@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from alembic import command
@@ -12,6 +13,9 @@ from alembic.script import ScriptDirectory
 from workgraph.persistence.db import Database
 
 MIGRATIONS_DIR = Path(__file__).parent / "migrations"
+
+# Alembic logs every context creation at INFO; keep CLI and MCP stdio output clean.
+logging.getLogger("alembic").setLevel(logging.WARNING)
 
 
 def _config(db: Database) -> Config:

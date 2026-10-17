@@ -6,10 +6,11 @@ import sys
 from pathlib import Path
 
 from workgraph.app import Workgraph
+from workgraph.demo import scripted_agent
 from workgraph.config.settings import CommandAgentConfig
 from workgraph.jobs.worker import Worker
 
-FAKE_AGENT = str(Path(__file__).parent / "fixtures" / "fake_agent.py")
+FAKE_AGENT = str(Path(scripted_agent.__file__))
 
 
 def enable_fake_agent(app: Workgraph, name: str = "fake", mode: str = "success", *, timeout: float = 120) -> None:

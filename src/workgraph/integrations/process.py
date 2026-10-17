@@ -212,7 +212,8 @@ def run_process(
             _kill_tree(proc)
             break
         time.sleep(poll_interval)
-    thread.join(timeout=10)
+    # Drain remaining output; consumers may briefly wait on database locks.
+    thread.join(timeout=60)
     if log_handle is not None:
         log_handle.close()
     return ProcessResult(

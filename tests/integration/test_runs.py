@@ -65,6 +65,10 @@ def test_successful_cross_repo_run_with_verification(app, human, ws, make_repo):
     commits = app.git.task_commits(human, ws, task.key)
     assert len(commits) == 2
     assert all(any(link["source"] == "execution_context" for link in c["links"]) for c in commits)
+    # protocol files stay outside the repositories; only the agent's change is committed
+    assert all(c["files_changed"] == 1 for c in commits)
+    churn = app.git.task_changes(human, ws, task.key)["cumulative_churn"]
+    assert churn["structurally_analyzed_commits"] == 2 and churn["functions_affected"] == 2, churn
     runs = app.verification.list_runs(human, ws, task=task.key)
     assert runs[0].status == "passed" and len(runs[0].manifest) == 2
     acceptance = app.verification.accept(human, ws, task.key)

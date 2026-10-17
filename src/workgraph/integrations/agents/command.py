@@ -6,7 +6,7 @@ placeholder substitution. Allowed placeholders::
 
     {attempt_id} {task_id} {task_key} {workdir} {manifest} {prompt_file}
 
-Input: a JSON request on stdin (also written to ``{workdir}/workgraph-request.json``)::
+Input: a JSON request on stdin (also written to ``workgraph-request.json`` next to the manifest)::
 
     {"protocol": "workgraph.agent.v1", "attempt_id": ..., "task": {...},
      "prompt": "...", "manifest": {...}}
@@ -98,7 +98,9 @@ class CommandAgentProvider:
     def run(
         self, request: AgentRunRequest, on_event: EventSink, should_cancel: CancelCheck
     ) -> AgentRunResult:
-        prompt_file = request.workdir / "workgraph-prompt.md"
+        # Protocol files live beside the manifest (the attempt directory), never inside a repository.
+        control_dir = request.manifest_path.parent
+        prompt_file = control_dir / "workgraph-prompt.md"
         prompt_file.write_text(request.prompt, encoding="utf-8")
         payload = {
             "protocol": PROTOCOL,
@@ -107,9 +109,7 @@ class CommandAgentProvider:
             "prompt": request.prompt,
             "manifest": request.manifest,
         }
-        (request.workdir / "workgraph-request.json").write_text(
-            json.dumps(payload, indent=2), encoding="utf-8"
-        )
+        (control_dir / "workgraph-request.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
         values = {
             "attempt_id": request.attempt_id,
             "task_id": request.task_id,

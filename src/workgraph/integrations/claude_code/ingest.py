@@ -634,13 +634,12 @@ class HookIngestor:
 
             total = session.scalar(select(func.count()).select_from(HookEvent)) or 0
             last = session.scalar(select(func.max(HookEvent.received_at)))
-            by_event = dict(
-                session.execute(
+            by_event = {
+                name: int(count)
+                for name, count in session.execute(
                     select(HookEvent.hook_event_name, func.count()).group_by(HookEvent.hook_event_name)
                 )
-                .tuples()
-                .all()
-            )
+            }
         return {
             "hook_events": int(total),
             "last_received_at": last.isoformat() if last else None,

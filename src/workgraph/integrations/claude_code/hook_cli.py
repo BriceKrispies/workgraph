@@ -74,5 +74,5 @@ def run_hook(argv: list[str]) -> int:
         except Exception:  # noqa: S110 - a hook must never fail the Claude Code session
             pass
         if debug:
-            pass
+            print(f"workgraph hook spooled: {exc}", file=sys.stderr)  # noqa: T201 - opt-in diagnostics
     return 0

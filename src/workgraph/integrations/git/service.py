@@ -682,6 +682,7 @@ class GitService(Service):
         created = self._ingest_batch(git, info, [full])
         if not created:
             raise NotFoundError(f"commit {sha} could not be ingested from {info.name}")
+        self.analyze_commits(created)
         return created[0]
 
     def link_commit(
@@ -851,6 +852,8 @@ class GitService(Service):
             if missing:
                 new_ids = self._ingest_batch(git, info, missing)
                 self._detect_equivalences(info, new_ids)
+                # Attempt commits are few and needed for churn metrics right away.
+                self.analyze_commits(new_ids)
             with self.db.session(write=True) as session:
                 for commit in session.scalars(
                     select(Commit).where(Commit.repository_id == repo_id, Commit.sha.in_(shas))
@@ -988,18 +991,19 @@ class GitService(Service):
                 "excluded_merges": 0,
             }
         commits = list(session.scalars(select(Commit).where(Commit.id.in_(commit_ids))))
-        seen_patches: set[str] = set()
+        # Keyed by (repository, patch id): identical patches in different repositories are distinct work.
+        seen_patches: set[tuple[str, str]] = set()
         counted: list[Commit] = []
         duplicates = merges = 0
         for commit in sorted(commits, key=lambda c: c.committed_at or utcnow()):
             if commit.is_merge:
                 merges += 1
                 continue
-            if commit.patch_id and commit.patch_id in seen_patches:
+            if commit.patch_id and (commit.repository_id, commit.patch_id) in seen_patches:
                 duplicates += 1
                 continue
             if commit.patch_id:
-                seen_patches.add(commit.patch_id)
+                seen_patches.add((commit.repository_id, commit.patch_id))
             counted.append(commit)
         counted_ids = [c.id for c in counted]
         file_rows = session.execute(

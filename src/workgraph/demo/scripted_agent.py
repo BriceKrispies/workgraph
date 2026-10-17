@@ -86,6 +86,7 @@ def main() -> int:
     if args.mode == "sleep":
         time.sleep(600)
     if args.mode == "crash":
+        print("boom: simulated crash", flush=True)  # noqa: T201 - deliberate unstructured output
         return 3
     if args.mode == "fail":
         emit(type="progress", message="tests are failing", percent=50)

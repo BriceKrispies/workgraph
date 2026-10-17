@@ -9,6 +9,7 @@ fall back to line-level analysis (reported as ``fallback`` with a reason).
 from __future__ import annotations
 
 import re
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import cache
@@ -109,6 +110,12 @@ def _loaders() -> dict[str, Callable[[], Any]]:
     }
 
 
+# The tree-sitter bindings are not thread-safe (grammar loading, parsing and node traversal all
+# crashed with access violations when job workers analysed commits concurrently), so every use of
+# tree-sitter in this module runs under this lock.
+_TREE_SITTER_LOCK = threading.RLock()
+
+
 @cache
 def _parser(language: str) -> Any:
     from tree_sitter import Language, Parser
@@ -123,7 +130,9 @@ def available_languages() -> list[str]:
     names = []
     for name in _loaders():
         try:
-            if _parser(name) is not None:
+            with _TREE_SITTER_LOCK:
+                parser = _parser(name)
+            if parser is not None:
                 names.append(name)
         except Exception:  # noqa: S112 - a broken grammar wheel only disables that language
             continue
@@ -189,6 +198,11 @@ def _name_of(node: Any, language: str) -> str:
 
 
 def extract_symbols(source: bytes, language: str) -> list[Symbol] | None:
+    with _TREE_SITTER_LOCK:
+        return _extract_symbols(source, language)
+
+
+def _extract_symbols(source: bytes, language: str) -> list[Symbol] | None:
     parser = _parser(language)
     if parser is None:
         return None

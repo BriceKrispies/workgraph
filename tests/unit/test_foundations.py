@@ -289,6 +289,27 @@ def test_symbol_extraction_all_languages(language):
     assert any(s.name.endswith(expected) for s in symbols), [s.name for s in symbols]
 
 
+def test_symbol_extraction_is_thread_safe():
+    # Job workers analyse commits concurrently; a shared tree-sitter Parser crashed the process.
+    source = b"\n".join(b"class C%d:\n    def m(self):\n        return %d\n" % (i, i) for i in range(300))
+    errors: list[BaseException] = []
+
+    def work() -> None:
+        try:
+            for _ in range(20):
+                symbols = extract_symbols(source, "python")
+                assert symbols is not None and len(symbols) == 600
+        except BaseException as exc:  # surfaced to the main thread below
+            errors.append(exc)
+
+    threads = [threading.Thread(target=work) for _ in range(8)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert errors == []
+
+
 def test_analyze_file_changes_and_fallback():
     old = b"def a():\n    return 1\n\ndef b():\n    return 2\n"
     new = b"def a():\n    return 10\n\ndef c():\n    return 3\n"

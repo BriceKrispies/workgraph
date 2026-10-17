@@ -422,7 +422,7 @@ class Warehouse:
         with self._lock:
             con = self.connection()
             relation = con.execute(sql, params)
-            arrow = relation.to_arrow_table()
+            arrow = relation.fetch_arrow_table()
             con.register("_export", arrow)
             target.parent.mkdir(parents=True, exist_ok=True)
             options = {

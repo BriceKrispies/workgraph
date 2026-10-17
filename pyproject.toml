@@ -17,7 +17,9 @@ classifiers = [
 ]
 dependencies = [
     "alembic>=1.20.0",
-    "duckdb>=1.5.6",
+    # DuckDB 1.4+ crashes uvicorn processes on CPython 3.12 for Windows (fatal PyEval_SaveThread).
+    "duckdb>=1.3.2,<1.4; python_version < '3.13'",
+    "duckdb>=1.5.6; python_version >= '3.13'",
     "fastapi>=0.143.3",
     "httpx>=0.28.1",
     "mcp>=2.3.0",
@@ -28,7 +30,8 @@ dependencies = [
     "sqlalchemy>=2",
     "sse-starlette>=3.5.0",
     "tomli-w>=1.2.0",
-    "tree-sitter>=0.26.0",
+    # tree-sitter 0.26.0 bindings crash (access violation during GC while walking nodes) on Windows.
+    "tree-sitter>=0.25.2,<0.26",
     "tree-sitter-c-sharp>=0.23.5",
     "tree-sitter-go>=0.25.0",
     "tree-sitter-javascript>=0.25.0",

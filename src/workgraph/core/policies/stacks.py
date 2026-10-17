@@ -16,12 +16,14 @@ STACK_ITEM_TRANSITIONS: dict[StackItemState, frozenset[StackItemState]] = {
     S.PENDING: frozenset({S.READY}),
     # A ready item is merged onto the integration branch, or conflicts with it. A new attempt sends it back.
     S.READY: frozenset({S.MERGED, S.CONFLICT, S.PENDING}),
-    S.MERGED: frozenset({S.VERIFIED, S.EJECTED, S.READY, S.CONFLICT}),
+    # A merged item leaves the integration branch when it is ejected, or when a culprit it depends on is.
+    S.MERGED: frozenset({S.VERIFIED, S.EJECTED, S.READY, S.CONFLICT, S.PENDING}),
     # A conflicting or ejected child goes back to its agent; once fixed it is ready again.
     S.CONFLICT: frozenset({S.READY, S.PENDING, S.EJECTED}),
     S.EJECTED: frozenset({S.PENDING, S.READY}),
-    # Verified items are replayed when the integration branch is rebuilt on a moved main.
-    S.VERIFIED: frozenset({S.READY}),
+    # Verified items are replayed when the integration branch is rebuilt on a moved main, and leave the
+    # branch again when a later full verification of the tip fails on them.
+    S.VERIFIED: frozenset({S.READY, S.EJECTED, S.PENDING, S.CONFLICT}),
 }
 
 # Items that are no longer on the integration branch and may therefore leave the stack.

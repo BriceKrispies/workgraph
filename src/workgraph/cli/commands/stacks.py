@@ -59,6 +59,17 @@ def stack_integrate(parent: str, workspace: str | None = workspace_option()) -> 
     emit(STATE.app().stacks.integrate(STATE.ctx(), ws(workspace), parent), _render_integration)
 
 
+def _render_verification(out: dict[str, Any]) -> None:
+    table([(out["stack"], out["job_id"])], ["stack", "verification job"])
+
+
+@stack_app.command("verify")
+@handle_errors
+def stack_verify(parent: str, workspace: str | None = workspace_option()) -> None:
+    """Queue full verification of the stack's integration tip (bisecting and ejecting on failure)."""
+    emit(STATE.app().stack_verification.request(STATE.ctx(), ws(workspace), parent), _render_verification)
+
+
 @stack_app.command("list")
 @handle_errors
 def stack_list(

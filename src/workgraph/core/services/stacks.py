@@ -62,10 +62,11 @@ def stack_base(session: Session, task: Task, repo: Repository) -> StackBase | No
     """Choose where a stack child's attempt starts in one repository.
 
     Returns None when the task is not an item of an active stack that covers the repository; the
-    attempt then starts from the default branch as before. A child that depends on siblings in the
-    stack which changed the repository starts from the head of the latest such sibling's succeeded
-    attempt, so stacked changes build on each other. Any other child starts from the stack's base
-    commit, so independent children run side by side on the same footing.
+    attempt then starts from the default branch as before. A conflicting or ejected child starts from
+    the integration tip. A child that depends on siblings in the stack which changed the repository
+    starts from the head of the latest such sibling's succeeded attempt, so stacked changes build on
+    each other. Any other child starts from the stack's base commit, so independent children run side
+    by side on the same footing.
     """
     row = session.execute(
         select(Stack.id, StackRepository.base_sha, StackRepository.integration_branch, StackItem.state)
@@ -79,8 +80,8 @@ def stack_base(session: Session, task: Task, repo: Repository) -> StackBase | No
     if row is None:
         return None
     stack_id, base_sha, integration_branch, state = row
-    if StackItemState(state) == StackItemState.CONFLICT:
-        # A child sent back for a merge conflict resolves it against what is already integrated.
+    if StackItemState(state) in (StackItemState.CONFLICT, StackItemState.EJECTED):
+        # A child sent back for a merge conflict, or ejected by verification, starts from what is integrated.
         checkout = primary_checkout(repo)
         if checkout is None:
             raise ValidationFailed(f"repository {repo.name!r} has no available checkout")

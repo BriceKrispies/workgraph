@@ -8,6 +8,8 @@ attempt starts from that tip (see ``core.services.stacks.stack_base``).
 
 Per-item progress lives in ``stack_items.detail`` as JSON: ``merges`` maps each repository name to
 the change head that was merged and the merge commit, and ``conflicts`` holds the open conflicts.
+Once the queue settles, ``stack_verify`` jobs run the full tier on the integration tip (see
+``integrations.git.stack_verification``).
 """
 
 from __future__ import annotations
@@ -57,9 +59,12 @@ INTEGRATION_IDENTITY = {
     "GIT_COMMITTER_EMAIL": "integration@workgraph.local",
 }
 
+# A conflicting child returns to its agent from either state; a verified child is still on the branch.
+RETURNABLE_TASK_STATUSES = (TaskStatus.AWAITING_VERIFICATION, TaskStatus.AWAITING_REVIEW)
+
 
 @dataclass(frozen=True)
-class _Target:
+class IntegrationTarget:
     stack_id: str
     workspace_id: str
     repository_id: str
@@ -70,30 +75,73 @@ class _Target:
     checkout_id: str
 
 
-def _load_detail(text: str | None) -> dict[str, Any]:
-    detail = json.loads(text) if text else {}
-    return {"merges": dict(detail.get("merges", {})), "conflicts": dict(detail.get("conflicts", {}))}
+@dataclass(frozen=True)
+class MergeOutcome:
+    """The result of merging one head into an integration worktree.
+
+    ``conflict_paths`` is None when the merge was made (or was already contained in the branch); a
+    conflicting merge is aborted, so ``merge_commit`` is then the tip the branch still points at.
+    """
+
+    merge_commit: str
+    conflict_paths: list[str] | None = None
+    git_error: str = ""
+    already_integrated: bool = False
 
 
-def _dump_detail(detail: dict[str, Any]) -> str:
+def load_detail(text: str | None) -> dict[str, Any]:
+    """An item's detail. Free text (set by an operator) carries no merges, so it reads as empty."""
+    try:
+        parsed = json.loads(text) if text else {}
+    except json.JSONDecodeError:
+        parsed = {}
+    if not isinstance(parsed, dict):
+        parsed = {}
+    return {
+        **parsed,
+        "merges": dict(parsed.get("merges", {})),
+        "conflicts": dict(parsed.get("conflicts", {})),
+    }
+
+
+def dump_detail(detail: dict[str, Any]) -> str:
     return json.dumps(detail, sort_keys=True)
 
 
-def _directory_name(name: str) -> str:
+def directory_name(name: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]", "_", name)
+
+
+def merge_head(git: Git, head: str, message: str) -> MergeOutcome:
+    """Merge ``head`` into the worktree's branch as Workgraph's integration identity."""
+    tip_before = git.head()
+    assert tip_before is not None
+    if git.is_ancestor(head, tip_before):
+        return MergeOutcome(merge_commit=tip_before, already_integrated=True)
+    result = git.run(
+        "merge", "--no-ff", "--no-edit", "-m", message, head, check=False, env=INTEGRATION_IDENTITY
+    )
+    if result.returncode == 0:
+        merged = git.head()
+        assert merged is not None
+        return MergeOutcome(merge_commit=merged)
+    unmerged = git.out("diff", "--name-only", "--diff-filter=U", check=False)
+    conflict_paths = [line for line in unmerged.splitlines() if line]
+    git_error = result.stderr.strip()[:500]
+    git.run("merge", "--abort", check=False)
+    return MergeOutcome(merge_commit=tip_before, conflict_paths=conflict_paths, git_error=git_error)
 
 
 class StackIntegrator(Service):
     # ------------------------------------------------------------------ worktree
 
-    def ensure_worktree(self, ctx: RequestContext, target: _Target) -> Path:
+    def worktree_path(self, stack_id: str, repository_name: str) -> Path:
+        """Where a stack's integration worktree for one repository lives."""
+        return self.app.paths.worktrees_dir / "stacks" / stack_id / directory_name(repository_name)
+
+    def ensure_worktree(self, ctx: RequestContext, target: IntegrationTarget) -> Path:
         """The integration worktree for a stack repository, created on first use."""
-        path = (
-            self.app.paths.worktrees_dir
-            / "stacks"
-            / target.stack_id
-            / _directory_name(target.repository_name)
-        )
+        path = self.worktree_path(target.stack_id, target.repository_name)
         with self.db.session() as session:
             row = session.scalar(select(ManagedWorktree).where(ManagedWorktree.path == str(path)))
             if (
@@ -151,7 +199,7 @@ class StackIntegrator(Service):
 
     def integrate(self, ctx: RequestContext, stack_id: str, repository_id: str) -> dict[str, Any]:
         """Merge every due ready item, in order, into one repository's integration branch."""
-        target = self._target(stack_id, repository_id)
+        target = self.target(stack_id, repository_id)
         if target is None:
             return {"status": "inactive", "merged": [], "skipped": [], "conflicts": []}
         git = Git(self.ensure_worktree(ctx, target))
@@ -180,9 +228,10 @@ class StackIntegrator(Service):
                         latest_event_id(session, stack),
                         exclude_repository_id=repository_id,
                     )
+        self.app.stack_verification.enqueue_if_settled(ctx, stack_id)
         return {"status": "ran", "repository": target.repository_name, **outcome}
 
-    def _target(self, stack_id: str, repository_id: str) -> _Target | None:
+    def target(self, stack_id: str, repository_id: str) -> IntegrationTarget | None:
         with self.db.session() as session:
             row = session.execute(
                 select(Stack, StackRepository, Repository)
@@ -198,7 +247,7 @@ class StackIntegrator(Service):
             checkout = primary_checkout(repo)
             if checkout is None:
                 raise GitError(f"repository {repo.name} has no available checkout")
-            return _Target(
+            return IntegrationTarget(
                 stack_id=stack.id,
                 workspace_id=stack.workspace_id,
                 repository_id=repo.id,
@@ -209,7 +258,7 @@ class StackIntegrator(Service):
                 checkout_id=checkout.id,
             )
 
-    def _next_due(self, target: _Target, processed: set[str]) -> str | None:
+    def _next_due(self, target: IntegrationTarget, processed: set[str]) -> str | None:
         """The next ready item whose in-stack dependencies are merged, by depth, priority, then readiness."""
         with self.db.session() as session:
             rows = session.execute(
@@ -250,14 +299,14 @@ class StackIntegrator(Service):
     # ------------------------------------------------------------------ one item
 
     def _integrate_item(
-        self, ctx: RequestContext, target: _Target, git: Git, item_id: str
+        self, ctx: RequestContext, target: IntegrationTarget, git: Git, item_id: str
     ) -> tuple[str, str]:
         """Merge one item into the integration branch; returns (outcome, task key)."""
         with self.db.session(write=True) as session:
-            stack, item, task, parent = self._load_item(session, item_id)
-            heads = self._heads(session, stack, task)
+            stack, item, task, parent = self.load_item(session, item_id)
+            heads = self.heads(session, stack, task)
             head = heads.get(target.repository_id)
-            detail = _load_detail(item.detail)
+            detail = load_detail(item.detail)
             if not heads:
                 # Nothing changed anywhere, so there is nothing to merge and the item is integrated as is.
                 self.app.stacks.transition_item(
@@ -281,36 +330,21 @@ class StackIntegrator(Service):
                 return "skipped", task.key
             if detail["merges"].get(target.repository_name, {}).get("head") == head:
                 return "noop", task.key
-            self._start_integrating(session, ctx, stack)
+            self.start_integrating(session, ctx, stack)
             task_key, title = task.key, task.title
         assert head is not None
 
-        tip_before = git.head()
-        assert tip_before is not None
         message = f"Merge {task_key}: {title} into {target.integration_branch}"
-        already_integrated = git.is_ancestor(head, tip_before)
-        conflict_paths: list[str] | None = None
-        git_error = ""
-        if already_integrated:
-            merge_commit = tip_before
-        else:
-            result = git.run(
-                "merge", "--no-ff", "--no-edit", "-m", message, head, check=False, env=INTEGRATION_IDENTITY
-            )
-            if result.returncode == 0:
-                merge_commit = git.head()
-            else:
-                unmerged = git.out("diff", "--name-only", "--diff-filter=U", check=False)
-                conflict_paths = [line for line in unmerged.splitlines() if line]
-                git_error = result.stderr.strip()[:500]
-                git.run("merge", "--abort", check=False)
-                merge_commit = tip_before
+        outcome = merge_head(git, head, message)
 
         with self.db.session(write=True) as session:
-            stack, item, task, parent = self._load_item(session, item_id)
-            detail = _load_detail(item.detail)
-            if conflict_paths is None:
-                detail["merges"][target.repository_name] = {"head": head, "merge_commit": merge_commit}
+            stack, item, task, parent = self.load_item(session, item_id)
+            detail = load_detail(item.detail)
+            if outcome.conflict_paths is None:
+                detail["merges"][target.repository_name] = {
+                    "head": head,
+                    "merge_commit": outcome.merge_commit,
+                }
                 detail["conflicts"].pop(target.repository_name, None)
                 record_event(
                     session,
@@ -324,72 +358,103 @@ class StackIntegrator(Service):
                         "repository": target.repository_name,
                         "branch": target.integration_branch,
                         "head": head,
-                        "merge_commit": merge_commit,
-                        "already_integrated": already_integrated,
+                        "merge_commit": outcome.merge_commit,
+                        "already_integrated": outcome.already_integrated,
                     },
                 )
-                if self._fully_merged(session, stack, task, detail):
+                if self.fully_merged(session, stack, task, detail):
                     self.app.stacks.transition_item(
-                        session, ctx, stack, parent, task, item, StackItemState.MERGED, _dump_detail(detail)
+                        session, ctx, stack, parent, task, item, StackItemState.MERGED, dump_detail(detail)
                     )
                 else:
-                    item.detail = _dump_detail(detail)
+                    item.detail = dump_detail(detail)
                     stack.updated_at = utcnow()
                 return "merged", task.key
 
-            # The merge is aborted, so the integration tip is the commit the branch still points at.
-            conflict = {
-                "repository": target.repository_name,
-                "head": head,
-                "paths": conflict_paths,
-                "integration_tip": merge_commit,
-                "instruction": (
-                    f"rebase this change onto the integration tip {merge_commit} of "
-                    f"{target.integration_branch} and resolve the conflicts there"
-                ),
-                "git_error": "" if conflict_paths else git_error,
-            }
-            detail["conflicts"][target.repository_name] = conflict
-            record_event(
+            self.record_conflict(
                 session,
                 ctx,
-                event_type="stack.integration_conflict",
-                entity_type="stack",
-                entity_id=stack.id,
-                workspace_id=stack.workspace_id,
-                data={"task_key": task.key, **conflict},
-            )
-            self.app.stacks.transition_item(
-                session, ctx, stack, parent, task, item, StackItemState.CONFLICT, _dump_detail(detail)
-            )
-            if TaskStatus(task.status) == TaskStatus.AWAITING_VERIFICATION:
-                self.app.tasks._transition(
-                    session,
-                    ctx,
-                    task,
-                    TaskStatus.READY,
-                    reason=f"integration conflict in {target.repository_name}",
-                )
-            paths = ", ".join(conflict_paths) if conflict_paths else "none reported"
-            self.app.tasks._comment(
-                session,
-                ctx,
+                stack,
+                parent,
                 task,
-                CommentCreate(
-                    body=(
-                        f"Merge conflict integrating {task.key} into {target.integration_branch} "
-                        f"({target.repository_name}). Conflicting paths: {paths}. "
-                        f"Integration tip: {merge_commit}. Next step: {conflict['instruction']}."
-                    ),
-                    data={"stack_item_conflict": conflict},
-                ),
+                item,
+                repository=target.repository_name,
+                branch=target.integration_branch,
+                head=head,
+                outcome=outcome,
+                detail=detail,
             )
             return "conflict", task.key
+
+    def record_conflict(
+        self,
+        session: Session,
+        ctx: RequestContext,
+        stack: Stack,
+        parent: Task,
+        task: Task,
+        item: StackItem,
+        *,
+        repository: str,
+        branch: str,
+        head: str,
+        outcome: MergeOutcome,
+        detail: dict[str, Any],
+    ) -> None:
+        """Send an item back to its agent after a merge into one repository conflicted.
+
+        The merge was aborted, so the branch did not move. The item moves to ``conflict`` (from ready,
+        merged or verified) and its task returns to ready with a comment naming the conflict.
+        """
+        paths = outcome.conflict_paths or []
+        conflict = {
+            "repository": repository,
+            "head": head,
+            "paths": paths,
+            "integration_tip": outcome.merge_commit,
+            "instruction": (
+                f"rebase this change onto the integration tip {outcome.merge_commit} of "
+                f"{branch} and resolve the conflicts there"
+            ),
+            "git_error": "" if paths else outcome.git_error,
+        }
+        detail["conflicts"][repository] = conflict
+        record_event(
+            session,
+            ctx,
+            event_type="stack.integration_conflict",
+            entity_type="stack",
+            entity_id=stack.id,
+            workspace_id=stack.workspace_id,
+            data={"task_key": task.key, **conflict},
+        )
+        item.detail = dump_detail(detail)
+        self.app.stacks.transition_item(
+            session, ctx, stack, parent, task, item, StackItemState.CONFLICT, dump_detail(detail)
+        )
+        if TaskStatus(task.status) in RETURNABLE_TASK_STATUSES:
+            self.app.tasks._transition(
+                session, ctx, task, TaskStatus.READY, reason=f"integration conflict in {repository}"
+            )
+        listed = ", ".join(paths) if paths else "none reported"
+        self.app.tasks._comment(
+            session,
+            ctx,
+            task,
+            CommentCreate(
+                body=(
+                    f"Merge conflict integrating {task.key} into {branch} ({repository}). "
+                    f"Conflicting paths: {listed}. Integration tip: {outcome.merge_commit}. "
+                    f"Next step: {conflict['instruction']}."
+                ),
+                data={"stack_item_conflict": conflict},
+            ),
+        )
 
     # ------------------------------------------------------------------ helpers
 
     @staticmethod
-    def _load_item(session: Session, item_id: str) -> tuple[Stack, StackItem, Task, Task]:
+    def load_item(session: Session, item_id: str) -> tuple[Stack, StackItem, Task, Task]:
         item = session.get(StackItem, item_id)
         assert item is not None
         stack = session.get(Stack, item.stack_id)
@@ -400,7 +465,7 @@ class StackIntegrator(Service):
         return stack, item, task, parent
 
     @staticmethod
-    def _heads(session: Session, stack: Stack, task: Task) -> dict[str, str]:
+    def heads(session: Session, stack: Stack, task: Task) -> dict[str, str]:
         """The head the task left in each stack repository it changed."""
         heads: dict[str, str] = {}
         for repo_id in session.scalars(
@@ -412,7 +477,7 @@ class StackIntegrator(Service):
         return heads
 
     @staticmethod
-    def _fully_merged(session: Session, stack: Stack, task: Task, detail: dict[str, Any]) -> bool:
+    def fully_merged(session: Session, stack: Stack, task: Task, detail: dict[str, Any]) -> bool:
         """Whether every repository the item changed has merged its current head."""
         names = dict(
             session.execute(
@@ -421,14 +486,18 @@ class StackIntegrator(Service):
                 .where(StackRepository.stack_id == stack.id)
             ).all()
         )
-        heads = StackIntegrator._heads(session, stack, task)
+        heads = StackIntegrator.heads(session, stack, task)
         return all(
             detail["merges"].get(names[repo_id], {}).get("head") == head for repo_id, head in heads.items()
         )
 
     @staticmethod
-    def _start_integrating(session: Session, ctx: RequestContext, stack: Stack) -> None:
-        if stack.status != StackStatus.OPEN:
+    def start_integrating(session: Session, ctx: RequestContext, stack: Stack) -> None:
+        """Move a stack into ``integrating`` when its branch is about to change.
+
+        A verified stack is no longer verified once a new child lands on its branch.
+        """
+        if stack.status not in (StackStatus.OPEN, StackStatus.VERIFIED):
             return
         previous = stack.status
         stack.status = StackStatus.INTEGRATING

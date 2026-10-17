@@ -47,11 +47,11 @@ def index_task(session: Session, task_id: str) -> None:
 _TOKEN_RE = re.compile(r"[\w]+", re.UNICODE)
 
 
-def to_fts_query(user_query: str, *, prefix: bool = True) -> str | None:
+def to_fts_query(user_query: str, *, prefix: bool = True, match_any: bool = False) -> str | None:
     """Turn free text into a safe FTS5 MATCH expression (no operator injection).
 
     Each token is quoted; the final token gets a prefix wildcard to support
-    search-as-you-type. Tokens are AND-ed together.
+    search-as-you-type. Tokens are AND-ed together unless ``match_any``.
     """
     tokens = _TOKEN_RE.findall(user_query)
     if not tokens:
@@ -59,4 +59,7 @@ def to_fts_query(user_query: str, *, prefix: bool = True) -> str | None:
     quoted = [f'"{t}"' for t in tokens]
     if prefix:
         quoted[-1] = quoted[-1] + "*"
+    if match_any:
+        # Similarity lookups: any shared term counts; bm25 ranks documents sharing more terms higher.
+        return " OR ".join(dict.fromkeys(quoted[:40]))
     return " ".join(quoted)

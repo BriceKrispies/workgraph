@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Workgraph local state (never commit databases, artifacts or credentials)
+*.db
+*.db-wal
+*.db-shm
+*.duckdb
+*.duckdb.wal
+.workgraph/
+wg-home/
+api-token
+
+# Frontend
+web/node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+src/workgraph/api/static/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

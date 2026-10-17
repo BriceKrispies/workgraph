@@ -33,3 +33,6 @@ src/workgraph/api/static/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Claude Code agent worktrees
+.claude/worktrees/

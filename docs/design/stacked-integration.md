@@ -1,7 +1,7 @@
 # Stacked integration
 
-Status: **accepted design, not implemented.** Tracked as parent task WG-2 in the `workgraph`
-repository; work items 1-7 below are WG-3 to WG-9.
+Tracked in Workgraph as parent task WG-2 (work items 1-7 below are WG-3 to WG-9); progress lives
+there (`workgraph task show WG-2`), not in this document.
 
 ## Problem
 
@@ -129,5 +129,5 @@ parallel.
    `main`), child acceptances, `stack.auto_accept` policy, single-child acceptance removes it from
    the stack. *(depends on 5)*
 7. **Interfaces and documentation** - `workgraph stack ...` CLI group, API routes, MCP tools,
-   web stack view, `docs/git.md`, `docs/task-lifecycle.md`, `docs/IMPLEMENTATION_STATUS.md`.
+   web stack view, `docs/git.md`, `docs/task-lifecycle.md`.
    *(depends on 6)*

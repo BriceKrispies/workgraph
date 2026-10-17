@@ -87,6 +87,9 @@ uv run tools/check.py
 
 ## Documentation
 
+Work status, open limitations and follow-ups are tracked in Workgraph itself (repository
+`workgraph`: `workgraph task list`), not in documents.
+
 | Topic | Document |
 | --- | --- |
 | Overview and architecture | [docs/architecture.md](docs/architecture.md) |
@@ -108,7 +111,6 @@ uv run tools/check.py
 | Testing | [docs/testing.md](docs/testing.md) |
 | Troubleshooting | [docs/troubleshooting.md](docs/troubleshooting.md) |
 | HTTP API | [docs/api.md](docs/api.md) |
-| Implementation status | [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md) |
 
 ## Observed measurements versus model interpretations
 

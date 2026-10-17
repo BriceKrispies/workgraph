@@ -55,7 +55,13 @@ from workgraph.persistence.orm import (
     VerificationRun,
 )
 from workgraph.security.permissions import Permission, require
-from workgraph.verification.configs import ApplicableCheck, CheckSpec, applicable_checks
+from workgraph.verification.configs import (
+    ApplicableCheck,
+    CheckSpec,
+    CheckTier,
+    applicable_checks,
+    checks_for_tier,
+)
 
 _PYTEST_FAILED = re.compile(r"^(?:FAILED|ERROR) (\S+::\S+)")
 _GENERIC_ERROR = re.compile(r"(?i)\b(error|failed|failure)\b[:\s](.{0,160})")
@@ -125,6 +131,13 @@ class AcceptanceOut(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+def _ran_fast_tier_only(run: VerificationRun, applicable: list[ApplicableCheck]) -> bool:
+    """A run restricted to the fast tier does not cover the full tier, so it cannot accept a task."""
+    if not any(check.spec.tier == "full" for check in applicable):
+        return False
+    return not any(entry.get("tier", "full") == "full" for entry in run.config_snapshot)
 
 
 @dataclass
@@ -319,9 +332,11 @@ class VerificationService(Service):
         attempt_id: str | None = None,
         manifest_entries: list[dict[str, Any]] | None = None,
         should_cancel: Any = None,
+        tier: CheckTier | None = None,
     ) -> VerificationRunOut:
+        """Run the applicable checks; ``tier`` restricts the run to one tier (``None`` runs every tier)."""
         require(ctx, Permission.VERIFY_RUN)
-        prepared = self._prepare(ctx, workspace, task_ref, attempt_id, manifest_entries)
+        prepared = self._prepare(ctx, workspace, task_ref, attempt_id, manifest_entries, tier)
         results = [self._execute_check(prepared, check, should_cancel) for check in prepared.checks]
         return self._finalize(ctx, prepared, results)
 
@@ -332,12 +347,15 @@ class VerificationService(Service):
         task_ref: str,
         attempt_id: str | None,
         manifest_entries: list[dict[str, Any]] | None,
+        tier: CheckTier | None,
     ) -> _PreparedRun:
         with self.db.session() as session:
             ws_id = self.app.tasks._workspace_id(session, workspace) if workspace else None
             task = resolve.task(session, ws_id, task_ref)
-            checks = applicable_checks(session, task)
+            checks = checks_for_tier(applicable_checks(session, task), tier)
             if not checks:
+                if tier is not None:
+                    raise ValidationFailed(f"no {tier} verification checks are configured for {task.key}")
                 raise ValidationFailed(
                     f"no verification checks are configured for {task.key}; record manual acceptance instead"
                 )
@@ -391,6 +409,7 @@ class VerificationService(Service):
                     "task_key": task_key,
                     "manifest_id": manifest.id,
                     "checks": len(checks),
+                    "tier": tier,
                 },
             )
             return _PreparedRun(
@@ -731,6 +750,11 @@ class VerificationService(Service):
             if not latest.required_passed:
                 raise ConflictError(
                     f"latest verification run for {task.key} failed required checks; it cannot be accepted",
+                    details={"run_id": latest.id},
+                )
+            if _ran_fast_tier_only(latest, checks):
+                raise ConflictError(
+                    f"latest verification run for {task.key} ran only fast checks; run full verification first",
                     details={"run_id": latest.id},
                 )
             return self._accept(

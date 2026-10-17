@@ -89,6 +89,21 @@ def test_all_command_groups(run, make_repo, tmp_path):
     run("attempt", "manifests", attempt["id"])
     run("verify", "runs")
     run("verify", "failures")
+    run(
+        "verify",
+        "config",
+        "lint",
+        "--scope-type",
+        "repository",
+        "--scope",
+        "svc",
+        "--check",
+        json.dumps(
+            {"name": "lint", "kind": "lint", "tier": "fast", "command": [sys.executable, "-c", "print(1)"]}
+        ),
+    )
+    fast = run("verify", "run", "WG-1", "--tier", "fast")
+    assert [c["name"] for c in fast["checks"]] == ["lint"]
     run("verify", "run", "WG-1")
     run("task", "accept", "WG-1")
     run("job", "list")

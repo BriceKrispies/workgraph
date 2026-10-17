@@ -22,7 +22,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -79,6 +79,7 @@ class ExecutionManifest(BaseModel):
     repositories: list[ManifestEntry]
     expected_changes: list[str]
     verification: list[dict[str, Any]]
+    agent_checks: list[dict[str, Any]] = Field(default_factory=list)
     baseline_manifest_id: str
     change_set_id: str | None
 
@@ -211,11 +212,16 @@ class WorktreeManager(Service):
             attempt = session.get(AgentAttempt, attempt_id)
             assert attempt is not None
             attempt.baseline_manifest_id = baseline.id
-            from workgraph.verification.configs import applicable_checks
+            from workgraph.verification.configs import applicable_checks, checks_for_tier
 
             task_row = session.get(Task, task_id)
             assert task_row is not None
-            checks = [c.spec.model_dump(mode="json") for c in applicable_checks(session, task_row)]
+            applicable = applicable_checks(session, task_row)
+            checks = [c.spec.model_dump(mode="json") for c in applicable]
+            agent_checks = [
+                {"name": c.spec.name, "command": c.spec.command, "repository": c.spec.repository}
+                for c in checks_for_tier(applicable, "fast")
+            ]
             record_event(
                 session,
                 ctx,
@@ -239,6 +245,7 @@ class WorktreeManager(Service):
                 repositories=entries,
                 expected_changes=expected_changes or [e.repository for e in writable],
                 verification=checks,
+                agent_checks=agent_checks,
                 baseline_manifest_id=baseline.id,
                 change_set_id=change_set_id,
             )

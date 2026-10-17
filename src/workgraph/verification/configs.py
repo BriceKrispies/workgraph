@@ -8,6 +8,7 @@ out of task descriptions or agent output.
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Literal
 
@@ -15,11 +16,14 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
+from workgraph.core.errors import ValidationFailed
 from workgraph.core.models.enums import CheckKind
 from workgraph.persistence.orm import Task, TaskProject, TaskRepository, VerificationConfig
 
 _ENV_NAME = re.compile(r"^[A-Z_][A-Z0-9_]{0,63}$")
 _FORBIDDEN_EXECUTABLES = {"sh", "bash", "zsh", "fish", "cmd", "cmd.exe", "powershell", "pwsh", "nu"}
+
+CheckTier = Literal["fast", "full"]
 
 
 class CheckSpec(BaseModel):
@@ -37,6 +41,11 @@ class CheckSpec(BaseModel):
     parser: Literal["auto", "pytest", "generic"] = "auto"
     allow_shell: bool = Field(
         default=False, description="Permit a shell interpreter as the executable (explicit operator opt-in)"
+    )
+    tier: CheckTier = Field(
+        default="full",
+        description="fast checks (lint, format, type check) gate stack children and are listed for the agent; "
+        "full checks run once per verification",
     )
 
     @field_validator("command")
@@ -71,6 +80,24 @@ class ApplicableCheck:
     scope_type: str
     scope_id: str
     spec: CheckSpec
+
+
+def parse_tier(value: str | None) -> CheckTier | None:
+    """Validate a tier supplied by a CLI, API or job boundary; ``None`` selects every tier."""
+    if value is None:
+        return None
+    if value == "fast":
+        return "fast"
+    if value == "full":
+        return "full"
+    raise ValidationFailed(f"unknown check tier {value!r}; expected one of: fast, full")
+
+
+def checks_for_tier(checks: Sequence[ApplicableCheck], tier: CheckTier | None) -> list[ApplicableCheck]:
+    """Keep the checks of one tier, preserving order; ``None`` keeps every check."""
+    if tier is None:
+        return list(checks)
+    return [check for check in checks if check.spec.tier == tier]
 
 
 def applicable_configs(session: Session, task: Task) -> list[VerificationConfig]:

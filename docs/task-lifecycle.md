@@ -68,7 +68,13 @@ uv run workgraph verify config integration --scope-type project --scope platform
 
 Scopes: `workspace`, `project`, `repository` (runs in that repository's checkout), `task`.
 Check fields: `name`, `kind` (test, lint, typecheck, build, integration, custom), `command`,
-`repository`, `timeout_seconds`, `required`, `env`, `parser` (auto, pytest, generic).
+`repository`, `timeout_seconds`, `required`, `env`, `parser` (auto, pytest, generic), `tier`
+(`fast` or `full`, default `full`).
+
+Tiers select checks by cost. `fast` checks (lint, format, type check) are the ones an agent is told
+to run itself: they are listed as `agent_checks` in the execution manifest. `workgraph verify run
+--tier fast` runs only those checks, and a run restricted to the fast tier cannot accept a task
+while full-tier checks exist. A run without `--tier` runs every check, as before.
 
 A run records the exact revision manifest under test, each check's exit code, duration, timeout,
 log artifact, output excerpt and parsed failure signatures (e.g. `test:tests/test_api.py::test_login`).

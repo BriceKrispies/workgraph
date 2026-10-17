@@ -502,12 +502,35 @@ class RunService(Service):
                     duration_ms=measured_ms,
                 )
         verification: dict[str, Any] | None = None
-        if needs_verification:
+        # A stack child is gated by its fast tier; the full tier runs once on the integration tip instead.
+        gate = self.app.stacks.gate(task_id) if needs_verification else None
+        if needs_verification and gate == "pass":
+            with self.db.session(write=True) as session:
+                attempt = resolve.attempt(session, attempt_id)
+                finish_attempt(
+                    session,
+                    ctx,
+                    attempt,
+                    AttemptStatus.SUCCEEDED,
+                    exit_reason="agent_succeeded",
+                    exit_code=result.exit_code,
+                    duration_ms=measured_ms,
+                )
+            self.app.stacks.mark_ready(ctx, task_id)
+            verification = {"gate": "no_fast_checks"}
+        elif needs_verification:
             try:
                 run = self.app.verification.run(
-                    ctx, None, task_id, attempt_id=attempt_id, should_cancel=job_ctx.cancel_requested
+                    ctx,
+                    None,
+                    task_id,
+                    attempt_id=attempt_id,
+                    should_cancel=job_ctx.cancel_requested,
+                    tier="fast" if gate == "fast" else None,
                 )
                 verification = {"run_id": run.id, "status": run.status}
+                if gate == "fast" and run.status == "passed":
+                    self.app.stacks.mark_ready(ctx, task_id)
             except WorkgraphError as exc:
                 with self.db.session(write=True) as session:
                     attempt = resolve.attempt(session, attempt_id)

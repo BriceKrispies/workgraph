@@ -32,10 +32,13 @@ from workgraph.core.services import resolve
 from workgraph.core.services.base import Service
 from workgraph.core.services.repositories import primary_checkout
 from workgraph.integrations.git.cli import Git
+from workgraph.jobs import queue as jobqueue
 from workgraph.persistence.orm import (
     AgentAttempt,
     ChangeSet,
     ChangeSetItem,
+    Event,
+    Job,
     Repository,
     Stack,
     StackItem,
@@ -65,7 +68,7 @@ def stack_base(session: Session, task: Task, repo: Repository) -> StackBase | No
     commit, so independent children run side by side on the same footing.
     """
     row = session.execute(
-        select(Stack.id, StackRepository.base_sha)
+        select(Stack.id, StackRepository.base_sha, StackRepository.integration_branch, StackItem.state)
         .join(StackItem, StackItem.stack_id == Stack.id)
         .join(
             StackRepository,
@@ -75,7 +78,23 @@ def stack_base(session: Session, task: Task, repo: Repository) -> StackBase | No
     ).first()
     if row is None:
         return None
-    stack_id, base_sha = row
+    stack_id, base_sha, integration_branch, state = row
+    if StackItemState(state) == StackItemState.CONFLICT:
+        # A child sent back for a merge conflict resolves it against what is already integrated.
+        checkout = primary_checkout(repo)
+        if checkout is None:
+            raise ValidationFailed(f"repository {repo.name!r} has no available checkout")
+        tip = Git(Path(checkout.path)).resolve_commit(integration_branch)
+        return StackBase(
+            tip,
+            {
+                "source": "integration_tip",
+                "stack_id": stack_id,
+                "stack_base_sha": base_sha,
+                "integration_branch": integration_branch,
+                "integration_tip": tip,
+            },
+        )
     siblings = session.scalars(
         select(Task)
         .join(TaskDependency, TaskDependency.depends_on_id == Task.id)
@@ -85,7 +104,7 @@ def stack_base(session: Session, task: Task, repo: Repository) -> StackBase | No
     )
     heads: list[tuple[Task, str]] = []
     for sibling in siblings:
-        head = _latest_head(session, sibling.id, repo.id)
+        head = latest_head(session, sibling.id, repo.id)
         if head is not None:
             heads.append((sibling, head))
     if not heads:
@@ -126,7 +145,7 @@ def stack_base(session: Session, task: Task, repo: Repository) -> StackBase | No
     )
 
 
-def _latest_head(session: Session, task_id: str, repository_id: str) -> str | None:
+def latest_head(session: Session, task_id: str, repository_id: str) -> str | None:
     """The head the task's latest succeeded attempt left in the repository, if it touched it."""
     return session.scalar(
         select(ChangeSetItem.head_sha)
@@ -141,6 +160,24 @@ def _latest_head(session: Session, task_id: str, repository_id: str) -> str | No
         .order_by(ChangeSet.created_at.desc(), AgentAttempt.number.desc())
         .limit(1)
     )
+
+
+def active_item(session: Session, task_id: str) -> tuple[Stack, StackItem] | None:
+    """The task's item in its parent's active stack, if it is one."""
+    row = session.execute(
+        select(Stack, StackItem)
+        .join(StackItem, StackItem.stack_id == Stack.id)
+        .where(StackItem.task_id == task_id, Stack.status.not_in(INACTIVE_STACK_STATUSES))
+    ).first()
+    return (row[0], row[1]) if row is not None else None
+
+
+def latest_event_id(session: Session, stack: Stack) -> str:
+    """The id of the newest event about a stack; it versions the stack's integration jobs."""
+    event_id = session.scalar(
+        select(Event.id).where(Event.entity_id == stack.id).order_by(Event.seq.desc()).limit(1)
+    )
+    return event_id or stack.id
 
 
 def stack_out(session: Session, stack: Stack) -> StackOut:
@@ -413,43 +450,142 @@ class StackService(Service):
             stack = self._active_or_raise(session, parent)
             child = resolve.task(session, ws_id, task_ref)
             item = self._item(session, stack, child)
-            current = StackItemState(item.state)
-            if current == target:
-                return stack_out(session, stack)
-            check_stack_item_transition(current, target)
-            item.state = str(target)
-            item.detail = detail
-            if target == StackItemState.MERGED and item.merge_order is None:
-                # Merge order is the order in which children first reached the integration branch.
-                # Rebuilds replay children in this recorded order.
-                last = session.scalar(
-                    select(func.max(StackItem.merge_order)).where(StackItem.stack_id == stack.id)
-                )
-                item.merge_order = (last or 0) + 1
-            stack.updated_at = utcnow()
-            session.flush()
-            event = record_event(
-                session,
-                ctx,
-                event_type="stack.item_state_changed",
-                entity_type="stack",
-                entity_id=stack.id,
-                workspace_id=ws_id,
-                data={
-                    "task_key": child.key,
-                    "parent_key": parent.key,
-                    "from": current,
-                    "to": target,
-                    "detail": detail,
-                    "merge_order": item.merge_order,
-                },
-            )
-            # Entering or leaving integration-ready changes whether dependents on this sibling are satisfied.
-            if (current in STACK_DEPENDENCY_SATISFIED_STATES) != (
-                target in STACK_DEPENDENCY_SATISFIED_STATES
-            ):
-                self.app.tasks._refresh_dependents(session, ctx.caused_by(event.id), child.id)
+            self.transition_item(session, ctx, stack, parent, child, item, target, detail)
             return stack_out(session, stack)
+
+    def mark_ready(self, ctx: RequestContext, task_id: str) -> None:
+        """Mark a stack child ready after its fast tier passed; a task outside an active stack is left alone."""
+        require(ctx, Permission.STACK_WRITE)
+        with self.db.session(write=True) as session:
+            found = active_item(session, task_id)
+            if found is None:
+                return
+            stack, item = found
+            child = session.get(Task, task_id)
+            parent = session.get(Task, stack.parent_task_id)
+            assert child is not None and parent is not None
+            self.transition_item(session, ctx, stack, parent, child, item, StackItemState.READY, item.detail)
+
+    def gate(self, task_id: str) -> str | None:
+        """How a finished attempt is verified: None outside a stack, ``fast`` or ``pass`` inside one.
+
+        ``pass`` means the stack child has no fast checks, so it becomes ready without running any.
+        """
+        from workgraph.verification.configs import applicable_checks, checks_for_tier
+
+        with self.db.session() as session:
+            if active_item(session, task_id) is None:
+                return None
+            task = session.get(Task, task_id)
+            assert task is not None
+            return "fast" if checks_for_tier(applicable_checks(session, task), "fast") else "pass"
+
+    def integrate(self, ctx: RequestContext, workspace: str | None, parent_ref: str) -> dict[str, Any]:
+        """Queue an integration run for each repository of the parent's active stack."""
+        require(ctx, Permission.STACK_WRITE)
+        with self.db.session(write=True) as session:
+            ws_id = self.app.tasks._workspace_id(session, workspace)
+            parent = resolve.task(session, ws_id, parent_ref)
+            stack = self._active_or_raise(session, parent)
+            version = latest_event_id(session, stack)
+            jobs = self.enqueue_integration(session, ctx, stack, version)
+            names = dict(
+                session.execute(
+                    select(StackRepository.repository_id, Repository.name)
+                    .join(Repository, Repository.id == StackRepository.repository_id)
+                    .where(StackRepository.stack_id == stack.id)
+                ).all()
+            )
+            return {
+                "stack": parent.key,
+                "jobs": [{"repository": names[repo_id], "job_id": job.id} for repo_id, job in jobs],
+            }
+
+    def enqueue_integration(
+        self,
+        session: Session,
+        ctx: RequestContext,
+        stack: Stack,
+        version: str,
+        *,
+        exclude_repository_id: str | None = None,
+    ) -> builtins.list[tuple[str, Job]]:
+        """Queue one ``stack_integrate`` job per stack repository, holding the repository's resource keys.
+
+        The key names the stack state version (an event id), so repeated requests for an unchanged
+        stack collapse into one job while every new state change gets its own.
+        """
+        repo_ids = [
+            repo_id
+            for repo_id in session.scalars(
+                select(StackRepository.repository_id)
+                .where(StackRepository.stack_id == stack.id)
+                .order_by(StackRepository.repository_id)
+            )
+            if repo_id != exclude_repository_id
+        ]
+        queued = []
+        for repo_id in repo_ids:
+            job = jobqueue.enqueue(
+                session,
+                "stack_integrate",
+                {"stack_id": stack.id, "repository_id": repo_id},
+                workspace_id=stack.workspace_id,
+                idempotency_key=f"stack-integrate:{stack.id}:{repo_id}:{version}",
+                resource_keys=[f"repo:{repo_id}", f"exclusive:stack-integration:{repo_id}"],
+                causation_id=version,
+                created_by=ctx.actor,
+            )
+            queued.append((repo_id, job))
+        return queued
+
+    def transition_item(
+        self,
+        session: Session,
+        ctx: RequestContext,
+        stack: Stack,
+        parent: Task,
+        child: Task,
+        item: StackItem,
+        target: StackItemState,
+        detail: str | None,
+    ) -> None:
+        current = StackItemState(item.state)
+        if current == target:
+            return
+        check_stack_item_transition(current, target)
+        item.state = str(target)
+        item.detail = detail
+        if target == StackItemState.MERGED and item.merge_order is None:
+            # Merge order is the order in which children first reached the integration branch.
+            # Rebuilds replay children in this recorded order.
+            last = session.scalar(
+                select(func.max(StackItem.merge_order)).where(StackItem.stack_id == stack.id)
+            )
+            item.merge_order = (last or 0) + 1
+        stack.updated_at = utcnow()
+        session.flush()
+        event = record_event(
+            session,
+            ctx,
+            event_type="stack.item_state_changed",
+            entity_type="stack",
+            entity_id=stack.id,
+            workspace_id=stack.workspace_id,
+            data={
+                "task_key": child.key,
+                "parent_key": parent.key,
+                "from": current,
+                "to": target,
+                "detail": detail,
+                "merge_order": item.merge_order,
+            },
+        )
+        # Entering or leaving integration-ready changes whether dependents on this sibling are satisfied.
+        if (current in STACK_DEPENDENCY_SATISFIED_STATES) != (target in STACK_DEPENDENCY_SATISFIED_STATES):
+            self.app.tasks._refresh_dependents(session, ctx.caused_by(event.id), child.id)
+        if target == StackItemState.READY:
+            self.enqueue_integration(session, ctx, stack, event.id)
 
     # ------------------------------------------------------------------ reads
 

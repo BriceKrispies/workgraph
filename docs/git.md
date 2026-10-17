@@ -96,6 +96,36 @@ applicable verification checks.
   manifest entry (`base`) and in the `attempt.workspace_prepared` and `worktree.created` events.
   Tasks outside a stack, and repositories a stack does not cover, use the default branch as before.
   `in_place` isolation writes the user checkout directly, so no stack base is applied there.
+  A child whose item is `conflict` starts from the integration tip instead (`source`
+  `integration_tip`), so it resolves the conflict on top of what is already integrated.
+- **Integration branch and merge queue.** Each stack repository has one integration branch,
+  `wg/stack/<parent-key>`, created at the stack's `base_sha` the first time it is needed. Its
+  worktree lives at `worktrees/stacks/<stack-id>/<repository>` and is recorded in
+  `managed_worktrees` with no attempt, so it stays `active` while the stack is open and is never
+  released by an attempt. Workgraph never merges in a user checkout.
+  - **Fast gate.** When an attempt of a stack child succeeds, only the `fast` checks run
+    (`CheckSpec.tier`). A pass moves the stack item to `ready` and leaves the task
+    `awaiting_verification`; a fail fails the attempt and the task as usual. A child with no fast
+    checks becomes ready without a run.
+  - **Queue.** Each ready item enqueues a `stack_integrate` job per stack repository. The job holds
+    `repo:<repository-id>` and an exclusive `exclusive:stack-integration:<repository-id>` key, and its
+    idempotency key names the stack's latest event, so repeated requests for an unchanged stack
+    collapse into one job. `workgraph stack integrate PARENT` and `POST /ws/{ws}/stacks/{ref}/integrate`
+    queue it on demand.
+  - **Order.** An item is due once its in-stack dependencies are `merged` or `verified`. Due items
+    are taken by dependency depth, then task priority, then the time they became ready.
+  - **Merge.** For each due item the head its latest succeeded attempt left in the repository is
+    merged with `git merge --no-ff --no-edit` in the integration worktree, committed as Workgraph's
+    integration identity. The merge commit is recorded per repository in the item's `detail`
+    (JSON: `merges` and `conflicts`) and in the `stack.integration_merged` event. An item becomes
+    `merged` once every repository it changed has merged its current head, and the stack moves
+    `open -> integrating` at the first merge.
+  - **Conflict.** A merge that conflicts is aborted (`git merge --abort`). The item moves to
+    `conflict` with the conflicting paths (`git diff --name-only --diff-filter=U`), the integration
+    tip and an instruction to rebase onto that tip. The task returns to `ready` with a comment
+    carrying the same information, and the rest of the queue continues.
+  - Items with no change in a repository are skipped for that repository (`stack.integration_skipped`).
+    Full verification on the integration tip is not part of this stage.
 - Worktree rows track `preparing -> active -> released -> removed` (or `orphaned`).
   `workgraph worker recover` (and every worker start) reconciles rows with disk after a crash.
 - Cleanup is explicit (`workgraph git cleanup-worktrees --apply`), only touches clean,

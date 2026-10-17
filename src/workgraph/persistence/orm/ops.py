@@ -129,6 +129,7 @@ class AutomationRun(Base):
     trigger_event_id: Mapped[str | None] = mapped_column(String(36), default=None)
     depth: Mapped[int] = mapped_column(Integer, default=0)
     dry_run: Mapped[bool] = mapped_column(Boolean, default=False)
+    inputs: Mapped[dict[str, Any]] = mapped_column(default=dict)
     status: Mapped[str] = mapped_column(String(16), default="pending")
     matched: Mapped[bool] = mapped_column(Boolean, default=False)
     reason: Mapped[str] = mapped_column(Text, default="")

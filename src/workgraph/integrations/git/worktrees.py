@@ -90,7 +90,9 @@ class RepoRequest:
     target_ref: str | None = None
 
 
-def acquire_lease(session: Session, key: str, holder: str, *, purpose: str = "", ttl_seconds: int = 6 * 3600) -> None:
+def acquire_lease(
+    session: Session, key: str, holder: str, *, purpose: str = "", ttl_seconds: int = 6 * 3600
+) -> None:
     now = utcnow()
     existing = session.get(ResourceLease, key)
     if existing is not None:
@@ -104,8 +106,11 @@ def acquire_lease(session: Session, key: str, holder: str, *, purpose: str = "",
             )
         session.delete(existing)
         session.flush()
-    session.add(ResourceLease(resource_key=key, holder=holder, purpose=purpose,
-                              expires_at=now + timedelta(seconds=ttl_seconds)))
+    session.add(
+        ResourceLease(
+            resource_key=key, holder=holder, purpose=purpose, expires_at=now + timedelta(seconds=ttl_seconds)
+        )
+    )
     try:
         session.flush()
     except IntegrityError as exc:
@@ -164,13 +169,19 @@ class WorktreeManager(Service):
         entries: list[ManifestEntry] = []
         try:
             for request in requests:
-                entries.append(self._prepare_repo(ctx, ws_id, attempt_id, task_key, number, request, isolation, workspace_dir))
+                entries.append(
+                    self._prepare_repo(
+                        ctx, ws_id, attempt_id, task_key, number, request, isolation, workspace_dir
+                    )
+                )
         except Exception:
             self.release(ctx, attempt_id, remove=True)
             raise
         with self.db.session(write=True) as session:
             baseline = RevisionManifest(
-                workspace_id=ws_id, attempt_id=attempt_id, kind="baseline",
+                workspace_id=ws_id,
+                attempt_id=attempt_id,
+                kind="baseline",
                 entries=[e.model_dump() for e in entries],
             )
             session.add(baseline)
@@ -178,13 +189,24 @@ class WorktreeManager(Service):
             change_set_id = None
             writable = [e for e in entries if e.access == "read_write"]
             if writable:
-                change_set = ChangeSet(workspace_id=ws_id, task_id=task_id, attempt_id=attempt_id,
-                                       title=f"{task_key} attempt {number}")
+                change_set = ChangeSet(
+                    workspace_id=ws_id,
+                    task_id=task_id,
+                    attempt_id=attempt_id,
+                    title=f"{task_key} attempt {number}",
+                )
                 session.add(change_set)
                 session.flush()
                 for e in writable:
-                    session.add(ChangeSetItem(change_set_id=change_set.id, repository_id=e.repository_id,
-                                              base_sha=e.sha, branch=e.branch, status=ChangeSetItemStatus.PENDING))
+                    session.add(
+                        ChangeSetItem(
+                            change_set_id=change_set.id,
+                            repository_id=e.repository_id,
+                            base_sha=e.sha,
+                            branch=e.branch,
+                            status=ChangeSetItemStatus.PENDING,
+                        )
+                    )
                 change_set_id = change_set.id
             attempt = session.get(AgentAttempt, attempt_id)
             assert attempt is not None
@@ -194,16 +216,35 @@ class WorktreeManager(Service):
             task_row = session.get(Task, task_id)
             assert task_row is not None
             checks = [c.spec.model_dump(mode="json") for c in applicable_checks(session, task_row)]
-            record_event(session, ctx, event_type="attempt.workspace_prepared", entity_type="attempt",
-                         entity_id=attempt_id, workspace_id=ws_id, attempt_id=attempt_id,
-                         data={"repositories": [e.repository for e in entries], "isolation": isolation,
-                               "baseline_manifest_id": baseline.id, "change_set_id": change_set_id})
-            manifest = ExecutionManifest(
-                task_id=task_id, task_key=task_key, attempt_id=attempt_id, workspace_dir=str(workspace_dir),
-                repositories=entries, expected_changes=expected_changes or [e.repository for e in writable],
-                verification=checks, baseline_manifest_id=baseline.id, change_set_id=change_set_id,
+            record_event(
+                session,
+                ctx,
+                event_type="attempt.workspace_prepared",
+                entity_type="attempt",
+                entity_id=attempt_id,
+                workspace_id=ws_id,
+                attempt_id=attempt_id,
+                data={
+                    "repositories": [e.repository for e in entries],
+                    "isolation": isolation,
+                    "baseline_manifest_id": baseline.id,
+                    "change_set_id": change_set_id,
+                },
             )
-        (workspace_dir / "workgraph-manifest.json").write_text(manifest.model_dump_json(indent=2), encoding="utf-8")
+            manifest = ExecutionManifest(
+                task_id=task_id,
+                task_key=task_key,
+                attempt_id=attempt_id,
+                workspace_dir=str(workspace_dir),
+                repositories=entries,
+                expected_changes=expected_changes or [e.repository for e in writable],
+                verification=checks,
+                baseline_manifest_id=baseline.id,
+                change_set_id=change_set_id,
+            )
+        (workspace_dir / "workgraph-manifest.json").write_text(
+            manifest.model_dump_json(indent=2), encoding="utf-8"
+        )
         return manifest
 
     def _prepare_repo(
@@ -242,16 +283,35 @@ class WorktreeManager(Service):
             raise GitError(f"repository {name} has no commits to base an attempt on")
         if isolation == "in_place" and request.access == "read_write":
             with self.db.session(write=True) as session:
-                acquire_lease(session, f"checkout:{checkout_id}", attempt_id, purpose=f"in-place write {task_key}")
-            return ManifestEntry(repository_id=request.repository_id, repository=name, checkout_path=source,
-                                 source_checkout_path=source, sha=git.head(), ref=git.current_branch(),
-                                 target_ref=target, access=request.access, isolation="in_place")
+                acquire_lease(
+                    session, f"checkout:{checkout_id}", attempt_id, purpose=f"in-place write {task_key}"
+                )
+            return ManifestEntry(
+                repository_id=request.repository_id,
+                repository=name,
+                checkout_path=source,
+                source_checkout_path=source,
+                sha=git.head(),
+                ref=git.current_branch(),
+                target_ref=target,
+                access=request.access,
+                isolation="in_place",
+            )
         path = workspace_dir / re.sub(r"[^A-Za-z0-9._-]", "_", name)
-        branch = _branch_name(task_key, attempt_number, attempt_id) if request.access == "read_write" else None
+        branch = (
+            _branch_name(task_key, attempt_number, attempt_id) if request.access == "read_write" else None
+        )
         with self.db.session(write=True) as session:
-            row = ManagedWorktree(workspace_id=ws_id, repository_id=request.repository_id,
-                                  source_checkout_id=checkout_id, attempt_id=attempt_id, path=str(path),
-                                  branch=branch or "(detached)", base_sha=base, status=WorktreeStatus.PREPARING)
+            row = ManagedWorktree(
+                workspace_id=ws_id,
+                repository_id=request.repository_id,
+                source_checkout_id=checkout_id,
+                attempt_id=attempt_id,
+                path=str(path),
+                branch=branch or "(detached)",
+                base_sha=base,
+                status=WorktreeStatus.PREPARING,
+            )
             session.add(row)
             session.flush()
             worktree_id = row.id
@@ -271,13 +331,29 @@ class WorktreeManager(Service):
             row = session.get(ManagedWorktree, worktree_id)
             assert row is not None
             row.status = WorktreeStatus.ACTIVE
-            record_event(session, ctx, event_type="worktree.created", entity_type="worktree", entity_id=worktree_id,
-                         workspace_id=ws_id, attempt_id=attempt_id,
-                         data={"repository": name, "path": str(path), "branch": branch, "base_sha": base})
-        return ManifestEntry(repository_id=request.repository_id, repository=name, checkout_path=str(path),
-                             source_checkout_path=source, sha=base, ref=branch, target_ref=target,
-                             access=request.access, isolation="worktree" if branch else "snapshot",
-                             worktree_id=worktree_id, branch=branch)
+            record_event(
+                session,
+                ctx,
+                event_type="worktree.created",
+                entity_type="worktree",
+                entity_id=worktree_id,
+                workspace_id=ws_id,
+                attempt_id=attempt_id,
+                data={"repository": name, "path": str(path), "branch": branch, "base_sha": base},
+            )
+        return ManifestEntry(
+            repository_id=request.repository_id,
+            repository=name,
+            checkout_path=str(path),
+            source_checkout_path=source,
+            sha=base,
+            ref=branch,
+            target_ref=target,
+            access=request.access,
+            isolation="worktree" if branch else "snapshot",
+            worktree_id=worktree_id,
+            branch=branch,
+        )
 
     # ------------------------------------------------------------------ outcome
 
@@ -311,12 +387,19 @@ class WorktreeManager(Service):
             if changed_files:
                 dirty[entry.repository] = changed_files[:50]
             if entry.access == "read_only" and (commits or changed_files):
-                violations.append({"repository": entry.repository, "commits": len(commits),
-                                   "uncommitted_files": len(changed_files)})
+                violations.append(
+                    {
+                        "repository": entry.repository,
+                        "commits": len(commits),
+                        "uncommitted_files": len(changed_files),
+                    }
+                )
             elif commits:
                 modified.append(entry.repository_id)
         with self.db.session(write=True) as session:
-            manifest = RevisionManifest(workspace_id=ws_id, attempt_id=attempt_id, kind="outcome", entries=outcome)
+            manifest = RevisionManifest(
+                workspace_id=ws_id, attempt_id=attempt_id, kind="outcome", entries=outcome
+            )
             session.add(manifest)
             session.flush()
             attempt = session.get(AgentAttempt, attempt_id)
@@ -330,7 +413,9 @@ class WorktreeManager(Service):
             attempt.telemetry = telemetry
             change_set = session.scalar(select(ChangeSet).where(ChangeSet.attempt_id == attempt_id))
             if change_set is not None:
-                items = list(session.scalars(select(ChangeSetItem).where(ChangeSetItem.change_set_id == change_set.id)))
+                items = list(
+                    session.scalars(select(ChangeSetItem).where(ChangeSetItem.change_set_id == change_set.id))
+                )
                 head_by_repo = {e["repository_id"]: e["sha"] for e in outcome}
                 for item in items:
                     shas = commits_by_repo.get(item.repository_id, [])
@@ -345,23 +430,47 @@ class WorktreeManager(Service):
                     change_set.status = ChangeSetStatus.PARTIALLY_APPLIED
                 else:
                     change_set.status = ChangeSetStatus.APPLIED
-            record_event(session, ctx, event_type="attempt.outcome_captured", entity_type="attempt",
-                         entity_id=attempt_id, workspace_id=ws_id, attempt_id=attempt_id,
-                         data={"outcome_manifest_id": manifest.id, "modified_repositories": modified,
-                               "read_only_violations": violations,
-                               "commits": {k: len(v) for k, v in commits_by_repo.items()}})
-            return {"outcome_manifest_id": manifest.id, "modified": modified, "violations": violations,
-                    "commits": commits_by_repo, "uncommitted": dirty}
+            record_event(
+                session,
+                ctx,
+                event_type="attempt.outcome_captured",
+                entity_type="attempt",
+                entity_id=attempt_id,
+                workspace_id=ws_id,
+                attempt_id=attempt_id,
+                data={
+                    "outcome_manifest_id": manifest.id,
+                    "modified_repositories": modified,
+                    "read_only_violations": violations,
+                    "commits": {k: len(v) for k, v in commits_by_repo.items()},
+                },
+            )
+            return {
+                "outcome_manifest_id": manifest.id,
+                "modified": modified,
+                "violations": violations,
+                "commits": commits_by_repo,
+                "uncommitted": dirty,
+            }
 
     # ------------------------------------------------------------------ release / cleanup
 
-    def release(self, ctx: RequestContext, attempt_id: str, *, remove: bool = False, force: bool = False) -> builtins.list[dict[str, Any]]:
+    def release(
+        self, ctx: RequestContext, attempt_id: str, *, remove: bool = False, force: bool = False
+    ) -> builtins.list[dict[str, Any]]:
         """Mark an attempt's worktrees released; optionally remove clean ones from disk."""
         with self.db.session(write=True) as session:
             release_leases(session, attempt_id)
-            rows = list(session.scalars(select(ManagedWorktree).where(
-                ManagedWorktree.attempt_id == attempt_id,
-                ManagedWorktree.status.in_([WorktreeStatus.ACTIVE, WorktreeStatus.PREPARING, WorktreeStatus.RELEASED]))))
+            rows = list(
+                session.scalars(
+                    select(ManagedWorktree).where(
+                        ManagedWorktree.attempt_id == attempt_id,
+                        ManagedWorktree.status.in_(
+                            [WorktreeStatus.ACTIVE, WorktreeStatus.PREPARING, WorktreeStatus.RELEASED]
+                        ),
+                    )
+                )
+            )
             for row in rows:
                 if row.status != WorktreeStatus.RELEASED:
                     row.status = WorktreeStatus.RELEASED
@@ -389,14 +498,22 @@ class WorktreeManager(Service):
         if path.exists():
             git = Git(path)
             if git.is_repository() and not force and not git.is_clean():
-                return {"worktree_id": worktree_id, "removed": False, "reason": "worktree has uncommitted changes"}
+                return {
+                    "worktree_id": worktree_id,
+                    "removed": False,
+                    "reason": "worktree has uncommitted changes",
+                }
             if source and Git(source).is_repository():
                 args = ["worktree", "remove", str(path)]
                 if force:
                     args.insert(2, "--force")
                 result = Git(source).run(*args, check=False)
                 if result.returncode != 0 and path.exists():
-                    return {"worktree_id": worktree_id, "removed": False, "reason": result.stderr.strip()[:300]}
+                    return {
+                        "worktree_id": worktree_id,
+                        "removed": False,
+                        "reason": result.stderr.strip()[:300],
+                    }
             elif force and path.exists():
                 shutil.rmtree(path)
         if source and Git(source).is_repository():
@@ -406,8 +523,16 @@ class WorktreeManager(Service):
             assert row is not None
             row.status = WorktreeStatus.REMOVED
             row.removed_at = utcnow()
-            record_event(session, ctx, event_type="worktree.removed", entity_type="worktree", entity_id=worktree_id,
-                         workspace_id=ws_id, attempt_id=attempt_id, data={"path": str(path), "branch_kept": row.branch})
+            record_event(
+                session,
+                ctx,
+                event_type="worktree.removed",
+                entity_type="worktree",
+                entity_id=worktree_id,
+                workspace_id=ws_id,
+                attempt_id=attempt_id,
+                data={"path": str(path), "branch_kept": row.branch},
+            )
         parent = path.parent
         if parent.exists() and is_within(parent, self.root) and parent != self.root:
             leftovers = [p for p in parent.iterdir() if p.name != "workgraph-manifest.json"]
@@ -419,10 +544,20 @@ class WorktreeManager(Service):
         """Crash recovery: reconcile ``managed_worktrees`` rows with disk and attempt state."""
         fixed: dict[str, list[str]] = {"activated": [], "released": [], "orphaned": [], "unknown_dirs": []}
         with self.db.session() as session:
-            rows = [(r.id, r.path, r.status, r.attempt_id) for r in session.scalars(
-                select(ManagedWorktree).where(ManagedWorktree.status.in_([WorktreeStatus.PREPARING, WorktreeStatus.ACTIVE])))]
-            attempt_status = {a.id: a.status for a in session.scalars(select(AgentAttempt).where(
-                AgentAttempt.id.in_([r[3] for r in rows if r[3]])))}
+            rows = [
+                (r.id, r.path, r.status, r.attempt_id)
+                for r in session.scalars(
+                    select(ManagedWorktree).where(
+                        ManagedWorktree.status.in_([WorktreeStatus.PREPARING, WorktreeStatus.ACTIVE])
+                    )
+                )
+            ]
+            attempt_status = {
+                a.id: a.status
+                for a in session.scalars(
+                    select(AgentAttempt).where(AgentAttempt.id.in_([r[3] for r in rows if r[3]]))
+                )
+            }
             known_paths = {Path(p).resolve() for p in session.scalars(select(ManagedWorktree.path))}
         updates: dict[str, str] = {}
         for worktree_id, path, status, attempt_id in rows:
@@ -452,26 +587,46 @@ class WorktreeManager(Service):
                         if status == WorktreeStatus.ORPHANED:
                             row.last_error = "worktree missing on disk during recovery"
                     session.flush()
-                record_event(session, ctx, event_type="worktree.recovered", entity_type="system", entity_id="worktrees",
-                             workspace_id=None, data={k: len(v) for k, v in fixed.items()})
+                record_event(
+                    session,
+                    ctx,
+                    event_type="worktree.recovered",
+                    entity_type="system",
+                    entity_id="worktrees",
+                    workspace_id=None,
+                    data={k: len(v) for k, v in fixed.items()},
+                )
         return fixed
 
-    def list(self, ctx: RequestContext, workspace: str | None = None, *, status: str | None = None) -> builtins.list[dict[str, Any]]:
+    def list(
+        self, ctx: RequestContext, workspace: str | None = None, *, status: str | None = None
+    ) -> builtins.list[dict[str, Any]]:
         from workgraph.security.permissions import Permission, require
 
         require(ctx, Permission.REPO_READ)
         with self.db.session() as session:
-            stmt = select(ManagedWorktree, Repository.name).join(Repository, Repository.id == ManagedWorktree.repository_id)
+            stmt = select(ManagedWorktree, Repository.name).join(
+                Repository, Repository.id == ManagedWorktree.repository_id
+            )
             if workspace:
                 ws_id = self.app.tasks._workspace_id(session, workspace)
                 stmt = stmt.where(ManagedWorktree.workspace_id == ws_id)
             if status:
                 stmt = stmt.where(ManagedWorktree.status == status)
             return [
-                {"id": w.id, "repository": name, "repository_id": w.repository_id, "attempt_id": w.attempt_id,
-                 "path": w.path, "branch": w.branch, "base_sha": w.base_sha, "status": w.status,
-                 "last_error": w.last_error, "created_at": w.created_at.isoformat(),
-                 "removed_at": w.removed_at.isoformat() if w.removed_at else None}
+                {
+                    "id": w.id,
+                    "repository": name,
+                    "repository_id": w.repository_id,
+                    "attempt_id": w.attempt_id,
+                    "path": w.path,
+                    "branch": w.branch,
+                    "base_sha": w.base_sha,
+                    "status": w.status,
+                    "last_error": w.last_error,
+                    "created_at": w.created_at.isoformat(),
+                    "removed_at": w.removed_at.isoformat() if w.removed_at else None,
+                }
                 for w, name in session.execute(stmt.order_by(ManagedWorktree.created_at.desc()))
             ]
 

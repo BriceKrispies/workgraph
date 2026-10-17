@@ -51,7 +51,9 @@ def test_repo_without_remote_and_removal_keeps_files(app, human, ws, make_repo):
 def test_shared_repository_across_projects(app, human, ws, make_repo):
     shared = make_repo("shared-sdk")
     register(app, human, ws, shared)
-    p1 = app.projects.create(human, ws, ProjectCreate(slug="alpha", name="Alpha", repositories=["shared-sdk"]))
+    p1 = app.projects.create(
+        human, ws, ProjectCreate(slug="alpha", name="Alpha", repositories=["shared-sdk"])
+    )
     p2 = app.projects.create(human, ws, ProjectCreate(slug="beta", name="Beta", repositories=["shared-sdk"]))
     repo = app.repositories.get(human, ws, "shared-sdk")
     assert set(repo.project_ids) == {p1.id, p2.id}
@@ -118,7 +120,9 @@ def test_rebase_reconciliation_and_cherry_pick(app, human, ws, make_repo):
         eq = session.scalar(select(CommitEquivalence).where(CommitEquivalence.original_commit_id == old.id))
         assert eq is not None and eq.kind == "rewrite"
         carried = session.scalars(
-            select(CommitTaskLink).join(Commit, Commit.id == CommitTaskLink.commit_id).where(Commit.sha == rebased)
+            select(CommitTaskLink)
+            .join(Commit, Commit.id == CommitTaskLink.commit_id)
+            .where(Commit.sha == rebased)
         ).all()
         assert [c.source for c in carried] == ["rewrite_reconciliation"]
     # cherry-pick onto main: equivalent change, both reachable
@@ -126,7 +130,9 @@ def test_rebase_reconciliation_and_cherry_pick(app, human, ws, make_repo):
     repo.git("cherry-pick", "-x", rebased)
     app.git.sync_ref(human, ws, "rewrite")
     with app.db.session() as session:
-        picks = session.scalars(select(CommitEquivalence).where(CommitEquivalence.kind == "cherry_pick")).all()
+        picks = session.scalars(
+            select(CommitEquivalence).where(CommitEquivalence.kind == "cherry_pick")
+        ).all()
         assert picks
 
 
@@ -154,7 +160,10 @@ def test_shared_commit_and_churn_vs_final_surface(app, human, ws, make_repo):
     register(app, human, ws, repo)
     task = app.tasks.create(human, ws, TaskCreate(title="Churn", repositories=["churny"], status="ready"))
     other = app.tasks.create(human, ws, TaskCreate(title="Other"))
-    c1 = repo.commit("write lots", {"src/mod.py": "def f():\n" + "".join(f"    x{i} = {i}\n" for i in range(20)) + "    return 0\n"})
+    c1 = repo.commit(
+        "write lots",
+        {"src/mod.py": "def f():\n" + "".join(f"    x{i} = {i}\n" for i in range(20)) + "    return 0\n"},
+    )
     c2 = repo.commit("rewrite again", {"src/mod.py": "def f():\n    return 1\n"})
     app.git.sync_ref(human, ws, "churny")
     for sha in (c1, c2):
@@ -178,8 +187,15 @@ def test_shared_commit_and_churn_vs_final_surface(app, human, ws, make_repo):
 
 def test_structure_analysis_of_commits(app, human, ws, make_repo):
     repo = make_repo("structure")
-    repo.commit("python", {"pkg/a.py": "class A:\n    def m(self):\n        return 1\n\ndef top():\n    return 2\n"})
-    repo.commit("change", {"pkg/a.py": "class A:\n    def m(self):\n        return 10\n\ndef top():\n    return 2\n\ndef new():\n    pass\n"})
+    repo.commit(
+        "python", {"pkg/a.py": "class A:\n    def m(self):\n        return 1\n\ndef top():\n    return 2\n"}
+    )
+    repo.commit(
+        "change",
+        {
+            "pkg/a.py": "class A:\n    def m(self):\n        return 10\n\ndef top():\n    return 2\n\ndef new():\n    pass\n"
+        },
+    )
     repo.commit("docs", {"README.md": "# changed\n"})
     register(app, human, ws, repo)
     app.git.sync_ref(human, ws, "structure")

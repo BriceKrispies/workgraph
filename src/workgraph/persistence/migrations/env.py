@@ -10,12 +10,18 @@ config = context.config
 target_metadata = Base.metadata
 
 
+def _include_object(obj: object, name: str | None, type_: str, reflected: bool, compare_to: object) -> bool:
+    # FTS5 virtual tables and their shadow tables are managed by raw SQL in migrations.
+    return not (type_ == "table" and name is not None and name.startswith("task_fts"))
+
+
 def _run(connection: Connection) -> None:
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
         render_as_batch=True,
         compare_type=True,
+        include_object=_include_object,
     )
     with context.begin_transaction():
         context.run_migrations()

@@ -189,6 +189,16 @@ class JobQueue:
                 lease_expires_at=lease_expires_at,
             )
 
+    def claim_peek(self, *, kinds: Sequence[str] | None = None) -> str | None:
+        """Id of a currently runnable job, without claiming it."""
+        with self.db.session() as session:
+            stmt = select(Job.id).where(
+                Job.status == JobStatus.QUEUED, Job.run_at <= utcnow(), Job.cancel_requested.is_(False)
+            )
+            if kinds:
+                stmt = stmt.where(Job.kind.in_(list(kinds)))
+            return session.scalar(stmt.limit(1))
+
     def _has_capacity(self, key: str, held: Counter[str]) -> bool:
         limit = self.limit_for(key)
         return limit is None or held[key] < limit

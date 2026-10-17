@@ -18,10 +18,16 @@ def setup_task(app, human, ws, make_repo, names=("api", "lib"), read_only=()):
     for name in names:
         repo = make_repo(name)
         app.repositories.register(
-            human, ws, RepositoryRegister(path=str(repo.path), access_mode="read_only" if name in read_only else "read_write")
+            human,
+            ws,
+            RepositoryRegister(
+                path=str(repo.path), access_mode="read_only" if name in read_only else "read_write"
+            ),
         )
         repos[name] = repo
-    task = app.tasks.create(human, ws, TaskCreate(title="Cross repo", repositories=list(names), status="ready"))
+    task = app.tasks.create(
+        human, ws, TaskCreate(title="Cross repo", repositories=list(names), status="ready")
+    )
     with app.db.session(write=True) as session:
         t = resolve.task(session, None, task.id)
         attempt = new_attempt(session, human, t, provider="test", adapter="test", status=AttemptStatus.QUEUED)
@@ -30,7 +36,9 @@ def setup_task(app, human, ws, make_repo, names=("api", "lib"), read_only=()):
 
 
 def test_prepare_worktrees_manifest_and_change_set(app, human, ws, make_repo):
-    repos, task, attempt_id = setup_task(app, human, ws, make_repo, names=("api", "lib", "docs"), read_only=("docs",))
+    repos, task, attempt_id = setup_task(
+        app, human, ws, make_repo, names=("api", "lib", "docs"), read_only=("docs",)
+    )
     manifest = app.worktrees.prepare(human, attempt_id)
     assert len(manifest.repositories) == 3
     by_name = {e.repository: e for e in manifest.repositories}
@@ -72,7 +80,9 @@ def test_in_place_isolation_uses_exclusive_lease(app, human, ws, make_repo):
     task_b = app.tasks.create(human, ws, TaskCreate(title="Second", repositories=["solo"], status="ready"))
     with app.db.session(write=True) as session:
         t = resolve.task(session, None, task_b.id)
-        attempt_b = new_attempt(session, human, t, provider="test", adapter="test", status=AttemptStatus.QUEUED).id
+        attempt_b = new_attempt(
+            session, human, t, provider="test", adapter="test", status=AttemptStatus.QUEUED
+        ).id
     app.worktrees.prepare(human, attempt_a, isolation="in_place")
     with pytest.raises(ResourceBusyError):
         app.worktrees.prepare(human, attempt_b, isolation="in_place")
@@ -86,7 +96,9 @@ def test_parallel_worktree_attempts_do_not_conflict(app, human, ws, make_repo):
     task_b = app.tasks.create(human, ws, TaskCreate(title="B", repositories=["shared"], status="ready"))
     with app.db.session(write=True) as session:
         t = resolve.task(session, None, task_b.id)
-        attempt_b = new_attempt(session, human, t, provider="test", adapter="test", status=AttemptStatus.QUEUED).id
+        attempt_b = new_attempt(
+            session, human, t, provider="test", adapter="test", status=AttemptStatus.QUEUED
+        ).id
     m1 = app.worktrees.prepare(human, attempt_a)
     m2 = app.worktrees.prepare(human, attempt_b)
     assert m1.repositories[0].checkout_path != m2.repositories[0].checkout_path

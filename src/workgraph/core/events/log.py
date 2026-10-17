@@ -124,6 +124,10 @@ def record_event(
     attempt_id: str | None = None,
     occurred_at: datetime | None = None,
 ) -> Event:
+    payload = dict(data or {})
+    if ctx.automation_depth > 0:
+        # Recorded so the automation engine can bound recursive rule chains.
+        payload["_automation"] = {"depth": ctx.automation_depth, "actor": ctx.actor}
     event = Event(
         id=new_id(),
         workspace_id=workspace_id,
@@ -137,7 +141,7 @@ def record_event(
         causation_id=ctx.causation_id,
         attempt_id=attempt_id or ctx.attempt_id,
         schema_version=EVENT_SCHEMA_VERSIONS.get(event_type, DEFAULT_SCHEMA_VERSION),
-        data=data or {},
+        data=payload,
     )
     session.add(event)
     session.flush()

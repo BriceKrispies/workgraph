@@ -480,7 +480,7 @@ class GitService(Service):
                             Commit.id != commit.id,
                         )
                     ):
-                        if other.id in new_set and not (other.reachable is False):
+                        if other.id in new_set and other.reachable is not False:
                             continue
                         kind = "rewrite" if not other.reachable else "cherry_pick"
                         matches.append((other, kind, {"method": "patch-id", "patch_id": commit.patch_id}))

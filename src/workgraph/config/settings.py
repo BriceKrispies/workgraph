@@ -107,7 +107,7 @@ class ClaudeCodeAgentConfig(_Strict):
     type: Literal["claude_code"] = "claude_code"
     executable: str = "claude"
     model: str | None = None
-    permission_mode: Literal["default", "acceptEdits", "plan", "auto", "dontAsk", "bypassPermissions"] = (
+    permission_mode: Literal["acceptEdits", "auto", "bypassPermissions", "manual", "dontAsk", "plan"] = (
         "acceptEdits"
     )
     allowed_tools: list[str] = Field(default_factory=list)

@@ -8,8 +8,8 @@ from pathlib import Path
 import typer
 
 from workgraph import __version__
-from workgraph.cli.common import STATE
 from workgraph.cli.commands import core, repo, task
+from workgraph.cli.common import STATE
 
 app = typer.Typer(
     name="workgraph",

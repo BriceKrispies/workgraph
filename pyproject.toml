@@ -40,7 +40,7 @@ dependencies = [
 ]
 
 [project.scripts]
-workgraph = "workgraph.cli.main:main"
+workgraph = "workgraph.cli.entry:main"
 
 [build-system]
 requires = ["hatchling"]

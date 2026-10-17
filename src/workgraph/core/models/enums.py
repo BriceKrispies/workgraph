@@ -129,6 +129,24 @@ class ChangeSetItemStatus(StrEnum):
     FAILED = "failed"
 
 
+class StackStatus(StrEnum):
+    OPEN = "open"
+    INTEGRATING = "integrating"
+    VERIFYING = "verifying"
+    VERIFIED = "verified"
+    LANDED = "landed"
+    ABANDONED = "abandoned"
+
+
+class StackItemState(StrEnum):
+    PENDING = "pending"
+    READY = "ready"
+    MERGED = "merged"
+    CONFLICT = "conflict"
+    EJECTED = "ejected"
+    VERIFIED = "verified"
+
+
 class VerificationStatus(StrEnum):
     PENDING = "pending"
     RUNNING = "running"

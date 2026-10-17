@@ -161,6 +161,18 @@ def build_server(
 
     # ------------------------------------------------------------------ tasks
 
+    @tool(
+        "stack_get",
+        "Get a parent task's most recent stack: repositories with base SHAs and integration branches, "
+        "and each child's stack state.",
+    )
+    def stack_get(parent: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
+        return _dump(app.stacks.get(ctx(), workspace, parent))
+
+    @tool("stack_list", "List stacks in a workspace (active stacks unless include_inactive is set).")
+    def stack_list(workspace: Workspace = None, include_inactive: bool = False) -> dict[str, Any]:
+        return {"stacks": _dump(app.stacks.list(ctx(), workspace, include_inactive=include_inactive))}
+
     @tool("task_create", "Create a task. Repositories/projects/dependencies may be given by name or key.")
     def task_create(
         title: Annotated[str, Field(min_length=1, max_length=500)],

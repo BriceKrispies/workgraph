@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from workgraph.core.services.history import HistoryService
     from workgraph.core.services.projects import ProjectService
     from workgraph.core.services.repositories import RepositoryService
+    from workgraph.core.services.stacks import StackService
     from workgraph.core.services.tasks import TaskService
     from workgraph.core.services.workspaces import WorkspaceService
     from workgraph.integrations.agents.registry import AgentRegistry
@@ -138,6 +139,12 @@ class Workgraph:
         from workgraph.core.services.tasks import TaskService
 
         return TaskService(self)
+
+    @cached_property
+    def stacks(self) -> StackService:
+        from workgraph.core.services.stacks import StackService
+
+        return StackService(self)
 
     @cached_property
     def history(self) -> HistoryService:

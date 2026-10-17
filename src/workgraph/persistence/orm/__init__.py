@@ -65,6 +65,7 @@ from workgraph.persistence.orm.ops import (
     VerificationRun,
     Worker,
 )
+from workgraph.persistence.orm.stacks import Stack, StackItem, StackRepository
 
 __all__ = [
     "AgentAttempt",
@@ -106,6 +107,9 @@ __all__ = [
     "ResourceLease",
     "RevisionManifest",
     "SessionBinding",
+    "Stack",
+    "StackItem",
+    "StackRepository",
     "SubagentRun",
     "SystemCursor",
     "Task",

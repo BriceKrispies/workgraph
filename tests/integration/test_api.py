@@ -135,6 +135,27 @@ def test_sse_stream_requires_token_and_streams(app, ws, monkeypatch):
             assert first in ("event: domain", "event: queue")
 
 
+def test_stack_routes(client, app, human, ws, make_repo):
+    repo = make_repo("stacked")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    parent = client.post(
+        "/api/v1/ws/main/tasks", json={"title": "Parent", "repositories": ["stacked"]}
+    ).json()
+    client.post(
+        "/api/v1/ws/main/tasks",
+        json={"title": "Child", "parent": parent["key"], "repositories": ["stacked"]},
+    )
+    created = client.post("/api/v1/ws/main/stacks", json={"parent": parent["key"]})
+    assert created.status_code == 201, created.text
+    assert created.json()["repositories"][0]["base_sha"] == repo.head()
+    assert [i["state"] for i in created.json()["items"]] == ["pending"]
+    assert client.get(f"/api/v1/ws/main/stacks/{parent['key']}").json()["id"] == created.json()["id"]
+    assert [s["id"] for s in client.get("/api/v1/ws/main/stacks").json()] == [created.json()["id"]]
+    assert client.get("/api/v1/ws/main/stacks/WG-999").status_code == 404
+    missing = client.post("/api/v1/ws/main/stacks", json={"parent": parent["key"], "extra": 1})
+    assert missing.status_code == 422
+
+
 def test_spa_fallback_serves_ui_shell(client):
     page = client.get("/tasks/WG-1")
     assert page.status_code == 200 and "Workgraph" in page.text

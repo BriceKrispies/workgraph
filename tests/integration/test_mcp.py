@@ -37,6 +37,8 @@ REQUIRED_TOOLS = {
     "task_get_history",
     "task_get_attempts",
     "task_link_repository",
+    "stack_get",
+    "stack_list",
     "task_link_commit",
     "task_report_progress",
     "task_report_result",

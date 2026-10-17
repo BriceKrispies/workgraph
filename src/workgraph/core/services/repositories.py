@@ -27,7 +27,7 @@ from workgraph.core.models.schemas import (
 )
 from workgraph.core.services import resolve
 from workgraph.core.services.base import Service
-from workgraph.integrations.git.cli import Git, normalize_remote_url
+from workgraph.integrations.git.cli import Git, WorktreeEntry, normalize_remote_url
 from workgraph.jobs import queue as jobqueue
 from workgraph.persistence.orm import (
     ProjectRepository,
@@ -104,6 +104,7 @@ class RepositoryService(Service):
         kind = "worktree" if git.is_worktree() else "clone"
         default_branch = git.default_branch()
         shallow = git.is_shallow()
+        entries = git.worktrees()
 
         with self.db.session(write=True) as session:
             ws_id = self.app.tasks._workspace_id(session, workspace)
@@ -191,6 +192,8 @@ class RepositoryService(Service):
             else:
                 existing_checkout.available = True
                 existing_checkout.last_seen_at = utcnow()
+            skipped = self._discover_worktrees(session, ctx, ws, repo, entries, source="register")
+            repo.health_detail = {**(repo.health_detail or {}), "skipped_worktrees": skipped}
             self._sync_remotes(repo, remotes, normalized)
             for ref in data.projects:
                 project = resolve.project(session, ws_id, ref)
@@ -234,6 +237,66 @@ class RepositoryService(Service):
                 by_name[name].normalized_url = normalized[name]
             else:
                 repo.remotes.append(RepositoryRemote(name=name, url=url, normalized_url=normalized[name]))
+
+    def _discover_worktrees(
+        self,
+        session: Session,
+        ctx: RequestContext,
+        ws: Workspace,
+        repo: Repository,
+        entries: builtins.list[WorktreeEntry],
+        *,
+        source: str,
+    ) -> builtins.list[dict[str, str]]:
+        """Record the main tree and linked worktrees that are not checkouts yet; return what was skipped."""
+        known = {c.path for c in repo.checkouts}
+        managed = self.app.paths.worktrees_dir
+        skipped: builtins.list[dict[str, str]] = []
+        for index, entry in enumerate(entries):
+            if entry.bare:
+                continue
+            path = entry.path.resolve()
+            path_str = str(path)
+            # Workgraph's own managed worktrees are tracked as managed_worktree rows, never as user checkouts.
+            if path_str in known or is_within(path, managed):
+                continue
+            if entry.prunable:
+                skipped.append({"path": path_str, "reason": "worktree is prunable"})
+                continue
+            try:
+                self._check_boundary(ws, path)
+            except ValidationFailed as exc:
+                skipped.append({"path": path_str, "reason": exc.message})
+                continue
+            kind = "clone" if index == 0 else "worktree"
+            checkout = RepositoryCheckout(
+                repository_id=repo.id,
+                path=path_str,
+                kind=kind,
+                is_primary=False,
+                available=True,
+                last_seen_at=utcnow(),
+            )
+            session.add(checkout)
+            repo.checkouts.append(checkout)
+            known.add(path_str)
+            record_event(
+                session,
+                ctx,
+                event_type="repository.checkout_discovered",
+                entity_type="repository",
+                entity_id=repo.id,
+                workspace_id=ws.id,
+                data={
+                    "path": path_str,
+                    "kind": kind,
+                    "branch": entry.branch,
+                    "detached": entry.detached,
+                    "locked": entry.locked,
+                    "source": source,
+                },
+            )
+        return skipped
 
     def list(
         self,
@@ -290,18 +353,18 @@ class RepositoryService(Service):
             return repository_out(session, repo)
 
     def refresh(self, ctx: RequestContext, workspace: str | None, ref: str) -> RepositoryOut:
-        """Health check: verify every checkout, refresh remotes/default branch/shallow state."""
+        """Health check: verify every checkout, rediscover worktrees, refresh remotes/default branch/shallow state."""
         require(ctx, Permission.REPO_READ)
         with self.db.session() as session:
             ws_id = self.app.tasks._workspace_id(session, workspace)
             repo = resolve.repository(session, ws_id, ref, include_archived=True)
-            checkouts = [(c.id, c.path) for c in repo.checkouts]
+            checkouts = [(c.id, c.path, c.kind) for c in repo.checkouts]
             fingerprint = repo.identity_fingerprint
         observations: dict[str, dict[str, object]] = {}
         remotes: dict[str, str] = {}
         default_branch = None
         shallow = False
-        for checkout_id, path in checkouts:
+        for checkout_id, path, _kind in checkouts:
             git = Git(path)
             ok = git.is_repository()
             detail: dict[str, object] = {"path": path, "available": ok}
@@ -318,16 +381,38 @@ class RepositoryService(Service):
             else:
                 detail["error"] = "path missing or not a git repository"
             observations[checkout_id] = detail
+        live = [path for checkout_id, path, _kind in checkouts if observations[checkout_id]["available"]]
+        entries = Git(live[0]).worktrees() if live else []
+        prunable = {str(entry.path.resolve()) for entry in entries if entry.prunable}
+        for checkout_id, path, kind in checkouts:
+            if kind == "worktree" and path in prunable:
+                observations[checkout_id].update(available=False, error="worktree is prunable")
         with self.db.session(write=True) as session:
             repo = resolve.repository(session, ws_id, ref, include_archived=True)
+            ws = session.get(Workspace, ws_id)
+            assert ws is not None
             now = utcnow()
             for checkout in repo.checkouts:
                 obs = observations.get(checkout.id)
                 if obs is None:
                     continue
-                checkout.available = bool(obs["available"])
+                available = bool(obs["available"])
+                if checkout.kind == "worktree" and available != checkout.available:
+                    record_event(
+                        session,
+                        ctx,
+                        event_type="repository.checkout_discovered"
+                        if available
+                        else "repository.checkout_lost",
+                        entity_type="repository",
+                        entity_id=repo.id,
+                        workspace_id=ws_id,
+                        data={"path": checkout.path, "kind": checkout.kind, "reason": obs.get("error")},
+                    )
+                checkout.available = available
                 if checkout.available:
                     checkout.last_seen_at = now
+            skipped = self._discover_worktrees(session, ctx, ws, repo, entries, source="refresh")
             if remotes:
                 self._sync_remotes(repo, remotes, {k: normalize_remote_url(v) for k, v in remotes.items()})
             if default_branch and not repo.default_branch:
@@ -342,7 +427,7 @@ class RepositoryService(Service):
             )
             previous = repo.health_status
             repo.health_status = status
-            repo.health_detail = {"checkouts": list(observations.values())}
+            repo.health_detail = {"checkouts": list(observations.values()), "skipped_worktrees": skipped}
             repo.health_checked_at = now
             if previous != status:
                 record_event(

@@ -29,6 +29,7 @@ platform-specific process-tree termination for both families).
 | Identity independent of path/remote; multiple checkouts and remotes; relocation; no-remote repos | Done | `integration/test_git.py::test_register_identity_and_relocation`, `::test_repo_without_remote_and_removal_keeps_files`, `unit/test_foundations.py::test_normalize_remote_url` |
 | Default/tracked branches, declared repository dependencies, read-only/read-write access, health checks | Done | `integration/test_git.py`, `integration/test_worktrees.py`, `integration/test_analytics.py` (declared+observed) |
 | Register/list/inspect/refresh/remove without deleting repositories | Done | `integration/test_cli_groups.py`, `integration/test_git.py` |
+| Discover existing Git worktrees on register/refresh; skip managed and out-of-boundary paths; mark removed worktrees unavailable | Done | `integration/test_worktree_discovery.py`, `unit/test_foundations.py::test_parse_worktree_porcelain_entries_in_both_framings` |
 | Workspace defaults and project overrides | Done | `unit/test_foundations.py::test_workspace_overrides` (workspace files override global), project `settings` JSON |
 | UUID ids and readable keys (`WG-104`) | Done | `unit/test_tasks_core.py::test_create_and_get_task_with_key` |
 

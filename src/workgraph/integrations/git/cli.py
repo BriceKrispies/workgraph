@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import functools
 import os
 import re
 import shutil
@@ -37,6 +38,58 @@ def validate_ref(ref: str) -> str:
 
 def is_sha(value: str) -> bool:
     return bool(_SHA_RE.match(value))
+
+
+@functools.cache
+def git_version() -> tuple[int, int]:
+    """Major and minor version of the installed Git; ``(0, 0)`` when it cannot be read."""
+    output = subprocess.run(
+        [git_executable(), "--version"], capture_output=True, text=True, check=False
+    ).stdout
+    match = re.search(r"git version (\d+)\.(\d+)", output)
+    return (int(match[1]), int(match[2])) if match else (0, 0)
+
+
+@dataclass(frozen=True)
+class WorktreeEntry:
+    """One record of ``git worktree list --porcelain``. The first record is the main working tree."""
+
+    path: Path
+    head: str | None = None
+    branch: str | None = None
+    detached: bool = False
+    bare: bool = False
+    locked: bool = False
+    prunable: bool = False
+
+
+def parse_worktree_porcelain(output: str, *, nul: bool) -> list[WorktreeEntry]:
+    """Parse porcelain output. ``nul`` selects ``-z`` framing (NUL terminators, NUL-separated records)."""
+    separator = "\0" if nul else "\n"
+    records: list[dict[str, str]] = []
+    current: dict[str, str] | None = None
+    for line in output.split(separator):
+        if not line:
+            current = None  # a blank line (or empty NUL field) closes the record
+            continue
+        key, _, value = line.partition(" ")
+        if key == "worktree":
+            current = {"worktree": value}
+            records.append(current)
+        elif current is not None:
+            current[key] = value
+    return [
+        WorktreeEntry(
+            path=Path(record["worktree"]),
+            head=record.get("HEAD") or None,
+            branch=record["branch"].removeprefix("refs/heads/") if "branch" in record else None,
+            detached="detached" in record,
+            bare="bare" in record,
+            locked="locked" in record,
+            prunable="prunable" in record,
+        )
+        for record in records
+    ]
 
 
 @dataclass
@@ -147,6 +200,12 @@ class Git:
     def is_worktree(self) -> bool:
         git_dir = Path(self.out("rev-parse", "--absolute-git-dir").strip())
         return git_dir.resolve() != self.git_common_dir().resolve()
+
+    def worktrees(self) -> list[WorktreeEntry]:
+        """Every worktree of this repository, the main working tree first."""
+        if git_version() >= (2, 36):
+            return parse_worktree_porcelain(self.out("worktree", "list", "--porcelain", "-z"), nul=True)
+        return parse_worktree_porcelain(self.out("worktree", "list", "--porcelain"), nul=False)
 
     def head(self) -> str | None:
         result = self.run("rev-parse", "--verify", "--quiet", "HEAD", check=False)

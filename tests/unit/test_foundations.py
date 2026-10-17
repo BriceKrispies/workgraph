@@ -14,7 +14,7 @@ from workgraph.config.paths import AppPaths
 from workgraph.config.settings import ConfigStore
 from workgraph.core.errors import ConfigError, PermissionDenied, ValidationFailed
 from workgraph.core.fsutil import require_within, safe_relative_path
-from workgraph.integrations.git.cli import normalize_remote_url
+from workgraph.integrations.git.cli import WorktreeEntry, normalize_remote_url, parse_worktree_porcelain
 from workgraph.integrations.git.parse import parse_diff_tree, parse_meta, parse_trailers
 from workgraph.persistence import migrate
 from workgraph.persistence.db import Database
@@ -204,6 +204,29 @@ def test_normalize_remote_url():
         "https://user:pw@github.com/Org/Repo.git/",
     ]
     assert {normalize_remote_url(v) for v in variants} == {"github.com/Org/Repo"}
+
+
+def test_parse_worktree_porcelain_entries_in_both_framings():
+    z_output = (
+        "worktree C:/dev/repo\0HEAD 1111111111111111111111111111111111111111\0branch refs/heads/main\0\0"
+        "worktree C:/dev/wt-detached\0HEAD 2222222222222222222222222222222222222222\0detached\0\0"
+        "worktree C:/dev/wt-locked\0HEAD 3333333333333333333333333333333333333333\0"
+        "branch refs/heads/feature/x\0locked rebase in progress\0\0"
+        "worktree C:/dev/wt-gone\0HEAD 4444444444444444444444444444444444444444\0"
+        "branch refs/heads/old\0prunable gitdir file points to non-existent location\0\0"
+        "worktree C:/dev/bare.git\0bare\0\0"
+    )
+    entries = parse_worktree_porcelain(z_output, nul=True)
+    assert entries == [
+        WorktreeEntry(Path("C:/dev/repo"), "1" * 40, "main"),
+        WorktreeEntry(Path("C:/dev/wt-detached"), "2" * 40, None, detached=True),
+        WorktreeEntry(Path("C:/dev/wt-locked"), "3" * 40, "feature/x", locked=True),
+        WorktreeEntry(Path("C:/dev/wt-gone"), "4" * 40, "old", prunable=True),
+        WorktreeEntry(Path("C:/dev/bare.git"), bare=True),
+    ]
+    newline_output = z_output.replace("\0", "\n")
+    assert parse_worktree_porcelain(newline_output, nul=False) == entries
+    assert parse_worktree_porcelain("", nul=True) == []
 
 
 # ------------------------------------------------------------------ structural analysis

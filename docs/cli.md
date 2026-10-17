@@ -40,6 +40,8 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `events` | `list`, `verify` |
 | `demo` | `e2e`, `seed` |
 
+Worktree discovery: `repo register` and `repo refresh` run `git worktree list` and record each linked worktree (kind `worktree`) and the main working tree (kind `clone`) as a checkout of the same repository. Workgraph's managed worktrees, bare entries and paths outside the workspace's allowed roots are not added; the skipped paths are listed in the repository's `health_detail.skipped_worktrees`. Refresh marks worktrees that were removed or are reported as prunable as unavailable, and records `repository.checkout_discovered` / `repository.checkout_lost` events.
+
 ## Examples
 
 ```sh

@@ -125,7 +125,39 @@ applicable verification checks.
     tip and an instruction to rebase onto that tip. The task returns to `ready` with a comment
     carrying the same information, and the rest of the queue continues.
   - Items with no change in a repository are skipped for that repository (`stack.integration_skipped`).
-    Full verification on the integration tip is not part of this stage.
+  - **Settled.** The queue settles when no item is `pending` or `ready` and at least one item is on
+    the integration branch. After every integrate job that finds the stack settled, a
+    `stack_verify` job is queued, keyed by the integration tips, so repeated settling on the same
+    tips collapses into one job. `workgraph stack verify PARENT` and
+    `POST /ws/{ws}/stacks/{ref}/verify` queue it on demand; on demand the key also names the stack's
+    latest event, so each request after a state change runs again. The job holds the same
+    `repo:<repository-id>` and `exclusive:stack-integration:<repository-id>` keys as integration.
+    The stack moves `integrating -> verifying` while it runs.
+  - **Full verification on the tip.** The parent task's `full` checks (workspace, project and
+    repository scoped checks of the stack's repositories) run once, attributed to the parent task,
+    with each repository's checks executing in its integration worktree at the current tip. The
+    run's events carry the stack id and the tip shas. A stack with no full checks passes without a run.
+  - **Pass.** Every merged item becomes `verified`, each child task moves `awaiting_verification`
+    to `awaiting_review` (the reason names the run), and the stack becomes `verified`. Nothing is
+    accepted; acceptance is a separate step.
+  - **Fail: bisect.** The merge sequence is the items on the integration branch in `merge_order`.
+    Prefix `k` takes, for each repository, the merge commit of the last of the first `k` items that
+    merged into it (the base commit if none). The required checks that failed on the tip are run
+    against successive prefixes, with a binary search for the smallest failing prefix, assuming
+    failure is monotonic. Probes run in one detached bisect worktree per repository at
+    `worktrees/stacks/<stack-id>/bisect-<repository>`, removed afterwards. Each probe is a
+    verification run and a `stack.bisect_probe` event with its shas and result.
+  - **Eject and rebuild.** If the base (prefix 0) fails, nothing is ejected: the stack returns to
+    `integrating` (`stack.verification_failed_on_base`) and the items stay `merged`. Otherwise the
+    culprit at the failing prefix moves to `ejected`, with its failing check names, failure
+    signatures and run id in the item `detail`. Its task returns to `ready` with a comment carrying
+    the same information. Items that depend on the culprit, directly or through other items, move
+    back to `pending` with the reason `dependency <KEY> was ejected`. Each integration branch is then
+    reset to its base (`git reset --hard`, in the integration worktree only) and the remaining items
+    are replayed in merge order with the integration identity, updating `merges`. A replay that
+    conflicts is handled like an integration conflict. The stack is `integrating` again and
+    verification is queued on the rebuilt tips. An ejected child's next attempt starts from the
+    integration tip.
 - Worktree rows track `preparing -> active -> released -> removed` (or `orphaned`).
   `workgraph worker recover` (and every worker start) reconciles rows with disk after a crash.
 - Cleanup is explicit (`workgraph git cleanup-worktrees --apply`), only touches clean,

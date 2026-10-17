@@ -10,7 +10,8 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -150,6 +151,7 @@ class _PreparedRun:
     manifest: list[dict[str, Any]]
     checks: list[ApplicableCheck]
     tier: CheckTier | None = None
+    event_context: dict[str, Any] = field(default_factory=dict)
 
 
 def extract_failure_signatures(lines: list[str], parser: str) -> list[str]:
@@ -334,10 +336,17 @@ class VerificationService(Service):
         manifest_entries: list[dict[str, Any]] | None = None,
         should_cancel: Any = None,
         tier: CheckTier | None = None,
+        check_filter: Callable[[ApplicableCheck], bool] | None = None,
+        event_context: dict[str, Any] | None = None,
     ) -> VerificationRunOut:
-        """Run the applicable checks; ``tier`` restricts the run to one tier (``None`` runs every tier)."""
+        """Run the applicable checks; ``tier`` restricts the run to one tier (``None`` runs every tier).
+
+        ``check_filter`` further narrows the checks, and ``event_context`` is merged into the run's events.
+        """
         require(ctx, Permission.VERIFY_RUN)
-        prepared = self._prepare(ctx, workspace, task_ref, attempt_id, manifest_entries, tier)
+        prepared = self._prepare(
+            ctx, workspace, task_ref, attempt_id, manifest_entries, tier, check_filter, event_context or {}
+        )
         results = [self._execute_check(prepared, check, should_cancel) for check in prepared.checks]
         return self._finalize(ctx, prepared, results)
 
@@ -349,11 +358,15 @@ class VerificationService(Service):
         attempt_id: str | None,
         manifest_entries: list[dict[str, Any]] | None,
         tier: CheckTier | None,
+        check_filter: Callable[[ApplicableCheck], bool] | None,
+        event_context: dict[str, Any],
     ) -> _PreparedRun:
         with self.db.session() as session:
             ws_id = self.app.tasks._workspace_id(session, workspace) if workspace else None
             task = resolve.task(session, ws_id, task_ref)
             checks = checks_for_tier(applicable_checks(session, task), tier)
+            if check_filter is not None:
+                checks = [check for check in checks if check_filter(check)]
             if not checks:
                 if tier is not None:
                     raise ValidationFailed(f"no {tier} verification checks are configured for {task.key}")
@@ -411,6 +424,7 @@ class VerificationService(Service):
                     "manifest_id": manifest.id,
                     "checks": len(checks),
                     "tier": tier,
+                    **event_context,
                 },
             )
             return _PreparedRun(
@@ -422,6 +436,7 @@ class VerificationService(Service):
                 manifest=entries,
                 checks=checks,
                 tier=tier,
+                event_context=event_context,
             )
 
     def _execute_check(
@@ -577,6 +592,7 @@ class VerificationService(Service):
                     "required_passed": required_ok,
                     "optional_failures": any_failed and required_ok,
                     "failed_checks": failed_names,
+                    **prepared.event_context,
                 },
             )
             follow = ctx.caused_by(event.id)

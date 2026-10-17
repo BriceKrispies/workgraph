@@ -31,3 +31,9 @@ def get_stack(app: AppDep, ctx: CtxDep, ws: str, ref: str) -> Any:
 def integrate_stack(app: AppDep, ctx: CtxDep, ws: str, ref: str) -> Any:
     """Queue integration of the stack's ready children; one job per stack repository."""
     return app.stacks.integrate(ctx, ws, ref)
+
+
+@router.post("/ws/{ws}/stacks/{ref}/verify", status_code=202)
+def verify_stack(app: AppDep, ctx: CtxDep, ws: str, ref: str) -> Any:
+    """Queue full verification of the stack's integration tip; bisects and ejects on failure."""
+    return app.stack_verification.request(ctx, ws, ref)

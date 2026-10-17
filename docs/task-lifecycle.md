@@ -44,6 +44,10 @@ Transitions are validated by `core/policies/lifecycle.py`. Notable rules:
   promotes its blocked dependents; leaving them, or removing the item from the stack, blocks them
   again. Dependencies on tasks outside the stack keep the accepted-only rule. Every satisfaction
   check goes through `satisfied_dependencies` in `core/services/tasks.py`.
+- **Inside a stack, children are verified together.** A stack child stays `awaiting_verification`
+  while its item moves through the stack. When the stack passes full verification on the
+  integration tip, each child moves to `awaiting_review`. A child ejected by bisection returns to
+  `ready` with a comment, and its dependents in the stack wait in `pending` for a new attempt.
 - Dependencies are workspace-wide (across projects and repositories); cycles in dependencies and
   in the parent hierarchy are rejected with the offending path.
 - Claims are exclusive leases; an expired claim is released by maintenance.

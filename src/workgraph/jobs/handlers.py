@@ -95,6 +95,10 @@ def stack_integrate(app: Workgraph, job: JobContext) -> dict[str, Any]:
     return app.stack_integration.integrate(_ctx(job, "stacks"), payload["stack_id"], payload["repository_id"])
 
 
+def stack_verify(app: Workgraph, job: JobContext) -> dict[str, Any]:
+    return app.stack_verification.verify(_ctx(job, "stacks"), job.job.payload["stack_id"])
+
+
 def decompose_task(app: Workgraph, job: JobContext) -> dict[str, Any]:
     return app.scheduler.decompose(
         _ctx(job, "scheduler"), job.job.payload["task_id"], create=job.job.payload.get("create", True)
@@ -151,6 +155,7 @@ HANDLERS: dict[str, Handler] = {
     "agent_run": agent_run,
     "verify": verify,
     "stack_integrate": stack_integrate,
+    "stack_verify": stack_verify,
     "decompose_task": decompose_task,
     "automation_action": automation_action,
     "generate_report": generate_report,

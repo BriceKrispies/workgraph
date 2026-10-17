@@ -179,7 +179,7 @@ def test_stacked_child_merges_after_its_sibling(app, human, ws, tree):
     assert _entry(app, human, second_attempt)["target_ref"] == first_head
     items = _items(app, human, ws, parent)
     assert items[first.key].merge_order == 1
-    assert items[second.key].state == "merged" and items[second.key].merge_order == 2
+    assert items[second.key].state == "verified" and items[second.key].merge_order == 2
     repo.git("merge-base", "--is-ancestor", second_head, branch)
 
 
@@ -216,8 +216,8 @@ def test_conflicting_pair_sends_the_second_child_back_with_the_integration_tip(a
     assert base["integration_tip"] == tip
     assert _entry(app, human, retry)["target_ref"] == tip
     items = _items(app, human, ws, parent)
-    assert items[second.key].state == "merged"
-    assert items[first.key].state == "merged"
+    assert items[second.key].state == "verified"
+    assert items[first.key].state == "verified"
     assert items[second.key].merge_order == 2
     assert repo.git("log", "-1", "--format=%s", branch) == (
         f"Merge {second.key}: Second change into {branch}"
@@ -268,7 +268,7 @@ def test_integrate_requests_for_an_unchanged_stack_collapse_into_one_job(app, hu
     first = _child(app, human, ws, parent, "First change")
     stack = app.stacks.create(human, ws, parent.key)
     _run(app, human, ws, first.key, "fake-a")
-    assert _items(app, human, ws, parent)[first.key].state == "merged"
+    assert _items(app, human, ws, parent)[first.key].state == "verified"
 
     one = app.stacks.integrate(human, ws, parent.key)
     two = app.stacks.integrate(human, ws, parent.key)
@@ -276,7 +276,7 @@ def test_integrate_requests_for_an_unchanged_stack_collapse_into_one_job(app, hu
 
     assert one["jobs"] == two["jobs"]
     assert one["jobs"][0]["repository"] == "svc"
-    assert _items(app, human, ws, parent)[first.key].state == "merged"
+    assert _items(app, human, ws, parent)[first.key].state == "verified"
     assert app.stacks.get(human, ws, parent.key).id == stack.id
 
 
@@ -308,3 +308,200 @@ def test_integration_worktree_survives_recovery_and_cleanup(app, human, ws, tree
     assert path in {row["path"] for row in app.worktrees.list(human, status="active")}
     assert path not in {row["path"] for row in app.worktrees.cleanup(human, dry_run=True)}
     assert Git(path).is_clean()
+
+
+def _combined_check() -> dict[str, object]:
+    """A full check that fails only when a.txt and c.txt both exist, so no single child breaks it."""
+    code = (
+        "import os\n"
+        "if os.path.exists('a.txt') and os.path.exists('c.txt'):\n"
+        "    print('FAILED combined::a_and_c - a.txt and c.txt both exist')\n"
+        "    raise SystemExit(1)\n"
+    )
+    return {"name": "combined", "kind": "test", "command": [sys.executable, "-c", code]}
+
+
+def _branch_files(repo, branch: str) -> set[str]:
+    return set(repo.git("ls-tree", "--name-only", branch).split())
+
+
+def _task_comments(app, task_id: str) -> list[str]:
+    with app.db.session() as session:
+        return list(session.scalars(select(TaskComment.body).where(TaskComment.task_id == task_id)))
+
+
+def _verification_runs(app, parent) -> list[VerificationRun]:
+    with app.db.session() as session:
+        return list(session.scalars(select(VerificationRun).where(VerificationRun.task_id == parent.id)))
+
+
+def test_bisect_ejects_the_child_that_completes_a_failing_combination(app, human, ws, tree):
+    repo, parent = tree
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "b.txt")
+    _enable_agent(app, "fake-c", "c.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, _combined_check()],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    third = _child(app, human, ws, parent, "Third change")
+    stack = app.stacks.create(human, ws, parent.key)
+    branch = stack.repositories[0].integration_branch
+
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    assert _verification_runs(app, parent) == []
+    _run(app, human, ws, third.key, "fake-c")
+
+    items = _items(app, human, ws, parent)
+    assert items[first.key].state == "verified"
+    assert items[second.key].state == "verified"
+    assert items[third.key].state == "ejected"
+    ejection = json.loads(items[third.key].detail)["ejection"]
+    assert ejection["position"] == 3
+    assert ejection["failed_checks"] == ["combined"]
+    assert ejection["signatures"] == {"combined": ["test:combined::a_and_c"]}
+    failed_run = app.verification.get_run(human, ejection["verification_run_id"])
+    assert failed_run.required_passed is False
+    assert failed_run.task_id == parent.id
+
+    third_task = app.tasks.get(human, ws, third.key)
+    assert third_task.status == "ready"
+    assert any("combined" in body for body in _task_comments(app, third_task.id))
+
+    files = _branch_files(repo, branch)
+    assert {"a.txt", "b.txt"} <= files
+    assert "c.txt" not in files
+    assert app.tasks.get(human, ws, first.key).status == "awaiting_review"
+    assert app.tasks.get(human, ws, second.key).status == "awaiting_review"
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+
+    types = _event_types(app, stack.id)
+    for event_type in (
+        "stack.verification_started",
+        "stack.verification_failed",
+        "stack.bisect_probe",
+        "stack.item_ejected",
+        "stack.rebuilt",
+        "stack.verified",
+    ):
+        assert event_type in types
+    assert types.count("stack.bisect_probe") >= 2
+
+
+def test_all_passing_full_checks_verify_every_item_with_one_run(app, human, ws, tree):
+    _repo, parent = tree
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "b.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, passing_check("suite")],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    stack = app.stacks.create(human, ws, parent.key)
+
+    _run(app, human, ws, first.key, "fake-a")
+    assert _verification_runs(app, parent) == []
+    _run(app, human, ws, second.key, "fake-b")
+
+    items = _items(app, human, ws, parent)
+    assert items[first.key].state == "verified" and items[second.key].state == "verified"
+    assert app.tasks.get(human, ws, first.key).status == "awaiting_review"
+    assert app.tasks.get(human, ws, second.key).status == "awaiting_review"
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+    assert [run.status for run in _verification_runs(app, parent)] == ["passed"]
+    assert "stack.verified" in _event_types(app, stack.id)
+
+    # An on-demand request verifies the tip again, as a new run.
+    job_id = app.stack_verification.request(human, ws, parent.key)["job_id"]
+    drain(app)
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+    assert len(_verification_runs(app, parent)) == 2
+    with app.db.session() as session:
+        assert session.get(Job, job_id).status == "succeeded"
+
+
+def test_a_failure_on_the_base_ejects_nothing(app, human, ws, tree):
+    _repo, parent = tree
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "b.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, failing_check("suite")],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    stack = app.stacks.create(human, ws, parent.key)
+
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+
+    items = _items(app, human, ws, parent)
+    assert items[first.key].state == "merged" and items[second.key].state == "merged"
+    assert app.stacks.get(human, ws, parent.key).status == "integrating"
+    assert app.tasks.get(human, ws, first.key).status == "awaiting_verification"
+    types = _event_types(app, stack.id)
+    assert "stack.verification_failed_on_base" in types
+    assert "stack.item_ejected" not in types
+    assert "stack.verified" not in types
+
+
+def test_a_dependent_of_the_culprit_returns_to_pending(app, human, ws, tree):
+    repo, parent = tree
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "b.txt")
+    _enable_agent(app, "fake-c", "c.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, _combined_check()],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    third = _child(app, human, ws, parent, "Third change", depends_on=[second.key])
+    stack = app.stacks.create(human, ws, parent.key)
+    branch = stack.repositories[0].integration_branch
+
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-c")
+    _run(app, human, ws, third.key, "fake-b")
+
+    items = _items(app, human, ws, parent)
+    assert items[second.key].state == "ejected"
+    assert items[third.key].state == "pending"
+    assert json.loads(items[third.key].detail)["reason"] == f"dependency {second.key} was ejected"
+    assert items[first.key].state == "merged"
+    assert app.tasks.get(human, ws, second.key).status == "ready"
+    assert app.stacks.get(human, ws, parent.key).status == "integrating"
+    files = _branch_files(repo, branch)
+    assert "a.txt" in files
+    assert "b.txt" not in files and "c.txt" not in files
+
+
+def test_stack_verify_jobs_hold_the_repository_keys(app, human, ws, tree):
+    _repo, parent = tree
+    _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
+    child = _child(app, human, ws, parent, "Only change")
+    stack = app.stacks.create(human, ws, parent.key)
+    _run(app, human, ws, child.key, "fake-a")
+
+    repository_id = stack.repositories[0].repository_id
+    with app.db.session() as session:
+        jobs = list(session.scalars(select(Job).where(Job.kind == "stack_verify")))
+    assert len(jobs) == 1
+    job = jobs[0]
+    assert job.payload == {"stack_id": stack.id}
+    assert f"repo:{repository_id}" in job.resource_keys
+    assert f"exclusive:stack-integration:{repository_id}" in job.resource_keys
+    # Settling again on the same integration tips collapses into the existing job.
+    assert app.stack_verification.enqueue_if_settled(human, stack.id) == job.id

@@ -70,6 +70,17 @@ from workgraph.persistence.orm import (
 from workgraph.security.permissions import Permission, require
 
 CURSOR = "automation"
+PRIORITY_FREE_ACTIONS = {
+    "classify_task",
+    "add_tags",
+    "update_task",
+    "create_child_tasks",
+    "create_dependency",
+    "enqueue_agent_run",
+    "run_verification",
+    "generate_report",
+    "notify",
+}
 RATE_LIMIT_PER_MINUTE = 30
 ACTIONS_ADAPTER: TypeAdapter[list[Action]] = TypeAdapter(list[Action])
 
@@ -303,7 +314,7 @@ class AutomationService(Service):
             "triggers": TRIGGER_EVENTS,
             "schedule": ["cron", "interval_seconds"],
             "manual": True,
-            "actions": [t.__name__ for t in Action.__args__[0].__args__],  # type: ignore[attr-defined]
+            "actions": sorted(PRIORITY_FREE_ACTIONS),
             "operators": [
                 "eq",
                 "ne",

@@ -477,7 +477,7 @@ class WorktreeManager(Service):
             targets = [(r.id, r.path, r.source_checkout_id) for r in rows]
         results = []
         if remove:
-            for worktree_id, path, _checkout in targets:
+            for worktree_id, _path, _checkout in targets:
                 results.append(self.remove(ctx, worktree_id, force=force))
         return results
 

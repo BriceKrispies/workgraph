@@ -68,14 +68,25 @@ def estimate(
             row = resolve.task(session, ws_id, task)
             target_id, title, description = row.id, row.title, row.description
             category = category or row.category
-            repo_ids = set(session.scalars(select(TaskRepository.repository_id).where(TaskRepository.task_id == row.id)))
+            repo_ids = set(
+                session.scalars(select(TaskRepository.repository_id).where(TaskRepository.task_id == row.id))
+            )
         for ref in repositories or []:
             repo_ids.add(resolve.repository(session, ws_id, ref, include_archived=True).id)
-        accepted = {t.id: t for t in session.scalars(
-            select(Task).where(Task.workspace_id == ws_id, Task.accepted_at.is_not(None), Task.id != (target_id or "")))}
+        accepted = {
+            t.id: t
+            for t in session.scalars(
+                select(Task).where(
+                    Task.workspace_id == ws_id, Task.accepted_at.is_not(None), Task.id != (target_id or "")
+                )
+            )
+        }
         repos_of: dict[str, set[str]] = defaultdict(set)
-        for tid, rid in session.execute(select(TaskRepository.task_id, TaskRepository.repository_id)
-                                        .where(TaskRepository.task_id.in_(list(accepted)))):
+        for tid, rid in session.execute(
+            select(TaskRepository.task_id, TaskRepository.repository_id).where(
+                TaskRepository.task_id.in_(list(accepted))
+            )
+        ):
             repos_of[tid].add(rid)
     if not title:
         raise WorkgraphError("provide a task or a title to estimate")
@@ -93,8 +104,12 @@ def estimate(
         text_scores = {h.task_id: 1.0 / (rank + 1) for rank, h in enumerate(hits)}
     my_modules: set[str] = set()
     if target_id:
-        my_modules = {r["module"] for r in app.analytics.warehouse.query(
-            "SELECT DISTINCT module FROM task_files WHERE task_id = ?", [target_id])}
+        my_modules = {
+            r["module"]
+            for r in app.analytics.warehouse.query(
+                "SELECT DISTINCT module FROM task_files WHERE task_id = ?", [target_id]
+            )
+        }
     scored = []
     for tid, other in accepted.items():
         reasons: list[str] = []
@@ -112,8 +127,12 @@ def estimate(
                 score += 0.2 * overlap
                 reasons.append(f"repository overlap {overlap:.2f}")
         if my_modules:
-            theirs = {r["module"] for r in app.analytics.warehouse.query(
-                "SELECT DISTINCT module FROM task_files WHERE task_id = ?", [tid])}
+            theirs = {
+                r["module"]
+                for r in app.analytics.warehouse.query(
+                    "SELECT DISTINCT module FROM task_files WHERE task_id = ?", [tid]
+                )
+            }
             if theirs & my_modules:
                 score += 0.05 * len(theirs & my_modules) / len(theirs | my_modules)
                 reasons.append("touches the same modules")
@@ -121,7 +140,10 @@ def estimate(
             scored.append((score, tid, other.key, other.title, reasons))
     scored.sort(reverse=True)
     chosen = scored[:TOP_K]
-    basis = [{"task_id": tid, "key": key, "title": t, "score": round(s, 3), "reasons": r} for s, tid, key, t, r in chosen]
+    basis = [
+        {"task_id": tid, "key": key, "title": t, "score": round(s, 3), "reasons": r}
+        for s, tid, key, t, r in chosen
+    ]
     if len(chosen) < MIN_SAMPLE:
         return {
             "status": "insufficient_data",
@@ -131,27 +153,47 @@ def estimate(
         }
     ids = [tid for _, tid, *_ in chosen]
     placeholders = ",".join("?" for _ in ids)
-    facts = {r["id"]: r for r in app.analytics.warehouse.query(
-        f"SELECT * FROM task_facts WHERE id IN ({placeholders})", ids)}
+    facts = {
+        r["id"]: r
+        for r in app.analytics.warehouse.query(f"SELECT * FROM task_facts WHERE id IN ({placeholders})", ids)
+    }
+
     def collect(field: str) -> list[Any]:
         return [facts[i].get(field) for i in ids if i in facts]
 
-    churn = [(f.get("churn_insertions") or 0) + (f.get("churn_deletions") or 0) for f in facts.values() if f.get("commits")]
-    final = [(f.get("final_insertions") or 0) + (f.get("final_deletions") or 0) for f in facts.values()
-             if f.get("final_insertions") is not None]
+    churn = [
+        (f.get("churn_insertions") or 0) + (f.get("churn_deletions") or 0)
+        for f in facts.values()
+        if f.get("commits")
+    ]
+    final = [
+        (f.get("final_insertions") or 0) + (f.get("final_deletions") or 0)
+        for f in facts.values()
+        if f.get("final_insertions") is not None
+    ]
     runs = app.analytics.warehouse.query(
-        f"SELECT status FROM verification_runs WHERE task_id IN ({placeholders})", ids)
+        f"SELECT status FROM verification_runs WHERE task_id IN ({placeholders})", ids
+    )
     passed = sum(1 for r in runs if r["status"] == "passed")
     agents = app.analytics.warehouse.query(
         f"SELECT provider, COALESCE(model, '(unspecified)') AS model, COUNT(*) AS attempts, "
         f"COUNT(*) FILTER (WHERE status = 'succeeded') AS succeeded, quantile_cont(duration_ms, 0.5) AS median_ms "
         f"FROM agent_attempts WHERE parent_attempt_id IS NULL AND task_id IN ({placeholders}) GROUP BY provider, model",
-        ids)
+        ids,
+    )
     recommendations = sorted(
-        [{"provider": a["provider"], "model": a["model"], "attempts": a["attempts"], "succeeded": a["succeeded"],
-          "success_rate": round(a["succeeded"] / a["attempts"], 3) if a["attempts"] else None,
-          "median_duration_ms": a["median_ms"]} for a in agents],
-        key=lambda a: (-(a["success_rate"] or 0), -a["attempts"]),
+        [
+            {
+                "provider": a["provider"],
+                "model": a["model"],
+                "attempts": a["attempts"],
+                "succeeded": a["succeeded"],
+                "success_rate": round(a["succeeded"] / a["attempts"], 3) if a["attempts"] else None,
+                "median_duration_ms": a["median_ms"],
+            }
+            for a in agents
+        ],
+        key=lambda a: (-float(a["success_rate"] or 0), -int(a["attempts"] or 0)),
     )
     return {
         "status": "ok",
@@ -167,8 +209,11 @@ def estimate(
             "cumulative_churn": distribution(churn),
             "final_change_size": distribution(final),
         },
-        "verification": {"runs": len(runs), "passed": passed,
-                         "pass_rate": round(passed / len(runs), 3) if runs else None},
+        "verification": {
+            "runs": len(runs),
+            "passed": passed,
+            "pass_rate": round(passed / len(runs), 3) if runs else None,
+        },
         "agent_recommendations": recommendations,
         "uncertainty": "Ranges are the 25th-75th/90th percentiles of comparable tasks; small samples are volatile.",
         "caveats": [

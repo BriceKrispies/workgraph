@@ -16,6 +16,7 @@ Prompts mark the content to analyse with ``<task>...</task>`` or
 from __future__ import annotations
 
 import hashlib
+import itertools
 import json
 import math
 import re
@@ -278,7 +279,7 @@ def narrative_from_facts(facts_json: str) -> dict[str, Any]:
 
 def hash_embedding(text: str, dim: int = EMBED_DIM) -> list[float]:
     words = [w for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in STOP]
-    features = words + [f"{a}_{b}" for a, b in zip(words, words[1:], strict=False)]
+    features = words + [f"{a}_{b}" for a, b in itertools.pairwise(words)]
     vector = [0.0] * dim
     for feature in features:
         digest = hashlib.blake2b(feature.encode("utf-8"), digest_size=8).digest()

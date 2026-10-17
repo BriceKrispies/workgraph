@@ -34,8 +34,13 @@ def emit(**message: object) -> None:
 
 
 def git(path: str, *args: str) -> None:
-    env = {**os.environ, "GIT_AUTHOR_NAME": "Workgraph Scripted Agent", "GIT_AUTHOR_EMAIL": "agent@workgraph.local",
-           "GIT_COMMITTER_NAME": "Workgraph Scripted Agent", "GIT_COMMITTER_EMAIL": "agent@workgraph.local"}
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "Workgraph Scripted Agent",
+        "GIT_AUTHOR_EMAIL": "agent@workgraph.local",
+        "GIT_COMMITTER_NAME": "Workgraph Scripted Agent",
+        "GIT_COMMITTER_EMAIL": "agent@workgraph.local",
+    }
     subprocess.run(["git", "-C", path, *args], check=True, capture_output=True, env=env)
 
 
@@ -54,10 +59,17 @@ def implement(repo: dict[str, str], task_key: str, mode: str, default_file: str)
         target = root / default_file
         previous = target.read_text(encoding="utf-8") if target.exists() else ""
         index = len(previous.splitlines())
-        target.write_text(previous + f"def change_{index}():\n    return '{task_key}'\n", encoding="utf-8", newline="\n")
+        target.write_text(
+            previous + f"def change_{index}():\n    return '{task_key}'\n", encoding="utf-8", newline="\n"
+        )
     git(repo["checkout_path"], "add", "-A")
-    git(repo["checkout_path"], "commit", "-q", "-m",
-        f"Implement {task_key} in {repo['repository']}\n\nTask-ID: {task_key}")
+    git(
+        repo["checkout_path"],
+        "commit",
+        "-q",
+        "-m",
+        f"Implement {task_key} in {repo['repository']}\n\nTask-ID: {task_key}",
+    )
     return str(target.relative_to(root))
 
 
@@ -74,7 +86,6 @@ def main() -> int:
     if args.mode == "sleep":
         time.sleep(600)
     if args.mode == "crash":
-        print("boom: simulated crash", flush=True)
         return 3
     if args.mode == "fail":
         emit(type="progress", message="tests are failing", percent=50)

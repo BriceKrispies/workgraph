@@ -31,7 +31,7 @@ from workgraph.core.errors import (
     WorkgraphError,
 )
 from workgraph.core.events.log import record_event
-from workgraph.core.models.enums import PRIORITY_RANK, AttemptStatus, TaskStatus
+from workgraph.core.models.enums import PRIORITY_RANK, AttemptStatus, TaskPriority, TaskStatus
 from workgraph.core.models.schemas import TaskCreate
 from workgraph.core.services.base import Service
 from workgraph.core.services.repositories import primary_checkout
@@ -177,9 +177,9 @@ class Scheduler(Service):
             queues.setdefault(item["project_id"] or "-", []).append(item)
         ordered: list[dict[str, Any]] = []
         while any(queues.values()):
-            best_rank = min(PRIORITY_RANK[q[0]["priority"]] for q in queues.values() if q)  # type: ignore[index]
+            best_rank = min(PRIORITY_RANK[TaskPriority(q[0]["priority"])] for q in queues.values() if q)
             for queue in queues.values():
-                if queue and PRIORITY_RANK[queue[0]["priority"]] == best_rank:  # type: ignore[index]
+                if queue and PRIORITY_RANK[TaskPriority(queue[0]["priority"])] == best_rank:
                     ordered.append(queue.pop(0))
         return ordered
 

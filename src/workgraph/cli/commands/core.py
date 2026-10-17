@@ -7,7 +7,7 @@ import platform
 import shutil
 import sqlite3
 import sys
-from typing import Any
+from typing import Any, cast
 
 import typer
 
@@ -463,7 +463,7 @@ def project_update(
         STATE.ctx(),
         ws(workspace) or app.default_workspace_id(),
         ref,
-        ProjectUpdate(name=name, description=description, status=status),  # type: ignore[arg-type]
+        ProjectUpdate(name=name, description=description, status=cast(Any, status)),
     )
     emit(out, lambda p: console.print(f"updated {p.slug}"))
 

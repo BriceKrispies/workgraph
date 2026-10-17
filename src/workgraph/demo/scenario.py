@@ -46,24 +46,30 @@ REPOS: dict[str, dict[str, str]] = {
         "seed_file": "auth/__init__.py",
         "seed": "def login(user: str, password: str) -> bool:\n    return bool(user and password)\n",
         "plan_file": "auth/refresh.py",
-        "plan": ("# {task}: refresh token issuance\nMARKER = 'WORKGRAPH_DEMO_OK'\n\n\n"
-                 "def issue_refresh_token(user: str) -> str:\n    return f'refresh-{user}'\n\n\n"
-                 "class RefreshPolicy:\n    ttl_seconds = 3600\n"),
+        "plan": (
+            "# {task}: refresh token issuance\nMARKER = 'WORKGRAPH_DEMO_OK'\n\n\n"
+            "def issue_refresh_token(user: str) -> str:\n    return f'refresh-{user}'\n\n\n"
+            "class RefreshPolicy:\n    ttl_seconds = 3600\n"
+        ),
     },
     "shared-sdk": {
         "seed_file": "src/client.ts",
         "seed": "export function request(path: string): string {\n  return path;\n}\n",
         "plan_file": "src/token.ts",
-        "plan": ("// {task}: token refresh helper\nexport const MARKER = 'WORKGRAPH_DEMO_OK';\n\n"
-                 "export function refreshToken(token: string): string {\n  return `refreshed:${token}`;\n}\n\n"
-                 "export interface TokenPair {\n  access: string;\n  refresh: string;\n}\n"),
+        "plan": (
+            "// {task}: token refresh helper\nexport const MARKER = 'WORKGRAPH_DEMO_OK';\n\n"
+            "export function refreshToken(token: string): string {\n  return `refreshed:${token}`;\n}\n\n"
+            "export interface TokenPair {\n  access: string;\n  refresh: string;\n}\n"
+        ),
     },
     "web-client": {
         "seed_file": "app/main.js",
         "seed": "export function render() {\n  return 'login';\n}\n",
         "plan_file": "app/session.js",
-        "plan": ("// {task}: use the refresh flow\nexport const MARKER = 'WORKGRAPH_DEMO_OK';\n\n"
-                 "export function keepSessionAlive(client) {\n  return client.refresh();\n}\n"),
+        "plan": (
+            "// {task}: use the refresh flow\nexport const MARKER = 'WORKGRAPH_DEMO_OK';\n\n"
+            "export function keepSessionAlive(client) {\n  return client.refresh();\n}\n"
+        ),
     },
 }
 CHECK_SCRIPT = """import json, pathlib, sys
@@ -102,9 +108,17 @@ class DemoReport:
         try:
             details = check() or {}
         except Exception as exc:
-            self.steps.append({"step": number, "title": title, "ok": False, "error": f"{type(exc).__name__}: {exc}"})
+            self.steps.append(
+                {"step": number, "title": title, "ok": False, "error": f"{type(exc).__name__}: {exc}"}
+            )
             raise
-        entry = {"step": number, "title": title, "ok": True, "seconds": round(time.monotonic() - started, 2), **details}
+        entry = {
+            "step": number,
+            "title": title,
+            "ok": True,
+            "seconds": round(time.monotonic() - started, 2),
+            **details,
+        }
         self.steps.append(entry)
         return entry
 
@@ -119,9 +133,16 @@ def expect(condition: bool, message: str) -> None:
 
 
 def _git(path: Path, *args: str) -> str:
-    env = {**os.environ, "GIT_AUTHOR_NAME": "Demo Human", "GIT_AUTHOR_EMAIL": "human@workgraph.local",
-           "GIT_COMMITTER_NAME": "Demo Human", "GIT_COMMITTER_EMAIL": "human@workgraph.local"}
-    return subprocess.run(["git", "-C", str(path), *args], check=True, capture_output=True, text=True, env=env).stdout.strip()
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "Demo Human",
+        "GIT_AUTHOR_EMAIL": "human@workgraph.local",
+        "GIT_COMMITTER_NAME": "Demo Human",
+        "GIT_COMMITTER_EMAIL": "human@workgraph.local",
+    }
+    return subprocess.run(
+        ["git", "-C", str(path), *args], check=True, capture_output=True, text=True, env=env
+    ).stdout.strip()
 
 
 def create_repositories(root: Path) -> dict[str, Path]:
@@ -134,8 +155,9 @@ def create_repositories(root: Path) -> dict[str, Path]:
         seed = path / spec["seed_file"]
         seed.parent.mkdir(parents=True, exist_ok=True)
         seed.write_text(spec["seed"], encoding="utf-8", newline="\n")
-        (path / "workgraph-demo.json").write_text(json.dumps({"file": spec["plan_file"], "content": spec["plan"]}),
-                                                   encoding="utf-8", newline="\n")
+        (path / "workgraph-demo.json").write_text(
+            json.dumps({"file": spec["plan_file"], "content": spec["plan"]}), encoding="utf-8", newline="\n"
+        )
         (path / "check.py").write_text(CHECK_SCRIPT, encoding="utf-8", newline="\n")
         (path / "README.md").write_text(f"# {name}\n", encoding="utf-8", newline="\n")
         _git(path, "add", "-A")
@@ -161,7 +183,8 @@ async def _mcp_session(home: Path, calls: list[tuple[str, dict[str, Any]]]) -> l
     from mcp.client.stdio import StdioServerParameters
 
     params = StdioServerParameters(
-        command=sys.executable, args=["-m", "workgraph", "mcp", "--agent-name", "demo-mcp-agent"],
+        command=sys.executable,
+        args=["-m", "workgraph", "mcp", "--agent-name", "demo-mcp-agent"],
         env={**os.environ, "WORKGRAPH_HOME": str(home)},
     )
     results: list[Any] = []
@@ -176,7 +199,7 @@ async def _mcp_session(home: Path, calls: list[tuple[str, dict[str, Any]]]) -> l
     return results
 
 
-def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  # noqa: T201 - progress output
+def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:
     home = home.resolve()
     home.mkdir(parents=True, exist_ok=True)
     repos_root = home / "repos"
@@ -189,6 +212,7 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
         log(f"[{entry['step']:>2}] ok  {entry['title']}")
 
     try:
+
         def s1() -> dict[str, Any]:
             config = app.config
             config.llm.classification = ModelSelection(provider="heuristic", model="heuristic-v1")
@@ -197,14 +221,19 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
             config.execution.enabled = True
             config.execution.default_agent = "scripted"
             agent = str(Path(scripted_agent.__file__))
-            config.agents["scripted"] = CommandAgentConfig(executable=sys.executable, args=[agent, "--mode", "success",
-                                                                                            "{manifest}"], supports_usage=True)
-            config.agents["scripted-buggy"] = CommandAgentConfig(executable=sys.executable,
-                                                                 args=[agent, "--mode", "buggy", "{manifest}"],
-                                                                 supports_usage=True)
+            config.agents["scripted"] = CommandAgentConfig(
+                executable=sys.executable,
+                args=[agent, "--mode", "success", "{manifest}"],
+                supports_usage=True,
+            )
+            config.agents["scripted-buggy"] = CommandAgentConfig(
+                executable=sys.executable, args=[agent, "--mode", "buggy", "{manifest}"], supports_usage=True
+            )
             app.config_store.save_global(config)
             app.api_token()
-            ws = app.workspaces.create(human, WorkspaceCreate(slug="demo", name="Demo", key_prefix="WG"), make_default=True)
+            ws = app.workspaces.create(
+                human, WorkspaceCreate(slug="demo", name="Demo", key_prefix="WG"), make_default=True
+            )
             state["ws"] = ws.slug
             return {"workspace": ws.slug, "database": str(app.paths.database_file)}
 
@@ -212,7 +241,7 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
 
         def s2() -> dict[str, Any]:
             paths = create_repositories(repos_root)
-            for name, path in paths.items():
+            for path in paths.values():
                 app.repositories.register(human, "demo", RepositoryRegister(path=str(path)))
             names = sorted(r.name for r in app.repositories.list(human, "demo"))
             expect(names == sorted(REPOS), f"registered {names}")
@@ -223,49 +252,110 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
         say(report.step(2, "Register all three Git repositories", s2))
 
         def s3() -> dict[str, Any]:
-            project = app.projects.create(human, "demo", ProjectCreate(slug="session-refresh", name="Session refresh",
-                                                                       repositories=list(REPOS)))
+            project = app.projects.create(
+                human,
+                "demo",
+                ProjectCreate(slug="session-refresh", name="Session refresh", repositories=list(REPOS)),
+            )
             expect(len(project.repository_ids) == 3, "project should span 3 repositories")
             for name in REPOS:
-                app.verification.create_config(human, "demo", scope_type="repository", scope=name, name="contract",
-                                               checks=[{"name": f"{name} contract tests", "kind": "test",
-                                                        "command": [sys.executable, "check.py"]}])
-            app.verification.create_config(human, "demo", scope_type="project", scope="session-refresh",
-                                           name="integration",
-                                           checks=[{"name": "cross-repo integration", "kind": "integration",
-                                                    "command": [sys.executable, "-c", INTEGRATION_SCRIPT]}])
+                app.verification.create_config(
+                    human,
+                    "demo",
+                    scope_type="repository",
+                    scope=name,
+                    name="contract",
+                    checks=[
+                        {
+                            "name": f"{name} contract tests",
+                            "kind": "test",
+                            "command": [sys.executable, "check.py"],
+                        }
+                    ],
+                )
+            app.verification.create_config(
+                human,
+                "demo",
+                scope_type="project",
+                scope="session-refresh",
+                name="integration",
+                checks=[
+                    {
+                        "name": "cross-repo integration",
+                        "kind": "integration",
+                        "command": [sys.executable, "-c", INTEGRATION_SCRIPT],
+                    }
+                ],
+            )
             return {"project": project.slug}
 
         say(report.step(3, "Create a project spanning the repositories", s3))
 
         def s4() -> dict[str, Any]:
-            parent = app.tasks.create(human, "demo", TaskCreate(
-                title="Add session refresh across services",
-                description="Users are logged out when tokens expire. Implement token refresh end to end.\n\n"
-                            "- Add a token refresh helper to the SDK\n- Issue refresh tokens in the auth service\n"
-                            "- Use the refresh flow in the web client",
-                acceptance_criteria=["Expired sessions refresh transparently", "All contract tests pass"],
-                projects=["session-refresh"], repositories=list(REPOS), priority="high"))
+            parent = app.tasks.create(
+                human,
+                "demo",
+                TaskCreate(
+                    title="Add session refresh across services",
+                    description="Users are logged out when tokens expire. Implement token refresh end to end.\n\n"
+                    "- Add a token refresh helper to the SDK\n- Issue refresh tokens in the auth service\n"
+                    "- Use the refresh flow in the web client",
+                    acceptance_criteria=["Expired sessions refresh transparently", "All contract tests pass"],
+                    projects=["session-refresh"],
+                    repositories=list(REPOS),
+                    priority="high",
+                ),
+            )
             state["parent"] = parent.key
             return {"parent": parent.key}
 
         say(report.step(4, "Create a cross-repository parent task", s4))
 
         def s5() -> dict[str, Any]:
-            sdk = app.tasks.create(human, "demo", TaskCreate(
-                title="Add token refresh helper to the SDK", description="Implement refreshToken in shared-sdk.",
-                parent=state["parent"], projects=["session-refresh"], repositories=["shared-sdk"], status="ready",
-                priority="high"))
-            auth = app.tasks.create(human, "demo", TaskCreate(
-                title="Issue refresh tokens in auth-service", description="Add a refresh token endpoint implementation.",
-                parent=state["parent"], projects=["session-refresh"], repositories=["auth-service"], status="ready",
-                depends_on=[sdk.key], priority="high"))
-            web = app.tasks.create(human, "demo", TaskCreate(
-                title="Use refresh flow in web-client", description="Keep sessions alive with the SDK refresh helper.",
-                parent=state["parent"], projects=["session-refresh"], repositories=["web-client", "shared-sdk"],
-                status="ready", depends_on=[sdk.key, auth.key]))
+            sdk = app.tasks.create(
+                human,
+                "demo",
+                TaskCreate(
+                    title="Add token refresh helper to the SDK",
+                    description="Implement refreshToken in shared-sdk.",
+                    parent=state["parent"],
+                    projects=["session-refresh"],
+                    repositories=["shared-sdk"],
+                    status="ready",
+                    priority="high",
+                ),
+            )
+            auth = app.tasks.create(
+                human,
+                "demo",
+                TaskCreate(
+                    title="Issue refresh tokens in auth-service",
+                    description="Add a refresh token endpoint implementation.",
+                    parent=state["parent"],
+                    projects=["session-refresh"],
+                    repositories=["auth-service"],
+                    status="ready",
+                    depends_on=[sdk.key],
+                    priority="high",
+                ),
+            )
+            web = app.tasks.create(
+                human,
+                "demo",
+                TaskCreate(
+                    title="Use refresh flow in web-client",
+                    description="Keep sessions alive with the SDK refresh helper.",
+                    parent=state["parent"],
+                    projects=["session-refresh"],
+                    repositories=["web-client", "shared-sdk"],
+                    status="ready",
+                    depends_on=[sdk.key, auth.key],
+                ),
+            )
             state.update(sdk=sdk.key, auth=auth.key, web=web.key)
-            expect(auth.status == "blocked" and web.status == "blocked", "dependent children must start blocked")
+            expect(
+                auth.status == "blocked" and web.status == "blocked", "dependent children must start blocked"
+            )
             return {"children": [sdk.key, auth.key, web.key]}
 
         say(report.step(5, "Create dependent child tasks", s5))
@@ -274,17 +364,26 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
             for key in (state["parent"], state["sdk"], state["auth"], state["web"]):
                 app.classification.request(human, "demo", key)
             _drain(app)
-            categories = {k: app.classification.get(human, "demo", k).current for k in (state["sdk"], state["auth"])}
-            expect(all(c is not None and c.provider == "heuristic" for c in categories.values()), "classified")
+            categories = {
+                k: app.classification.get(human, "demo", k).current for k in (state["sdk"], state["auth"])
+            }
+            expect(
+                all(c is not None and c.provider == "heuristic" for c in categories.values()), "classified"
+            )
             return {k: c.category for k, c in categories.items() if c}
 
         say(report.step(6, "Classify the tasks with the deterministic provider", s6))
 
         def s7_s9() -> dict[str, Any]:
-            results = asyncio.run(_mcp_session(home, [
-                ("task_get_ready", {"workspace": "demo"}),
-                ("task_claim", {"task": state["sdk"], "workspace": "demo"}),
-            ]))
+            results = asyncio.run(
+                _mcp_session(
+                    home,
+                    [
+                        ("task_get_ready", {"workspace": "demo"}),
+                        ("task_claim", {"task": state["sdk"], "workspace": "demo"}),
+                    ],
+                )
+            )
             tools, ready, claimed = results
             expect("task_get_ready" in tools and len(tools) >= 40, f"MCP tools: {len(tools)}")
             ready_keys = [t["key"] for t in ready["tasks"]]
@@ -312,14 +411,28 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
             expect("baseline" in kinds and "outcome" in kinds, f"manifests {kinds}")
             expect(attempt.status == "succeeded", f"sdk attempt {attempt.status}: {attempt.error}")
             commits = app.git.task_commits(human, "demo", state["sdk"])
-            expect(len(commits) == 1 and any(l["source"] == "execution_context" for l in commits[0]["links"]), "commit linked")
-            expect(attempt.usage.get("input_tokens") == 1200 and attempt.cost_usd is None, "telemetry honesty")
-            return {"manifests": kinds, "commits": [c["sha"][:10] for c in commits], "usage": attempt.usage,
-                    "duration_ms": attempt.duration_ms}
+            expect(
+                len(commits) == 1
+                and any(link["source"] == "execution_context" for link in commits[0]["links"]),
+                "commit linked",
+            )
+            expect(
+                attempt.usage.get("input_tokens") == 1200 and attempt.cost_usd is None, "telemetry honesty"
+            )
+            return {
+                "manifests": kinds,
+                "commits": [c["sha"][:10] for c in commits],
+                "usage": attempt.usage,
+                "duration_ms": attempt.duration_ms,
+            }
 
         detail = report.step(10, "Prepare managed worktrees", s10_14)
         say(detail)
-        say(report.step(11, "Simulate implementation with the local command adapter", lambda: {"adapter": "command"}))
+        say(
+            report.step(
+                11, "Simulate implementation with the local command adapter", lambda: {"adapter": "command"}
+            )
+        )
         say(report.step(12, "Generate real Git commits", lambda: {"commits": detail["commits"]}))
 
         def s12b() -> dict[str, Any]:
@@ -345,23 +458,36 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
 
         def s15_16() -> dict[str, Any]:
             first = app.attempts.get(human, state["auth_attempt_1"])
-            expect(first.status == "failed" and first.exit_reason == "verification_failed", f"first {first.status}")
+            expect(
+                first.status == "failed" and first.exit_reason == "verification_failed",
+                f"first {first.status}",
+            )
             failures = app.verification.failures(human, "demo")
             auth_failures = [f for f in failures if f["task_key"] == state["auth"]]
-            expect(bool(auth_failures) and auth_failures[0]["failure_signatures"][0].startswith("test:"),
-                   f"failure signature recorded: {failures}")
+            expect(
+                bool(auth_failures) and auth_failures[0]["failure_signatures"][0].startswith("test:"),
+                f"failure signature recorded: {failures}",
+            )
             passed = app.verification.list_runs(human, "demo", task=state["sdk"])[0]
             expect(passed.status == "passed", "sdk verification passed")
-            return {"passing_run": passed.id, "failing_run_signatures": auth_failures[0]["failure_signatures"]}
+            return {
+                "passing_run": passed.id,
+                "failing_run_signatures": auth_failures[0]["failure_signatures"],
+            }
 
         say(report.step(15, "Run configured verification checks", s15_16))
         say(report.step(16, "Record passing and failing verification scenarios", lambda: {"recorded": True}))
 
         def s17() -> dict[str, Any]:
-            retry = app.runs.start(human, "demo", state["auth"], agent="scripted", retry_of=state["auth_attempt_1"])
+            retry = app.runs.start(
+                human, "demo", state["auth"], agent="scripted", retry_of=state["auth_attempt_1"]
+            )
             _drain(app)
             out = app.attempts.get(human, retry.id)
-            expect(out.status == "succeeded" and out.retry_of_attempt_id == state["auth_attempt_1"], f"retry {out.status}")
+            expect(
+                out.status == "succeeded" and out.retry_of_attempt_id == state["auth_attempt_1"],
+                f"retry {out.status}",
+            )
             app.verification.accept(human, "demo", state["auth"])
             _drain(app)
             web = app.runs.start(human, "demo", state["web"], agent="scripted")
@@ -381,8 +507,9 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
             app.tasks.complete(human, "demo", state["parent"], summary="children accepted")
             # The parent has no implementation of its own and agent branches are never merged
             # automatically, so it is accepted by a recorded human decision.
-            app.verification.accept_manually(human, "demo", state["parent"],
-                                             reason="all child tasks accepted after passing verification")
+            app.verification.accept_manually(
+                human, "demo", state["parent"], reason="all child tasks accepted after passing verification"
+            )
             _drain(app)
             return {"accepted": [state["sdk"], state["auth"], state["web"], state["parent"]]}
 
@@ -395,9 +522,13 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
             expect(churn["commits"] == 2, f"auth churn commits {churn['commits']}")
             expect(len(surface) == 1, "final surface computed")
             expect(churn["insertions"] > surface[0]["insertions"], "cumulative churn exceeds final change")
-            return {"cumulative_churn": {k: churn[k] for k in ("commits", "insertions", "deletions")},
-                    "final_change_surface": {k: surface[0][k] for k in ("insertions", "deletions", "files_changed",
-                                                                        "functions_affected")}}
+            return {
+                "cumulative_churn": {k: churn[k] for k in ("commits", "insertions", "deletions")},
+                "final_change_surface": {
+                    k: surface[0][k]
+                    for k in ("insertions", "deletions", "files_changed", "functions_affected")
+                },
+            }
 
         say(report.step(19, "Calculate cumulative churn and final diff separately", s19))
 
@@ -412,7 +543,9 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
         def s21() -> dict[str, Any]:
             history = app.analytics.task_history(human, "demo")
             expect(len(history) == 4, f"history {len(history)}")
-            elapsed = app.analytics.query(human, "demo", AnalyticsQuery(metric="attempts_per_task"))["rows"][0]
+            elapsed = app.analytics.query(human, "demo", AnalyticsQuery(metric="attempts_per_task"))["rows"][
+                0
+            ]
             return {"accepted_tasks": len(history), "attempts_per_task_median": elapsed.get("median")}
 
         say(report.step(21, "Query historical task results", s21))
@@ -430,6 +563,7 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
         port = _free_port()
         server_thread, server = _start_api(app, port)
         try:
+
             def s23() -> dict[str, Any]:
                 token = app.api_token()
                 headers = {"Authorization": f"Bearer {token}"}
@@ -458,9 +592,13 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
                 if built:
                     expect('name="workgraph-token"' in index.text, "token injected into UI")
                     expect('<div id="root">' in index.text, "SPA root element")
-                return {"ui_built": built, "ui_status": index.status_code,
-                        "note": "browser-level checks: pnpm --dir web test:e2e" if built else
-                        "web UI not built; run pnpm --dir web build to serve it"}
+                return {
+                    "ui_built": built,
+                    "ui_status": index.status_code,
+                    "note": "browser-level checks: pnpm --dir web test:e2e"
+                    if built
+                    else "web UI not built; run pnpm --dir web build to serve it",
+                }
 
             say(report.step(24, "Verify the web frontend serves the persisted data", s24))
         finally:
@@ -468,15 +606,19 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
             server_thread.join(timeout=30)
 
         def s25() -> dict[str, Any]:
-            before = {"tasks": app.tasks.list(human, "demo").total,
-                      "attempts": app.attempts.list(human, "demo").total,
-                      "events": len(app.history.events(human, "demo", limit=5000))}
+            before = {
+                "tasks": app.tasks.list(human, "demo").total,
+                "attempts": app.attempts.list(human, "demo").total,
+                "events": len(app.history.events(human, "demo", limit=5000)),
+            }
             app.close()
             reopened = Workgraph(AppPaths.resolve(home))
             try:
-                after = {"tasks": reopened.tasks.list(human, "demo").total,
-                         "attempts": reopened.attempts.list(human, "demo").total,
-                         "events": len(reopened.history.events(human, "demo", limit=5000))}
+                after = {
+                    "tasks": reopened.tasks.list(human, "demo").total,
+                    "attempts": reopened.attempts.list(human, "demo").total,
+                    "events": len(reopened.history.events(human, "demo", limit=5000)),
+                }
                 expect(before == after, f"persistence mismatch {before} vs {after}")
                 recovered = reopened.queue.recover_expired()
                 worktrees = reopened.worktrees.recover(RequestContext.system("demo"))
@@ -484,8 +626,13 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:  
                 expect(projection["consistent"], f"projection {projection['mismatches']}")
             finally:
                 reopened.close()
-            return {"before": before, "after": after, "recovered_jobs": len(recovered),
-                    "orphaned_worktrees": len(worktrees["orphaned"]), "event_projection": "consistent"}
+            return {
+                "before": before,
+                "after": after,
+                "recovered_jobs": len(recovered),
+                "orphaned_worktrees": len(worktrees["orphaned"]),
+                "event_projection": "consistent",
+            }
 
         say(report.step(25, "Restart the application and confirm persistence and recovery", s25))
     finally:

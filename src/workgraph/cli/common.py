@@ -103,7 +103,7 @@ def to_jsonable(value: Any) -> Any:
     return value
 
 
-def emit(value: Any, human: Callable[[Any], None] | None = None) -> None:
+def emit(value: Any, human: Callable[[Any], object] | None = None) -> None:
     """Print ``value`` as JSON (``--json``) or via the ``human`` renderer."""
     if STATE.json or human is None:
         sys.stdout.write(json.dumps(to_jsonable(value), indent=2, default=str) + "\n")
@@ -122,7 +122,7 @@ def fail(message: str, code: int = 1, details: dict[str, Any] | None = None) -> 
     raise typer.Exit(code)
 
 
-def handle_errors(fn: Callable[P, R]) -> Callable[P, R]:
+def handle_errors[**P, R](fn: Callable[P, R]) -> Callable[P, R]:
     """Translate domain exceptions into consistent output and exit codes."""
 
     @wraps(fn)
@@ -165,7 +165,7 @@ def kv(pairs: Iterable[tuple[str, Any]], title: str | None = None) -> None:
     if title:
         console.print(f"[bold]{title}[/bold]")
     for key, value in pairs:
-        if value is None or value == [] or value == {}:
+        if value is None or value in ([], {}):
             continue
         console.print(f"  [cyan]{key}[/cyan]: {value}")
 

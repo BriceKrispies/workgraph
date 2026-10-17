@@ -4,13 +4,11 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import TypeVar
 
 import httpx
 
 from workgraph.core.errors import ProviderUnavailableError
 
-T = TypeVar("T")
 RETRYABLE_STATUS = {408, 425, 429, 500, 502, 503, 504}
 
 
@@ -18,7 +16,7 @@ class RetryableHTTPError(Exception):
     pass
 
 
-def with_retries(
+def with_retries[T](
     fn: Callable[[], T],
     *,
     retries: int,

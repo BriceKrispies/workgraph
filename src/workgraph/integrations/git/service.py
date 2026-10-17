@@ -1068,9 +1068,10 @@ class GitService(Service):
                     select(Repository).where(Repository.workspace_id == task.workspace_id)
                 )
             }
-            paths = {
-                rid: (primary_checkout(r).path if primary_checkout(r) else None) for rid, r in repos.items()
-            }
+            paths: dict[str, str | None] = {}
+            for rid, r in repos.items():
+                checkout = primary_checkout(r)
+                paths[rid] = checkout.path if checkout else None
             names = {rid: r.name for rid, r in repos.items()}
             task_id, task_key = task.id, task.key
         parts: list[dict[str, Any]] = []

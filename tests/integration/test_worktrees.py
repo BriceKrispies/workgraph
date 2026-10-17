@@ -7,10 +7,9 @@ import pytest
 from workgraph.core.errors import ResourceBusyError
 from workgraph.core.models.enums import AttemptStatus
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
-from workgraph.core.services.attempts import new_attempt
 from workgraph.core.services import resolve
+from workgraph.core.services.attempts import new_attempt
 from workgraph.integrations.git.cli import Git
-from workgraph.integrations.git.worktrees import RepoRequest
 
 
 def setup_task(app, human, ws, make_repo, names=("api", "lib"), read_only=()):

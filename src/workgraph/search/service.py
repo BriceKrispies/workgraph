@@ -446,10 +446,12 @@ class SearchService(Service):
                 if tid != target_id:
                     candidates[tid] = {"similarity": cosine(mine, vec)}
         else:
-            for rank, hit in enumerate(self.lexical(ctx, slug, query_text, limit=50, match_any=True), start=1):
+            for rank, hit in enumerate(
+                self.lexical(ctx, slug, query_text, limit=50, match_any=True), start=1
+            ):
                 if hit.task_id != target_id:
                     candidates[hit.task_id] = {"similarity": round(1.0 / rank, 4)}
-        out = []
+        out: list[dict[str, Any]] = []
         with self.db.session() as session:
             for tid, info in candidates.items():
                 other = session.get(Task, tid)
@@ -490,7 +492,7 @@ class SearchService(Service):
                         ),
                     }
                 )
-        out.sort(key=lambda r: -r["score"])
+        out.sort(key=lambda r: -float(r["score"]))
         return {
             "task_id": target_id,
             "method": method,

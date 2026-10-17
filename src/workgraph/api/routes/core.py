@@ -40,8 +40,10 @@ def meta(app: AppDep) -> dict[str, Any]:
         "execution_enabled": config.execution.enabled,
         "auto_schedule": config.execution.auto_schedule,
         "agents": list(config.agents),
-        "llm": {"classification": config.llm.classification.model_dump(),
-                "embeddings": config.llm.embeddings.model_dump()},
+        "llm": {
+            "classification": config.llm.classification.model_dump(),
+            "embeddings": config.llm.embeddings.model_dump(),
+        },
     }
 
 
@@ -96,8 +98,9 @@ def project_remove_repo(app: AppDep, ctx: CtxDep, ws: str, ref: str, repository:
 
 
 @router.get("/ws/{ws}/repositories", response_model=list[RepositoryOut])
-def list_repositories(app: AppDep, ctx: CtxDep, ws: str, include_archived: bool = False,
-                      project: str | None = None) -> Any:
+def list_repositories(
+    app: AppDep, ctx: CtxDep, ws: str, include_archived: bool = False, project: str | None = None
+) -> Any:
     return app.repositories.list(ctx, ws, include_archived=include_archived, project=project)
 
 
@@ -137,10 +140,25 @@ def sync_repository(app: AppDep, ctx: CtxDep, ws: str, ref: str, mode: str = Que
 
 
 @router.get("/ws/{ws}/repositories/{ref}/commits")
-def repository_commits(app: AppDep, ctx: CtxDep, ws: str, ref: str, limit: int = Query(50, le=500),
-                       offset: int = 0, linked_only: bool = False, include_unreachable: bool = False) -> Any:
-    return app.git.repository_commits(ctx, ws, ref, limit=limit, offset=offset, linked_only=linked_only,
-                                      include_unreachable=include_unreachable)
+def repository_commits(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    ref: str,
+    limit: int = Query(50, le=500),
+    offset: int = 0,
+    linked_only: bool = False,
+    include_unreachable: bool = False,
+) -> Any:
+    return app.git.repository_commits(
+        ctx,
+        ws,
+        ref,
+        limit=limit,
+        offset=offset,
+        linked_only=linked_only,
+        include_unreachable=include_unreachable,
+    )
 
 
 @router.get("/ws/{ws}/repositories/{ref}/commits/{sha}")

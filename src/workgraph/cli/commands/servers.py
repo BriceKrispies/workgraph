@@ -48,7 +48,9 @@ def serve_command(
         background = Worker(app)
         thread = threading.Thread(target=background.run, name="workgraph-worker", daemon=True)
         thread.start()
-    err_console.print(f"Workgraph listening on http://{bind_host}:{bind_port}/  (API token: {app.paths.api_token_file})")
+    err_console.print(
+        f"Workgraph listening on http://{bind_host}:{bind_port}/  (API token: {app.paths.api_token_file})"
+    )
     try:
         uvicorn.run(asgi, host=bind_host, port=bind_port, log_level="warning")
     finally:
@@ -62,7 +64,9 @@ def serve_command(
 def mcp_command(
     transport: str = typer.Option("stdio", help="stdio or http"),
     agent_name: str = typer.Option("mcp-client", "--agent-name", help="Agent identity recorded in history"),
-    grant: list[str] = typer.Option(None, "--grant", help="Extra permission to grant (repeatable), e.g. run:start"),
+    grant: list[str] = typer.Option(
+        None, "--grant", help="Extra permission to grant (repeatable), e.g. run:start"
+    ),
     host: str = typer.Option("127.0.0.1"),
     port: int = typer.Option(8766),
 ) -> None:
@@ -85,5 +89,7 @@ def mcp_command(
     from workgraph.api.app import create_app
 
     asgi = create_app(app, host=host, port=port, with_mcp=True, mcp_agent=agent_name)
-    err_console.print(f"MCP Streamable HTTP on http://{host}:{port}/mcp/ (bearer token in {app.paths.api_token_file})")
+    err_console.print(
+        f"MCP Streamable HTTP on http://{host}:{port}/mcp/ (bearer token in {app.paths.api_token_file})"
+    )
     uvicorn.run(asgi, host=host, port=port, log_level="warning")

@@ -67,9 +67,13 @@ def generate_retrospective(
     analytics = app.analytics
     flt = AnalyticsFilters(since=since, until=until, project=project, repository=repository)
 
-    def q(metric: str, group_by: list[str] | None = None, *, scoped_time: bool = True) -> list[dict[str, Any]]:
+    def q(
+        metric: str, group_by: list[str] | None = None, *, scoped_time: bool = True
+    ) -> list[dict[str, Any]]:
         filters = flt if scoped_time else flt.model_copy(update={"since": None, "until": None})
-        return analytics.query(ctx, workspace, AnalyticsQuery(metric=metric, group_by=group_by or [], filters=filters))["rows"]
+        return analytics.query(
+            ctx, workspace, AnalyticsQuery(metric=metric, group_by=group_by or [], filters=filters)
+        )["rows"]
 
     accepted = q("tasks_accepted")
     by_category = q("tasks_accepted", ["category"])
@@ -86,29 +90,54 @@ def generate_retrospective(
     coupling = analytics.coupling(ctx, workspace, project=project)
     findings = analytics.failures(ctx, workspace)["findings"]
     recent = analytics.task_history(ctx, workspace, repository=repository, limit=200)
-    in_period = [t for t in recent if t.get("accepted_at") and since.isoformat()[:19] <= t["accepted_at"][:19] <= until.isoformat()[:19]]
-    significant = sorted(in_period, key=lambda t: -((t.get("final_insertions") or 0) + (t.get("final_deletions") or 0)))[:5]
+    in_period = [
+        t
+        for t in recent
+        if t.get("accepted_at") and since.isoformat()[:19] <= t["accepted_at"][:19] <= until.isoformat()[:19]
+    ]
+    significant = sorted(
+        in_period, key=lambda t: -((t.get("final_insertions") or 0) + (t.get("final_deletions") or 0))
+    )[:5]
 
     def first(rows: list[dict[str, Any]], key: str = "value") -> Any:
         return rows[0].get(key) if rows else None
 
     facts = {
-        "period": {"since": since.isoformat(), "until": until.isoformat(), "project": project, "repository": repository},
-        "tasks": {"created": first(created) or 0, "completed": first(completed) or 0, "accepted": first(accepted) or 0,
-                  "blocked_now": first(blocked) or 0},
+        "period": {
+            "since": since.isoformat(),
+            "until": until.isoformat(),
+            "project": project,
+            "repository": repository,
+        },
+        "tasks": {
+            "created": first(created) or 0,
+            "completed": first(completed) or 0,
+            "accepted": first(accepted) or 0,
+            "blocked_now": first(blocked) or 0,
+        },
         "categories": {r.get("category") or "unclassified": r["value"] for r in by_category},
         "elapsed_ms": elapsed[0] if elapsed else {},
         "agents": agents,
-        "code": {"cumulative_churn": churn[0] if churn else {}, "final_change": final[0] if final else {},
-                 "rework_ratio": rework[0] if rework else {}},
+        "code": {
+            "cumulative_churn": churn[0] if churn else {},
+            "final_change": final[0] if final else {},
+            "rework_ratio": rework[0] if rework else {},
+        },
         "verification": vpass[0] if vpass else {},
         "top_failing_checks": failures[:5],
         "coordination": coupling["summary"],
         "coupled_pairs": coupling["commonly_changed_pairs"][:5],
-        "findings": [{"title": f["title"], "kind": f["kind"], "evidence": f["evidence"]} for f in findings[:10]],
-        "significant_changes": [{"task": t["key"], "title": t["title"],
-                                 "final_lines": (t.get("final_insertions") or 0) + (t.get("final_deletions") or 0)}
-                                for t in significant],
+        "findings": [
+            {"title": f["title"], "kind": f["kind"], "evidence": f["evidence"]} for f in findings[:10]
+        ],
+        "significant_changes": [
+            {
+                "task": t["key"],
+                "title": t["title"],
+                "final_lines": (t.get("final_insertions") or 0) + (t.get("final_deletions") or 0),
+            }
+            for t in significant
+        ],
     }
     lines = [
         f"# Retrospective: {since.date()} to {until.date()}",
@@ -125,31 +154,43 @@ def generate_retrospective(
         "## Category breakdown",
         "",
     ]
-    lines += [f"- {cat}: {count}" for cat, count in facts["categories"].items()] or ["- no accepted tasks in period"]
+    lines += [f"- {cat}: {count}" for cat, count in facts["categories"].items()] or [
+        "- no accepted tasks in period"
+    ]
     lines += ["", "## Bottlenecks", "", f"- Currently blocked tasks: {facts['tasks']['blocked_now']}."]
     for f in findings:
         if f["kind"] == "dependency_bottleneck":
             lines.append(f"- {f['title']} [{', '.join(f['evidence']['tasks'][:5])}]")
     lines += ["", "## Rework", ""]
     rw = facts["code"]["rework_ratio"]
-    lines.append(f"- Median rework ratio (churn / final change): {rw.get('median', 'n/a') if rw else 'n/a'} "
-                 f"(n={rw.get('n', 0) if rw else 0}).")
+    lines.append(
+        f"- Median rework ratio (churn / final change): {rw.get('median', 'n/a') if rw else 'n/a'} "
+        f"(n={rw.get('n', 0) if rw else 0})."
+    )
     for f in findings:
         if f["kind"] in ("high_rework", "retry_loop"):
             lines.append(f"- {f['title']} [{', '.join(f['evidence'].get('tasks', [])[:5])}]")
     lines += ["", "## Agent effectiveness", ""]
     for a in agents:
         rate = a.get("value")
-        lines.append(f"- {a.get('provider')} / {a.get('model')}: {a.get('numerator')}/{a.get('denominator')} attempts "
-                     f"succeeded ({rate:.0%})" if rate is not None else f"- {a.get('provider')}: no finished attempts")
+        lines.append(
+            f"- {a.get('provider')} / {a.get('model')}: {a.get('numerator')}/{a.get('denominator')} attempts "
+            f"succeeded ({rate:.0%})"
+            if rate is not None
+            else f"- {a.get('provider')}: no finished attempts"
+        )
     if not agents:
         lines.append("- no agent attempts finished in the period")
     lines += ["", "## Cross-repository coordination", ""]
     summary = coupling["summary"]
-    lines.append(f"- Cross-repository tasks: {summary['cross_repository_tasks']} of {summary['tasks_with_code']} with code; "
-                 f"average repositories per task {summary['average_repositories_per_task']}.")
+    lines.append(
+        f"- Cross-repository tasks: {summary['cross_repository_tasks']} of {summary['tasks_with_code']} with code; "
+        f"average repositories per task {summary['average_repositories_per_task']}."
+    )
     for pair in facts["coupled_pairs"]:
-        lines.append(f"- {pair['pair'][0]} + {pair['pair'][1]} changed together in {pair['co_changes']} task(s).")
+        lines.append(
+            f"- {pair['pair'][0]} + {pair['pair'][1]} changed together in {pair['co_changes']} task(s)."
+        )
     lines += ["", "## Quality", ""]
     v = facts["verification"]
     if v:
@@ -157,8 +198,9 @@ def generate_retrospective(
     for check in facts["top_failing_checks"]:
         lines.append(f"- Check '{check.get('check_name')}' failed {check.get('value')} time(s).")
     lines += ["", "## Significant changes", ""]
-    lines += [f"- [{s['task']}] {s['title']} ({s['final_lines']} final lines)" for s in facts["significant_changes"]] or [
-        "- none recorded"]
+    lines += [
+        f"- [{s['task']}] {s['title']} ({s['final_lines']} final lines)" for s in facts["significant_changes"]
+    ] or ["- none recorded"]
     opportunities = [f["title"] for f in findings if f["severity"] in ("warning", "error")][:5]
     lines += ["", "## Potential improvement opportunities", ""]
     lines += [f"- Investigate: {o}" for o in opportunities] or ["- No significant failure patterns detected."]
@@ -171,31 +213,71 @@ def generate_retrospective(
         try:
             selection = app.llm.selection("summarization", slug)
             provider = app.llm.get(selection.provider, slug)
-            facts_for_model = {**facts, "highlights": lines[6:9], "summary": f"{facts['tasks']['accepted']} tasks accepted",
-                               "opportunities": opportunities}
+            facts_for_model = {
+                **facts,
+                "highlights": lines[6:9],
+                "summary": f"{facts['tasks']['accepted']} tasks accepted",
+                "opportunities": opportunities,
+            }
             schema = Narrative.model_json_schema()
             schema["title"] = "Narrative"
-            response = provider.generate_json(selection.model, system=NARRATIVE_SYSTEM,
-                                              prompt=f"<facts>{json.dumps(facts_for_model, default=str)}</facts>", schema=schema)
+            response = provider.generate_json(
+                selection.model,
+                system=NARRATIVE_SYSTEM,
+                prompt=f"<facts>{json.dumps(facts_for_model, default=str)}</facts>",
+                schema=schema,
+            )
             narrative = Narrative.model_validate(response.data)
-            narrative_text = "\n".join(["## Narrative (model-generated interpretation)", "",
-                                        f"_Written by {selection.provider}/{response.model} from the measured facts above._",
-                                        "", narrative.summary, ""] + [f"- {o}" for o in narrative.observations]) + "\n"
+            narrative_text = (
+                "\n".join(
+                    [
+                        "## Narrative (model-generated interpretation)",
+                        "",
+                        f"_Written by {selection.provider}/{response.model} from the measured facts above._",
+                        "",
+                        narrative.summary,
+                        "",
+                    ]
+                    + [f"- {o}" for o in narrative.observations]
+                )
+                + "\n"
+            )
             narrative_source = f"model:{selection.provider}/{response.model}"
         except (WorkgraphError, ValidationError, OSError) as exc:
-            narrative_text = f"\n_Model narrative unavailable ({type(exc).__name__}); deterministic report only._\n"
+            narrative_text = (
+                f"\n_Model narrative unavailable ({type(exc).__name__}); deterministic report only._\n"
+            )
     content = deterministic + ("\n" + narrative_text if narrative_text else "")
     with app.db.session(write=True) as session:
         ws_id = app.tasks._workspace_id(session, workspace)
-        report = Report(workspace_id=ws_id, kind="retrospective", title=f"Retrospective {since.date()} - {until.date()}",
-                        scope=facts["period"], content_markdown=content, data=json.loads(json.dumps(facts, default=str)),
-                        narrative_source=narrative_source, created_by=ctx.actor)
+        report = Report(
+            workspace_id=ws_id,
+            kind="retrospective",
+            title=f"Retrospective {since.date()} - {until.date()}",
+            scope=facts["period"],
+            content_markdown=content,
+            data=json.loads(json.dumps(facts, default=str)),
+            narrative_source=narrative_source,
+            created_by=ctx.actor,
+        )
         session.add(report)
         session.flush()
-        record_event(session, ctx, event_type="report.generated", entity_type="report", entity_id=report.id,
-                     workspace_id=ws_id, data={"kind": "retrospective", "narrative_source": narrative_source})
-        return {"id": report.id, "title": report.title, "narrative_source": narrative_source, "content": content,
-                "facts": facts}
+        record_event(
+            session,
+            ctx,
+            event_type="report.generated",
+            entity_type="report",
+            entity_id=report.id,
+            workspace_id=ws_id,
+            data={"kind": "retrospective", "narrative_source": narrative_source},
+        )
+        return {
+            "id": report.id,
+            "title": report.title,
+            "narrative_source": narrative_source,
+            "content": content,
+            "facts": facts,
+        }
 
 
 def list_reports(app: Workgraph, workspace: str, limit: int = 20) -> list[dict[str, Any]]:
@@ -203,6 +285,17 @@ def list_reports(app: Workgraph, workspace: str, limit: int = 20) -> list[dict[s
 
     with app.db.session() as session:
         ws_id = app.tasks._workspace_id(session, workspace)
-        rows = session.scalars(select(Report).where(Report.workspace_id == ws_id).order_by(Report.created_at.desc()).limit(limit))
-        return [{"id": r.id, "kind": r.kind, "title": r.title, "narrative_source": r.narrative_source,
-                 "created_at": r.created_at.isoformat(), "content": r.content_markdown} for r in rows]
+        rows = session.scalars(
+            select(Report).where(Report.workspace_id == ws_id).order_by(Report.created_at.desc()).limit(limit)
+        )
+        return [
+            {
+                "id": r.id,
+                "kind": r.kind,
+                "title": r.title,
+                "narrative_source": r.narrative_source,
+                "created_at": r.created_at.isoformat(),
+                "content": r.content_markdown,
+            }
+            for r in rows
+        ]

@@ -54,6 +54,11 @@ def safe_relative_path(value: str) -> Path:
     if not value or "\x00" in value:
         raise ValidationFailed("empty or NUL-containing path")
     candidate = Path(value)
-    if candidate.is_absolute() or candidate.drive or any(part == ".." for part in candidate.parts):
+    if (
+        candidate.is_absolute()
+        or candidate.drive
+        or candidate.root
+        or any(p == ".." for p in candidate.parts)
+    ):
         raise ValidationFailed(f"path {value!r} must be relative and must not traverse upwards")
     return candidate

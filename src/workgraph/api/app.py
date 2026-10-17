@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import contextlib
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from pathlib import Path
 from typing import Any
 
@@ -39,8 +39,14 @@ def _index_html(token: str) -> str:
     return html.replace("</head>", f"{meta}</head>", 1)
 
 
-def create_app(app: Workgraph, *, host: str = "127.0.0.1", port: int = 8765, with_mcp: bool = True,
-               mcp_agent: str = "mcp-http-client") -> ASGIApp:
+def create_app(
+    app: Workgraph,
+    *,
+    host: str = "127.0.0.1",
+    port: int = 8765,
+    with_mcp: bool = True,
+    mcp_agent: str = "mcp-http-client",
+) -> ASGIApp:
     token = app.api_token()
     mcp_server = None
     if with_mcp:
@@ -49,15 +55,21 @@ def create_app(app: Workgraph, *, host: str = "127.0.0.1", port: int = 8765, wit
         mcp_server = build_server(app, agent_name=mcp_agent)
 
     @contextlib.asynccontextmanager
-    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
         if mcp_server is not None:
             async with mcp_server.session_manager.run():
                 yield
         else:
             yield
 
-    api = FastAPI(title="Workgraph", version=__version__, lifespan=lifespan, docs_url="/api/docs",
-                  openapi_url="/api/openapi.json", redoc_url=None)
+    api = FastAPI(
+        title="Workgraph",
+        version=__version__,
+        lifespan=lifespan,
+        docs_url="/api/docs",
+        openapi_url="/api/openapi.json",
+        redoc_url=None,
+    )
     api.state.workgraph = app
     api.middleware("http")(security_headers)
 
@@ -67,8 +79,16 @@ def create_app(app: Workgraph, *, host: str = "127.0.0.1", port: int = 8765, wit
 
     @api.exception_handler(RequestValidationError)
     async def validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
-        return JSONResponse({"error": {"code": "validation_failed", "message": "invalid request",
-                                       "details": {"errors": jsonable_errors(exc.errors())}}}, status_code=422)
+        return JSONResponse(
+            {
+                "error": {
+                    "code": "validation_failed",
+                    "message": "invalid request",
+                    "details": {"errors": jsonable_errors(exc.errors())},
+                }
+            },
+            status_code=422,
+        )
 
     from workgraph.api.routes import core, ops, tasks
 
@@ -83,7 +103,8 @@ def create_app(app: Workgraph, *, host: str = "127.0.0.1", port: int = 8765, wit
             streamable_http_path="/",
             transport_security=TransportSecuritySettings(
                 enable_dns_rebinding_protection=True,
-                allowed_hosts=[f"{h}:{port}" for h in ("127.0.0.1", "localhost", host)] + ["127.0.0.1", "localhost"],
+                allowed_hosts=[f"{h}:{port}" for h in ("127.0.0.1", "localhost", host)]
+                + ["127.0.0.1", "localhost"],
                 allowed_origins=[f"http://{h}:{port}" for h in ("127.0.0.1", "localhost", host)],
             ),
             host=host,
@@ -95,7 +116,9 @@ def create_app(app: Workgraph, *, host: str = "127.0.0.1", port: int = 8765, wit
     @api.get("/{path:path}", include_in_schema=False)
     async def spa(path: str) -> Response:
         if path.startswith(("api/", "mcp")):
-            return JSONResponse({"error": {"code": "not_found", "message": f"/{path} not found"}}, status_code=404)
+            return JSONResponse(
+                {"error": {"code": "not_found", "message": f"/{path} not found"}}, status_code=404
+            )
         candidate = (assets / path).resolve()
         if path and candidate.is_file() and assets.resolve() in candidate.parents:
             return FileResponse(candidate)

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 import typer
 
@@ -170,9 +170,9 @@ def task_list(
             root_only=roots,
             text=search,
             archived_only=archived,
-            sort=sort,
+            sort=cast(Any, sort),
             descending=not asc,
-            limit=limit,  # type: ignore[arg-type]
+            limit=limit,
             offset=offset,
         ),
     )
@@ -382,7 +382,7 @@ def task_result(
         STATE.ctx(),
         ws(workspace),
         ref,
-        ResultReport(outcome=outcome, summary=summary, attempt_id=attempt),  # type: ignore[arg-type]
+        ResultReport(outcome=cast(Any, outcome), summary=summary, attempt_id=attempt),
     )
     emit(out, lambda t: console.print(f"{t.key} is now {t.status}"))
 

@@ -34,15 +34,26 @@ class RunStart(BaseModel):
 
 
 @router.get("/ws/{ws}/attempts")
-def list_attempts(app: AppDep, ctx: CtxDep, ws: str, task: str | None = None,
-                  status: list[str] | None = Query(None), provider: str | None = None,
-                  limit: int = Query(50, le=500), offset: int = 0) -> Any:
-    return app.attempts.list(ctx, ws, task=task, statuses=status, provider=provider, limit=limit, offset=offset)
+def list_attempts(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    task: str | None = None,
+    status: list[str] | None = Query(None),
+    provider: str | None = None,
+    limit: int = Query(50, le=500),
+    offset: int = 0,
+) -> Any:
+    return app.attempts.list(
+        ctx, ws, task=task, statuses=status, provider=provider, limit=limit, offset=offset
+    )
 
 
 @router.post("/ws/{ws}/runs", status_code=201)
 def start_run(app: AppDep, ctx: CtxDep, ws: str, body: RunStart) -> Any:
-    return app.runs.start(ctx, ws, body.task, agent=body.agent, model=body.model, instructions=body.instructions)
+    return app.runs.start(
+        ctx, ws, body.task, agent=body.agent, model=body.model, instructions=body.instructions
+    )
 
 
 @router.get("/attempts/compare")
@@ -94,27 +105,69 @@ def rerun(app: AppDep, ctx: CtxDep, attempt_id: str) -> Any:
 
 
 def _job(job: Any) -> dict[str, Any]:
-    return {c: getattr(job, c) for c in ("id", "workspace_id", "kind", "status", "priority", "payload", "result",
-                                         "run_at", "attempts", "max_attempts", "lease_owner", "lease_expires_at",
-                                         "heartbeat_at", "started_at", "finished_at", "cancel_requested",
-                                         "resource_keys", "last_error", "error_kind", "task_id", "attempt_id",
-                                         "created_by", "created_at")}
+    return {
+        c: getattr(job, c)
+        for c in (
+            "id",
+            "workspace_id",
+            "kind",
+            "status",
+            "priority",
+            "payload",
+            "result",
+            "run_at",
+            "attempts",
+            "max_attempts",
+            "lease_owner",
+            "lease_expires_at",
+            "heartbeat_at",
+            "started_at",
+            "finished_at",
+            "cancel_requested",
+            "resource_keys",
+            "last_error",
+            "error_kind",
+            "task_id",
+            "attempt_id",
+            "created_by",
+            "created_at",
+        )
+    }
 
 
 @router.get("/jobs")
-def list_jobs(app: AppDep, ctx: CtxDep, workspace: str | None = None, status: list[str] | None = Query(None),
-              kind: str | None = None, task: str | None = None, limit: int = Query(100, le=1000), offset: int = 0) -> Any:
+def list_jobs(
+    app: AppDep,
+    ctx: CtxDep,
+    workspace: str | None = None,
+    status: list[str] | None = Query(None),
+    kind: str | None = None,
+    task: str | None = None,
+    limit: int = Query(100, le=1000),
+    offset: int = 0,
+) -> Any:
     require(ctx, Permission.WORKSPACE_READ)
     ws_id = app.workspaces.get(ctx, workspace).id if workspace else None
-    jobs, total = app.queue.list(statuses=status, kind=kind, workspace_id=ws_id, task_id=task, limit=limit, offset=offset)
+    jobs, total = app.queue.list(
+        statuses=status, kind=kind, workspace_id=ws_id, task_id=task, limit=limit, offset=offset
+    )
     return {"items": [_job(j) for j in jobs], "total": total, "stats": app.queue.stats(ws_id)}
 
 
 @router.get("/jobs/{job_id}")
 def get_job(app: AppDep, ctx: CtxDep, job_id: str) -> Any:
     require(ctx, Permission.WORKSPACE_READ)
-    runs = [{"attempt": r.attempt_number, "worker": r.worker_id, "status": r.status, "error": r.error,
-             "started_at": r.started_at, "finished_at": r.finished_at} for r in app.queue.runs(job_id)]
+    runs = [
+        {
+            "attempt": r.attempt_number,
+            "worker": r.worker_id,
+            "status": r.status,
+            "error": r.error,
+            "started_at": r.started_at,
+            "finished_at": r.finished_at,
+        }
+        for r in app.queue.runs(job_id)
+    ]
     return {**_job(app.queue.get(job_id)), "runs": runs}
 
 
@@ -134,9 +187,25 @@ def retry_job(app: AppDep, ctx: CtxDep, job_id: str) -> Any:
 @router.get("/workers")
 def workers(app: AppDep, ctx: CtxDep) -> Any:
     require(ctx, Permission.WORKSPACE_READ)
-    return [{c: getattr(w, c) for c in ("id", "hostname", "pid", "status", "concurrency", "current_jobs",
-                                        "jobs_completed", "jobs_failed", "started_at", "heartbeat_at", "stopped_at")}
-            for w in app.queue.workers()]
+    return [
+        {
+            c: getattr(w, c)
+            for c in (
+                "id",
+                "hostname",
+                "pid",
+                "status",
+                "concurrency",
+                "current_jobs",
+                "jobs_completed",
+                "jobs_failed",
+                "started_at",
+                "heartbeat_at",
+                "stopped_at",
+            )
+        }
+        for w in app.queue.workers()
+    ]
 
 
 # ---------------------------------------------------------------------------- verification
@@ -156,17 +225,22 @@ def verification_configs(app: AppDep, ctx: CtxDep, ws: str) -> Any:
 
 @router.post("/ws/{ws}/verification/configs", status_code=201)
 def create_verification_config(app: AppDep, ctx: CtxDep, ws: str, body: VerificationConfigBody) -> Any:
-    return app.verification.create_config(ctx, ws, scope_type=body.scope_type, scope=body.scope, name=body.name,
-                                          checks=body.checks)
+    return app.verification.create_config(
+        ctx, ws, scope_type=body.scope_type, scope=body.scope, name=body.name, checks=body.checks
+    )
 
 
 @router.post("/verification/configs/{config_id}/{action}")
-def toggle_verification_config(app: AppDep, ctx: CtxDep, config_id: str, action: Literal["enable", "disable"]) -> Any:
+def toggle_verification_config(
+    app: AppDep, ctx: CtxDep, config_id: str, action: Literal["enable", "disable"]
+) -> Any:
     return app.verification.set_config_enabled(ctx, config_id, action == "enable")
 
 
 @router.get("/ws/{ws}/verification/runs")
-def verification_runs(app: AppDep, ctx: CtxDep, ws: str, status: str | None = None, limit: int = Query(50, le=500)) -> Any:
+def verification_runs(
+    app: AppDep, ctx: CtxDep, ws: str, status: str | None = None, limit: int = Query(50, le=500)
+) -> Any:
     return app.verification.list_runs(ctx, ws, status=status, limit=limit)
 
 
@@ -176,8 +250,14 @@ def verification_run(app: AppDep, ctx: CtxDep, run_id: str) -> Any:
 
 
 @router.get("/ws/{ws}/verification/failures")
-def verification_failures(app: AppDep, ctx: CtxDep, ws: str, check: str | None = None,
-                          repository: str | None = None, since: datetime | None = None) -> Any:
+def verification_failures(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    check: str | None = None,
+    repository: str | None = None,
+    since: datetime | None = None,
+) -> Any:
     return app.verification.failures(ctx, ws, check_name=check, repository=repository, since=since)
 
 
@@ -210,8 +290,14 @@ def update_rule(app: AppDep, ctx: CtxDep, ws: str, ref: str, body: dict[str, Any
 
 
 @router.post("/ws/{ws}/automation/rules/{ref}/{action}")
-def rule_action(app: AppDep, ctx: CtxDep, ws: str, ref: str, action: Literal["enable", "disable", "trigger"],
-                body: dict[str, Any] | None = None) -> Any:
+def rule_action(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    ref: str,
+    action: Literal["enable", "disable", "trigger"],
+    body: dict[str, Any] | None = None,
+) -> Any:
     if action == "trigger":
         return app.automation.trigger(ctx, ws, ref, inputs=(body or {}).get("inputs"))
     return app.automation.set_enabled(ctx, ws, ref, action == "enable")
@@ -226,12 +312,20 @@ class PreviewBody(BaseModel):
 
 @router.post("/ws/{ws}/automation/preview")
 def preview_rule(app: AppDep, ctx: CtxDep, ws: str, body: PreviewBody) -> Any:
-    return app.automation.preview(ctx, ws, rule=body.rule, spec=body.spec, event_id=body.event_id, inputs=body.inputs)
+    return app.automation.preview(
+        ctx, ws, rule=body.rule, spec=body.spec, event_id=body.event_id, inputs=body.inputs
+    )
 
 
 @router.get("/ws/{ws}/automation/runs")
-def automation_runs(app: AppDep, ctx: CtxDep, ws: str, rule: str | None = None, status: str | None = None,
-                    limit: int = Query(100, le=1000)) -> Any:
+def automation_runs(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    rule: str | None = None,
+    status: str | None = None,
+    limit: int = Query(100, le=1000),
+) -> Any:
     return app.automation.runs(ctx, ws, rule=rule, status=status, limit=limit)
 
 
@@ -275,12 +369,20 @@ class CompareBody(BaseModel):
 
 @router.post("/ws/{ws}/analytics/compare")
 def analytics_compare(app: AppDep, ctx: CtxDep, ws: str, body: CompareBody) -> Any:
-    return app.analytics.compare(ctx, ws, body.metric, a=(body.a_since, body.a_until), b=(body.b_since, body.b_until),
-                                 group_by=body.group_by)
+    return app.analytics.compare(
+        ctx,
+        ws,
+        body.metric,
+        a=(body.a_since, body.a_until),
+        b=(body.b_since, body.b_until),
+        group_by=body.group_by,
+    )
 
 
 @router.get("/ws/{ws}/analytics/coupling")
-def analytics_coupling(app: AppDep, ctx: CtxDep, ws: str, project: str | None = None, min_support: int = 1) -> Any:
+def analytics_coupling(
+    app: AppDep, ctx: CtxDep, ws: str, project: str | None = None, min_support: int = 1
+) -> Any:
     return app.analytics.coupling(ctx, ws, project=project, min_support=min_support)
 
 
@@ -290,8 +392,14 @@ def analytics_failures(app: AppDep, ctx: CtxDep, ws: str) -> Any:
 
 
 @router.get("/ws/{ws}/analytics/history")
-def analytics_history(app: AppDep, ctx: CtxDep, ws: str, category: str | None = None,
-                      repository: str | None = None, limit: int = Query(50, le=500)) -> Any:
+def analytics_history(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    category: str | None = None,
+    repository: str | None = None,
+    limit: int = Query(50, le=500),
+) -> Any:
     return app.analytics.task_history(ctx, ws, category=category, repository=repository, limit=limit)
 
 
@@ -305,8 +413,15 @@ class EstimateBody(BaseModel):
 
 @router.post("/ws/{ws}/analytics/estimate")
 def analytics_estimate(app: AppDep, ctx: CtxDep, ws: str, body: EstimateBody) -> Any:
-    return app.analytics.estimate(ctx, ws, task=body.task, title=body.title, description=body.description,
-                                  category=body.category, repositories=body.repositories)
+    return app.analytics.estimate(
+        ctx,
+        ws,
+        task=body.task,
+        title=body.title,
+        description=body.description,
+        category=body.category,
+        repositories=body.repositories,
+    )
 
 
 class ExportBody(BaseModel):
@@ -345,20 +460,53 @@ def retrospective(app: AppDep, ctx: CtxDep, ws: str, body: RetroBody) -> Any:
     require(ctx, Permission.ANALYTICS_READ)
     from workgraph.analytics.retrospective import generate_retrospective
 
-    return generate_retrospective(app, ctx, ws, period_days=body.period_days, project=body.project,
-                                  repository=body.repository, use_model=body.use_model)
+    return generate_retrospective(
+        app,
+        ctx,
+        ws,
+        period_days=body.period_days,
+        project=body.project,
+        repository=body.repository,
+        use_model=body.use_model,
+    )
 
 
 @router.get("/ws/{ws}/search")
-def search(app: AppDep, ctx: CtxDep, ws: str, q: str = Query(..., min_length=1),
-           mode: Literal["hybrid", "lexical", "semantic"] = "hybrid", project: str | None = None,
-           repository: str | None = None, category: str | None = None, status: list[str] | None = Query(None),
-           agent: str | None = None, model: str | None = None, path: str | None = None,
-           created_after: datetime | None = None, created_before: datetime | None = None,
-           limit: int = Query(20, le=200)) -> Any:
-    return app.search.search(ctx, ws, q, mode=mode, limit=limit, filters=SearchFilters(
-        project=project, repository=repository, category=category, statuses=status, agent=agent, model=model,
-        changed_path=path, created_after=created_after, created_before=created_before))
+def search(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    q: str = Query(..., min_length=1),
+    mode: Literal["hybrid", "lexical", "semantic"] = "hybrid",
+    project: str | None = None,
+    repository: str | None = None,
+    category: str | None = None,
+    status: list[str] | None = Query(None),
+    agent: str | None = None,
+    model: str | None = None,
+    path: str | None = None,
+    created_after: datetime | None = None,
+    created_before: datetime | None = None,
+    limit: int = Query(20, le=200),
+) -> Any:
+    return app.search.search(
+        ctx,
+        ws,
+        q,
+        mode=mode,
+        limit=limit,
+        filters=SearchFilters(
+            project=project,
+            repository=repository,
+            category=category,
+            statuses=status,
+            agent=agent,
+            model=model,
+            changed_path=path,
+            created_after=created_after,
+            created_before=created_before,
+        ),
+    )
 
 
 @router.get("/ws/{ws}/classification/evaluations")
@@ -378,17 +526,28 @@ def disagreements(app: AppDep, ctx: CtxDep, ws: str) -> Any:
 def settings(app: AppDep, ctx: CtxDep, workspace: str | None = None) -> Any:
     require(ctx, Permission.WORKSPACE_READ)
     config = app.effective_config(workspace or app.config.default_workspace)
-    return {"config": config.model_dump(mode="json"), "paths": {
-        "config_file": str(app.paths.config_file), "data_dir": str(app.paths.data_dir)}}
+    return {
+        "config": config.model_dump(mode="json"),
+        "paths": {"config_file": str(app.paths.config_file), "data_dir": str(app.paths.data_dir)},
+    }
 
 
 class SettingsPatch(BaseModel):
     values: dict[str, Any] = Field(description="Dotted keys, e.g. {'execution.max_concurrent_runs': 3}")
 
 
-EDITABLE_PREFIXES = ("execution.", "jobs.", "llm.classification.", "llm.embeddings.", "llm.summarization.",
-                     "llm.auto_classify", "llm.auto_embed", "retention.", "claude.capture_tool_payloads",
-                     "automation.max_depth")
+EDITABLE_PREFIXES = (
+    "execution.",
+    "jobs.",
+    "llm.classification.",
+    "llm.embeddings.",
+    "llm.summarization.",
+    "llm.auto_classify",
+    "llm.auto_embed",
+    "retention.",
+    "claude.capture_tool_payloads",
+    "automation.max_depth",
+)
 
 
 @router.patch("/settings")
@@ -430,30 +589,60 @@ def claude_status(app: AppDep, ctx: CtxDep) -> Any:
     require(ctx, Permission.WORKSPACE_READ)
     from workgraph.integrations.claude_code import installer
 
-    return {"user": installer.status("user"), "hooks": app.hooks.stats(), "sessions": app.hooks.sessions(limit=20)}
+    return {
+        "user": installer.status("user"),
+        "hooks": app.hooks.stats(),
+        "sessions": app.hooks.sessions(limit=20),
+    }
 
 
 @router.get("/ws/{ws}/scheduler")
 def scheduler(app: AppDep, ctx: CtxDep, ws: str) -> Any:
     require(ctx, Permission.TASK_READ)
     ws_id = app.workspaces.get(ctx, ws).id
-    return {"enabled": app.config.execution.enabled, "auto_schedule": app.config.execution.auto_schedule,
-            "eligible": app.scheduler.eligible(ctx, ws_id)}
+    return {
+        "enabled": app.config.execution.enabled,
+        "auto_schedule": app.config.execution.auto_schedule,
+        "eligible": app.scheduler.eligible(ctx, ws_id),
+    }
 
 
 # ---------------------------------------------------------------------------- events
 
 
 @router.get("/ws/{ws}/events")
-def events(app: AppDep, ctx: CtxDep, ws: str, after_seq: int | None = None, entity_type: str | None = None,
-           entity_id: str | None = None, prefix: str | None = None, limit: int = Query(200, le=5000),
-           descending: bool = False) -> Any:
-    return app.history.events(ctx, ws, after_seq=after_seq, entity_type=entity_type, entity_id=entity_id,
-                              event_type_prefix=prefix, limit=limit, descending=descending)
+def events(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    after_seq: int | None = None,
+    entity_type: str | None = None,
+    entity_id: str | None = None,
+    prefix: str | None = None,
+    limit: int = Query(200, le=5000),
+    descending: bool = False,
+) -> Any:
+    return app.history.events(
+        ctx,
+        ws,
+        after_seq=after_seq,
+        entity_type=entity_type,
+        entity_id=entity_id,
+        event_type_prefix=prefix,
+        limit=limit,
+        descending=descending,
+    )
 
 
 @router.get("/ws/{ws}/events/stream")
-async def event_stream(app: AppDep, ctx: CtxDep, ws: str, request: Request, after_seq: int | None = None) -> Any:
+async def event_stream(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    request: Request,
+    after_seq: int | None = None,
+    max_events: int | None = Query(None, ge=1, le=10_000),
+) -> Any:
     """Server-sent events: new domain events plus periodic queue snapshots."""
     require(ctx, Permission.WORKSPACE_READ)
     from workgraph.core.events.log import latest_seq
@@ -466,14 +655,21 @@ async def event_stream(app: AppDep, ctx: CtxDep, ws: str, request: Request, afte
     async def generator() -> Any:
         cursor = after_seq
         ticks = 0
+        sent = 0
         while not await request.is_disconnected():
             batch = await asyncio.to_thread(app.history.events, ctx, ws_id, after_seq=cursor, limit=200)
             for event in batch:
                 cursor = event.seq
                 yield {"event": "domain", "id": str(event.seq), "data": event.model_dump_json()}
+                sent += 1
+                if max_events and sent >= max_events:
+                    return
             if ticks % 5 == 0:
                 stats = await asyncio.to_thread(app.queue.stats, ws_id)
                 yield {"event": "queue", "data": json.dumps(stats)}
+                sent += 1
+                if max_events and sent >= max_events:
+                    return
             ticks += 1
             await asyncio.sleep(1.0)
 

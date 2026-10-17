@@ -31,8 +31,23 @@ TABLES: dict[str, list[str] | None] = {
     "repository_dependencies": ["from_repository_id", "to_repository_id", "kind", "description"],
     "project_repositories": ["project_id", "repository_id"],
     "tasks": [
-        "id", "workspace_id", "number", "key", "title", "status", "priority", "category", "parent_id", "assignee",
-        "assigned_agent", "created_at", "updated_at", "started_at", "completed_at", "accepted_at", "archived_at",
+        "id",
+        "workspace_id",
+        "number",
+        "key",
+        "title",
+        "status",
+        "priority",
+        "category",
+        "parent_id",
+        "assignee",
+        "assigned_agent",
+        "created_at",
+        "updated_at",
+        "started_at",
+        "completed_at",
+        "accepted_at",
+        "archived_at",
         "auto_execute",
     ],
     "task_projects": ["task_id", "project_id"],
@@ -41,36 +56,127 @@ TABLES: dict[str, list[str] | None] = {
     "task_dependencies": ["task_id", "depends_on_id", "created_at"],
     "task_relations": ["source_task_id", "target_task_id", "relation_type", "created_at"],
     "agent_attempts": [
-        "id", "workspace_id", "task_id", "number", "status", "provider", "adapter", "model", "parent_attempt_id",
-        "retry_of_attempt_id", "rerun_of_attempt_id", "created_at", "queued_at", "started_at", "finished_at",
-        "queue_wait_ms", "duration_ms", "exit_reason", "usage", "usage_source", "cost_usd", "cost_source",
+        "id",
+        "workspace_id",
+        "task_id",
+        "number",
+        "status",
+        "provider",
+        "adapter",
+        "model",
+        "parent_attempt_id",
+        "retry_of_attempt_id",
+        "rerun_of_attempt_id",
+        "created_at",
+        "queued_at",
+        "started_at",
+        "finished_at",
+        "queue_wait_ms",
+        "duration_ms",
+        "exit_reason",
+        "usage",
+        "usage_source",
+        "cost_usd",
+        "cost_source",
         "modified_repository_ids",
     ],
     "commits": [
-        "id", "repository_id", "sha", "author_name", "author_email", "committed_at", "subject", "is_merge",
-        "patch_id", "insertions", "deletions", "files_changed", "reachable",
+        "id",
+        "repository_id",
+        "sha",
+        "author_name",
+        "author_email",
+        "committed_at",
+        "subject",
+        "is_merge",
+        "patch_id",
+        "insertions",
+        "deletions",
+        "files_changed",
+        "reachable",
     ],
     "commit_file_changes": [
-        "id", "commit_id", "path", "old_path", "change_type", "insertions", "deletions", "is_binary", "language",
-        "file_class", "module",
+        "id",
+        "commit_id",
+        "path",
+        "old_path",
+        "change_type",
+        "insertions",
+        "deletions",
+        "is_binary",
+        "language",
+        "file_class",
+        "module",
     ],
     "commit_task_links": ["commit_id", "task_id", "source", "confidence", "attempt_id"],
-    "commit_analyses": ["commit_id", "functions_affected", "types_affected", "files_parsed", "files_fallback"],
+    "commit_analyses": [
+        "commit_id",
+        "functions_affected",
+        "types_affected",
+        "files_parsed",
+        "files_fallback",
+    ],
     "commit_symbols": ["file_change_id", "symbol_kind", "name", "change_kind", "lines_changed"],
-    "verification_runs": ["id", "workspace_id", "task_id", "attempt_id", "status", "required_passed", "started_at",
-                          "finished_at", "created_at"],
-    "verification_check_results": ["id", "run_id", "name", "kind", "required", "repository_id", "status",
-                                   "exit_code", "duration_ms", "timed_out", "failure_signatures", "created_at"],
+    "verification_runs": [
+        "id",
+        "workspace_id",
+        "task_id",
+        "attempt_id",
+        "status",
+        "required_passed",
+        "started_at",
+        "finished_at",
+        "created_at",
+    ],
+    "verification_check_results": [
+        "id",
+        "run_id",
+        "name",
+        "kind",
+        "required",
+        "repository_id",
+        "status",
+        "exit_code",
+        "duration_ms",
+        "timed_out",
+        "failure_signatures",
+        "created_at",
+    ],
     "task_acceptances": ["task_id", "attempt_id", "decision", "mode", "created_at"],
-    "task_change_surfaces": ["task_id", "repository_id", "files_changed", "insertions", "deletions", "renames",
-                             "binary_files", "functions_affected", "types_affected"],
+    "task_change_surfaces": [
+        "task_id",
+        "repository_id",
+        "files_changed",
+        "insertions",
+        "deletions",
+        "renames",
+        "binary_files",
+        "functions_affected",
+        "types_affected",
+    ],
     "change_sets": ["id", "task_id", "attempt_id", "status"],
     "change_set_items": ["change_set_id", "repository_id", "status"],
-    "classifications": ["id", "task_id", "source", "status", "provider", "model", "category", "confidence",
-                        "is_current", "created_at"],
+    "classifications": [
+        "id",
+        "task_id",
+        "source",
+        "status",
+        "provider",
+        "model",
+        "category",
+        "confidence",
+        "is_current",
+        "created_at",
+    ],
 }
-EVENT_TYPES = ("task.status_changed", "task.reopened", "task.completed", "task.accepted", "task.escalated",
-               "task.rejected")
+EVENT_TYPES = (
+    "task.status_changed",
+    "task.reopened",
+    "task.completed",
+    "task.accepted",
+    "task.escalated",
+    "task.rejected",
+)
 TIMESTAMP_SUFFIXES = ("_at",)
 
 
@@ -85,7 +191,9 @@ def _arrow_table(cursor: sqlite3.Cursor, columns: list[str]) -> pa.Table:
     for col, values in data.items():
         if all(v is None or isinstance(v, int) for v in values) and any(v is not None for v in values):
             arrays[col] = pa.array(values, type=pa.int64())
-        elif all(v is None or isinstance(v, int | float) for v in values) and any(isinstance(v, float) for v in values):
+        elif all(v is None or isinstance(v, int | float) for v in values) and any(
+            isinstance(v, float) for v in values
+        ):
             arrays[col] = pa.array([None if v is None else float(v) for v in values], type=pa.float64())
         else:
             arrays[col] = pa.array([None if v is None else str(v) for v in values], type=pa.string())
@@ -135,13 +243,36 @@ class Warehouse:
             casts = []
             for col in columns:
                 if col.endswith(TIMESTAMP_SUFFIXES):
-                    casts.append(f"TRY_CAST(REPLACE(CAST({col} AS VARCHAR), '+00:00', '') AS TIMESTAMP) AS {col}")
-                elif col in ("is_merge", "reachable", "is_binary", "required", "required_passed", "timed_out",
-                             "is_current", "auto_execute"):
+                    casts.append(
+                        f"TRY_CAST(REPLACE(CAST({col} AS VARCHAR), '+00:00', '') AS TIMESTAMP) AS {col}"
+                    )
+                elif col in (
+                    "is_merge",
+                    "reachable",
+                    "is_binary",
+                    "required",
+                    "required_passed",
+                    "timed_out",
+                    "is_current",
+                    "auto_execute",
+                ):
                     casts.append(f"CAST({col} AS BOOLEAN) AS {col}")
-                elif col in ("insertions", "deletions", "files_changed", "duration_ms", "queue_wait_ms", "number",
-                             "functions_affected", "types_affected", "renames", "binary_files", "exit_code",
-                             "files_parsed", "files_fallback", "lines_changed"):
+                elif col in (
+                    "insertions",
+                    "deletions",
+                    "files_changed",
+                    "duration_ms",
+                    "queue_wait_ms",
+                    "number",
+                    "functions_affected",
+                    "types_affected",
+                    "renames",
+                    "binary_files",
+                    "exit_code",
+                    "files_parsed",
+                    "files_fallback",
+                    "lines_changed",
+                ):
                     casts.append(f"CAST({col} AS BIGINT) AS {col}")
                 elif col in ("confidence", "cost_usd"):
                     casts.append(f"CAST({col} AS DOUBLE) AS {col}")
@@ -152,8 +283,12 @@ class Warehouse:
         placeholders = ",".join("?" for _ in EVENT_TYPES)
         cursor = source.execute(
             f"SELECT seq, workspace_id, event_type, entity_id, actor, occurred_at, data FROM events "
-            f"WHERE event_type IN ({placeholders})", EVENT_TYPES)
-        arrow = _arrow_table(cursor, ["seq", "workspace_id", "event_type", "entity_id", "actor", "occurred_at", "data"])
+            f"WHERE event_type IN ({placeholders})",
+            EVENT_TYPES,
+        )
+        arrow = _arrow_table(
+            cursor, ["seq", "workspace_id", "event_type", "entity_id", "actor", "occurred_at", "data"]
+        )
         con.register("_src", arrow)
         con.execute(
             "CREATE TABLE events AS SELECT CAST(seq AS BIGINT) AS seq, CAST(workspace_id AS VARCHAR) AS workspace_id, "
@@ -290,7 +425,11 @@ class Warehouse:
             arrow = relation.to_arrow_table()
             con.register("_export", arrow)
             target.parent.mkdir(parents=True, exist_ok=True)
-            options = {"csv": "(FORMAT CSV, HEADER)", "parquet": "(FORMAT PARQUET)", "json": "(FORMAT JSON, ARRAY TRUE)"}
+            options = {
+                "csv": "(FORMAT CSV, HEADER)",
+                "parquet": "(FORMAT PARQUET)",
+                "json": "(FORMAT JSON, ARRAY TRUE)",
+            }
             con.execute(f"COPY _export TO '{target.as_posix()}' {options[fmt]}")
             con.unregister("_export")
             return target

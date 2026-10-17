@@ -84,7 +84,8 @@ class RepositoryService(Service):
                 f"{path} is outside the workspace's allowed roots",
                 details={"path": str(path), "allowed_roots": roots},
             )
-        if is_within(path, self.app.paths.data_dir):
+        managed = (self.app.paths.worktrees_dir, self.app.paths.runs_dir, self.app.paths.artifacts_dir)
+        if any(is_within(path, root) for root in managed):
             raise ValidationFailed("Workgraph-managed directories cannot be registered as repositories")
 
     def register(self, ctx: RequestContext, workspace: str | None, data: RepositoryRegister) -> RepositoryOut:

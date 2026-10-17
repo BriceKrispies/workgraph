@@ -52,26 +52,37 @@ class LocalSecurityMiddleware:
         request = Request(scope)
         host = (request.headers.get("host") or "").lower()
         if host not in self.hosts:
-            await JSONResponse({"error": {"code": "forbidden_host", "message": f"host {host!r} not allowed"}},
-                               status_code=421)(scope, receive, send)
+            await JSONResponse(
+                {"error": {"code": "forbidden_host", "message": f"host {host!r} not allowed"}},
+                status_code=421,
+            )(scope, receive, send)
             return
         path = scope["path"]
-        protected = (path.startswith("/api/") or path.startswith("/mcp")) and path not in PUBLIC_PATHS
+        protected = (path.startswith(("/api/", "/mcp"))) and path not in PUBLIC_PATHS
         if protected:
             origin = request.headers.get("origin")
             if origin and request.method not in SAFE_METHODS and origin.rstrip("/") not in self.origins:
-                await JSONResponse({"error": {"code": "forbidden_origin", "message": f"origin {origin} not allowed"}},
-                                   status_code=403)(scope, receive, send)
+                await JSONResponse(
+                    {"error": {"code": "forbidden_origin", "message": f"origin {origin} not allowed"}},
+                    status_code=403,
+                )(scope, receive, send)
                 return
             if not self._authorized(request):
-                await JSONResponse({"error": {"code": "unauthorized", "message": "missing or invalid API token"}},
-                                   status_code=401, headers={"WWW-Authenticate": "Bearer"})(scope, receive, send)
+                await JSONResponse(
+                    {"error": {"code": "unauthorized", "message": "missing or invalid API token"}},
+                    status_code=401,
+                    headers={"WWW-Authenticate": "Bearer"},
+                )(scope, receive, send)
                 return
         await self.app(scope, receive, send)
 
     def _authorized(self, request: Request) -> bool:
         header = request.headers.get("authorization", "")
-        supplied = header[7:].strip() if header.lower().startswith("bearer ") else request.headers.get("x-workgraph-token")
+        supplied = (
+            header[7:].strip()
+            if header.lower().startswith("bearer ")
+            else request.headers.get("x-workgraph-token")
+        )
         if not supplied and request.url.path.endswith("/events/stream"):
             supplied = request.query_params.get("token")
         return bool(supplied) and hmac.compare_digest(supplied.encode(), self.token.encode())

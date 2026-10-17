@@ -13,12 +13,20 @@ from workgraph.core.models.schemas import TaskCreate
 
 
 def test_condition_evaluator_trace():
-    cond = Condition.model_validate({"all": [
-        {"field": "task.priority", "op": "in", "value": ["high", "critical"]},
-        {"not": {"field": "task.tags", "op": "contains", "value": "skip"}},
-        {"any": [{"field": "task.title", "op": "matches", "value": "(?i)crash"},
-                 {"field": "classification.category", "op": "eq", "value": "bug_fix"}]},
-    ]})
+    cond = Condition.model_validate(
+        {
+            "all": [
+                {"field": "task.priority", "op": "in", "value": ["high", "critical"]},
+                {"not": {"field": "task.tags", "op": "contains", "value": "skip"}},
+                {
+                    "any": [
+                        {"field": "task.title", "op": "matches", "value": "(?i)crash"},
+                        {"field": "classification.category", "op": "eq", "value": "bug_fix"},
+                    ]
+                },
+            ]
+        }
+    )
     trace: list = []
     ctx = {"task": {"priority": "high", "tags": [], "title": "App crash on start"}}
     assert evaluate(cond, ctx, trace)
@@ -40,8 +48,10 @@ def rule(**overrides):
         "name": "tag bugs",
         "trigger": {"type": "event", "event_types": ["task.created"]},
         "conditions": {"field": "task.title", "op": "matches", "value": "(?i)bug|crash"},
-        "actions": [{"type": "add_tags", "tags": ["needs-triage"]},
-                    {"type": "notify", "title": "New bug {{task.key}}: {{task.title}}"}],
+        "actions": [
+            {"type": "add_tags", "tags": ["needs-triage"]},
+            {"type": "notify", "title": "New bug {{task.key}}: {{task.title}}"},
+        ],
     }
     base.update(overrides)
     return base
@@ -75,12 +85,16 @@ def test_event_rule_matches_and_is_idempotent(app, human, ws):
 
 def test_recursion_guard(app, human, ws):
     # Each run creates a child task, which emits task.created again -> bounded by max_depth.
-    app.automation.create_rule(human, ws, {
-        "name": "fractal",
-        "trigger": {"type": "event", "event_types": ["task.created"]},
-        "actions": [{"type": "create_child_tasks", "children": [{"title": "child of {{task.key}}"}]}],
-        "max_depth": 2,
-    })
+    app.automation.create_rule(
+        human,
+        ws,
+        {
+            "name": "fractal",
+            "trigger": {"type": "event", "event_types": ["task.created"]},
+            "actions": [{"type": "create_child_tasks", "children": [{"title": "child of {{task.key}}"}]}],
+            "max_depth": 2,
+        },
+    )
     app.tasks.create(human, ws, TaskCreate(title="root"))
     drain(app)
     tasks = app.tasks.list(human, ws).items
@@ -100,10 +114,15 @@ def test_dry_run_preview(app, human, ws):
 
 def test_manual_trigger_and_agent_restrictions(app, human, agent_ctx, ws):
     task = app.tasks.create(human, ws, TaskCreate(title="Something"))
-    app.automation.create_rule(human, ws, {
-        "name": "escalate", "trigger": {"type": "manual"},
-        "actions": [{"type": "update_task", "priority": "critical"}],
-    })
+    app.automation.create_rule(
+        human,
+        ws,
+        {
+            "name": "escalate",
+            "trigger": {"type": "manual"},
+            "actions": [{"type": "update_task", "priority": "critical"}],
+        },
+    )
     run = app.automation.trigger(agent_ctx, ws, "escalate", inputs={"task": task.key})
     assert run.status == "queued"
     drain(app)
@@ -116,10 +135,15 @@ def test_manual_trigger_and_agent_restrictions(app, human, agent_ctx, ws):
 
 
 def test_scheduled_rule(app, human, ws):
-    created = app.automation.create_rule(human, ws, {
-        "name": "weekly report", "trigger": {"type": "schedule", "interval_seconds": 3600},
-        "actions": [{"type": "notify", "title": "tick {{input.scheduled_for}}"}],
-    })
+    created = app.automation.create_rule(
+        human,
+        ws,
+        {
+            "name": "weekly report",
+            "trigger": {"type": "schedule", "interval_seconds": 3600},
+            "actions": [{"type": "notify", "title": "tick {{input.scheduled_for}}"}],
+        },
+    )
     from workgraph.core.context import RequestContext
 
     ctx = RequestContext.system("test")
@@ -132,10 +156,16 @@ def test_scheduled_rule(app, human, ws):
 
 
 def test_failing_action_retries_then_dead_letters(app, human, ws):
-    app.automation.create_rule(human, ws, {
-        "name": "bad dep", "trigger": {"type": "event", "event_types": ["task.created"]},
-        "actions": [{"type": "create_dependency", "depends_on": "WG-999"}], "retry_max_attempts": 2,
-    })
+    app.automation.create_rule(
+        human,
+        ws,
+        {
+            "name": "bad dep",
+            "trigger": {"type": "event", "event_types": ["task.created"]},
+            "actions": [{"type": "create_dependency", "depends_on": "WG-999"}],
+            "retry_max_attempts": 2,
+        },
+    )
     app.tasks.create(human, ws, TaskCreate(title="x"))
     drain(app)
     run = app.automation.runs(human, ws, rule="bad dep")[0]

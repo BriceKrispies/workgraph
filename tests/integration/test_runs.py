@@ -15,7 +15,9 @@ def make_task(app, human, ws, make_repo, names=("api", "sdk"), **kw):
     for name in names:
         repo = make_repo(name)
         app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
-    return app.tasks.create(human, ws, TaskCreate(title="Implement login", repositories=list(names), status="ready", **kw))
+    return app.tasks.create(
+        human, ws, TaskCreate(title="Implement login", repositories=list(names), status="ready", **kw)
+    )
 
 
 def test_execution_is_opt_in(app, human, ws, make_repo):
@@ -42,8 +44,9 @@ def test_unavailable_provider_is_actionable_and_harmless(app, human, ws, make_re
 def test_successful_cross_repo_run_with_verification(app, human, ws, make_repo):
     enable_fake_agent(app)
     task = make_task(app, human, ws, make_repo)
-    app.verification.create_config(human, ws, scope_type="task", scope=task.key, name="checks",
-                                   checks=[passing_check()])
+    app.verification.create_config(
+        human, ws, scope_type="task", scope=task.key, name="checks", checks=[passing_check()]
+    )
     attempt = app.runs.start(human, ws, task.key)
     assert attempt.status == "queued"
     drain(app)
@@ -61,7 +64,7 @@ def test_successful_cross_repo_run_with_verification(app, human, ws, make_repo):
     assert detail.status == "awaiting_review"
     commits = app.git.task_commits(human, ws, task.key)
     assert len(commits) == 2
-    assert all(any(l["source"] == "execution_context" for l in c["links"]) for c in commits)
+    assert all(any(link["source"] == "execution_context" for link in c["links"]) for c in commits)
     runs = app.verification.list_runs(human, ws, task=task.key)
     assert runs[0].status == "passed" and len(runs[0].manifest) == 2
     acceptance = app.verification.accept(human, ws, task.key)
@@ -76,8 +79,14 @@ def test_successful_cross_repo_run_with_verification(app, human, ws, make_repo):
 def test_failed_verification_then_retry(app, human, ws, make_repo):
     enable_fake_agent(app)
     task = make_task(app, human, ws, make_repo, names=("svc",))
-    config = app.verification.create_config(human, ws, scope_type="repository", scope="svc", name="ci",
-                                            checks=[failing_check(), {**passing_check("lint"), "required": False}])
+    config = app.verification.create_config(
+        human,
+        ws,
+        scope_type="repository",
+        scope="svc",
+        name="ci",
+        checks=[failing_check(), {**passing_check("lint"), "required": False}],
+    )
     first = app.runs.start(human, ws, task.key)
     drain(app)
     a1 = app.attempts.get(human, first.id)
@@ -88,7 +97,9 @@ def test_failed_verification_then_retry(app, human, ws, make_repo):
     with pytest.raises(Exception, match="failed required checks"):
         app.verification.accept(human, ws, task.key)
     # operator fixes the check configuration and retries
-    app.verification.create_config(human, ws, scope_type="repository", scope="svc", name="ci", checks=[passing_check()])
+    app.verification.create_config(
+        human, ws, scope_type="repository", scope="svc", name="ci", checks=[passing_check()]
+    )
     assert config.version == 1
     second = app.runs.retry(human, first.id)
     assert second.retry_of_attempt_id == first.id
@@ -172,13 +183,23 @@ def test_scheduler_runs_independent_tasks_and_respects_dependencies(app, human, 
     app.config_store.save_global(config)
     for name in ("r1", "r2"):
         app.repositories.register(human, ws, RepositoryRegister(path=str(make_repo(name).path)))
-    a = app.tasks.create(human, ws, TaskCreate(title="A", repositories=["r1"], status="ready", auto_execute=True))
-    b = app.tasks.create(human, ws, TaskCreate(title="B", repositories=["r2"], status="ready", auto_execute=True))
-    c = app.tasks.create(human, ws, TaskCreate(title="C", repositories=["r1"], status="ready", auto_execute=True,
-                                               depends_on=[a.key]))
+    a = app.tasks.create(
+        human, ws, TaskCreate(title="A", repositories=["r1"], status="ready", auto_execute=True)
+    )
+    b = app.tasks.create(
+        human, ws, TaskCreate(title="B", repositories=["r2"], status="ready", auto_execute=True)
+    )
+    c = app.tasks.create(
+        human,
+        ws,
+        TaskCreate(title="C", repositories=["r1"], status="ready", auto_execute=True, depends_on=[a.key]),
+    )
     eligible = {e["key"] for e in app.scheduler.eligible(human)}
     assert eligible == {a.key, b.key}
-    assert app.scheduler.explain(human, ws, c.key)["reasons"] == ["status is blocked", "dependencies unsatisfied"]
+    assert app.scheduler.explain(human, ws, c.key)["reasons"] == [
+        "status is blocked",
+        "dependencies unsatisfied",
+    ]
     tick = app.scheduler.tick(human)
     assert {s["task"] for s in tick["started"]} == {a.key, b.key}
     drain(app)

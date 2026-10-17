@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
@@ -35,20 +35,50 @@ router = APIRouter(prefix="/api/v1/ws/{ws}")
 
 @router.get("/tasks", response_model=Page[TaskOut])
 def list_tasks(
-    app: AppDep, ctx: CtxDep, ws: str,
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
     status: list[TaskStatus] | None = Query(None),
     priority: list[TaskPriority] | None = Query(None),
-    project: str | None = None, repository: str | None = None, tag: list[str] | None = Query(None),
-    category: str | None = None, assignee: str | None = None, parent: str | None = None, roots: bool = False,
-    q: str | None = None, created_after: datetime | None = None, created_before: datetime | None = None,
-    archived: bool = False, sort: str = "created_at", descending: bool = True,
-    limit: int = Query(50, ge=1, le=500), offset: int = Query(0, ge=0),
+    project: str | None = None,
+    repository: str | None = None,
+    tag: list[str] | None = Query(None),
+    category: str | None = None,
+    assignee: str | None = None,
+    parent: str | None = None,
+    roots: bool = False,
+    q: str | None = None,
+    created_after: datetime | None = None,
+    created_before: datetime | None = None,
+    archived: bool = False,
+    sort: str = "created_at",
+    descending: bool = True,
+    limit: int = Query(50, ge=1, le=500),
+    offset: int = Query(0, ge=0),
 ) -> Any:
-    return app.tasks.list(ctx, ws, TaskFilter(
-        statuses=status, priorities=priority, project=project, repository=repository, tags=tag, category=category,
-        assignee=assignee, parent=parent, root_only=roots, text=q, created_after=created_after,
-        created_before=created_before, archived_only=archived, sort=sort, descending=descending,  # type: ignore[arg-type]
-        limit=limit, offset=offset))
+    return app.tasks.list(
+        ctx,
+        ws,
+        TaskFilter(
+            statuses=status,
+            priorities=priority,
+            project=project,
+            repository=repository,
+            tags=tag,
+            category=category,
+            assignee=assignee,
+            parent=parent,
+            root_only=roots,
+            text=q,
+            created_after=created_after,
+            created_before=created_before,
+            archived_only=archived,
+            sort=cast(Any, sort),
+            descending=descending,
+            limit=limit,
+            offset=offset,
+        ),
+    )
 
 
 @router.post("/tasks", response_model=TaskOut, status_code=201)
@@ -62,14 +92,26 @@ def bulk_update(app: AppDep, ctx: CtxDep, ws: str, body: BulkUpdate) -> Any:
 
 
 @router.get("/ready", response_model=list[TaskOut])
-def ready(app: AppDep, ctx: CtxDep, ws: str, project: str | None = None, repository: str | None = None,
-          limit: int = Query(50, le=500)) -> Any:
+def ready(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    project: str | None = None,
+    repository: str | None = None,
+    limit: int = Query(50, le=500),
+) -> Any:
     return app.tasks.get_ready(ctx, ws, project=project, repository=repository, limit=limit)
 
 
 @router.get("/graph", response_model=TaskGraph)
-def graph(app: AppDep, ctx: CtxDep, ws: str, project: str | None = None, root: str | None = None,
-          include_closed: bool = True) -> Any:
+def graph(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    project: str | None = None,
+    root: str | None = None,
+    include_closed: bool = True,
+) -> Any:
     return app.tasks.graph(ctx, ws, project=project, root=root, include_closed=include_closed)
 
 
@@ -194,7 +236,9 @@ def history(app: AppDep, ctx: CtxDep, ws: str, ref: str, limit: int = Query(500,
 
 
 @router.get("/tasks/{ref}/attempts")
-def task_attempts(app: AppDep, ctx: CtxDep, ws: str, ref: str, limit: int = Query(50, le=500), offset: int = 0) -> Any:
+def task_attempts(
+    app: AppDep, ctx: CtxDep, ws: str, ref: str, limit: int = Query(50, le=500), offset: int = 0
+) -> Any:
     return app.attempts.list(ctx, ws, task=ref, limit=limit, offset=offset)
 
 
@@ -220,8 +264,14 @@ def task_changes(app: AppDep, ctx: CtxDep, ws: str, ref: str, min_confidence: fl
 
 
 @router.get("/tasks/{ref}/diff")
-def task_diff(app: AppDep, ctx: CtxDep, ws: str, ref: str, repository: str | None = None,
-              max_bytes: int = Query(400_000, le=5_000_000)) -> Any:
+def task_diff(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    ref: str,
+    repository: str | None = None,
+    max_bytes: int = Query(400_000, le=5_000_000),
+) -> Any:
     return app.git.task_diff(ctx, ws, ref, repository=repository, max_bytes=max_bytes)
 
 
@@ -236,8 +286,15 @@ def classification(app: AppDep, ctx: CtxDep, ws: str, ref: str) -> Any:
 
 
 @router.post("/tasks/{ref}/classification")
-def request_classification(app: AppDep, ctx: CtxDep, ws: str, ref: str, provider: str | None = None,
-                           model: str | None = None, promote: bool = False) -> Any:
+def request_classification(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    ref: str,
+    provider: str | None = None,
+    model: str | None = None,
+    promote: bool = False,
+) -> Any:
     return app.classification.request(ctx, ws, ref, provider=provider, model=model, promote=promote)
 
 
@@ -249,7 +306,9 @@ class ConfirmBody(BaseModel):
 
 @router.post("/tasks/{ref}/classification/confirm")
 def confirm_classification(app: AppDep, ctx: CtxDep, ws: str, ref: str, body: ConfirmBody) -> Any:
-    return app.classification.confirm(ctx, ws, ref, category=body.category, note=body.note, complexity=body.complexity)
+    return app.classification.confirm(
+        ctx, ws, ref, category=body.category, note=body.note, complexity=body.complexity
+    )
 
 
 @router.get("/tasks/{ref}/similar")
@@ -280,8 +339,15 @@ def verify(app: AppDep, ctx: CtxDep, ws: str, ref: str, attempt_id: str | None =
     require(ctx, Permission.VERIFY_RUN)
     task = app.tasks.get(ctx, ws, ref)
     with app.db.session(write=True) as session:
-        job = jobqueue.enqueue(session, "verify", {"task_id": task.id, "attempt_id": attempt_id},
-                               workspace_id=task.workspace_id, task_id=task.id, max_attempts=1, created_by=ctx.actor)
+        job = jobqueue.enqueue(
+            session,
+            "verify",
+            {"task_id": task.id, "attempt_id": attempt_id},
+            workspace_id=task.workspace_id,
+            task_id=task.id,
+            max_attempts=1,
+            created_by=ctx.actor,
+        )
         return {"job_id": job.id}
 
 

@@ -14,7 +14,14 @@ from workgraph.core.services import resolve
 from workgraph.core.services.attempts import new_attempt
 from workgraph.integrations.claude_code import installer
 from workgraph.integrations.claude_code.hook_cli import run_hook
-from workgraph.persistence.orm import AgentAttempt, AgentInternalTask, AgentSession, HookEvent, SubagentRun, ToolEvent
+from workgraph.persistence.orm import (
+    AgentAttempt,
+    AgentInternalTask,
+    AgentSession,
+    HookEvent,
+    SubagentRun,
+    ToolEvent,
+)
 
 
 def hook(app, payload, env=None, monkeypatch=None, received_at="2026-10-17T10:00:00+00:00"):
@@ -23,14 +30,22 @@ def hook(app, payload, env=None, monkeypatch=None, received_at="2026-10-17T10:00
 
 
 def base(event, session="sess-1", **kw):
-    return {"session_id": session, "transcript_path": "/t.jsonl", "cwd": "/work", "hook_event_name": event, **kw}
+    return {
+        "session_id": session,
+        "transcript_path": "/t.jsonl",
+        "cwd": "/work",
+        "hook_event_name": event,
+        **kw,
+    }
 
 
 def make_attempt(app, human, ws):
     task = app.tasks.create(human, ws, TaskCreate(title="Hooked", status="ready"))
     with app.db.session(write=True) as session:
         t = resolve.task(session, None, task.id)
-        attempt = new_attempt(session, human, t, provider="claude_code", adapter="claude_code", status=AttemptStatus.RUNNING)
+        attempt = new_attempt(
+            session, human, t, provider="claude_code", adapter="claude_code", status=AttemptStatus.RUNNING
+        )
         return task, attempt.id
 
 
@@ -38,24 +53,84 @@ def test_session_correlation_tools_subagents_and_internal_tasks(app, human, ws):
     task, attempt_id = make_attempt(app, human, ws)
     env = {"attempt_id": attempt_id, "task_id": task.id}
     assert hook(app, base("SessionStart", source="startup", model="claude-x"), env).status == "ingested"
-    hook(app, base("PreToolUse", tool_name="Bash", tool_use_id="t1",
-                   tool_input={"command": "export TOKEN=sk-ant-abcdefghijklmnopqrstuvwxyz && pytest"}), env,
-         received_at="2026-10-17T10:00:01+00:00")
-    hook(app, base("PostToolUse", tool_name="Bash", tool_use_id="t1", tool_input={"command": "pytest"},
-                   tool_response={"stdout": "ok"}, duration_ms=1200), env, received_at="2026-10-17T10:00:02+00:00")
-    hook(app, base("PostToolUseFailure", tool_name="Edit", tool_use_id="t2", tool_input={"file_path": "/work/a.py"},
-                   error="Exit code 1 password=hunter2", duration_ms=5), env, received_at="2026-10-17T10:00:03+00:00")
-    hook(app, base("SubagentStart", agent_id="agent-1", agent_type="Explore"), env, received_at="2026-10-17T10:00:04+00:00")
-    hook(app, base("SubagentStop", agent_id="agent-1", agent_type="Explore", last_assistant_message="Found 3 issues",
-                   stop_hook_active=False), env, received_at="2026-10-17T10:00:05+00:00")
-    hook(app, base("TaskCreated", task_id="task-001", task_subject=f"Implement part of {task.key}"), env,
-         received_at="2026-10-17T10:00:06+00:00")
-    hook(app, base("TaskCompleted", task_id="task-001", task_subject=f"Implement part of {task.key}"), env,
-         received_at="2026-10-17T10:00:07+00:00")
-    hook(app, base("Stop", last_assistant_message="done", stop_hook_active=False), env, received_at="2026-10-17T10:00:08+00:00")
+    hook(
+        app,
+        base(
+            "PreToolUse",
+            tool_name="Bash",
+            tool_use_id="t1",
+            tool_input={"command": "export TOKEN=sk-ant-abcdefghijklmnopqrstuvwxyz && pytest"},
+        ),
+        env,
+        received_at="2026-10-17T10:00:01+00:00",
+    )
+    hook(
+        app,
+        base(
+            "PostToolUse",
+            tool_name="Bash",
+            tool_use_id="t1",
+            tool_input={"command": "pytest"},
+            tool_response={"stdout": "ok"},
+            duration_ms=1200,
+        ),
+        env,
+        received_at="2026-10-17T10:00:02+00:00",
+    )
+    hook(
+        app,
+        base(
+            "PostToolUseFailure",
+            tool_name="Edit",
+            tool_use_id="t2",
+            tool_input={"file_path": "/work/a.py"},
+            error="Exit code 1 password=hunter2",
+            duration_ms=5,
+        ),
+        env,
+        received_at="2026-10-17T10:00:03+00:00",
+    )
+    hook(
+        app,
+        base("SubagentStart", agent_id="agent-1", agent_type="Explore"),
+        env,
+        received_at="2026-10-17T10:00:04+00:00",
+    )
+    hook(
+        app,
+        base(
+            "SubagentStop",
+            agent_id="agent-1",
+            agent_type="Explore",
+            last_assistant_message="Found 3 issues",
+            stop_hook_active=False,
+        ),
+        env,
+        received_at="2026-10-17T10:00:05+00:00",
+    )
+    hook(
+        app,
+        base("TaskCreated", task_id="task-001", task_subject=f"Implement part of {task.key}"),
+        env,
+        received_at="2026-10-17T10:00:06+00:00",
+    )
+    hook(
+        app,
+        base("TaskCompleted", task_id="task-001", task_subject=f"Implement part of {task.key}"),
+        env,
+        received_at="2026-10-17T10:00:07+00:00",
+    )
+    hook(
+        app,
+        base("Stop", last_assistant_message="done", stop_hook_active=False),
+        env,
+        received_at="2026-10-17T10:00:08+00:00",
+    )
     hook(app, base("SessionEnd", reason="other"), env, received_at="2026-10-17T10:00:09+00:00")
     with app.db.session() as session:
-        agent_session = session.scalar(select(AgentSession).where(AgentSession.external_session_id == "sess-1"))
+        agent_session = session.scalar(
+            select(AgentSession).where(AgentSession.external_session_id == "sess-1")
+        )
         assert agent_session.binding_source == "workgraph_launched"
         assert agent_session.attempt_id == attempt_id and agent_session.task_id == task.id
         assert agent_session.tool_calls == 2 and agent_session.tool_failures == 1
@@ -95,12 +170,16 @@ def test_unbound_then_explicit_binding_by_cwd(app, human, ws, tmp_path):
     unbound = base("SessionStart", session="ext-2")
     unbound["cwd"] = "/elsewhere"
     hook(app, unbound)
-    assert next(s for s in app.hooks.sessions() if s["external_session_id"] == "ext-2")["binding"] == "unbound"
+    assert (
+        next(s for s in app.hooks.sessions() if s["external_session_id"] == "ext-2")["binding"] == "unbound"
+    )
 
 
 def test_spooling_and_replay(app, home, monkeypatch):
     monkeypatch.setenv("WORKGRAPH_HOME", str(home))
-    monkeypatch.setattr(sys, "stdin", io.TextIOWrapper(io.BytesIO(json.dumps(base("SessionStart", session="sp")).encode())))
+    monkeypatch.setattr(
+        sys, "stdin", io.TextIOWrapper(io.BytesIO(json.dumps(base("SessionStart", session="sp")).encode()))
+    )
     # Simulate an un-ingestable moment: the schema check fails because the database is "locked/missing".
     import workgraph.integrations.claude_code.ingest as ingest_mod
 
@@ -123,12 +202,26 @@ def test_hook_command_end_to_end_subprocess(app, home):
     """The real CLI entrypoint ingests directly and exits 0 with no stdout."""
     payload = base("SessionStart", session="proc-1", source="startup")
     env = {**__import__("os").environ, "WORKGRAPH_HOME": str(home)}
-    proc = subprocess.run([sys.executable, "-m", "workgraph", "claude", "hook"], input=json.dumps(payload),
-                          capture_output=True, text=True, env=env, timeout=60)
+    proc = subprocess.run(
+        [sys.executable, "-m", "workgraph", "claude", "hook"],
+        input=json.dumps(payload),
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=60,
+        check=False,
+    )
     assert proc.returncode == 0 and proc.stdout == ""
     assert any(s["external_session_id"] == "proc-1" for s in app.hooks.sessions())
-    bad = subprocess.run([sys.executable, "-m", "workgraph", "claude", "hook"], input="{not json",
-                         capture_output=True, text=True, env=env, timeout=60)
+    bad = subprocess.run(
+        [sys.executable, "-m", "workgraph", "claude", "hook"],
+        input="{not json",
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=60,
+        check=False,
+    )
     assert bad.returncode == 0
 
 
@@ -139,7 +232,9 @@ def test_installer_merges_and_uninstalls_only_its_entries(tmp_path, monkeypatch)
     existing = {
         "model": "opus",
         "permissions": {"allow": ["Bash(git *)"]},
-        "hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "my-linter"}]}]},
+        "hooks": {
+            "PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": "my-linter"}]}]
+        },
     }
     settings.write_text(json.dumps(existing))
     exe = str(tmp_path / "bin" / "workgraph.exe")

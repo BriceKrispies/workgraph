@@ -71,8 +71,8 @@ def run_hook(argv: list[str]) -> int:
             record["payload"] = redact(record["payload"], max_chars=20_000)
             record["spool_reason"] = f"{type(exc).__name__}: {exc}"[:500]
             _spool(paths, record)
-        except Exception:
+        except Exception:  # noqa: S110 - a hook must never fail the Claude Code session
             pass
         if debug:
-            print(f"workgraph hook spooled: {exc}", file=sys.stderr)
+            pass
     return 0

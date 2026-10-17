@@ -19,7 +19,7 @@ class FakeOllama:
         server = self
 
         class Handler(BaseHTTPRequestHandler):
-            def log_message(self, *args: object) -> None:
+            def log_message(self, format: str, *args: Any) -> None:
                 pass
 
             def _send(self, status: int, body: dict[str, Any]) -> None:
@@ -30,13 +30,13 @@ class FakeOllama:
                 self.end_headers()
                 self.wfile.write(data)
 
-            def do_GET(self) -> None:  # noqa: N802
+            def do_GET(self) -> None:
                 if self.path == "/api/tags":
                     self._send(200, {"models": [{"name": m} for m in server.models]})
                 else:
                     self._send(404, {"error": "not found"})
 
-            def do_POST(self) -> None:  # noqa: N802
+            def do_POST(self) -> None:
                 body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                 server.requests.append({"path": self.path, "body": body})
                 if server.fail_next > 0:
@@ -57,10 +57,19 @@ class FakeOllama:
                         if server.forced_category and model.startswith("other-model"):
                             result["category"] = server.forced_category
                         content = json.dumps(result)
-                    self._send(200, {"model": model, "message": {"role": "assistant", "content": content},
-                                     "done": True, "eval_count": 42})
+                    self._send(
+                        200,
+                        {
+                            "model": model,
+                            "message": {"role": "assistant", "content": content},
+                            "done": True,
+                            "eval_count": 42,
+                        },
+                    )
                 elif self.path == "/api/embed":
-                    self._send(200, {"model": model, "embeddings": [hash_embedding(t) for t in body["input"]]})
+                    self._send(
+                        200, {"model": model, "embeddings": [hash_embedding(t) for t in body["input"]]}
+                    )
                 else:
                     self._send(404, {"error": "unknown endpoint"})
 

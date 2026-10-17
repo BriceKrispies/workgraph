@@ -116,7 +116,7 @@ def _parser(language: str) -> Any:
     loader = _loaders().get(language)
     if loader is None:
         return None
-    return Parser(Language(loader()))
+    return Parser(Language(loader()))  # ty: ignore[deprecated]
 
 
 def available_languages() -> list[str]:
@@ -125,7 +125,7 @@ def available_languages() -> list[str]:
         try:
             if _parser(name) is not None:
                 names.append(name)
-        except Exception:  # a broken grammar wheel only disables that language
+        except Exception:  # noqa: S112 - a broken grammar wheel only disables that language
             continue
     return names
 

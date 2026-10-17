@@ -4,7 +4,7 @@ import statistics
 
 import pytest
 
-from tests.helpers import drain, enable_fake_agent, failing_check, passing_check
+from tests.helpers import drain, enable_fake_agent, failing_check
 from workgraph.analytics.estimation import percentile
 from workgraph.analytics.service import AnalyticsFilters, AnalyticsQuery
 from workgraph.config.settings import ModelSelection, OllamaProviderConfig
@@ -17,16 +17,26 @@ from workgraph.persistence.orm import AgentAttempt
 
 
 def q(app, human, ws, metric, group_by=None, **filters):
-    return app.analytics.query(human, ws, AnalyticsQuery(metric=metric, group_by=group_by or [],
-                                                         filters=AnalyticsFilters(**filters)))
+    return app.analytics.query(
+        human, ws, AnalyticsQuery(metric=metric, group_by=group_by or [], filters=AnalyticsFilters(**filters))
+    )
 
 
 def add_attempt(app, human, task_id, *, provider, model, status, duration_ms, queue_ms):
     with app.db.session(write=True) as session:
         task = resolve.task(session, None, task_id)
-        attempt = new_attempt(session, human, task, provider=provider, adapter="command", status=AttemptStatus.RUNNING,
-                              model=model)
-        finish_attempt(session, human, attempt, AttemptStatus(status), exit_reason="test", duration_ms=duration_ms)
+        attempt = new_attempt(
+            session,
+            human,
+            task,
+            provider=provider,
+            adapter="command",
+            status=AttemptStatus.RUNNING,
+            model=model,
+        )
+        finish_attempt(
+            session, human, attempt, AttemptStatus(status), exit_reason="test", duration_ms=duration_ms
+        )
         attempt.queue_wait_ms = queue_ms
         return attempt.id
 
@@ -43,9 +53,19 @@ def test_throughput_execution_and_agent_metrics(app, human, ws):
     for i, duration in enumerate(durations):
         t = app.tasks.create(human, ws, TaskCreate(title=f"Task {i}", status="ready"))
         keys.append(t.key)
-        add_attempt(app, human, t.id, provider="alpha" if i < 3 else "beta", model="m1", status="succeeded",
-                    duration_ms=duration, queue_ms=100 * (i + 1))
-    add_attempt(app, human, keys[0], provider="alpha", model="m1", status="failed", duration_ms=500, queue_ms=50)
+        add_attempt(
+            app,
+            human,
+            t.id,
+            provider="alpha" if i < 3 else "beta",
+            model="m1",
+            status="succeeded",
+            duration_ms=duration,
+            queue_ms=100 * (i + 1),
+        )
+    add_attempt(
+        app, human, keys[0], provider="alpha", model="m1", status="failed", duration_ms=500, queue_ms=50
+    )
     for key in keys[:3]:
         accept(app, human, ws, key)
     assert q(app, human, ws, "tasks_created")["rows"][0]["value"] == 5
@@ -57,7 +77,10 @@ def test_throughput_execution_and_agent_metrics(app, human, ws):
     assert row["median"] == pytest.approx(statistics.median(all_durations))
     assert row["p90"] == pytest.approx(percentile([float(d) for d in all_durations], 0.9))
     assert row["min"] == 500 and row["max"] == 10000
-    agents = {(r["provider"], r["model"]): r for r in q(app, human, ws, "agent_completion_rate", ["provider", "model"])["rows"]}
+    agents = {
+        (r["provider"], r["model"]): r
+        for r in q(app, human, ws, "agent_completion_rate", ["provider", "model"])["rows"]
+    }
     assert agents[("alpha", "m1")]["numerator"] == 3 and agents[("alpha", "m1")]["denominator"] == 4
     assert agents[("beta", "m1")]["value"] == 1.0
     fps = q(app, human, ws, "first_pass_success")["rows"][0]
@@ -72,7 +95,7 @@ def test_throughput_execution_and_agent_metrics(app, human, ws):
 def test_invalid_grouping_rejected(app, human, ws):
     with pytest.raises(ValidationFailed):
         q(app, human, ws, "tasks_created", ["model"])
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         AnalyticsQuery(metric="DROP TABLE tasks")
 
 
@@ -83,8 +106,13 @@ def test_code_metrics_shared_commits_coupling_and_estimation(app, human, ws, mak
         app.repositories.register(human, ws, RepositoryRegister(path=str(repos[name].path)))
     tasks = []
     for i in range(4):
-        t = app.tasks.create(human, ws, TaskCreate(title=f"Token refresh part {i}", status="ready",
-                                                   repositories=["auth-service", "shared-sdk"]))
+        t = app.tasks.create(
+            human,
+            ws,
+            TaskCreate(
+                title=f"Token refresh part {i}", status="ready", repositories=["auth-service", "shared-sdk"]
+            ),
+        )
         tasks.append(t)
         for repo in ("auth-service", "shared-sdk"):
             sha = repos[repo].commit(f"work {i}\n\nTask-ID: {t.key}", {f"src/mod{i}.py": "x = 1\n" * (i + 1)})
@@ -97,7 +125,10 @@ def test_code_metrics_shared_commits_coupling_and_estimation(app, human, ws, mak
     for t in tasks:
         accept(app, human, ws, t.key)
         app.git.compute_change_surface(human, t.id)
-    volume = {r["repository_label"]: r for r in q(app, human, ws, "repository_change_volume", ["repository"])["rows"]}
+    volume = {
+        r["repository_label"]: r
+        for r in q(app, human, ws, "repository_change_volume", ["repository"])["rows"]
+    }
     # shared commit counted once at repository level: 1+2+3+4 lines of work + 3 shared lines
     assert volume["auth-service"]["value"] == 10 + 3
     assert volume["auth-service"]["n"] == 5
@@ -130,13 +161,17 @@ def test_code_metrics_shared_commits_coupling_and_estimation(app, human, ws, mak
 def test_failures_and_retrospective_fallback(app, human, ws, make_repo):
     enable_fake_agent(app)
     config = app.config
-    config.llm.providers["ollama"] = OllamaProviderConfig(base_url="http://127.0.0.1:9", max_retries=0, timeout_seconds=1)
+    config.llm.providers["ollama"] = OllamaProviderConfig(
+        base_url="http://127.0.0.1:9", max_retries=0, timeout_seconds=1
+    )
     config.llm.summarization = ModelSelection(provider="ollama", model="qwen")
     app.config_store.save_global(config)
     repo = make_repo("svc")
     app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
     task = app.tasks.create(human, ws, TaskCreate(title="Flaky login", repositories=["svc"], status="ready"))
-    app.verification.create_config(human, ws, scope_type="repository", scope="svc", name="ci", checks=[failing_check()])
+    app.verification.create_config(
+        human, ws, scope_type="repository", scope="svc", name="ci", checks=[failing_check()]
+    )
     first = app.runs.start(human, ws, task.key)
     drain(app)
     second = app.runs.retry(human, first.id)
@@ -163,8 +198,12 @@ def test_retrospective_with_model_narrative(app, human, ws):
     app.config_store.save_global(config)
     t = app.tasks.create(human, ws, TaskCreate(title="Done thing", status="ready"))
     accept(app, human, ws, t.key)
-    app.tasks.add_relation(human, ws, app.tasks.create(human, ws, TaskCreate(title="fix")).key,
-                           RelationCreate(target=t.key, relation_type="regression_of"))
+    app.tasks.add_relation(
+        human,
+        ws,
+        app.tasks.create(human, ws, TaskCreate(title="fix")).key,
+        RelationCreate(target=t.key, relation_type="regression_of"),
+    )
     from workgraph.analytics.retrospective import generate_retrospective
 
     retro = generate_retrospective(app, human, ws)
@@ -178,8 +217,13 @@ def test_exports(app, human, ws, tmp_path):
     for fmt in ("csv", "json", "parquet"):
         out = app.analytics.export(human, ws, target=tmp_path / f"facts.{fmt}", fmt=fmt, dataset="task_facts")
         assert out["bytes"] > 0
-    out = app.analytics.export(human, ws, target=tmp_path / "q.csv", fmt="csv",
-                               query=AnalyticsQuery(metric="tasks_created", group_by=["status"]))
+    out = app.analytics.export(
+        human,
+        ws,
+        target=tmp_path / "q.csv",
+        fmt="csv",
+        query=AnalyticsQuery(metric="tasks_created", group_by=["status"]),
+    )
     assert "backlog" in (tmp_path / "q.csv").read_text()
     with app.db.session() as session:
         assert session.query(AgentAttempt).count() == 0

@@ -21,7 +21,12 @@ def backup_command(
     from workgraph.persistence.backup import create_backup
 
     result = create_backup(STATE.app().paths, output, include_artifacts=include_artifacts)
-    emit(result, lambda r: console.print(f"backup written to {r['path']} ({r['bytes']} bytes, schema {r['schema_revision']})"))
+    emit(
+        result,
+        lambda r: console.print(
+            f"backup written to {r['path']} ({r['bytes']} bytes, schema {r['schema_revision']})"
+        ),
+    )
 
 
 @handle_errors
@@ -49,14 +54,23 @@ def export_workspace(output: Path, workspace: str | None = workspace_option()) -
     app = STATE.app()
     ws_obj = app.workspaces.get(STATE.ctx(), ws(workspace) or app.default_workspace_id())
     result = do_export(app.db, ws_obj.id, output)
-    emit(result, lambda r: (console.print(f"exported to {r['path']}"),
-                            table(sorted(r["tables"].items()), ["table", "rows"])))
+    emit(
+        result,
+        lambda r: (
+            console.print(f"exported to {r['path']}"),
+            table(sorted(r["tables"].items()), ["table", "rows"]),
+        ),
+    )
 
 
 @export_app.command("analytics")
 @handle_errors
-def export_analytics(output: Path, dataset: str = typer.Option("task_facts"),
-                     fmt: str = typer.Option("csv", "--format"), workspace: str | None = workspace_option()) -> None:
+def export_analytics(
+    output: Path,
+    dataset: str = typer.Option("task_facts"),
+    fmt: str = typer.Option("csv", "--format"),
+    workspace: str | None = workspace_option(),
+) -> None:
     """Export an analytics fact table (task_facts, attempt_facts, task_commits, task_files)."""
     result = STATE.app().analytics.export(STATE.ctx(), ws(workspace), target=output, fmt=fmt, dataset=dataset)
     emit(result, lambda r: console.print(f"wrote {r['path']}"))
@@ -76,20 +90,41 @@ def import_command(source: Path) -> None:
 
         for task_id in session.scalars(select(Task.id).where(Task.workspace_id == result["workspace_id"])):
             index_task(session, task_id)
-    emit(result, lambda r: (console.print(f"imported workspace {r['workspace_id']}"),
-                            table(sorted(r["tables"].items()), ["table", "rows"])))
+    emit(
+        result,
+        lambda r: (
+            console.print(f"imported workspace {r['workspace_id']}"),
+            table(sorted(r["tables"].items()), ["table", "rows"]),
+        ),
+    )
 
 
 @events_app.command("list")
 @handle_errors
-def events_list(entity: str | None = typer.Option(None, help="Entity id"), prefix: str | None = typer.Option(None),
-                after: int | None = typer.Option(None, help="Only events after this sequence number"),
-                limit: int = typer.Option(50), workspace: str | None = workspace_option()) -> None:
+def events_list(
+    entity: str | None = typer.Option(None, help="Entity id"),
+    prefix: str | None = typer.Option(None),
+    after: int | None = typer.Option(None, help="Only events after this sequence number"),
+    limit: int = typer.Option(50),
+    workspace: str | None = workspace_option(),
+) -> None:
     """List events (filter by entity, type prefix or sequence)."""
-    rows = STATE.app().history.events(STATE.ctx(), ws(workspace), entity_id=entity, event_type_prefix=prefix,
-                                      after_seq=after, limit=limit, descending=after is None)
-    emit(rows, lambda rs: table([(e.seq, when(e.occurred_at), e.event_type, e.actor, e.entity_id[:8]) for e in rs],
-                                ["seq", "when", "event", "actor", "entity"]))
+    rows = STATE.app().history.events(
+        STATE.ctx(),
+        ws(workspace),
+        entity_id=entity,
+        event_type_prefix=prefix,
+        after_seq=after,
+        limit=limit,
+        descending=after is None,
+    )
+    emit(
+        rows,
+        lambda rs: table(
+            [(e.seq, when(e.occurred_at), e.event_type, e.actor, e.entity_id[:8]) for e in rs],
+            ["seq", "when", "event", "actor", "entity"],
+        ),
+    )
 
 
 @events_app.command("verify")
@@ -98,8 +133,12 @@ def events_verify(workspace: str | None = workspace_option()) -> None:
     """Replay task events and compare with current-state tables."""
     app = STATE.app()
     report = app.history.verify_task_projection(STATE.ctx(), ws(workspace) or app.default_workspace_id())
-    emit(report, lambda r: console.print(
-        f"{'consistent' if r['consistent'] else 'MISMATCH'}: {r['tasks']} tasks, {r['events']} events"
-        + ("" if r["consistent"] else f" {r['mismatches']}")))
+    emit(
+        report,
+        lambda r: console.print(
+            f"{'consistent' if r['consistent'] else 'MISMATCH'}: {r['tasks']} tasks, {r['events']} events"
+            + ("" if r["consistent"] else f" {r['mismatches']}")
+        ),
+    )
     if not report["consistent"]:
         raise typer.Exit(1)

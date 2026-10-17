@@ -95,6 +95,10 @@ ignore = [
     "RET504", "SIM108", "PLC0415", "PLW2901", "RUF012", "ANN401", "B008",
 ]
 
+[tool.ruff.lint.pycodestyle]
+# The formatter wraps code at 110; long SQL and message string literals may run to 130.
+max-line-length = 130
+
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "ANN", "S105", "S106", "S108", "PLR", "T20", "S311", "DTZ", "PTH"]
 "src/workgraph/cli/**" = ["T20"]

@@ -6,19 +6,23 @@ import sys
 from pathlib import Path
 
 from workgraph.app import Workgraph
-from workgraph.demo import scripted_agent
 from workgraph.config.settings import CommandAgentConfig
+from workgraph.demo import scripted_agent
 from workgraph.jobs.worker import Worker
 
 FAKE_AGENT = str(Path(scripted_agent.__file__))
 
 
-def enable_fake_agent(app: Workgraph, name: str = "fake", mode: str = "success", *, timeout: float = 120) -> None:
+def enable_fake_agent(
+    app: Workgraph, name: str = "fake", mode: str = "success", *, timeout: float = 120
+) -> None:
     config = app.config
     config.execution.enabled = True
     config.execution.default_agent = name
     config.agents[name] = CommandAgentConfig(
-        executable=sys.executable, args=[FAKE_AGENT, "--mode", mode, "{manifest}"], timeout_seconds=timeout,
+        executable=sys.executable,
+        args=[FAKE_AGENT, "--mode", mode, "{manifest}"],
+        timeout_seconds=timeout,
         supports_usage=True,
     )
     app.config_store.save_global(config)

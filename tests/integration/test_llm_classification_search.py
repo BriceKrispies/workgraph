@@ -21,7 +21,9 @@ def ollama():
 
 def use_ollama(app, url, model="qwen-test", embed="embed-test"):
     config = app.config
-    config.llm.providers["ollama"] = OllamaProviderConfig(base_url=url, timeout_seconds=5, max_retries=2, backoff_seconds=0)
+    config.llm.providers["ollama"] = OllamaProviderConfig(
+        base_url=url, timeout_seconds=5, max_retries=2, backoff_seconds=0
+    )
     config.llm.classification = ModelSelection(provider="ollama", model=model)
     config.llm.embeddings = ModelSelection(provider="ollama", model=embed)
     app.config_store.save_global(config)
@@ -34,12 +36,18 @@ def free_port() -> int:
 
 
 def test_ollama_structured_output_retries_and_errors(ollama):
-    provider = OllamaProvider("ollama", OllamaProviderConfig(base_url=ollama.url, max_retries=2, backoff_seconds=0))
+    provider = OllamaProvider(
+        "ollama", OllamaProviderConfig(base_url=ollama.url, max_retries=2, backoff_seconds=0)
+    )
     assert provider.check_model("qwen-test")[0]
     assert not provider.check_model("missing")[0]
     ollama.fail_next = 2
-    response = provider.generate_json("qwen-test", system="s", prompt="<task>Fix crash in login</task>",
-                                      schema={"title": "TaskClassification"})
+    response = provider.generate_json(
+        "qwen-test",
+        system="s",
+        prompt="<task>Fix crash in login</task>",
+        schema={"title": "TaskClassification"},
+    )
     assert response.data["category"] == "bug_fix" and response.attempts == 3
     sent = ollama.requests[-1]["body"]
     assert sent["format"] == {"title": "TaskClassification"} and sent["stream"] is False
@@ -55,8 +63,12 @@ def test_ollama_structured_output_retries_and_errors(ollama):
 
 
 def test_provider_unreachable():
-    provider = OllamaProvider("ollama", OllamaProviderConfig(base_url=f"http://127.0.0.1:{free_port()}",
-                                                            max_retries=1, backoff_seconds=0, timeout_seconds=2))
+    provider = OllamaProvider(
+        "ollama",
+        OllamaProviderConfig(
+            base_url=f"http://127.0.0.1:{free_port()}", max_retries=1, backoff_seconds=0, timeout_seconds=2
+        ),
+    )
     ok, detail = provider.check_model("x")
     assert not ok and "unreachable" in detail
     with pytest.raises(ProviderUnavailableError):
@@ -68,8 +80,13 @@ def test_classification_job_versioning_and_model_policy(app, human, ws, ollama):
     config = app.config
     config.llm.auto_classify = True
     app.config_store.save_global(config)
-    task = app.tasks.create(human, ws, TaskCreate(title="Fix crash when login token expires",
-                                                  description="The app throws an exception and crashes."))
+    task = app.tasks.create(
+        human,
+        ws,
+        TaskCreate(
+            title="Fix crash when login token expires", description="The app throws an exception and crashes."
+        ),
+    )
     drain(app)
     result = app.classification.get(human, ws, task.key)
     current = result.current
@@ -89,12 +106,16 @@ def test_classification_job_versioning_and_model_policy(app, human, ws, ollama):
     again = app.classification.run_classification(human, task.id)
     assert again.id == current.id
     # Material description change -> re-classification by the same model replaces it.
-    app.tasks.update(human, ws, task.key, TaskUpdate(description="Refactor the login module into smaller units."))
+    app.tasks.update(
+        human, ws, task.key, TaskUpdate(description="Refactor the login module into smaller units.")
+    )
     drain(app)
     updated = app.classification.get(human, ws, task.key).current
     assert updated.id != current.id and updated.model == "qwen-test"
     # Manual confirmation is authoritative.
-    manual = app.classification.confirm(human, ws, task.key, category="security", note="actually a token issue")
+    manual = app.classification.confirm(
+        human, ws, task.key, category="security", note="actually a token issue"
+    )
     assert manual.is_current and manual.source == "manual"
     app.classification.run_classification(human, task.id, model="other-model", promote=False)
     assert app.classification.get(human, ws, task.key).current.id == manual.id
@@ -118,8 +139,9 @@ def test_invalid_output_and_unavailable_model(app, human, ws, ollama):
 
 def test_classification_job_dead_letters_when_model_unavailable(app, human, ws):
     config = app.config
-    config.llm.providers["ollama"] = OllamaProviderConfig(base_url=f"http://127.0.0.1:{free_port()}", max_retries=0,
-                                                          timeout_seconds=1)
+    config.llm.providers["ollama"] = OllamaProviderConfig(
+        base_url=f"http://127.0.0.1:{free_port()}", max_retries=0, timeout_seconds=1
+    )
     app.config_store.save_global(config)
     task = app.tasks.create(human, ws, TaskCreate(title="Anything"))
     result = app.classification.request(human, ws, task.key)
@@ -166,10 +188,20 @@ def test_search_lexical_semantic_hybrid_and_similar(app, human, ws, make_repo):
     app.config_store.save_global(config)
     repo = make_repo("auth")
     app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
-    t1 = app.tasks.create(human, ws, TaskCreate(title="Login token refresh fails", description="OAuth token expiry",
-                                                repositories=["auth"]))
-    t2 = app.tasks.create(human, ws, TaskCreate(title="Token refresh race condition", description="oauth token renew",
-                                                repositories=["auth"]))
+    t1 = app.tasks.create(
+        human,
+        ws,
+        TaskCreate(
+            title="Login token refresh fails", description="OAuth token expiry", repositories=["auth"]
+        ),
+    )
+    t2 = app.tasks.create(
+        human,
+        ws,
+        TaskCreate(
+            title="Token refresh race condition", description="oauth token renew", repositories=["auth"]
+        ),
+    )
     app.tasks.create(human, ws, TaskCreate(title="Dark mode colours", description="css theme"))
     # Full-text search works without any embeddings.
     result = app.search.search(human, ws, "token refresh")
@@ -181,8 +213,15 @@ def test_search_lexical_semantic_hybrid_and_similar(app, human, ws, make_repo):
     hybrid = app.search.search(human, ws, "oauth token")
     assert hybrid.mode == "hybrid" and hybrid.semantic_available
     assert hybrid.hits[0].key in {t1.key, t2.key}
-    filtered = app.search.search(human, ws, "token", mode="lexical",
-                                 filters=__import__("workgraph.search.service", fromlist=["SearchFilters"]).SearchFilters(repository="auth"))
+    filtered = app.search.search(
+        human,
+        ws,
+        "token",
+        mode="lexical",
+        filters=__import__("workgraph.search.service", fromlist=["SearchFilters"]).SearchFilters(
+            repository="auth"
+        ),
+    )
     assert len(filtered.hits) == 2
     similar = app.search.similar(human, ws, t1.key)
     assert similar["method"] == "semantic" and similar["similar"][0]["key"] == t2.key

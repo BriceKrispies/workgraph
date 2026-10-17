@@ -31,8 +31,10 @@ def worker_run(
     worker.install_signal_handlers()
     console.print(f"worker {worker.worker_id} started (concurrency {worker.concurrency})")
     worker.run(once=once, max_idle_seconds=max_idle)
-    emit({"worker": worker.worker_id, "completed": worker.completed, "failed": worker.failed},
-         lambda r: console.print(f"worker stopped: {r['completed']} completed, {r['failed']} failed"))
+    emit(
+        {"worker": worker.worker_id, "completed": worker.completed, "failed": worker.failed},
+        lambda r: console.print(f"worker stopped: {r['completed']} completed, {r['failed']} failed"),
+    )
 
 
 @worker_app.command("list")
@@ -40,11 +42,38 @@ def worker_run(
 def worker_list() -> None:
     """Show workers and their heartbeats."""
     workers = STATE.app().queue.workers()
-    rows = [{"id": w.id, "status": w.status, "pid": w.pid, "concurrency": w.concurrency, "current": w.current_jobs,
-             "completed": w.jobs_completed, "failed": w.jobs_failed, "heartbeat_at": w.heartbeat_at} for w in workers]
-    emit(rows, lambda rs: table([(r["id"], r["status"], r["pid"], r["concurrency"], len(r["current"]), r["completed"],
-                                  r["failed"], when(r["heartbeat_at"])) for r in rs],
-                                ["worker", "status", "pid", "conc", "running", "done", "failed", "heartbeat"]))
+    rows = [
+        {
+            "id": w.id,
+            "status": w.status,
+            "pid": w.pid,
+            "concurrency": w.concurrency,
+            "current": w.current_jobs,
+            "completed": w.jobs_completed,
+            "failed": w.jobs_failed,
+            "heartbeat_at": w.heartbeat_at,
+        }
+        for w in workers
+    ]
+    emit(
+        rows,
+        lambda rs: table(
+            [
+                (
+                    r["id"],
+                    r["status"],
+                    r["pid"],
+                    r["concurrency"],
+                    len(r["current"]),
+                    r["completed"],
+                    r["failed"],
+                    when(r["heartbeat_at"]),
+                )
+                for r in rs
+            ],
+            ["worker", "status", "pid", "conc", "running", "done", "failed", "heartbeat"],
+        ),
+    )
 
 
 @worker_app.command("recover")
@@ -54,26 +83,63 @@ def worker_recover() -> None:
     from workgraph.core.context import RequestContext
 
     app = STATE.app()
-    result = {"recovered_jobs": app.queue.recover_expired(), "lost_workers": app.queue.mark_lost_workers(),
-              "worktrees": app.worktrees.recover(RequestContext.system("cli"))}
+    result = {
+        "recovered_jobs": app.queue.recover_expired(),
+        "lost_workers": app.queue.mark_lost_workers(),
+        "worktrees": app.worktrees.recover(RequestContext.system("cli")),
+    }
     emit(result, lambda r: kv(r.items(), title="recovery"))
 
 
 def _job_row(j: Any) -> tuple[Any, ...]:
-    return (short(j.id), j.kind, j.status, f"{j.attempts}/{j.max_attempts}", when(j.run_at),
-            (j.last_error or "")[:60])
+    return (
+        short(j.id),
+        j.kind,
+        j.status,
+        f"{j.attempts}/{j.max_attempts}",
+        when(j.run_at),
+        (j.last_error or "")[:60],
+    )
 
 
 @job_app.command("list")
 @handle_errors
-def job_list(status: list[str] = typer.Option(None, "--status", "-s"), kind: str | None = typer.Option(None),
-             limit: int = typer.Option(50), offset: int = typer.Option(0)) -> None:
+def job_list(
+    status: list[str] = typer.Option(None, "--status", "-s"),
+    kind: str | None = typer.Option(None),
+    limit: int = typer.Option(50),
+    offset: int = typer.Option(0),
+) -> None:
     """List jobs (newest first)."""
     jobs, total = STATE.app().queue.list(statuses=status or None, kind=kind, limit=limit, offset=offset)
-    data = {"total": total, "items": [{c: getattr(j, c) for c in ("id", "kind", "status", "attempts", "max_attempts",
-                                                                   "run_at", "last_error", "error_kind", "task_id",
-                                                                   "attempt_id", "created_at")} for j in jobs]}
-    emit(data, lambda _: table([_job_row(j) for j in jobs], ["job", "kind", "status", "attempts", "run at", "error"]))
+    data = {
+        "total": total,
+        "items": [
+            {
+                c: getattr(j, c)
+                for c in (
+                    "id",
+                    "kind",
+                    "status",
+                    "attempts",
+                    "max_attempts",
+                    "run_at",
+                    "last_error",
+                    "error_kind",
+                    "task_id",
+                    "attempt_id",
+                    "created_at",
+                )
+            }
+            for j in jobs
+        ],
+    }
+    emit(
+        data,
+        lambda _: table(
+            [_job_row(j) for j in jobs], ["job", "kind", "status", "attempts", "run at", "error"]
+        ),
+    )
 
 
 @job_app.command("show")
@@ -83,14 +149,50 @@ def job_show(job_id: str) -> None:
     app = STATE.app()
     job = app.queue.get(job_id)
     runs = app.queue.runs(job_id)
-    data = {**{c: getattr(job, c) for c in ("id", "kind", "status", "payload", "result", "attempts", "max_attempts",
-                                            "run_at", "lease_owner", "lease_expires_at", "last_error", "error_kind",
-                                            "resource_keys", "cancel_requested", "created_at", "finished_at")},
-            "runs": [{"attempt": r.attempt_number, "worker": r.worker_id, "status": r.status, "error": r.error,
-                      "started_at": r.started_at, "finished_at": r.finished_at} for r in runs]}
-    emit(data, lambda d: (kv([(k, v) for k, v in d.items() if k != "runs"], title=job.kind),
-                          table([(r["attempt"], r["worker"], r["status"], (r["error"] or "")[:80]) for r in d["runs"]],
-                                ["#", "worker", "status", "error"])))
+    data = {
+        **{
+            c: getattr(job, c)
+            for c in (
+                "id",
+                "kind",
+                "status",
+                "payload",
+                "result",
+                "attempts",
+                "max_attempts",
+                "run_at",
+                "lease_owner",
+                "lease_expires_at",
+                "last_error",
+                "error_kind",
+                "resource_keys",
+                "cancel_requested",
+                "created_at",
+                "finished_at",
+            )
+        },
+        "runs": [
+            {
+                "attempt": r.attempt_number,
+                "worker": r.worker_id,
+                "status": r.status,
+                "error": r.error,
+                "started_at": r.started_at,
+                "finished_at": r.finished_at,
+            }
+            for r in runs
+        ],
+    }
+    emit(
+        data,
+        lambda d: (
+            kv([(k, v) for k, v in d.items() if k != "runs"], title=job.kind),
+            table(
+                [(r["attempt"], r["worker"], r["status"], (r["error"] or "")[:80]) for r in d["runs"]],
+                ["#", "worker", "status", "error"],
+            ),
+        ),
+    )
 
 
 @job_app.command("stats")
@@ -119,8 +221,11 @@ def job_retry(job_id: str) -> None:
 
 @job_app.command("enqueue")
 @handle_errors
-def job_enqueue(kind: str, payload: str = typer.Option("{}", help="JSON payload"),
-                key: str | None = typer.Option(None, help="Idempotency key")) -> None:
+def job_enqueue(
+    kind: str,
+    payload: str = typer.Option("{}", help="JSON payload"),
+    key: str | None = typer.Option(None, help="Idempotency key"),
+) -> None:
     """Enqueue a job (e.g. `noop` to check that workers are alive, `git_sync`, `compact_telemetry`)."""
     from workgraph.jobs.handlers import HANDLERS
 

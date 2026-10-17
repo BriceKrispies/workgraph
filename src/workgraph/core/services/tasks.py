@@ -756,7 +756,10 @@ class TaskService(Service):
             if exists is None:
                 path = depends_on_reachable(session, dep.id, task.id)
                 if path is not None:
-                    by_id = dict(session.execute(select(Task.id, Task.key).where(Task.id.in_(path))).tuples())
+                    by_id = {
+                        row.id: row.key
+                        for row in session.execute(select(Task.id, Task.key).where(Task.id.in_(path)))
+                    }
                     keys = [by_id[p] for p in path]
                     raise DependencyCycleError(
                         f"adding {task.key} -> {dep.key} would create a cycle: "

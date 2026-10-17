@@ -13,7 +13,7 @@ from __future__ import annotations
 import builtins
 import hashlib
 from collections import defaultdict, deque
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from datetime import timedelta
 from typing import Any
 
@@ -35,9 +35,12 @@ from workgraph.core.errors import (
 from workgraph.core.events.log import record_event
 from workgraph.core.models.enums import (
     DEPENDENCY_SATISFIED_STATUSES,
+    INACTIVE_STACK_STATUSES,
     PRIORITY_RANK,
+    STACK_DEPENDENCY_SATISFIED_STATES,
     AttemptStatus,
     CommentKind,
+    StackItemState,
     TaskPriority,
     TaskStatus,
 )
@@ -72,6 +75,8 @@ from workgraph.persistence.orm import (
     AgentAttempt,
     Project,
     Repository,
+    Stack,
+    StackItem,
     Task,
     TaskComment,
     TaskDependency,
@@ -118,18 +123,53 @@ def task_out(session: Session, task: Task, cls: type[TaskOut] = TaskOut) -> Any:
     return cls.model_validate(data)
 
 
-def unsatisfied_dependencies(session: Session, task_id: str) -> list[Task]:
-    return list(
-        session.scalars(
-            select(Task)
-            .join(TaskDependency, TaskDependency.depends_on_id == Task.id)
-            .where(
-                TaskDependency.task_id == task_id,
-                Task.status.not_in([str(s) for s in DEPENDENCY_SATISFIED_STATUSES]),
-            )
-            .order_by(Task.number)
-        )
+def satisfied_dependencies(session: Session, edges: Collection[tuple[str, str]]) -> set[tuple[str, str]]:
+    """Which ``(task_id, depends_on_id)`` edges are satisfied.
+
+    A dependency is satisfied once its task is accepted. Inside a stack, a dependency on a sibling
+    that is an item of the same active stack is satisfied as soon as that item is integration-ready
+    (ready, merged or verified). Every dependency check goes through here.
+    """
+    if not edges:
+        return set()
+    statuses = dict(
+        session.execute(select(Task.id, Task.status).where(Task.id.in_({d for _, d in edges}))).all()
     )
+    satisfied = {(t, d) for t, d in edges if statuses.get(d) in DEPENDENCY_SATISFIED_STATUSES}
+    pending = {(t, d) for t, d in edges if (t, d) not in satisfied}
+    if not pending:
+        return satisfied
+    members: dict[str, dict[str, str]] = defaultdict(dict)  # stack id -> task id -> item state
+    for stack_id, task_id, state in session.execute(
+        select(StackItem.stack_id, StackItem.task_id, StackItem.state)
+        .join(Stack, Stack.id == StackItem.stack_id)
+        .where(
+            StackItem.task_id.in_({t for t, _ in pending} | {d for _, d in pending}),
+            Stack.status.not_in(INACTIVE_STACK_STATUSES),
+        )
+    ):
+        members[stack_id][task_id] = state
+    for task_id, depends_on_id in pending:
+        for items in members.values():
+            if task_id in items and depends_on_id in items:
+                if StackItemState(items[depends_on_id]) in STACK_DEPENDENCY_SATISFIED_STATES:
+                    satisfied.add((task_id, depends_on_id))
+                break
+    return satisfied
+
+
+def unsatisfied_dependencies(session: Session, task_id: str) -> list[Task]:
+    edges = [
+        (task_id, depends_on_id)
+        for depends_on_id in session.scalars(
+            select(TaskDependency.depends_on_id).where(TaskDependency.task_id == task_id)
+        )
+    ]
+    satisfied = satisfied_dependencies(session, edges)
+    blockers = [d for _, d in edges if (task_id, d) not in satisfied]
+    if not blockers:
+        return []
+    return list(session.scalars(select(Task).where(Task.id.in_(blockers)).order_by(Task.number)))
 
 
 def depends_on_reachable(session: Session, start: str, target: str) -> list[str] | None:
@@ -1237,10 +1277,8 @@ class TaskService(Service):
                     and_(TaskDependency.task_id.in_(ids), TaskDependency.depends_on_id.in_(ids))
                 )
             ).all()
-            unsatisfied: set[str] = set()
-            for tid, did in dep_rows:
-                if tasks[did].status not in DEPENDENCY_SATISFIED_STATUSES:
-                    unsatisfied.add(tid)
+            satisfied = satisfied_dependencies(session, [(tid, did) for tid, did in dep_rows])
+            unsatisfied: set[str] = {tid for tid, did in dep_rows if (tid, did) not in satisfied}
             nodes = [
                 GraphNode(
                     id=t.id,

@@ -38,6 +38,12 @@ Transitions are validated by `core/policies/lifecycle.py`. Notable rules:
 - Moving to `ready` with unaccepted dependencies lands in `blocked` (reason `dependencies`);
   accepting the last blocker returns dependents to `ready` and emits `task.became_ready`.
   Claiming or running a task with unaccepted dependencies is rejected.
+- **Inside a stack, a sibling dependency is satisfied earlier.** When both tasks are items of the
+  same active stack, the dependency counts as satisfied once its stack item is `ready`, `merged` or
+  `verified` (integration-ready), without acceptance. Setting the item to any of those states
+  promotes its blocked dependents; leaving them, or removing the item from the stack, blocks them
+  again. Dependencies on tasks outside the stack keep the accepted-only rule. Every satisfaction
+  check goes through `satisfied_dependencies` in `core/services/tasks.py`.
 - Dependencies are workspace-wide (across projects and repositories); cycles in dependencies and
   in the parent hierarchy are rejected with the offending path.
 - Claims are exclusive leases; an expired claim is released by maintenance.

@@ -147,6 +147,14 @@ class StackItemState(StrEnum):
     VERIFIED = "verified"
 
 
+# Stacks in these states are history; a parent may start a new stack once its last one is inactive.
+INACTIVE_STACK_STATUSES = (str(StackStatus.LANDED), str(StackStatus.ABANDONED))
+# Inside a stack a sibling dependency is satisfied once its item is integration-ready or later.
+STACK_DEPENDENCY_SATISFIED_STATES = frozenset(
+    {StackItemState.READY, StackItemState.MERGED, StackItemState.VERIFIED}
+)
+
+
 class VerificationStatus(StrEnum):
     PENDING = "pending"
     RUNNING = "running"

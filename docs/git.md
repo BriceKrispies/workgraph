@@ -84,6 +84,18 @@ applicable verification checks.
 - With `execution.isolation = "in_place"` the user checkout is used under an exclusive lease;
   a second incompatible attempt fails with `resource_busy`.
 - Parallel attempts on the same repository each get their own worktree.
+- **Base inside a stack.** When the task is an item of an active stack and the stack covers the
+  repository, the attempt's target ref is chosen from the dependency graph, unless the caller passed
+  one (reruns do). A child with no sibling dependency that changed the repository starts from the
+  stack's `base_sha`, so independent children run side by side. A child that depends on siblings
+  starts from the head its latest succeeded attempt left in the repository (the sibling's
+  `ChangeSetItem.head_sha`). If several siblings changed the repository, the one whose head builds
+  on the others is the base, and the rest are recorded as `superseded`. If two of those heads are not
+  on one line of history, preparation fails with a `ValidationFailed` asking for an explicit
+  dependency between the two siblings. The chosen source, base and sibling are recorded in the
+  manifest entry (`base`) and in the `attempt.workspace_prepared` and `worktree.created` events.
+  Tasks outside a stack, and repositories a stack does not cover, use the default branch as before.
+  `in_place` isolation writes the user checkout directly, so no stack base is applied there.
 - Worktree rows track `preparing -> active -> released -> removed` (or `orphaned`).
   `workgraph worker recover` (and every worker start) reconciles rows with disk after a crash.
 - Cleanup is explicit (`workgraph git cleanup-worktrees --apply`), only touches clean,

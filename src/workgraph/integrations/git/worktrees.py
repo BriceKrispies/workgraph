@@ -17,7 +17,7 @@ from __future__ import annotations
 import builtins
 import re
 import shutil
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import timedelta
 from pathlib import Path
 from typing import Any
@@ -41,6 +41,7 @@ from workgraph.core.models.enums import (
 )
 from workgraph.core.services.base import Service
 from workgraph.core.services.repositories import primary_checkout
+from workgraph.core.services.stacks import stack_base
 from workgraph.integrations.git.cli import Git, validate_ref
 from workgraph.persistence.orm import (
     AgentAttempt,
@@ -67,6 +68,8 @@ class ManifestEntry(BaseModel):
     isolation: str  # worktree | in_place | snapshot
     worktree_id: str | None = None
     branch: str | None = None
+    # Why this base was chosen when a stack decided it (see core.services.stacks.stack_base).
+    base: dict[str, Any] | None = None
 
 
 class ExecutionManifest(BaseModel):
@@ -89,6 +92,7 @@ class RepoRequest:
     repository_id: str
     access: str
     target_ref: str | None = None
+    base: dict[str, Any] | None = None
 
 
 def acquire_lease(
@@ -165,6 +169,8 @@ class WorktreeManager(Service):
             assert task is not None
             task_id, task_key, ws_id, number = task.id, task.key, task.workspace_id, attempt.number
         requests = requests if requests is not None else self.default_requests(task_id)
+        if isolation != "in_place":
+            requests = [self._stack_request(task_id, request) for request in requests]
         workspace_dir = self.root / attempt_id
         workspace_dir.mkdir(parents=True, exist_ok=True)
         entries: list[ManifestEntry] = []
@@ -232,6 +238,7 @@ class WorktreeManager(Service):
                 attempt_id=attempt_id,
                 data={
                     "repositories": [e.repository for e in entries],
+                    "bases": {e.repository: e.base for e in entries if e.base is not None},
                     "isolation": isolation,
                     "baseline_manifest_id": baseline.id,
                     "change_set_id": change_set_id,
@@ -253,6 +260,20 @@ class WorktreeManager(Service):
             manifest.model_dump_json(indent=2), encoding="utf-8"
         )
         return manifest
+
+    def _stack_request(self, task_id: str, request: RepoRequest) -> RepoRequest:
+        """Give a stack child's request the base its dependencies imply, unless the caller chose one."""
+        if request.target_ref is not None:
+            return request
+        with self.db.session() as session:
+            repo = session.get(Repository, request.repository_id)
+            task = session.get(Task, task_id)
+            if repo is None or task is None:
+                return request
+            base = stack_base(session, task, repo)
+        if base is None:
+            return request
+        return replace(request, target_ref=base.commit, base=base.info)
 
     def _prepare_repo(
         self,
@@ -346,7 +367,13 @@ class WorktreeManager(Service):
                 entity_id=worktree_id,
                 workspace_id=ws_id,
                 attempt_id=attempt_id,
-                data={"repository": name, "path": str(path), "branch": branch, "base_sha": base},
+                data={
+                    "repository": name,
+                    "path": str(path),
+                    "branch": branch,
+                    "base_sha": base,
+                    "base": request.base,
+                },
             )
         return ManifestEntry(
             repository_id=request.repository_id,
@@ -360,6 +387,7 @@ class WorktreeManager(Service):
             isolation="worktree" if branch else "snapshot",
             worktree_id=worktree_id,
             branch=branch,
+            base=request.base,
         )
 
     # ------------------------------------------------------------------ outcome

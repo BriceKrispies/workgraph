@@ -8,16 +8,24 @@ resolving that commit; the integration worktree is prepared by later stages.
 from __future__ import annotations
 
 import builtins
+from dataclasses import dataclass
+from itertools import combinations
 from pathlib import Path
+from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session
 
 from workgraph.core.clock import utcnow
 from workgraph.core.context import RequestContext
 from workgraph.core.errors import ConflictError, NotFoundError, ValidationFailed
 from workgraph.core.events.log import record_event
-from workgraph.core.models.enums import StackItemState, StackStatus
+from workgraph.core.models.enums import (
+    INACTIVE_STACK_STATUSES,
+    STACK_DEPENDENCY_SATISFIED_STATES,
+    AttemptStatus,
+    StackItemState,
+)
 from workgraph.core.models.schemas import StackItemOut, StackOut, StackRepositoryOut
 from workgraph.core.policies.stacks import REMOVABLE_STATES, check_stack_item_transition
 from workgraph.core.services import resolve
@@ -25,17 +33,114 @@ from workgraph.core.services.base import Service
 from workgraph.core.services.repositories import primary_checkout
 from workgraph.integrations.git.cli import Git
 from workgraph.persistence.orm import (
+    AgentAttempt,
+    ChangeSet,
+    ChangeSetItem,
     Repository,
     Stack,
     StackItem,
     StackRepository,
     Task,
+    TaskDependency,
     TaskRepository,
 )
 from workgraph.security.permissions import Permission, require
 
-# Stacks in these states are history; a parent may start a new stack once its last one is inactive.
-INACTIVE_STACK_STATUSES = (str(StackStatus.LANDED), str(StackStatus.ABANDONED))
+
+@dataclass(frozen=True)
+class StackBase:
+    """The commit a stack child's attempt starts from in one repository, and why it was chosen."""
+
+    commit: str
+    info: dict[str, Any]
+
+
+def stack_base(session: Session, task: Task, repo: Repository) -> StackBase | None:
+    """Choose where a stack child's attempt starts in one repository.
+
+    Returns None when the task is not an item of an active stack that covers the repository; the
+    attempt then starts from the default branch as before. A child that depends on siblings in the
+    stack which changed the repository starts from the head of the latest such sibling's succeeded
+    attempt, so stacked changes build on each other. Any other child starts from the stack's base
+    commit, so independent children run side by side on the same footing.
+    """
+    row = session.execute(
+        select(Stack.id, StackRepository.base_sha)
+        .join(StackItem, StackItem.stack_id == Stack.id)
+        .join(
+            StackRepository,
+            and_(StackRepository.stack_id == Stack.id, StackRepository.repository_id == repo.id),
+        )
+        .where(StackItem.task_id == task.id, Stack.status.not_in(INACTIVE_STACK_STATUSES))
+    ).first()
+    if row is None:
+        return None
+    stack_id, base_sha = row
+    siblings = session.scalars(
+        select(Task)
+        .join(TaskDependency, TaskDependency.depends_on_id == Task.id)
+        .join(StackItem, and_(StackItem.task_id == Task.id, StackItem.stack_id == stack_id))
+        .where(TaskDependency.task_id == task.id)
+        .order_by(Task.number)
+    )
+    heads: list[tuple[Task, str]] = []
+    for sibling in siblings:
+        head = _latest_head(session, sibling.id, repo.id)
+        if head is not None:
+            heads.append((sibling, head))
+    if not heads:
+        return StackBase(base_sha, {"source": "stack_base", "stack_id": stack_id, "stack_base_sha": base_sha})
+    checkout = primary_checkout(repo)
+    if checkout is None:
+        raise ValidationFailed(f"repository {repo.name!r} has no available checkout")
+    git = Git(Path(checkout.path))
+    for (first, first_head), (second, second_head) in combinations(heads, 2):
+        if not (git.is_ancestor(first_head, second_head) or git.is_ancestor(second_head, first_head)):
+            raise ValidationFailed(
+                f"{task.key} depends on {first.key} and {second.key}, whose changes to {repo.name!r} "
+                "are not one line of history; add an explicit dependency between "
+                f"{first.key} and {second.key} so that one builds on the other",
+                details={"task": task.key, "repository": repo.name, "siblings": [first.key, second.key]},
+            )
+
+    def builds_on_others(entry: tuple[Task, str]) -> int:
+        return sum(
+            1
+            for other, other_head in heads
+            if other.id != entry[0].id and git.is_ancestor(other_head, entry[1])
+        )
+
+    # The latest sibling is the one whose head builds on the most other sibling heads.
+    ordered = sorted(heads, key=builds_on_others, reverse=True)
+    (latest, head), superseded = ordered[0], ordered[1:]
+    return StackBase(
+        head,
+        {
+            "source": "sibling_head",
+            "stack_id": stack_id,
+            "stack_base_sha": base_sha,
+            "sibling": latest.key,
+            "sibling_head": head,
+            "superseded": [{"task": other.key, "head": other_head} for other, other_head in superseded],
+        },
+    )
+
+
+def _latest_head(session: Session, task_id: str, repository_id: str) -> str | None:
+    """The head the task's latest succeeded attempt left in the repository, if it touched it."""
+    return session.scalar(
+        select(ChangeSetItem.head_sha)
+        .join(ChangeSet, ChangeSet.id == ChangeSetItem.change_set_id)
+        .join(AgentAttempt, AgentAttempt.id == ChangeSet.attempt_id)
+        .where(
+            ChangeSet.task_id == task_id,
+            ChangeSetItem.repository_id == repository_id,
+            ChangeSetItem.head_sha.is_not(None),
+            AgentAttempt.status == str(AttemptStatus.SUCCEEDED),
+        )
+        .order_by(ChangeSet.created_at.desc(), AgentAttempt.number.desc())
+        .limit(1)
+    )
 
 
 def stack_out(session: Session, stack: Stack) -> StackOut:
@@ -277,7 +382,7 @@ class StackService(Service):
             session.delete(item)
             stack.updated_at = utcnow()
             session.flush()
-            record_event(
+            event = record_event(
                 session,
                 ctx,
                 event_type="stack.item_removed",
@@ -286,6 +391,9 @@ class StackService(Service):
                 workspace_id=ws_id,
                 data={"task_key": child.key, "parent_key": parent.key, "state": state},
             )
+            if state in STACK_DEPENDENCY_SATISFIED_STATES:
+                # Dependents that relied on this sibling inside the stack must wait for acceptance again.
+                self.app.tasks._refresh_dependents(session, ctx.caused_by(event.id), child.id)
             return stack_out(session, stack)
 
     def set_item_state(
@@ -320,7 +428,7 @@ class StackService(Service):
                 item.merge_order = (last or 0) + 1
             stack.updated_at = utcnow()
             session.flush()
-            record_event(
+            event = record_event(
                 session,
                 ctx,
                 event_type="stack.item_state_changed",
@@ -336,6 +444,11 @@ class StackService(Service):
                     "merge_order": item.merge_order,
                 },
             )
+            # Entering or leaving integration-ready changes whether dependents on this sibling are satisfied.
+            if (current in STACK_DEPENDENCY_SATISFIED_STATES) != (
+                target in STACK_DEPENDENCY_SATISFIED_STATES
+            ):
+                self.app.tasks._refresh_dependents(session, ctx.caused_by(event.id), child.id)
             return stack_out(session, stack)
 
     # ------------------------------------------------------------------ reads

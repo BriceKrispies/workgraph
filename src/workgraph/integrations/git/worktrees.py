@@ -597,7 +597,8 @@ class WorktreeManager(Service):
         updates: dict[str, str] = {}
         for worktree_id, path, status, attempt_id in rows:
             exists = Path(path).exists() and Git(path).is_repository()
-            finished = attempt_status.get(attempt_id or "") in TERMINAL_ATTEMPT_STATUSES or attempt_id is None
+            # Stack integration worktrees have no attempt and stay active while their stack is open.
+            finished = attempt_id is not None and attempt_status.get(attempt_id) in TERMINAL_ATTEMPT_STATUSES
             if not exists:
                 updates[worktree_id] = WorktreeStatus.ORPHANED
                 fixed["orphaned"].append(path)
@@ -609,7 +610,7 @@ class WorktreeManager(Service):
                 fixed["activated"].append(path)
         if self.root.exists():
             for attempt_dir in self.root.iterdir():
-                if attempt_dir.is_dir():
+                if attempt_dir.is_dir() and attempt_dir.name != "stacks":
                     for child in attempt_dir.iterdir():
                         if child.is_dir() and child.resolve() not in known_paths:
                             fixed["unknown_dirs"].append(str(child))

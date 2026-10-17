@@ -149,6 +149,7 @@ class _PreparedRun:
     attempt_id: str | None
     manifest: list[dict[str, Any]]
     checks: list[ApplicableCheck]
+    tier: CheckTier | None = None
 
 
 def extract_failure_signatures(lines: list[str], parser: str) -> list[str]:
@@ -420,6 +421,7 @@ class VerificationService(Service):
                 attempt_id=attempt_id,
                 manifest=entries,
                 checks=checks,
+                tier=tier,
             )
 
     def _execute_check(
@@ -578,7 +580,11 @@ class VerificationService(Service):
                 },
             )
             follow = ctx.caused_by(event.id)
-            self._apply_change_set_status(session, prepared, required_ok)
+            # A fast-tier pass only gates a stack child (the stack item becomes ready); the change set
+            # is verified, and the task moved on, by the full tier on the integration tip.
+            fast_pass = prepared.tier == "fast" and required_ok
+            if not fast_pass:
+                self._apply_change_set_status(session, prepared, required_ok)
             if prepared.attempt_id:
                 attempt = session.get(AgentAttempt, prepared.attempt_id)
                 if attempt is not None and attempt.status == AttemptStatus.VERIFYING:
@@ -594,7 +600,7 @@ class VerificationService(Service):
                     )
             task = session.get(Task, prepared.task_id)
             assert task is not None
-            if task.status == TaskStatus.AWAITING_VERIFICATION:
+            if task.status == TaskStatus.AWAITING_VERIFICATION and not fast_pass:
                 target = TaskStatus.AWAITING_REVIEW if required_ok else TaskStatus.FAILED
                 self.app.tasks._transition(
                     session,

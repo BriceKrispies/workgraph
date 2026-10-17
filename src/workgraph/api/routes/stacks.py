@@ -25,3 +25,9 @@ def create_stack(app: AppDep, ctx: CtxDep, ws: str, body: StackCreate) -> Any:
 @router.get("/ws/{ws}/stacks/{ref}", response_model=StackOut)
 def get_stack(app: AppDep, ctx: CtxDep, ws: str, ref: str) -> Any:
     return app.stacks.get(ctx, ws, ref)
+
+
+@router.post("/ws/{ws}/stacks/{ref}/integrate", status_code=202)
+def integrate_stack(app: AppDep, ctx: CtxDep, ws: str, ref: str) -> Any:
+    """Queue integration of the stack's ready children; one job per stack repository."""
+    return app.stacks.integrate(ctx, ws, ref)

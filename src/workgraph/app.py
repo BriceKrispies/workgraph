@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from workgraph.integrations.agents.registry import AgentRegistry
     from workgraph.integrations.claude_code.ingest import HookIngestor
     from workgraph.integrations.git.service import GitService
+    from workgraph.integrations.git.stack_integration import StackIntegrator
     from workgraph.integrations.git.worktrees import WorktreeManager
     from workgraph.integrations.llm.registry import LLMRegistry
     from workgraph.jobs.queue import JobQueue
@@ -169,6 +170,12 @@ class Workgraph:
         from workgraph.integrations.git.worktrees import WorktreeManager
 
         return WorktreeManager(self)
+
+    @cached_property
+    def stack_integration(self) -> StackIntegrator:
+        from workgraph.integrations.git.stack_integration import StackIntegrator
+
+        return StackIntegrator(self)
 
     @cached_property
     def llm(self) -> LLMRegistry:

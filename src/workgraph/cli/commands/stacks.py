@@ -48,6 +48,17 @@ def stack_show(parent: str, workspace: str | None = workspace_option()) -> None:
     emit(STATE.app().stacks.get(STATE.ctx(), ws(workspace), parent), _render_stack)
 
 
+def _render_integration(out: dict[str, Any]) -> None:
+    table([(job["repository"], job["job_id"]) for job in out["jobs"]], ["repository", "integration job"])
+
+
+@stack_app.command("integrate")
+@handle_errors
+def stack_integrate(parent: str, workspace: str | None = workspace_option()) -> None:
+    """Queue merging the stack's ready children onto each repository's integration branch."""
+    emit(STATE.app().stacks.integrate(STATE.ctx(), ws(workspace), parent), _render_integration)
+
+
 @stack_app.command("list")
 @handle_errors
 def stack_list(

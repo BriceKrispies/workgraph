@@ -13,6 +13,7 @@ import os
 import re
 import shutil
 import subprocess
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -116,7 +117,7 @@ class Git:
         self.path = Path(path)
         self.timeout = timeout
 
-    def _env(self) -> dict[str, str]:
+    def _env(self, extra: Mapping[str, str] | None = None) -> dict[str, str]:
         env = dict(os.environ)
         env.update(
             {
@@ -130,6 +131,7 @@ class Git:
         )
         env.pop("GIT_DIR", None)
         env.pop("GIT_WORK_TREE", None)
+        env.update(extra or {})
         return env
 
     def run(
@@ -139,6 +141,7 @@ class Git:
         input_text: str | None = None,
         timeout: float | None = None,
         binary: bool = False,
+        env: Mapping[str, str] | None = None,
     ) -> GitResult:
         argv = [
             git_executable(),
@@ -156,7 +159,7 @@ class Git:
                 input=input_text.encode("utf-8") if input_text is not None else None,
                 capture_output=True,
                 timeout=timeout or self.timeout,
-                env=self._env(),
+                env=self._env(env),
                 check=False,
             )
         except subprocess.TimeoutExpired as exc:

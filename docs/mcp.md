@@ -35,7 +35,7 @@ dimensions and typed filters.
 `task_link_commit`, `task_report_progress`, `task_report_result`, `attempt_create`, `attempt_get`,
 `attempt_list`, `run_start`, `run_get`, `run_cancel`, `git_get_changes`, `git_get_task_diff`,
 `classification_get`, `classification_request`, `analytics_query`, `analytics_report`,
-`automation_list`, `automation_trigger`.
+`automation_list`, `automation_trigger`, `stack_get`, `stack_list`.
 
 All tools have JSON-Schema input validation and structured output. List tools accept
 `limit`/`offset` and return `next_offset`. Errors are returned as tool errors whose text is

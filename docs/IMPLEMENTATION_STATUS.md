@@ -44,6 +44,7 @@ platform-specific process-tree termination for both families).
 | Pagination, filtering, sorting, bulk operations, full-text search, archived retrieval | Done | `unit/test_tasks_core.py::test_filters_pagination_search_and_bulk` |
 | Cross-project/cross-repository dependencies, cycle detection, workspace-global graph | Done | `unit/test_tasks_core.py::test_cycle_detection`, `::test_dependencies_block_and_unblock`, `::test_graph` |
 | Parent-child rollups | Done | `unit/test_tasks_core.py::test_parent_child_rollup_and_hierarchy_cycle` |
+| Stacks: `stacks`/`stack_items` model (migration `0003`), base SHAs fresh off the default branch at creation, item state table, events, CLI/API/MCP reads. No integration branch, merging, verification or acceptance yet (stacked-integration items 3-7) | Partial | `integration/test_stacks.py`, `unit/test_foundations.py::test_stacks_migration_upgrades_populated_0002`, `integration/test_cli_groups.py::test_stack_command_group`, `integration/test_api.py::test_stack_routes`, `integration/test_mcp.py` |
 
 ## 7. Immutable history
 

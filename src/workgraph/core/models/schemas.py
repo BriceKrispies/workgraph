@@ -16,6 +16,8 @@ from workgraph.core.models.enums import (
     AttemptStatus,
     CommentKind,
     RelationType,
+    StackItemState,
+    StackStatus,
     TaskPriority,
     TaskStatus,
 )
@@ -550,6 +552,46 @@ class ResultReport(InputSchema):
         default=None, description="Provider-measured token usage. Omit when not measured."
     )
     cost_usd: float | None = Field(default=None, ge=0, description="Only when reliably measured")
+
+
+# --------------------------------------------------------------------------- stacks
+
+
+class StackCreate(InputSchema):
+    parent: str = Field(min_length=1, description="Parent task id or key")
+
+
+class StackRepositoryOut(Schema):
+    repository_id: str
+    repository_name: str
+    base_sha: str
+    integration_branch: str
+
+
+class StackItemOut(Schema):
+    id: str
+    stack_id: str
+    task_id: str
+    task_key: str
+    task_title: str
+    state: StackItemState
+    merge_order: int | None = None
+    detail: str | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class StackOut(Schema):
+    id: str
+    workspace_id: str
+    parent_task_id: str
+    parent_key: str
+    parent_title: str
+    status: StackStatus
+    repositories: list[StackRepositoryOut] = Field(default_factory=list)
+    items: list[StackItemOut] = Field(default_factory=list)
+    created_at: datetime
+    updated_at: datetime
 
 
 ProjectSummary.model_rebuild()

@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 import tomli_w
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 
 from workgraph.analytics.code.classify import file_class, language_for, module_for
 from workgraph.analytics.code.structure import analyze_file, available_languages, extract_symbols, parse_hunks
@@ -47,6 +48,44 @@ def test_migrations_clean_downgrade_and_existing(tmp_path):
     conn2 = sqlite3.connect(tmp_path / "m.db")
     assert conn2.execute("PRAGMA journal_mode").fetchone()[0] == "wal"
     conn2.close()
+
+
+def test_stacks_migration_upgrades_populated_0002(tmp_path):
+    db = Database(tmp_path / "s.db")
+    migrate.upgrade(db, "0002")
+    with db.engine.begin() as conn:
+        conn.exec_driver_sql(
+            "INSERT INTO workspaces (id, slug, name, description, key_prefix, next_task_number, settings, created_at, "
+            "updated_at) VALUES ('w', 's', 'n', '', 'WG', 2, '{}', '2026-01-01', '2026-01-01')"
+        )
+        conn.exec_driver_sql(
+            "INSERT INTO tasks (id, workspace_id, number, key, title, description, description_hash, "
+            "acceptance_criteria, status, priority, auto_execute, external_refs, metadata, created_by, version, "
+            "created_at, updated_at) VALUES ('t1', 'w', 1, 'WG-1', 'Parent', '', 'h', '[]', 'backlog', 'medium', 0, "
+            "'[]', '{}', 'test', 1, '2026-01-01', '2026-01-01')"
+        )
+    migrate.upgrade(db)
+    assert migrate.current_revision(db) == "0003" == SCHEMA_HEAD
+    stack_insert = (
+        "INSERT INTO stacks (id, workspace_id, parent_task_id, status, created_at, updated_at) "
+        "VALUES (:id, 'w', 't1', :status, '2026-01-01', '2026-01-01')"
+    )
+    with db.engine.begin() as conn:
+        conn.exec_driver_sql(stack_insert, {"id": "s1", "status": "open"})
+        assert conn.exec_driver_sql("SELECT title FROM tasks").scalar() == "Parent"
+    with pytest.raises(IntegrityError), db.engine.begin() as conn:
+        conn.exec_driver_sql(stack_insert, {"id": "s2", "status": "open"})
+    with db.engine.begin() as conn:
+        # Only one stack per parent may be in progress; a landed or abandoned one does not count.
+        conn.exec_driver_sql(stack_insert, {"id": "s3", "status": "abandoned"})
+    migrate.downgrade(db, "0002")
+    with db.engine.connect() as conn:
+        tables = conn.exec_driver_sql(
+            "SELECT name FROM sqlite_master WHERE name IN ('stacks', 'stack_items', 'stack_repositories')"
+        ).fetchall()
+    assert tables == []
+    migrate.upgrade(db)
+    assert migrate.is_up_to_date(db)
 
 
 def test_foreign_keys_enforced_and_rollback(app):

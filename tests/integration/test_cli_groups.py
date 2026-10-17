@@ -191,3 +191,25 @@ def test_all_command_groups(run, make_repo, tmp_path):
     ):
         out = run(*args, json_mode=False)
         assert isinstance(out, str) and out
+
+
+def test_stack_command_group(run, make_repo):
+    run("init")
+    run("config", "set", "llm.auto_classify", "false")
+    run("config", "set", "llm.auto_embed", "false")
+    repo = make_repo("stacked")
+    run("repo", "register", str(repo.path))
+    run("task", "create", "Parent work", "--repo", "stacked")
+    run("task", "create", "First change", "--parent", "WG-1", "--repo", "stacked")
+    run("task", "create", "Second change", "--parent", "WG-1", "--repo", "stacked")
+    created = run("stack", "create", "WG-1")
+    assert created["parent_key"] == "WG-1"
+    assert created["repositories"][0]["base_sha"] == repo.head()
+    assert [i["state"] for i in created["items"]] == ["pending", "pending"]
+    shown = run("stack", "show", "WG-1")
+    assert shown["id"] == created["id"]
+    assert [s["parent_key"] for s in run("stack", "list")] == ["WG-1"]
+    assert run("stack", "list", "--all")[0]["id"] == created["id"]
+    assert "WG-1" in run("stack", "show", "WG-1", json_mode=False)
+    assert "WG-1" in run("stack", "list", json_mode=False)
+    run("stack", "show", "WG-9", expect=4)

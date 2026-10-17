@@ -22,6 +22,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `project` | `create`, `list`, `show`, `update`, `add-repo`, `remove-repo` |
 | `repo` | `register`, `list`, `show`, `refresh`, `status`, `update`, `remove`, `remove-checkout`, `depend` |
 | `task` | `create`, `list`, `ready`, `show`, `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` |
+| `stack` | `create PARENT`, `show PARENT`, `list [--all]` (read and create only; the stack's branch, merging and verification come in later stages) |
 | `attempt` | `list`, `show`, `create`, `finish`, `compare`, `manifests` |
 | `agent` | `list`, `add-command` |
 | `run` | `start [--wait]`, `get`, `watch`, `cancel`, `retry`, `rerun`, `schedule [--dry-run/--explain]`, `decompose [--create]` |

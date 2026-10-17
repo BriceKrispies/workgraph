@@ -35,7 +35,7 @@ main ──●──────────────────────
 
 - A stack belongs to one parent task and one repository per participating repository. It records
   `base_sha`, resolved from the repository's default branch **at creation**, and the integration
-  branch name `wg/stack/<PARENT-KEY>`.
+  branch name `wg/stack/<parent-key>` (the key lowercased, e.g. `wg/stack/wg-2`).
 - The integration branch is always cut **fresh from `main`** and is never rebased. If `main` moves
   before the stack lands, the integration branch is rebuilt from the new `main` and the merged
   children are replayed in their recorded order (see step 6).

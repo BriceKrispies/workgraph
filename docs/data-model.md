@@ -54,6 +54,7 @@ erDiagram
 | `revision_manifests` | Exact repository revisions (baseline, outcome, verification, accepted). |
 | `managed_worktrees`, `resource_leases` | Worktree ownership/lifecycle and exclusive checkout leases. |
 | `change_sets`, `change_set_items` | Cross-repository logical changes with independent per-repository status. |
+| `stacks`, `stack_repositories`, `stack_items` | A parent task's children integrated as one unit: base commits per repository and per-child integration state. See [Stacks](#stacks). |
 | `commits`, `commit_file_changes`, `commit_symbols`, `commit_analyses` | Git metadata, per-file stats, Tree-sitter symbols and analysis provenance (no diff payloads). |
 | `commit_task_links` | Attribution with `source` (explicit, execution_context, worktree, trailer, message_inference, rewrite_reconciliation), `confidence` and `evidence`. |
 | `commit_equivalences` | Rebased/amended (`rewrite`) or cherry-picked commits. |
@@ -73,6 +74,17 @@ Task states: `backlog`, `ready`, `blocked`, `claimed`, `running`, `awaiting_veri
 `awaiting_review`, `accepted`, `failed`, `cancelled`.
 Attempt states: `queued`, `preparing`, `running`, `verifying`, `succeeded`, `failed`, `cancelled`,
 `timed_out`, `abandoned`. See [task-lifecycle.md](task-lifecycle.md).
+
+## Stacks
+
+A stack belongs to one parent task. `stack_repositories` records, for each repository linked to the
+parent or its children, the `base_sha` (the default-branch head of the primary checkout, read when
+the stack is created) and the `integration_branch`, `wg/stack/<parent key, lowercased>`. The branch
+is named but not created yet. `stack_items` holds one row per child with a state (`pending`,
+`ready`, `merged`, `conflict`, `ejected`, `verified`) kept apart from the task lifecycle; `merge_order`
+is set the first time an item merges and is kept for replays. A parent has at most one stack in
+progress (`status` other than `landed` or `abandoned`), enforced by a partial unique index. Item
+transitions are validated in `core/policies/stacks.py`.
 
 ## Migrations
 

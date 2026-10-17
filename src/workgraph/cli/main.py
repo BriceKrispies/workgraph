@@ -63,6 +63,7 @@ def _register_optional_groups() -> None:
         intelligence,
         jobs,
         servers,
+        stacks,
     )
 
     app.add_typer(agents.attempt_app, name="attempt")
@@ -72,6 +73,7 @@ def _register_optional_groups() -> None:
     app.add_typer(jobs.worker_app, name="worker")
     app.add_typer(jobs.job_app, name="job")
     app.add_typer(gitcmd.git_app, name="git")
+    app.add_typer(stacks.stack_app, name="stack")
     app.add_typer(intelligence.classify_app, name="classify")
     app.command("search")(intelligence.search_command)
     app.add_typer(analytics.analytics_app, name="analytics")

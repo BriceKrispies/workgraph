@@ -70,8 +70,8 @@ class Database:
             yield session
             if write:
                 session.commit()
-            else:
-                session.rollback()
+            # Read sessions are simply closed: close() detaches loaded objects without
+            # expiring them (rollback() would), so callers may keep using their data.
         except BaseException:
             session.rollback()
             raise

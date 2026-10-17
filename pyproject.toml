@@ -24,6 +24,7 @@ dependencies = [
     "platformdirs>=4.13.3",
     "pyarrow>=26.0.0",
     "pydantic>=2.14.1",
+    "rich>=15.0.0",
     "sqlalchemy>=2",
     "sse-starlette>=3.5.0",
     "tomli-w>=1.2.0",

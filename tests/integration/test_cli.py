@@ -159,6 +159,10 @@ def test_doctor_reports_health(run):
 
 def test_console_script_help():
     proc = subprocess.run(
-        [sys.executable, "-m", "workgraph", "--help"], capture_output=True, text=True, check=False
+        [sys.executable, "-m", "workgraph", "--help"],
+        capture_output=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+        check=False,
     )
     assert proc.returncode == 0 and "task" in proc.stdout and "analytics" in proc.stdout

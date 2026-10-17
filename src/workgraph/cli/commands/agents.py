@@ -23,6 +23,7 @@ from workgraph.cli.common import (
 )
 from workgraph.core.models.enums import TERMINAL_ATTEMPT_STATUSES, AttemptStatus
 from workgraph.core.models.schemas import AttemptCreate
+from workgraph.verification.configs import parse_tier
 
 attempt_app = typer.Typer(help="Inspect and record agent attempts.", no_args_is_help=True)
 agent_app = typer.Typer(help="Configured agent adapters and their capabilities.", no_args_is_help=True)
@@ -426,10 +427,15 @@ def verify_configs(workspace: str | None = workspace_option()) -> None:
 @verify_app.command("run")
 @handle_errors
 def verify_run(
-    task: str, attempt: str | None = typer.Option(None), workspace: str | None = workspace_option()
+    task: str,
+    attempt: str | None = typer.Option(None),
+    tier: str | None = typer.Option(None, "--tier", help="Only run checks of this tier: fast or full."),
+    workspace: str | None = workspace_option(),
 ) -> None:
     """Run the applicable checks now against the task's current revisions."""
-    run = STATE.app().verification.run(STATE.ctx(), ws(workspace), task, attempt_id=attempt)
+    run = STATE.app().verification.run(
+        STATE.ctx(), ws(workspace), task, attempt_id=attempt, tier=parse_tier(tier)
+    )
     emit(
         run,
         lambda r: (

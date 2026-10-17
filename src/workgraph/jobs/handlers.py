@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from workgraph.core.context import RequestContext
+from workgraph.verification.configs import parse_tier
 
 if TYPE_CHECKING:
     from workgraph.app import Workgraph
@@ -84,6 +85,7 @@ def verify(app: Workgraph, job: JobContext) -> dict[str, Any]:
         payload["task_id"],
         attempt_id=payload.get("attempt_id"),
         should_cancel=job.cancel_requested,
+        tier=parse_tier(payload.get("tier")),
     )
     return {"run_id": run.id, "status": run.status}
 

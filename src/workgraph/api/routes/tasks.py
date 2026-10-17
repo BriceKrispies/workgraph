@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
@@ -332,7 +332,14 @@ def applicable_checks(app: AppDep, ctx: CtxDep, ws: str, ref: str) -> Any:
 
 
 @router.post("/tasks/{ref}/verify")
-def verify(app: AppDep, ctx: CtxDep, ws: str, ref: str, attempt_id: str | None = None) -> Any:
+def verify(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    ref: str,
+    attempt_id: str | None = None,
+    tier: Literal["fast", "full"] | None = None,
+) -> Any:
     from workgraph.jobs import queue as jobqueue
     from workgraph.security.permissions import Permission, require
 
@@ -342,7 +349,7 @@ def verify(app: AppDep, ctx: CtxDep, ws: str, ref: str, attempt_id: str | None =
         job = jobqueue.enqueue(
             session,
             "verify",
-            {"task_id": task.id, "attempt_id": attempt_id},
+            {"task_id": task.id, "attempt_id": attempt_id, "tier": tier},
             workspace_id=task.workspace_id,
             task_id=task.id,
             max_attempts=1,

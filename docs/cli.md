@@ -25,7 +25,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `attempt` | `list`, `show`, `create`, `finish`, `compare`, `manifests` |
 | `agent` | `list`, `add-command` |
 | `run` | `start [--wait]`, `get`, `watch`, `cancel`, `retry`, `rerun`, `schedule [--dry-run/--explain]`, `decompose [--create]` |
-| `verify` | `config`, `configs`, `run`, `runs`, `failures` |
+| `verify` | `config`, `configs`, `run [--tier fast\|full]`, `runs`, `failures` |
 | `worker` | `run [--once/--kind]`, `list`, `recover` |
 | `job` | `list`, `show`, `stats`, `cancel`, `retry`, `enqueue`, `compact` |
 | `git` | `sync [--full]`, `log`, `show`, `link`, `unlink`, `changes`, `diff`, `surface`, `analyze`, `worktrees`, `cleanup-worktrees [--apply]`, `install-hook` |
@@ -57,6 +57,7 @@ uv run workgraph analytics query execution_duration --by provider --by model --s
 uv run workgraph analytics export facts.parquet --format parquet --dataset task_facts
 uv run workgraph automation preview --rule "tag bugs" --task WG-12
 uv run workgraph classify evaluate --provider ollama --model qwen2.5:7b-instruct
+uv run workgraph verify run WG-12 --tier fast
 ```
 
 All commands are single-line and work unchanged in PowerShell, bash, zsh and Nushell.

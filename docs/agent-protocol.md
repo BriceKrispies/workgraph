@@ -45,12 +45,15 @@ On stdin (and in `workgraph-request.json` beside the manifest, outside every rep
     ],
     "expected_changes": ["api"],
     "verification": [{"name": "unit tests", "command": ["pytest"], "required": true}],
+    "agent_checks": [{"name": "lint", "command": ["ruff", "check", "."], "repository": "api"}],
     "baseline_manifest_id": "…", "change_set_id": "…"
   }
 }
 ```
 
-The manifest is also written to `{manifest}` (`workgraph-manifest.json`).
+The manifest is also written to `{manifest}` (`workgraph-manifest.json`). `agent_checks` lists the
+fast-tier checks (`name`, `command`, `repository`) that an agent should run itself; `verification`
+lists every check that Workgraph runs afterwards.
 
 ## Output
 

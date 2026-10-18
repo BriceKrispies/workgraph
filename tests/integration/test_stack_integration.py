@@ -210,6 +210,10 @@ def test_conflicting_pair_sends_the_second_child_back_with_the_integration_tip(a
     # The merge was aborted: the integration worktree is clean and the branch did not move.
     assert Git(_integration_path(app, stack)).is_clean()
     assert repo.git("rev-parse", branch) == tip
+    # The stack verified around the conflict, but the parent cannot land while a child is unfinished.
+    with pytest.raises(ConflictError, match=f"unfinished children: {second.key} \\(conflict\\)"):
+        app.verification.accept_manually(human, ws, parent.key, reason="looks fine")
+    assert repo.git("rev-parse", "main") != tip
 
     retry = _run(app, human, ws, second.key)
     base = _prepared_bases(app, retry)["svc"]

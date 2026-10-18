@@ -108,6 +108,8 @@ Every failed trial gets one **failure cause**, with its source (`mechanical`, `a
 | `wrong_model` | The model that ran is not the arm's model (trial is invalid). |
 | `other` | Anything else, with a note. |
 
+**Running a trial.** The sequence is `experiment replay scan`, then `replay create --validate`, then `experiment create` and `freeze`, then `trial add`, then `trial start` (give the printed brief to the subagent), then `trial grade`, then `trial classify` for any failure. Trials run in a single-branch clone with no remote, so the solution commit is not reachable by any ref in it.
+
 ## Design: start big, step down (WG-1122)
 
 The question is where the success curve crosses 50% and 80%. An adaptive staircase finds the

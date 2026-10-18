@@ -15,9 +15,12 @@ from workgraph.core.errors import ValidationFailed
 MODEL_ALIASES = frozenset({"haiku", "sonnet", "opus", "fable", "inherit"})
 
 REQUIRED_KEYS = frozenset({"arms", "brief_template", "primary_size", "bands", "staircase", "budget"})
-# ``oracle_template`` overrides the replay oracle (an argv list), ``env`` adds variables to oracle and gate
-# runs (e.g. a shared CARGO_TARGET_DIR), ``pool`` selects the candidate tasks (tag, repository).
-OPTIONAL_KEYS = frozenset({"refine", "repeat", "control", "gates", "seed", "oracle_template", "env", "pool"})
+# ``oracle_template`` overrides the replay oracle (an argv list), ``env`` adds variables to oracle, gate and
+# setup runs (e.g. a shared CARGO_TARGET_DIR), ``pool`` selects the candidate tasks (tag, repository), and
+# ``setup`` lists commands run in each trial's fresh clone before the trial starts.
+OPTIONAL_KEYS = frozenset(
+    {"refine", "repeat", "control", "gates", "seed", "oracle_template", "env", "pool", "setup"}
+)
 STAIRCASE_KEYS = ("per_visit", "up", "down", "max_reversals", "max_trials")
 
 
@@ -122,6 +125,13 @@ def protocol_problems(protocol: object) -> list[str]:
             for gate in gates
         ):
             problems.append("gates must be a list of non-empty command lists of strings")
+    if "setup" in protocol:
+        setup = protocol["setup"]
+        if not isinstance(setup, list) or not all(
+            isinstance(command, list) and command and all(isinstance(part, str) and part for part in command)
+            for command in setup
+        ):
+            problems.append("setup must be a list of non-empty command lists of strings")
     if "oracle_template" in protocol:
         template = protocol["oracle_template"]
         if (

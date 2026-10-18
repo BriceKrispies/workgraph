@@ -276,6 +276,30 @@ def build_server(
     ) -> dict[str, Any]:
         return _dump(app.experiments.classify(ctx(), workspace, trial, cause, source, notes))
 
+    @tool(
+        "trial_start",
+        "Start a planned experiment trial: clone the task's replay base into a fresh single-branch clone (no "
+        "remote), run the protocol's setup, and return the worktree, branch, base sha and the brief to give the "
+        "subagent (requires experiment:write).",
+    )
+    def trial_start(
+        trial: Annotated[str, Field(description="Experiment trial UUID")], workspace: Workspace = None
+    ) -> dict[str, Any]:
+        return _dump(app.trial_runner.start(ctx(), workspace, trial))
+
+    @tool(
+        "trial_grade",
+        "Grade a started experiment trial: measure its clone against the base, run the oracle and gates, and "
+        "record the outcome. A failure with flags (tests modified, stubs) is classed as gaming (requires "
+        "experiment:write).",
+    )
+    def trial_grade(
+        trial: Annotated[str, Field(description="Experiment trial UUID")],
+        timeout: Annotated[float, Field(gt=0, description="Seconds allowed per command")] = 3600.0,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return _dump(app.trial_runner.grade(ctx(), workspace, trial, timeout=timeout))
+
     @tool("task_create", "Create a task. Repositories/projects/dependencies may be given by name or key.")
     def task_create(
         title: Annotated[str, Field(min_length=1, max_length=500)],

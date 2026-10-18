@@ -45,8 +45,8 @@ Stack mutations need the `stack:write` permission, which agents do not have by d
 `stack_add_item`, `stack_remove_item`, `stack_integrate` and `stack_verify` are denied unless the server
 is started with `workgraph mcp --grant stack:write`.
 
-`trial_classify` needs the `experiment:write` permission (`workgraph mcp --grant experiment:write`), which agents
-do not have by default. Experiment reads need `task:read`.
+`trial_start`, `trial_grade` and `trial_classify` need the `experiment:write` permission (`workgraph mcp --grant experiment:write`), which agents
+do not have by default. `trial_start` returns the trial's worktree, branch, base sha and brief; `trial_grade` takes an optional `timeout` in seconds. Experiment reads need `task:read`.
 
 All tools have JSON-Schema input validation and structured output. List tools accept
 `limit`/`offset` and return `next_offset`. Errors are returned as tool errors whose text is

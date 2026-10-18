@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     from workgraph.core.services.stacks import StackService
     from workgraph.core.services.tasks import TaskService
     from workgraph.core.services.workspaces import WorkspaceService
+    from workgraph.experiments.contract import ContractChecker
     from workgraph.experiments.planner import TrialPlanner
     from workgraph.experiments.pool import ReplayPool
     from workgraph.experiments.predictor import Predictor
@@ -183,6 +184,12 @@ class Workgraph:
         from workgraph.experiments.predictor import Predictor
 
         return Predictor(self)
+
+    @cached_property
+    def contract_checker(self) -> ContractChecker:
+        from workgraph.experiments.contract import ContractChecker
+
+        return ContractChecker(self)
 
     @cached_property
     def history(self) -> HistoryService:

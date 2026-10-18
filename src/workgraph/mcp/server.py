@@ -410,6 +410,21 @@ def build_server(
     def task_get(task: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
         return _dump(app.tasks.detail(ctx(), workspace, task))
 
+    @tool(
+        "task_contract_check",
+        "Triage a task for delegation: verdict not_delegable (needs a decision, no checkable oracle, or a report "
+        "or register item), incomplete (metadata contract missing fields), split (predicted success below target) "
+        "or leaf. Reports the missing fields, the reasons and the predicted success, an inference from the latest "
+        "fit for the model.",
+    )
+    def task_contract_check(
+        task: TaskRef,
+        model: Annotated[str, Field(description="Model id the predictor was fitted for")],
+        target: Annotated[float, Field(ge=0, le=1, description="Predicted success needed for a leaf")] = 0.8,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return app.contract_checker.check(ctx(), workspace, task, model=model, target=target).as_dict()
+
     @tool("task_search", "Search tasks by text (full-text, plus semantic when embeddings exist).")
     def task_search(
         query: Annotated[str, Field(min_length=1)],

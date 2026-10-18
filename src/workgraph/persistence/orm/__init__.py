@@ -36,7 +36,7 @@ from workgraph.persistence.orm.execution import (
     SubagentRun,
     ToolEvent,
 )
-from workgraph.persistence.orm.experiments import Experiment, ExperimentTrial
+from workgraph.persistence.orm.experiments import Experiment, ExperimentTrial, PredictorFit
 from workgraph.persistence.orm.git import (
     Commit,
     CommitAnalysis,
@@ -99,6 +99,7 @@ __all__ = [
     "JobRun",
     "ManagedWorktree",
     "Notification",
+    "PredictorFit",
     "Project",
     "ProjectRepository",
     "Report",

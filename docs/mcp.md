@@ -36,10 +36,14 @@ dimensions and typed filters.
 `attempt_list`, `run_start`, `run_get`, `run_cancel`, `git_get_changes`, `git_get_task_diff`,
 `classification_get`, `classification_request`, `analytics_query`, `analytics_report`,
 `automation_list`, `automation_trigger`, `stack_get`, `stack_list`, `stack_history`, `experiment_list`,
-`experiment_get`, `experiment_report`.
+`experiment_get`, `experiment_report`, `experiment_predict`.
 
 `experiment_next` creates the next planned trial of an experiment, so it needs the `experiment:write` permission
 (`workgraph mcp --grant experiment:write`), like `trial_classify`.
+
+`experiment_fit` refits and stores the success predictor for a model (`experiment:write`). `experiment_predict` takes
+either `task` (reads its `contract.predicted` features) or `repository`, `src_lines`, `src_files` and `packages`, and
+returns the probability, interval, fit id and data cutoff, labelled as an inference (`task:read`).
 
 Stack mutations need the `stack:write` permission, which agents do not have by default: `stack_create`,
 `stack_add_item`, `stack_remove_item`, `stack_integrate` and `stack_verify` are denied unless the server

@@ -650,5 +650,37 @@ class TrialOut(Schema):
     graded_at: datetime | None = None
 
 
+class PredictorFitOut(Schema):
+    id: str
+    workspace_id: str
+    model: str
+    created_at: datetime
+    data_cutoff: datetime | None = None
+    trial_ids: list[str]
+    feature_names: list[str]
+    repositories: list[str]
+    coef: list[float]
+    penalty: list[float]
+    n: int
+    converged: bool
+    metrics: dict[str, Any]
+    samples: list[list[float]]
+
+
+class PredictionOut(Schema):
+    """A success probability. Always an inference: it comes from the fit named by ``fit_id``."""
+
+    probability: float
+    low: float | None = None
+    high: float | None = None
+    fit_id: str
+    model: str
+    data_cutoff: datetime | None = None
+    n: int
+    repository: str | None = None
+    repository_known: bool
+    inference: bool = True
+
+
 ProjectSummary.model_rebuild()
 TaskDetail.model_rebuild()

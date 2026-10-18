@@ -36,6 +36,7 @@ from workgraph.persistence.orm.execution import (
     SubagentRun,
     ToolEvent,
 )
+from workgraph.persistence.orm.experiments import Experiment, ExperimentTrial
 from workgraph.persistence.orm.git import (
     Commit,
     CommitAnalysis,
@@ -88,6 +89,8 @@ __all__ = [
     "CommitSymbol",
     "CommitTaskLink",
     "Event",
+    "Experiment",
+    "ExperimentTrial",
     "Finding",
     "GitObjectGap",
     "HookEvent",

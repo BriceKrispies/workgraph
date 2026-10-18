@@ -227,3 +227,92 @@ def test_stack_command_group(run, make_repo):
     assert "integration branch" in human_show and "wg/stack/wg-1" in human_show
     run("stack", "show", "WG-9", expect=4)
     run("stack", "history", "WG-9", expect=4)
+
+
+def test_experiment_command_group(run, home, tmp_path):
+    from workgraph.app import Workgraph
+    from workgraph.config.paths import AppPaths
+    from workgraph.core.context import RequestContext
+
+    run("init")
+    run("config", "set", "llm.auto_classify", "false")
+    run("config", "set", "llm.auto_embed", "false")
+    run("task", "create", "Measured change")
+    protocol = {
+        "arms": [{"name": "haiku", "model": "claude-haiku-5-5"}],
+        "brief_template": "leaf-v1",
+        "primary_size": "source_lines",
+        "bands": {"min": 1, "max": 5},
+        "staircase": {"per_visit": 2, "up": 1, "down": 2, "max_reversals": 6, "max_trials": 24},
+        "budget": {"trials": 40},
+    }
+    created = run(
+        "experiment",
+        "create",
+        "cli-exp",
+        "--title",
+        "CLI experiment",
+        "--question",
+        "Does it?",
+        "--protocol",
+        json.dumps(protocol),
+    )
+    assert (created["slug"], created["status"]) == ("cli-exp", "draft")
+    assert [e["slug"] for e in run("experiment", "list")] == ["cli-exp"]
+    assert [e["slug"] for e in run("experiment", "list", "--status", "draft")] == ["cli-exp"]
+    assert run("experiment", "list", "--status", "running") == []
+    bad = tmp_path / "bad.json"
+    bad.write_text(json.dumps({**protocol, "arms": [{"name": "haiku", "model": "haiku"}]}))
+    run("experiment", "create", "bad-exp", "--title", "Bad", "--protocol", f"@{bad}", expect=2)
+    run("experiment", "trial", "add", "cli-exp", "WG-1", "--arm", "haiku", "--phase", "staircase", expect=3)
+    frozen = run("experiment", "freeze", "cli-exp")
+    assert frozen["status"] == "running" and frozen["frozen_at"]
+    added = run(
+        "experiment",
+        "trial",
+        "add",
+        "cli-exp",
+        "WG-1",
+        "--arm",
+        "haiku",
+        "--phase",
+        "staircase",
+        "--band",
+        "2",
+    )
+    assert (added["seq"], added["task_key"], added["requested_model"]) == (1, "WG-1", "claude-haiku-5-5")
+    run("experiment", "trial", "add", "cli-exp", "WG-1", "--arm", "nope", "--phase", "staircase", expect=2)
+    shown = run("experiment", "show", "cli-exp")
+    assert shown["experiment"]["slug"] == "cli-exp" and [t["id"] for t in shown["trials"]] == [added["id"]]
+    assert "WG-1" in run("experiment", "show", "cli-exp", json_mode=False)
+    assert run("experiment", "trial", "show", added["id"])["band"] == 2
+    assert "staircase" in run("experiment", "trial", "show", added["id"], json_mode=False)
+    run("experiment", "trial", "classify", added["id"], "--cause", "too_big", "--source", "agent", expect=3)
+
+    # Grades come from the service; the CLI only classifies what the service measured.
+    inst = Workgraph(AppPaths.resolve(home))
+    try:
+        ctx = RequestContext.human("tester")
+        inst.experiments.start_trial(ctx, None, added["id"])
+        inst.experiments.record_grade(ctx, None, added["id"], "fail")
+    finally:
+        inst.close()
+    classified = run(
+        "experiment",
+        "trial",
+        "classify",
+        added["id"],
+        "--cause",
+        "too_big",
+        "--source",
+        "agent",
+        "--notes",
+        "whole",
+    )
+    assert (classified["failure_cause"], classified["failure_cause_source"]) == ("too_big", "agent")
+    run("experiment", "trial", "classify", added["id"], "--cause", "sometimes", "--source", "agent", expect=2)
+    run("experiment", "trial", "classify", added["id"], "--cause", "other", "--source", "robot", expect=2)
+    closed = run("experiment", "close", "cli-exp")
+    assert closed["status"] == "closed"
+    run("experiment", "trial", "show", "WG-999", expect=4)
+    run("experiment", "show", "missing", expect=4)

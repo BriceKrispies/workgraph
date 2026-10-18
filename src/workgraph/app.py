@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from workgraph.automation.engine import AutomationService
     from workgraph.classification.service import ClassificationService
     from workgraph.core.services.attempts import AttemptService
+    from workgraph.core.services.experiments import ExperimentService
     from workgraph.core.services.history import HistoryService
     from workgraph.core.services.projects import ProjectService
     from workgraph.core.services.repositories import RepositoryService
@@ -148,6 +149,12 @@ class Workgraph:
         from workgraph.core.services.stacks import StackService
 
         return StackService(self)
+
+    @cached_property
+    def experiments(self) -> ExperimentService:
+        from workgraph.core.services.experiments import ExperimentService
+
+        return ExperimentService(self)
 
     @cached_property
     def history(self) -> HistoryService:

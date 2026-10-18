@@ -9,7 +9,7 @@ from mcp import Client
 from mcp.client.stdio import StdioServerParameters
 from mcp.client.streamable_http import streamable_http_client
 
-from workgraph.core.models.schemas import RepositoryRegister
+from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.demo.scenario import _free_port, _start_api
 
 REQUIRED_TOOLS = {
@@ -45,6 +45,9 @@ REQUIRED_TOOLS = {
     "stack_remove_item",
     "stack_integrate",
     "stack_verify",
+    "experiment_get",
+    "experiment_list",
+    "trial_classify",
     "task_link_commit",
     "task_report_progress",
     "task_report_result",
@@ -209,3 +212,55 @@ async def test_streamable_http_transport(app, human, ws):
         server.should_exit = True
         thread.join(timeout=30)
     assert app.tasks.get(human, ws, "WG-1").title == "Over HTTP"
+
+
+@pytest.mark.slow
+async def test_experiment_tools_read_and_classify_with_grant(app, human, ws, home):
+    task = app.tasks.create(human, ws, TaskCreate(title="Measured"))
+    protocol = {
+        "arms": [{"name": "haiku", "model": "claude-haiku-5-5"}],
+        "brief_template": "leaf-v1",
+        "primary_size": "source_lines",
+        "bands": {"min": 1, "max": 5},
+        "staircase": {"per_visit": 2, "up": 1, "down": 2, "max_reversals": 6, "max_trials": 24},
+        "budget": {"trials": 40},
+    }
+    app.experiments.create(human, ws, "mcp-exp", "MCP experiment", None, protocol)
+    app.experiments.freeze(human, ws, "mcp-exp")
+    trial = app.experiments.add_trial(human, ws, "mcp-exp", task.key, "haiku", "staircase")
+    app.experiments.start_trial(human, ws, trial.id)
+    app.experiments.record_grade(human, ws, trial.id, "fail")
+
+    def stdio(*grants: str) -> StdioServerParameters:
+        args = ["-m", "workgraph", "mcp", "--agent-name", "tester"]
+        for grant in grants:
+            args += ["--grant", grant]
+        return StdioServerParameters(
+            command=sys.executable, args=args, env={**os.environ, "WORKGRAPH_HOME": str(home)}
+        )
+
+    async with Client(stdio(), read_timeout_seconds=60) as client:
+        listed = await client.call_tool("experiment_list", {})
+        assert [e["slug"] for e in listed.structured_content["experiments"]] == ["mcp-exp"]
+        got = await client.call_tool("experiment_get", {"experiment": "mcp-exp"})
+        assert got.structured_content["experiment"]["status"] == "running"
+        assert [t["id"] for t in got.structured_content["trials"]] == [trial.id]
+        denied = await client.call_tool(
+            "trial_classify", {"trial": trial.id, "cause": "too_big", "source": "agent"}
+        )
+        assert denied.is_error and "experiment:write" in str(denied.content)
+        assert app.experiments.trial(human, ws, trial.id).failure_cause is None
+    async with Client(stdio("experiment:write"), read_timeout_seconds=60) as client:
+        classified = await client.call_tool(
+            "trial_classify",
+            {"trial": trial.id, "cause": "too_big", "source": "agent", "notes": "whole feature"},
+        )
+        assert not classified.is_error
+        assert classified.structured_content["failure_cause"] == "too_big"
+        unknown = await client.call_tool(
+            "trial_classify", {"trial": trial.id, "cause": "sometimes", "source": "agent"}
+        )
+        assert unknown.is_error
+        missing = await client.call_tool("experiment_get", {"experiment": "no-such-experiment"})
+        assert missing.is_error and "not_found" in str(missing.content)
+    assert app.experiments.trial(human, ws, trial.id).failure_cause == "too_big"

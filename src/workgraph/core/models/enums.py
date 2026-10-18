@@ -155,6 +155,54 @@ STACK_DEPENDENCY_SATISFIED_STATES = frozenset(
 )
 
 
+# --------------------------------------------------------------------------- experiments
+
+
+class ExperimentStatus(StrEnum):
+    DRAFT = "draft"
+    RUNNING = "running"
+    CLOSED = "closed"
+
+
+class TrialStatus(StrEnum):
+    PLANNED = "planned"
+    RUNNING = "running"
+    GRADED = "graded"
+    INVALID = "invalid"
+
+
+class TrialOutcome(StrEnum):
+    PASSED = "pass"
+    FAILED = "fail"
+
+
+class TrialPhase(StrEnum):
+    STAIRCASE = "staircase"
+    REFINE = "refine"
+    CONTROL = "control"
+    REPEAT = "repeat"
+    LIVE = "live"
+
+
+class FailureCause(StrEnum):
+    TOO_BIG = "too_big"
+    MISSING_CONTEXT = "missing_context"
+    AMBIGUOUS_SPEC = "ambiguous_spec"
+    COUPLING = "coupling"
+    GAMING = "gaming"
+    GATE_GAP = "gate_gap"
+    HARNESS = "harness"
+    BUDGET = "budget"
+    WRONG_MODEL = "wrong_model"
+    OTHER = "other"
+
+
+class FailureCauseSource(StrEnum):
+    HUMAN = "human"
+    AGENT = "agent"
+    MECHANICAL = "mechanical"
+
+
 class VerificationStatus(StrEnum):
     PENDING = "pending"
     RUNNING = "running"

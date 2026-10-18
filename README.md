@@ -10,7 +10,7 @@ approved checks, and turns all of it into engineering analytics - entirely on yo
   Git worktrees per attempt, cross-repository change sets and revision manifests.
 - **Agent-agnostic execution**: a Claude Code adapter (programmatic `claude -p --output-format
   stream-json`) and a generic command adapter speaking a small JSON-lines protocol.
-- **MCP server** (stdio and Streamable HTTP) with 41 tools and resources over the same services.
+- **MCP server** (stdio and Streamable HTTP) with 52 tools and resources over the same services.
 - **Claude Code lifecycle hooks**: passive, idempotent, spooled ingestion of session, tool,
   subagent and internal-task events.
 - **Git intelligence**: incremental ingestion, trailers, rename/merge/rebase/cherry-pick handling,

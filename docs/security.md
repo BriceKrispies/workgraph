@@ -18,6 +18,7 @@ Every service call carries a `RequestContext` with an actor (`human:`, `agent:`,
 | Accept / reject work | yes | **no** | no |
 | Register repositories | yes | grant `repo:register` | no |
 | Create stacks, add/remove children, integrate, verify | yes | grant `stack:write` (reads need `task:read`) | no |
+| Create, freeze and close experiments; add, start, grade and classify trials | yes | grant `experiment:write` (reads need `task:read`) | no |
 | Start agent code execution | yes, if `execution.enabled` | grant `run:start` and `execution.enabled` | only rules authored by a human with `run:start` |
 | Author automation rules, verification commands, agent config | yes | **no** | no |
 

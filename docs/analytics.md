@@ -116,6 +116,35 @@ significant changes, opportunities) with task-key citations. If the summarizatio
 it adds a clearly labelled model-generated narrative written only from the measured facts; otherwise
 the deterministic report stands alone.
 
+## Subagent work over time
+
+`workgraph analytics subagents [--period week|month] [--since YYYY-MM-DD] [--until YYYY-MM-DD] [--model M]`
+(MCP: `analytics_subagents`) reports the Claude Code subagent runs recorded for a workspace, bucketed by
+ISO week or calendar month (UTC) of when each run stopped, and by model. The model is the measured model
+of the run, else its requested model, else `unknown`.
+
+A run is *linked* when its subagent prompt starts with a `Task-ID: <KEY>` line, so it names a task in the
+workspace. Runs without a link have no workspace; they are counted only when the default workspace is
+reported, and the report says how many there are.
+
+Columns, per period and model:
+
+- `runs` and `linked_runs`: runs that stopped in the bucket; those linked to a task.
+- `tasks`: distinct linked tasks. A task with runs in several buckets is counted in the bucket of its latest run.
+- `accepted`, `rejected`, `failed`, `pending`: the task outcome. `accepted` is the task status `accepted`;
+  `rejected` is any acceptance decision other than `accepted` on a task that is not accepted; `failed` is
+  status `failed` or `cancelled`; everything else is `pending`. Decided is accepted + rejected + failed.
+- `rate` (`acceptance_rate`): accepted / decided, with its 95% Wilson interval (`wilson`). Null when nothing is decided.
+- `first_pass`: accepted tasks that had exactly one linked run of that model in the window.
+- `median_output_tokens`, `median_turns`, `tool_errors`: measured from each run's transcript telemetry.
+
+Task size comes from the task's final change surface (insertions + deletions, files changed) when one exists.
+Otherwise it is the sum over its linked non-merge commits, each counted once. Size bands are
+`floor(log2(lines))`, so band `2^b` holds tasks with `2^b` to `2^(b+1) - 1` changed lines. A task with no
+change surface and no linked commits, or with zero changed lines, is in the `unknown` band.
+
+To link runs, start the subagent prompt with `Task-ID: <KEY>` as its first line.
+
 ## Measurements versus interpretations
 
 | Measured (facts) | Interpreted (model output) |

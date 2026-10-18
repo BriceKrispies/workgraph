@@ -34,7 +34,7 @@ dimensions and typed filters.
 `task_add_comment`, `task_get_history`, `task_get_attempts`, `task_link_repository`,
 `task_link_commit`, `task_report_progress`, `task_report_result`, `attempt_create`, `attempt_get`,
 `attempt_list`, `run_start`, `run_get`, `run_cancel`, `git_get_changes`, `git_get_task_diff`,
-`classification_get`, `classification_request`, `analytics_query`, `analytics_report`,
+`classification_get`, `classification_request`, `analytics_query`, `analytics_report`, `analytics_subagents`,
 `automation_list`, `automation_trigger`, `stack_get`, `stack_list`, `stack_history`, `experiment_list`,
 `experiment_get`, `experiment_report`, `experiment_predict`, `task_contract_check`.
 

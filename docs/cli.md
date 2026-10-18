@@ -33,7 +33,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `git` | `sync [--full]`, `log`, `show`, `link`, `unlink`, `changes`, `diff`, `surface`, `analyze`, `worktrees`, `cleanup-worktrees [--apply]`, `install-hook` |
 | `classify` | `request [--now]`, `show`, `confirm`, `promote`, `reclassify`, `gold`, `evaluate`, `evaluations`, `disagreements` |
 | `search` | full-text / semantic / hybrid; `--similar-to KEY`; `--reindex` |
-| `analytics` | `metrics`, `query`, `overview`, `compare`, `coupling`, `failures`, `estimate`, `history`, `export`, `retrospective` |
+| `analytics` | `metrics`, `query`, `overview`, `compare`, `coupling`, `failures`, `subagents`, `estimate`, `history`, `export`, `retrospective` |
 | `automation` | `list`, `create`, `update`, `show`, `enable`, `disable`, `trigger`, `preview`, `runs`, `notifications`, `catalog`, `process` |
 | `claude` | `install [--mcp]`, `uninstall`, `status`, `replay`, `bind`, `unbind`, `sessions`, `mcp-config`, `hook` |
 | `config` | `show`, `path`, `validate`, `migrate`, `set` |

@@ -176,6 +176,86 @@ def coupling(
     emit(result, human)
 
 
+@analytics_app.command("subagents")
+@handle_errors
+def subagents(
+    period: str = typer.Option("week", help="week or month"),
+    since: datetime | None = typer.Option(None, help="Inclusive start date (UTC)"),
+    until: datetime | None = typer.Option(None, help="Exclusive end date (UTC)"),
+    model: str | None = typer.Option(None, "--model", help="Only runs of this model"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Subagent runs by period and model, with linked task outcomes and task size bands."""
+    result = STATE.app().subagent_report.report(
+        STATE.ctx(),
+        ws(workspace),
+        period=cast(Any, period),
+        since=since,
+        until=until,
+        model=model,
+    )
+
+    def human(r: dict[str, Any]) -> None:
+        table(
+            [
+                (
+                    row["period"],
+                    row["model"],
+                    row["runs"],
+                    row["linked_runs"],
+                    row["tasks"],
+                    row["accepted"],
+                    row["rejected"],
+                    row["pending"],
+                    _rate_text(row["acceptance_rate"], row["wilson"]),
+                    _tokens_text(row["median_output_tokens"]),
+                )
+                for row in r["by_period"]
+            ],
+            [
+                "period",
+                "model",
+                "runs",
+                "linked",
+                "tasks",
+                "accepted",
+                "rejected",
+                "pending",
+                "rate",
+                "median tokens",
+            ],
+            title="subagent work by period",
+        )
+        table(
+            [
+                (
+                    row["model"],
+                    "unknown" if row["band"] is None else f"2^{row['band']}",
+                    row["tasks"],
+                    f"{row['accepted']}/{row['decided']}",
+                    _rate_text(row["acceptance_rate"], row["wilson"]),
+                )
+                for row in r["by_size"]
+            ],
+            ["model", "size (lines)", "tasks", "accepted/decided", "rate"],
+            title="acceptance by task size",
+        )
+        for note in r["notes"]:
+            console.print(f"[dim]note: {note}[/dim]")
+
+    emit(result, human)
+
+
+def _rate_text(rate: float | None, interval: list[float] | None) -> str:
+    if rate is None or interval is None:
+        return "-"
+    return f"{rate:.2f} [{interval[0]:.2f}, {interval[1]:.2f}]"
+
+
+def _tokens_text(value: float | None) -> str:
+    return "-" if value is None else f"{value:.0f}"
+
+
 @analytics_app.command("failures")
 @handle_errors
 def failures(

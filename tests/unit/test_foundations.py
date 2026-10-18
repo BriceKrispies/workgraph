@@ -65,7 +65,7 @@ def test_stacks_migration_upgrades_populated_0002(tmp_path):
             "'[]', '{}', 'test', 1, '2026-01-01', '2026-01-01')"
         )
     migrate.upgrade(db)
-    assert migrate.current_revision(db) == "0004" == SCHEMA_HEAD
+    assert migrate.current_revision(db) == "0006" == SCHEMA_HEAD
     stack_insert = (
         "INSERT INTO stacks (id, workspace_id, parent_task_id, status, created_at, updated_at) "
         "VALUES (:id, 'w', 't1', :status, '2026-01-01', '2026-01-01')"
@@ -82,6 +82,52 @@ def test_stacks_migration_upgrades_populated_0002(tmp_path):
     with db.engine.connect() as conn:
         tables = conn.exec_driver_sql(
             "SELECT name FROM sqlite_master WHERE name IN ('stacks', 'stack_items', 'stack_repositories')"
+        ).fetchall()
+    assert tables == []
+    migrate.upgrade(db)
+    assert migrate.is_up_to_date(db)
+
+
+def test_experiments_migration_upgrades_populated_0004(tmp_path):
+    db = Database(tmp_path / "e.db")
+    migrate.upgrade(db, "0004")
+    with db.engine.begin() as conn:
+        conn.exec_driver_sql(
+            "INSERT INTO workspaces (id, slug, name, description, key_prefix, next_task_number, settings, created_at, "
+            "updated_at) VALUES ('w', 's', 'n', '', 'WG', 2, '{}', '2026-01-01', '2026-01-01')"
+        )
+        conn.exec_driver_sql(
+            "INSERT INTO tasks (id, workspace_id, number, key, title, description, description_hash, "
+            "acceptance_criteria, status, priority, auto_execute, external_refs, metadata, created_by, version, "
+            "created_at, updated_at) VALUES ('t1', 'w', 1, 'WG-1', 'Measured', '', 'h', '[]', 'backlog', 'medium', 0, "
+            "'[]', '{}', 'test', 1, '2026-01-01', '2026-01-01')"
+        )
+    migrate.upgrade(db)
+    assert migrate.current_revision(db) == "0006" == SCHEMA_HEAD
+    experiment_insert = (
+        "INSERT INTO experiments (id, workspace_id, slug, title, question, status, protocol, frozen_at, "
+        "created_at, updated_at) VALUES (:id, 'w', :slug, 'Exp', NULL, 'draft', '{}', NULL, '2026-01-01', "
+        "'2026-01-01')"
+    )
+    trial_insert = (
+        "INSERT INTO experiment_trials (id, experiment_id, task_id, arm, requested_model, phase, seq, features, "
+        "status, outcome_detail, created_at) VALUES (:id, 'e1', 't1', 'haiku', 'claude-haiku-5-5', 'staircase', "
+        ":seq, '{}', 'planned', '{}', '2026-01-01')"
+    )
+    with db.engine.begin() as conn:
+        conn.exec_driver_sql(experiment_insert, {"id": "e1", "slug": "exp"})
+        conn.exec_driver_sql(trial_insert, {"id": "tr1", "seq": 1})
+        conn.exec_driver_sql(trial_insert, {"id": "tr2", "seq": 2})
+    with pytest.raises(IntegrityError), db.engine.begin() as conn:
+        # Slugs are unique per workspace.
+        conn.exec_driver_sql(experiment_insert, {"id": "e2", "slug": "exp"})
+    with pytest.raises(IntegrityError), db.engine.begin() as conn:
+        # Trial sequence numbers are unique per experiment.
+        conn.exec_driver_sql(trial_insert, {"id": "tr3", "seq": 1})
+    migrate.downgrade(db, "0004")
+    with db.engine.connect() as conn:
+        tables = conn.exec_driver_sql(
+            "SELECT name FROM sqlite_master WHERE name IN ('experiments', 'experiment_trials')"
         ).fetchall()
     assert tables == []
     migrate.upgrade(db)

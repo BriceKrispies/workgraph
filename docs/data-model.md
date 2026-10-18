@@ -55,6 +55,7 @@ erDiagram
 | `managed_worktrees`, `resource_leases` | Worktree ownership/lifecycle and exclusive checkout leases. |
 | `change_sets`, `change_set_items` | Cross-repository logical changes with independent per-repository status. |
 | `stacks`, `stack_repositories`, `stack_items` | A parent task's children integrated as one unit: base commits per repository and per-child integration state. See [Stacks](#stacks). |
+| `experiments`, `experiment_trials` | Measured experiments: a protocol pinned before its first trial, and one row per trial (task, attempt, arm, requested and actual model, outcome, failure cause). See [Experiments](#experiments). |
 | `commits`, `commit_file_changes`, `commit_symbols`, `commit_analyses` | Git metadata, per-file stats, Tree-sitter symbols and analysis provenance (no diff payloads). |
 | `commit_task_links` | Attribution with `source` (explicit, execution_context, worktree, trailer, message_inference, rewrite_reconciliation), `confidence` and `evidence`. |
 | `commit_equivalences` | Rebased/amended (`rewrite`) or cherry-picked commits. |
@@ -87,6 +88,23 @@ progress (`status` other than `landed` or `abandoned`), enforced by a partial un
 transitions are validated in `core/policies/stacks.py`. `stacks.land_request` (migration `0004`) is
 null unless a landing was requested while the default branch had moved; it holds the requested mode,
 reason and actor until the stack lands (see [Git](git.md#stack-landing)).
+
+## Experiments
+
+An experiment is `draft`, then `running` once frozen, then `closed`. `protocol` holds the arms
+(each a name and a pinned full model id, never an alias such as `haiku`), the brief template, the
+primary size metric, the band range, the staircase and budget parameters, and optional refine,
+repeat, control, gates and seed. It is validated on every write, and once the experiment is frozen
+(`frozen_at` set) it cannot change. Validation in `core/policies/experiments.py` reports every problem
+at once.
+
+Each `experiment_trials` row is one task, one attempt and one model. The `requested_model` is the
+arm's pinned id. `actual_model` is recorded when the run is linked. A trial whose actual model differs
+is set to `invalid` with failure cause `wrong_model` and source `mechanical`; invalid trials stay out
+of every fit. `seq` orders trials within an experiment. `features` holds the predicted features (at
+creation) and the actual ones (under `actual`, at grading). A trial moves `planned` -> `running` ->
+`graded` (or `invalid`). `outcome` is `pass` or `fail`, and a failure cause is recorded with its
+source (`human`, `agent` or `mechanical`). Trial changes only happen while the experiment is running.
 
 ## Migrations
 

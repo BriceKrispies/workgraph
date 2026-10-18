@@ -34,6 +34,7 @@ class Permission(StrEnum):
     GIT_LINK = "git:link"
     ATTEMPT_WRITE = "attempt:write"
     STACK_WRITE = "stack:write"
+    EXPERIMENT_WRITE = "experiment:write"
     RUN_START = "run:start"
     RUN_CANCEL = "run:cancel"
     VERIFY_RUN = "verify:run"

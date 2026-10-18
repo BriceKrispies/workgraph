@@ -15,11 +15,17 @@ from workgraph.core.models.enums import (
     AccessMode,
     AttemptStatus,
     CommentKind,
+    ExperimentStatus,
+    FailureCause,
+    FailureCauseSource,
     RelationType,
     StackItemState,
     StackStatus,
     TaskPriority,
     TaskStatus,
+    TrialOutcome,
+    TrialPhase,
+    TrialStatus,
 )
 
 T = TypeVar("T")
@@ -599,6 +605,49 @@ class StackOut(Schema):
     items: list[StackItemOut] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
+
+
+# --------------------------------------------------------------------------- experiments
+
+
+class ExperimentOut(Schema):
+    id: str
+    workspace_id: str
+    slug: str
+    title: str
+    question: str | None = None
+    status: ExperimentStatus
+    protocol: dict[str, Any]
+    frozen_at: datetime | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class TrialOut(Schema):
+    id: str
+    experiment_id: str
+    task_id: str
+    task_key: str
+    attempt_id: str | None = None
+    subagent_run_id: str | None = None
+    arm: str
+    requested_model: str
+    actual_model: str | None = None
+    phase: TrialPhase
+    seq: int
+    band: int | None = None
+    features: dict[str, Any]
+    base_ref: str | None = None
+    worktree_path: str | None = None
+    status: TrialStatus
+    outcome: TrialOutcome | None = None
+    outcome_detail: dict[str, Any]
+    failure_cause: FailureCause | None = None
+    failure_cause_source: FailureCauseSource | None = None
+    notes: str | None = None
+    created_at: datetime
+    started_at: datetime | None = None
+    graded_at: datetime | None = None
 
 
 ProjectSummary.model_rebuild()

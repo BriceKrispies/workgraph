@@ -23,7 +23,14 @@ from workgraph.analytics.service import AnalyticsFilters, AnalyticsQuery
 from workgraph.app import Workgraph
 from workgraph.core.context import RequestContext
 from workgraph.core.errors import NotFoundError, WorkgraphError
-from workgraph.core.models.enums import AccessMode, RelationType, TaskPriority, TaskStatus
+from workgraph.core.models.enums import (
+    AccessMode,
+    FailureCause,
+    FailureCauseSource,
+    RelationType,
+    TaskPriority,
+    TaskStatus,
+)
 from workgraph.core.models.schemas import (
     AttemptCreate,
     ClaimRequest,
@@ -215,6 +222,39 @@ def build_server(
     )
     def stack_verify(parent: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
         return app.stack_verification.request(ctx(), workspace, parent)
+
+    @tool(
+        "experiment_list",
+        "List experiments in a workspace, optionally only those in one status (draft, running, closed).",
+    )
+    def experiment_list(workspace: Workspace = None, status: str | None = None) -> dict[str, Any]:
+        return {"experiments": _dump(app.experiments.list(ctx(), workspace, status=status))}
+
+    @tool(
+        "experiment_get",
+        "Get an experiment by slug or id: its protocol (arms with pinned models, bands, budget) and its trials "
+        "in order, with models requested and actually run, outcomes and failure causes.",
+    )
+    def experiment_get(
+        experiment: Annotated[str, Field(description="Experiment slug or UUID")], workspace: Workspace = None
+    ) -> dict[str, Any]:
+        return {
+            "experiment": _dump(app.experiments.get(ctx(), workspace, experiment)),
+            "trials": _dump(app.experiments.trials(ctx(), workspace, experiment)),
+        }
+
+    @tool(
+        "trial_classify",
+        "Record the failure cause of a failed or invalid experiment trial and its source (requires experiment:write).",
+    )
+    def trial_classify(
+        trial: Annotated[str, Field(description="Experiment trial UUID")],
+        cause: FailureCause,
+        source: FailureCauseSource,
+        notes: str | None = None,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return _dump(app.experiments.classify(ctx(), workspace, trial, cause, source, notes))
 
     @tool("task_create", "Create a task. Repositories/projects/dependencies may be given by name or key.")
     def task_create(

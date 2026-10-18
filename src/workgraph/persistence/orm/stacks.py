@@ -26,6 +26,8 @@ class Stack(Base):
     workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id", ondelete="RESTRICT"), index=True)
     parent_task_id: Mapped[str] = mapped_column(ForeignKey("tasks.id", ondelete="RESTRICT"), index=True)
     status: Mapped[str] = mapped_column(String(16), default="open")
+    # JSON request to land the stack once it verifies on a moved default branch; null when none is pending.
+    land_request: Mapped[str | None] = mapped_column(Text, default=None)
     created_at: Mapped[datetime] = created_col()
     updated_at: Mapped[datetime] = updated_col()
 

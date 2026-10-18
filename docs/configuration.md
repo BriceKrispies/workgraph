@@ -96,6 +96,9 @@ per_repository_concurrency = 1 # resource key "repo:<id>" (git jobs)
 lease_seconds = 60
 default_max_attempts = 5
 
+[stacks]
+auto_accept = false            # land a stack as soon as its full verification passes (no parent acceptance)
+
 [retention]
 telemetry_payload_days = 30    # raw hook payloads are compacted after this
 run_log_days = 90              # agent/verification log files are purged after this
@@ -111,6 +114,12 @@ max_depth = 3                  # global recursion limit for rule chains
 Workspace settings stored in the database (not secrets) are managed with
 `workgraph workspace set <slug> --allowed-root DIR`, which restricts repository registration
 to paths below the given directories.
+
+`[stacks] auto_accept` is read per workspace: a workspace file can set a `[stacks]` table of its own to
+override the global value. With it on, a stack whose full verification passes lands on the default
+branch without anyone accepting the parent (see [Git](git.md#stack-landing)). It is off by default, and
+it is the only setting in the `stacks` table. Project-level overrides do not exist yet, as for the
+other settings.
 
 ## Secrets
 

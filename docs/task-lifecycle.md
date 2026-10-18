@@ -105,4 +105,29 @@ uv run workgraph verify failures --check "unit tests"
 - **Reject**: `workgraph task reject WG-12 --reason "..."` sends the work back to `ready`.
 
 Acceptance stores the accepted revision manifest and queues the final-change-surface computation.
-Workgraph never merges, pushes or publishes accepted work.
+Workgraph never merges, pushes or publishes accepted work, with one exception: accepting the parent
+of a stack lands the stack (see below).
+
+### Acceptance in stacks
+
+- **Parent.** Once a stack's full verification passes, the parent task moves to `awaiting_review`
+  (walking `ready` and `claimed` first if it was not already there), with the stack's passing run as
+  its verification. A parent that cannot be claimed, for example because its own dependencies are
+  unmet, stays where it is and the reason is recorded as `stack.parent_not_reviewable`.
+- **Accepting the parent lands the stack.** `workgraph task accept WG-2` (automated) or
+  `workgraph task accept WG-2 --manual --reason "..."` requires the stack to be `verified`; otherwise
+  it is refused and nothing changes. A verified stack lands: each verified child is accepted
+  (`mode` `automated`, linked to the stack's passing run), then the parent is accepted, and the stack
+  becomes `landed`. The default branch moves to the verified integration tip. The details are in
+  [Git](git.md#stack-landing).
+- **The default branch moved.** If the default branch moved after the stack was cut, nothing lands
+  and the call is refused with `landing: deferred`. The stack is rebuilt on the new head, verified
+  again, and lands by itself once that verification passes.
+- **Auto-accept.** With `stacks.auto_accept` enabled, a stack lands as soon as it verifies, as an
+  automated acceptance of the parent with the reason `stack.auto_accept`.
+- **Rejecting the parent** (`task reject`) leaves the stack as it is and records `stack.parent_rejected`.
+  Nothing lands.
+- **A child on its own.** Accepting a child that is an item of an active stack accepts it as usual
+  and removes it from the stack. If its commits were on the integration branch, the branch is rebuilt
+  without them, its in-stack dependents go back to `pending`, and the remaining stack is verified
+  again. Its change is not landed by the stack.

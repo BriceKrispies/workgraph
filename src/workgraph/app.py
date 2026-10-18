@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     from workgraph.integrations.claude_code.ingest import HookIngestor
     from workgraph.integrations.git.service import GitService
     from workgraph.integrations.git.stack_integration import StackIntegrator
+    from workgraph.integrations.git.stack_landing import StackLander
     from workgraph.integrations.git.stack_verification import StackVerifier
     from workgraph.integrations.git.worktrees import WorktreeManager
     from workgraph.integrations.llm.registry import LLMRegistry
@@ -183,6 +184,12 @@ class Workgraph:
         from workgraph.integrations.git.stack_verification import StackVerifier
 
         return StackVerifier(self)
+
+    @cached_property
+    def stack_lander(self) -> StackLander:
+        from workgraph.integrations.git.stack_landing import StackLander
+
+        return StackLander(self)
 
     @cached_property
     def llm(self) -> LLMRegistry:

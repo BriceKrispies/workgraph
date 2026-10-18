@@ -24,7 +24,7 @@ from sqlalchemy.orm import Session
 
 from workgraph.core.clock import utcnow
 from workgraph.core.context import RequestContext
-from workgraph.core.errors import GitError, NotFoundError
+from workgraph.core.errors import GitError, InvalidTransitionError, NotFoundError
 from workgraph.core.events.log import record_event
 from workgraph.core.models.enums import (
     INACTIVE_STACK_STATUSES,
@@ -68,7 +68,7 @@ ON_BRANCH_STATES = frozenset({StackItemState.MERGED, StackItemState.VERIFIED, St
 
 
 @dataclass(frozen=True)
-class _Repo:
+class StackRepoBase:
     repository_id: str
     name: str
     base_sha: str
@@ -85,7 +85,7 @@ class _Entry:
     merges: dict[str, dict[str, str]]
 
 
-def _in_scope(repos: list[_Repo]) -> Callable[[ApplicableCheck], bool]:
+def _in_scope(repos: list[StackRepoBase]) -> Callable[[ApplicableCheck], bool]:
     """Full checks that apply to this stack: workspace and project checks, and checks of its repositories."""
     names = {repo.name for repo in repos} | {repo.repository_id for repo in repos}
 
@@ -197,7 +197,7 @@ class StackVerifier(Service):
         with self.db.session(write=True) as session:
             stack = session.get(Stack, stack_id)
             assert stack is not None
-            self._set_status(session, ctx, stack, StackStatus.VERIFYING, reason="verification started")
+            self.set_status(session, ctx, stack, StackStatus.VERIFYING, reason="verification started")
             record_event(
                 session,
                 ctx,
@@ -231,7 +231,7 @@ class StackVerifier(Service):
     ) -> dict[str, Any]:
         with self.db.session(write=True) as session:
             stack, parent = self._load(session, stack_id)
-            rows = self._item_rows(session, stack)
+            rows = self.item_rows(session, stack)
             verified = []
             for item, task in rows:
                 if StackItemState(item.state) == StackItemState.MERGED:
@@ -253,7 +253,8 @@ class StackVerifier(Service):
                         reason=f"stack {parent.key} verified on the integration tip{where}",
                         extra={"run_id": run_id},
                     )
-            self._set_status(session, ctx, stack, StackStatus.VERIFIED, reason=reason)
+            self._review_parent(session, ctx, stack, parent, run_id)
+            self.set_status(session, ctx, stack, StackStatus.VERIFIED, reason=reason)
             record_event(
                 session,
                 ctx,
@@ -263,7 +264,49 @@ class StackVerifier(Service):
                 workspace_id=stack.workspace_id,
                 data={"run_id": run_id, "tips": tips, "tasks": verified, "reason": reason},
             )
-        return {"status": "verified", "run_id": run_id, "verified": verified}
+        landing = self.app.stack_lander.after_verified(ctx, stack_id)
+        return {"status": "verified", "run_id": run_id, "verified": verified, "landing": landing}
+
+    def _review_parent(
+        self, session: Session, ctx: RequestContext, stack: Stack, parent: Task, run_id: str | None
+    ) -> None:
+        """Make the parent reviewable: the stack's full run on the integration tip verifies the parent.
+
+        The parent is walked to ``awaiting_review`` one legal lifecycle step at a time. A parent that
+        cannot get there (for example, with unmet dependencies) stays where it is and the reason is
+        recorded, so the stack still verifies and the parent can be moved by hand.
+        """
+        steps = {
+            TaskStatus.AWAITING_VERIFICATION: [TaskStatus.AWAITING_REVIEW],
+            TaskStatus.CLAIMED: [TaskStatus.AWAITING_REVIEW],
+            TaskStatus.RUNNING: [TaskStatus.AWAITING_REVIEW],
+            TaskStatus.READY: [TaskStatus.CLAIMED, TaskStatus.AWAITING_REVIEW],
+            TaskStatus.BACKLOG: [TaskStatus.READY, TaskStatus.CLAIMED, TaskStatus.AWAITING_REVIEW],
+            TaskStatus.BLOCKED: [TaskStatus.READY, TaskStatus.CLAIMED, TaskStatus.AWAITING_REVIEW],
+            TaskStatus.FAILED: [TaskStatus.READY, TaskStatus.CLAIMED, TaskStatus.AWAITING_REVIEW],
+        }
+        if TaskStatus(parent.status) == TaskStatus.AWAITING_REVIEW:
+            return
+        reason = f"stack {parent.key} verified on the integration tip" + (
+            f" (verification run {run_id})" if run_id else ""
+        )
+        try:
+            for step in steps.get(TaskStatus(parent.status), []):
+                self.app.tasks._transition(
+                    session, ctx, parent, step, reason=reason, extra={"run_id": run_id}
+                )
+            if TaskStatus(parent.status) != TaskStatus.AWAITING_REVIEW:
+                raise InvalidTransitionError(f"{parent.key} is {parent.status} and cannot be reviewed yet")
+        except InvalidTransitionError as exc:
+            record_event(
+                session,
+                ctx,
+                event_type="stack.parent_not_reviewable",
+                entity_type="stack",
+                entity_id=stack.id,
+                workspace_id=stack.workspace_id,
+                data={"task_key": parent.key, "status": parent.status, "reason": exc.message},
+            )
 
     # ------------------------------------------------------------------ bisect
 
@@ -272,7 +315,7 @@ class StackVerifier(Service):
         ctx: RequestContext,
         stack_id: str,
         parent_id: str,
-        repos: list[_Repo],
+        repos: list[StackRepoBase],
         targets: list[IntegrationTarget],
         tip_run: VerificationRunOut,
         tips: dict[str, str],
@@ -352,7 +395,7 @@ class StackVerifier(Service):
                         workspace_id=stack.workspace_id,
                         data={"run_id": base_run.id, "failed_checks": sorted(failing), "reason": reason},
                     )
-                    self._set_status(session, ctx, stack, StackStatus.INTEGRATING, reason=reason)
+                    self.set_status(session, ctx, stack, StackStatus.INTEGRATING, reason=reason)
                 return {"status": "failed_on_base", "run_id": base_run.id}
 
             # Invariant: the prefix ``low`` passes and the prefix ``high`` fails.
@@ -369,7 +412,7 @@ class StackVerifier(Service):
                 self.app.worktrees.remove(ctx, row_id, force=True)
         culprit = sequence[high - 1]
         task_key = self._eject(ctx, stack_id, culprit, high, high_run, failing)
-        self._rebuild(ctx, stack_id, targets, repos)
+        self.rebuild(ctx, stack_id, targets, repos)
         self._enqueue(ctx, stack_id, version=None)
         return {"status": "ejected", "task": task_key, "position": high, "run_id": high_run.id}
 
@@ -433,7 +476,7 @@ class StackVerifier(Service):
                     data={"stack_item_ejection": ejection},
                 ),
             )
-            for dependent_item, dependent_task in self._dependents(session, stack, task.id):
+            for dependent_item, dependent_task in self.dependents(session, stack, task.id):
                 if StackItemState(dependent_item.state) == StackItemState.EJECTED:
                     continue
                 reason = f"dependency {task.key} was ejected"
@@ -451,8 +494,8 @@ class StackVerifier(Service):
 
     # ------------------------------------------------------------------ rebuild
 
-    def _rebuild(
-        self, ctx: RequestContext, stack_id: str, targets: list[IntegrationTarget], repos: list[_Repo]
+    def rebuild(
+        self, ctx: RequestContext, stack_id: str, targets: list[IntegrationTarget], repos: list[StackRepoBase]
     ) -> None:
         """Reset each integration branch to its base and replay the items still on it, in merge order."""
         with self.db.session() as session:
@@ -510,7 +553,7 @@ class StackVerifier(Service):
                         outcome=outcome,
                         detail=detail,
                     )
-            self._set_status(
+            self.set_status(
                 session, ctx, stack, StackStatus.INTEGRATING, reason="rebuilt without ejected items"
             )
             record_event(
@@ -596,7 +639,7 @@ class StackVerifier(Service):
     def _signatures(run: VerificationRunOut, failing: set[str]) -> dict[str, list[str]]:
         return {check.name: list(check.failure_signatures) for check in run.checks if check.name in failing}
 
-    def _tips(self, stack_id: str, repos: list[_Repo]) -> dict[str, str]:
+    def _tips(self, stack_id: str, repos: list[StackRepoBase]) -> dict[str, str]:
         """The integration tip of each repository; its base while the worktree does not exist yet."""
         tips: dict[str, str] = {}
         for repo in repos:
@@ -605,14 +648,14 @@ class StackVerifier(Service):
         return tips
 
     @staticmethod
-    def _repos(session: Session, stack: Stack) -> list[_Repo]:
+    def _repos(session: Session, stack: Stack) -> list[StackRepoBase]:
         rows = session.execute(
             select(StackRepository.repository_id, Repository.name, StackRepository.base_sha)
             .join(Repository, Repository.id == StackRepository.repository_id)
             .where(StackRepository.stack_id == stack.id)
             .order_by(Repository.name)
         ).all()
-        return [_Repo(*row) for row in rows]
+        return [StackRepoBase(*row) for row in rows]
 
     @staticmethod
     def _settled(session: Session, stack: Stack) -> bool:
@@ -634,7 +677,7 @@ class StackVerifier(Service):
         return stack, parent
 
     @staticmethod
-    def _item_rows(session: Session, stack: Stack) -> list[tuple[StackItem, Task]]:
+    def item_rows(session: Session, stack: Stack) -> list[tuple[StackItem, Task]]:
         return [
             tuple(row)
             for row in session.execute(
@@ -649,7 +692,7 @@ class StackVerifier(Service):
     def _sequence(session: Session, stack: Stack) -> list[_Entry]:
         """The items whose merges are on the integration branch, in merge order."""
         entries = []
-        for item, task in StackVerifier._item_rows(session, stack):
+        for item, task in StackVerifier.item_rows(session, stack):
             if StackItemState(item.state) not in ON_BRANCH_STATES:
                 continue
             merges = load_detail(item.detail)["merges"]
@@ -658,9 +701,9 @@ class StackVerifier(Service):
         return entries
 
     @staticmethod
-    def _dependents(session: Session, stack: Stack, task_id: str) -> list[tuple[StackItem, Task]]:
+    def dependents(session: Session, stack: Stack, task_id: str) -> list[tuple[StackItem, Task]]:
         """Items of the stack that depend, directly or through other items, on one task."""
-        rows = {task.id: (item, task) for item, task in StackVerifier._item_rows(session, stack)}
+        rows = {task.id: (item, task) for item, task in StackVerifier.item_rows(session, stack)}
         edges = session.execute(
             select(TaskDependency.task_id, TaskDependency.depends_on_id).where(
                 TaskDependency.task_id.in_(list(rows)), TaskDependency.depends_on_id.in_(list(rows))
@@ -681,7 +724,7 @@ class StackVerifier(Service):
         return [rows[task] for task in sorted(found, key=lambda t: rows[t][1].number)]
 
     @staticmethod
-    def _set_status(
+    def set_status(
         session: Session, ctx: RequestContext, stack: Stack, target: StackStatus, *, reason: str
     ) -> None:
         if stack.status == target:

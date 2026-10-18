@@ -22,7 +22,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `project` | `create`, `list`, `show`, `update`, `add-repo`, `remove-repo` |
 | `repo` | `register`, `list`, `show`, `refresh`, `status`, `update`, `remove`, `remove-checkout`, `depend` |
 | `task` | `create`, `list`, `ready`, `show`, `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` |
-| `stack` | `create PARENT`, `show PARENT`, `list [--all]`, `integrate PARENT` (queues merging the ready children onto each repository's integration branch), `verify PARENT` (queues full verification of the integration tip, bisecting and ejecting a failing child); acceptance comes in a later stage |
+| `stack` | `create PARENT`, `show PARENT`, `list [--all]`, `integrate PARENT` (queues merging the ready children onto each repository's integration branch), `verify PARENT` (queues full verification of the integration tip, bisecting and ejecting a failing child). Acceptance goes through `task`: `task accept PARENT` (or `--manual --reason`) lands a verified stack on the default branch, refused with `landing: deferred` when the default branch moved and the stack is rebuilt to verify again; `task accept CHILD` accepts one child alone and removes it from its stack; `task reject PARENT` leaves the stack as it is (see [Git](git.md#stack-landing)) |
 | `attempt` | `list`, `show`, `create`, `finish`, `compare`, `manifests` |
 | `agent` | `list`, `add-command` |
 | `run` | `start [--wait]`, `get`, `watch`, `cancel`, `retry`, `rerun`, `schedule [--dry-run/--explain]`, `decompose [--create]` |

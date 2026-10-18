@@ -84,7 +84,9 @@ is named but not created yet. `stack_items` holds one row per child with a state
 `ready`, `merged`, `conflict`, `ejected`, `verified`) kept apart from the task lifecycle; `merge_order`
 is set the first time an item merges and is kept for replays. A parent has at most one stack in
 progress (`status` other than `landed` or `abandoned`), enforced by a partial unique index. Item
-transitions are validated in `core/policies/stacks.py`.
+transitions are validated in `core/policies/stacks.py`. `stacks.land_request` (migration `0004`) is
+null unless a landing was requested while the default branch had moved; it holds the requested mode,
+reason and actor until the stack lands (see [Git](git.md#stack-landing)).
 
 ## Migrations
 

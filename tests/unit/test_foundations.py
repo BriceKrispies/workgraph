@@ -65,7 +65,7 @@ def test_stacks_migration_upgrades_populated_0002(tmp_path):
             "'[]', '{}', 'test', 1, '2026-01-01', '2026-01-01')"
         )
     migrate.upgrade(db)
-    assert migrate.current_revision(db) == "0003" == SCHEMA_HEAD
+    assert migrate.current_revision(db) == "0004" == SCHEMA_HEAD
     stack_insert = (
         "INSERT INTO stacks (id, workspace_id, parent_task_id, status, created_at, updated_at) "
         "VALUES (:id, 'w', 't1', :status, '2026-01-01', '2026-01-01')"

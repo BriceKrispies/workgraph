@@ -12,9 +12,10 @@ from sqlalchemy import select
 
 from tests.helpers import FAKE_AGENT, drain, enable_fake_agent, failing_check, passing_check
 from workgraph.config.settings import CommandAgentConfig
+from workgraph.core.errors import ConflictError, ValidationFailed
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.integrations.git.cli import Git
-from workgraph.persistence.orm import Event, Job, TaskComment, VerificationRun
+from workgraph.persistence.orm import Event, Job, TaskAcceptance, TaskComment, VerificationRun
 
 
 def _enable_agent(app, name: str, file: str) -> None:
@@ -505,3 +506,222 @@ def test_stack_verify_jobs_hold_the_repository_keys(app, human, ws, tree):
     assert f"exclusive:stack-integration:{repository_id}" in job.resource_keys
     # Settling again on the same integration tips collapses into the existing job.
     assert app.stack_verification.enqueue_if_settled(human, stack.id) == job.id
+
+
+def _verified_stack(app, human, ws, parent, *, suite: dict[str, object] | None = None):
+    """Two children on separate files, integrated and verified on the stack's integration tip."""
+    _gate(
+        app,
+        human,
+        ws,
+        [
+            {**passing_check("types"), "kind": "typecheck", "tier": "fast"},
+            suite or passing_check("suite"),
+        ],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    stack = app.stacks.create(human, ws, parent.key)
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    return first, second, stack
+
+
+def _landed_run_id(app, stack_id: str) -> str:
+    with app.db.session() as session:
+        data = session.scalar(
+            select(Event.data)
+            .where(Event.entity_id == stack_id, Event.event_type == "stack.verified")
+            .order_by(Event.seq.desc())
+            .limit(1)
+        )
+    assert data is not None
+    return data["run_id"]
+
+
+def _landed_tips(app, stack_id: str) -> dict[str, str]:
+    with app.db.session() as session:
+        data = session.scalar(
+            select(Event.data).where(Event.entity_id == stack_id, Event.event_type == "stack.landed")
+        )
+    assert data is not None
+    return data["tips"]
+
+
+def _accepted_rows(app, human, ws, key: str) -> list[TaskAcceptance]:
+    task_id = app.tasks.get(human, ws, key).id
+    with app.db.session() as session:
+        return list(
+            session.scalars(
+                select(TaskAcceptance).where(
+                    TaskAcceptance.task_id == task_id, TaskAcceptance.decision == "accepted"
+                )
+            )
+        )
+
+
+def test_accepting_the_parent_lands_the_verified_stack_on_the_default_branch(app, human, ws, tree):
+    repo, parent = tree
+    first, second, stack = _verified_stack(app, human, ws, parent)
+    branch = stack.repositories[0].integration_branch
+    tip = repo.git("rev-parse", branch)
+    assert app.tasks.get(human, ws, parent.key).status == "awaiting_review"
+
+    acceptance = app.verification.accept(human, ws, parent.key)
+
+    assert acceptance.mode == "automated"
+    assert repo.git("rev-parse", "main") == tip
+    assert (repo.path / "a.py").exists() and (repo.path / "b.py").exists()
+    assert repo.git("status", "--porcelain") == ""
+    run_id = _landed_run_id(app, stack.id)
+    for task in (first, second):
+        assert app.tasks.get(human, ws, task.key).status == "accepted"
+        (row,) = _accepted_rows(app, human, ws, task.key)
+        assert row.mode == "automated" and row.verification_run_id == run_id
+    assert app.tasks.get(human, ws, parent.key).status == "accepted"
+    assert app.stacks.get(human, ws, parent.key).status == "landed"
+    assert not _integration_path(app, stack).exists()
+    assert repo.git("branch", "--list", branch) == ""
+    types = _event_types(app, stack.id)
+    assert "stack.landed" in types and "stack.integration_removed" in types
+    assert _landed_tips(app, stack.id) == {"svc": tip}
+
+
+def test_main_moving_before_acceptance_rebuilds_and_lands_after_reverification(app, human, ws, tree):
+    repo, parent = tree
+    first, second, stack = _verified_stack(app, human, ws, parent)
+    moved = repo.commit("unrelated change on main", {"extra.txt": "moved\n"})
+
+    with pytest.raises(ConflictError) as refused:
+        app.verification.accept(human, ws, parent.key)
+
+    assert refused.value.details["landing"] == "deferred"
+    assert repo.git("rev-parse", "main") == moved
+    assert app.tasks.get(human, ws, parent.key).status == "awaiting_review"
+    assert app.stacks.get(human, ws, parent.key).repositories[0].base_sha == moved
+    assert app.stacks.get(human, ws, parent.key).status != "landed"
+    assert "stack.land_requested" in _event_types(app, stack.id)
+
+    drain(app)
+
+    landed = repo.git("rev-parse", "main")
+    assert landed != moved
+    repo.git("merge-base", "--is-ancestor", moved, landed)
+    assert {"a.py", "b.py", "extra.txt"} <= _branch_files(repo, "main")
+    assert app.tasks.get(human, ws, first.key).status == "accepted"
+    assert app.tasks.get(human, ws, second.key).status == "accepted"
+    assert app.tasks.get(human, ws, parent.key).status == "accepted"
+    assert app.stacks.get(human, ws, parent.key).status == "landed"
+    types = _event_types(app, stack.id)
+    assert types.count("stack.verified") == 2 and "stack.landed" in types
+
+
+def test_dirty_user_checkout_refuses_the_landing_and_moves_no_ref(app, human, ws, tree):
+    repo, parent = tree
+    first, _second, stack = _verified_stack(app, human, ws, parent)
+    branch = stack.repositories[0].integration_branch
+    base = repo.git("rev-parse", "main")
+    tip = repo.git("rev-parse", branch)
+    repo.write("scratch.txt", "not committed\n")
+
+    with pytest.raises(ValidationFailed, match="uncommitted changes"):
+        app.verification.accept(human, ws, parent.key)
+
+    assert repo.git("rev-parse", "main") == base
+    assert repo.git("rev-parse", branch) == tip
+    assert app.tasks.get(human, ws, parent.key).status == "awaiting_review"
+    assert app.tasks.get(human, ws, first.key).status == "awaiting_review"
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+    assert "stack.landing_refused" in _event_types(app, stack.id)
+
+    (repo.path / "scratch.txt").unlink()
+    app.verification.accept(human, ws, parent.key)
+    assert repo.git("rev-parse", "main") == tip
+
+
+def test_auto_accept_lands_the_stack_as_soon_as_it_verifies(app, human, ws, tree):
+    repo, parent = tree
+    config = app.config
+    config.stacks.auto_accept = True
+    app.config_store.save_global(config)
+
+    first, _second, stack = _verified_stack(app, human, ws, parent)
+
+    assert repo.git("rev-parse", "main") == _landed_tips(app, stack.id)["svc"]
+    assert app.stacks.get(human, ws, parent.key).status == "landed"
+    assert app.tasks.get(human, ws, parent.key).status == "accepted"
+    (row,) = _accepted_rows(app, human, ws, parent.key)
+    assert row.mode == "automated" and row.reason == "stack.auto_accept"
+    assert app.tasks.get(human, ws, first.key).status == "accepted"
+
+
+def test_auto_accept_is_off_by_default(app, human, ws, tree):
+    repo, parent = tree
+    base = repo.git("rev-parse", "main")
+
+    _verified_stack(app, human, ws, parent)
+
+    assert app.config.stacks.auto_accept is False
+    assert repo.git("rev-parse", "main") == base
+    assert app.tasks.get(human, ws, parent.key).status == "awaiting_review"
+
+
+def test_accepting_a_merged_child_alone_removes_it_and_rebuilds_without_it(app, human, ws, tree):
+    repo, parent = tree
+    first, second, stack = _verified_stack(app, human, ws, parent)
+    branch = stack.repositories[0].integration_branch
+    base = repo.git("rev-parse", "main")
+    assert "a.py" in _branch_files(repo, branch)
+
+    accepted = app.verification.accept_manually(human, ws, first.key, reason="reviewed on its own")
+
+    assert accepted.mode == "manual" and accepted.reason == "reviewed on its own"
+    assert app.tasks.get(human, ws, first.key).status == "accepted"
+    assert first.key not in _items(app, human, ws, parent)
+    assert repo.git("rev-parse", "main") == base
+    assert "a.py" not in _branch_files(repo, branch)
+    assert "b.py" in _branch_files(repo, branch)
+    assert app.stacks.get(human, ws, parent.key).status == "integrating"
+    assert "stack.item_released" in _event_types(app, stack.id)
+
+    drain(app)
+
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+    assert app.tasks.get(human, ws, second.key).status == "awaiting_review"
+    assert app.tasks.get(human, ws, parent.key).status == "awaiting_review"
+    assert _items(app, human, ws, parent)[second.key].state == "verified"
+
+
+def test_accepting_the_parent_of_a_stack_that_is_not_verified_is_refused(app, human, ws, tree):
+    _repo, parent = tree
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, failing_check("suite")],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    app.stacks.create(human, ws, parent.key)
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    assert app.stacks.get(human, ws, parent.key).status == "integrating"
+
+    with pytest.raises(ConflictError, match="only a verified stack can land"):
+        app.verification.accept(human, ws, parent.key)
+    with pytest.raises(ConflictError, match="only a verified stack can land"):
+        app.verification.accept_manually(human, ws, parent.key, reason="looks fine")
+    assert app.tasks.get(human, ws, parent.key).status != "accepted"
+
+
+def test_rejecting_the_parent_leaves_the_stack_verified_without_landing(app, human, ws, tree):
+    repo, parent = tree
+    _first, _second, stack = _verified_stack(app, human, ws, parent)
+    base = repo.git("rev-parse", "main")
+
+    app.verification.reject(human, ws, parent.key, reason="needs another pass")
+
+    assert app.tasks.get(human, ws, parent.key).status == "ready"
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+    assert repo.git("rev-parse", "main") == base
+    assert "stack.parent_rejected" in _event_types(app, stack.id)

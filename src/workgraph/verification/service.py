@@ -751,8 +751,16 @@ class VerificationService(Service):
     def accept(
         self, ctx: RequestContext, workspace: str | None, task_ref: str, *, reason: str = ""
     ) -> AcceptanceOut:
-        """Automated acceptance: requires the latest verification run to have passed."""
+        """Automated acceptance: requires the latest verification run to have passed.
+
+        Accepting the parent of a stack lands the stack instead (see ``StackLander``).
+        """
         require(ctx, Permission.TASK_ACCEPT)
+        stack_id = self._stack_of_parent(workspace, task_ref)
+        if stack_id is not None:
+            return self._land_stack(
+                ctx, stack_id, mode="automated", reason=reason or "required checks passed"
+            )
         with self.db.session(write=True) as session:
             ws_id = self.app.tasks._workspace_id(session, workspace) if workspace else None
             task = resolve.task(session, ws_id, task_ref)
@@ -779,9 +787,13 @@ class VerificationService(Service):
                     f"latest verification run for {task.key} ran only fast checks; run full verification first",
                     details={"run_id": latest.id},
                 )
-            return self._accept(
+            self.app.stack_lander.guard_child(session, task)
+            out = self._accept(
                 session, ctx, task, mode="automated", reason=reason or "required checks passed", run=latest
             )
+            rebuild = self.app.stack_lander.release_child(session, ctx, task)
+        self.app.stack_lander.rebuild_without(ctx, rebuild)
+        return out
 
     def accept_manually(
         self, ctx: RequestContext, workspace: str | None, task_ref: str, *, reason: str
@@ -789,6 +801,9 @@ class VerificationService(Service):
         require(ctx, Permission.TASK_ACCEPT)
         if not reason.strip():
             raise ValidationFailed("manual acceptance requires a recorded reason")
+        stack_id = self._stack_of_parent(workspace, task_ref)
+        if stack_id is not None:
+            return self._land_stack(ctx, stack_id, mode="manual", reason=reason)
         with self.db.session(write=True) as session:
             ws_id = self.app.tasks._workspace_id(session, workspace) if workspace else None
             task = resolve.task(session, ws_id, task_ref)
@@ -798,7 +813,29 @@ class VerificationService(Service):
                 .order_by(VerificationRun.created_at.desc())
                 .limit(1)
             )
-            return self._accept(session, ctx, task, mode="manual", reason=reason, run=latest)
+            self.app.stack_lander.guard_child(session, task)
+            out = self._accept(session, ctx, task, mode="manual", reason=reason, run=latest)
+            rebuild = self.app.stack_lander.release_child(session, ctx, task)
+        self.app.stack_lander.rebuild_without(ctx, rebuild)
+        return out
+
+    def _stack_of_parent(self, workspace: str | None, task_ref: str) -> str | None:
+        """The id of the task's active stack when the task is that stack's parent."""
+        with self.db.session() as session:
+            ws_id = self.app.tasks._workspace_id(session, workspace) if workspace else None
+            task = resolve.task(session, ws_id, task_ref)
+            stack = self.app.stack_lander.active_stack_of_parent(session, task.id)
+            return stack.id if stack is not None else None
+
+    def _land_stack(self, ctx: RequestContext, stack_id: str, *, mode: str, reason: str) -> AcceptanceOut:
+        landed = self.app.stack_lander.land(ctx, stack_id, mode=mode, reason=reason)
+        if landed is None:
+            raise ConflictError(
+                "the default branch moved since the stack was verified; the stack was rebuilt on the new "
+                "branch and lands automatically once it verifies",
+                details={"stack_id": stack_id, "landing": "deferred"},
+            )
+        return landed
 
     def _accept(
         self,
@@ -913,6 +950,7 @@ class VerificationService(Service):
             self.app.tasks._transition(
                 session, ctx.caused_by(event.id), task, TaskStatus.READY, reason="rejected: " + reason
             )
+            self.app.stack_lander.record_parent_rejected(session, ctx, task, reason)
             session.flush()
             return AcceptanceOut.model_validate(acceptance)
 

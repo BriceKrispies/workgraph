@@ -211,6 +211,47 @@ def task_show(ref: str, workspace: str | None = workspace_option()) -> None:
     emit(STATE.app().tasks.detail(STATE.ctx(), ws(workspace), ref), _render_task)
 
 
+def _render_verdict(out: dict[str, Any]) -> None:
+    prediction = out["prediction"]
+    if prediction is None:
+        probability = "none (no prediction)"
+    else:
+        interval = (
+            "none"
+            if prediction["low"] is None or prediction["high"] is None
+            else f"95% {prediction['low']:.3f} to {prediction['high']:.3f}"
+        )
+        cutoff = prediction["data_cutoff"] or "none"
+        probability = (
+            f"{prediction['probability']:.3f}, interval {interval}, fit {prediction['fit_id']}, "
+            f"data cutoff {cutoff} (inference)"
+        )
+    kv(
+        [
+            ("verdict", out["verdict"]),
+            ("reasons", "; ".join(out["reasons"]) or "none"),
+            ("missing", ", ".join(out["missing"]) or "none"),
+            ("probability", probability),
+            ("target", f"{out['target']:.3f}"),
+            ("model", out["model"]),
+        ],
+        title="contract check",
+    )
+
+
+@task_app.command("contract-check")
+@handle_errors
+def task_contract_check(
+    ref: str,
+    model: str = typer.Option(..., "--model", help="Model id the predictor was fitted for"),
+    target: float = typer.Option(0.8, "--target", help="Predicted success needed for a leaf"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Triage a task: not_delegable, incomplete, split or leaf, with the predicted success as an inference."""
+    verdict = STATE.app().contract_checker.check(STATE.ctx(), ws(workspace), ref, model=model, target=target)
+    emit(verdict.as_dict(), _render_verdict)
+
+
 @task_app.command("update")
 @handle_errors
 def task_update(

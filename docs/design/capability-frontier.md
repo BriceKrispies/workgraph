@@ -172,9 +172,23 @@ Version `breakdown-v1`. Each step names the command that performs it.
    orchestrator.
 2. **Contract**: before a leaf goes out the orchestrator writes its red tests, declares the files
    it may touch, its gate commands, what is out of scope, and its predicted features (metadata
-   `contract`). Every acceptance criterion names the check that proves it.
-3. **Predict** (`experiment predict TASK`): if predicted success meets the target, the task is a
-   leaf.
+   `contract`). Every acceptance criterion names the check that proves it. The shape:
+
+   ```json
+   {
+     "files": ["pkg/mod.py", "tests/test_mod.py"],
+     "oracle": [["pytest", "-q", "tests/test_mod.py"]],
+     "gates": [["ruff", "check", "."]],
+     "out_of_scope": ["the CLI"],
+     "checks": ["tests/test_mod.py::test_f"],
+     "predicted": {"src_lines": 40, "src_files": 1, "packages": ["pkg"]}
+   }
+   ```
+
+   `files` and `oracle` are non-empty, `gates` may be empty, and `checks` has one entry per acceptance
+   criterion, in the same order. `workgraph task contract-check TASK --model M` performs steps 1 to 3.
+3. **Predict** (`experiment predict TASK`, run inside `task contract-check`): if predicted success meets
+   the target, the task is a leaf.
 4. **Split** otherwise: by package first, then by acceptance criterion, with interfaces defined
    in the parent before children that use them. Children become child tasks with dependencies.
    Return to step 2 for each child. **Stop splitting as soon as a piece meets the target**:

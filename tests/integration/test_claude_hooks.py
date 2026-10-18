@@ -268,8 +268,11 @@ def test_installer_refuses_invalid_json(tmp_path, monkeypatch):
     assert (tmp_path / "settings.json").read_text() == "{ broken"
 
 
-def write_subagent_transcript(path, task_key=None, *, output=40):
+def write_subagent_transcript(path, task_key=None, *, output=40, quoted_key=None):
     prompt = f"Task-ID: {task_key}\nDo the work." if task_key else "Do the work."
+    if quoted_key:
+        # A replay brief quotes the original commit message, which can carry its own Task-ID trailer.
+        prompt += f"\n\n## Task\nOld change.\n\nTask-ID: {quoted_key}\n"
     usage = {"input_tokens": 3, "cache_creation_input_tokens": 10, "cache_read_input_tokens": 20}
     records = [
         {
@@ -300,6 +303,29 @@ def write_subagent_transcript(path, task_key=None, *, output=40):
         },
     ]
     path.write_text("\n".join(json.dumps(r) for r in records) + "\n", encoding="utf-8")
+
+
+def test_only_the_first_task_marker_links_the_run(app, human, ws, tmp_path):
+    task = app.tasks.create(human, ws, TaskCreate(title="Brief's own task"))
+    quoted = app.tasks.create(human, ws, TaskCreate(title="Task named by a quoted commit message"))
+    transcript = tmp_path / "agent-q1.jsonl"
+    write_subagent_transcript(transcript, task.key, quoted_key=quoted.key)
+    hook(app, base("SessionStart", session="sess-quoted", source="startup"))
+    hook(
+        app,
+        base(
+            "SubagentStop",
+            session="sess-quoted",
+            agent_id="agent-q1",
+            agent_type="general-purpose",
+            agent_transcript_path=str(transcript),
+        ),
+        received_at="2026-10-17T10:00:02+00:00",
+    )
+    with app.db.session() as session:
+        run = session.scalar(select(SubagentRun).where(SubagentRun.external_agent_id == "agent-q1"))
+        assert run.task_id == task.id
+        assert run.telemetry["task_keys"] == [task.key, quoted.key]
 
 
 def test_unbound_subagent_transcript_creates_linked_top_level_attempt(app, human, ws, tmp_path):

@@ -585,10 +585,14 @@ def _parse_transcript_quietly(path: str) -> TranscriptStats | None:
 
 
 def _transcript_task(session: Session, workspace_id: str | None, keys: tuple[str, ...]) -> Task | None:
-    """The task named by the transcript, only if exactly one task in scope has a named key."""
+    """The task named by the prompt's first ``Task-ID:`` line, only if exactly one task in scope has that key.
+
+    Only the first marker counts: a brief leads with its own marker, and text quoted further down (a replayed
+    commit message, for one) can carry other ``Task-ID:`` trailers.
+    """
     if not keys:
         return None
-    stmt = select(Task).where(Task.key.in_(keys))
+    stmt = select(Task).where(Task.key == keys[0])
     if workspace_id:
         stmt = stmt.where(Task.workspace_id == workspace_id)
     matches = list(session.scalars(stmt))

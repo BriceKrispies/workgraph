@@ -64,6 +64,7 @@ def _register_optional_groups() -> None:
         jobs,
         servers,
         stacks,
+        ui,
     )
 
     app.add_typer(agents.attempt_app, name="attempt")
@@ -87,6 +88,7 @@ def _register_optional_groups() -> None:
     app.command("import")(data.import_command)
     app.add_typer(data.events_app, name="events")
     app.add_typer(demo.demo_app, name="demo")
+    app.add_typer(ui.ui_app, name="ui")
 
 
 _register_optional_groups()

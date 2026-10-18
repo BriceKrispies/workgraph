@@ -109,10 +109,13 @@ def graph(
     ctx: CtxDep,
     ws: str,
     project: str | None = None,
+    repository: str | None = None,
     root: str | None = None,
     include_closed: bool = True,
 ) -> Any:
-    return app.tasks.graph(ctx, ws, project=project, root=root, include_closed=include_closed)
+    return app.tasks.graph(
+        ctx, ws, project=project, repository=repository, root=root, include_closed=include_closed
+    )
 
 
 @router.get("/tasks/{ref}", response_model=TaskDetail)

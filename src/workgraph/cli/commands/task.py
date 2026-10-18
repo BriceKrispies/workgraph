@@ -476,12 +476,18 @@ def _summ(data: dict[str, Any]) -> str:
 def task_graph(
     root: str | None = typer.Option(None),
     project: str | None = typer.Option(None, "--project", "-p"),
+    repository: str | None = typer.Option(None, "--repo", "-r"),
     open_only: bool = typer.Option(False, "--open"),
     workspace: str | None = workspace_option(),
 ) -> None:
     """Print the dependency/hierarchy graph."""
     graph = STATE.app().tasks.graph(
-        STATE.ctx(), ws(workspace), root=root, project=project, include_closed=not open_only
+        STATE.ctx(),
+        ws(workspace),
+        root=root,
+        project=project,
+        repository=repository,
+        include_closed=not open_only,
     )
     keys = {n.id: n.key for n in graph.nodes}
 

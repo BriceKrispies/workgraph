@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Background, Controls, MarkerType, MiniMap, Position, ReactFlow, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import type { GraphEdge, GraphNode } from "../api/types";
@@ -21,14 +21,25 @@ const STATUS_FILL: Record<string, string> = {
   backlog: "#f8fafc",
 };
 
-/** Layered layout: a node's column is the longest path from a root over dependency and parent edges. */
+const COL_W = 280;
+const ROW_H = 96;
+
+/** Nodes touched by at least one of the given edges. */
+export function linkedIds(edges: GraphEdge[]): Set<string> {
+  return new Set(edges.flatMap((e) => [e.source, e.target]));
+}
+
+/**
+ * Layered layout: a node's column is the longest path from a root over dependency and parent edges.
+ * Nodes with no dependency or parent edge are packed into a grid below the layers, so a mostly
+ * unlinked backlog does not become one column thousands of rows tall.
+ */
 export function layeredLayout(nodes: GraphNode[], edges: GraphEdge[]): Map<string, { x: number; y: number }> {
   const incoming = new Map<string, string[]>();
   for (const n of nodes) incoming.set(n.id, []);
-  for (const e of edges) {
-    if (e.kind === "relation") continue;
-    if (incoming.has(e.target) && incoming.has(e.source)) incoming.get(e.target)!.push(e.source);
-  }
+  const structural = edges.filter((e) => e.kind !== "relation" && incoming.has(e.source) && incoming.has(e.target));
+  for (const e of structural) incoming.get(e.target)!.push(e.source);
+  const linked = linkedIds(structural);
   const level = new Map<string, number>();
   const visiting = new Set<string>();
   const depth = (id: string): number => {
@@ -41,14 +52,25 @@ export function layeredLayout(nodes: GraphNode[], edges: GraphEdge[]): Map<strin
     level.set(id, d);
     return d;
   };
-  nodes.forEach((n) => depth(n.id));
   const columns = new Map<number, string[]>();
+  const isolated: string[] = [];
   for (const n of nodes) {
-    const d = level.get(n.id) ?? 0;
+    if (!linked.has(n.id)) {
+      isolated.push(n.id);
+      continue;
+    }
+    const d = depth(n.id);
     columns.set(d, [...(columns.get(d) ?? []), n.id]);
   }
   const positions = new Map<string, { x: number; y: number }>();
-  for (const [d, ids] of columns) ids.forEach((id, i) => positions.set(id, { x: d * 280, y: i * 96 }));
+  for (const [d, ids] of columns) ids.forEach((id, i) => positions.set(id, { x: d * COL_W, y: i * ROW_H }));
+  if (isolated.length) {
+    const layerRows = Math.max(0, ...[...columns.values()].map((ids) => ids.length));
+    const top = layerRows ? (layerRows + 1) * ROW_H : 0;
+    // roughly square in screen space, and never narrower than the layers above it
+    const gridCols = Math.max(columns.size, Math.ceil(Math.sqrt((isolated.length * ROW_H) / COL_W)));
+    isolated.forEach((id, i) => positions.set(id, { x: (i % gridCols) * COL_W, y: top + Math.floor(i / gridCols) * ROW_H }));
+  }
   return positions;
 }
 
@@ -57,16 +79,36 @@ export function GraphPage() {
   const navigate = useNavigate();
   const projects = useProjectNames(ws);
   const repoNames = useRepoNames(ws);
-  const [project, setProject] = useState("");
-  const [openOnly, setOpenOnly] = useState(false);
-  const [showRelations, setShowRelations] = useState(true);
-  const graph = useGraph(ws, project || undefined);
+  // Filters live in the URL so a view can be linked to and captured by `workgraph ui screenshot`.
+  const [params, setParams] = useSearchParams();
+  const project = params.get("project") ?? "";
+  const repository = params.get("repo") ?? "";
+  const openOnly = params.get("open") === "1";
+  const linkedOnly = params.get("linked") === "1";
+  const showRelations = params.get("relations") !== "0";
+  const setParam = (key: string, value: string | null) =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (value) next.set(key, value);
+        else next.delete(key);
+        return next;
+      },
+      { replace: true },
+    );
+  const graph = useGraph(ws, project || undefined, repository || undefined);
 
-  const { nodes, edges } = useMemo(() => {
+  const { nodes, edges, counts } = useMemo(() => {
     const data = graph.data ?? { nodes: [], edges: [] };
-    const visible = data.nodes.filter((n) => !openOnly || !["accepted", "cancelled"].includes(n.status));
-    const ids = new Set(visible.map((n) => n.id));
-    const visibleEdges = data.edges.filter((e) => ids.has(e.source) && ids.has(e.target) && (showRelations || e.kind !== "relation"));
+    let visible = data.nodes.filter((n) => !openOnly || !["accepted", "cancelled"].includes(n.status));
+    let ids = new Set(visible.map((n) => n.id));
+    let visibleEdges = data.edges.filter((e) => ids.has(e.source) && ids.has(e.target) && (showRelations || e.kind !== "relation"));
+    const linked = linkedIds(visibleEdges);
+    if (linkedOnly) {
+      visible = visible.filter((n) => linked.has(n.id));
+      ids = new Set(visible.map((n) => n.id));
+      visibleEdges = visibleEdges.filter((e) => ids.has(e.source) && ids.has(e.target));
+    }
     const positions = layeredLayout(visible, visibleEdges);
     const rfNodes: Node[] = visible.map((n) => ({
       id: n.id,
@@ -110,15 +152,15 @@ export function GraphPage() {
       markerEnd: { type: MarkerType.ArrowClosed },
       labelStyle: { fontSize: 10 },
     }));
-    return { nodes: rfNodes, edges: rfEdges };
-  }, [graph.data, openOnly, showRelations, repoNames]);
+    return { nodes: rfNodes, edges: rfEdges, counts: { tasks: visible.length, linked: linked.size, edges: visibleEdges.length } };
+  }, [graph.data, openOnly, linkedOnly, showRelations, repoNames]);
 
   return (
     <div className="flex h-full flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-semibold text-slate-900">Task graph</h1>
         <div className="flex flex-wrap items-center gap-3 text-sm">
-          <select aria-label="Project filter" className={`${inputBase} w-44`} value={project} onChange={(e) => setProject(e.target.value)}>
+          <select aria-label="Project filter" className={`${inputBase} w-44`} value={project} onChange={(e) => setParam("project", e.target.value)}>
             <option value="">all projects</option>
             {[...projects.values()].map((p) => (
               <option key={p.id} value={p.slug}>
@@ -126,11 +168,22 @@ export function GraphPage() {
               </option>
             ))}
           </select>
+          <select aria-label="Repository filter" className={`${inputBase} w-44`} value={repository} onChange={(e) => setParam("repo", e.target.value)}>
+            <option value="">all repositories</option>
+            {[...new Set(repoNames.values())].sort().map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
           <label className="flex items-center gap-1">
-            <input type="checkbox" checked={openOnly} onChange={(e) => setOpenOnly(e.target.checked)} /> open only
+            <input type="checkbox" checked={openOnly} onChange={(e) => setParam("open", e.target.checked ? "1" : null)} /> open only
           </label>
           <label className="flex items-center gap-1">
-            <input type="checkbox" checked={showRelations} onChange={(e) => setShowRelations(e.target.checked)} /> relations
+            <input type="checkbox" checked={linkedOnly} onChange={(e) => setParam("linked", e.target.checked ? "1" : null)} /> linked only
+          </label>
+          <label className="flex items-center gap-1">
+            <input type="checkbox" checked={showRelations} onChange={(e) => setParam("relations", e.target.checked ? null : "0")} /> relations
           </label>
         </div>
       </div>
@@ -139,6 +192,12 @@ export function GraphPage() {
         <span>- - parent → child</span>
         <span className="text-purple-600">- - relation</span>
         <span className="text-amber-600">orange border = blocked</span>
+        <span>unlinked tasks are gridded below the layers</span>
+        {graph.data && (
+          <span className="ml-auto" data-testid="graph-counts">
+            {counts.tasks} tasks · {counts.linked} linked · {counts.edges} edges
+          </span>
+        )}
       </div>
       <ErrorBanner error={graph.error} />
       <Card className="min-h-[520px] flex-1" bodyClass="h-full min-h-[520px] p-0">
@@ -151,9 +210,12 @@ export function GraphPage() {
         ) : (
           <div className="h-[calc(100vh-220px)] min-h-[520px]" data-testid="task-graph">
             <ReactFlow
+              // remount on filter changes so the view is fitted to what is now shown
+              key={`${project}|${repository}|${openOnly}|${linkedOnly}|${showRelations}`}
               nodes={nodes}
               edges={edges}
               fitView
+              minZoom={0.02}
               nodesDraggable
               onNodeClick={(_, node) => {
                 const n = graph.data?.nodes.find((g) => g.id === node.id);

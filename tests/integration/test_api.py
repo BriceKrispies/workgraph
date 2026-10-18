@@ -105,6 +105,22 @@ def test_graph_analytics_search_and_settings(client, app, human, ws):
     assert client.get("/api/v1/ws/main/events", params={"limit": 5}).json()
 
 
+def test_graph_filters_by_repository(client, app, human, ws, make_repo):
+    for name in ("alpha", "beta"):
+        app.repositories.register(human, ws, RepositoryRegister(path=str(make_repo(name).path)))
+    a = client.post("/api/v1/ws/main/tasks", json={"title": "In alpha", "repositories": ["alpha"]}).json()
+    client.post(
+        "/api/v1/ws/main/tasks",
+        json={"title": "Also alpha", "repositories": ["alpha"], "depends_on": [a["key"]]},
+    )
+    client.post("/api/v1/ws/main/tasks", json={"title": "In beta", "repositories": ["beta"]})
+    graph = client.get("/api/v1/ws/main/graph", params={"repository": "alpha"}).json()
+    assert {n["title"] for n in graph["nodes"]} == {"In alpha", "Also alpha"}
+    assert len(graph["edges"]) == 1
+    missing = client.get("/api/v1/ws/main/graph", params={"repository": "nope"})
+    assert missing.status_code == 404
+
+
 def test_automation_jobs_and_runs_endpoints(client, app, human, ws):
     rule = {"name": "tagger", "trigger": {"type": "manual"}, "actions": [{"type": "add_tags", "tags": ["x"]}]}
     assert client.post("/api/v1/ws/main/automation/rules", json=rule).status_code == 201

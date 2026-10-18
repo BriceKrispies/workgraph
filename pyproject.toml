@@ -108,6 +108,7 @@ max-line-length = 130
 "src/workgraph/cli/**" = ["T20"]
 "src/workgraph/persistence/migrations/**" = ["ANN", "E501"]
 "tools/**" = ["T20", "ANN"]
+"src/workgraph/experiments/**" = ["S311"]  # seeded resampling and sampling for statistics, not security
 
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["typer.Option", "typer.Argument", "fastapi.Depends", "fastapi.Query"]

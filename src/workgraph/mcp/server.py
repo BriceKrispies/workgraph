@@ -173,6 +173,49 @@ def build_server(
     def stack_list(workspace: Workspace = None, include_inactive: bool = False) -> dict[str, Any]:
         return {"stacks": _dump(app.stacks.list(ctx(), workspace, include_inactive=include_inactive))}
 
+    @tool(
+        "stack_history",
+        "A parent task's most recent stack in order: merges, conflicts, verification runs, bisect "
+        "probes, ejections, rebuilds and landing.",
+    )
+    def stack_history(parent: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
+        return {"events": _dump(app.stacks.history(ctx(), workspace, parent))}
+
+    @tool(
+        "stack_create",
+        "Stack a parent task's children on a fresh integration branch cut from each repository's default "
+        "branch (requires stack:write).",
+    )
+    def stack_create(parent: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
+        return _dump(app.stacks.create(ctx(), workspace, parent))
+
+    @tool("stack_add_item", "Add a child task of the parent to its active stack (requires stack:write).")
+    def stack_add_item(parent: TaskRef, task: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
+        return _dump(app.stacks.add_item(ctx(), workspace, parent, task))
+
+    @tool(
+        "stack_remove_item",
+        "Remove a pending, ready, conflicting or ejected child from the active stack (requires stack:write).",
+    )
+    def stack_remove_item(parent: TaskRef, task: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
+        return _dump(app.stacks.remove_item(ctx(), workspace, parent, task))
+
+    @tool(
+        "stack_integrate",
+        "Queue merging the stack's ready children onto each repository's integration branch "
+        "(requires stack:write).",
+    )
+    def stack_integrate(parent: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
+        return app.stacks.integrate(ctx(), workspace, parent)
+
+    @tool(
+        "stack_verify",
+        "Queue full verification of the stack's integration tip; a failure bisects and ejects the culprit "
+        "(requires stack:write).",
+    )
+    def stack_verify(parent: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
+        return app.stack_verification.request(ctx(), workspace, parent)
+
     @tool("task_create", "Create a task. Repositories/projects/dependencies may be given by name or key.")
     def task_create(
         title: Annotated[str, Field(min_length=1, max_length=500)],

@@ -212,4 +212,18 @@ def test_stack_command_group(run, make_repo):
     assert run("stack", "list", "--all")[0]["id"] == created["id"]
     assert "WG-1" in run("stack", "show", "WG-1", json_mode=False)
     assert "WG-1" in run("stack", "list", json_mode=False)
+    run("task", "create", "Late change", "--parent", "WG-1", "--repo", "stacked")
+    added = run("stack", "add", "WG-1", "WG-4")
+    assert [i["task_key"] for i in added["items"]] == ["WG-2", "WG-3", "WG-4"]
+    run("stack", "add", "WG-1", "WG-4", expect=3)
+    removed = run("stack", "remove", "WG-1", "WG-4")
+    assert [i["task_key"] for i in removed["items"]] == ["WG-2", "WG-3"]
+    history = run("stack", "history", "WG-1")
+    assert [e["event_type"] for e in history] == ["stack.created", "stack.item_added", "stack.item_removed"]
+    assert [e["seq"] for e in history] == sorted(e["seq"] for e in history)
+    human_history = run("stack", "history", "WG-1", json_mode=False)
+    assert "stack.item_removed" in human_history and "task_key=WG-4" in human_history
+    human_show = run("stack", "show", "WG-1", json_mode=False)
+    assert "integration branch" in human_show and "wg/stack/wg-1" in human_show
     run("stack", "show", "WG-9", expect=4)
+    run("stack", "history", "WG-9", expect=4)

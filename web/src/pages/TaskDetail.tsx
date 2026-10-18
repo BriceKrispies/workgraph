@@ -20,6 +20,7 @@ import {
   inputClass,
 } from "../components/ui";
 import { TaskForm } from "../features/TaskForm";
+import { TaskStackLinks } from "../features/stacks";
 import {
   AttemptsPanel,
   ChangesPanel,
@@ -149,6 +150,7 @@ export function TaskDetailPage() {
             ))}
             <span className="text-[12px] text-slate-400">v{t.version}</span>
           </div>
+          <TaskStackLinks taskKey={t.key} />
         </div>
         <div className="flex flex-wrap items-center gap-1.5" data-testid="task-actions">
           {actions.includes("claim") && (

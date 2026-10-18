@@ -120,6 +120,10 @@ of a stack lands the stack (see below).
   (`mode` `automated`, linked to the stack's passing run), then the parent is accepted, and the stack
   becomes `landed`. The default branch moves to the verified integration tip. The details are in
   [Git](git.md#stack-landing).
+- **Unfinished children refuse the landing.** Accepting the parent means the whole piece of work is
+  done, so every item must be `verified`. A stack with a `pending`, `ready`, `conflict` or `ejected`
+  child is refused, the refusal names each unfinished child and its state, and the children are either
+  finished or removed from the stack first.
 - **The default branch moved.** If the default branch moved after the stack was cut, nothing lands
   and the call is refused with `landing: deferred`. The stack is rebuilt on the new head, verified
   again, and lands by itself once that verification passes.
@@ -127,7 +131,11 @@ of a stack lands the stack (see below).
   automated acceptance of the parent with the reason `stack.auto_accept`.
 - **Rejecting the parent** (`task reject`) leaves the stack as it is and records `stack.parent_rejected`.
   Nothing lands.
+- **Membership.** Children join and leave an active stack with `workgraph stack add PARENT TASK` and
+  `workgraph stack remove PARENT TASK` (or the matching API routes and MCP tools, which need
+  `stack:write`). A child can only join if all its repositories are part of the stack, and a child that
+  is `merged` or `verified` on the integration branch cannot leave it.
 - **A child on its own.** Accepting a child that is an item of an active stack accepts it as usual
-  and removes it from the stack. If its commits were on the integration branch, the branch is rebuilt
-  without them, its in-stack dependents go back to `pending`, and the remaining stack is verified
-  again. Its change is not landed by the stack.
+  (automated, or `--manual --reason` as for any child) and removes it from the stack. If its commits
+  were on the integration branch, the branch is rebuilt without them, its in-stack dependents go back
+  to `pending`, and the remaining stack is verified again. Its change is not landed by the stack.

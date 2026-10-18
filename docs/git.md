@@ -99,7 +99,7 @@ applicable verification checks.
   A child whose item is `conflict` starts from the integration tip instead (`source`
   `integration_tip`), so it resolves the conflict on top of what is already integrated.
 - **Integration branch and merge queue.** Each stack repository has one integration branch,
-  `wg/stack/<parent-key>`, created at the stack's `base_sha` the first time it is needed. Its
+  `wg/stack/<parent-key>` with the key lowercased (`wg/stack/wg-2`), created at the stack's `base_sha` the first time it is needed. Its
   worktree lives at `worktrees/stacks/<stack-id>/<repository>` and is recorded in
   `managed_worktrees` with no attempt, so it stays `active` while the stack is open and is never
   released by an attempt. Workgraph never merges in a user checkout.
@@ -192,8 +192,9 @@ Accepting the parent task of a verified stack lands it (`workgraph task accept P
   tip of each repository, and the integration worktrees are removed (`worktree remove --force`) and
   the integration branch is deleted (`stack.integration_removed`). Dependents of the accepted tasks
   are promoted by the normal acceptance path.
-- **Refusals.** A landing that is refused (stack not verified, parent not awaiting review, dirty
-  checkout, integration work in flight) is recorded as `stack.landing_refused` and changes nothing
+- **Refusals.** A landing that is refused (stack not verified, parent not awaiting review, any child
+  not `verified` (listed with its state, for example `ejected` or `pending`), a child not awaiting
+  review, dirty checkout, integration work in flight) is recorded as `stack.landing_refused` and changes nothing
   else. With `stacks.auto_accept` enabled, the landing runs when the stack verifies, and a refusal
   leaves the stack `verified` for a manual accept.
 - **Auto-accept.** `stacks.auto_accept` (global, overridable per workspace; see
@@ -203,6 +204,13 @@ Accepting the parent task of a verified stack lands it (`workgraph task accept P
 A child accepted on its own is removed from the stack. Its commits, if they were on the integration
 branch, are removed by rebuilding the branch without them, which the stack then verifies again. The
 change itself is not landed, so it reaches the default branch only if it is landed by other means.
+
+**Inspecting a stack.** `workgraph stack show PARENT` lists each repository with its base sha,
+integration branch and tip (blank while the integration worktree does not exist), and the children in
+merge order with their state and, for conflicts and ejections, the paths or failed checks.
+`workgraph stack history PARENT` (also `GET /ws/{ws}/stacks/{ref}/history` and `stack_history`)
+returns the stack's events in order, together with the verification runs they name. The web Stacks
+page shows the same data, with the bisection timeline.
 
 ## Cross-repository change sets
 

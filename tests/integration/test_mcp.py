@@ -39,6 +39,12 @@ REQUIRED_TOOLS = {
     "task_link_repository",
     "stack_get",
     "stack_list",
+    "stack_history",
+    "stack_create",
+    "stack_add_item",
+    "stack_remove_item",
+    "stack_integrate",
+    "stack_verify",
     "task_link_commit",
     "task_report_progress",
     "task_report_result",
@@ -126,6 +132,59 @@ async def test_stdio_server_discovery_invocation_and_persistence(app, human, ws,
     assert app.git.task_commits(human, ws, key)[0]["sha"] == sha
     actors = {e.actor for e in app.history.task_history(human, ws, key)}
     assert "agent:tester" in actors
+
+
+@pytest.mark.slow
+async def test_stack_mutations_need_stack_write(app, human, ws, home, make_repo):
+    repo = make_repo("stack-mcp")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+
+    def stdio(*grants: str) -> StdioServerParameters:
+        args = ["-m", "workgraph", "mcp", "--agent-name", "tester"]
+        for grant in grants:
+            args += ["--grant", grant]
+        return StdioServerParameters(
+            command=sys.executable, args=args, env={**os.environ, "WORKGRAPH_HOME": str(home)}
+        )
+
+    async with Client(stdio(), read_timeout_seconds=60) as client:
+        parent = await client.call_tool("task_create", {"title": "Stacked", "repositories": ["stack-mcp"]})
+        child = await client.call_tool(
+            "task_create",
+            {"title": "Change", "parent": parent.structured_content["key"], "repositories": ["stack-mcp"]},
+        )
+        parent_key = parent.structured_content["key"]
+        child_key = child.structured_content["key"]
+        denied = await client.call_tool("stack_create", {"parent": parent_key})
+        assert denied.is_error and "stack:write" in str(denied.content)
+        assert not (await client.call_tool("stack_list", {})).is_error
+        assert (await client.call_tool("stack_get", {"parent": parent_key})).is_error
+    async with Client(stdio("stack:write"), read_timeout_seconds=60) as client:
+        created = await client.call_tool("stack_create", {"parent": parent_key})
+        assert not created.is_error
+        assert created.structured_content["parent_key"] == parent_key
+        assert [i["task_key"] for i in created.structured_content["items"]] == [child_key]
+        extra = await client.call_tool(
+            "task_create", {"title": "Late", "parent": parent_key, "repositories": ["stack-mcp"]}
+        )
+        late_key = extra.structured_content["key"]
+        added = await client.call_tool("stack_add_item", {"parent": parent_key, "task": late_key})
+        assert [i["task_key"] for i in added.structured_content["items"]] == [child_key, late_key]
+        removed = await client.call_tool("stack_remove_item", {"parent": parent_key, "task": late_key})
+        assert [i["task_key"] for i in removed.structured_content["items"]] == [child_key]
+        history = await client.call_tool("stack_history", {"parent": parent_key})
+        assert [e["event_type"] for e in history.structured_content["events"]] == [
+            "stack.created",
+            "stack.item_added",
+            "stack.item_removed",
+        ]
+        integrated = await client.call_tool("stack_integrate", {"parent": parent_key})
+        assert (
+            not integrated.is_error and integrated.structured_content["jobs"][0]["repository"] == "stack-mcp"
+        )
+        verify_missing = await client.call_tool("stack_verify", {"parent": "WG-999"})
+        assert verify_missing.is_error and "not_found" in str(verify_missing.content)
+    assert app.stacks.get(human, ws, parent_key).items[0].task_key == child_key
 
 
 @pytest.mark.slow

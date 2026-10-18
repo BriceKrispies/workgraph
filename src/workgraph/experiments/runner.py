@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import time
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -21,11 +22,12 @@ from sqlalchemy import String, cast, select
 from workgraph.core.context import RequestContext
 from workgraph.core.errors import ConflictError, ValidationFailed
 from workgraph.core.models.enums import TrialStatus
-from workgraph.core.models.schemas import TrialOut
+from workgraph.core.models.schemas import TaskOut, TrialOut
 from workgraph.core.services.base import Service
 from workgraph.core.services.repositories import primary_checkout
 from workgraph.experiments import briefs, replay
 from workgraph.experiments.briefs import BriefContext
+from workgraph.experiments.contract import contract_problems
 from workgraph.experiments.escape import Escape, find_escapes, normalize_path_text
 from workgraph.integrations.claude_code.transcript import tool_calls
 from workgraph.integrations.git.cli import Git
@@ -49,11 +51,13 @@ class TrialRunner(Service):
             )
         protocol = self.app.experiments.get(ctx, workspace, trial.experiment_id).protocol
         task = self.app.tasks.get(ctx, workspace, trial.task_key)
-        meta = _replay_meta(task.metadata, task.key)
+        spec = _task_spec(task)
         repository, checkout = self._repository(trial.task_id)
-        subject, body = _commit_message(checkout, meta["sha"])
-        base_ref = str(meta["base_ref"])
-        test_paths = [str(path) for path in meta["test_paths"]]
+        if spec.commit is None:
+            subject, body = task.title, task.description
+        else:
+            subject, body = _commit_message(checkout, spec.commit)
+        base_ref = spec.base_ref or _default_branch(checkout)
 
         short = trial.id[:8]
         branch = f"{BRANCH_PREFIX}{short}"
@@ -89,7 +93,11 @@ class TrialRunner(Service):
                         details={"command": argv, "exit": record["exit"]},
                     )
             base_sha = clone.out("rev-parse", "HEAD").strip()
-            oracle, gates = _commands(protocol, meta, dest, base_sha, test_paths)
+            if spec.commit is None:
+                test_paths = _declared_test_paths(spec.files, replay.ReplayConfig.for_repository(dest))
+            else:
+                test_paths = spec.test_paths
+            oracle, gates = _commands(protocol, spec, dest, base_sha, test_paths)
             context = BriefContext(
                 task_key=task.key,
                 trial_id=trial.id,
@@ -101,6 +109,9 @@ class TrialRunner(Service):
                 test_paths=tuple(test_paths),
                 oracle=oracle,
                 gates=gates,
+                acceptance=spec.acceptance,
+                files=spec.files,
+                out_of_scope=spec.out_of_scope,
             )
             brief = briefs.render(str(protocol["brief_template"]), context)
             started = self.app.experiments.start_trial(
@@ -140,8 +151,8 @@ class TrialRunner(Service):
             raise ValidationFailed(f"trial worktree {worktree} is missing", details={"path": str(worktree)})
         base_sha = trial.base_ref
         protocol = self.app.experiments.get(ctx, workspace, trial.experiment_id).protocol
-        meta = _replay_meta(self.app.tasks.get(ctx, workspace, trial.task_key).metadata, trial.task_key)
-        oracle, gates = _commands(protocol, meta, worktree, base_sha, [str(p) for p in meta["test_paths"]])
+        spec = _task_spec(self.app.tasks.get(ctx, workspace, trial.task_key))
+        oracle, gates = _commands(protocol, spec, worktree, base_sha, spec.test_paths)
 
         if trial.subagent_run_id is None:
             run = self._latest_run(trial.id)
@@ -162,6 +173,10 @@ class TrialRunner(Service):
             flags["tests_modified"] = list(changes.tests_modified)
         if changes.stubs:
             flags["stubs"] = [{"path": path, "line": line} for path, line in changes.stubs]
+        if spec.leaf:
+            undeclared = [path for path in changes.changed_paths if path not in spec.files]
+            if undeclared:
+                flags["outside_declared_files"] = undeclared
         escape_check, escapes = self._escapes(trial, worktree)
         if escapes:
             flags["escaped_clone"] = [
@@ -294,23 +309,102 @@ def _commit_message(checkout: Path, sha: str) -> tuple[str, str]:
     return subject, body
 
 
+@dataclass(frozen=True)
+class _Spec:
+    """What a task's trial is run and graded against: a replay commit, or a leaf's declared contract.
+
+    ``commit`` is set only for replay tasks. ``oracle`` is the task's own oracle; the protocol's oracle template
+    applies to replay tasks only. ``gates`` are the task's own gates, run before the protocol's gates.
+    """
+
+    leaf: bool
+    base_ref: str | None
+    commit: str | None
+    test_paths: tuple[str, ...]
+    oracle: Commands
+    gates: Commands
+    files: tuple[str, ...]
+    out_of_scope: tuple[str, ...]
+    acceptance: tuple[tuple[str, str], ...]
+
+
+def _task_spec(task: TaskOut) -> _Spec:
+    """The spec of a replay task, or of a leaf whose ``metadata.contract`` is complete. Anything else is refused."""
+    if isinstance(task.metadata.get("replay"), dict):
+        meta = _replay_meta(task.metadata, task.key)
+        return _Spec(
+            leaf=False,
+            base_ref=str(meta["base_ref"]),
+            commit=str(meta["sha"]),
+            test_paths=tuple(str(path) for path in meta["test_paths"]),
+            oracle=_argv_tuples(meta.get("oracle", [])),
+            gates=(),
+            files=(),
+            out_of_scope=(),
+            acceptance=(),
+        )
+    missing, not_delegable = contract_problems(task)
+    if missing or not_delegable:
+        problems = [*not_delegable, *(f"missing {name}" for name in missing)]
+        raise ValidationFailed(
+            f"task {task.key} has no replay metadata and cannot run as a leaf: {'; '.join(problems)}",
+            details={"task": task.key, "missing": missing, "not_delegable": not_delegable},
+        )
+    contract: dict[str, Any] = task.metadata["contract"]
+    base = contract.get("base_ref")
+    return _Spec(
+        leaf=True,
+        base_ref=str(base) if base is not None else None,
+        commit=None,
+        test_paths=(),
+        oracle=_argv_tuples(contract["oracle"]),
+        gates=_argv_tuples(contract["gates"]),
+        files=tuple(str(path) for path in contract["files"]),
+        out_of_scope=tuple(str(item) for item in contract["out_of_scope"]),
+        acceptance=tuple(zip(task.acceptance_criteria, contract["checks"], strict=True)),
+    )
+
+
+def _argv_tuples(value: Any) -> Commands:
+    return tuple(tuple(str(part) for part in command) for command in value)
+
+
+def _declared_test_paths(files: Sequence[str], config: replay.ReplayConfig) -> tuple[str, ...]:
+    return tuple(path for path in files if any(replay.match_glob(path, glob) for glob in config.test_globs))
+
+
+def _default_branch(checkout: Path) -> str:
+    """The repository's default branch, or the checked-out branch when no default can be read."""
+    git = Git(checkout)
+    branch = git.default_branch() or git.current_branch()
+    if branch is None:
+        raise ValidationFailed(
+            f"checkout {checkout} has no default branch; set contract.base_ref on the task",
+            details={"path": str(checkout)},
+        )
+    return branch
+
+
 def _commands(
     protocol: Mapping[str, Any],
-    meta: Mapping[str, Any],
+    spec: _Spec,
     clone: Path,
     base_sha: str,
     test_paths: Sequence[str],
 ) -> tuple[Commands, Commands]:
-    """The oracle and gate commands of a trial. The oracle must exist, or the trial cannot be graded."""
+    """The oracle and gate commands of a trial, shared by start and grade so they cannot disagree.
+
+    The oracle must exist, or the trial cannot be run or graded.
+    """
     template = protocol.get("oracle_template")
-    if template is not None:
+    if template is not None and not spec.leaf:
         existing, packages = replay.template_inputs(clone, base_sha, test_paths)
         oracle: Commands = (replay.expand_oracle_template(template, existing, packages),) if existing else ()
     else:
-        oracle = tuple(tuple(str(part) for part in command) for command in meta.get("oracle", []))
+        oracle = spec.oracle
     if not oracle:
         raise ValidationFailed("the trial has no oracle command, so it cannot be run or graded")
-    gates = tuple(tuple(str(part) for part in command) for command in protocol.get("gates", []))
+    gates = spec.gates + _argv_tuples(protocol.get("gates", []))
     return oracle, gates
 
 
@@ -357,4 +451,6 @@ def _flag_summary(flags: Mapping[str, Any]) -> str:
         parts.append(
             "escaped clone via: " + ", ".join(sorted({escape["root"] for escape in flags["escaped_clone"]}))
         )
+    if "outside_declared_files" in flags:
+        parts.append("outside declared files: " + ", ".join(flags["outside_declared_files"]))
     return "; ".join(parts)

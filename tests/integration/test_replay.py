@@ -19,6 +19,7 @@ from workgraph.experiments.replay import (
     resolve_oracle,
     scan,
     validate,
+    worktree_changes,
 )
 
 MOD_BASE = "def f():\n    return 1\n"
@@ -381,3 +382,97 @@ def test_validate_rejects_red_solution(make_repo: Callable[..., GitRepo], tmp_pa
     assert result.reason == "oracle_red_at_solution"
     assert all(code != 0 for code in result.solution)
     assert len(_worktrees(repo)) == 1
+
+
+# ---------------------------------------------------------------- worktree_changes
+
+
+def _worktree_repo(make_repo: Callable[..., GitRepo], name: str) -> tuple[GitRepo, str]:
+    repo = _py_repo(make_repo, name)
+    base = repo.commit(
+        "tests and ignores",
+        {
+            "tests/test_mod.py": "def test_f():\n    assert True\n",
+            ".gitignore": "__pycache__/\n.pytest_cache/\n",
+        },
+    )
+    return repo, base
+
+
+def test_worktree_changes_counts_committed_uncommitted_and_untracked(
+    make_repo: Callable[..., GitRepo],
+) -> None:
+    repo, base = _worktree_repo(make_repo, "py-worktree-counts")
+    repo.commit("Add g", {"pkg/mod.py": MOD_WITH_G})
+    repo.write("pkg/mod.py", MOD_WITH_G + "X = 3\n")
+    repo.write("pkg/extra.py", "E = 1\nF = 2\n")
+    repo.write(".pytest_cache/junk.py", "J = 1\n" * 50)
+
+    changes = worktree_changes(repo.path, base)
+
+    assert changes.features.src_lines == 7
+    assert changes.features.src_files == 2
+    assert changes.features.test_files == 0
+    assert changes.features.band == 2
+    assert changes.features.packages == ("",)
+    assert changes.added_source_lines["pkg/extra.py"] == ("E = 1", "F = 2")
+    assert "X = 3" in changes.added_source_lines["pkg/mod.py"]
+    assert ".pytest_cache/junk.py" not in changes.added_source_lines
+    assert changes.tests_modified == ()
+
+
+def test_worktree_changes_lists_added_stubs(make_repo: Callable[..., GitRepo]) -> None:
+    repo, base = _worktree_repo(make_repo, "py-worktree-stubs")
+    repo.write("pkg/stub.py", 'def a():\n    raise NotImplementedError\n\n\nX = todo!("later")\n')
+
+    changes = worktree_changes(repo.path, base)
+
+    assert changes.stubs == (
+        ("pkg/stub.py", "    raise NotImplementedError"),
+        ("pkg/stub.py", 'X = todo!("later")'),
+    )
+
+
+def test_worktree_changes_lists_modified_test_file(make_repo: Callable[..., GitRepo]) -> None:
+    repo, base = _worktree_repo(make_repo, "py-worktree-modified")
+    repo.write("tests/test_mod.py", TEST_G)
+
+    assert worktree_changes(repo.path, base).tests_modified == ("tests/test_mod.py",)
+
+
+def test_worktree_changes_lists_deleted_test_file(make_repo: Callable[..., GitRepo]) -> None:
+    repo, base = _worktree_repo(make_repo, "py-worktree-deleted")
+    (repo.path / "tests" / "test_mod.py").unlink()
+
+    assert worktree_changes(repo.path, base).tests_modified == ("tests/test_mod.py",)
+
+
+def test_worktree_changes_ignores_new_test_file(make_repo: Callable[..., GitRepo]) -> None:
+    repo, base = _worktree_repo(make_repo, "py-worktree-new")
+    repo.write("tests/test_new.py", TEST_G)
+
+    assert worktree_changes(repo.path, base).tests_modified == ()
+
+
+def test_worktree_changes_lists_old_path_of_renamed_test_file(make_repo: Callable[..., GitRepo]) -> None:
+    repo, base = _worktree_repo(make_repo, "py-worktree-renamed")
+    repo.git("mv", "tests/test_mod.py", "tests/test_renamed.py")
+
+    assert worktree_changes(repo.path, base).tests_modified == ("tests/test_mod.py",)
+
+
+def test_worktree_changes_leaves_worktree_and_index_untouched(make_repo: Callable[..., GitRepo]) -> None:
+    repo, base = _worktree_repo(make_repo, "py-worktree-untouched")
+    repo.commit("Add g", {"pkg/mod.py": MOD_WITH_G})
+    repo.write("pkg/mod.py", MOD_WITH_G + "X = 3\n")
+    repo.write("pkg/extra.py", "E = 1\n")
+
+    def snapshot() -> tuple[str, bytes, bytes]:
+        status = repo.git("status", "--porcelain")
+        index = (repo.path / ".git" / "index").read_bytes()
+        return status, index, (repo.path / "pkg" / "extra.py").read_bytes()
+
+    before = snapshot()
+    worktree_changes(repo.path, base)
+
+    assert snapshot() == before

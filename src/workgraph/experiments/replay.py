@@ -8,6 +8,7 @@ solution, so its non-test source size is known.
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -526,3 +527,80 @@ def validate(
         return Validation(ok=True, reason=None, base=base, solution=solution)
     finally:
         shutil.rmtree(root, ignore_errors=True)
+
+
+_STUB_PATTERNS = (
+    re.compile(r"\btodo!\s*\("),
+    re.compile(r"\bunimplemented!\s*\("),
+    re.compile(r"\bNotImplementedError\b"),
+    re.compile(r'panic!\s*\(\s*"not implemented'),
+)
+
+
+@dataclass(frozen=True)
+class WorktreeChanges:
+    """A worktree's contents measured against a base commit, including uncommitted and untracked files."""
+
+    features: ReplayFeatures
+    tests_modified: tuple[str, ...]
+    added_source_lines: dict[str, tuple[str, ...]]
+    stubs: tuple[tuple[str, str], ...]
+
+
+def _tests_modified(name_status: str, config: ReplayConfig) -> tuple[str, ...]:
+    """Existing test files that were modified, deleted, or renamed away (new test files are not listed)."""
+    listed: list[str] = []
+    for status, path, old in _name_status(name_status):
+        if status[0] == "R" and old is not None and _kind(old, config) == "test":
+            listed.append(old)
+        elif status[0] in "MD" and _kind(path, config) == "test":
+            listed.append(path)
+    return tuple(listed)
+
+
+def worktree_changes(worktree: Path, base_sha: str, config: ReplayConfig | None = None) -> WorktreeChanges:
+    """Measure the worktree's current contents against ``base_sha``.
+
+    Uses a temporary index, so the worktree's real index and files are never written.
+    """
+    git = Git(worktree)
+    config = config if config is not None else ReplayConfig.for_repository(worktree)
+    base = git.resolve_commit(base_sha)
+    with tempfile.TemporaryDirectory(prefix="wg-worktree-index-") as scratch:
+        env = {"GIT_INDEX_FILE": str(Path(scratch) / "index")}
+        git.run("read-tree", base, env=env)
+        git.run("add", "-A", env=env)
+        files = frozenset(path for path in git.run("ls-files", "-z", env=env).stdout.split("\0") if path)
+        numstat = git.run("diff", "--cached", "-M", "--numstat", "-z", base, env=env).stdout
+        patch = git.run("diff", "--cached", "-M", "-U0", base, env=env).stdout
+        name_status = git.run("diff", "--cached", "-M", "--name-status", "-z", base, env=env).stdout
+
+    changes = _parse_numstat(numstat)
+    tests = [change for change in changes if _kind(change.path, config) == "test"]
+    sources = [change for change in changes if _kind(change.path, config) == "source"]
+    src_lines = sum(change.lines for change in sources)
+    manifests = _manifest_dirs(files, MANIFESTS)
+    packages = tuple(sorted({_nearest(change.path, manifests) or "" for change in sources}))
+    features = ReplayFeatures(
+        src_lines=src_lines,
+        test_lines=sum(change.lines for change in tests),
+        src_files=len(sources),
+        test_files=len(tests),
+        packages=packages,
+        band=_band(src_lines),
+    )
+
+    source_paths = {change.path for change in sources}
+    added = {path: tuple(lines) for path, lines in _added_lines(patch).items() if path in source_paths}
+    stubs = tuple(
+        (path, line)
+        for path, lines in added.items()
+        for line in lines
+        if any(pattern.search(line) for pattern in _STUB_PATTERNS)
+    )
+    return WorktreeChanges(
+        features=features,
+        tests_modified=_tests_modified(name_status, config),
+        added_source_lines=added,
+        stubs=stubs,
+    )

@@ -571,6 +571,8 @@ class WorktreeChanges:
     tests_modified: tuple[str, ...]
     added_source_lines: dict[str, tuple[str, ...]]
     stubs: tuple[tuple[str, str], ...]
+    # Source and test files that differ from the base, new files included, sorted.
+    changed_paths: tuple[str, ...]
 
 
 def _tests_modified(name_status: str, config: ReplayConfig) -> tuple[str, ...]:
@@ -582,6 +584,16 @@ def _tests_modified(name_status: str, config: ReplayConfig) -> tuple[str, ...]:
         elif status[0] in "MD" and _kind(path, config) == "test":
             listed.append(path)
     return tuple(listed)
+
+
+def _changed_paths(name_status: str, config: ReplayConfig) -> tuple[str, ...]:
+    """Every source or test path that differs from the base, including the old name of a rename."""
+    changed: set[str] = set()
+    for _status, path, old in _name_status(name_status):
+        for candidate in (path, old):
+            if candidate is not None and _kind(candidate, config) in ("source", "test"):
+                changed.add(candidate)
+    return tuple(sorted(changed))
 
 
 def worktree_changes(worktree: Path, base_sha: str, config: ReplayConfig | None = None) -> WorktreeChanges:
@@ -629,4 +641,5 @@ def worktree_changes(worktree: Path, base_sha: str, config: ReplayConfig | None 
         tests_modified=_tests_modified(name_status, config),
         added_source_lines=added,
         stubs=stubs,
+        changed_paths=_changed_paths(name_status, config),
     )

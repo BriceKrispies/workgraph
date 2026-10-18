@@ -27,6 +27,10 @@ class BriefContext:
     test_paths: tuple[str, ...]
     oracle: tuple[tuple[str, ...], ...]
     gates: tuple[tuple[str, ...], ...]
+    # Leaf-only fields. replay-v1 does not print them, so its output is unchanged.
+    acceptance: tuple[tuple[str, str], ...] = ()
+    files: tuple[str, ...] = ()
+    out_of_scope: tuple[str, ...] = ()
 
 
 _REPLAY_V1 = """\
@@ -80,7 +84,66 @@ def _replay_v1(context: BriefContext) -> str:
     )
 
 
+_LEAF_V1 = """\
+Task-ID: {task_key}
+Trial-ID: {trial_id}
+
+You are working alone in the git worktree {worktree} (repository {repository}), \
+on branch {branch}. Work only there. Do not push or merge.
+
+## Task
+{subject}
+
+{body_block}## Done means
+{done}
+
+## Files you may change
+{files}
+
+## Out of scope
+{out_of_scope}
+
+## Tests that must pass
+These tests were written for this task and fail now. Make them pass by changing the code, not the tests. \
+Do not modify, delete or skip them.
+{oracle}
+
+## Checks that must also pass
+{gates}
+
+## Rules
+Follow the repository's own agent instructions (AGENTS.md or CLAUDE.md) if it has them. Change only the files \
+listed above. Commit your work on {branch} when you are done.
+
+## Report
+Reply with what you changed, the output of the test command, and anything you could not finish.
+"""
+
+
+def _bullets(items: list[str]) -> str:
+    return "\n".join(f"- {item}" for item in items) if items else "- (none)"
+
+
+def _leaf_v1(context: BriefContext) -> str:
+    body = context.body.rstrip("\n")
+    return _LEAF_V1.format(
+        task_key=context.task_key,
+        trial_id=context.trial_id,
+        worktree=context.worktree,
+        repository=context.repository,
+        branch=context.branch,
+        subject=context.subject,
+        body_block=f"{body}\n\n" if body else "",
+        done=_bullets([f"{criterion} (checked by: {check})" for criterion, check in context.acceptance]),
+        files=_bullets(list(context.files)),
+        out_of_scope=_bullets(list(context.out_of_scope)),
+        oracle=_command_lines(context.oracle),
+        gates=_command_lines(context.gates) or "    (none)",
+    )
+
+
 TEMPLATES: dict[str, Callable[[BriefContext], str]] = {
+    "leaf-v1": _leaf_v1,
     "replay-v1": _replay_v1,
 }
 

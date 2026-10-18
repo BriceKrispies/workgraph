@@ -15,7 +15,7 @@ from workgraph.cli.common import STATE
 from workgraph.cli.main import app as cli
 from workgraph.core.clock import utcnow
 from workgraph.core.errors import ConflictError, ValidationFailed
-from workgraph.core.models.schemas import RepositoryRegister
+from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.persistence.orm import AgentSession, SubagentRun
 
 GITIGNORE = ".pytest_cache/\n__pycache__/\n"
@@ -400,3 +400,119 @@ def test_isolated_clone_has_no_alternates_and_no_solution_objects(app, human, ws
 def test_unknown_clone_mode_is_rejected_by_the_policy(app, human, ws):
     with pytest.raises(ValidationFailed, match="clone"):
         app.experiments.create(human, ws, "bad-clone", "Bad clone", None, protocol(clone="bogus"))
+
+
+RED_TEST = "from pkg.mod import f, g\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_g():\n    assert g() == 2\n"
+LEAF_ARM = "claude-haiku-5-5"
+LEAF_CONTRACT: dict[str, Any] = {
+    "files": ["pkg/mod.py", "tests/test_mod.py"],
+    "oracle": [[sys.executable, "-m", "pytest", "-q", "tests/test_mod.py"]],
+    "gates": [],
+    "out_of_scope": ["the CLI"],
+    "checks": ["tests/test_mod.py::test_f", "tests/test_mod.py::test_g"],
+    "predicted": {"src_lines": 4, "src_files": 1, "packages": ["pkg"]},
+}
+
+
+def leaf_protocol() -> dict[str, Any]:
+    leaf = protocol(brief_template="leaf-v1", arms=[{"name": LEAF_ARM, "model": PINNED}])
+    del leaf["oracle_template"]
+    return leaf
+
+
+@pytest.fixture
+def leaf_repo(app, human, ws, make_repo) -> GitRepo:
+    """A Python repository whose default branch already holds the red test for g."""
+    repo = make_repo("leaf")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    repo.commit(
+        "add project",
+        {
+            "pyproject.toml": PYPROJECT,
+            ".gitignore": GITIGNORE,
+            "pkg/__init__.py": "",
+            "pkg/mod.py": MOD_BASE,
+            "tests/test_mod.py": TEST_F,
+        },
+    )
+    repo.commit("red test for g", {"tests/test_mod.py": RED_TEST})
+    return repo
+
+
+@pytest.fixture
+def leaf_running(app, human, ws):
+    experiment = app.experiments.create(human, ws, "leaf-exp", "Leaf experiment", None, leaf_protocol())
+    return app.experiments.freeze(human, ws, experiment.slug)
+
+
+def _leaf_task(app, human, ws, contract: dict[str, Any] | None = None) -> str:
+    task = app.tasks.create(
+        human,
+        ws,
+        TaskCreate(
+            title="Add g",
+            description="Return g.",
+            acceptance_criteria=["f still returns one", "g returns two"],
+            metadata={"contract": LEAF_CONTRACT if contract is None else contract},
+        ),
+    )
+    app.tasks.link_repository(human, ws, task.key, "leaf")
+    return task.key
+
+
+def test_leaf_start_clones_default_branch_and_renders_leaf_brief(app, human, ws, leaf_repo, leaf_running):
+    key = _leaf_task(app, human, ws)
+    trial = app.experiments.add_trial(human, ws, "leaf-exp", key, LEAF_ARM, "staircase")
+    started = app.trial_runner.start(human, ws, trial.id)
+
+    clone = GitRepo(Path(started["worktree"]))
+    assert started["base_sha"] == leaf_repo.head()
+    assert clone.head() == leaf_repo.head()
+    assert started["trial"].base_ref == leaf_repo.head()
+    assert Path(started["worktree"], "pkg", "mod.py").read_text(encoding="utf-8") == MOD_BASE
+
+    brief = started["brief"]
+    assert f"Task-ID: {key}" in brief
+    assert "## Task\nAdd g\n\nReturn g.\n\n## Done means\n" in brief
+    assert (
+        "## Done means\n"
+        "- f still returns one (checked by: tests/test_mod.py::test_f)\n"
+        "- g returns two (checked by: tests/test_mod.py::test_g)\n"
+    ) in brief
+    assert "## Files you may change\n- pkg/mod.py\n- tests/test_mod.py\n" in brief
+    assert "## Out of scope\n- the CLI\n" in brief
+    assert "-m pytest -q tests/test_mod.py" in brief
+
+
+def test_correct_leaf_change_passes(app, human, ws, leaf_repo, leaf_running):
+    key = _leaf_task(app, human, ws)
+    trial = app.experiments.add_trial(human, ws, "leaf-exp", key, LEAF_ARM, "staircase")
+    started = app.trial_runner.start(human, ws, trial.id)
+    _write(started["worktree"], "pkg/mod.py", MOD_WITH_G)
+
+    graded = app.trial_runner.grade(human, ws, trial.id)
+    assert (graded.status, graded.outcome, graded.failure_cause) == ("graded", "pass", None)
+    assert graded.outcome_detail["flags"] == {}
+
+
+def test_undeclared_file_fails_as_outside_declared_files(app, human, ws, leaf_repo, leaf_running):
+    key = _leaf_task(app, human, ws)
+    trial = app.experiments.add_trial(human, ws, "leaf-exp", key, LEAF_ARM, "staircase")
+    started = app.trial_runner.start(human, ws, trial.id)
+    _write(started["worktree"], "pkg/mod.py", MOD_WITH_G)
+    _write(started["worktree"], "pkg/other.py", "X = 1\n")
+
+    graded = app.trial_runner.grade(human, ws, trial.id)
+    assert graded.outcome == "fail"
+    assert graded.outcome_detail["flags"] == {"outside_declared_files": ["pkg/other.py"]}
+    assert (graded.failure_cause, graded.failure_cause_source) == ("gaming", "mechanical")
+
+
+def test_leaf_with_incomplete_contract_refuses_to_start(app, human, ws, leaf_repo, leaf_running):
+    contract = {name: value for name, value in LEAF_CONTRACT.items() if name != "out_of_scope"}
+    key = _leaf_task(app, human, ws, contract=contract)
+    trial = app.experiments.add_trial(human, ws, "leaf-exp", key, LEAF_ARM, "staircase")
+
+    with pytest.raises(ValidationFailed, match=r"contract\.out_of_scope"):
+        app.trial_runner.start(human, ws, trial.id)
+    assert app.experiments.trial(human, ws, trial.id).status == "planned"

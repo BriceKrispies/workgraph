@@ -81,3 +81,80 @@ def test_rendered_output_ends_with_exactly_one_newline() -> None:
 
     assert rendered.endswith("anything you could not finish.\n")
     assert not rendered.endswith("\n\n")
+
+
+LEAF_CONTEXT = replace(
+    CONTEXT,
+    acceptance=(("g returns two", "tests/test_mod.py::test_g"),),
+    files=("pkg/mod.py", "tests/test_mod.py"),
+    out_of_scope=("the CLI",),
+)
+
+GOLDEN_LEAF_V1 = """\
+Task-ID: WG-1
+Trial-ID: T-1
+
+You are working alone in the git worktree /w/demo-wt (repository demo), \
+on branch agent/wg-1. Work only there. Do not push or merge.
+
+## Task
+Add g
+
+Return g.
+
+## Done means
+- g returns two (checked by: tests/test_mod.py::test_g)
+
+## Files you may change
+- pkg/mod.py
+- tests/test_mod.py
+
+## Out of scope
+- the CLI
+
+## Tests that must pass
+These tests were written for this task and fail now. Make them pass by changing the code, not the tests. \
+Do not modify, delete or skip them.
+    python -m pytest -q tests/test_mod.py
+
+## Checks that must also pass
+    uv run ruff check .
+
+## Rules
+Follow the repository's own agent instructions (AGENTS.md or CLAUDE.md) if it has them. Change only the files \
+listed above. Commit your work on agent/wg-1 when you are done.
+
+## Report
+Reply with what you changed, the output of the test command, and anything you could not finish.
+"""
+
+
+def test_leaf_v1_matches_golden_text() -> None:
+    assert render("leaf-v1", LEAF_CONTEXT) == GOLDEN_LEAF_V1
+
+
+def test_leaf_v1_empty_body_and_no_gates() -> None:
+    rendered = render("leaf-v1", replace(LEAF_CONTEXT, body="", gates=()))
+
+    assert "## Task\nAdd g\n\n## Done means\n" in rendered
+    assert "## Checks that must also pass\n    (none)\n\n## Rules\n" in rendered
+    assert "\n\n\n" not in rendered
+    assert rendered.endswith("anything you could not finish.\n")
+
+
+def test_leaf_v1_lists_none_when_a_section_is_empty() -> None:
+    rendered = render("leaf-v1", replace(LEAF_CONTEXT, acceptance=(), out_of_scope=()))
+
+    assert "## Done means\n- (none)\n" in rendered
+    assert "## Out of scope\n- (none)\n" in rendered
+
+
+def test_replay_v1_ignores_leaf_only_fields() -> None:
+    leaf_fields = replace(
+        CONTEXT,
+        acceptance=(("g returns two", "tests/test_mod.py::test_g"),),
+        files=("pkg/mod.py",),
+        out_of_scope=("the CLI",),
+    )
+
+    assert render("replay-v1", leaf_fields) == GOLDEN_REPLAY_V1

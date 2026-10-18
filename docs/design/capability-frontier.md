@@ -201,6 +201,13 @@ Version `breakdown-v1`. Each step names the command that performs it.
    checks once. The parent passes only when the integrated stack passes. Leaves that pass alone
    but fail together count against the breakdown, not the leaves.
 
+Steps 5 and 6 are implemented by `breakdown-v1`, which uses the brief `leaf-v1`. A leaf is a task
+with no replay metadata and a complete `metadata.contract`. It runs through the same
+`trial start` and `trial grade` commands as a replay trial, in a clone of the default branch, with
+the contract's oracle and gates. Production leaves are recorded with phase `live`. Grading adds the
+flag `outside_declared_files` (cause `gaming`, mechanical) for any source or test file changed
+outside the contract's `files`.
+
 ## Validation of the whole (WG-1127, WG-1128)
 
 - **E2 breakdown trials**: three large tasks per repository go through the procedure end to

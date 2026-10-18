@@ -121,6 +121,14 @@ class SubagentRun(Base):
     stopped_at: Mapped[datetime | None] = mapped_column(default=None)
     last_message_excerpt: Mapped[str | None] = mapped_column(Text, default=None)
     transcript_path: Mapped[str | None] = mapped_column(String(1000), default=None)
+    # Measured from the transcript (see integrations/claude_code/transcript.py); never from hooks.
+    requested_model: Mapped[str | None] = mapped_column(String(200), default=None)
+    model: Mapped[str | None] = mapped_column(String(200), default=None)
+    usage: Mapped[dict[str, Any] | None] = mapped_column(default=None)
+    telemetry: Mapped[dict[str, Any] | None] = mapped_column(default=None)
+    task_id: Mapped[str | None] = mapped_column(
+        ForeignKey("tasks.id", ondelete="SET NULL"), index=True, default=None
+    )
 
 
 class AgentInternalTask(Base):

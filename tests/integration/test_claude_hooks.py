@@ -266,3 +266,159 @@ def test_installer_refuses_invalid_json(tmp_path, monkeypatch):
     with pytest.raises(ConfigError):
         installer.install("user", command="workgraph")
     assert (tmp_path / "settings.json").read_text() == "{ broken"
+
+
+def write_subagent_transcript(path, task_key=None, *, output=40):
+    prompt = f"Task-ID: {task_key}\nDo the work." if task_key else "Do the work."
+    usage = {"input_tokens": 3, "cache_creation_input_tokens": 10, "cache_read_input_tokens": 20}
+    records = [
+        {
+            "type": "user",
+            "timestamp": "2026-10-14T08:54:30.000Z",
+            "message": {"role": "user", "content": prompt},
+        },
+        # One API message split over two lines: the first line must not be double counted.
+        {
+            "type": "assistant",
+            "timestamp": "2026-10-14T08:54:31.000Z",
+            "message": {
+                "id": "msg_1",
+                "model": "claude-haiku-4-5-20251001",
+                "content": [{"type": "tool_use", "id": "tu_1", "name": "Bash", "input": {}}],
+                "usage": {**usage, "output_tokens": 3},
+            },
+        },
+        {
+            "type": "assistant",
+            "timestamp": "2026-10-14T08:54:32.000Z",
+            "message": {
+                "id": "msg_1",
+                "model": "claude-haiku-4-5-20251001",
+                "content": [],
+                "usage": {**usage, "output_tokens": output},
+            },
+        },
+    ]
+    path.write_text("\n".join(json.dumps(r) for r in records) + "\n", encoding="utf-8")
+
+
+def test_unbound_subagent_transcript_creates_linked_top_level_attempt(app, human, ws, tmp_path):
+    task = app.tasks.create(human, ws, TaskCreate(title="Transcript target"))
+    transcript = tmp_path / "agent-u1.jsonl"
+    write_subagent_transcript(transcript, task.key)
+    hook(
+        app,
+        base("SessionStart", session="sess-untracked", source="startup"),
+        received_at="2026-10-17T10:00:00+00:00",
+    )
+    hook(
+        app,
+        base("SubagentStart", session="sess-untracked", agent_id="agent-u1", agent_type="general-purpose"),
+        received_at="2026-10-17T10:00:01+00:00",
+    )
+    hook(
+        app,
+        base(
+            "SubagentStop",
+            session="sess-untracked",
+            agent_id="agent-u1",
+            agent_type="general-purpose",
+            agent_transcript_path=str(transcript),
+            last_assistant_message="done",
+        ),
+        received_at="2026-10-17T10:00:02+00:00",
+    )
+    with app.db.session() as session:
+        run = session.scalar(select(SubagentRun).where(SubagentRun.external_agent_id == "agent-u1"))
+        assert run.task_id == task.id and run.model == "claude-haiku-4-5-20251001"
+        assert run.usage == {
+            "input_tokens": 3,
+            "output_tokens": 40,
+            "cache_creation_input_tokens": 10,
+            "cache_read_input_tokens": 20,
+        }
+        attempt = session.get(AgentAttempt, run.attempt_id)
+        assert attempt.task_id == task.id and attempt.parent_attempt_id is None
+        assert attempt.adapter == "claude_code_subagent" and attempt.agent_id == "subagent:general-purpose"
+        assert attempt.model == "claude-haiku-4-5-20251001"
+        assert attempt.usage["output_tokens"] == 40
+        assert attempt.usage_source == "claude_code_transcript"
+        assert attempt.session_id == "sess-untracked" and attempt.status == "succeeded"
+        assert attempt.telemetry["tool_uses"] == {"Bash": 1}
+
+
+def test_bound_subagent_child_attempt_gets_model_and_usage(app, human, ws, tmp_path):
+    task, attempt_id = make_attempt(app, human, ws)
+    env = {"attempt_id": attempt_id, "task_id": task.id}
+    transcript = tmp_path / "agent-b1.jsonl"
+    write_subagent_transcript(transcript, output=12)
+    hook(app, base("SessionStart", source="startup"), env, received_at="2026-10-17T10:00:00+00:00")
+    hook(
+        app,
+        base("SubagentStart", agent_id="agent-b1", agent_type="Explore"),
+        env,
+        received_at="2026-10-17T10:00:01+00:00",
+    )
+    hook(
+        app,
+        base(
+            "SubagentStop", agent_id="agent-b1", agent_type="Explore", agent_transcript_path=str(transcript)
+        ),
+        env,
+        received_at="2026-10-17T10:00:02+00:00",
+    )
+    with app.db.session() as session:
+        run = session.scalar(select(SubagentRun).where(SubagentRun.external_agent_id == "agent-b1"))
+        child = session.get(AgentAttempt, run.attempt_id)
+        assert child.parent_attempt_id == attempt_id and child.status == "succeeded"
+        assert child.model == "claude-haiku-4-5-20251001"
+        assert child.usage["output_tokens"] == 12 and child.usage_source == "claude_code_transcript"
+        assert run.task_id is None  # the transcript names no task
+
+
+def test_backfill_transcripts_links_late_transcripts_idempotently(app, human, ws, tmp_path):
+    task = app.tasks.create(human, ws, TaskCreate(title="Backfill target"))
+    transcript = tmp_path / "agent-late.jsonl"
+    hook(
+        app,
+        base("SessionStart", session="sess-late", source="startup"),
+        received_at="2026-10-17T10:00:00+00:00",
+    )
+    hook(
+        app,
+        base("SubagentStart", session="sess-late", agent_id="agent-late", agent_type="general-purpose"),
+        received_at="2026-10-17T10:00:01+00:00",
+    )
+    hook(
+        app,
+        base(
+            "SubagentStop",
+            session="sess-late",
+            agent_id="agent-late",
+            agent_type="general-purpose",
+            agent_transcript_path=str(transcript),
+        ),
+        received_at="2026-10-17T10:00:02+00:00",
+    )
+    assert app.hooks.backfill_transcripts(human) == {
+        "parsed": 0,
+        "missing": 1,
+        "linked": 0,
+        "attempts_created": 0,
+    }
+    write_subagent_transcript(transcript, task.key)
+    assert app.hooks.backfill_transcripts(human) == {
+        "parsed": 1,
+        "missing": 0,
+        "linked": 1,
+        "attempts_created": 1,
+    }
+    assert app.hooks.backfill_transcripts(human) == {
+        "parsed": 0,
+        "missing": 0,
+        "linked": 0,
+        "attempts_created": 0,
+    }
+    with app.db.session() as session:
+        attempts = session.scalars(select(AgentAttempt).where(AgentAttempt.task_id == task.id)).all()
+        assert len(attempts) == 1 and attempts[0].usage_source == "claude_code_transcript"

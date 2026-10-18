@@ -65,6 +65,7 @@ erDiagram
 | `jobs`, `job_runs`, `job_resource_claims`, `workers` | Durable queue. |
 | `automation_rules`, `automation_runs`, `notifications` | Automation. |
 | `agent_sessions`, `session_bindings`, `subagent_runs`, `agent_internal_tasks`, `hook_events`, `tool_events` | Claude Code lifecycle telemetry (redacted). |
+| `subagent_runs` (transcript columns) | `requested_model` (sidecar alias), `model` (model that ran), `usage` (summed per message id), `telemetry` (turns, tool counts and errors, markers, versions), `task_id` (FK to `tasks`, `SET NULL`, set only when one task in scope matches the transcript's `Task-ID:`). Null until a transcript is read. |
 | `artifacts`, `reports`, `findings` | Files (prompts, logs, reports), retrospectives and failure findings. |
 | `task_fts` | SQLite FTS5 index over task text, comments, tags and classification summaries. |
 

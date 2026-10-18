@@ -65,7 +65,7 @@ def test_stacks_migration_upgrades_populated_0002(tmp_path):
             "'[]', '{}', 'test', 1, '2026-01-01', '2026-01-01')"
         )
     migrate.upgrade(db)
-    assert migrate.current_revision(db) == "0004" == SCHEMA_HEAD
+    assert migrate.current_revision(db) == "0005" == SCHEMA_HEAD
     stack_insert = (
         "INSERT INTO stacks (id, workspace_id, parent_task_id, status, created_at, updated_at) "
         "VALUES (:id, 'w', 't1', :status, '2026-01-01', '2026-01-01')"
@@ -84,6 +84,47 @@ def test_stacks_migration_upgrades_populated_0002(tmp_path):
             "SELECT name FROM sqlite_master WHERE name IN ('stacks', 'stack_items', 'stack_repositories')"
         ).fetchall()
     assert tables == []
+    migrate.upgrade(db)
+    assert migrate.is_up_to_date(db)
+
+
+def test_subagent_telemetry_migration_upgrades_populated_0004(tmp_path):
+    db = Database(tmp_path / "t.db")
+    migrate.upgrade(db, "0004")
+    with db.engine.begin() as conn:
+        conn.exec_driver_sql(
+            "INSERT INTO workspaces (id, slug, name, description, key_prefix, next_task_number, settings, created_at, "
+            "updated_at) VALUES ('w', 's', 'n', '', 'WG', 2, '{}', '2026-01-01', '2026-01-01')"
+        )
+        conn.exec_driver_sql(
+            "INSERT INTO tasks (id, workspace_id, number, key, title, description, description_hash, "
+            "acceptance_criteria, status, priority, auto_execute, external_refs, metadata, created_by, version, "
+            "created_at, updated_at) VALUES ('t1', 'w', 1, 'WG-1', 'Parent', '', 'h', '[]', 'backlog', 'medium', 0, "
+            "'[]', '{}', 'test', 1, '2026-01-01', '2026-01-01')"
+        )
+        conn.exec_driver_sql(
+            "INSERT INTO agent_sessions (id, provider, external_session_id, binding_source, tool_calls, "
+            "tool_failures, created_at, updated_at) VALUES ('as1', 'claude_code', 'sess', 'unbound', 0, 0, "
+            "'2026-01-01', '2026-01-01')"
+        )
+        conn.exec_driver_sql(
+            "INSERT INTO subagent_runs (id, session_id, external_agent_id, agent_type) "
+            "VALUES ('r1', 'as1', 'agent-1', 'Explore')"
+        )
+    migrate.upgrade(db)
+    assert migrate.current_revision(db) == "0005" == SCHEMA_HEAD
+    with db.engine.begin() as conn:
+        row = conn.exec_driver_sql("SELECT model, usage, task_id, agent_type FROM subagent_runs").one()
+        assert tuple(row) == (None, None, None, "Explore")
+        conn.exec_driver_sql(
+            "UPDATE subagent_runs SET task_id = 't1', model = 'haiku', usage = '{\"output_tokens\":5}' WHERE id = 'r1'"
+        )
+    with pytest.raises(IntegrityError), db.engine.begin() as conn:
+        conn.exec_driver_sql("UPDATE subagent_runs SET task_id = 'missing' WHERE id = 'r1'")
+    migrate.downgrade(db, "0004")
+    with db.engine.connect() as conn:
+        columns = {row[1] for row in conn.exec_driver_sql("PRAGMA table_info(subagent_runs)")}
+    assert "task_id" not in columns and "usage" not in columns and "model" not in columns
     migrate.upgrade(db)
     assert migrate.is_up_to_date(db)
 

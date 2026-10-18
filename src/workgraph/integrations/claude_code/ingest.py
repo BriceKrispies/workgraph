@@ -31,6 +31,7 @@ from workgraph.core.clock import ensure_utc, utcnow
 from workgraph.core.context import RequestContext
 from workgraph.core.events.log import record_event
 from workgraph.core.models.enums import TERMINAL_ATTEMPT_STATUSES, AttemptStatus
+from workgraph.integrations.claude_code.transcript import TranscriptStats, parse_transcript
 from workgraph.persistence.db import Database
 from workgraph.persistence.orm import (
     AgentAttempt,
@@ -65,6 +66,8 @@ KNOWN_EVENTS = {
     "PreCompact",
 }
 TASK_KEY_RE = re.compile(r"\b([A-Z][A-Z0-9]{0,9}-\d+)\b")
+TRANSCRIPT_USAGE_SOURCE = "claude_code_transcript"
+SUBAGENT_ADAPTER = "claude_code_subagent"
 
 
 class HookPayload(BaseModel):
@@ -379,6 +382,14 @@ def _apply(
             run.stopped_at = at
             run.transcript_path = payload.agent_transcript_path
             run.last_message_excerpt = redact_text(payload.last_assistant_message or "", 1000) or None
+            _apply_transcript(
+                session,
+                ctx,
+                run,
+                external_session_id=agent_session.external_session_id,
+                workspace_id=agent_session.workspace_id,
+                at=at,
+            )
             if run.attempt_id:
                 child = session.get(AgentAttempt, run.attempt_id)
                 if child is not None and AttemptStatus(child.status) not in TERMINAL_ATTEMPT_STATUSES:
@@ -488,6 +499,111 @@ def _child_attempt(
     return child.id
 
 
+@dataclass
+class TranscriptApplied:
+    parsed: bool = False
+    linked: bool = False
+    attempt_created: bool = False
+
+
+def _apply_transcript(
+    session: Session,
+    ctx: RequestContext,
+    run: SubagentRun,
+    *,
+    external_session_id: str | None,
+    workspace_id: str | None,
+    at: datetime,
+) -> TranscriptApplied:
+    """Fill a subagent run from its transcript. Shared by the SubagentStop hook and the backfill.
+
+    Transcript parsing is advisory: a missing or unreadable file leaves the run untouched.
+    A run with a child attempt gets that attempt's model and usage. A run without one but with a
+    linked task gets a finished top-level attempt, so the subagent's work is still accounted for.
+    """
+    result = TranscriptApplied()
+    if not run.transcript_path:
+        return result
+    stats = _parse_transcript_quietly(run.transcript_path)
+    if stats is None:
+        return result
+    result.parsed = True
+    telemetry = stats.telemetry()
+    run.requested_model = stats.requested_model
+    run.model = stats.model
+    run.telemetry = telemetry
+    usage = stats.usage if stats.turns else None
+    if usage is not None:
+        run.usage = usage
+    task = _transcript_task(session, workspace_id, stats.task_keys)
+    if task is not None:
+        run.task_id = task.id
+        result.linked = True
+    if run.attempt_id:
+        child = session.get(AgentAttempt, run.attempt_id)
+        if child is not None:
+            child.model = stats.model
+            if usage is not None:
+                child.usage = usage
+                child.usage_source = TRANSCRIPT_USAGE_SOURCE
+    elif task is not None:
+        from workgraph.core.services.attempts import finish_attempt, new_attempt
+
+        attempt = new_attempt(
+            session,
+            ctx,
+            task,
+            provider=PROVIDER,
+            adapter=SUBAGENT_ADAPTER,
+            status=AttemptStatus.RUNNING,
+            agent_id=f"subagent:{stats.agent_type or run.agent_type or 'unknown'}",
+            model=stats.model,
+            session_id=external_session_id,
+        )
+        attempt.started_at = _parse_timestamp(stats.started_at) or run.started_at or run.stopped_at or at
+        run.attempt_id = attempt.id
+        result.attempt_created = True
+        finish_attempt(
+            session,
+            ctx,
+            attempt,
+            AttemptStatus.SUCCEEDED,
+            exit_reason="subagent_stopped",
+            summary=run.last_message_excerpt,
+            usage=usage,
+            usage_source=TRANSCRIPT_USAGE_SOURCE if usage is not None else None,
+            telemetry=telemetry,
+        )
+    return result
+
+
+def _parse_transcript_quietly(path: str) -> TranscriptStats | None:
+    try:
+        return parse_transcript(path)
+    except Exception:  # a parse failure must never break ingestion
+        return None
+
+
+def _transcript_task(session: Session, workspace_id: str | None, keys: tuple[str, ...]) -> Task | None:
+    """The task named by the transcript, only if exactly one task in scope has a named key."""
+    if not keys:
+        return None
+    stmt = select(Task).where(Task.key.in_(keys))
+    if workspace_id:
+        stmt = stmt.where(Task.workspace_id == workspace_id)
+    matches = list(session.scalars(stmt))
+    return matches[0] if len(matches) == 1 else None
+
+
+def _parse_timestamp(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return ensure_utc(datetime.fromisoformat(value))
+    except ValueError:
+        return None
+
+
 def _roll_up(session: Session, agent_session: AgentSession) -> None:
     if not agent_session.attempt_id:
         return
@@ -511,6 +627,35 @@ class HookIngestor:
 
     def ingest(self, record: dict[str, Any], source: str = "direct") -> IngestResult:
         return process_record(self.app.db, self.app.config.claude, record, source=source)
+
+    def backfill_transcripts(self, ctx: RequestContext, limit: int | None = None) -> dict[str, int]:
+        """Apply transcript telemetry to subagent runs that do not have a model yet (idempotent)."""
+        from workgraph.security.permissions import Permission, require
+
+        require(ctx, Permission.TELEMETRY_INGEST)
+        counts = {"parsed": 0, "missing": 0, "linked": 0, "attempts_created": 0}
+        with self.app.db.session(write=True) as session:
+            stmt = (
+                select(SubagentRun)
+                .where(SubagentRun.transcript_path.is_not(None), SubagentRun.model.is_(None))
+                .order_by(SubagentRun.id)
+            )
+            if limit is not None:
+                stmt = stmt.limit(limit)
+            for run in list(session.scalars(stmt)):
+                agent_session = session.get(AgentSession, run.session_id)
+                result = _apply_transcript(
+                    session,
+                    ctx,
+                    run,
+                    external_session_id=agent_session.external_session_id if agent_session else None,
+                    workspace_id=agent_session.workspace_id if agent_session else None,
+                    at=utcnow(),
+                )
+                counts["parsed" if result.parsed else "missing"] += 1
+                counts["linked"] += int(result.linked)
+                counts["attempts_created"] += int(result.attempt_created)
+        return counts
 
     def replay_spool(self, limit: int = 500) -> dict[str, int]:
         """Ingest spooled hook records; a record failing five times is set aside as ``.failed``."""

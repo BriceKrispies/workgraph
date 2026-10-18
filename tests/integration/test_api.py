@@ -156,6 +156,46 @@ def test_stack_routes(client, app, human, ws, make_repo):
     assert missing.status_code == 422
 
 
+def test_stack_item_and_history_routes(client, app, human, ws, make_repo):
+    repo = make_repo("stacked-api")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    parent = client.post(
+        "/api/v1/ws/main/tasks", json={"title": "Parent", "repositories": ["stacked-api"]}
+    ).json()
+    client.post(
+        "/api/v1/ws/main/tasks",
+        json={"title": "Child", "parent": parent["key"], "repositories": ["stacked-api"]},
+    )
+    stacks = f"/api/v1/ws/main/stacks/{parent['key']}"
+    assert client.post("/api/v1/ws/main/stacks", json={"parent": parent["key"]}).status_code == 201
+    late = client.post(
+        "/api/v1/ws/main/tasks",
+        json={"title": "Late", "parent": parent["key"], "repositories": ["stacked-api"]},
+    ).json()
+    added = client.post(f"{stacks}/items", json={"task": late["key"]})
+    assert added.status_code == 201, added.text
+    assert [i["task_key"] for i in added.json()["items"]] == ["WG-2", "WG-3"]
+    assert [s["parent_key"] for s in client.get(f"/api/v1/ws/main/tasks/{late['key']}/stacks").json()] == [
+        parent["key"]
+    ]
+    assert client.get(f"/api/v1/ws/main/tasks/{parent['key']}/stacks").json() == []
+    assert client.post(f"{stacks}/items", json={"task": late["key"], "extra": 1}).status_code == 422
+    assert client.post(f"{stacks}/items", json={"task": "WG-2"}).status_code == 409
+    removed = client.delete(f"{stacks}/items/{late['key']}")
+    assert removed.status_code == 200 and [i["task_key"] for i in removed.json()["items"]] == ["WG-2"]
+    assert client.delete(f"{stacks}/items/WG-999").status_code == 404
+    shown = client.get(stacks).json()
+    assert shown["repositories"][0]["integration_tip"] is None
+    history = client.get(f"{stacks}/history")
+    assert history.status_code == 200
+    assert [e["event_type"] for e in history.json()] == [
+        "stack.created",
+        "stack.item_added",
+        "stack.item_removed",
+    ]
+    assert client.get("/api/v1/ws/main/stacks/WG-999/history").status_code == 404
+
+
 def test_spa_fallback_serves_ui_shell(client):
     page = client.get("/tasks/WG-1")
     assert page.status_code == 200 and "Workgraph" in page.text

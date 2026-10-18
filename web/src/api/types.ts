@@ -178,6 +178,54 @@ export interface EventOut {
   data: Record<string, unknown>;
 }
 
+export type StackStatus = "open" | "integrating" | "verifying" | "verified" | "landed" | "abandoned";
+
+export type StackItemState = "pending" | "ready" | "merged" | "conflict" | "ejected" | "verified";
+
+export interface StackRepository {
+  repository_id: string;
+  repository_name: string;
+  base_sha: string;
+  integration_branch: string;
+  integration_tip: string | null;
+}
+
+export interface StackItem {
+  id: string;
+  stack_id: string;
+  task_id: string;
+  task_key: string;
+  task_title: string;
+  state: StackItemState;
+  merge_order: number | null;
+  detail: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Stack {
+  id: string;
+  workspace_id: string;
+  parent_task_id: string;
+  parent_key: string;
+  parent_title: string;
+  status: StackStatus;
+  repositories: StackRepository[];
+  items: StackItem[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StackIntegrationJobs {
+  stack: string;
+  jobs: { repository: string; job_id: string }[];
+}
+
+export interface StackVerificationJob {
+  stack: string;
+  job_id: string;
+}
+
 export interface Attempt {
   id: string;
   task_id: string;

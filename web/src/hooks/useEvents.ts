@@ -47,6 +47,7 @@ export function useEventStream(ws: string): { connected: boolean } {
       }
       if (prefix === "automation" || prefix === "notification") schedule("automation");
       if (prefix === "repository" || prefix === "git") schedule("repositories");
+      if (prefix === "stack" || prefix === "verification") schedule("stacks");
     });
     source.addEventListener("queue", () => {
       schedule("jobs");

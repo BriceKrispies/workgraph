@@ -19,14 +19,14 @@ from sqlalchemy.orm import Session
 from workgraph.core.clock import utcnow
 from workgraph.core.context import RequestContext
 from workgraph.core.errors import ConflictError, NotFoundError, ValidationFailed
-from workgraph.core.events.log import record_event
+from workgraph.core.events.log import query_events, record_event
 from workgraph.core.models.enums import (
     INACTIVE_STACK_STATUSES,
     STACK_DEPENDENCY_SATISFIED_STATES,
     AttemptStatus,
     StackItemState,
 )
-from workgraph.core.models.schemas import StackItemOut, StackOut, StackRepositoryOut
+from workgraph.core.models.schemas import EventOut, StackItemOut, StackOut, StackRepositoryOut
 from workgraph.core.policies.stacks import REMOVABLE_STATES, check_stack_item_transition
 from workgraph.core.services import resolve
 from workgraph.core.services.base import Service
@@ -267,6 +267,20 @@ class StackService(Service):
         if item is None:
             raise NotFoundError(f"{task.key} is not in the stack", details={"task": task.key})
         return item
+
+    def _with_tips(self, stack: StackOut) -> StackOut:
+        """Attach each integration branch tip that its prepared worktree can report."""
+        repositories = [
+            repo.model_copy(
+                update={
+                    "integration_tip": self.app.stack_integration.integration_tip(
+                        stack.id, repo.repository_name
+                    )
+                }
+            )
+            for repo in stack.repositories
+        ]
+        return stack.model_copy(update={"repositories": repositories})
 
     @staticmethod
     def _base_sha(repo: Repository) -> str:
@@ -595,7 +609,33 @@ class StackService(Service):
         with self.db.session() as session:
             ws_id = self.app.tasks._workspace_id(session, workspace)
             parent = resolve.task(session, ws_id, parent_ref)
-            return stack_out(session, self._latest(session, parent))
+            return self._with_tips(stack_out(session, self._latest(session, parent)))
+
+    def history(self, ctx: RequestContext, workspace: str | None, parent_ref: str) -> builtins.list[EventOut]:
+        """The latest stack's events in order, with the verification runs its events name.
+
+        Stack events carry the verification run they came from (``run_id``, or ``verification_run_id``
+        for ejections), so the runs are found through those ids rather than by scanning all events.
+        """
+        require(ctx, Permission.TASK_READ)
+        with self.db.session() as session:
+            ws_id = self.app.tasks._workspace_id(session, workspace)
+            parent = resolve.task(session, ws_id, parent_ref)
+            stack = self._latest(session, parent)
+            events = query_events(session, entity_type="stack", entity_ids=[stack.id], limit=10000)
+            run_ids: set[str] = set()
+            for event in events:
+                for key in ("run_id", "verification_run_id"):
+                    value = event.data.get(key)
+                    if isinstance(value, str):
+                        run_ids.add(value)
+            runs = (
+                query_events(session, entity_type="verification_run", entity_ids=sorted(run_ids), limit=10000)
+                if run_ids
+                else []
+            )
+            merged = sorted([*events, *runs], key=lambda event: event.seq)
+            return [EventOut.model_validate(event.to_dict()) for event in merged]
 
     def list(
         self, ctx: RequestContext, workspace: str | None, *, include_inactive: bool = False
@@ -606,7 +646,7 @@ class StackService(Service):
             stmt = select(Stack).where(Stack.workspace_id == ws_id).order_by(Stack.created_at.desc())
             if not include_inactive:
                 stmt = stmt.where(Stack.status.not_in(INACTIVE_STACK_STATUSES))
-            return [stack_out(session, stack) for stack in session.scalars(stmt)]
+            return [self._with_tips(stack_out(session, stack)) for stack in session.scalars(stmt)]
 
     def for_task(
         self, ctx: RequestContext, workspace: str | None, task_ref: str
@@ -623,3 +663,19 @@ class StackService(Service):
                 .order_by(Stack.created_at.desc())
             ).all()
             return [item_out(item, task) for item, task in rows]
+
+    def containing(
+        self, ctx: RequestContext, workspace: str | None, task_ref: str
+    ) -> builtins.list[StackOut]:
+        """Every stack the task is an item of, newest first (inactive ones included)."""
+        require(ctx, Permission.TASK_READ)
+        with self.db.session() as session:
+            ws_id = self.app.tasks._workspace_id(session, workspace)
+            child = resolve.task(session, ws_id, task_ref)
+            stacks = session.scalars(
+                select(Stack)
+                .join(StackItem, StackItem.stack_id == Stack.id)
+                .where(StackItem.task_id == child.id)
+                .order_by(Stack.created_at.desc())
+            ).all()
+            return [stack_out(session, stack) for stack in stacks]

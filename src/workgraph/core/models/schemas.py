@@ -561,11 +561,18 @@ class StackCreate(InputSchema):
     parent: str = Field(min_length=1, description="Parent task id or key")
 
 
+class StackItemAdd(InputSchema):
+    task: str = Field(min_length=1, description="Child task id or key")
+
+
 class StackRepositoryOut(Schema):
     repository_id: str
     repository_name: str
     base_sha: str
     integration_branch: str
+    integration_tip: str | None = Field(
+        default=None, description="Head of the integration branch, when its worktree has been prepared"
+    )
 
 
 class StackItemOut(Schema):

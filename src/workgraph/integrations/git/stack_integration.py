@@ -139,6 +139,11 @@ class StackIntegrator(Service):
         """Where a stack's integration worktree for one repository lives."""
         return self.app.paths.worktrees_dir / "stacks" / stack_id / directory_name(repository_name)
 
+    def integration_tip(self, stack_id: str, repository_name: str) -> str | None:
+        """The integration branch tip in the stack's worktree, or None while that worktree does not exist."""
+        path = self.worktree_path(stack_id, repository_name)
+        return Git(path).head() if path.exists() else None
+
     def ensure_worktree(self, ctx: RequestContext, target: IntegrationTarget) -> Path:
         """The integration worktree for a stack repository, created on first use."""
         path = self.worktree_path(target.stack_id, target.repository_name)

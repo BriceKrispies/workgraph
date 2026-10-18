@@ -78,3 +78,27 @@ test("graph, analytics and automation pages render data", async ({ page }) => {
   await page.getByRole("tab", { name: "Agent adapters" }).click();
   await expect(page.getByTestId("agents")).toBeVisible();
 });
+
+test("stacks: a stack created through the API shows on the stacks pages", async ({ page, request }) => {
+  await page.goto(`${base()}/`);
+  const html = await (await request.get(`${base()}/`)).text();
+  const token = /name="workgraph-token" content="([^"]+)"/.exec(html)?.[1];
+  expect(token).toBeTruthy();
+  const headers = { Authorization: `Bearer ${token}` };
+  const workspaces = await (await request.get(`${base()}/api/v1/workspaces`, { headers })).json();
+  const slug = workspaces[0].slug;
+  const tasks = await (await request.get(`${base()}/api/v1/ws/${slug}/tasks`, { headers, params: { limit: 200 } })).json();
+  const parent = (tasks.items as { key: string; title: string }[]).find((t) => t.title === "Session reliability initiative");
+  expect(parent).toBeTruthy();
+  const created = await request.post(`${base()}/api/v1/ws/${slug}/stacks`, { headers, data: { parent: parent!.key } });
+  expect(created.status()).toBe(201);
+
+  await page.goto(`${base()}/stacks`);
+  const table = page.getByTestId("stacks");
+  await expect(table).toBeVisible();
+  await expect(table.getByTestId("stack-row").filter({ hasText: parent!.key })).toBeVisible();
+  await table.getByRole("link", { name: new RegExp(parent!.key) }).click();
+  await expect(page.getByTestId("stack-repositories")).toBeVisible();
+  await expect(page.getByTestId("stack-items").getByTestId("stack-item").first()).toBeVisible();
+  await expect(page.getByTestId("stack-timeline")).toContainText("Stack created");
+});

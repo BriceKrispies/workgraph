@@ -100,8 +100,8 @@ behaviour).
   verification run and the accepted manifest), then the parent is accepted.
 - A workspace or project policy `stack.auto_accept` (default off) accepts a stack automatically when
   its full verification passes, so a human is only involved when something fails.
-- Accepting a single child on its own remains possible (manual acceptance with a reason) and
-  removes it from the stack.
+- Accepting a single child on its own remains possible (automated, or manual with a reason, as for
+  any child) and removes it from the stack.
 
 ## What already exists
 

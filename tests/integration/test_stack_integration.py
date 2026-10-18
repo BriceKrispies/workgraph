@@ -145,6 +145,7 @@ def test_independent_children_pass_the_fast_gate_and_merge_in_order(app, human, 
     types = _event_types(app, stack.id)
     assert types.count("stack.integration_merged") == 2
     assert "stack.status_changed" in types
+    assert app.stacks.get(human, ws, parent.key).repositories[0].integration_tip == Git(worktree).head()
 
 
 def test_merge_jobs_hold_the_repository_resource_key(app, human, ws, tree):
@@ -729,3 +730,20 @@ def test_rejecting_the_parent_leaves_the_stack_verified_without_landing(app, hum
     assert app.stacks.get(human, ws, parent.key).status == "verified"
     assert repo.git("rev-parse", "main") == base
     assert "stack.parent_rejected" in _event_types(app, stack.id)
+
+
+def test_history_lists_stack_events_with_their_verification_runs(app, human, ws, tree):
+    repo, parent = tree
+    _first, _second, stack = _verified_stack(app, human, ws, parent)
+    history = app.stacks.history(human, ws, parent.key)
+    assert [e.seq for e in history] == sorted(e.seq for e in history)
+    assert history[0].event_type == "stack.created"
+    verified = next(e for e in history if e.event_type == "stack.verified")
+    runs = [e for e in history if e.event_type == "verification.completed"]
+    assert verified.data["run_id"] in {e.entity_id for e in runs}
+    assert all(e.entity_type == "verification_run" for e in runs)
+    assert {"stack.integration_merged", "stack.verified", "verification.completed"} <= {
+        e.event_type for e in history
+    }
+    tip = repo.git("rev-parse", stack.repositories[0].integration_branch)
+    assert app.stacks.get(human, ws, parent.key).repositories[0].integration_tip == tip

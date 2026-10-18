@@ -106,9 +106,12 @@ def _seed(app: Workgraph, human: RequestContext, ws: str) -> dict[str, Any]:
             output: int | None = None,
             turns: int | None = None,
             tool_errors: int = 0,
+            trial: str | None = None,
         ) -> None:
             usage = {"output_tokens": output} if output is not None else {}
-            telemetry = {"tool_errors": tool_errors}
+            telemetry: dict[str, Any] = {"tool_errors": tool_errors}
+            if trial is not None:
+                telemetry["trial_ids"] = [trial]
             if turns is not None:
                 telemetry["turns"] = turns
             session.add(
@@ -133,7 +136,18 @@ def _seed(app: Workgraph, human: RequestContext, ws: str) -> dict[str, Any]:
         run("r5", _at("2026-10-14"), task="pend", model=SONNET)
         run("r6", _at("2026-10-14"), model=HAIKU, output=500)
         run("r-open", None, task="pend", model=HAIKU, output=9999)
+        # An experiment trial: reported by `experiment report`, never counted here.
+        run("r-trial", _at("2026-10-14"), task="pend", model=HAIKU, output=7777, trial="trial-1")
     return ids
+
+
+def test_experiment_trial_runs_are_excluded_and_noted(app, human, ws):
+    _seed(app, human, ws)
+    report = app.subagent_report.report(human, ws, period="week")
+
+    haiku_w42 = _by(report["by_period"], period="2026-W42", model=HAIKU)
+    assert haiku_w42["runs"] == 2 and haiku_w42["pending"] == 0
+    assert any("1 runs are experiment trials" in note for note in report["notes"])
 
 
 def _by(rows: list[dict[str, Any]], **keys: Any) -> dict[str, Any]:

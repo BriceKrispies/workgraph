@@ -196,7 +196,9 @@ class SubagentReport(Service):
             sizes = _sizes(session, ws_task_ids)
 
         outcomes = {task: _outcome(owners[task][1], decisions.get(task, [])) for task in ws_task_ids}
-        runs, unlinked, outside = self._runs(stopped, owners, ws_id, is_default, since_utc, until_utc, model)
+        runs, unlinked, outside, trials = self._runs(
+            stopped, owners, ws_id, is_default, since_utc, until_utc, model
+        )
 
         models = sorted({run.model for run in runs})
         per_model = {name: [run for run in runs if run.model == name] for name in models}
@@ -220,6 +222,11 @@ class SubagentReport(Service):
                 notes.append("unlinked runs are counted only when the default workspace is reported")
         if outside:
             notes.append(f"{outside} runs are linked to tasks in other workspaces and are excluded")
+        if trials:
+            notes.append(
+                f"{trials} runs are experiment trials (their prompt carries a Trial-ID) and are excluded; "
+                "see `workgraph experiment report`"
+            )
         unknown = sum(1 for name in models for task in per_model_tasks[name] if sizes[task].lines is None)
         if unknown:
             notes.append(
@@ -263,17 +270,23 @@ class SubagentReport(Service):
         since: datetime | None,
         until: datetime | None,
         model: str | None,
-    ) -> tuple[list[_Run], int, int]:
-        """The in-window runs of the report, plus the counts of unlinked and out-of-workspace runs."""
+    ) -> tuple[list[_Run], int, int, int]:
+        """The in-window runs of the report, plus the counts of unlinked, out-of-workspace and trial runs."""
         runs: list[_Run] = []
         unlinked = 0
         outside = 0
+        trials = 0
         for row in stopped:
             at = _utc(row.stopped_at) if row.stopped_at is not None else None
             if at is None or (since is not None and at < since) or (until is not None and at >= until):
                 continue
             name = row.model or row.requested_model or UNKNOWN_MODEL
             if model is not None and name != model:
+                continue
+            telemetry = _dict(row.telemetry)
+            # Experiment trials have their own report and never reach acceptance, so they would read as pending work.
+            if telemetry.get("trial_ids"):
+                trials += 1
                 continue
             owner = owners.get(row.task_id) if row.task_id is not None else None
             if owner is not None and owner[0] != ws_id:
@@ -284,7 +297,6 @@ class SubagentReport(Service):
                 if not is_default:
                     continue
             usage = _dict(row.usage)
-            telemetry = _dict(row.telemetry)
             runs.append(
                 _Run(
                     model=name,
@@ -295,7 +307,7 @@ class SubagentReport(Service):
                     tool_errors=int(_number(telemetry.get("tool_errors")) or 0),
                 )
             )
-        return runs, unlinked, outside
+        return runs, unlinked, outside, trials
 
     @staticmethod
     def _by_period(

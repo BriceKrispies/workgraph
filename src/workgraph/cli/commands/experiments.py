@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import typer
@@ -203,6 +204,54 @@ def trial_classify(
         STATE.app().experiments.classify(STATE.ctx(), ws(workspace), trial, cause, source, notes),
         _render_trial,
     )
+
+
+def _render_start(out: dict[str, Any]) -> None:
+    trial = out["trial"]
+    kv(
+        [
+            ("worktree", out["worktree"]),
+            ("branch", out["branch"]),
+            ("base sha", out["base_sha"]),
+        ],
+        title=f"trial {trial.seq} of {trial.task_key} started",
+    )
+    typer.echo(out["brief"])
+
+
+@trial_app.command("start")
+@handle_errors
+def trial_start(trial: str, workspace: str | None = workspace_option()) -> None:
+    """Clone the replay base for a planned trial, run its setup, and print the brief to give the subagent."""
+    emit(STATE.app().trial_runner.start(STATE.ctx(), ws(workspace), trial), _render_start)
+
+
+def _render_grade(t: Any) -> None:
+    detail = t.outcome_detail or {}
+    flags = detail.get("flags") or {}
+    kv(
+        [
+            ("trial", t.id),
+            ("outcome", t.outcome or ""),
+            ("status", t.status),
+            ("oracle exits", ", ".join(str(r["exit"]) for r in detail.get("oracle", []))),
+            ("gate exits", ", ".join(str(r["exit"]) for r in detail.get("gates", [])) or "none"),
+            ("flags", json.dumps(flags) if flags else "none"),
+            ("failure cause", f"{t.failure_cause} ({t.failure_cause_source})" if t.failure_cause else ""),
+        ],
+        title=f"trial {t.seq} of {t.task_key} graded",
+    )
+
+
+@trial_app.command("grade")
+@handle_errors
+def trial_grade(
+    trial: str,
+    timeout: float = typer.Option(3600.0, "--timeout", help="Seconds allowed per oracle or gate command"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Run the oracle and gates in a started trial's clone, measure it, and record the outcome."""
+    emit(STATE.app().trial_runner.grade(STATE.ctx(), ws(workspace), trial, timeout=timeout), _render_grade)
 
 
 @replay_app.command("scan")

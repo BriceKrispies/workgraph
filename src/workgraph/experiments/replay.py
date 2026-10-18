@@ -258,6 +258,39 @@ def _package_name(git: Git, sha: str, package_dir: str) -> str | None:
     return name if isinstance(name, str) else None
 
 
+def expand_oracle_template(
+    template: Sequence[str], test_paths: Sequence[str], packages: Sequence[str]
+) -> tuple[str, ...]:
+    """Expand an oracle template: ``{test_files}`` becomes the test paths, ``{packages}`` the packages."""
+    argv: list[str] = []
+    for item in template:
+        if item == "{test_files}":
+            argv.extend(test_paths)
+        elif item == "{packages}":
+            argv.extend(packages)
+        else:
+            argv.append(item)
+    return tuple(argv)
+
+
+def _template_inputs(
+    files: frozenset[str], test_paths: Sequence[str]
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """The test paths present in ``files``, and the packages they belong to (nearest manifest directory)."""
+    existing = tuple(path for path in test_paths if path in files)
+    manifests = _manifest_dirs(files, MANIFESTS)
+    packages = tuple(dict.fromkeys(_nearest(path, manifests) or "." for path in existing))
+    return existing, packages
+
+
+def template_inputs(
+    repo: Path, sha: str, test_paths: Sequence[str]
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Existing test paths and their packages at ``sha``, as :func:`expand_oracle_template` expects them."""
+    git = Git(repo)
+    return _template_inputs(_tree_files(git, git.resolve_commit(sha)), test_paths)
+
+
 def _resolve_oracle(
     git: Git,
     sha: str,
@@ -265,21 +298,12 @@ def _resolve_oracle(
     config: ReplayConfig,
     files: frozenset[str],
 ) -> tuple[tuple[str, ...], ...]:
-    existing = tuple(path for path in test_paths if path in files)
     if config.oracle_template is not None:
+        existing, packages = _template_inputs(files, test_paths)
         if not existing:
             return ()
-        manifests = _manifest_dirs(files, MANIFESTS)
-        packages = tuple(dict.fromkeys(_nearest(path, manifests) or "." for path in existing))
-        argv: list[str] = []
-        for item in config.oracle_template:
-            if item == "{test_files}":
-                argv.extend(existing)
-            elif item == "{packages}":
-                argv.extend(packages)
-            else:
-                argv.append(item)
-        return (tuple(argv),)
+        return (expand_oracle_template(config.oracle_template, existing, packages),)
+    existing = tuple(path for path in test_paths if path in files)
 
     commands: list[tuple[str, ...]] = []
     cargo_dirs = _manifest_dirs(files, ("Cargo.toml",))

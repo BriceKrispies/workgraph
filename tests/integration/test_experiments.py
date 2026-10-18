@@ -103,6 +103,13 @@ def test_pinned_full_model_ids_are_accepted(app, human, ws):
     assert [arm["model"] for arm in created.protocol["arms"]] == [PINNED, OLDER]
 
 
+@pytest.mark.parametrize("setup", [[[]], [["python"], [""]], ["python"], "python"])
+def test_setup_must_be_non_empty_command_lists(app, human, ws, setup):
+    with pytest.raises(ValidationFailed, match="setup must be a list of non-empty command lists"):
+        app.experiments.create(human, ws, "exp-setup", "Setup", None, protocol(setup=setup))
+    app.experiments.create(human, ws, "exp-setup", "Setup", None, protocol(setup=[["python", "-V"]]))
+
+
 def test_bad_protocol_reports_every_problem(app, human, ws):
     spec = protocol(
         arms=[{"name": "a", "model": "sonnet"}, {"name": "a", "model": PINNED}],

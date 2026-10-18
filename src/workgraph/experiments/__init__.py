@@ -1,1 +1,1 @@
-"""Experiment statistics and the adaptive band staircase for capability trials."""
+"""Capability experiments: replay task pools from repository history, trial statistics and design."""

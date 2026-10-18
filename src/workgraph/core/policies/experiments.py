@@ -15,7 +15,9 @@ from workgraph.core.errors import ValidationFailed
 MODEL_ALIASES = frozenset({"haiku", "sonnet", "opus", "fable", "inherit"})
 
 REQUIRED_KEYS = frozenset({"arms", "brief_template", "primary_size", "bands", "staircase", "budget"})
-OPTIONAL_KEYS = frozenset({"refine", "repeat", "control", "gates", "seed"})
+# ``oracle_template`` overrides the replay oracle (an argv list), ``env`` adds variables to oracle and gate
+# runs (e.g. a shared CARGO_TARGET_DIR), ``pool`` selects the candidate tasks (tag, repository).
+OPTIONAL_KEYS = frozenset({"refine", "repeat", "control", "gates", "seed", "oracle_template", "env", "pool"})
 STAIRCASE_KEYS = ("per_visit", "up", "down", "max_reversals", "max_trials")
 
 
@@ -33,7 +35,8 @@ def model_problem(model: object) -> str | None:
         return "is not a non-empty string"
     if model.strip().lower() in MODEL_ALIASES:
         return f"is the alias {model!r}; pin a full model id such as 'claude-haiku-5-5'"
-    if not (model.startswith("claude-") or any(ch.isdigit() for ch in model)):
+    # A pinned id names a version ("claude-haiku-5-5"); a family name such as "claude-haiku" is still an alias.
+    if not any(ch.isdigit() for ch in model):
         return "is not a pinned model id (expected a full id such as 'claude-haiku-5-5')"
     return None
 
@@ -119,6 +122,22 @@ def protocol_problems(protocol: object) -> list[str]:
             for gate in gates
         ):
             problems.append("gates must be a list of non-empty command lists of strings")
+    if "oracle_template" in protocol:
+        template = protocol["oracle_template"]
+        if (
+            not isinstance(template, list)
+            or not template
+            or not all(isinstance(p, str) and p for p in template)
+        ):
+            problems.append("oracle_template must be a non-empty list of strings")
+    if "env" in protocol:
+        env = protocol["env"]
+        if not isinstance(env, dict) or not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in env.items()
+        ):
+            problems.append("env must be an object of string values")
+    if "pool" in protocol and not isinstance(protocol["pool"], dict):
+        problems.append("pool must be an object")
     if "seed" in protocol and not _is_int(protocol["seed"]):
         problems.append("seed must be an integer")
     return problems

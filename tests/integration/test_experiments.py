@@ -89,7 +89,7 @@ def test_frozen_protocol_cannot_change(app, human, ws):
     ]
 
 
-@pytest.mark.parametrize("alias", ["haiku", "sonnet", "opus", "fable", "inherit", "Haiku"])
+@pytest.mark.parametrize("alias", ["haiku", "sonnet", "opus", "fable", "inherit", "Haiku", "claude-haiku"])
 def test_alias_model_ids_are_rejected(app, human, ws, alias):
     spec = protocol(arms=[{"name": "arm", "model": alias}])
     with pytest.raises(ValidationFailed, match=r"alias|pinned"):

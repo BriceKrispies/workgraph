@@ -247,10 +247,20 @@ class StackLander(Service):
                     f"{parent.key} is {parent.status}; only completed work awaiting review can be accepted",
                     details={"parent": parent.key},
                 )
+            # Accepting the parent means the whole piece of work is done, so every child must land with it.
+            unfinished = sorted(
+                f"{task.key} ({item.state})"
+                for item, task in StackVerifier.item_rows(session, stack)
+                if StackItemState(item.state) != StackItemState.VERIFIED
+            )
+            if unfinished:
+                raise ConflictError(
+                    f"{parent.key}'s stack has unfinished children: {', '.join(unfinished)}; finish them or "
+                    "remove them from the stack before accepting the parent",
+                    details={"parent": parent.key, "unfinished": unfinished},
+                )
             children = []
-            for item, task in StackVerifier.item_rows(session, stack):
-                if StackItemState(item.state) != StackItemState.VERIFIED:
-                    continue
+            for _item, task in StackVerifier.item_rows(session, stack):
                 if TaskStatus(task.status) not in ACCEPTABLE_TASK_STATUSES:
                     raise ConflictError(
                         f"{task.key} is {task.status}; a verified child cannot be accepted in that state",

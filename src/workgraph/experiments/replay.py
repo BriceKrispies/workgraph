@@ -484,7 +484,9 @@ def create_base(repo: Path, candidate: ReplayCandidate) -> str:
         if existing == tree:
             return branch
         raise ValueError(f"branch {branch} already exists with a different tree")
-    message = f"Replay base for {candidate.sha}\n\nTests from {candidate.sha} on its parent."
+    # The message must not name the solution commit: a trial agent reads the base's log, and with the SHA it can
+    # look the solution up wherever that object is reachable (a trial agent did exactly this in E1-rho trial 1).
+    message = "Replay base\n\nThe tests of the replayed commit, applied to its parent."
     commit = git.run("commit-tree", tree, "-p", candidate.parent, "-m", message).stdout.strip()
     git.run("update-ref", ref, commit)
     return branch

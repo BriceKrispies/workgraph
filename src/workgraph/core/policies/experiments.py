@@ -18,8 +18,8 @@ REQUIRED_KEYS = frozenset({"arms", "brief_template", "primary_size", "bands", "s
 # ``oracle_template`` overrides the replay oracle (an argv list), ``env`` adds variables to oracle, gate and
 # setup runs (e.g. a shared CARGO_TARGET_DIR), ``pool`` selects the candidate tasks (tag, repository), and
 # ``setup`` lists commands run in each trial's fresh clone before the trial starts, and ``clone`` selects how
-# the clone is made: "shared" (default) keeps alternates to the source object store, "isolated" copies only the
-# base branch's objects, so the solution's objects are absent from the clone.
+# the clone is made: "isolated" (default) copies only the base branch's objects, so the solution's objects are
+# absent from the clone; "shared" keeps alternates to the source object store.
 OPTIONAL_KEYS = frozenset(
     {"refine", "repeat", "control", "gates", "seed", "oracle_template", "env", "pool", "setup", "clone"}
 )

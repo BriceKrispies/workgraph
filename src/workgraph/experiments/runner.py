@@ -68,12 +68,12 @@ class TrialRunner(Service):
         dest.parent.mkdir(parents=True, exist_ok=True)
         try:
             # --single-branch with --branch <base> makes the clone hold only the base; the remote is then removed
-            # so no other branch or tag of the source repository is reachable by ref from the clone. "shared" keeps
-            # alternates to the source object store (solution objects stay readable by SHA); "isolated" copies only
-            # the base branch's objects.
+            # so no other branch or tag of the source repository is reachable by ref from the clone. "isolated" (the
+            # default) copies only the base branch's objects; "shared" keeps alternates to the source object store, so
+            # solution objects stay readable by SHA, and the base branch's name carries a prefix of that SHA.
             Git(checkout).out(
                 "clone",
-                "--no-local" if protocol.get("clone", "shared") == "isolated" else "--shared",
+                "--no-local" if protocol.get("clone", "isolated") == "isolated" else "--shared",
                 "--single-branch",
                 "--no-tags",
                 "--branch",

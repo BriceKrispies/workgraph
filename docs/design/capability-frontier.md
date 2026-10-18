@@ -201,6 +201,10 @@ Version `breakdown-v1`. Each step names the command that performs it.
 | Repository state (red suites on main) | Oracles are the commit's own tests at its own parent, not the whole suite. |
 | Selection by size bands | Bands are sampled from the validated pool with a fixed seed. |
 | Few trials | Intervals are always reported; production trials keep adding data. |
+| Agent reads the solution from history | Trials run in a single-branch clone with no remote, so no ref reaches the solution commit. The clone is `--shared`, so its objects are still readable by SHA through alternates; the SHA is not in the brief. |
+| Agent reads the solution from the main checkout | The repository's own checkout (e.g. `C:\dev\rho`) holds the future code at HEAD. The brief confines the agent to its clone. Flagging tool calls that touch paths outside the clone is a backlog task. |
+| Small replay pool | Workgraph's own history yields 23 eligible commits (bands 4 to 12, one to four per band), too few for 40 distinct staircase trials. E1-workgraph gets a smaller budget, and E1-rho is the primary experiment. |
+| Lost telemetry | Claude Code prunes old subagent transcripts: of 1,161 hook-recorded runs, 1,105 transcripts were gone by the first backfill. Telemetry is captured at `SubagentStop`; `claude backfill-transcripts` recovers only what is still on disk. |
 
 ## Data model and interfaces
 

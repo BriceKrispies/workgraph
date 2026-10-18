@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Callable
+from datetime import datetime
 from functools import wraps
 from typing import Annotated, Any, Literal, ParamSpec, TypeVar
 
@@ -811,6 +812,26 @@ def build_server(
                 raise ToolError("estimate requires a task")
             return app.analytics.estimate(c, workspace, task=task)
         return {"tasks": app.analytics.task_history(c, workspace)}
+
+    @tool(
+        "analytics_subagents",
+        "Subagent runs over time by period and model, with the acceptance outcomes and size bands of their linked tasks.",
+    )
+    def analytics_subagents(
+        period: Literal["week", "month"] = "week",
+        since: Annotated[str | None, Field(description="Inclusive start, ISO date or datetime (UTC)")] = None,
+        until: Annotated[str | None, Field(description="Exclusive end, ISO date or datetime (UTC)")] = None,
+        model: str | None = None,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        try:
+            since_at = datetime.fromisoformat(since) if since else None
+            until_at = datetime.fromisoformat(until) if until else None
+        except ValueError as exc:
+            raise ToolError(f"invalid date: {exc}") from exc
+        return app.subagent_report.report(
+            ctx(), workspace, period=period, since=since_at, until=until_at, model=model
+        )
 
     # ------------------------------------------------------------------ automation
 

@@ -22,6 +22,7 @@ from workgraph.persistence.db import Database
 
 if TYPE_CHECKING:
     from workgraph.analytics.service import AnalyticsService
+    from workgraph.analytics.subagents import SubagentReport
     from workgraph.automation.engine import AutomationService
     from workgraph.classification.service import ClassificationService
     from workgraph.core.services.attempts import AttemptService
@@ -286,6 +287,12 @@ class Workgraph:
         from workgraph.analytics.service import AnalyticsService
 
         return AnalyticsService(self)
+
+    @cached_property
+    def subagent_report(self) -> SubagentReport:
+        from workgraph.analytics.subagents import SubagentReport
+
+        return SubagentReport(self)
 
     @cached_property
     def hooks(self) -> HookIngestor:

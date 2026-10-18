@@ -163,6 +163,47 @@ applicable verification checks.
 - Cleanup is explicit (`workgraph git cleanup-worktrees --apply`), only touches clean,
   Workgraph-created worktrees, and always keeps the branches.
 
+## Stack landing
+
+Accepting the parent task of a verified stack lands it (`workgraph task accept PARENT`, or
+`--manual --reason`). Nothing else moves a default branch: a child accepted on its own does not.
+
+- **Checks first.** For every stack repository, the default branch head is read. When it still
+  equals the stack's `base_sha`, the default branch fast-forwards to the verified integration tip
+  (`wg/stack/<parent-key>`, the tip recorded by the passing `stack.verified` event). The integration
+  branch must still be at that tip, and the tip must descend from the base. Every check runs before
+  any ref moves, so a refusal leaves every repository untouched.
+- **Fast-forward.** If a user checkout has the default branch checked out, the branch moves with
+  `git merge --ff-only <tip>` in that checkout, and the checkout must be clean (`git status
+  --porcelain` empty), otherwise the landing is refused with a `ValidationFailed` naming the path. If
+  no checkout has it, the branch moves with `git update-ref refs/heads/<default> <tip> <base_sha>`, a
+  compare-and-swap that fails if the branch moved in between. A failure part way through restores the
+  repositories already moved.
+- **The default branch moved.** Nothing lands. The stack's `base_sha` is updated to the new head for
+  each repository, the stack is rebuilt from it (the integration branches are reset to the new base
+  and the merged children are replayed in merge order), and a `stack_verify` job is queued. The
+  landing request (mode, reason, actor) is kept on the stack in its `land_request` column and the
+  event `stack.land_requested` records the old and new base shas. The accept call is refused with
+  `landing: deferred`. When the rebuilt stack verifies, it lands by itself. If that verification
+  fails, the stack goes to the usual bisection and the request stays pending for the next pass.
+- **On landing.** Each verified child is accepted (`mode` `automated`, `verification_run_id` the
+  stack's passing run, the accepted manifest from that run) and then the parent is accepted with the
+  requested mode and reason. The stack becomes `landed`, the `stack.landed` event records the landed
+  tip of each repository, and the integration worktrees are removed (`worktree remove --force`) and
+  the integration branch is deleted (`stack.integration_removed`). Dependents of the accepted tasks
+  are promoted by the normal acceptance path.
+- **Refusals.** A landing that is refused (stack not verified, parent not awaiting review, dirty
+  checkout, integration work in flight) is recorded as `stack.landing_refused` and changes nothing
+  else. With `stacks.auto_accept` enabled, the landing runs when the stack verifies, and a refusal
+  leaves the stack `verified` for a manual accept.
+- **Auto-accept.** `stacks.auto_accept` (global, overridable per workspace; see
+  [Configuration](configuration.md)) lands a stack as soon as it verifies, as an automated acceptance
+  of the parent with the reason `stack.auto_accept`.
+
+A child accepted on its own is removed from the stack. Its commits, if they were on the integration
+branch, are removed by rebuilding the branch without them, which the stack then verifies again. The
+change itself is not landed, so it reaches the default branch only if it is landed by other means.
+
 ## Cross-repository change sets
 
 An attempt touching several repositories creates a change set with one item per writable

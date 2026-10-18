@@ -101,6 +101,7 @@ export function StackDetailPage() {
   if (!stack.data) return <ErrorBanner error={stack.error ?? new Error(`No stack for ${ref}`)} />;
   const s = stack.data;
   const inactive = s.status === "landed" || s.status === "abandoned";
+  const unfinished = s.items.filter((i) => i.state !== "verified");
   const counts = countStates(s.items);
   return (
     <div className="space-y-4">
@@ -130,10 +131,17 @@ export function StackDetailPage() {
       </div>
       <ErrorBanner error={integrate.error ?? verify.error} />
       {notice && !integrate.error && !verify.error && <div className="text-[12px] text-slate-500">{notice}</div>}
-      {s.status === "verified" && (
+      {s.status === "verified" && unfinished.length === 0 && (
         <div className="rounded-md border border-teal-200 bg-teal-50 px-3 py-2 text-sm text-teal-900" data-testid="stack-landing">
           Verified on the integration tip. Accepting the parent lands it on the default branch:{" "}
           <span className="mono">workgraph task accept {s.parent_key}</span>
+        </div>
+      )}
+      {s.status === "verified" && unfinished.length > 0 && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" data-testid="stack-landing">
+          Verified on the integration tip, but it cannot land while children are unfinished:{" "}
+          <span className="mono">{unfinished.map((i) => `${i.task_key} (${i.state})`).join(", ")}</span>. Finish them
+          or remove them from the stack (<span className="mono">workgraph stack remove {s.parent_key} &lt;TASK&gt;</span>).
         </div>
       )}
 

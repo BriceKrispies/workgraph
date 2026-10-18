@@ -70,7 +70,16 @@ def _render_stack(s: Any) -> None:
         ["merge order", "task", "state", "detail", "title"],
     )
     if s.status == "verified":
-        console.print(f"Verified on the integration tip. Land it with: workgraph task accept {s.parent_key}")
+        unfinished = [f"{i.task_key} ({i.state})" for i in s.items if i.state != "verified"]
+        if unfinished:
+            console.print(
+                f"Verified on the integration tip, but it cannot land while children are unfinished: "
+                f"{', '.join(unfinished)}. Finish them or remove them with: workgraph stack remove {s.parent_key} <TASK>"
+            )
+        else:
+            console.print(
+                f"Verified on the integration tip. Land it with: workgraph task accept {s.parent_key}"
+            )
 
 
 @stack_app.command("create")

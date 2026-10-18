@@ -163,7 +163,11 @@ describe("StackDetailPage", () => {
     expect(within(timeline).getAllByTestId("timeline-run-passed")).toHaveLength(1);
     const culprit = timeline.querySelector('[data-culprit="true"]');
     expect(culprit).toHaveTextContent("Culprit WG-3 ejected at prefix 2");
-    expect(screen.getByTestId("stack-landing")).toHaveTextContent("workgraph task accept WG-1");
+    // The fixture is verified but has unfinished children, so landing is blocked rather than offered.
+    const landing = screen.getByTestId("stack-landing");
+    expect(landing).toHaveTextContent("cannot land while children are unfinished");
+    expect(landing).toHaveTextContent("WG-3 (conflict)");
+    expect(landing).not.toHaveTextContent("workgraph task accept");
   });
 
   it("queues integration and verification through the API", async () => {

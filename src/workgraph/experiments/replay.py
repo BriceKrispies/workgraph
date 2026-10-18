@@ -21,7 +21,12 @@ from pathlib import Path
 
 from workgraph.integrations.git.cli import Git, validate_ref
 
-RUST_TEST_GLOBS = ("**/tests/**/*.rs", "**/*_tests.rs")
+# Rho programs under a tests/ directory are test programs that Rust harnesses build and run (rho's
+# libraries/*/tests/*.rho); counting them as source made a replay task's size include its own tests and left
+# them off the red-test base (found in E1-rho trial 3).
+RUST_TEST_GLOBS = ("**/tests/**/*.rs", "**/tests/**/*.rho", "**/*_tests.rs")
+# Bumped whenever file classification changes, so pools built under different rules can be told apart.
+CLASSIFIER = "replay-classifier-2"
 RUST_SOURCE_SUFFIXES = (".rs", ".rho")
 PYTHON_TEST_GLOBS = ("tests/**/*.py", "**/test_*.py", "**/*_test.py")
 PYTHON_SOURCE_SUFFIXES = (".py",)

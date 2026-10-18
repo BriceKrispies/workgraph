@@ -77,8 +77,13 @@ class ReplayPool(Service):
                 ctx, workspace, TaskFilter(tags=[REPLAY_TAG], limit=500, offset=offset, include_archived=True)
             )
             for task in page.items:
-                sha = task.metadata.get("replay", {}).get("sha")
-                if isinstance(sha, str):
+                meta = task.metadata.get("replay", {})
+                sha = meta.get("sha")
+                # A task built under another classifier is not a duplicate: its tests and size differ.
+                if (
+                    isinstance(sha, str)
+                    and meta.get("classifier", "replay-classifier-1") == replay.CLASSIFIER
+                ):
                     found.setdefault(sha, task.key)
             if page.next_offset is None:
                 return found
@@ -159,6 +164,7 @@ def _task_create(
     metadata = {
         "replay": {
             "sha": candidate.sha,
+            "classifier": replay.CLASSIFIER,
             "parent": candidate.parent,
             "base_ref": base_ref,
             "test_paths": list(candidate.test_paths),

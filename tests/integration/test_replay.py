@@ -220,6 +220,28 @@ def test_rust_oracle_resolution(make_repo: Callable[..., GitRepo]) -> None:
     assert resolved == (("cargo", "test", "-p", "foo-core", "--test", "bar"),)
 
 
+def test_rho_test_programs_are_tests_and_go_on_the_base(make_repo: Callable[..., GitRepo]) -> None:
+    # rho's Rust harnesses build and run .rho programs kept under tests/; they are tests, not source.
+    repo = _rust_repo(make_repo)
+    sha = repo.commit(
+        "Add two with a rho test program",
+        {
+            "crates/foo/src/lib.rs": RUST_FEATURE_FILES["crates/foo/src/lib.rs"],
+            "crates/foo/src/two.rho": "two :: fn() -> i32 { return 2 }\n",
+            "crates/foo/tests/bar.rs": RUST_FEATURE_FILES["crates/foo/tests/bar.rs"],
+            "libraries/gpu/tests/two_is_two.rho": "main :: fn() -> i32 { return 42 }\n",
+        },
+    )
+
+    candidate = analyze_commit(repo.path, sha, ReplayConfig.for_repository(repo.path))
+
+    assert "libraries/gpu/tests/two_is_two.rho" in candidate.test_paths
+    assert "crates/foo/src/two.rho" in candidate.source_paths
+    assert candidate.features.src_lines == 5
+    branch = create_base(repo.path, candidate)
+    assert repo.git("show", f"{branch}:libraries/gpu/tests/two_is_two.rho").startswith("main ::")
+
+
 def test_rust_helper_only_commit_has_no_oracle(make_repo: Callable[..., GitRepo]) -> None:
     repo = _rust_repo(make_repo)
     sha = repo.commit(

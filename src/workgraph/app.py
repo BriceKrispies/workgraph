@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     from workgraph.core.services.stacks import StackService
     from workgraph.core.services.tasks import TaskService
     from workgraph.core.services.workspaces import WorkspaceService
+    from workgraph.experiments.planner import TrialPlanner
     from workgraph.experiments.pool import ReplayPool
     from workgraph.integrations.agents.registry import AgentRegistry
     from workgraph.integrations.claude_code.ingest import HookIngestor
@@ -162,6 +163,12 @@ class Workgraph:
         from workgraph.experiments.pool import ReplayPool
 
         return ReplayPool(self)
+
+    @cached_property
+    def trial_planner(self) -> TrialPlanner:
+        from workgraph.experiments.planner import TrialPlanner
+
+        return TrialPlanner(self)
 
     @cached_property
     def history(self) -> HistoryService:

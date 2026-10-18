@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import uuid
 from pathlib import Path
@@ -93,7 +94,7 @@ def _write(worktree: str | Path, rel: str, content: str) -> None:
     target.write_text(content, encoding="utf-8", newline="\n")
 
 
-def _record_run(app, trial_id: str, model: str) -> str:
+def _record_run(app, trial_id: str, model: str, transcript_path: str | None = None) -> str:
     """A subagent run whose telemetry names the trial, as the transcript ingester would record it."""
     unique = uuid.uuid4().hex
     with app.db.session(write=True) as session:
@@ -106,6 +107,7 @@ def _record_run(app, trial_id: str, model: str) -> str:
             attempt_id="attempt-7",
             model=model,
             telemetry={"trial_ids": [trial_id]},
+            transcript_path=transcript_path,
             stopped_at=utcnow(),
         )
         session.add(run)
@@ -239,6 +241,7 @@ def test_run_on_pinned_model_keeps_trial_graded(app, human, ws, project, replay_
         "attempt_id": "attempt-7",
         "model": PINNED,
     }
+    assert graded.outcome_detail["escape_check"] == "no_transcript"
 
 
 def test_failing_setup_fails_start_and_leaves_trial_planned(app, human, ws, project, replay_task):
@@ -298,3 +301,102 @@ def test_cli_start_and_grade(home, monkeypatch, tmp_path, app, human, ws, projec
     _write(started["worktree"], "pkg/mod.py", MOD_WITH_G)
     graded = invoke("experiment", "trial", "grade", trial.id, "--timeout", "600")
     assert (graded["status"], graded["outcome"]) == ("graded", "pass")
+
+
+def _transcript(path: Path, *calls: tuple[str, str, dict[str, Any]]) -> str:
+    """A subagent transcript whose one assistant message makes the given (tool_use id, name, input) calls."""
+    content = [
+        {"type": "tool_use", "id": tool_id, "name": name, "input": data} for tool_id, name, data in calls
+    ]
+    record = {
+        "type": "assistant",
+        "timestamp": "2026-10-14T08:55:00.000Z",
+        "message": {
+            "id": "msg_1",
+            "model": PINNED,
+            "content": content,
+            "usage": {"input_tokens": 1, "output_tokens": 1},
+        },
+    }
+    path.write_text(json.dumps(record) + "\n", encoding="utf-8")
+    return str(path)
+
+
+def test_reading_the_source_checkout_fails_as_escaped_clone(
+    app, human, ws, project, replay_task, running, tmp_path
+):
+    repo, _shas = project
+    trial = _trial(app, human, ws, replay_task)
+    started = app.trial_runner.start(human, ws, trial.id)
+    _write(started["worktree"], "pkg/mod.py", MOD_WITH_G)
+    transcript = _transcript(
+        tmp_path / "agent-escape.jsonl",
+        ("t1", "Read", {"file_path": str(repo.path / "pkg" / "mod.py")}),
+    )
+    _record_run(app, trial.id, PINNED, transcript)
+
+    graded = app.trial_runner.grade(human, ws, trial.id)
+    assert (graded.outcome, graded.failure_cause, graded.failure_cause_source) == (
+        "fail",
+        "gaming",
+        "mechanical",
+    )
+    assert graded.outcome_detail["escape_check"] == "checked"
+    flags = graded.outcome_detail["flags"]
+    assert list(flags) == ["escaped_clone"]
+    assert [(flag["tool"], flag["tool_use_id"]) for flag in flags["escaped_clone"]] == [("Read", "t1")]
+
+
+def test_transcript_confined_to_the_clone_is_not_flagged(
+    app, human, ws, project, replay_task, running, tmp_path
+):
+    trial = _trial(app, human, ws, replay_task)
+    started = app.trial_runner.start(human, ws, trial.id)
+    _write(started["worktree"], "pkg/mod.py", MOD_WITH_G)
+    transcript = _transcript(
+        tmp_path / "agent-clone.jsonl",
+        ("t1", "Read", {"file_path": str(Path(started["worktree"], "pkg", "mod.py"))}),
+        ("t2", "Bash", {"command": f"cd {started['worktree']} && python -m pytest -q"}),
+    )
+    _record_run(app, trial.id, PINNED, transcript)
+
+    graded = app.trial_runner.grade(human, ws, trial.id)
+    assert (graded.status, graded.outcome) == ("graded", "pass")
+    assert graded.outcome_detail["flags"] == {}
+    assert graded.outcome_detail["escape_check"] == "checked"
+
+
+def test_no_linked_run_reports_no_run(app, human, ws, project, replay_task, running):
+    trial = _trial(app, human, ws, replay_task)
+    started = app.trial_runner.start(human, ws, trial.id)
+    _write(started["worktree"], "pkg/mod.py", MOD_WITH_G)
+
+    graded = app.trial_runner.grade(human, ws, trial.id)
+    assert graded.outcome == "pass"
+    assert graded.outcome_detail["escape_check"] == "no_run"
+    assert graded.outcome_detail["flags"] == {}
+
+
+def test_isolated_clone_has_no_alternates_and_no_solution_objects(app, human, ws, project, replay_task):
+    _repo, shas = project
+    experiment = app.experiments.create(
+        human, ws, "isolated-exp", "Isolated", None, protocol(clone="isolated")
+    )
+    frozen = app.experiments.freeze(human, ws, experiment.slug)
+    trial = app.experiments.add_trial(human, ws, frozen.slug, replay_task, "haiku", "staircase")
+    started = app.trial_runner.start(human, ws, trial.id)
+
+    worktree = Path(started["worktree"])
+    assert started["trial"].status == "running"
+    assert not Path(worktree, ".git", "objects", "info", "alternates").exists()
+    probe = subprocess.run(
+        ["git", "-C", str(worktree), "cat-file", "-e", shas["eligible"]],
+        capture_output=True,
+        check=False,
+    )
+    assert probe.returncode != 0
+
+
+def test_unknown_clone_mode_is_rejected_by_the_policy(app, human, ws):
+    with pytest.raises(ValidationFailed, match="clone"):
+        app.experiments.create(human, ws, "bad-clone", "Bad clone", None, protocol(clone="bogus"))

@@ -3,6 +3,7 @@ from __future__ import annotations
 from sqlalchemy import select
 
 from workgraph.core.models.schemas import ProjectCreate, RepositoryRegister, TaskCreate
+from workgraph.integrations.git.cli import Git
 from workgraph.persistence.orm import Commit, CommitEquivalence, CommitFileChange, CommitTaskLink
 
 
@@ -214,3 +215,15 @@ def test_structure_analysis_of_commits(app, human, ws, make_repo):
     docs_detail = app.git.commit_detail(human, ws, "structure", docs.sha)
     assert docs_detail["files"][0]["file_class"] == "docs"
     assert docs_detail["analysis"]["files_fallback"] == 1
+
+
+def test_revision_ranges_work_in_deeply_nested_checkouts(make_repo, tmp_path):
+    # Managed worktrees nest deeply; a range argument plus the path used to exceed Windows MAX_PATH.
+    # The checkout path stays short enough for Git's own files but long enough that path + range > 260.
+    padding = max(1, 185 - len(str(tmp_path / "repos" / "deep-")))
+    repo = make_repo("deep-" + "x" * padding)
+    base = repo.git("rev-parse", "HEAD")
+    head = repo.commit("second", {"a.txt": "a\n"})
+    git = Git(repo.path)
+    assert git.out("rev-list", "--reverse", f"{base}..{head}").split() == [head]
+    assert git.out("rev-list", "--reverse", f"{base}..{head}", "--").split() == [head]

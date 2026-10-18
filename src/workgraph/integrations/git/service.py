@@ -840,7 +840,7 @@ class GitService(Service):
             if base == head or not path:
                 continue
             git = Git(path)
-            shas = git.out("rev-list", "--reverse", f"{base}..{head}").split()
+            shas = git.out("rev-list", "--reverse", f"{base}..{head}", "--").split()
             info = self._repo_info(repo_id)
             with self.db.session() as session:
                 known = set(

@@ -417,7 +417,7 @@ class WorktreeManager(Service):
             outcome.append(data)
             commits: list[str] = []
             if head and entry.sha and head != entry.sha:
-                commits = git.out("rev-list", "--reverse", f"{entry.sha}..{head}").split()
+                commits = git.out("rev-list", "--reverse", f"{entry.sha}..{head}", "--").split()
             commits_by_repo[entry.repository_id] = commits
             if changed_files:
                 dirty[entry.repository] = changed_files[:50]

@@ -403,11 +403,20 @@ class RunService(Service):
         recorder.flush()
 
         outcome: dict[str, Any] = {}
+        # Without a captured outcome the attempt's commits are unknown, so it cannot count as a success:
+        # a stack would treat the child as having changed nothing and merge it without its commits.
+        capture_error: str | None = None
         try:
             outcome = self.app.worktrees.capture_outcome(ctx, attempt_id)
-            self.app.git.link_attempt_commits(ctx, attempt_id)
         except WorkgraphError as exc:
+            capture_error = exc.message
             outcome = {"error": exc.message}
+        if capture_error is None:
+            try:
+                self.app.git.link_attempt_commits(ctx, attempt_id)
+            except WorkgraphError as exc:
+                outcome = {**outcome, "link_error": exc.message}
+        succeeded = result.status == "succeeded" and not outcome.get("violations") and capture_error is None
         with self.db.session(write=True) as session:
             artifact = None
             if log_path.exists():
@@ -441,7 +450,7 @@ class RunService(Service):
                 usage_kwargs = {"usage": result.usage, "usage_source": f"{provider.adapter_type}_reported"}
             if result.cost_usd is not None:
                 usage_kwargs.update(cost_usd=result.cost_usd, cost_source=f"{provider.adapter_type}_reported")
-            if result.status == "succeeded" and not outcome.get("violations"):
+            if succeeded:
                 for k, v in usage_kwargs.items():
                     setattr(attempt, k, v if k != "usage" else {**v})
                 attempt.summary = result.summary[:50_000] if result.summary else attempt.summary
@@ -457,12 +466,20 @@ class RunService(Service):
                 error = result.error or ""
                 if outcome.get("violations"):
                     error = f"read-only repositories were modified: {outcome['violations']}. {error}".strip()
+                if capture_error is not None:
+                    error = f"could not record the attempt's changes: {capture_error}. {error}".strip()
                 finish_attempt(
                     session,
                     ctx,
                     attempt,
                     status,
-                    exit_reason=result.status if result.status != "succeeded" else "policy_violation",
+                    exit_reason=(
+                        result.status
+                        if result.status != "succeeded"
+                        else "outcome_capture_failed"
+                        if capture_error is not None
+                        else "policy_violation"
+                    ),
                     exit_code=result.exit_code,
                     error=error or "agent failed",
                     summary=result.summary,
@@ -477,7 +494,7 @@ class RunService(Service):
                         session, ctx, task, target, reason=f"attempt #{attempt.number} {status}"
                     )
                 self._maybe_escalate(session, ctx, task)
-        if result.status != "succeeded" or outcome.get("violations"):
+        if not succeeded:
             self.app.worktrees.release(ctx, attempt_id)
             return {"status": result.status, "error": result.error}
 

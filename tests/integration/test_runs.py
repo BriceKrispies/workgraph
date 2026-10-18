@@ -6,7 +6,7 @@ import time
 import pytest
 
 from tests.helpers import drain, enable_fake_agent, failing_check, passing_check
-from workgraph.core.errors import PermissionDenied, ProviderUnavailableError
+from workgraph.core.errors import GitError, PermissionDenied, ProviderUnavailableError
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.jobs.worker import Worker
 
@@ -136,6 +136,22 @@ def test_agent_failure_crash_and_read_only_violation(app, human, ws, make_repo):
     drain(app)
     violated = app.attempts.get(human, attempt3.id)
     assert violated.status == "failed" and "read-only" in (violated.error or "")
+
+
+def test_attempt_fails_when_its_changes_cannot_be_recorded(app, human, ws, make_repo, monkeypatch):
+    enable_fake_agent(app)
+    task = make_task(app, human, ws, make_repo, names=("capture",))
+
+    def broken(ctx, attempt_id):
+        raise GitError("git rev-list failed (128): fatal: Filename too long")
+
+    monkeypatch.setattr(app.worktrees, "capture_outcome", broken)
+    attempt = app.runs.start(human, ws, task.key)
+    drain(app)
+    out = app.attempts.get(human, attempt.id)
+    assert out.status == "failed" and out.exit_reason == "outcome_capture_failed"
+    assert "could not record the attempt's changes" in (out.error or "")
+    assert app.tasks.get(human, ws, task.key).status == "failed"
 
 
 def test_timeout(app, human, ws, make_repo):

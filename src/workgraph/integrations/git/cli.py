@@ -13,6 +13,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -151,6 +152,8 @@ class Git:
             "core.quotepath=off",
             "-c",
             "color.ui=never",
+            # Managed worktrees nest deeply; without this Git for Windows fails at MAX_PATH (260).
+            *(("-c", "core.longpaths=true") if sys.platform == "win32" else ()),
             *args,
         ]
         try:

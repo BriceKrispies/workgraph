@@ -7,11 +7,12 @@ solution, so its non-test source size is known.
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import tempfile
 import tomllib
-from collections.abc import Generator, Iterator, Sequence
+from collections.abc import Generator, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from fnmatch import fnmatchcase
@@ -474,19 +475,26 @@ def _worktree(git: Git, ref: str, path: Path) -> Generator[Path]:
         shutil.rmtree(path, ignore_errors=True)
 
 
-def _exit_code(argv: Sequence[str], cwd: Path, timeout: float) -> int:
+def _exit_code(argv: Sequence[str], cwd: Path, timeout: float, env: Mapping[str, str]) -> int:
     try:
-        proc = subprocess.run(list(argv), cwd=cwd, timeout=timeout, capture_output=True, check=False)
+        proc = subprocess.run(
+            list(argv), cwd=cwd, timeout=timeout, capture_output=True, check=False, env=dict(env)
+        )
     except (subprocess.TimeoutExpired, OSError):
         return -1
     return proc.returncode
 
 
 def _run_oracle(
-    git: Git, ref: str, path: Path, oracle: Sequence[Sequence[str]], timeout: float
+    git: Git,
+    ref: str,
+    path: Path,
+    oracle: Sequence[Sequence[str]],
+    timeout: float,
+    env: Mapping[str, str],
 ) -> tuple[int, ...]:
     with _worktree(git, ref, path) as worktree:
-        return tuple(_exit_code(command, worktree, timeout) for command in oracle)
+        return tuple(_exit_code(command, worktree, timeout, env) for command in oracle)
 
 
 def validate(
@@ -496,18 +504,23 @@ def validate(
     *,
     timeout: float = 1800.0,
     workdir: Path | None = None,
+    env: Mapping[str, str] | None = None,
 ) -> Validation:
-    """Oracle must fail at the base (some command non-zero) and pass at the real commit (all zero)."""
+    """Oracle must fail at the base (some command non-zero) and pass at the real commit (all zero).
+
+    ``env`` is added to the inherited environment of every oracle command.
+    """
     if not candidate.oracle:
         return Validation(ok=False, reason="no_oracle", base=(), solution=())
     validate_ref(base_ref)
     git = Git(repo)
+    run_env = {**os.environ, **(env or {})}
     root = Path(tempfile.mkdtemp(prefix="wg-replay-", dir=workdir))
     try:
-        base = _run_oracle(git, base_ref, root / "base", candidate.oracle, timeout)
+        base = _run_oracle(git, base_ref, root / "base", candidate.oracle, timeout, run_env)
         if all(code == 0 for code in base):
             return Validation(ok=False, reason="oracle_green_at_base", base=base, solution=())
-        solution = _run_oracle(git, candidate.sha, root / "solution", candidate.oracle, timeout)
+        solution = _run_oracle(git, candidate.sha, root / "solution", candidate.oracle, timeout, run_env)
         if any(code != 0 for code in solution):
             return Validation(ok=False, reason="oracle_red_at_solution", base=base, solution=solution)
         return Validation(ok=True, reason=None, base=base, solution=solution)

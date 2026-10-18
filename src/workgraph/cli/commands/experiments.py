@@ -18,13 +18,19 @@ from workgraph.cli.common import (
     workspace_option,
     ws,
 )
+from workgraph.core.errors import ValidationFailed
 
 experiment_app = typer.Typer(
     help="Create, freeze and inspect experiments (pinned protocols measured by trials).",
     no_args_is_help=True,
 )
 trial_app = typer.Typer(help="Add, inspect and classify the trials of an experiment.", no_args_is_help=True)
+replay_app = typer.Typer(
+    help="Turn a repository's commits into replay tasks (red tests at the parent, the commit as solution).",
+    no_args_is_help=True,
+)
 experiment_app.add_typer(trial_app, name="trial")
+experiment_app.add_typer(replay_app, name="replay")
 
 
 def _render_experiment(out: dict[str, Any]) -> None:
@@ -196,4 +202,95 @@ def trial_classify(
     emit(
         STATE.app().experiments.classify(STATE.ctx(), ws(workspace), trial, cause, source, notes),
         _render_trial,
+    )
+
+
+@replay_app.command("scan")
+@handle_errors
+def replay_scan(
+    repo: str = typer.Option(..., "--repo", help="Repository name or id"),
+    rev: str = typer.Option("HEAD", "--rev", help="Revision to walk back from (newest first)"),
+    limit: int | None = typer.Option(None, "--limit", help="Stop after this many candidates"),
+    min_lines: int = typer.Option(1, "--min-lines", help="Smallest non-test source size, in lines"),
+    max_lines: int | None = typer.Option(None, "--max-lines", help="Largest non-test source size, in lines"),
+    include_excluded: bool = typer.Option(False, "--include-excluded", help="Also list excluded commits"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """List commits that could become replay tasks, with their size band and exclusion reasons."""
+    candidates = STATE.app().replay_pool.scan(
+        STATE.ctx(),
+        ws(workspace),
+        repo,
+        rev=rev,
+        limit=limit,
+        min_lines=min_lines,
+        max_lines=max_lines,
+        include_excluded=include_excluded,
+    )
+    emit(
+        [c.as_dict() for c in candidates],
+        lambda items: table(
+            [
+                (
+                    c.sha[:12],
+                    c.features.band if c.features.band is not None else "",
+                    c.features.src_lines,
+                    c.features.test_lines,
+                    c.features.src_files,
+                    ",".join(c.features.packages),
+                    ",".join(c.excluded),
+                    short(c.subject, 60),
+                )
+                for c in candidates
+            ],
+            ["sha", "band", "src_lines", "test_lines", "src_files", "packages", "excluded", "subject"],
+        ),
+    )
+
+
+@replay_app.command("create")
+@handle_errors
+def replay_create(
+    shas: list[str] = typer.Argument(..., help="Commit shas to turn into replay tasks"),
+    repo: str = typer.Option(..., "--repo", help="Repository name or id"),
+    validate: bool = typer.Option(
+        False, "--validate", help="Run the oracle at the base and the commit first"
+    ),
+    oracle_template: str | None = typer.Option(
+        None,
+        "--oracle-template",
+        help='Oracle argv as a JSON list, e.g. ["python", "-m", "pytest", "{test_files}"]',
+    ),
+    env: list[str] | None = typer.Option(None, "--env", help="K=V passed to oracle commands (repeatable)"),
+    timeout: float = typer.Option(1800.0, "--timeout", help="Seconds allowed per oracle command"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Create one replay task per commit. Existing replay tasks for a commit are reported, not duplicated."""
+    template = parse_json_arg(oracle_template, "oracle template")
+    if template is not None and not (
+        isinstance(template, list) and all(isinstance(t, str) for t in template)
+    ):
+        raise ValidationFailed("--oracle-template must be a JSON list of strings")
+    environment: dict[str, str] = {}
+    for item in env or []:
+        key, sep, value = item.partition("=")
+        if not sep or not key:
+            raise ValidationFailed(f"--env expects K=V, got {item!r}")
+        environment[key] = value
+    results = STATE.app().replay_pool.create(
+        STATE.ctx(),
+        ws(workspace),
+        repo,
+        shas,
+        validate=validate,
+        oracle_template=template,
+        env=environment,
+        timeout=timeout,
+    )
+    emit(
+        results,
+        lambda items: table(
+            [(r["sha"][:12], r["status"], r["task_key"] or "", r["reason"] or "") for r in items],
+            ["sha", "status", "task", "reason"],
+        ),
     )

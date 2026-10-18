@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import json
 
-from workgraph.integrations.claude_code.transcript import TranscriptStats, parse_transcript
+from workgraph.integrations.claude_code.transcript import (
+    ToolCall,
+    TranscriptStats,
+    parse_transcript,
+    tool_calls,
+)
 
 
 def parsed(path) -> TranscriptStats:
@@ -221,3 +226,27 @@ def test_telemetry_is_json_safe(tmp_path):
     assert data["task_keys"] == ["WG-3"]
     assert data["tool_uses"] == {"Grep": 1}
     assert "usage" not in data
+
+
+def test_tool_calls_dedupe_repeated_blocks_and_return_inputs(tmp_path):
+    read = {"type": "tool_use", "id": "t1", "name": "Read", "input": {"file_path": "c:/dev/rho/pkg/mod.py"}}
+    bash = {"type": "tool_use", "id": "t2", "name": "Bash", "input": {"command": "git log"}}
+    transcript = write_lines(
+        tmp_path / "agent-calls.jsonl",
+        [
+            prompt("go"),
+            assistant("msg_1", 5, content=[read]),
+            assistant("msg_1", 9, content=[read, bash]),
+            assistant("msg_2", 9, content=[{"type": "text", "text": "no tools here"}]),
+            assistant("msg_3", 4, model="<synthetic>", content=[tool_use("t9", "Edit")]),
+        ],
+    )
+    calls = tool_calls(transcript)
+    assert calls == [
+        ToolCall(name="Read", input={"file_path": "c:/dev/rho/pkg/mod.py"}, tool_use_id="t1"),
+        ToolCall(name="Bash", input={"command": "git log"}, tool_use_id="t2"),
+    ]
+
+
+def test_tool_calls_missing_file_is_empty(tmp_path):
+    assert tool_calls(tmp_path / "absent.jsonl") == []

@@ -17,10 +17,13 @@ MODEL_ALIASES = frozenset({"haiku", "sonnet", "opus", "fable", "inherit"})
 REQUIRED_KEYS = frozenset({"arms", "brief_template", "primary_size", "bands", "staircase", "budget"})
 # ``oracle_template`` overrides the replay oracle (an argv list), ``env`` adds variables to oracle, gate and
 # setup runs (e.g. a shared CARGO_TARGET_DIR), ``pool`` selects the candidate tasks (tag, repository), and
-# ``setup`` lists commands run in each trial's fresh clone before the trial starts.
+# ``setup`` lists commands run in each trial's fresh clone before the trial starts, and ``clone`` selects how
+# the clone is made: "shared" (default) keeps alternates to the source object store, "isolated" copies only the
+# base branch's objects, so the solution's objects are absent from the clone.
 OPTIONAL_KEYS = frozenset(
-    {"refine", "repeat", "control", "gates", "seed", "oracle_template", "env", "pool", "setup"}
+    {"refine", "repeat", "control", "gates", "seed", "oracle_template", "env", "pool", "setup", "clone"}
 )
+CLONE_MODES = ("shared", "isolated")
 STAIRCASE_KEYS = ("per_visit", "up", "down", "max_reversals", "max_trials")
 
 
@@ -146,6 +149,8 @@ def protocol_problems(protocol: object) -> list[str]:
             isinstance(k, str) and isinstance(v, str) for k, v in env.items()
         ):
             problems.append("env must be an object of string values")
+    if "clone" in protocol and protocol["clone"] not in CLONE_MODES:
+        problems.append(f"clone must be one of: {', '.join(CLONE_MODES)}")
     if "pool" in protocol and not isinstance(protocol["pool"], dict):
         problems.append("pool must be an object")
     if "seed" in protocol and not _is_int(protocol["seed"]):

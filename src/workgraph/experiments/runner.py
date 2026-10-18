@@ -26,6 +26,8 @@ from workgraph.core.services.base import Service
 from workgraph.core.services.repositories import primary_checkout
 from workgraph.experiments import briefs, replay
 from workgraph.experiments.briefs import BriefContext
+from workgraph.experiments.escape import Escape, find_escapes, normalize_path_text
+from workgraph.integrations.claude_code.transcript import tool_calls
 from workgraph.integrations.git.cli import Git
 from workgraph.persistence.orm import Repository, SubagentRun, TaskRepository
 from workgraph.security.permissions import Permission, require
@@ -62,10 +64,12 @@ class TrialRunner(Service):
         dest.parent.mkdir(parents=True, exist_ok=True)
         try:
             # --single-branch with --branch <base> makes the clone hold only the base; the remote is then removed
-            # so no other branch or tag of the source repository is reachable by ref from the clone.
+            # so no other branch or tag of the source repository is reachable by ref from the clone. "shared" keeps
+            # alternates to the source object store (solution objects stay readable by SHA); "isolated" copies only
+            # the base branch's objects.
             Git(checkout).out(
                 "clone",
-                "--shared",
+                "--no-local" if protocol.get("clone", "shared") == "isolated" else "--shared",
                 "--single-branch",
                 "--no-tags",
                 "--branch",
@@ -158,6 +162,12 @@ class TrialRunner(Service):
             flags["tests_modified"] = list(changes.tests_modified)
         if changes.stubs:
             flags["stubs"] = [{"path": path, "line": line} for path, line in changes.stubs]
+        escape_check, escapes = self._escapes(trial, worktree)
+        if escapes:
+            flags["escaped_clone"] = [
+                {"tool": e.tool, "tool_use_id": e.tool_use_id, "root": e.root, "excerpt": e.excerpt}
+                for e in escapes
+            ]
 
         env = {**os.environ, **protocol.get("env", {})}
         oracle_records = [_run_command(argv, worktree, timeout, env) for argv in oracle]
@@ -185,6 +195,7 @@ class TrialRunner(Service):
                 "oracle": oracle_records,
                 "gates": gate_records,
                 "flags": flags,
+                "escape_check": escape_check,
             },
             # record_grade stores this under features["actual"], so the measured dict is passed bare.
             features=changes.features.as_dict(),
@@ -211,6 +222,47 @@ class TrialRunner(Service):
             if checkout is None:
                 raise ValidationFailed(f"repository {repo.name!r} has no available checkout")
             return repo.name, Path(checkout.path)
+
+    def _escapes(self, trial: TrialOut, worktree: Path) -> tuple[str, list[Escape]]:
+        """Tool calls in the linked run's transcript that name a path outside the clone: (check status, escapes)."""
+        if trial.subagent_run_id is None:
+            return "no_run", []
+        with self.db.session() as session:
+            run = session.get(SubagentRun, trial.subagent_run_id)
+            if run is None:
+                return "no_run", []
+            transcript = run.transcript_path
+        if transcript is None or not Path(transcript).is_file():
+            return "no_transcript", []
+        roots = self._source_roots(trial.task_id, worktree)
+        return "checked", find_escapes(tool_calls(transcript), roots)
+
+    def _source_roots(self, task_id: str, clone: Path) -> list[str]:
+        """Checkout paths of the task's repository that a clone must not read: every non-managed checkout, primary
+        first, excluding the clone itself and any directory that contains it."""
+        with self.db.session() as session:
+            repo_id = session.scalars(
+                select(TaskRepository.repository_id)
+                .where(TaskRepository.task_id == task_id)
+                .order_by(TaskRepository.created_at)
+            ).first()
+            if repo_id is None:
+                return []
+            repo = session.get(Repository, repo_id)
+            assert repo is not None
+            checkouts = sorted(
+                (c for c in repo.checkouts if c.kind != "managed_worktree"),
+                key=lambda c: (not c.is_primary, c.created_at),
+            )
+            paths = [c.path for c in checkouts]
+        clone_text = normalize_path_text(str(clone)).rstrip("/")
+        roots: list[str] = []
+        for path in paths:
+            root_text = normalize_path_text(path).rstrip("/")
+            if clone_text == root_text or clone_text.startswith(root_text + "/"):
+                continue
+            roots.append(path)
+        return roots
 
     def _latest_run(self, trial_id: str) -> tuple[str, str | None, str | None] | None:
         """The most recent subagent run whose telemetry names this trial: (run id, attempt id, model)."""
@@ -301,4 +353,8 @@ def _flag_summary(flags: Mapping[str, Any]) -> str:
         parts.append("tests modified: " + ", ".join(flags["tests_modified"]))
     if "stubs" in flags:
         parts.append("stubs in: " + ", ".join(sorted({stub["path"] for stub in flags["stubs"]})))
+    if "escaped_clone" in flags:
+        parts.append(
+            "escaped clone via: " + ", ".join(sorted({escape["root"] for escape in flags["escaped_clone"]}))
+        )
     return "; ".join(parts)

@@ -155,6 +155,54 @@ def parse_transcript(path: str | Path) -> TranscriptStats | None:
     )
 
 
+@dataclass(frozen=True)
+class ToolCall:
+    name: str
+    input: dict[str, Any]
+    tool_use_id: str
+
+
+def tool_calls(path: str | Path) -> list[ToolCall]:
+    """Every tool call a subagent transcript made, one per distinct ``tool_use`` id, in first-seen order.
+
+    Blocks repeated across the lines of one message id collapse to one call (the last occurrence wins, as in
+    ``parse_transcript``). Synthetic messages are ignored. A missing or unreadable file gives an empty list.
+    """
+    try:
+        lines = Path(path).read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+    calls: dict[str, ToolCall] = {}
+    for number, line in enumerate(lines):
+        try:
+            record = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(record, dict) or record.get("type") != "assistant":
+            continue
+        message = record.get("message")
+        if not isinstance(message, dict) or message.get("model") == SYNTHETIC_MODEL:
+            continue
+        message_id = message.get("id")
+        if not isinstance(message_id, str):
+            message_id = f"line-{number}"
+        content = message.get("content")
+        for index, block in enumerate(content if isinstance(content, list) else []):
+            if not isinstance(block, dict) or block.get("type") != "tool_use":
+                continue
+            block_id = block.get("id")
+            if not isinstance(block_id, str):
+                block_id = f"{message_id}#{number}.{index}"
+            name = block.get("name")
+            tool_input = block.get("input")
+            calls[block_id] = ToolCall(
+                name=name if isinstance(name, str) else "unknown",
+                input=tool_input if isinstance(tool_input, dict) else {},
+                tool_use_id=block_id,
+            )
+    return list(calls.values())
+
+
 def _read_sidecar(transcript: Path) -> dict[str, Any]:
     sidecar = transcript.with_name(transcript.name.removesuffix(".jsonl") + ".meta.json")
     try:

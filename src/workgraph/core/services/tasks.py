@@ -1231,6 +1231,7 @@ class TaskService(Service):
         workspace: str | None,
         *,
         project: str | None = None,
+        repository: str | None = None,
         root: str | None = None,
         include_closed: bool = True,
     ) -> TaskGraph:
@@ -1259,6 +1260,14 @@ class TaskService(Service):
                     session.scalars(select(TaskProject.task_id).where(TaskProject.project_id == proj.id))
                 )
                 tasks = {k: v for k, v in tasks.items() if k in in_project}
+            if repository:
+                repo = resolve.repository(session, ws_id, repository, include_archived=True)
+                in_repo = set(
+                    session.scalars(
+                        select(TaskRepository.task_id).where(TaskRepository.repository_id == repo.id)
+                    )
+                )
+                tasks = {k: v for k, v in tasks.items() if k in in_repo}
             ids = list(tasks)
             projects_by_task: dict[str, builtins.list[str]] = defaultdict(list)
             for tid, pid in session.execute(

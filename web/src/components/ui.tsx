@@ -45,7 +45,7 @@ export function Spinner({ small }: { small?: boolean }) {
 
 export function Loading({ label: text = "Loading…" }: { label?: string }) {
   return (
-    <div className="flex items-center gap-2 p-6 text-slate-500">
+    <div className="flex items-center gap-2 p-6 text-slate-500" aria-busy="true">
       <Spinner /> {text}
     </div>
   );

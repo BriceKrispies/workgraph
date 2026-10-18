@@ -21,7 +21,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `workspace` | `create`, `list`, `show`, `use`, `archive`, `set --allowed-root` |
 | `project` | `create`, `list`, `show`, `update`, `add-repo`, `remove-repo` |
 | `repo` | `register`, `list`, `show`, `refresh`, `status`, `update`, `remove`, `remove-checkout`, `depend` |
-| `task` | `create`, `list`, `ready`, `show`, `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` |
+| `task` | `create`, `list`, `ready`, `show`, `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` (`--project`, `--repo`, `--open`) |
 | `stack` | `create PARENT`, `show PARENT` (repositories with base, integration branch and tip; children in merge order), `list [--all]`, `add PARENT TASK` and `remove PARENT TASK` (change the children of the active stack), `history PARENT` (the stack's events in order, with their verification runs), `integrate PARENT` (queues merging the ready children onto each repository's integration branch), `verify PARENT` (queues full verification of the integration tip, bisecting and ejecting a failing child). Acceptance goes through `task`: `task accept PARENT` (or `--manual --reason`) lands a verified stack on the default branch, refused with `landing: deferred` when the default branch moved and the stack is rebuilt to verify again; `task accept CHILD` accepts one child alone and removes it from its stack; `task reject PARENT` leaves the stack as it is (see [Git](git.md#stack-landing)) |
 | `attempt` | `list`, `show`, `create`, `finish`, `compare`, `manifests` |
 | `agent` | `list`, `add-command` |
@@ -36,6 +36,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `automation` | `list`, `create`, `update`, `show`, `enable`, `disable`, `trigger`, `preview`, `runs`, `notifications`, `catalog`, `process` |
 | `claude` | `install [--mcp]`, `uninstall`, `status`, `replay`, `bind`, `unbind`, `sessions`, `mcp-config`, `hook` |
 | `config` | `show`, `path`, `validate`, `migrate`, `set` |
+| `ui` | `screenshot [PAGE]`: capture a page of the running web UI to a PNG (see [below](#ui-screenshots)) |
 | `backup`, `restore` | consistent online backup zip; verified restore with safety copy and forward migration |
 | `export`, `import` | `export workspace FILE.jsonl`, `export analytics`; `import FILE.jsonl` |
 | `events` | `list`, `verify` |
@@ -62,3 +63,23 @@ uv run workgraph verify run WG-12 --tier fast
 ```
 
 All commands are single-line and work unchanged in PowerShell, bash, zsh and Nushell.
+
+## UI screenshots
+
+`workgraph ui screenshot PAGE -o FILE.png` loads a page of the web UI served by `workgraph serve` in a
+headless browser and writes a PNG. `PAGE` is the UI path with its query string, so any filtered view
+can be captured:
+
+```sh
+workgraph ui screenshot "graph?repo=rho&linked=1" -o rho-graph.png --width 2400 --height 1500 --scale 2
+workgraph ui screenshot tasks/WG-12 -o wg-12.png
+```
+
+No browser is bundled: Chrome, Edge or Chromium is found on `PATH` or in its standard install location,
+or named with `--browser` / `WORKGRAPH_BROWSER`. The capture waits until nothing on the page is marked
+`aria-busy` and, for pages that load their own data, until that data has rendered (`--wait-for SELECTOR`
+overrides this), then `--settle` seconds. The server address comes from the config unless `--url` is given.
+
+The graph page reads its filters from the URL: `project`, `repo`, `open=1` (hide accepted and cancelled
+tasks), `linked=1` (only tasks with a dependency, parent or relation edge) and `relations=0`. Tasks with no
+dependency or parent edge are laid out in a grid below the dependency layers.

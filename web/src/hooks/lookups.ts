@@ -3,10 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { get } from "../api/client";
 import type { GraphEdge, GraphNode, Project, Repository } from "../api/types";
 
-export function useGraph(ws: string, project?: string) {
+export function useGraph(ws: string, project?: string, repository?: string) {
   return useQuery({
-    queryKey: ["graph", ws, project ?? ""],
-    queryFn: () => get<{ nodes: GraphNode[]; edges: GraphEdge[] }>(`/ws/${ws}/graph`, { project }),
+    queryKey: ["graph", ws, project ?? "", repository ?? ""],
+    queryFn: () => get<{ nodes: GraphNode[]; edges: GraphEdge[] }>(`/ws/${ws}/graph`, { project, repository }),
   });
 }
 

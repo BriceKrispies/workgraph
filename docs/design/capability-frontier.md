@@ -123,6 +123,9 @@ threshold in few trials, and starting at the top band pushes the model past its 
    above its threshold. If the control also fails a task, the brief or oracle is suspect, not
    Haiku's limit.
 
+`workgraph experiment next EXP` plans these steps from the recorded history: it returns the pending trial if
+one is planned or running, otherwise creates the next trial, or reports done with the reason.
+
 **Trial budget per repository**: 40 Haiku trials (24 staircase + 16 refine, of which 6 are
 repeats) and 10 control trials, so 50 trials per repository and 100 across E1-rho (WG-1125) and
 E1-workgraph (WG-1126). Tokens are recorded per trial and reported, not capped. This size gives
@@ -134,6 +137,7 @@ production leaf (below), so the budget is a starting point, not the final sample
 - Pass rate per band with **Wilson** intervals.
 - **Logistic regression** of pass on log2 size per arm and repository; the sizes at 50% and 80%
   come from the fit, with **bootstrap** intervals resampling by task with a fixed seed.
+- `workgraph experiment report EXP` prints these per arm (bands, fits, usage, causes), and `--json` emits the same data.
 - Invalid trials are excluded from every fit and listed with their cause.
 - **Calibration** of any predicted probability is reported as a Brier score and reliability bins.
 

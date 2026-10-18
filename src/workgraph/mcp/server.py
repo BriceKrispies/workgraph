@@ -244,6 +244,26 @@ def build_server(
         }
 
     @tool(
+        "experiment_next",
+        "Plan the next trial of an experiment: returns the pending trial if one is planned or running, otherwise "
+        "creates the next trial from the protocol, or reports done with the reason (requires experiment:write).",
+    )
+    def experiment_next(
+        experiment: Annotated[str, Field(description="Experiment slug or UUID")], workspace: Workspace = None
+    ) -> dict[str, Any]:
+        return _dump(app.trial_planner.next(ctx(), workspace, experiment))
+
+    @tool(
+        "experiment_report",
+        "Summarise an experiment per arm: pass rates by band with Wilson intervals, the size fit with bootstrap "
+        "intervals, token usage by outcome, failure causes and invalid trials.",
+    )
+    def experiment_report(
+        experiment: Annotated[str, Field(description="Experiment slug or UUID")], workspace: Workspace = None
+    ) -> dict[str, Any]:
+        return _dump(app.trial_planner.report(ctx(), workspace, experiment))
+
+    @tool(
         "trial_classify",
         "Record the failure cause of a failed or invalid experiment trial and its source (requires experiment:write).",
     )

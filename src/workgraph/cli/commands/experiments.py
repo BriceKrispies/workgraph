@@ -8,6 +8,7 @@ import typer
 
 from workgraph.cli.common import (
     STATE,
+    console,
     emit,
     handle_errors,
     kv,
@@ -203,6 +204,76 @@ def trial_classify(
         STATE.app().experiments.classify(STATE.ctx(), ws(workspace), trial, cause, source, notes),
         _render_trial,
     )
+
+
+def _render_next(out: dict[str, Any]) -> None:
+    trial = out["trial"]
+    if trial is None:
+        console.print(f"done: {out['reason']}")
+        return
+    if out["reason"] == "pending":
+        console.print(f"pending: {trial.task_key} ({trial.phase}) is not graded yet")
+    _render_trial(trial)
+
+
+def _fit_line(fit: dict[str, Any] | None) -> str:
+    if fit is None:
+        return "fit: not available"
+
+    def size(value: float | None, ci: list[float] | None) -> str:
+        if value is None:
+            return "n/a"
+        interval = f" [{ci[0]:.0f}, {ci[1]:.0f}]" if ci is not None else " [n/a]"
+        return f"{value:.0f} lines{interval}"
+
+    return f"50%: {size(fit['lines50'], fit['ci50'])}, 80%: {size(fit['lines80'], fit['ci80'])}"
+
+
+def _render_report(out: dict[str, Any]) -> None:
+    exp = out["experiment"]
+    step = out["step"]
+    console.print(f"experiment {exp['slug']} ({exp['status']}): phase {step['phase']}, band {step['band']}")
+    for arm in out["arms"]:
+        console.print(f"\n[bold]{arm['arm']}[/bold]")
+        table(
+            [
+                (
+                    b["band"],
+                    b["n"],
+                    b["passes"],
+                    f"{b['rate']:.2f}",
+                    f"[{b['wilson'][0]:.2f}, {b['wilson'][1]:.2f}]",
+                )
+                for b in arm["bands"]
+            ],
+            ["band", "n", "passes", "rate", "wilson 95%"],
+        )
+        fit = arm["fit"]
+        console.print(_fit_line(fit) if fit is not None else f"fit: {arm['fit_reason']}")
+        for outcome, usage in arm["usage"].items():
+            console.print(
+                f"usage {outcome}: n={usage['n']} missing={usage['missing_usage']} "
+                f"output_tokens median={usage['output_tokens']['median']} "
+                f"turns median={usage['turns']['median']} tool_errors median={usage['tool_errors']['median']}"
+            )
+        causes = ", ".join(f"{k}={v}" for k, v in arm["failure_causes"].items()) or "none"
+        console.print(f"failure causes: {causes}")
+        for item in arm["invalid"]:
+            console.print(f"invalid: seq {item['seq']} {item['task_key']} {item['failure_cause'] or ''}")
+
+
+@experiment_app.command("next")
+@handle_errors
+def experiment_next(experiment: str, workspace: str | None = workspace_option()) -> None:
+    """Plan the next trial: the pending trial, a newly created one, or why the experiment is done."""
+    emit(STATE.app().trial_planner.next(STATE.ctx(), ws(workspace), experiment), _render_next)
+
+
+@experiment_app.command("report")
+@handle_errors
+def experiment_report(experiment: str, workspace: str | None = workspace_option()) -> None:
+    """Summarise an experiment per arm: bands, size fit, usage, failure causes and invalid trials."""
+    emit(STATE.app().trial_planner.report(STATE.ctx(), ws(workspace), experiment), _render_report)
 
 
 @replay_app.command("scan")

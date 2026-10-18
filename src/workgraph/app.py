@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from workgraph.core.services.workspaces import WorkspaceService
     from workgraph.experiments.planner import TrialPlanner
     from workgraph.experiments.pool import ReplayPool
+    from workgraph.experiments.predictor import Predictor
     from workgraph.experiments.runner import TrialRunner
     from workgraph.integrations.agents.registry import AgentRegistry
     from workgraph.integrations.claude_code.ingest import HookIngestor
@@ -176,6 +177,12 @@ class Workgraph:
         from workgraph.experiments.runner import TrialRunner
 
         return TrialRunner(self)
+
+    @cached_property
+    def predictor(self) -> Predictor:
+        from workgraph.experiments.predictor import Predictor
+
+        return Predictor(self)
 
     @cached_property
     def history(self) -> HistoryService:

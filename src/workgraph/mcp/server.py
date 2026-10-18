@@ -22,7 +22,7 @@ from workgraph import __version__
 from workgraph.analytics.service import AnalyticsFilters, AnalyticsQuery
 from workgraph.app import Workgraph
 from workgraph.core.context import RequestContext
-from workgraph.core.errors import NotFoundError, WorkgraphError
+from workgraph.core.errors import NotFoundError, ValidationFailed, WorkgraphError
 from workgraph.core.models.enums import (
     AccessMode,
     FailureCause,
@@ -262,6 +262,79 @@ def build_server(
         experiment: Annotated[str, Field(description="Experiment slug or UUID")], workspace: Workspace = None
     ) -> dict[str, Any]:
         return _dump(app.trial_planner.report(ctx(), workspace, experiment))
+
+    @tool(
+        "experiment_fit",
+        "Fit the success predictor for one model over all graded trials of every experiment, bootstrap it, and "
+        "store the fit with its data cutoff and trial ids (requires experiment:write).",
+    )
+    def experiment_fit(
+        model: Annotated[str, Field(description="Model id the trials ran with, e.g. claude-haiku-5-5")],
+        repo_penalty: Annotated[
+            float, Field(ge=0, description="L2 penalty on each repository intercept")
+        ] = 1.0,
+        feature_penalty: Annotated[float, Field(ge=0, description="L2 penalty on each size feature")] = 0.01,
+        samples: Annotated[
+            int, Field(ge=0, le=5000, description="Bootstrap refits stored for intervals")
+        ] = 200,
+        seed: int = 0,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return _dump(
+            app.predictor.fit(
+                ctx(),
+                workspace,
+                model,
+                repo_penalty=repo_penalty,
+                feature_penalty=feature_penalty,
+                samples=samples,
+                seed=seed,
+            )
+        )
+
+    @tool(
+        "experiment_predict",
+        "Predict P(success) for a model with an interval, labelled as an inference and naming its fit. Give either "
+        "task (reads metadata contract.predicted) or repository, src_lines, src_files and packages. The fit is "
+        "the latest one for the model unless fit is given.",
+    )
+    def experiment_predict(
+        model: Annotated[str, Field(description="Model id to predict for")],
+        task: Annotated[
+            str | None, Field(description="Task key or UUID with metadata contract.predicted")
+        ] = None,
+        repository: Annotated[
+            str | None, Field(description="Repository name or id (task form: ignored)")
+        ] = None,
+        src_lines: Annotated[float | None, Field(ge=0, description="Predicted non-test source lines")] = None,
+        src_files: Annotated[float | None, Field(ge=0, description="Predicted source files touched")] = None,
+        packages: Annotated[list[str] | None, Field(description="Packages touched")] = None,
+        fit: Annotated[
+            str | None, Field(description="Predictor fit id; default the latest for the model")
+        ] = None,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        if task is not None:
+            return _dump(app.predictor.predict_task(ctx(), workspace, model, task, fit_id=fit))
+        missing = [
+            name
+            for name, value in (
+                ("repository", repository),
+                ("src_lines", src_lines),
+                ("src_files", src_files),
+                ("packages", packages),
+            )
+            if value is None
+        ]
+        if missing or repository is None or src_lines is None or src_files is None or packages is None:
+            raise ValidationFailed(
+                f"experiment_predict needs task or all of the features; missing {', '.join(missing)}"
+            )
+        return _dump(
+            app.predictor.predict(
+                ctx(), workspace, model, repository, src_lines, src_files, packages, fit_id=fit
+            )
+        )
 
     @tool(
         "trial_classify",

@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from workgraph.persistence.orm.base import Base, created_col, pk, updated_col
@@ -57,3 +57,28 @@ class ExperimentTrial(Base):
     created_at: Mapped[datetime] = created_col()
     started_at: Mapped[datetime | None] = mapped_column(default=None)
     graded_at: Mapped[datetime | None] = mapped_column(default=None)
+
+
+class PredictorFit(Base):
+    """A success model fitted over graded trials: its coefficients, the trials it used and bootstrap samples."""
+
+    __tablename__ = "predictor_fits"
+
+    id: Mapped[str] = pk()
+    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id", ondelete="RESTRICT"), index=True)
+    model: Mapped[str] = mapped_column(String(200))
+    created_at: Mapped[datetime] = created_col()
+    # The latest graded_at among the trials the fit used.
+    data_cutoff: Mapped[datetime | None] = mapped_column(default=None)
+    trial_ids: Mapped[list[str]] = mapped_column(default=list)
+    feature_names: Mapped[list[str]] = mapped_column(default=list)
+    # Repository ids with an intercept, in coefficient order (after the features).
+    repositories: Mapped[list[str]] = mapped_column(default=list)
+    # Intercept first, then the features, then one indicator per repository.
+    coef: Mapped[list[Any]] = mapped_column(default=list)
+    penalty: Mapped[list[Any]] = mapped_column(default=list)
+    n: Mapped[int] = mapped_column(Integer)
+    converged: Mapped[bool] = mapped_column(Boolean, default=False)
+    metrics: Mapped[dict[str, Any]] = mapped_column(default=dict)
+    # Bootstrap refits: one coefficient vector (same layout as ``coef``) per converged resample.
+    samples: Mapped[list[Any]] = mapped_column(default=list)

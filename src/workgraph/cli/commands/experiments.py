@@ -21,6 +21,7 @@ from workgraph.cli.common import (
     ws,
 )
 from workgraph.core.errors import ValidationFailed
+from workgraph.core.models.schemas import PredictionOut, PredictorFitOut
 
 experiment_app = typer.Typer(
     help="Create, freeze and inspect experiments (pinned protocols measured by trials).",
@@ -414,3 +415,100 @@ def replay_create(
             ["sha", "status", "task", "reason"],
         ),
     )
+
+
+def _render_fit(fit: PredictorFitOut) -> None:
+    kv(
+        [
+            ("fit", fit.id),
+            ("model", fit.model),
+            ("data cutoff", when(fit.data_cutoff) or ""),
+            ("n", fit.n),
+            ("converged", "yes" if fit.converged else "no"),
+            ("in-sample brier", f"{fit.metrics.get('brier', 0.0):.4f}"),
+            ("passes / fails", f"{fit.metrics.get('n_pass', 0)} / {fit.metrics.get('n_fail', 0)}"),
+            ("repositories", ", ".join(fit.repositories) or "none"),
+            ("bootstrap samples", len(fit.samples)),
+        ],
+        title=f"predictor fit for {fit.model}",
+    )
+
+
+def _render_prediction(out: PredictionOut) -> None:
+    interval = (
+        "none (fewer than 20 bootstrap samples)"
+        if out.low is None or out.high is None
+        else f"95% {out.low:.3f} to {out.high:.3f}"
+    )
+    kv(
+        [
+            ("probability", f"{out.probability:.3f}"),
+            ("interval", interval),
+            ("repository", out.repository or "none"),
+            ("repository in fit", "yes" if out.repository_known else "no (shared estimate)"),
+            ("fit", out.fit_id),
+            ("data cutoff", when(out.data_cutoff) or ""),
+            ("n", out.n),
+        ],
+        title=f"{out.model} success, inference",
+    )
+
+
+@experiment_app.command("fit")
+@handle_errors
+def experiment_fit(
+    model: str = typer.Option(..., "--model", help="Model id the trials ran with, e.g. claude-haiku-5-5"),
+    repo_penalty: float = typer.Option(1.0, "--repo-penalty", help="L2 penalty on each repository intercept"),
+    feature_penalty: float = typer.Option(0.01, "--feature-penalty", help="L2 penalty on each size feature"),
+    samples: int = typer.Option(200, "--samples", help="Bootstrap refits stored for intervals"),
+    seed: int = typer.Option(0, "--seed", help="Bootstrap random seed"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Fit the success predictor for one model over all graded trials, and store the fit."""
+    emit(
+        STATE.app().predictor.fit(
+            STATE.ctx(),
+            ws(workspace),
+            model,
+            repo_penalty=repo_penalty,
+            feature_penalty=feature_penalty,
+            samples=samples,
+            seed=seed,
+        ),
+        _render_fit,
+    )
+
+
+@experiment_app.command("predict")
+@handle_errors
+def experiment_predict(
+    model: str = typer.Option(..., "--model", help="Model id to predict for"),
+    task: str | None = typer.Option(
+        None, "--task", help="Task whose metadata contract.predicted gives the features"
+    ),
+    repo: str | None = typer.Option(None, "--repo", help="Repository name or id"),
+    lines: float | None = typer.Option(None, "--lines", help="Predicted non-test source lines"),
+    files: float | None = typer.Option(None, "--files", help="Predicted source files touched"),
+    packages: str | None = typer.Option(
+        None, "--packages", help="Comma-separated packages touched (may be empty)"
+    ),
+    fit: str | None = typer.Option(None, "--fit", help="Fit id; defaults to the latest fit for the model"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Predict the probability of success, with an interval, labelled as an inference."""
+    app = STATE.app()
+    ctx = STATE.ctx()
+    if task is not None:
+        if any(value is not None for value in (repo, lines, files, packages)):
+            raise ValidationFailed("give either --task or --repo, --lines, --files and --packages, not both")
+        out = app.predictor.predict_task(ctx, ws(workspace), model, task, fit_id=fit)
+    else:
+        given = {"--repo": repo, "--lines": lines, "--files": files, "--packages": packages}
+        missing = [flag for flag, value in given.items() if value is None]
+        if missing or repo is None or lines is None or files is None or packages is None:
+            raise ValidationFailed(
+                f"predict needs --task or all of --repo, --lines, --files, --packages; missing {', '.join(missing)}"
+            )
+        names = [name.strip() for name in packages.split(",") if name.strip()]
+        out = app.predictor.predict(ctx, ws(workspace), model, repo, lines, files, names, fit_id=fit)
+    emit(out, _render_prediction)

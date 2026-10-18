@@ -47,6 +47,8 @@ REQUIRED_TOOLS = {
     "stack_verify",
     "experiment_get",
     "experiment_list",
+    "experiment_fit",
+    "experiment_predict",
     "trial_classify",
     "task_link_commit",
     "task_report_progress",

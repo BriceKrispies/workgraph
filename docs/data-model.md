@@ -56,6 +56,7 @@ erDiagram
 | `change_sets`, `change_set_items` | Cross-repository logical changes with independent per-repository status. |
 | `stacks`, `stack_repositories`, `stack_items` | A parent task's children integrated as one unit: base commits per repository and per-child integration state. See [Stacks](#stacks). |
 | `experiments`, `experiment_trials` | Measured experiments: a protocol pinned before its first trial, and one row per trial (task, attempt, arm, requested and actual model, outcome, failure cause). See [Experiments](#experiments). |
+| `predictor_fits` | A success model fitted over graded trials of one model: coefficients and penalties, the feature and repository layout, the data cutoff, the trial ids used, in-sample metrics and bootstrap coefficient samples. See [Experiments](#experiments). |
 | `commits`, `commit_file_changes`, `commit_symbols`, `commit_analyses` | Git metadata, per-file stats, Tree-sitter symbols and analysis provenance (no diff payloads). |
 | `commit_task_links` | Attribution with `source` (explicit, execution_context, worktree, trailer, message_inference, rewrite_reconciliation), `confidence` and `evidence`. |
 | `commit_equivalences` | Rebased/amended (`rewrite`) or cherry-picked commits. |
@@ -106,6 +107,11 @@ of every fit. `seq` orders trials within an experiment. `features` holds the pre
 creation) and the actual ones (under `actual`, at grading). A trial moves `planned` -> `running` ->
 `graded` (or `invalid`). `outcome` is `pass` or `fail`, and a failure cause is recorded with its
 source (`human`, `agent` or `mechanical`). Trial changes only happen while the experiment is running.
+
+`predictor_fits` rows are immutable. Each one stores the logistic fit of pass on log2 source lines, log2 files and
+packages touched, with one repository intercept per repository (shrunk by its own L2 penalty), the latest graded
+`graded_at` among its trials as `data_cutoff`, and the `trial_ids` it used. `coef` is intercept first, then the features,
+then one indicator per entry of `repositories`. `samples` holds the converged bootstrap refits used for prediction intervals.
 
 ## Migrations
 

@@ -161,6 +161,8 @@ history (the staircase with a smaller budget) to set its intercept.
 predicted features recorded before it runs and outcome and actual features afterwards. The
 predictor's data keeps growing as it is used.
 
+Commands: `workgraph experiment fit --model M` stores a fit, and `workgraph experiment predict --model M (--task TASK | --repo R --lines N --files F --packages P)` returns the labelled inference with its fit id.
+
 ## Breakdown procedure (WG-1124)
 
 Version `breakdown-v1`. Each step names the command that performs it.

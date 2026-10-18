@@ -542,12 +542,14 @@ def validate(
     run_env = {**os.environ, **(env or {})}
     root = Path(tempfile.mkdtemp(prefix="wg-replay-", dir=workdir))
     try:
-        base = _run_oracle(git, base_ref, root / "base", candidate.oracle, timeout, run_env)
-        if all(code == 0 for code in base):
-            return Validation(ok=False, reason="oracle_green_at_base", base=base, solution=())
+        # The solution runs first: commits that were red when made are the commonest rejection, and checking
+        # them first skips the base run (a full build in a compiled language) for every one of them.
         solution = _run_oracle(git, candidate.sha, root / "solution", candidate.oracle, timeout, run_env)
         if any(code != 0 for code in solution):
-            return Validation(ok=False, reason="oracle_red_at_solution", base=base, solution=solution)
+            return Validation(ok=False, reason="oracle_red_at_solution", base=(), solution=solution)
+        base = _run_oracle(git, base_ref, root / "base", candidate.oracle, timeout, run_env)
+        if all(code == 0 for code in base):
+            return Validation(ok=False, reason="oracle_green_at_base", base=base, solution=solution)
         return Validation(ok=True, reason=None, base=base, solution=solution)
     finally:
         shutil.rmtree(root, ignore_errors=True)

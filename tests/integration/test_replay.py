@@ -357,7 +357,7 @@ def test_validate_rejects_green_base(make_repo: Callable[..., GitRepo], tmp_path
 
     assert result.ok is False
     assert result.reason == "oracle_green_at_base"
-    assert result.solution == ()
+    assert result.solution and all(code == 0 for code in result.solution)
     assert len(_worktrees(repo)) == 1
     assert list(workdir.iterdir()) == []
 
@@ -381,6 +381,7 @@ def test_validate_rejects_red_solution(make_repo: Callable[..., GitRepo], tmp_pa
     assert result.ok is False
     assert result.reason == "oracle_red_at_solution"
     assert all(code != 0 for code in result.solution)
+    assert result.base == ()  # the solution runs first, so a red solution skips the base run
     assert len(_worktrees(repo)) == 1
 
 

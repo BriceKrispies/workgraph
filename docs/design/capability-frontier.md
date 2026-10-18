@@ -91,7 +91,10 @@ commits in every band from 2^3 to 2^12.
 - no stub in added lines: `todo!`, `unimplemented!`, `NotImplementedError`, TODO-only bodies.
   This is the WG-106 failure, where Haiku forced every node complete instead of running it.
 
-`pass` requires all three. Exit codes, flags and the actual diff features are stored on the trial.
+- no tool call in the subagent's transcript names a path in the repository's own checkout
+  (**escaped_clone**, WG-1129).
+
+`pass` requires all four. Exit codes, flags and the actual diff features are stored on the trial.
 
 Every failed trial gets one **failure cause**, with its source (`mechanical`, `agent`, `human`):
 

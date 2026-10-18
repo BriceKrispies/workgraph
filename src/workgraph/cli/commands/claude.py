@@ -120,6 +120,18 @@ def replay(limit: int = typer.Option(1000)) -> None:
     emit(STATE.app().hooks.replay_spool(limit=limit), lambda r: kv(r.items(), title="replay"))
 
 
+@claude_app.command("backfill-transcripts")
+@handle_errors
+def backfill_transcripts(
+    limit: int | None = typer.Option(None, help="Process at most this many subagent runs"),
+) -> None:
+    """Fill subagent model, usage and task links from transcripts (idempotent)."""
+    emit(
+        STATE.app().hooks.backfill_transcripts(STATE.ctx(), limit=limit),
+        lambda r: kv(r.items(), title="backfill-transcripts"),
+    )
+
+
 @claude_app.command("bind")
 @handle_errors
 def bind(

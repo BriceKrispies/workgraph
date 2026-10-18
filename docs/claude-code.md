@@ -75,3 +75,32 @@ but never become authoritative:
 Subagents of a bound session become nested attempts (`parent_attempt_id`) that finish on
 `SubagentStop`. `TaskCreated`/`TaskCompleted` populate `agent_internal_tasks`; one is linked to a
 Workgraph task only if its subject names a task key explicitly.
+
+### Transcript telemetry
+
+Claude Code writes each subagent's transcript (JSONL) and an `agent-<id>.meta.json` sidecar. On
+`SubagentStop` Workgraph reads both (`integrations/claude_code/transcript.py`, stdlib only) and
+records what actually ran, which the hook payload does not carry:
+
+- the model that ran (`subagent_runs.model`) and the requested alias (`requested_model`, from the sidecar),
+- token usage summed per API message, turns, tool calls per name, tool errors and prompt length,
+- a `Task-ID: <KEY>` marker in the first prompt links the run to that task (`subagent_runs.task_id`),
+  but only when exactly one task in scope has that key; `Trial-ID:` markers are recorded as well.
+
+Dedupe: one API message is split over several lines sharing `message.id`. Usage comes from the line
+with the largest `output_tokens` per message id (ties: the last line); tool uses are counted once per
+`tool_use` id; `<synthetic>` messages are ignored.
+
+If the run has a child attempt, that attempt gets the model and usage (`usage_source =
+claude_code_transcript`). If the run has no attempt but a task was linked, a finished top-level
+attempt is created for that task (adapter `claude_code_subagent`). A missing or unreadable transcript
+leaves the run unchanged.
+
+Transcripts that were not readable when the hook fired (or that predate this) can be applied later:
+
+```sh
+uv run workgraph claude backfill-transcripts [--limit N]
+```
+
+It processes runs with a transcript path and no model, prints `parsed`, `missing`, `linked` and
+`attempts_created`, and is idempotent.

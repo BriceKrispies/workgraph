@@ -1,0 +1,20 @@
+{
+  "id": "10150",
+  "key": "ABC-150",
+  "self": "https://acme.atlassian.net/rest/api/3/issue/10150",
+  "fields": {
+    "summary": "Legacy invoice export",
+    "description": null,
+    "priority": {"id": "5", "name": "Lowest"},
+    "assignee": null,
+    "status": {"name": "Done", "statusCategory": {"key": "done", "name": "Done"}},
+    "resolution": {"id": "10001", "name": "Won't Do"},
+    "issuetype": {"name": "Task"},
+    "project": {"key": "ABC", "name": "Billing"},
+    "parent": null,
+    "issuelinks": [],
+    "customfield_10042": null,
+    "labels": [],
+    "updated": "2026-10-17T16:40:00.000+0000"
+  }
+}

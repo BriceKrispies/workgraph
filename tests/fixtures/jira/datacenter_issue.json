@@ -1,0 +1,29 @@
+{
+  "id": "20417",
+  "key": "OPS-7",
+  "self": "https://jira.corp.example/rest/api/2/issue/20417",
+  "fields": {
+    "summary": "Rotate the auth signing key",
+    "description": "h2. Goal\n\nRotate the *signing key* without downtime.\n\n* step one\n* step two",
+    "priority": {"id": "3", "name": "Major"},
+    "assignee": null,
+    "status": {"name": "To Do", "statusCategory": {"key": "new", "name": "To Do"}},
+    "resolution": null,
+    "issuetype": {"name": "Task"},
+    "project": {"key": "OPS", "name": "Operations"},
+    "parent": null,
+    "issuelinks": [
+      {
+        "id": "30001",
+        "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
+        "inwardIssue": {"id": "20401", "key": "OPS-3", "fields": {"summary": "Vault upgrade"}}
+      }
+    ],
+    "customfield_11000": [
+      "https://github.com/acme/svc-auth/pull/9",
+      "https://github.com/acme/svc-auth/pull/10"
+    ],
+    "labels": ["security"],
+    "updated": "2026-10-16T08:00:00.000+0000"
+  }
+}

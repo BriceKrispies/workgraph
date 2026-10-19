@@ -1,0 +1,26 @@
+{
+  "errors": [],
+  "configErrors": [],
+  "detail": [
+    {
+      "pullRequests": [
+        {
+          "id": "#42",
+          "name": "ABC-123 Add retry budget",
+          "status": "MERGED",
+          "url": "https://github.com/acme/svc-billing/pull/42",
+          "branch": "ABC-123-retry-budget",
+          "repositoryName": "acme/svc-billing"
+        },
+        {
+          "id": "#43",
+          "name": "ABC-123 Retry budget config",
+          "status": "OPEN",
+          "url": "https://github.com/acme/svc-api/pull/43",
+          "branch": "ABC-123-retry-config",
+          "repositoryName": "acme/svc-api"
+        }
+      ]
+    }
+  ]
+}

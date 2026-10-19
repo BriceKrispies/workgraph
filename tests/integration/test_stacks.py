@@ -12,7 +12,7 @@ from workgraph.core.errors import (
     ValidationFailed,
 )
 from workgraph.core.models.enums import StackItemState
-from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
+from workgraph.core.models.schemas import RepositoryRegister, TaskCreate, TaskUpdate
 from workgraph.persistence.orm import Event, Stack
 from workgraph.security.permissions import DEFAULT_AGENT_PERMISSIONS, Permission
 
@@ -140,6 +140,17 @@ def test_readmit_requeues_an_ejected_or_pending_child(app, human, ws, tree):
     app.stacks.set_item_state(human, ws, parent.key, first.key, StackItemState.MERGED)
     with pytest.raises(ConflictError):
         app.stacks.readmit_item(human, ws, parent.key, first.key)
+
+
+def test_readmit_returns_an_ejected_task_to_awaiting_verification(app, human, ws, tree):
+    _, parent, first, _ = tree
+    app.stacks.create(human, ws, parent.key)
+    for state in (StackItemState.READY, StackItemState.MERGED, StackItemState.EJECTED):
+        app.stacks.set_item_state(human, ws, parent.key, first.key, state)
+    # The ejection sent the task back to ready, as a bisected ejection does.
+    app.tasks.update(human, ws, first.key, TaskUpdate(status="ready"))
+    app.stacks.readmit_item(human, ws, parent.key, first.key)
+    assert app.tasks.get(human, ws, first.key).status == "awaiting_verification"
 
 
 def test_child_in_another_repository_is_rejected(app, human, ws, tree, make_repo):

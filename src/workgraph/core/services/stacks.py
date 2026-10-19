@@ -25,6 +25,7 @@ from workgraph.core.models.enums import (
     STACK_DEPENDENCY_SATISFIED_STATES,
     AttemptStatus,
     StackItemState,
+    TaskStatus,
 )
 from workgraph.core.models.schemas import EventOut, StackItemOut, StackOut, StackRepositoryOut
 from workgraph.core.policies.stacks import REMOVABLE_STATES, check_stack_item_transition
@@ -492,6 +493,15 @@ class StackService(Service):
                     details={"task": child.key, "state": str(state)},
                 )
             self.transition_item(session, ctx, stack, parent, child, item, StackItemState.READY, item.detail)
+            # An ejection returned the task to ready; its submitted change comes back with the item, so
+            # the task goes back to awaiting verification (through running, as the lifecycle requires),
+            # or the stack could verify and still refuse to land it.
+            if TaskStatus(child.status) == TaskStatus.READY:
+                reason = f"readmitted to stack {parent.key}"
+                self.app.tasks._transition(session, ctx, child, TaskStatus.RUNNING, reason=reason)
+                self.app.tasks._transition(
+                    session, ctx, child, TaskStatus.AWAITING_VERIFICATION, reason=reason
+                )
             return stack_out(session, stack)
 
     def mark_ready(self, ctx: RequestContext, task_id: str) -> None:

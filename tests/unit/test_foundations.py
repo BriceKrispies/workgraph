@@ -331,6 +331,12 @@ def test_check_spec_rejects_shell_unless_opted_in():
         CheckSpec(name="x", command=["pytest"], env={"bad name": "1"})
 
 
+def test_check_spec_error_exit_codes_default_to_none_and_round_trip():
+    assert CheckSpec(name="x", command=["pytest"]).error_exit_codes == []
+    spec = CheckSpec(name="x", command=["pytest"], error_exit_codes=[2, 5])
+    assert CheckSpec.model_validate(spec.model_dump(mode="json")) == spec
+
+
 # ------------------------------------------------------------------ git parsing
 
 

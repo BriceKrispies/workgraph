@@ -4,7 +4,8 @@ A check with ``baseline="absolute"`` fails whenever it does not pass. A check wi
 ``baseline="regression"`` fails only when its failures include one that the base does not already
 report: the base is measured by running the same check there, so nothing is written down as an
 exception list. A regression-mode check that times out, or that fails without any parsed failure
-signature, cannot be compared and counts as failing.
+signature, cannot be compared and counts as failing. A check with status ``error`` (it could not judge
+anything) counts as failing in either mode and is never compared with the base.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ class CheckOutcome:
     status: str
     signatures: list[str] = field(default_factory=list)
     run_id: str | None = None
+    excerpt: str = ""
 
 
 def regressions(
@@ -36,6 +38,10 @@ def regressions(
         if not check.required or check.status == "passed":
             continue
         signatures = list(check.failure_signatures)
+        if check.status == "error":
+            # Nothing was judged, so there is nothing to compare with the base.
+            found[check.name] = signatures
+            continue
         spec = specs.get(check.name)
         if spec is None or spec.baseline == "absolute":
             found[check.name] = signatures

@@ -7,7 +7,9 @@ Passing verifies every merged item and moves its child to ``awaiting_review``.
 Failing bisects the merge sequence. A probe checks out one prefix of the sequence in a detached
 bisect worktree per repository and runs only the checks that failed on the tip. A check in regression
 mode fails only on signatures the stack's base does not already report, so a red base does not block
-the stack. The first item whose prefix fails is ejected: its task returns to ready with the failure,
+the stack. A check that errors (it could not judge its revision, see ``error_exit_codes``) on the tip,
+on the base or on a probe stops the verification with ``stack.verification_errored``: nothing is
+ejected and nothing passes. The first item whose prefix fails is ejected: its task returns to ready with the failure,
 the items that depend on it go back to pending, and the integration branch is rebuilt from the base
 without it. Verification then runs again on the rebuilt tip. A failure on the base itself ejects
 nothing.
@@ -34,6 +36,7 @@ from workgraph.core.models.enums import (
     StackItemState,
     StackStatus,
     TaskStatus,
+    VerificationStatus,
     WorktreeStatus,
 )
 from workgraph.core.models.schemas import CommentCreate
@@ -68,7 +71,7 @@ from workgraph.persistence.orm import (
 )
 from workgraph.security.permissions import Permission, require
 from workgraph.verification.configs import ApplicableCheck, CheckSpec, applicable_checks
-from workgraph.verification.service import VerificationRunOut
+from workgraph.verification.service import CheckResultOut, VerificationRunOut
 
 # Items whose merges are on the integration branch. A conflicting item may hold merges in the
 # repositories that did integrate, so it stays in the merge sequence until it is fixed.
@@ -129,9 +132,28 @@ def _failed_checks(run: VerificationRunOut) -> dict[str, str | None]:
     }
 
 
+def _errored_checks(run: VerificationRunOut) -> list[CheckResultOut]:
+    """Required checks that could not judge anything. A run with one proves nothing about its revision."""
+    return [check for check in run.checks if check.required and check.status == VerificationStatus.ERROR]
+
+
+def _tail(excerpt: str, lines: int = 20) -> str:
+    return "\n".join(excerpt.splitlines()[-lines:])
+
+
 def _is_absolute(specs: dict[str, CheckSpec], name: str) -> bool:
     spec = specs.get(name)
     return spec is None or spec.baseline == "absolute"
+
+
+def _ran_with(run: VerificationRun, name: str, spec: CheckSpec) -> bool:
+    """Whether ``run`` ran the check ``name`` with exactly the current definition (its snapshot entry)."""
+    current = spec.model_dump(mode="json")
+    return any(
+        {key: value for key, value in entry.items() if key not in ("config_id", "config")} == current
+        for entry in run.config_snapshot
+        if entry.get("name") == name
+    )
 
 
 class StackVerifier(Service):
@@ -253,11 +275,31 @@ class StackVerifier(Service):
         )
         for path in paths.values():
             Git(path).run("clean", "-ffdx", check=False)
+        errored = _errored_checks(run)
+        if errored:
+            return self._verification_errored(
+                ctx,
+                stack_id,
+                run_id=run.id,
+                errors={check.name: _tail(check.output_excerpt) for check in errored},
+                stage="tip",
+            )
         if run.required_passed:
             return self._passed(ctx, stack_id, run_id=run.id, tips=tips, reason="full checks passed")
         specs = {check.spec.name: check.spec for check in checks}
         failed = _failed_checks(run)
-        base = self._base_outcomes(ctx, stack_id, parent_id, workspace_id, repos, targets, failed)
+        base = self._base_outcomes(ctx, stack_id, parent_id, workspace_id, repos, targets, failed, specs)
+        base_errors = {
+            name: outcome for name, outcome in base.items() if outcome.status == VerificationStatus.ERROR
+        }
+        if base_errors:
+            return self._verification_errored(
+                ctx,
+                stack_id,
+                run_id=next(iter(base_errors.values())).run_id,
+                errors={name: _tail(outcome.excerpt) for name, outcome in base_errors.items()},
+                stage="base",
+            )
         if not regressions(run, base, specs):
             tolerated = {
                 check.name: list(check.failure_signatures) for check in run.checks if check.name in failed
@@ -271,6 +313,32 @@ class StackVerifier(Service):
                 extra={"tolerated": tolerated},
             )
         return self._bisect(ctx, stack_id, parent_id, repos, targets, run, tips, base, specs)
+
+    # ------------------------------------------------------------------ errored
+
+    def _verification_errored(
+        self, ctx: RequestContext, stack_id: str, *, run_id: str, errors: dict[str, str], stage: str
+    ) -> dict[str, Any]:
+        """Stop when a check could not judge its revision: no pass, no bisection, no ejection.
+
+        ``errors`` maps each errored check to the tail of its output. The stack returns to ``integrating``
+        so that a new verification (or a fix to the check) can run; no item changes state.
+        """
+        names = sorted(errors)
+        reason = f"verification could not judge {', '.join(names)} (run {run_id}, {stage})"
+        with self.db.session(write=True) as session:
+            stack, _ = self._load(session, stack_id)
+            record_event(
+                session,
+                ctx,
+                event_type="stack.verification_errored",
+                entity_type="stack",
+                entity_id=stack.id,
+                workspace_id=stack.workspace_id,
+                data={"run_id": run_id, "stage": stage, "checks": names, "excerpt": errors, "reason": reason},
+            )
+            self.set_status(session, ctx, stack, StackStatus.INTEGRATING, reason=reason)
+        return {"status": "errored", "run_id": run_id, "checks": names, "stage": stage}
 
     # ------------------------------------------------------------------ pass
 
@@ -430,6 +498,15 @@ class StackVerifier(Service):
                 run = self._probe(
                     ctx, stack_id, parent_id, targets, bisect, shas, set(failing), in_scope, middle
                 )
+                errored = _errored_checks(run)
+                if errored:
+                    return self._verification_errored(
+                        ctx,
+                        stack_id,
+                        run_id=run.id,
+                        errors={check.name: _tail(check.output_excerpt) for check in errored},
+                        stage="bisect",
+                    )
                 passed = not regressions(run, base, specs)
                 with self.db.session(write=True) as session:
                     stack, _ = self._load(session, stack_id)
@@ -687,14 +764,16 @@ class StackVerifier(Service):
         repos: list[StackRepoBase],
         targets: list[IntegrationTarget],
         failed: dict[str, str | None],
+        specs: dict[str, CheckSpec],
     ) -> dict[str, CheckOutcome]:
         """How each failed check finished on the stack's base: from an earlier run at the base, else a new run.
 
-        ``failed`` maps each check name to the repository its tip result was recorded against.
+        ``failed`` maps each check name to the repository its tip result was recorded against. A new base
+        run that errors is returned as an ``error`` outcome, and the caller stops on it.
         """
         if not failed:
             return {}
-        outcomes = self._cached_outcomes(workspace_id, repos, failed)
+        outcomes = self._cached_outcomes(workspace_id, repos, failed, specs)
         missing = {name for name in failed if name not in outcomes}
         if missing:
             bases = {repo.name: repo.base_sha for repo in repos}
@@ -704,16 +783,23 @@ class StackVerifier(Service):
                 )
             for check in run.checks:
                 if check.name in missing and check.repository_id == failed[check.name]:
-                    outcomes[check.name] = CheckOutcome(check.status, list(check.failure_signatures), run.id)
+                    outcomes[check.name] = CheckOutcome(
+                        check.status, list(check.failure_signatures), run.id, check.output_excerpt
+                    )
         return outcomes
 
     def _cached_outcomes(
-        self, workspace_id: str, repos: list[StackRepoBase], failed: dict[str, str | None]
+        self,
+        workspace_id: str,
+        repos: list[StackRepoBase],
+        failed: dict[str, str | None],
+        specs: dict[str, CheckSpec],
     ) -> dict[str, CheckOutcome]:
         """Outcomes of the failed checks from the newest runs in the workspace whose manifest is at the bases.
 
-        Only the most recent ``_CACHE_SCAN_LIMIT`` runs are scanned. A result is taken only when both the
-        check name and the repository it was recorded against match.
+        Only the most recent ``_CACHE_SCAN_LIMIT`` runs are scanned. A result is taken only when the check
+        name and the repository it was recorded against match, the result did not error, and the run ran
+        the check with the current definition (same command, env, parser, baseline and so on).
         """
         found: dict[str, CheckOutcome] = {}
         with self.db.session() as session:
@@ -724,7 +810,7 @@ class StackVerifier(Service):
                 .limit(_CACHE_SCAN_LIMIT)
             ).all()
             for run in runs:
-                pending = [name for name in failed if name not in found]
+                pending = [name for name in failed if name not in found and name in specs]
                 if not pending:
                     break
                 manifest = session.get(RevisionManifest, run.manifest_id) if run.manifest_id else None
@@ -738,7 +824,13 @@ class StackVerifier(Service):
                 for row in rows:
                     if row.name in found or row.repository_id != failed[row.name]:
                         continue
-                    found[row.name] = CheckOutcome(row.status, list(row.failure_signatures), run.id)
+                    if row.status == VerificationStatus.ERROR or not _ran_with(
+                        run, row.name, specs[row.name]
+                    ):
+                        continue
+                    found[row.name] = CheckOutcome(
+                        row.status, list(row.failure_signatures), run.id, row.output_excerpt
+                    )
         return found
 
     def _probe(

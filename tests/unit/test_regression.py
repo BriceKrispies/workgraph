@@ -131,6 +131,24 @@ def test_a_check_missing_from_the_specs_is_judged_absolutely():
     assert regressions(run, base, {}) == {"suite": ["test:a"]}
 
 
+def test_an_errored_check_is_failing_in_absolute_mode_whatever_the_base_says():
+    run = _run(_check("suite", status="error"))
+    base = {"suite": CheckOutcome("error", [], "older")}
+    assert regressions(run, base, _specs(_spec("suite", "absolute"))) == {"suite": []}
+
+
+def test_an_errored_check_is_never_tolerated_in_regression_mode():
+    run = _run(_check("suite", status="error", signatures=["test:a"]))
+    base = {"suite": CheckOutcome("failed", ["test:a"])}
+    assert regressions(run, base, _specs(_spec("suite"))) == {"suite": ["test:a"]}
+    assert regressions(run, None, _specs(_spec("suite"))) == {"suite": ["test:a"]}
+
+
+def test_an_errored_optional_check_is_not_failing():
+    run = _run(_check("lint", status="error", required=False))
+    assert regressions(run, None, _specs(_spec("lint", "absolute"))) == {}
+
+
 def test_outcome_run_id_does_not_affect_the_judgement():
     run = _run(_check("suite", signatures=["test:a"]))
     base: dict[str, Any] = {"suite": CheckOutcome("failed", ["test:a"], run_id="older")}

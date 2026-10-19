@@ -248,6 +248,12 @@ def test_decision_replaces_a_pending_verdict(app, human, ws):
     assert "triage:needs-decision" not in task.tags and "needs-decision" not in task.tags
 
 
+def test_a_hand_set_needs_decision_tag_survives_triage(app, human, ws):
+    key = _task(app, human, ws, "Open question", tags=["needs-decision"])
+    _apply(app, human, ws, [{"key": key, "verdict": "unclear", "summary": "Not sure."}])
+    assert "needs-decision" in _detail(app, human, ws, key).tags
+
+
 def test_dry_run_changes_nothing_and_reports_like_real_run(app, human, ws):
     cancel = _task(app, human, ws, "Cancel me")
     split = _task(app, human, ws, "Split me", tags=["wg136"])

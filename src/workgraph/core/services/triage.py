@@ -232,7 +232,10 @@ def _apply_one(
     key = item.key
     verdict = item.verdict
     # A pending verdict being replaced: drop its tags so the task carries only the new one.
-    stale = [t for t in item.task.tags if t.startswith(TRIAGE_TAG_PREFIX) or t == "needs-decision"]
+    stale = [t for t in item.task.tags if t.startswith(TRIAGE_TAG_PREFIX)]
+    # The plain needs-decision tag is triage's only when triage set it; a hand-set one stays.
+    if f"{TRIAGE_TAG_PREFIX}needs-decision" in stale and "needs-decision" in item.task.tags:
+        stale.append("needs-decision")
     if stale:
         tasks.update(ctx, ws_id, key, TaskUpdate(remove_tags=stale))
 

@@ -105,7 +105,7 @@ class _RepoInfo:
     id: str
     name: str
     workspace_id: str
-    key_prefix: str
+    key_prefixes: tuple[str, ...]
     path: str
     tracked_branches: list[str] = field(default_factory=list)
     known_refs: dict[str, str] = field(default_factory=dict)
@@ -143,11 +143,26 @@ class GitService(Service):
                 r.name: r.sha
                 for r in session.scalars(select(RepositoryRef).where(RepositoryRef.repository_id == repo.id))
             }
+            # Every prefix a key in this workspace may carry: the local prefix, the prefix of
+            # tracker-synced keys (Jira project keys), and the projects of configured connections.
+            prefixes = {ws.key_prefix.upper()}
+            prefixes.update(
+                prefix.upper()
+                for prefix in session.scalars(
+                    select(func.substr(Task.key, 1, func.instr(Task.key, "-") - 1))
+                    .where(Task.workspace_id == ws.id, func.instr(Task.key, "-") > 0)
+                    .distinct()
+                )
+                if prefix
+            )
+            for connection in self.app.config.trackers.values():
+                if connection.workspace == ws.slug:
+                    prefixes.update(project.upper() for project in connection.projects)
             return _RepoInfo(
                 id=repo.id,
                 name=repo.name,
                 workspace_id=repo.workspace_id,
-                key_prefix=ws.key_prefix,
+                key_prefixes=tuple(sorted(prefixes)),
                 path=checkout.path,
                 tracked_branches=list(repo.tracked_branches or []),
                 known_refs=refs,
@@ -567,7 +582,7 @@ class GitService(Service):
         with self.db.session(write=True) as session:
             for commit in list(session.scalars(select(Commit).where(Commit.id.in_(commit_ids)))):
                 candidates = trailer_candidates(commit.trailers or [])
-                candidates += message_candidates(commit.message, info.key_prefix, commit.trailers or [])
+                candidates += message_candidates(commit.message, info.key_prefixes, commit.trailers or [])
                 for candidate in candidates:
                     try:
                         task = resolve.task(session, info.workspace_id, candidate.task_ref)

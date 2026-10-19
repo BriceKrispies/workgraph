@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy import select
 
+from workgraph.core.context import RequestContext
 from workgraph.core.models.schemas import ProjectCreate, RepositoryRegister, TaskCreate
 from workgraph.integrations.git.cli import Git
 from workgraph.persistence.orm import Commit, CommitEquivalence, CommitFileChange, CommitTaskLink
@@ -227,3 +228,26 @@ def test_revision_ranges_work_in_deeply_nested_checkouts(make_repo, tmp_path):
     git = Git(repo.path)
     assert git.out("rev-list", "--reverse", f"{base}..{head}").split() == [head]
     assert git.out("rev-list", "--reverse", f"{base}..{head}", "--").split() == [head]
+
+
+def test_message_inference_learns_tracker_keys(app, human, ws, make_repo):
+    # a tracker-synced task carries its Jira key (prefix ABC) next to the local WG prefix
+    jira = app.tasks.create(RequestContext.system("tracker-sync"), ws, TaskCreate(title="Jira", key="ABC-7"))
+    assert jira.key == "ABC-7"
+    repo = make_repo("jira-msg")
+    register(app, human, ws, repo)
+    sha = repo.commit("fix the login redirect, closes ABC-7", {"login.txt": "x\n"})
+    app.git.sync_ref(human, ws, "jira-msg")
+    with app.db.session() as session:
+        links = (
+            session.execute(
+                select(CommitTaskLink)
+                .join(Commit)
+                .where(Commit.sha == sha, CommitTaskLink.source == "message_inference")
+            )
+            .scalars()
+            .all()
+        )
+    assert [link.task_id for link in links] == [jira.id]
+    assert links[0].evidence["matched"] == "ABC-7"
+    assert links[0].confidence == 0.5

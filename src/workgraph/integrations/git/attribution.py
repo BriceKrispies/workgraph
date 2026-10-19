@@ -15,6 +15,7 @@ number can be traced back to why a commit was attributed to a task.
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -43,12 +44,22 @@ def trailer_candidates(trailers: list[dict[str, str]]) -> list[Candidate]:
     return found
 
 
-def message_candidates(message: str, key_prefix: str, trailers: list[dict[str, str]]) -> list[Candidate]:
-    """Task keys mentioned in prose. Ambiguous (several keys) lowers confidence further."""
+def message_candidates(
+    message: str, key_prefixes: Sequence[str], trailers: list[dict[str, str]]
+) -> list[Candidate]:
+    """Task keys mentioned in prose, for any of the given prefixes.
+
+    Keys are normalised to ``PREFIX-N`` in upper case. Ambiguous (several keys, across all
+    prefixes) lowers confidence further.
+    """
+    prefixes = sorted({p for p in key_prefixes if p}, key=len, reverse=True)
+    if not prefixes:
+        return []
     trailer_lines = {f"{t['key']}: {t['value']}" for t in trailers}
     prose = "\n".join(line for line in message.splitlines() if line.strip() not in trailer_lines)
-    pattern = re.compile(rf"(?<![A-Za-z0-9]){re.escape(key_prefix)}-(\d+)(?![0-9])", re.IGNORECASE)
-    keys = list(dict.fromkeys(f"{key_prefix}-{m.group(1)}" for m in pattern.finditer(prose)))
+    alternation = "|".join(re.escape(p) for p in prefixes)
+    pattern = re.compile(rf"(?<![A-Za-z0-9])({alternation})-(\d+)(?![0-9])", re.IGNORECASE)
+    keys = list(dict.fromkeys(f"{m.group(1).upper()}-{m.group(2)}" for m in pattern.finditer(prose)))
     if not keys:
         return []
     ambiguous = len(keys) > 1

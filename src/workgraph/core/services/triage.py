@@ -156,9 +156,12 @@ def _shape_problem(entry: Any) -> str | None:
     if "evidence" in entry and not _str_list(entry["evidence"]):
         return "evidence must be a list of strings"
     if verdict == "open":
-        rewrites = entry.get("rewrites")
-        if not isinstance(rewrites, list) or not rewrites:
-            return "open verdict needs at least one rewrite"
+        rewrites = entry.get("rewrites", [])
+        duplicates = entry.get("duplicate_of", [])
+        if not isinstance(rewrites, list) or not _str_list(duplicates):
+            return "rewrites must be a list and duplicate_of a list of task keys"
+        if not rewrites and not duplicates:
+            return "open verdict needs at least one rewrite or a duplicate_of task"
         for i, rewrite in enumerate(rewrites):
             if not isinstance(rewrite, dict):
                 return f"rewrite {i} is not an object"
@@ -233,8 +236,14 @@ def _apply_one(
         return "cancelled", []
 
     if verdict == "open":
-        new_keys = [_create_follow_up(tasks, ctx, item, rewrite) for rewrite in entry["rewrites"]]
-        keys = ", ".join(new_keys)
+        new_keys = [_create_follow_up(tasks, ctx, item, rewrite) for rewrite in entry.get("rewrites", [])]
+        # Open work an existing task already tracks: the original duplicates that task, nothing is created.
+        duplicates = list(entry.get("duplicate_of", []))
+        for target in duplicates:
+            tasks.add_relation(
+                ctx, ws_id, key, RelationCreate(target=target, relation_type=RelationType.DUPLICATES)
+            )
+        keys = ", ".join(new_keys + duplicates)
         _comment(tasks, ctx, ws_id, key, _body(source, f"superseded by {keys}", summary, evidence))
         _tag(tasks, ctx, ws_id, key, [f"{TRIAGE_TAG_PREFIX}superseded"])
         _cancel(tasks, ctx, ws_id, key, f"triage: superseded by {keys}")

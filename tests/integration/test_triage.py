@@ -190,6 +190,30 @@ def test_rewrite_size_is_a_scope_and_legacy_sizes_map_to_one(app, human, ws, siz
     assert tag in _detail(app, human, ws, report["applied"][0]["new_keys"][0]).tags
 
 
+def test_open_work_tracked_elsewhere_duplicates_the_existing_task(app, human, ws):
+    key = _task(app, human, ws, "Old plan")
+    tracked = _task(app, human, ws, "Already tracked")
+    report = _apply(
+        app,
+        human,
+        ws,
+        [{"key": key, "verdict": "open", "summary": "s", "rewrites": [], "duplicate_of": [tracked]}],
+    )
+    assert report["errors"] == []
+    assert report["applied"][0]["action"] == "superseded" and report["applied"][0]["new_keys"] == []
+    detail = _detail(app, human, ws, key)
+    assert detail.status == "cancelled"
+    tracked_id = _detail(app, human, ws, tracked).id
+    assert [(r.relation_type, r.target_task_id) for r in detail.relations] == [("duplicates", tracked_id)]
+    assert detail.comments[-1].body.startswith(f"Triage (triage batch TEST): superseded by {tracked}.")
+
+
+def test_open_without_rewrites_or_duplicates_is_refused(app, human, ws):
+    key = _task(app, human, ws, "Nothing to do")
+    report = _apply(app, human, ws, [{"key": key, "verdict": "open", "summary": "s", "rewrites": []}])
+    assert report["errors"][0]["error"] == "open verdict needs at least one rewrite or a duplicate_of task"
+
+
 def test_unknown_rewrite_size_is_refused(app, human, ws):
     key = _task(app, human, ws, "Badly sized")
     report = _apply(

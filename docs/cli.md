@@ -58,19 +58,19 @@ entries are kept.
 
 ```json
 {"key": "WG-312", "verdict": "resolved", "summary": "...", "evidence": ["..."],
- "rewrites": [{"title": "...", "description": "...", "files": ["..."], "acceptance_criteria": ["..."], "size": "small"}],
- "decision": null, "command": null}
+ "rewrites": [{"title": "...", "description": "...", "files": ["..."], "acceptance_criteria": ["..."], "size": "one-file"}],
+ "duplicate_of": [], "decision": null, "command": null}
 ```
 
 | Verdict | Effect |
 | --- | --- |
 | `resolved`, `obsolete` | comment, tag `triage:<verdict>`, move to `cancelled` (reason `triage: <verdict>`) |
-| `open` | one new task per rewrite (`follows_up` the original; priority, projects and repositories copied; tags = the original's minus `wg136` and `kind:*`, plus `triaged` and `scope:<size>` (what the change touches: one-file, one-crate, several-crates)), then the original is commented, tagged `triage:superseded` and cancelled |
+| `open` | one new task per rewrite (`follows_up` the original; priority, projects and repositories copied; tags = the original's minus `wg136` and `kind:*`, plus `triaged` and `scope:<size>` (what the change touches: one-file, one-crate, several-crates; legacy small/medium/large read as those)); each key in `duplicate_of` (open work an existing task already tracks) gets a `duplicates` relation from the original instead of a new task; then the original is commented, tagged `triage:superseded` and cancelled |
 | `needs-decision` | comment with the decision, tags `needs-decision` and `triage:needs-decision`; status unchanged |
 | `needs-run` | comment with the `command` that confirms it, tag `triage:needs-run`; status unchanged; `command` is required |
 | `unclear` | comment, tag `triage:unclear`; status unchanged |
 
-- The whole file is validated before anything changes. An element with an unknown verdict or key, a missing key, an `open` without rewrites, a rewrite without title or description, a duplicate key, or a `cancelled` move the lifecycle refuses (for example an accepted task) is reported as an error and skipped; the other elements still apply.
+- The whole file is validated before anything changes. An element with an unknown verdict or key, a missing key, an `open` with neither rewrites nor `duplicate_of`, a rewrite without title or description, a duplicate key, or a `cancelled` move the lifecycle refuses (for example an accepted task) is reported as an error and skipped; the other elements still apply.
 - A task that already has a `triage:*` tag is reported as `skipped`, so re-running a file is safe.
 - `--dry-run` prints the same table and errors as a real run and changes nothing.
 - `--source` names who triaged (e.g. `triage batch WG-1215`) and appears in each comment as `Triage (<source>): ...`. Without it the comment reads `Triage: ...`.

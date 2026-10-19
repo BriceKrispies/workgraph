@@ -6,6 +6,10 @@ report: the base is measured by running the same check there, so nothing is writ
 exception list. A regression-mode check that times out, or that fails without any parsed failure
 signature, cannot be compared and counts as failing. A check with status ``error`` (it could not judge
 anything) counts as failing in either mode and is never compared with the base.
+
+A test failure is identified by its test function, not by where the test lives: ``test:a::b::name``
+matches a base ``test:name`` or ``test:c::name``, so moving a test into another binary or module
+(merging test files) does not turn its known failure into a new one.
 """
 
 from __future__ import annotations
@@ -53,8 +57,15 @@ def regressions(
         if outcome is None or outcome.status == "passed":
             found[check.name] = signatures
             continue
-        known = set(outcome.signatures)
-        new = [signature for signature in signatures if signature not in known]
+        known = set(outcome.signatures) | {_leaf(signature) for signature in outcome.signatures}
+        new = [s for s in signatures if s not in known and _leaf(s) not in known]
         if new:
             found[check.name] = new
     return found
+
+
+def _leaf(signature: str) -> str:
+    """``test:a::b::name`` -> ``test:name``; other signatures are returned unchanged."""
+    if not signature.startswith("test:"):
+        return signature
+    return "test:" + signature.rsplit("::", 1)[-1]

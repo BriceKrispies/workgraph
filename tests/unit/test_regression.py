@@ -84,6 +84,13 @@ def test_a_regression_failure_already_on_the_base_is_tolerated():
     assert regressions(run, base, _specs(_spec("suite"))) == {}
 
 
+def test_a_known_failure_whose_test_moved_to_another_binary_is_tolerated():
+    # spec02_055.rs merged into the spec02 binary: the test gains a module path, the failure is the same.
+    run = _run(_check("suite", signatures=["test:spec02::spec02_055::a_device_run", "test:fresh"]))
+    base = {"suite": CheckOutcome("failed", ["test:a_device_run", "test:spec02_055::a_device_run"])}
+    assert regressions(run, base, _specs(_spec("suite"))) == {"suite": ["test:fresh"]}
+
+
 def test_only_the_new_signatures_of_a_regression_failure_are_reported_in_order():
     run = _run(_check("suite", signatures=["test:c", "test:a", "test:b"]))
     base = {"suite": CheckOutcome("failed", ["test:a"])}

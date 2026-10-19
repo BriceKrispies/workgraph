@@ -68,6 +68,7 @@ KNOWN_EVENTS = {
 TASK_KEY_RE = re.compile(r"\b([A-Z][A-Z0-9]{0,9}-\d+)\b")
 TRANSCRIPT_USAGE_SOURCE = "claude_code_transcript"
 SUBAGENT_ADAPTER = "claude_code_subagent"
+OPEN_ATTEMPT_STATUSES = (AttemptStatus.QUEUED, AttemptStatus.PREPARING, AttemptStatus.RUNNING)
 
 
 class HookPayload(BaseModel):
@@ -382,7 +383,7 @@ def _apply(
             run.stopped_at = at
             run.transcript_path = payload.agent_transcript_path
             run.last_message_excerpt = redact_text(payload.last_assistant_message or "", 1000) or None
-            _apply_transcript(
+            transcript = _apply_transcript(
                 session,
                 ctx,
                 run,
@@ -390,7 +391,8 @@ def _apply(
                 workspace_id=agent_session.workspace_id,
                 at=at,
             )
-            if run.attempt_id:
+            # An attempt the hook only bound belongs to the orchestrator, which finishes it.
+            if run.attempt_id and not transcript.attempt_bound:
                 child = session.get(AgentAttempt, run.attempt_id)
                 if child is not None and AttemptStatus(child.status) not in TERMINAL_ATTEMPT_STATUSES:
                     from workgraph.core.services.attempts import finish_attempt
@@ -504,6 +506,7 @@ class TranscriptApplied:
     parsed: bool = False
     linked: bool = False
     attempt_created: bool = False
+    attempt_bound: bool = False
 
 
 def _apply_transcript(
@@ -519,7 +522,10 @@ def _apply_transcript(
 
     Transcript parsing is advisory: a missing or unreadable file leaves the run untouched.
     A run with a child attempt gets that attempt's model and usage. A run without one but with a
-    linked task gets a finished top-level attempt, so the subagent's work is still accounted for.
+    linked task first binds to the task's open attempt (queued, preparing or running, with no
+    subagent run yet). The orchestrator owns that attempt, so its status is left alone. Only when
+    there is none does the run get a new finished top-level attempt, so the subagent's work is
+    still accounted for.
     """
     result = TranscriptApplied()
     if not run.transcript_path:
@@ -547,6 +553,13 @@ def _apply_transcript(
                 child.usage = usage
                 child.usage_source = TRANSCRIPT_USAGE_SOURCE
     elif task is not None:
+        open_attempt = _open_attempt_for_subagent(session, task)
+        if open_attempt is not None:
+            run.attempt_id = open_attempt.id
+            result.attempt_bound = True
+            _record_subagent_bound(session, ctx, run, open_attempt, task, stats, usage, telemetry)
+            return result
+
         from workgraph.core.services.attempts import finish_attempt, new_attempt
 
         attempt = new_attempt(
@@ -575,6 +588,55 @@ def _apply_transcript(
             telemetry=telemetry,
         )
     return result
+
+
+def _open_attempt_for_subagent(session: Session, task: Task) -> AgentAttempt | None:
+    """The task's most recent attempt that is still open and has no subagent run bound to it."""
+    bound = select(SubagentRun.attempt_id).where(SubagentRun.attempt_id.is_not(None))
+    return session.scalar(
+        select(AgentAttempt)
+        .where(
+            AgentAttempt.task_id == task.id,
+            AgentAttempt.status.in_([s.value for s in OPEN_ATTEMPT_STATUSES]),
+            AgentAttempt.id.not_in(bound),
+        )
+        .order_by(AgentAttempt.number.desc())
+        .limit(1)
+    )
+
+
+def _record_subagent_bound(
+    session: Session,
+    ctx: RequestContext,
+    run: SubagentRun,
+    attempt: AgentAttempt,
+    task: Task,
+    stats: TranscriptStats,
+    usage: dict[str, Any] | None,
+    telemetry: dict[str, Any],
+) -> None:
+    """Put a subagent run's measured facts on an attempt the orchestrator owns. Status is not touched."""
+    attempt.model = stats.model or attempt.model
+    if usage is not None:
+        attempt.usage = usage
+        attempt.usage_source = TRANSCRIPT_USAGE_SOURCE
+    attempt.telemetry = {**(attempt.telemetry or {}), **telemetry}
+    record_event(
+        session,
+        ctx,
+        event_type="attempt.subagent_bound",
+        entity_type="attempt",
+        entity_id=attempt.id,
+        workspace_id=attempt.workspace_id,
+        attempt_id=attempt.id,
+        data={
+            "task_id": task.id,
+            "task_key": task.key,
+            "agent_id": run.external_agent_id,
+            "agent_type": stats.agent_type or run.agent_type,
+            "model": stats.model,
+        },
+    )
 
 
 def _parse_transcript_quietly(path: str) -> TranscriptStats | None:

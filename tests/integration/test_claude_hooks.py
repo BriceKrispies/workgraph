@@ -373,6 +373,83 @@ def test_unbound_subagent_transcript_creates_linked_top_level_attempt(app, human
         assert attempt.telemetry["tool_uses"] == {"Bash": 1}
 
 
+def stop_untracked_subagent(app, session_id, agent_id, transcript, received_at):
+    """Start and stop a subagent in a session with no Workgraph launch context."""
+    hook(app, base("SessionStart", session=session_id, source="startup"), received_at=received_at)
+    hook(
+        app,
+        base("SubagentStart", session=session_id, agent_id=agent_id, agent_type="general-purpose"),
+        received_at=received_at,
+    )
+    hook(
+        app,
+        base(
+            "SubagentStop",
+            session=session_id,
+            agent_id=agent_id,
+            agent_type="general-purpose",
+            agent_transcript_path=str(transcript),
+        ),
+        received_at="2026-10-17T10:00:02+00:00",
+    )
+
+
+def test_subagent_transcript_binds_to_running_orchestrator_attempt(app, human, ws, tmp_path):
+    task, attempt_id = make_attempt(app, human, ws)
+    transcript = tmp_path / "agent-o1.jsonl"
+    write_subagent_transcript(transcript, task.key, output=25)
+    stop_untracked_subagent(app, "sess-orch", "agent-o1", transcript, "2026-10-17T10:00:00+00:00")
+    with app.db.session() as session:
+        run = session.scalar(select(SubagentRun).where(SubagentRun.external_agent_id == "agent-o1"))
+        assert run.attempt_id == attempt_id and run.task_id == task.id
+        attempts = list(session.scalars(select(AgentAttempt).where(AgentAttempt.task_id == task.id)))
+        assert [a.id for a in attempts] == [attempt_id]  # no second attempt was created
+        attempt = session.get(AgentAttempt, attempt_id)
+        assert attempt.status == "running" and attempt.finished_at is None
+        assert attempt.model == "claude-haiku-4-5-20251001"
+        assert attempt.usage["output_tokens"] == 25 and attempt.usage_source == "claude_code_transcript"
+        assert attempt.telemetry["tool_uses"] == {"Bash": 1}
+        assert attempt.adapter == "claude_code"  # the orchestrator's adapter is kept
+
+
+def test_subagent_transcript_creates_attempt_when_only_finished_attempts_exist(app, human, ws, tmp_path):
+    task = app.tasks.create(human, ws, TaskCreate(title="Already finished"))
+    with app.db.session(write=True) as session:
+        t = resolve.task(session, None, task.id)
+        done = new_attempt(
+            session, human, t, provider="claude_code", adapter="claude_code", status=AttemptStatus.SUCCEEDED
+        )
+        done_id = done.id
+    transcript = tmp_path / "agent-f1.jsonl"
+    write_subagent_transcript(transcript, task.key)
+    stop_untracked_subagent(app, "sess-finished", "agent-f1", transcript, "2026-10-17T10:00:00+00:00")
+    with app.db.session() as session:
+        run = session.scalar(select(SubagentRun).where(SubagentRun.external_agent_id == "agent-f1"))
+        assert run.attempt_id != done_id
+        created = session.get(AgentAttempt, run.attempt_id)
+        assert created.number == 2 and created.adapter == "claude_code_subagent"
+        assert created.status == "succeeded"
+        assert session.get(AgentAttempt, done_id).status == "succeeded"
+
+
+def test_running_attempt_already_bound_to_a_subagent_is_not_reused(app, human, ws, tmp_path):
+    task, attempt_id = make_attempt(app, human, ws)
+    first = tmp_path / "agent-r1.jsonl"
+    second = tmp_path / "agent-r2.jsonl"
+    write_subagent_transcript(first, task.key)
+    write_subagent_transcript(second, task.key)
+    stop_untracked_subagent(app, "sess-r1", "agent-r1", first, "2026-10-17T10:00:00+00:00")
+    stop_untracked_subagent(app, "sess-r2", "agent-r2", second, "2026-10-17T10:01:00+00:00")
+    with app.db.session() as session:
+        bound = session.scalar(select(SubagentRun).where(SubagentRun.external_agent_id == "agent-r1"))
+        other = session.scalar(select(SubagentRun).where(SubagentRun.external_agent_id == "agent-r2"))
+        assert bound.attempt_id == attempt_id
+        assert other.attempt_id != attempt_id
+        created = session.get(AgentAttempt, other.attempt_id)
+        assert created.number == 2 and created.adapter == "claude_code_subagent"
+        assert session.get(AgentAttempt, attempt_id).status == "running"
+
+
 def test_bound_subagent_child_attempt_gets_model_and_usage(app, human, ws, tmp_path):
     task, attempt_id = make_attempt(app, human, ws)
     env = {"attempt_id": attempt_id, "task_id": task.id}

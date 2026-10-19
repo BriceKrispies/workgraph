@@ -23,6 +23,7 @@ from workgraph.cli.common import (
 )
 from workgraph.core.models.enums import TERMINAL_ATTEMPT_STATUSES, AttemptStatus
 from workgraph.core.models.schemas import AttemptCreate
+from workgraph.orchestration.runs import AttemptStartOut
 from workgraph.verification.configs import parse_tier
 
 attempt_app = typer.Typer(help="Inspect and record agent attempts.", no_args_is_help=True)
@@ -125,6 +126,42 @@ def attempt_create(
         AttemptCreate(task=task, provider=provider, model=model, session_id=session_id),
     )
     emit(out, lambda a: console.print(f"attempt {a.id} (#{a.number}) {a.status}"))
+
+
+def _print_attempt_start(out: AttemptStartOut) -> None:
+    console.print(f"attempt {short(out.attempt_id)} (#{out.attempt_number}) running on {out.task_key}")
+    for repo in out.repositories:
+        base = repo.base_sha[:12] if repo.base_sha else "?"
+        console.print(f"  {repo.repository}: {repo.checkout_path} on {repo.branch} (base {base})")
+    if out.agent_checks:
+        console.print("fast checks: " + ", ".join(c["name"] for c in out.agent_checks))
+
+
+@attempt_app.command("start")
+@handle_errors
+def attempt_start(
+    task: str,
+    agent_name: str | None = typer.Option(
+        None, "--agent-name", help="Agent name recorded on the attempt (default: the actor's name)."
+    ),
+    adapter: str = typer.Option("claude_code_subagent", "--adapter"),
+    model: str | None = typer.Option(None, "--model"),
+    isolation: str | None = typer.Option(
+        None, "--isolation", help="worktree or in_place (default: configured)."
+    ),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Claim a task, record an attempt and prepare its worktrees for an external agent."""
+    out = STATE.app().runs.start_external(
+        STATE.ctx(),
+        ws(workspace),
+        task,
+        agent_name=agent_name,
+        adapter=adapter,
+        model=model,
+        isolation=isolation,
+    )
+    emit(out, _print_attempt_start)
 
 
 @attempt_app.command("finish")

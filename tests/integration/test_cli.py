@@ -74,6 +74,23 @@ def test_cli_workflow_json(run, make_repo):
     run("config", "set", "execution.max_concurrent_runs", '"lots"', expect=7)
 
 
+def test_cli_attempt_start_json_keys(run, make_repo):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    repo = make_repo("svc")
+    run("repo", "register", str(repo.path))
+    task = run("task", "create", "External work", "--ready", "--repo", "svc")
+
+    out = run("attempt", "start", task["key"], "--agent-name", "tester")
+
+    assert set(out) == {"attempt_id", "attempt_number", "task_key", "repositories", "agent_checks"}
+    assert out["task_key"] == task["key"] and out["attempt_number"] == 1
+    [repository] = out["repositories"]
+    assert set(repository) == {"repository", "checkout_path", "branch", "base_sha", "base"}
+    assert repository["repository"] == "svc" and repository["base_sha"] == repo.head()
+    assert repository["branch"].startswith(f"wg/{task['key'].lower()}/attempt-1-")
+    assert run("task", "show", task["key"])["status"] == "running"
+
+
 def test_cli_errors_and_exit_codes(run):
     run("init")
     err = run("task", "show", "WG-404", expect=4)

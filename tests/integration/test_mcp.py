@@ -55,6 +55,7 @@ REQUIRED_TOOLS = {
     "task_report_progress",
     "task_report_result",
     "attempt_create",
+    "attempt_start",
     "attempt_get",
     "attempt_list",
     "run_start",

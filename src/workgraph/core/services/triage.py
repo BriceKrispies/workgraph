@@ -45,6 +45,8 @@ DROPPED_TAG = "wg136"
 
 # Verdicts that move the task to cancelled.
 CANCEL_VERDICTS = frozenset({"resolved", "obsolete"})
+# Verdicts that leave the task waiting: a later file (a decision made, a run done) may replace them.
+PENDING_VERDICTS = frozenset({"needs-decision", "needs-run", "unclear"})
 
 Report = dict[str, list[dict[str, Any]]]
 
@@ -126,7 +128,8 @@ def _plan(
             report["errors"].append(_error(index, key, verdict, exc.message))
             continue
         existing = [t for t in task.tags if t.startswith(TRIAGE_TAG_PREFIX)]
-        if existing:
+        pending = [t.removeprefix(TRIAGE_TAG_PREFIX) for t in existing]
+        if existing and (verdict in pending or not set(pending) <= PENDING_VERDICTS):
             report["skipped"].append(
                 {"key": task.key, "verdict": verdict, "reason": f"already triaged ({existing[0]})"}
             )
@@ -228,6 +231,10 @@ def _apply_one(
     ws_id = item.task.workspace_id
     key = item.key
     verdict = item.verdict
+    # A pending verdict being replaced: drop its tags so the task carries only the new one.
+    stale = [t for t in item.task.tags if t.startswith(TRIAGE_TAG_PREFIX) or t == "needs-decision"]
+    if stale:
+        tasks.update(ctx, ws_id, key, TaskUpdate(remove_tags=stale))
 
     if verdict in CANCEL_VERDICTS:
         _comment(tasks, ctx, ws_id, key, _body(source, verdict, summary, evidence))

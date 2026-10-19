@@ -235,6 +235,19 @@ def test_rerun_is_idempotent(app, human, ws):
     assert len(_detail(app, human, ws, key).comments) == 1
 
 
+def test_decision_replaces_a_pending_verdict(app, human, ws):
+    key = _task(app, human, ws, "Port the game?")
+    _apply(app, human, ws, [{"key": key, "verdict": "needs-decision", "summary": "Ask.", "decision": "Port it?"}])
+    again = _apply(app, human, ws, [{"key": key, "verdict": "needs-decision", "summary": "Ask."}])
+    assert again["skipped"][0]["reason"] == "already triaged (triage:needs-decision)"
+    report = _apply(app, human, ws, [{"key": key, "verdict": "obsolete", "summary": "Port dropped."}])
+    assert [a["action"] for a in report["applied"]] == ["cancelled"]
+    task = _detail(app, human, ws, key)
+    assert task.status == "cancelled"
+    assert "triage:obsolete" in task.tags
+    assert "triage:needs-decision" not in task.tags and "needs-decision" not in task.tags
+
+
 def test_dry_run_changes_nothing_and_reports_like_real_run(app, human, ws):
     cancel = _task(app, human, ws, "Cancel me")
     split = _task(app, human, ws, "Split me", tags=["wg136"])

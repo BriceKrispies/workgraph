@@ -92,9 +92,12 @@ with the largest `output_tokens` per message id (ties: the last line); tool uses
 `tool_use` id; `<synthetic>` messages are ignored.
 
 If the run has a child attempt, that attempt gets the model and usage (`usage_source =
-claude_code_transcript`). If the run has no attempt but a task was linked, a finished top-level
-attempt is created for that task (adapter `claude_code_subagent`). A missing or unreadable transcript
-leaves the run unchanged.
+claude_code_transcript`). If the run has no attempt but a task was linked, the run binds to that task's most recent attempt
+that is still open (`queued`, `preparing` or `running`) and has no subagent run yet. The attempt gets the
+model, usage (`usage_source = claude_code_transcript`) and telemetry, and an `attempt.subagent_bound`
+event is recorded. Its status is left alone, because the orchestrator finishes it. Only when no such
+attempt exists is a finished top-level attempt created for the task (adapter `claude_code_subagent`).
+Finished attempts are never reused. A missing or unreadable transcript leaves the run unchanged.
 
 Transcripts that were not readable when the hook fired (or that predate this) can be applied later:
 

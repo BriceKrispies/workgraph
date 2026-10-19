@@ -117,6 +117,20 @@ def stack_readmit(parent: str, task: str, workspace: str | None = workspace_opti
     emit(STATE.app().stacks.readmit_item(STATE.ctx(), ws(workspace), parent, task), _render_stack)
 
 
+@stack_app.command("eject")
+@handle_errors
+def stack_eject(
+    parent: str,
+    task: str,
+    reason: str = typer.Option(
+        ..., "--reason", "-m", help="The evidence that names this child as the failure"
+    ),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Eject a merged child known to cause the stack's failure, and rebuild without it (no bisection)."""
+    emit(STATE.app().stack_verification.eject(STATE.ctx(), ws(workspace), parent, task, reason))
+
+
 def _event_summary(event: Any) -> str:
     keys = ("task_key", "from", "to", "position", "passed", "run_id", "verification_run_id", "failed_checks")
     return ", ".join(

@@ -29,7 +29,13 @@ from sqlalchemy.orm import Session
 
 from workgraph.core.clock import utcnow
 from workgraph.core.context import RequestContext
-from workgraph.core.errors import GitError, InvalidTransitionError, NotFoundError
+from workgraph.core.errors import (
+    ConflictError,
+    GitError,
+    InvalidTransitionError,
+    NotFoundError,
+    ValidationFailed,
+)
 from workgraph.core.events.log import record_event
 from workgraph.core.models.enums import (
     INACTIVE_STACK_STATUSES,
@@ -560,6 +566,55 @@ class StackVerifier(Service):
         listed = "; ".join(
             f"{name}: {', '.join(found) or 'none reported'}" for name, found in signatures.items()
         )
+        comment = (
+            f"Stack {{parent}} verification failed on the integration tip, and bisection "
+            f"placed the failure at {{task}} (position {position} in the merge order). "
+            f"Failing checks: {names}. Failure signatures: {listed or 'none reported'}. "
+            f"Verification run: {run.id}. Next step: fix the failure in this change and submit "
+            "a new attempt; the stack verifies again once the change is integrated."
+        )
+        return self._apply_ejection(ctx, culprit, ejection, comment, reason=names)
+
+    def eject(
+        self, ctx: RequestContext, workspace: str | None, parent_ref: str, task_ref: str, reason: str
+    ) -> dict[str, Any]:
+        """Eject a merged child an operator has identified as a stack's failure, then rebuild without it.
+
+        For when the culprit is known from evidence and bisection would cost full runs, or would be
+        misled by an unrelated flaky failure. The child goes back to ``ready`` like a bisected one.
+        """
+        require(ctx, Permission.STACK_WRITE)
+        if not reason.strip():
+            raise ValidationFailed("an ejection needs a reason (the evidence that names this child)")
+        with self.db.session() as session:
+            ws_id = self.app.tasks._workspace_id(session, workspace)
+            parent = resolve.task(session, ws_id, parent_ref)
+            child = resolve.task(session, ws_id, task_ref)
+            stack = session.scalar(
+                select(Stack).where(
+                    Stack.parent_task_id == parent.id, Stack.status.not_in(INACTIVE_STACK_STATUSES)
+                )
+            )
+            if stack is None:
+                raise NotFoundError(f"{parent.key} has no active stack", details={"parent": parent.key})
+            stack_id = stack.id
+            culprit = next((e for e in self._sequence(session, stack) if e.task_key == child.key), None)
+            if culprit is None:
+                raise ConflictError(
+                    f"{child.key} is not merged on {parent.key}'s stack; only a merged child can be ejected",
+                    details={"task": child.key},
+                )
+        ejection = {"manual": True, "reason": reason}
+        comment = f"Ejected from stack {{parent}} by {ctx.actor}: {reason}"
+        task_key = self._apply_ejection(ctx, culprit, ejection, comment, reason=reason)
+        self.app.stack_lander.rebuild_without(ctx, stack_id)
+        return {"status": "ejected", "task": task_key, "stack_id": stack_id}
+
+    def _apply_ejection(
+        self, ctx: RequestContext, culprit: _Entry, ejection: dict[str, Any], comment: str, *, reason: str
+    ) -> str:
+        """Mark ``culprit`` ejected, return its task to ready with ``comment``, and park its dependents."""
+        names = reason
         with self.db.session(write=True) as session:
             stack, item, task, parent = StackIntegrator.load_item(session, culprit.item_id)
             self.app.stacks.transition_item(
@@ -590,13 +645,7 @@ class StackVerifier(Service):
                 ctx,
                 task,
                 CommentCreate(
-                    body=(
-                        f"Stack {parent.key} verification failed on the integration tip, and bisection "
-                        f"placed the failure at {task.key} (position {position} in the merge order). "
-                        f"Failing checks: {names}. Failure signatures: {listed or 'none reported'}. "
-                        f"Verification run: {run.id}. Next step: fix the failure in this change and submit "
-                        "a new attempt; the stack verifies again once the change is integrated."
-                    ),
+                    body=comment.format(parent=parent.key, task=task.key),
                     data={"stack_item_ejection": ejection},
                 ),
             )

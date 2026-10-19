@@ -364,6 +364,38 @@ def _verification_runs(app, parent) -> list[VerificationRun]:
         return list(session.scalars(select(VerificationRun).where(VerificationRun.task_id == parent.id)))
 
 
+def test_an_operator_ejects_a_known_culprit_and_the_stack_rebuilds_without_it(
+    app, human, ws, tree, manual_landing
+):
+    repo, parent = tree
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "b.txt")
+    _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    stack = app.stacks.create(human, ws, parent.key)
+    branch = stack.repositories[0].integration_branch
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+
+    with pytest.raises(ValidationFailed):
+        app.stack_verification.eject(human, ws, parent.key, second.key, " ")
+    result = app.stack_verification.eject(human, ws, parent.key, second.key, "link errors name its paths")
+    assert result["status"] == "ejected" and result["task"] == second.key
+
+    items = _items(app, human, ws, parent)
+    assert items[second.key].state == "ejected"
+    assert json.loads(items[second.key].detail)["ejection"] == {
+        "manual": True,
+        "reason": "link errors name its paths",
+    }
+    assert app.tasks.get(human, ws, second.key).status == "ready"
+    assert "b.txt" not in _branch_files(repo, branch) and "a.txt" in _branch_files(repo, branch)
+    assert "stack.item_ejected" in _event_types(app, stack.id)
+    with pytest.raises(ConflictError):
+        app.stack_verification.eject(human, ws, parent.key, second.key, "again")
+
+
 def test_bisect_ejects_the_child_that_completes_a_failing_combination(app, human, ws, tree):
     repo, parent = tree
     _enable_agent(app, "fake-a", "a.txt")

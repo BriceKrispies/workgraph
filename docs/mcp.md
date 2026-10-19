@@ -32,7 +32,7 @@ dimensions and typed filters.
 `task_search`, `task_list`, `task_update`, `task_claim`, `task_release`, `task_complete`,
 `task_get_ready`, `task_add_dependency`, `task_remove_dependency`, `task_add_relation`,
 `task_add_comment`, `task_get_history`, `task_get_attempts`, `task_link_repository`,
-`task_link_commit`, `task_report_progress`, `task_report_result`, `attempt_create`, `attempt_get`,
+`task_link_commit`, `task_report_progress`, `task_report_result`, `attempt_create`, `attempt_start`, `attempt_get`,
 `attempt_list`, `run_start`, `run_get`, `run_cancel`, `git_get_changes`, `git_get_task_diff`,
 `classification_get`, `classification_request`, `analytics_query`, `analytics_report`, `analytics_subagents`,
 `automation_list`, `automation_trigger`, `stack_get`, `stack_list`, `stack_history`, `experiment_list`,
@@ -106,7 +106,13 @@ HTTP-capable clients connect to `http://127.0.0.1:8765/mcp/` with the bearer tok
 
 1. `task_get_ready` - pick the highest-priority unblocked task.
 2. `task_claim` - exclusive lease (default 120 minutes).
-3. `attempt_create` - record the attempt (model, session id).
+3. `attempt_create` - record the attempt (model, session id). It makes no worktree.
+   `attempt_start` replaces steps 2 and 3 when the work should be isolated in managed git worktrees (the same
+   ones a Workgraph-run agent gets, with the stack base for stack children). It claims a ready task (or
+   continues your own claim), records the attempt, prepares one worktree per linked repository and moves the
+   task and attempt to running. It returns `attempt_id`, `attempt_number`, `task_key`, `repositories` (each with
+   `repository`, `checkout_path`, `branch`, `base_sha` and `base`) and `agent_checks`. Commit in those
+   checkouts. Requires `task:claim` and `attempt:write`; a task in any other status is refused.
 4. Work in the repository, committing with a `Task-ID: WG-12` trailer.
 5. `task_report_progress` as work proceeds.
 6. `task_link_commit` for anything not carrying the trailer.

@@ -673,6 +673,30 @@ def build_server(
             )
         )
 
+    @tool(
+        "attempt_start",
+        "Claim a ready task (or continue your claim), record an attempt and prepare its managed git worktrees "
+        "(stack base included). Returns the checkouts to work in. Requires task:claim and attempt:write.",
+    )
+    def attempt_start(
+        task: TaskRef,
+        model: str | None = None,
+        adapter: str = "claude_code_subagent",
+        isolation: Annotated[str | None, Field(pattern="^(worktree|in_place)$")] = None,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return _dump(
+            app.runs.start_external(
+                ctx(),
+                workspace,
+                task,
+                agent_name=agent_name,
+                adapter=adapter,
+                model=model,
+                isolation=isolation,
+            )
+        )
+
     @tool("attempt_get", "Get an attempt with telemetry, manifests and provenance.")
     def attempt_get(attempt_id: str) -> dict[str, Any]:
         return _dump(app.attempts.get(ctx(), attempt_id))

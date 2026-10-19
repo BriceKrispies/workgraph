@@ -28,6 +28,7 @@ from workgraph.core.errors import (
     NotFoundError,
     PermissionDenied,
     ProviderUnavailableError,
+    ValidationFailed,
     WorkgraphError,
 )
 from workgraph.core.events.log import query_events, record_event
@@ -56,6 +57,22 @@ class RunOut(BaseModel):
     job_id: str | None
     job_status: str | None
     recent_events: list[dict[str, Any]]
+
+
+class StartedRepository(BaseModel):
+    repository: str
+    checkout_path: str
+    branch: str | None
+    base_sha: str | None
+    base: dict[str, Any] | None
+
+
+class AttemptStartOut(BaseModel):
+    attempt_id: str
+    attempt_number: int
+    task_key: str
+    repositories: list[StartedRepository]
+    agent_checks: list[dict[str, Any]]
 
 
 class RunService(Service):
@@ -163,6 +180,110 @@ class RunService(Service):
             attempt.telemetry = {"job_id": job.id}
             session.flush()
             return AttemptOut.model_validate(attempt)
+
+    def start_external(
+        self,
+        ctx: RequestContext,
+        workspace: str | None,
+        task_ref: str,
+        *,
+        agent_name: str | None = None,
+        adapter: str = "claude_code_subagent",
+        model: str | None = None,
+        isolation: str | None = None,
+    ) -> AttemptStartOut:
+        """Start an attempt an external agent works in, with the worktrees a managed run would get.
+
+        Claims a ready task for the actor (or continues a claim the actor already holds), records an
+        attempt, prepares its worktrees (a stack child gets its stack base) and moves task and attempt to
+        running. The agent commits in the returned checkouts; finishing goes through the usual result calls.
+        """
+        require(ctx, Permission.TASK_CLAIM)
+        require(ctx, Permission.ATTEMPT_WRITE)
+        if isolation is not None and isolation not in ("worktree", "in_place"):
+            raise ValidationFailed(f"isolation must be worktree or in_place, not {isolation!r}")
+        agent = agent_name or ctx.actor.partition(":")[2] or ctx.actor
+        with self.db.session(write=True) as session:
+            ws_id = self.app.tasks._workspace_id(session, workspace) if workspace else None
+            task = resolve.task(session, ws_id, task_ref)
+            status = TaskStatus(task.status)
+            if status == TaskStatus.READY:
+                self.app.tasks._claim_in_session(session, ctx, task, ClaimRequest())
+            elif status != TaskStatus.CLAIMED or task.claimed_by != ctx.actor:
+                holder = f" by {task.claimed_by}" if status == TaskStatus.CLAIMED and task.claimed_by else ""
+                raise ValidationFailed(
+                    f"task {task.key} is {status}{holder}; an external attempt needs a ready task "
+                    f"or one claimed by {ctx.actor}",
+                    details={"status": str(status)},
+                )
+            active = session.scalar(
+                select(AgentAttempt).where(
+                    AgentAttempt.task_id == task.id,
+                    AgentAttempt.status.in_(
+                        [
+                            AttemptStatus.QUEUED,
+                            AttemptStatus.PREPARING,
+                            AttemptStatus.RUNNING,
+                            AttemptStatus.VERIFYING,
+                        ]
+                    ),
+                    AgentAttempt.parent_attempt_id.is_(None),
+                )
+            )
+            if active is not None:
+                raise InvalidTransitionError(
+                    f"task {task.key} already has an active attempt #{active.number}"
+                )
+            attempt = new_attempt(
+                session,
+                ctx,
+                task,
+                provider=agent,
+                adapter=adapter,
+                status=AttemptStatus.QUEUED,
+                agent_id=ctx.actor,
+                model=model,
+                config_snapshot={"agent": agent, "model": model, "external": True},
+            )
+            set_attempt_status(session, ctx, attempt, AttemptStatus.PREPARING)
+            attempt_id, number, task_id, task_key = attempt.id, attempt.number, task.id, task.key
+        try:
+            manifest = self.app.worktrees.prepare(ctx, attempt_id, isolation=isolation)
+            with self.db.session(write=True) as session:
+                attempt = resolve.attempt(session, attempt_id)
+                task = session.get(Task, task_id)
+                assert task is not None
+                if task.status == TaskStatus.CLAIMED:
+                    self.app.tasks._transition(
+                        session, ctx, task, TaskStatus.RUNNING, reason=f"attempt #{number}"
+                    )
+                set_attempt_status(session, ctx, attempt, AttemptStatus.RUNNING)
+        except Exception as exc:
+            message = getattr(exc, "message", None) or str(exc)
+            self._finalize_failure(
+                ctx,
+                attempt_id,
+                AttemptStatus.FAILED,
+                f"external attempt start failed: {message}",
+                exit_reason="start_failed",
+            )
+            raise
+        return AttemptStartOut(
+            attempt_id=attempt_id,
+            attempt_number=number,
+            task_key=task_key,
+            repositories=[
+                StartedRepository(
+                    repository=e.repository,
+                    checkout_path=e.checkout_path,
+                    branch=e.branch,
+                    base_sha=e.sha,
+                    base=e.base,
+                )
+                for e in manifest.repositories
+            ],
+            agent_checks=manifest.agent_checks,
+        )
 
     def retry(self, ctx: RequestContext, attempt_id: str, *, instructions: str | None = None) -> AttemptOut:
         with self.db.session() as session:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -9,6 +10,7 @@ from sqlalchemy import select
 
 from tests.helpers import drain, enable_fake_agent
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
+from workgraph.integrations.git.cli import Git
 from workgraph.persistence.orm import Event
 
 
@@ -169,3 +171,23 @@ def test_task_outside_any_stack_keeps_default_base(app, human, ws, tree):
     assert entry["sha"] == repo.head()
     assert entry["base"] is None
     assert "svc" not in _prepared_bases(app, attempt_id)
+
+
+def test_external_attempt_start_gets_sibling_head_base(app, human, ws, tree):
+    _repo, parent = tree
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change", depends_on=[first.key])
+    app.stacks.create(human, ws, parent.key)
+    first_attempt = _run(app, human, ws, first.key)
+    first_head = _entry(app, human, first_attempt, "outcome")["sha"]
+    app.stacks.set_item_state(human, ws, parent.key, first.key, "ready")
+    assert app.tasks.get(human, ws, second.key).status == "ready"
+
+    out = app.runs.start_external(human, ws, second.key, agent_name="tester")
+
+    [entry] = out.repositories
+    assert entry.base_sha == first_head
+    assert entry.base["source"] == "sibling_head" and entry.base["sibling"] == first.key
+    assert Git(Path(entry.checkout_path)).head() == first_head
+    assert app.tasks.get(human, ws, second.key).status == "running"
+    assert _prepared_bases(app, out.attempt_id)["svc"]["sibling"] == first.key

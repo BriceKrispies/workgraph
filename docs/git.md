@@ -108,10 +108,11 @@ applicable verification checks.
     `awaiting_verification`; a fail fails the attempt and the task as usual. A child with no fast
     checks becomes ready without a run.
   - **Queue.** Each ready item enqueues a `stack_integrate` job per stack repository. The job holds
-    `repo:<repository-id>` and an exclusive `exclusive:stack-integration:<repository-id>` key, and its
-    idempotency key names the stack's latest event, so repeated requests for an unchanged stack
-    collapse into one job. `workgraph stack integrate PARENT` and `POST /ws/{ws}/stacks/{ref}/integrate`
-    queue it on demand.
+    the exclusive `exclusive:stack:<stack-id>:<repository-id>` key, which only this stack's
+    integration and verification hold, so another stack on the same repository keeps merging while
+    this one verifies. Its idempotency key names the stack's latest event, so repeated requests for
+    an unchanged stack collapse into one job. `workgraph stack integrate PARENT` and
+    `POST /ws/{ws}/stacks/{ref}/integrate` queue it on demand.
   - **Order.** An item is due once its in-stack dependencies are `merged` or `verified`. Due items
     are taken by dependency depth, then task priority, then the time they became ready.
   - **Merge.** For each due item the head its latest succeeded attempt left in the repository is
@@ -130,9 +131,11 @@ applicable verification checks.
     `stack_verify` job is queued, keyed by the integration tips, so repeated settling on the same
     tips collapses into one job. `workgraph stack verify PARENT` and
     `POST /ws/{ws}/stacks/{ref}/verify` queue it on demand; on demand the key also names the stack's
-    latest event, so each request after a state change runs again. The job holds the same
-    `repo:<repository-id>` and `exclusive:stack-integration:<repository-id>` keys as integration.
-    The stack moves `integrating -> verifying` while it runs.
+    latest event, so each request after a state change runs again. The job holds the stack's own
+    `exclusive:stack:<stack-id>:<repository-id>` key for each of its repositories, plus
+    `verify:<repository-id>` (bounded by `jobs.verify_concurrency`, default 1), so two heavy
+    verifications never run at once on one repository, while the other stacks' integration on that
+    repository continues. The stack moves `integrating -> verifying` while it runs.
   - **Full verification on the tip.** The parent task's `full` checks (workspace, project and
     repository scoped checks of the stack's repositories) run once, attributed to the parent task,
     with each repository's checks executing in its integration worktree at the current tip. The
@@ -176,6 +179,13 @@ applicable verification checks.
 Accepting the parent task of a verified stack lands it (`workgraph task accept PARENT`, or
 `--manual --reason`). Nothing else moves a default branch: a child accepted on its own does not.
 
+- **Locks.** The landing runs inside the stack's `stack_verify` job, so it holds that stack's keys
+  and the repository's `verify:` key: no integration or verification of the same stack runs
+  alongside it, and with the default `jobs.verify_concurrency = 1` no other stack's verification
+  does either. Integration of other stacks is not blocked. A landing that is accepted directly
+  (`task accept PARENT`) runs in the request, outside the job queue; it is guarded by the stack's
+  own integration state, and its default-branch moves are compare-and-swap, so a branch another
+  landing moved first is refused, not overwritten.
 - **Checks first.** For every stack repository, the default branch head is read. When it still
   equals the stack's `base_sha`, the default branch fast-forwards to the verified integration tip
   (`wg/stack/<parent-key>`, the tip recorded by the passing `stack.verified` event). The integration

@@ -19,6 +19,7 @@ from workgraph.persistence.orm import (
     Event,
     Job,
     RevisionManifest,
+    Stack,
     Task,
     TaskAcceptance,
     TaskComment,
@@ -164,7 +165,7 @@ def test_independent_children_pass_the_fast_gate_and_merge_in_order(app, human, 
     assert app.stacks.get(human, ws, parent.key).repositories[0].integration_tip == Git(worktree).head()
 
 
-def test_merge_jobs_hold_the_repository_resource_key(app, human, ws, tree):
+def test_merge_jobs_hold_only_their_stacks_key_on_the_repository(app, human, ws, tree):
     _, parent = tree
     _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
     child = _child(app, human, ws, parent, "Only change")
@@ -177,7 +178,7 @@ def test_merge_jobs_hold_the_repository_resource_key(app, human, ws, tree):
     assert jobs
     for job in jobs:
         assert job.payload["repository_id"] == repository_id
-        assert f"repo:{repository_id}" in job.resource_keys
+        assert job.resource_keys == [f"exclusive:stack:{stack.id}:{repository_id}"]
 
 
 def test_stacked_child_merges_after_its_sibling(app, human, ws, tree, manual_landing):
@@ -483,7 +484,9 @@ def test_a_failure_the_base_already_has_does_not_block_the_stack(app, human, ws,
     assert len(_verification_runs(app, parent)) == 2
 
 
-def test_a_regression_at_the_same_base_reuses_the_cached_base_outcome(app, human, ws, red_base, manual_landing):
+def test_a_regression_at_the_same_base_reuses_the_cached_base_outcome(
+    app, human, ws, red_base, manual_landing
+):
     _repo, parent = red_base
     _enable_agent(app, "fake-a", "a.txt")
     _enable_agent(app, "fake-b", "c.txt")
@@ -508,7 +511,9 @@ def test_a_regression_at_the_same_base_reuses_the_cached_base_outcome(app, human
     assert "stack.verified" in _event_types(app, stack.id)
 
 
-def test_a_new_regression_ejects_the_child_and_names_only_its_signature(app, human, ws, red_base, manual_landing):
+def test_a_new_regression_ejects_the_child_and_names_only_its_signature(
+    app, human, ws, red_base, manual_landing
+):
     repo, parent = red_base
     _enable_agent(app, "fake-a", "a.txt")
     _enable_agent(app, "fake-b", "c.txt")
@@ -721,7 +726,9 @@ def test_a_dependent_of_the_culprit_returns_to_pending(app, human, ws, tree):
     assert "b.txt" not in files and "c.txt" not in files
 
 
-def test_stack_verify_jobs_hold_the_repository_keys(app, human, ws, tree, manual_landing):
+def test_stack_verify_jobs_hold_their_stacks_key_and_the_repository_verify_key(
+    app, human, ws, tree, manual_landing
+):
     _repo, parent = tree
     _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
     child = _child(app, human, ws, parent, "Only change")
@@ -734,10 +741,39 @@ def test_stack_verify_jobs_hold_the_repository_keys(app, human, ws, tree, manual
     assert len(jobs) == 1
     job = jobs[0]
     assert job.payload == {"stack_id": stack.id}
-    assert f"repo:{repository_id}" in job.resource_keys
-    assert f"exclusive:stack-integration:{repository_id}" in job.resource_keys
+    assert job.resource_keys == sorted(
+        [f"exclusive:stack:{stack.id}:{repository_id}", f"verify:{repository_id}"]
+    )
     # Settling again on the same integration tips collapses into the existing job.
     assert app.stack_verification.enqueue_if_settled(human, stack.id) == job.id
+
+
+def test_two_stacks_on_one_repository_do_not_block_each_other(app, human, ws, tree):
+    """Stack A's verification is claimed; stack B still integrates, while a second verification waits."""
+    _repo, parent_a = tree
+    parent_b = app.tasks.create(human, ws, TaskCreate(title="Other parent", repositories=["svc"]))
+    _child(app, human, ws, parent_a, "A change")
+    _child(app, human, ws, parent_b, "B change")
+    stack_a = app.stacks.create(human, ws, parent_a.key)
+    stack_b = app.stacks.create(human, ws, parent_b.key)
+    repository_id = stack_a.repositories[0].repository_id
+
+    # Verification is queued by the settle hook once a stack has merged work; enqueue it directly so the
+    # job can be held unrun. Integration of stack B is queued the way a merge request queues it.
+    verify_a = app.stack_verification._enqueue(human, stack_a.id, version=None)
+    with app.db.session(write=True) as session:
+        integrate_b = app.stacks.enqueue_integration(session, human, session.get(Stack, stack_b.id), "v1")
+    assert integrate_b
+    verify_b = app.stack_verification._enqueue(human, stack_b.id, version=None)
+    assert verify_a and verify_b
+
+    held_a = app.queue.claim("holder", kinds=["stack_verify"])
+    assert held_a is not None and held_a.id == verify_a
+    # Stack B's cheap merge runs while stack A's verification is held.
+    merge_b = app.queue.claim("holder", kinds=["stack_integrate"])
+    assert merge_b is not None and merge_b.payload == {"stack_id": stack_b.id, "repository_id": repository_id}
+    # The second heavy verification on the repository waits for the held one (verify_concurrency = 1).
+    assert app.queue.claim("holder", kinds=["stack_verify"]) is None
 
 
 def _verified_stack(app, human, ws, parent, *, suite: dict[str, object] | None = None):

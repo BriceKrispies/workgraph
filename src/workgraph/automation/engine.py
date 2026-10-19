@@ -56,6 +56,7 @@ from workgraph.core.models.schemas import TaskCreate, TaskUpdate
 from workgraph.core.services import resolve
 from workgraph.core.services.base import Service
 from workgraph.jobs import queue as jobqueue
+from workgraph.jobs.limits import task_verify_keys
 from workgraph.persistence.orm import (
     AgentAttempt,
     AutomationRule,
@@ -806,6 +807,7 @@ class AutomationService(Service):
                         workspace_id=ws_id,
                         task_id=task,
                         max_attempts=1,
+                        resource_keys=task_verify_keys(session, task),
                         created_by=ctx.actor,
                     )
                 return {"job_id": job.id}

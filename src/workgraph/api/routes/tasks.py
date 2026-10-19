@@ -348,6 +348,8 @@ def verify(
 
     require(ctx, Permission.VERIFY_RUN)
     task = app.tasks.get(ctx, ws, ref)
+    from workgraph.jobs.limits import task_verify_keys
+
     with app.db.session(write=True) as session:
         job = jobqueue.enqueue(
             session,
@@ -356,6 +358,7 @@ def verify(
             workspace_id=task.workspace_id,
             task_id=task.id,
             max_attempts=1,
+            resource_keys=task_verify_keys(session, task.id),
             created_by=ctx.actor,
         )
         return {"job_id": job.id}

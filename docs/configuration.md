@@ -93,6 +93,7 @@ worker_concurrency = 4
 gpu_concurrency = 1            # concurrent model jobs (resource key "gpu")
 per_agent_concurrency = 2      # resource key "agent:<name>"
 per_repository_concurrency = 1 # resource key "repo:<id>" (git jobs)
+verify_concurrency = 1         # resource key "verify:<id>": heavy verification jobs per repository
 lease_seconds = 60
 default_max_attempts = 5
 

@@ -33,6 +33,7 @@ from workgraph.core.services.base import Service
 from workgraph.core.services.repositories import primary_checkout
 from workgraph.integrations.git.cli import Git
 from workgraph.jobs import queue as jobqueue
+from workgraph.jobs.limits import stack_key
 from workgraph.persistence.orm import (
     AgentAttempt,
     ChangeSet,
@@ -525,10 +526,11 @@ class StackService(Service):
         *,
         exclude_repository_id: str | None = None,
     ) -> builtins.list[tuple[str, Job]]:
-        """Queue one ``stack_integrate`` job per stack repository, holding the repository's resource keys.
+        """Queue one ``stack_integrate`` job per stack repository, holding that stack's key for the repository.
 
         The key names the stack state version (an event id), so repeated requests for an unchanged
-        stack collapse into one job while every new state change gets its own.
+        stack collapse into one job while every new state change gets its own. Only this stack's
+        key is held, so other stacks on the same repository integrate and verify independently.
         """
         repo_ids = [
             repo_id
@@ -547,7 +549,7 @@ class StackService(Service):
                 {"stack_id": stack.id, "repository_id": repo_id},
                 workspace_id=stack.workspace_id,
                 idempotency_key=f"stack-integrate:{stack.id}:{repo_id}:{version}",
-                resource_keys=[f"repo:{repo_id}", f"exclusive:stack-integration:{repo_id}"],
+                resource_keys=[stack_key(stack.id, repo_id)],
                 causation_id=version,
                 created_by=ctx.actor,
             )

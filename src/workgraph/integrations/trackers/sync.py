@@ -26,6 +26,7 @@ from workgraph.core.models.schemas import TaskCreate, TaskUpdate
 from workgraph.core.services import resolve
 from workgraph.core.services.base import Service
 from workgraph.core.services.tasks import TaskService, depends_on_reachable, is_ancestor
+from workgraph.integrations.trackers.repositories import resolve_repository
 from workgraph.integrations.trackers.types import (
     SYNC_ACTOR,
     SYNC_COMPONENT,
@@ -38,7 +39,6 @@ from workgraph.persistence.orm import (
     ExternalItem,
     Project,
     Repository,
-    RepositoryRemote,
     SystemCursor,
     Task,
     TaskDependency,
@@ -467,21 +467,6 @@ def _task_by_key(session: Session, ws_id: str, key: str) -> Task | None:
     return session.scalar(select(Task).where(Task.workspace_id == ws_id, Task.key == key))
 
 
-def _resolve_repository(session: Session, ws_id: str, repo_normalized_url: str) -> str | None:
-    """The registered, non-archived repository of the workspace whose remote matches the URL."""
-    return session.scalar(
-        select(Repository.id)
-        .join(RepositoryRemote, RepositoryRemote.repository_id == Repository.id)
-        .where(
-            Repository.workspace_id == ws_id,
-            Repository.archived_at.is_(None),
-            func.lower(RepositoryRemote.normalized_url) == repo_normalized_url.lower(),
-        )
-        .order_by(Repository.name)
-        .limit(1)
-    )
-
-
 def _resolve_pull_request_repos(
     session: Session, ws_id: str, snap: TrackerSnapshot, report: SyncReport
 ) -> dict[str, str | None]:
@@ -490,7 +475,7 @@ def _resolve_pull_request_repos(
     for pr in snap.pull_requests:
         if pr.repo_normalized_url in resolved:
             continue
-        repo_id = _resolve_repository(session, ws_id, pr.repo_normalized_url)
+        repo_id = resolve_repository(session, ws_id, pr.repo_normalized_url)
         resolved[pr.repo_normalized_url] = repo_id
         if repo_id is None and pr.repo_normalized_url not in report.unresolved_pull_requests:
             report.unresolved_pull_requests.append(pr.repo_normalized_url)

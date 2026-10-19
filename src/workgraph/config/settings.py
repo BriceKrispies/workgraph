@@ -177,6 +177,11 @@ class StacksConfig(_Strict):
     """Land a stack as soon as its full verification passes, instead of waiting for the parent's acceptance."""
 
 
+class VerificationConfig(_Strict):
+    auto_accept: bool = True
+    """Accept a task as soon as its full verification passes, instead of waiting for `workgraph task accept`."""
+
+
 class GlobalConfig(_Strict):
     schema_version: int = CONFIG_SCHEMA_VERSION
     default_workspace: str | None = None
@@ -186,6 +191,7 @@ class GlobalConfig(_Strict):
     execution: ExecutionConfig = Field(default_factory=ExecutionConfig)
     jobs: JobLimitsConfig = Field(default_factory=JobLimitsConfig)
     stacks: StacksConfig = Field(default_factory=StacksConfig)
+    verification: VerificationConfig = Field(default_factory=VerificationConfig)
     retention: RetentionConfig = Field(default_factory=RetentionConfig)
     claude: ClaudeIntegrationConfig = Field(default_factory=ClaudeIntegrationConfig)
     automation: AutomationConfig = Field(default_factory=AutomationConfig)
@@ -200,6 +206,7 @@ class WorkspaceOverrides(_Strict):
     execution: dict[str, Any] | None = None
     jobs: dict[str, Any] | None = None
     stacks: dict[str, Any] | None = None
+    verification: dict[str, Any] | None = None
 
 
 def _migrate(raw: dict[str, Any]) -> dict[str, Any]:

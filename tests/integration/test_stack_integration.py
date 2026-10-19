@@ -19,6 +19,7 @@ from workgraph.persistence.orm import (
     Event,
     Job,
     RevisionManifest,
+    Task,
     TaskAcceptance,
     TaskComment,
     VerificationRun,
@@ -872,6 +873,24 @@ def test_dirty_user_checkout_refuses_the_landing_and_moves_no_ref(app, human, ws
     (repo.path / "scratch.txt").unlink()
     app.verification.accept(human, ws, parent.key)
     assert repo.git("rev-parse", "main") == tip
+
+
+def test_stack_child_is_not_accepted_by_its_own_verification(app, human, ws, tree, manual_landing):
+    _repo, parent = tree
+    first, _second, _stack = _verified_stack(app, human, ws, parent)
+    with app.db.session(write=True) as session:
+        session.get(Task, first.id).status = "awaiting_verification"
+
+    run = app.verification.run(human, ws, first.key)
+
+    assert run.required_passed
+    assert app.tasks.get(human, ws, first.key).status == "awaiting_review"
+    assert not [
+        row
+        for row in app.verification.acceptances(human, ws, first.key)
+        if row.reason == "verification.auto_accept"
+    ]
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
 
 
 def test_auto_accept_lands_the_stack_as_soon_as_it_verifies(app, human, ws, tree):

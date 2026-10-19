@@ -40,6 +40,7 @@ from workgraph.core.models.enums import (
 from workgraph.core.services import resolve
 from workgraph.core.services.artifacts import register_file
 from workgraph.core.services.base import Service
+from workgraph.core.services.stacks import active_item
 from workgraph.integrations.git.cli import Git
 from workgraph.integrations.process import base_environment, run_process
 from workgraph.persistence.orm import (
@@ -622,6 +623,7 @@ class VerificationService(Service):
     def _finalize(
         self, ctx: RequestContext, prepared: _PreparedRun, results: list[dict[str, Any]]
     ) -> VerificationRunOut:
+        reviewable = False
         with self.db.session(write=True) as session:
             run = session.get(VerificationRun, prepared.run_id)
             assert run is not None
@@ -717,8 +719,46 @@ class VerificationService(Service):
                     reason=f"verification {run.status}",
                     extra={"run_id": run.id},
                 )
+                reviewable = required_ok
             session.flush()
-            return self._run_out(session, run)
+            out = self._run_out(session, run)
+        if reviewable:
+            self._auto_accept(ctx, prepared)
+        return out
+
+    def _auto_accept(self, ctx: RequestContext, prepared: _PreparedRun) -> None:
+        """Accept a task whose full verification just passed, when ``verification.auto_accept`` is on.
+
+        Runs in its own write session after the run is finalized. Stack children are accepted by the
+        stack landing and a stack parent lands its stack, so neither is accepted here.
+        """
+        if Permission.TASK_ACCEPT not in ctx.permissions:
+            return
+        config = self.app.effective_config(self.app.workspace_slug(prepared.workspace_id))
+        if not config.verification.auto_accept:
+            return
+        if not any(check.spec.required for check in prepared.checks):
+            return
+        with self.db.session(write=True) as session:
+            task = session.get(Task, prepared.task_id)
+            run = session.get(VerificationRun, prepared.run_id)
+            if task is None or run is None or _ran_fast_tier_only(run, prepared.checks):
+                return
+            if TaskStatus(task.status) != TaskStatus.AWAITING_REVIEW:
+                return
+            if active_item(session, task.id) is not None:
+                return
+            if self.app.stack_lander.active_stack_of_parent(session, task.id) is not None:
+                return
+            latest = session.scalar(
+                select(VerificationRun)
+                .where(VerificationRun.task_id == task.id)
+                .order_by(VerificationRun.created_at.desc())
+                .limit(1)
+            )
+            if latest is None or latest.id != run.id:
+                return
+            self._accept(session, ctx, task, mode="automated", reason="verification.auto_accept", run=run)
 
     def _apply_change_set_status(self, session: Session, prepared: _PreparedRun, passed: bool) -> None:
         if not prepared.attempt_id:

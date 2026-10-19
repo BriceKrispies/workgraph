@@ -12,6 +12,23 @@ from workgraph.core.services.attempts import new_attempt
 from workgraph.persistence.orm import Task
 
 
+@pytest.fixture
+def manual_verification(app):
+    """Tasks wait for `workgraph task accept` after a passing run: turns verification.auto_accept off."""
+    config = app.config
+    config.verification.auto_accept = False
+    app.config_store.save_global(config)
+
+
+def _await_verification(app, task) -> None:
+    with app.db.session(write=True) as session:
+        session.get(Task, task.id).status = "awaiting_verification"
+
+
+def _acceptances(app, human, ws, task) -> list:
+    return app.verification.acceptances(human, ws, task.key)
+
+
 def setup_tiered_task(app, human, ws, make_repo):
     repo = make_repo("svc")
     app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
@@ -128,3 +145,73 @@ def test_failure_signature_comes_from_full_log_not_tail(app, human, ws):
     run = app.verification.run(human, ws, task.key)
     assert run.checks[0].status == "failed"
     assert run.checks[0].failure_signatures == ["test:demo::a::b"]
+
+
+def test_passing_full_run_accepts_the_task(app, human, ws, make_repo):
+    task = setup_tiered_task(app, human, ws, make_repo)
+    _await_verification(app, task)
+    run = app.verification.run(human, ws, task.key)
+    assert run.required_passed
+    assert app.tasks.get(human, ws, task.key).status == "accepted"
+    (acceptance,) = _acceptances(app, human, ws, task)
+    assert acceptance.mode == "automated"
+    assert acceptance.reason == "verification.auto_accept"
+    assert acceptance.verification_run_id == run.id
+
+
+def test_auto_accept_off_leaves_the_task_awaiting_review(app, human, ws, make_repo, manual_verification):
+    task = setup_tiered_task(app, human, ws, make_repo)
+    _await_verification(app, task)
+    run = app.verification.run(human, ws, task.key)
+    assert run.required_passed
+    assert app.tasks.get(human, ws, task.key).status == "awaiting_review"
+    assert _acceptances(app, human, ws, task) == []
+
+
+def test_fast_tier_run_does_not_auto_accept(app, human, ws, make_repo):
+    task = setup_tiered_task(app, human, ws, make_repo)
+    _await_verification(app, task)
+    run = app.verification.run(human, ws, task.key, tier="fast")
+    assert run.required_passed
+    assert app.tasks.get(human, ws, task.key).status != "accepted"
+    assert _acceptances(app, human, ws, task) == []
+
+
+def test_failing_run_does_not_auto_accept(app, human, ws, make_repo):
+    repo = make_repo("broken")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    task = app.tasks.create(human, ws, TaskCreate(title="Broken", repositories=["broken"], status="ready"))
+    app.verification.create_config(
+        human,
+        ws,
+        scope_type="repository",
+        scope="broken",
+        name="ci",
+        checks=[{"name": "unit tests", "command": [sys.executable, "-c", "raise SystemExit(1)"]}],
+    )
+    _await_verification(app, task)
+    run = app.verification.run(human, ws, task.key)
+    assert not run.required_passed
+    assert app.tasks.get(human, ws, task.key).status != "accepted"
+    assert _acceptances(app, human, ws, task) == []
+
+
+def test_run_without_required_checks_does_not_auto_accept(app, human, ws, make_repo):
+    repo = make_repo("optional")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    task = app.tasks.create(
+        human, ws, TaskCreate(title="Optional only", repositories=["optional"], status="ready")
+    )
+    app.verification.create_config(
+        human,
+        ws,
+        scope_type="repository",
+        scope="optional",
+        name="ci",
+        checks=[{"name": "unit tests", "required": False, "command": [sys.executable, "-c", "print('ok')"]}],
+    )
+    _await_verification(app, task)
+    run = app.verification.run(human, ws, task.key)
+    assert run.required_passed
+    assert app.tasks.get(human, ws, task.key).status == "awaiting_review"
+    assert _acceptances(app, human, ws, task) == []

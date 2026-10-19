@@ -99,6 +99,9 @@ default_max_attempts = 5
 [stacks]
 auto_accept = true             # land a stack as soon as its full verification passes (no parent acceptance)
 
+[verification]
+auto_accept = true             # accept a task as soon as its full verification passes (no `task accept`)
+
 [retention]
 telemetry_payload_days = 30    # raw hook payloads are compacted after this
 run_log_days = 90              # agent/verification log files are purged after this
@@ -120,6 +123,13 @@ override the global value. With it on, a stack whose full verification passes la
 branch without anyone accepting the parent (see [Git](git.md#stack-landing)). It is on by default, and
 it is the only setting in the `stacks` table. Project-level overrides do not exist yet, as for the
 other settings.
+
+`[verification] auto_accept` is read the same way (a workspace file can set its own `[verification]`
+table). With it on, a task that is not a stack item and not a stack parent is accepted as soon as its
+full verification run passes all required checks, with the reason `verification.auto_accept`. A
+fast-tier-only run never accepts a task, and a run with no required checks never accepts one. It is on
+by default; set it to `false` to keep the `workgraph task accept` step (see
+[Task lifecycle](task-lifecycle.md#acceptance)).
 
 ## Secrets
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 from typing import Any, cast
 
 import typer
@@ -32,6 +33,7 @@ from workgraph.core.models.schemas import (
     TaskFilter,
     TaskUpdate,
 )
+from workgraph.core.services import triage
 
 task_app = typer.Typer(help="Create, query and move tasks through their lifecycle.", no_args_is_help=True)
 
@@ -486,6 +488,45 @@ def task_archive(
     """Archive (or unarchive) a task. Records are never deleted."""
     out = STATE.app().tasks.archive(STATE.ctx(), ws(workspace), ref, archived=not undo)
     emit(out, lambda t: console.print(f"{t.key} {'unarchived' if undo else 'archived'}"))
+
+
+@task_app.command("triage-apply")
+@handle_errors
+def task_triage_apply(
+    path: Path = typer.Argument(
+        ..., exists=True, dir_okay=False, readable=True, help="JSON array of verdicts"
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Report what would change; change nothing"),
+    source: str | None = typer.Option(None, "--source", help="Who triaged, e.g. 'triage batch WG-1215'"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Apply a file of triage verdicts (resolved, obsolete, open, needs-decision, needs-run, unclear)."""
+    entries = triage.load_verdicts(path)
+    report = triage.apply_verdicts(
+        STATE.app().tasks, STATE.ctx(), ws(workspace), entries, dry_run=dry_run, source=source
+    )
+    emit(report, lambda r: _render_triage(r, dry_run))
+    if report["errors"]:
+        raise typer.Exit(1)
+
+
+def _render_triage(report: dict[str, Any], dry_run: bool) -> None:
+    rows: list[tuple[Any, ...]] = []
+    for item in report["applied"]:
+        rows.append((item["key"], item["verdict"], item["action"], ", ".join(item["new_keys"]) or "-"))
+    for item in report["skipped"]:
+        rows.append((item["key"], item["verdict"], "skipped", item["reason"]))
+    for item in report["errors"]:
+        rows.append((item["key"] or "-", item["verdict"] or "-", "error", item["error"]))
+    table(
+        rows,
+        ["key", "verdict", "action", "new keys / error"],
+        title="triage" + (" (dry run)" if dry_run else ""),
+    )
+    console.print(
+        f"{len(report['applied'])} applied, {len(report['skipped'])} skipped, {len(report['errors'])} errors"
+        + (" (nothing changed)" if dry_run else "")
+    )
 
 
 @task_app.command("history")

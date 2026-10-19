@@ -54,6 +54,7 @@ from workgraph.verification.service import AcceptanceOut
 # Task states from which the acceptance service accepts a task.
 ACCEPTABLE_TASK_STATUSES = (TaskStatus.AWAITING_REVIEW, TaskStatus.AWAITING_VERIFICATION)
 # Jobs that rebuild or move a stack's integration branches; a request must not rebuild under them.
+# Per stack: a landing waits only for integration work of the same stack, never for another stack's.
 INTEGRATION_JOB_KINDS = ("stack_integrate", "stack_verify")
 INTEGRATION_JOB_STATUSES = ("queued", "running")
 
@@ -363,7 +364,11 @@ class StackLander(Service):
         self._rebuild(ctx, stack_id, bases=heads)
 
     def _fast_forward(self, plans: list[tuple[IntegrationTarget, str, str]]) -> None:
-        """Move each default branch from its base to the verified tip, after checking every repository."""
+        """Move each default branch from its base to the verified tip, after checking every repository.
+
+        Every move is a fast-forward or a compare-and-swap on the branch's base, so a branch that another
+        landing moved first is refused and the moves already made are rolled back.
+        """
         moves: list[tuple[IntegrationTarget, str, str, Any]] = []
         for target, default, tip in plans:
             source = Git(target.source_path)
@@ -396,7 +401,7 @@ class StackLander(Service):
                 else:
                     Git(target.source_path).run("update-ref", f"refs/heads/{default}", tip, target.base_sha)
                 moved.append((target, default, tip, holder))
-        except GitError:
+        except GitError as exc:
             for target, default, tip, holder in reversed(moved):
                 if holder is not None:
                     Git(holder).run("reset", "--keep", target.base_sha, check=False)
@@ -404,7 +409,11 @@ class StackLander(Service):
                     Git(target.source_path).run(
                         "update-ref", f"refs/heads/{default}", target.base_sha, tip, check=False
                     )
-            raise
+            # A default branch that moved under the landing (another stack's verification on the same
+            # repository, when verify_concurrency allows it) is a refusal, not a crash of the job.
+            raise ConflictError(
+                "a default branch moved while the stack was landing; nothing was moved, verify and accept again"
+            ) from exc
 
     def _finish(
         self,

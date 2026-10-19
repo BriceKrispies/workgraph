@@ -81,6 +81,20 @@ def test_resource_limits(app):
     assert again is not None and again.id == second
 
 
+def test_verify_keys_are_bounded_by_verify_concurrency(app):
+    config = app.config
+    config.jobs.verify_concurrency = 2
+    app.config_store.save_global(config)
+    queue = app.queue
+    jobs = [queue.enqueue("noop", resource_keys=["verify:abc"]) for _ in range(3)]
+    first = queue.claim("w")
+    second = queue.claim("w")
+    assert {first.id, second.id} == set(jobs[:2])
+    assert queue.claim("w") is None  # two verifications hold the repository's verify keys
+    queue.complete(first.id, "w")
+    assert queue.claim("w").id == jobs[2]
+
+
 def test_cancellation(app):
     queue = app.queue
     queued = queue.enqueue("noop")

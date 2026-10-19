@@ -154,6 +154,7 @@ class JobLimitsConfig(_Strict):
     gpu_concurrency: int = Field(default=1, ge=1, le=16)
     per_agent_concurrency: int = Field(default=2, ge=1, le=64)
     per_repository_concurrency: int = Field(default=1, ge=1, le=64)
+    verify_concurrency: int = Field(default=1, ge=1, le=64)
     lease_seconds: int = Field(default=60, ge=5, le=3600)
     default_max_attempts: int = Field(default=5, ge=1, le=50)
 

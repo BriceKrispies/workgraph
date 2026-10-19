@@ -53,6 +53,7 @@ from workgraph.integrations.git.stack_integration import (
     merge_head,
 )
 from workgraph.jobs import queue as jobqueue
+from workgraph.jobs.limits import stack_key, verify_key
 from workgraph.persistence.orm import (
     ManagedWorktree,
     Repository,
@@ -177,9 +178,11 @@ class StackVerifier(Service):
             key = f"stack-verify:{stack_id}:" + ",".join(f"{repo.name}={tips[repo.name]}" for repo in repos)
             if version:
                 key += f":{version}"
+            # This stack's keys only, so other stacks on the repository keep integrating. ``verify:`` bounds
+            # how many heavy verifications run on one repository at once.
             resource_keys = sorted(
-                {f"repo:{repo.repository_id}" for repo in repos}
-                | {f"exclusive:stack-integration:{repo.repository_id}" for repo in repos}
+                {stack_key(stack_id, repo.repository_id) for repo in repos}
+                | {verify_key(repo.repository_id) for repo in repos}
             )
             job = jobqueue.enqueue(
                 session,

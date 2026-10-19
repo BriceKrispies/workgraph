@@ -334,8 +334,18 @@ class RepositoryService(Service):
         with self.db.session(write=True) as session:
             ws_id = self.app.tasks._workspace_id(session, workspace)
             repo = resolve.repository(session, ws_id, ref)
+            updates = data.model_dump(exclude_unset=True)
+            if data.default_branch and data.default_branch != repo.default_branch:
+                # A new default branch is always tracked, so git sync never misses it.
+                tracked = (
+                    list(repo.tracked_branches or [])
+                    if data.tracked_branches is None
+                    else data.tracked_branches
+                )
+                if data.default_branch not in tracked:
+                    updates["tracked_branches"] = [*tracked, data.default_branch]
             changes = {}
-            for field, value in data.model_dump(exclude_unset=True).items():
+            for field, value in updates.items():
                 if value is not None and getattr(repo, field) != value:
                     changes[field] = [getattr(repo, field), value]
                     setattr(repo, field, value)

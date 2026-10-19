@@ -45,6 +45,12 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 
 Worktree discovery: `repo register` and `repo refresh` run `git worktree list` and record each linked worktree (kind `worktree`) and the main working tree (kind `clone`) as a checkout of the same repository. Workgraph's managed worktrees, bare entries and paths outside the workspace's allowed roots are not added; the skipped paths are listed in the repository's `health_detail.skipped_worktrees`. Refresh marks worktrees that were removed or are reported as prunable as unavailable, and records `repository.checkout_discovered` / `repository.checkout_lost` events.
 
+`repo update` takes `--track BRANCH` and `--untrack BRANCH` (both repeatable) to edit the repository's
+tracked branches. Git sync scans the tracked branches first and then only the first 20 local branches,
+so a branch that matters in a repository with many branches should be tracked explicitly. Changing
+`--default-branch` also adds the new default to the tracked branches when it is not tracked yet; existing
+entries are kept.
+
 ## Examples
 
 ```sh

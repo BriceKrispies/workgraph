@@ -85,7 +85,9 @@ cancellation and **resource keys** that enforce concurrency limits (`gpu`, `agen
 crashed worker's jobs are recovered when its lease expires. One worker at a time is elected
 (through an expiring lease row) to run maintenance: lease recovery, lost-worker detection,
 expired task claims, automation event dispatch, scheduled rules, the agent scheduler,
-hook-spool replay and telemetry retention.
+hook-spool replay and telemetry retention. The same leader queues Jira tracker syncs
+(`tracker_sync` jobs, at most one queued or running per connection and mode) on each
+`[trackers.<name>]` connection's poll and full-sync intervals (`jobs/trackers.py`).
 
 ## Agent runs
 

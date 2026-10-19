@@ -28,6 +28,14 @@ def git_sync(app: Workgraph, job: JobContext) -> dict[str, Any]:
     return result.model_dump()
 
 
+def tracker_sync(app: Workgraph, job: JobContext) -> dict[str, Any]:
+    payload = job.job.payload
+    report = app.trackers.sync(
+        _ctx(job, "tracker-sync"), payload["connection"], full=bool(payload.get("full"))
+    )
+    return report.as_dict()
+
+
 def analyze_commits(app: Workgraph, job: JobContext) -> dict[str, Any]:
     analyzed = 0
     for commit_id in job.job.payload["commit_ids"]:
@@ -147,6 +155,7 @@ def noop(app: Workgraph, job: JobContext) -> dict[str, Any]:
 
 HANDLERS: dict[str, Handler] = {
     "git_sync": git_sync,
+    "tracker_sync": tracker_sync,
     "analyze_commits": analyze_commits,
     "compute_change_surface": compute_change_surface,
     "classify_task": classify_task,

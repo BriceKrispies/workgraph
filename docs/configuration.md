@@ -113,6 +113,22 @@ max_payload_chars = 4000
 
 [automation]
 max_depth = 3                  # global recursion limit for rule chains
+
+[trackers.work-jira]
+type = "jira"
+flavour = "cloud"                 # "data_center" once implemented
+base_url = "https://acme.atlassian.net"
+workspace = "work"
+projects = ["ABC"]                # Jira project keys; each maps to a Workgraph project of the same slug
+email_env = "WORKGRAPH_JIRA_EMAIL"
+token_env = "WORKGRAPH_JIRA_TOKEN"
+poll_interval_seconds = 300
+full_sync_interval_seconds = 86400
+overlap_seconds = 120
+missing_grace_seconds = 86400
+pr_fields = ["customfield_10042"]
+dev_panel = true
+cancelled_resolutions = ["Won't Do", "Duplicate"]
 ```
 
 Workspace settings stored in the database (not secrets) are managed with
@@ -131,6 +147,17 @@ full verification run passes all required checks, with the reason `verification.
 fast-tier-only run never accepts a task, and a run with no required checks never accepts one. It is on
 by default; set it to `false` to keep the `workgraph task accept` step (see
 [Task lifecycle](task-lifecycle.md#acceptance)).
+
+### Issue trackers
+
+Each `[trackers.<name>]` table connects Workgraph to one Jira site, read-only: Workgraph only issues
+GET requests and never comments on, transitions or edits a Jira issue. Issues from the listed
+`projects` are mirrored as tasks into the workspace named by `workspace`. The maintenance leader
+queues an incremental sync every `poll_interval_seconds` and a full sync every
+`full_sync_interval_seconds`, and `workgraph tracker sync` runs one on demand. Credentials come only
+from the environment variables named by `email_env` and `token_env`; the configuration holds those
+names, never the values. The design, including the status mapping, is in
+[design/tracker-sync.md](design/tracker-sync.md).
 
 ## Secrets
 

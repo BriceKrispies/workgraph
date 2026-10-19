@@ -31,6 +31,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `worker` | `run [--once/--kind]`, `list`, `recover` |
 | `job` | `list`, `show`, `stats`, `cancel`, `retry`, `enqueue`, `compact` |
 | `git` | `sync [--full]`, `log`, `show`, `link`, `unlink`, `changes`, `diff`, `surface`, `analyze`, `worktrees`, `cleanup-worktrees [--apply]`, `install-hook` |
+| `tracker` | `list` (configured connections), `sync NAME [--full] [--queue]` (mirrors a Jira connection's issues into tasks now and prints the report; `--queue` enqueues a `tracker_sync` job and prints its id), `status [NAME]` (cursor, last sync, tracked task counts, unresolved pull request repositories; all connections when no name). Read-only towards Jira; see [Configuration](configuration.md#issue-trackers) |
 | `classify` | `request [--now]`, `show`, `confirm`, `promote`, `reclassify`, `gold`, `evaluate`, `evaluations`, `disagreements` |
 | `search` | full-text / semantic / hybrid; `--similar-to KEY`; `--reindex` |
 | `analytics` | `metrics`, `query`, `overview`, `compare`, `coupling`, `failures`, `subagents`, `estimate`, `history`, `export`, `retrospective` |

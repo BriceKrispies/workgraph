@@ -57,10 +57,10 @@ def upgrade() -> None:
                     "updated_at": now,
                 }
             )
-    # Dropping the column rebuilds `tasks` on SQLite, which would cascade-delete any task_links rows,
-    # so the links are written only after the rebuild.
-    with op.batch_alter_table("tasks", schema=None) as batch_op:
-        batch_op.drop_column("external_refs")
+    # Native DROP COLUMN (SQLite 3.35+), not a batch rebuild: migrations run with foreign keys on, and
+    # dropping the old `tasks` table during a rebuild fails on RESTRICT references (attempts, stack items)
+    # or cascades away comments, tags, dependencies and links.
+    op.execute(sa.text("ALTER TABLE tasks DROP COLUMN external_refs"))
     if rows:
         task_links = sa.table(
             "task_links",
@@ -83,6 +83,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    # Remove the migrated links first; a plain ADD COLUMN avoids rebuilding `tasks` and cascading other links.
+    # A plain ADD COLUMN, like the upgrade's DROP COLUMN, avoids rebuilding `tasks`.
     op.execute(sa.text("DELETE FROM task_links WHERE kind = 'external_ref'"))
     op.add_column("tasks", sa.Column("external_refs", JSON(), nullable=False, server_default=sa.text("'[]'")))

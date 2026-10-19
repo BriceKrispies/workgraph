@@ -548,6 +548,7 @@ EDITABLE_PREFIXES = (
     "claude.capture_tool_payloads",
     "automation.max_depth",
     "stacks.auto_accept",
+    "verification.auto_accept",
 )
 
 

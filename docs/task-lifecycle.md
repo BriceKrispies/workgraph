@@ -111,6 +111,11 @@ uv run workgraph verify failures --check "unit tests"
 - **Manual**: `workgraph task accept WG-12 --manual --reason "reviewed the diff"` records an
   explicit decision by the actor (required for tasks with no automated checks).
 - **Reject**: `workgraph task reject WG-12 --reason "..."` sends the work back to `ready`.
+- **Auto-accept.** By default (`verification.auto_accept = true`), a task that is not part of a stack
+  is accepted as soon as its full verification run passes all required checks, with the reason
+  `verification.auto_accept`. A fast-tier-only run never accepts, and neither does a run with no
+  required checks. Stack children and stack parents are handled by the stack (see below). Set the
+  setting to `false` in [configuration](configuration.md) to keep acceptance a manual step.
 
 Acceptance stores the accepted revision manifest and queues the final-change-surface computation.
 Workgraph never merges, pushes or publishes accepted work, with one exception: accepting the parent

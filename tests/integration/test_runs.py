@@ -11,6 +11,14 @@ from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.jobs.worker import Worker
 
 
+@pytest.fixture
+def manual_verification(app):
+    """Tasks wait for `workgraph task accept` after a passing run: turns verification.auto_accept off."""
+    config = app.config
+    config.verification.auto_accept = False
+    app.config_store.save_global(config)
+
+
 def make_task(app, human, ws, make_repo, names=("api", "sdk"), **kw):
     for name in names:
         repo = make_repo(name)
@@ -41,7 +49,7 @@ def test_unavailable_provider_is_actionable_and_harmless(app, human, ws, make_re
     assert app.attempts.list(human, ws, task=task.key).total == 0
 
 
-def test_successful_cross_repo_run_with_verification(app, human, ws, make_repo):
+def test_successful_cross_repo_run_with_verification(app, human, ws, make_repo, manual_verification):
     enable_fake_agent(app)
     task = make_task(app, human, ws, make_repo)
     app.verification.create_config(
@@ -80,7 +88,7 @@ def test_successful_cross_repo_run_with_verification(app, human, ws, make_repo):
     assert "attempt.succeeded" in events and "task.accepted" in events
 
 
-def test_failed_verification_then_retry(app, human, ws, make_repo):
+def test_failed_verification_then_retry(app, human, ws, make_repo, manual_verification):
     enable_fake_agent(app)
     task = make_task(app, human, ws, make_repo, names=("svc",))
     config = app.verification.create_config(

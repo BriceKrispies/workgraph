@@ -399,6 +399,162 @@ def test_bisect_ejects_the_child_that_completes_a_failing_combination(app, human
     assert types.count("stack.bisect_probe") >= 2
 
 
+def _bad_files_check(baseline: str = "regression") -> dict[str, object]:
+    """A full check that prints one cargo-style failure per bad_* file in the repository."""
+    code = (
+        "import os\n"
+        "bad = sorted(name for name in os.listdir('.') if name.startswith('bad_'))\n"
+        "for name in bad:\n"
+        "    print(f'test {name} ... FAILED')\n"
+        "raise SystemExit(1 if bad else 0)\n"
+    )
+    return {
+        "name": "suite",
+        "kind": "test",
+        "command": [sys.executable, "-c", code],
+        "parser": "cargo",
+        "baseline": baseline,
+    }
+
+
+def _event_data(app, stack_id: str, event_type: str) -> dict[str, Any]:
+    with app.db.session() as session:
+        return session.scalar(
+            select(Event.data).where(Event.entity_id == stack_id, Event.event_type == event_type)
+        )
+
+
+@pytest.fixture
+def red_base(app, human, ws, make_repo):
+    """A repository whose base already fails the suite: bad_a.txt is a known failure."""
+    enable_fake_agent(app)
+    repo = make_repo("svc")
+    repo.commit("record a known failure", {"bad_a.txt": "known\n"})
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    parent = app.tasks.create(human, ws, TaskCreate(title="Parent work", repositories=["svc"]))
+    return repo, parent
+
+
+def test_a_failure_the_base_already_has_does_not_block_the_stack(app, human, ws, red_base):
+    _repo, parent = red_base
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "c.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, _bad_files_check()],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    stack = app.stacks.create(human, ws, parent.key)
+
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+    assert app.tasks.get(human, ws, first.key).status == "awaiting_review"
+    assert app.tasks.get(human, ws, second.key).status == "awaiting_review"
+    assert "stack.item_ejected" not in _event_types(app, stack.id)
+    verified = _event_data(app, stack.id, "stack.verified")
+    assert verified["reason"] == "no new failures against the base"
+    assert verified["tolerated"] == {"suite": ["test:bad_a.txt"]}
+    # The base was measured once, for the failing check; the run on the tip is the only other run.
+    assert len(_verification_runs(app, parent)) == 2
+
+
+def test_a_regression_at_the_same_base_reuses_the_cached_base_outcome(app, human, ws, red_base):
+    _repo, parent = red_base
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "c.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, _bad_files_check()],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    stack = app.stacks.create(human, ws, parent.key)
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    assert len(_verification_runs(app, parent)) == 2
+
+    app.stack_verification.request(human, ws, parent.key)
+    drain(app)
+
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+    assert len(_verification_runs(app, parent)) == 3
+    assert "stack.verified" in _event_types(app, stack.id)
+
+
+def test_a_new_regression_ejects_the_child_and_names_only_its_signature(app, human, ws, red_base):
+    repo, parent = red_base
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "c.txt")
+    _enable_agent(app, "fake-c", "bad_b.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, _bad_files_check()],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    third = _child(app, human, ws, parent, "Third change")
+    stack = app.stacks.create(human, ws, parent.key)
+    branch = stack.repositories[0].integration_branch
+
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    _run(app, human, ws, third.key, "fake-c")
+
+    items = _items(app, human, ws, parent)
+    assert items[first.key].state == "verified" and items[second.key].state == "verified"
+    assert items[third.key].state == "ejected"
+    ejection = json.loads(items[third.key].detail)["ejection"]
+    assert ejection["position"] == 3
+    assert ejection["failed_checks"] == ["suite"]
+    assert ejection["signatures"] == {"suite": ["test:bad_b.txt"]}
+    comments = " ".join(_task_comments(app, app.tasks.get(human, ws, third.key).id))
+    assert "test:bad_b.txt" in comments and "bad_a" not in comments
+    assert app.tasks.get(human, ws, third.key).status == "ready"
+    assert "bad_b.txt" not in _branch_files(repo, branch)
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+
+
+def test_an_absolute_check_failing_on_the_base_still_ejects_nothing(app, human, ws, red_base):
+    _repo, parent = red_base
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "c.txt")
+    _enable_agent(app, "fake-c", "bad_b.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [
+            {**passing_check("types"), "kind": "typecheck", "tier": "fast"},
+            _bad_files_check(baseline="absolute"),
+        ],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    third = _child(app, human, ws, parent, "Third change")
+    stack = app.stacks.create(human, ws, parent.key)
+
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    _run(app, human, ws, third.key, "fake-c")
+
+    items = _items(app, human, ws, parent)
+    assert all(items[task.key].state == "merged" for task in (first, second, third))
+    assert app.stacks.get(human, ws, parent.key).status == "integrating"
+    types = _event_types(app, stack.id)
+    assert "stack.verification_failed_on_base" in types
+    assert "stack.item_ejected" not in types
+    assert "stack.verified" not in types
+
+
 def test_all_passing_full_checks_verify_every_item_with_one_run(app, human, ws, tree):
     _repo, parent = tree
     _enable_agent(app, "fake-a", "a.txt")

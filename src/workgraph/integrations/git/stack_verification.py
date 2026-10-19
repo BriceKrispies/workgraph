@@ -5,16 +5,19 @@ Once the queue settles (no item pending or ready, at least one item on the integ
 Passing verifies every merged item and moves its child to ``awaiting_review``.
 
 Failing bisects the merge sequence. A probe checks out one prefix of the sequence in a detached
-bisect worktree per repository and runs only the checks that failed on the tip. The first item whose
-prefix fails is ejected: its task returns to ready with the failure, the items that depend on it go
-back to pending, and the integration branch is rebuilt from the base without it. Verification then
-runs again on the rebuilt tip. A failure on the base itself ejects nothing.
+bisect worktree per repository and runs only the checks that failed on the tip. A check in regression
+mode fails only on signatures the stack's base does not already report, so a red base does not block
+the stack. The first item whose prefix fails is ejected: its task returns to ready with the failure,
+the items that depend on it go back to pending, and the integration branch is rebuilt from the base
+without it. Verification then runs again on the rebuilt tip. A failure on the base itself ejects
+nothing.
 """
 
 from __future__ import annotations
 
 import shutil
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -38,6 +41,7 @@ from workgraph.core.services import resolve
 from workgraph.core.services.base import Service
 from workgraph.core.services.stacks import latest_event_id
 from workgraph.integrations.git.cli import Git
+from workgraph.integrations.git.regression import CheckOutcome, regressions
 from workgraph.integrations.git.stack_integration import (
     RETURNABLE_TASK_STATUSES,
     IntegrationTarget,
@@ -52,14 +56,17 @@ from workgraph.jobs import queue as jobqueue
 from workgraph.persistence.orm import (
     ManagedWorktree,
     Repository,
+    RevisionManifest,
     Stack,
     StackItem,
     StackRepository,
     Task,
     TaskDependency,
+    VerificationCheckResult,
+    VerificationRun,
 )
 from workgraph.security.permissions import Permission, require
-from workgraph.verification.configs import ApplicableCheck, applicable_checks
+from workgraph.verification.configs import ApplicableCheck, CheckSpec, applicable_checks
 from workgraph.verification.service import VerificationRunOut
 
 # Items whose merges are on the integration branch. A conflicting item may hold merges in the
@@ -102,6 +109,17 @@ def _prefix_shas(bases: dict[str, str], sequence: list[_Entry], position: int) -
         for name, merge in entry.merges.items():
             shas[name] = merge["merge_commit"]
     return shas
+
+
+def _at_bases(entries: list[dict[str, Any]], repos: list[StackRepoBase]) -> bool:
+    """Whether a revision manifest holds exactly the base commit of every stack repository."""
+    shas = {entry.get("repository_id"): entry.get("sha") for entry in entries}
+    return all(shas.get(repo.repository_id) == repo.base_sha for repo in repos)
+
+
+def _is_absolute(specs: dict[str, CheckSpec], name: str) -> bool:
+    spec = specs.get(name)
+    return spec is None or spec.baseline == "absolute"
 
 
 class StackVerifier(Service):
@@ -222,12 +240,34 @@ class StackVerifier(Service):
             Git(path).run("clean", "-ffdx", check=False)
         if run.required_passed:
             return self._passed(ctx, stack_id, run_id=run.id, tips=tips, reason="full checks passed")
-        return self._bisect(ctx, stack_id, parent_id, repos, targets, run, tips)
+        specs = {check.spec.name: check.spec for check in checks}
+        failed = {check.name for check in run.checks if check.required and check.status != "passed"}
+        base = self._base_outcomes(ctx, stack_id, parent_id, repos, targets, failed)
+        if not regressions(run, base, specs):
+            tolerated = {
+                check.name: list(check.failure_signatures) for check in run.checks if check.name in failed
+            }
+            return self._passed(
+                ctx,
+                stack_id,
+                run_id=run.id,
+                tips=tips,
+                reason="no new failures against the base",
+                extra={"tolerated": tolerated},
+            )
+        return self._bisect(ctx, stack_id, parent_id, repos, targets, run, tips, base, specs)
 
     # ------------------------------------------------------------------ pass
 
     def _passed(
-        self, ctx: RequestContext, stack_id: str, *, run_id: str | None, tips: dict[str, str], reason: str
+        self,
+        ctx: RequestContext,
+        stack_id: str,
+        *,
+        run_id: str | None,
+        tips: dict[str, str],
+        reason: str,
+        extra: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         with self.db.session(write=True) as session:
             stack, parent = self._load(session, stack_id)
@@ -262,7 +302,7 @@ class StackVerifier(Service):
                 entity_type="stack",
                 entity_id=stack.id,
                 workspace_id=stack.workspace_id,
-                data={"run_id": run_id, "tips": tips, "tasks": verified, "reason": reason},
+                data={"run_id": run_id, "tips": tips, "tasks": verified, "reason": reason, **(extra or {})},
             )
         landing = self.app.stack_lander.after_verified(ctx, stack_id)
         return {"status": "verified", "run_id": run_id, "verified": verified, "landing": landing}
@@ -319,8 +359,17 @@ class StackVerifier(Service):
         targets: list[IntegrationTarget],
         tip_run: VerificationRunOut,
         tips: dict[str, str],
+        base: dict[str, CheckOutcome],
+        specs: dict[str, CheckSpec],
     ) -> dict[str, Any]:
-        failing = {check.name for check in tip_run.checks if check.required and check.status != "passed"}
+        failing = regressions(tip_run, base, specs)
+        failed = {check.name for check in tip_run.checks if check.required and check.status != "passed"}
+        # An absolute check that fails on the base is a failure of the base itself, not of any child.
+        on_base = sorted(
+            name
+            for name in failed
+            if _is_absolute(specs, name) and (name not in base or base[name].status != "passed")
+        )
         with self.db.session(write=True) as session:
             stack, _ = self._load(session, stack_id)
             sequence = self._sequence(session, stack)
@@ -335,31 +384,38 @@ class StackVerifier(Service):
                     "run_id": tip_run.id,
                     "tips": tips,
                     "failed_checks": sorted(failing),
-                    "signatures": self._signatures(tip_run, failing),
+                    "signatures": failing,
                 },
             )
+        if not sequence or on_base:
+            run_id = tip_run.id if not sequence else base[on_base[0]].run_id
+            reason = "no merged change to eject" if not sequence else "the base fails"
+            with self.db.session(write=True) as session:
+                stack, _ = self._load(session, stack_id)
+                record_event(
+                    session,
+                    ctx,
+                    event_type="stack.verification_failed_on_base",
+                    entity_type="stack",
+                    entity_id=stack.id,
+                    workspace_id=stack.workspace_id,
+                    data={"run_id": run_id, "failed_checks": sorted(on_base or failing), "reason": reason},
+                )
+                self.set_status(session, ctx, stack, StackStatus.INTEGRATING, reason=reason)
+            return {"status": "failed_on_base", "run_id": run_id}
+
         in_scope = _in_scope(repos)
         bases = {repo.name: repo.base_sha for repo in repos}
-        bisect = {target.repository_name: self._bisect_worktree(ctx, target) for target in targets}
-        try:
-
-            def probe(position: int) -> VerificationRunOut:
-                shas = _prefix_shas(bases, sequence, position)
-                for name, sha in shas.items():
-                    git = Git(bisect[name][1])
-                    git.run("checkout", "--force", "--detach", sha)
-                    git.run("clean", "-ffdx")
-                run = self.app.verification.run(
-                    ctx,
-                    None,
-                    parent_id,
-                    manifest_entries=self._entries(
-                        targets, {name: path for name, (_, path) in bisect.items()}, shas, branch=False
-                    ),
-                    tier="full",
-                    check_filter=lambda check: in_scope(check) and check.spec.name in failing,
-                    event_context={"stack": {"id": stack_id, "position": position, "shas": shas}},
+        # Invariant: the prefix ``low`` passes and the prefix ``high`` fails. The base passes by construction.
+        low, high, high_run = 0, len(sequence), tip_run
+        with self._worktrees(ctx, targets) as bisect:
+            while high - low > 1:
+                middle = (low + high) // 2
+                shas = _prefix_shas(bases, sequence, middle)
+                run = self._probe(
+                    ctx, stack_id, parent_id, targets, bisect, shas, set(failing), in_scope, middle
                 )
+                passed = not regressions(run, base, specs)
                 with self.db.session(write=True) as session:
                     stack, _ = self._load(session, stack_id)
                     record_event(
@@ -370,48 +426,21 @@ class StackVerifier(Service):
                         entity_id=stack.id,
                         workspace_id=stack.workspace_id,
                         data={
-                            "position": position,
+                            "position": middle,
                             "shas": shas,
-                            "passed": run.required_passed,
+                            "passed": passed,
                             "run_id": run.id,
                             "failed_checks": sorted(
                                 c.name for c in run.checks if c.required and c.status != "passed"
                             ),
                         },
                     )
-                return run
-
-            base_run = probe(0) if sequence else tip_run
-            if not sequence or not base_run.required_passed:
-                reason = "no merged change to eject" if not sequence else "the base fails"
-                with self.db.session(write=True) as session:
-                    stack, _ = self._load(session, stack_id)
-                    record_event(
-                        session,
-                        ctx,
-                        event_type="stack.verification_failed_on_base",
-                        entity_type="stack",
-                        entity_id=stack.id,
-                        workspace_id=stack.workspace_id,
-                        data={"run_id": base_run.id, "failed_checks": sorted(failing), "reason": reason},
-                    )
-                    self.set_status(session, ctx, stack, StackStatus.INTEGRATING, reason=reason)
-                return {"status": "failed_on_base", "run_id": base_run.id}
-
-            # Invariant: the prefix ``low`` passes and the prefix ``high`` fails.
-            low, high, high_run = 0, len(sequence), tip_run
-            while high - low > 1:
-                middle = (low + high) // 2
-                run = probe(middle)
-                if run.required_passed:
+                if passed:
                     low = middle
                 else:
                     high, high_run = middle, run
-        finally:
-            for row_id, _ in bisect.values():
-                self.app.worktrees.remove(ctx, row_id, force=True)
         culprit = sequence[high - 1]
-        task_key = self._eject(ctx, stack_id, culprit, high, high_run, failing)
+        task_key = self._eject(ctx, stack_id, culprit, high, high_run, regressions(high_run, base, specs))
         self.rebuild(ctx, stack_id, targets, repos)
         self._enqueue(ctx, stack_id, version=None)
         return {"status": "ejected", "task": task_key, "position": high, "run_id": high_run.id}
@@ -423,16 +452,15 @@ class StackVerifier(Service):
         culprit: _Entry,
         position: int,
         run: VerificationRunOut,
-        failing: set[str],
+        signatures: dict[str, list[str]],
     ) -> str:
-        signatures = self._signatures(run, failing)
         ejection = {
             "position": position,
             "verification_run_id": run.id,
-            "failed_checks": sorted(failing),
+            "failed_checks": sorted(signatures),
             "signatures": signatures,
         }
-        names = ", ".join(sorted(failing))
+        names = ", ".join(sorted(signatures))
         listed = "; ".join(
             f"{name}: {', '.join(found) or 'none reported'}" for name, found in signatures.items()
         )
@@ -635,9 +663,100 @@ class StackVerifier(Service):
             for target in targets
         ]
 
-    @staticmethod
-    def _signatures(run: VerificationRunOut, failing: set[str]) -> dict[str, list[str]]:
-        return {check.name: list(check.failure_signatures) for check in run.checks if check.name in failing}
+    def _base_outcomes(
+        self,
+        ctx: RequestContext,
+        stack_id: str,
+        parent_id: str,
+        repos: list[StackRepoBase],
+        targets: list[IntegrationTarget],
+        names: set[str],
+    ) -> dict[str, CheckOutcome]:
+        """How each named check finished on the stack's base: from an earlier run at the base, else a new run."""
+        if not names:
+            return {}
+        outcomes = self._cached_outcomes(parent_id, repos, names)
+        missing = names - set(outcomes)
+        if missing:
+            bases = {repo.name: repo.base_sha for repo in repos}
+            with self._worktrees(ctx, targets) as bisect:
+                run = self._probe(
+                    ctx, stack_id, parent_id, targets, bisect, bases, missing, _in_scope(repos), position=0
+                )
+            for check in run.checks:
+                if check.name in missing:
+                    outcomes[check.name] = CheckOutcome(check.status, list(check.failure_signatures), run.id)
+        return outcomes
+
+    def _cached_outcomes(
+        self, parent_id: str, repos: list[StackRepoBase], names: set[str]
+    ) -> dict[str, CheckOutcome]:
+        """Outcomes of the named checks from the most recent runs of the parent whose manifest is at the bases."""
+        found: dict[str, CheckOutcome] = {}
+        with self.db.session() as session:
+            runs = session.scalars(
+                select(VerificationRun)
+                .where(VerificationRun.task_id == parent_id)
+                .order_by(VerificationRun.created_at.desc())
+            ).all()
+            for run in runs:
+                wanted = names - set(found)
+                if not wanted:
+                    break
+                manifest = session.get(RevisionManifest, run.manifest_id) if run.manifest_id else None
+                if manifest is None or not _at_bases(manifest.entries, repos):
+                    continue
+                rows = session.scalars(
+                    select(VerificationCheckResult).where(
+                        VerificationCheckResult.run_id == run.id, VerificationCheckResult.name.in_(wanted)
+                    )
+                )
+                for row in rows:
+                    found.setdefault(row.name, CheckOutcome(row.status, list(row.failure_signatures), run.id))
+        return found
+
+    def _probe(
+        self,
+        ctx: RequestContext,
+        stack_id: str,
+        parent_id: str,
+        targets: list[IntegrationTarget],
+        bisect: dict[str, tuple[str, Path]],
+        shas: dict[str, str],
+        names: set[str],
+        in_scope: Callable[[ApplicableCheck], bool],
+        position: int,
+    ) -> VerificationRunOut:
+        """Check out one revision in the bisect worktrees and run the named full checks there."""
+        for name, sha in shas.items():
+            git = Git(bisect[name][1])
+            git.run("checkout", "--force", "--detach", sha)
+            git.run("clean", "-ffdx")
+        return self.app.verification.run(
+            ctx,
+            None,
+            parent_id,
+            manifest_entries=self._entries(
+                targets, {name: path for name, (_, path) in bisect.items()}, shas, branch=False
+            ),
+            tier="full",
+            check_filter=lambda check: in_scope(check) and check.spec.name in names,
+            event_context={"stack": {"id": stack_id, "position": position, "shas": shas}},
+        )
+
+    @contextmanager
+    def _worktrees(
+        self, ctx: RequestContext, targets: list[IntegrationTarget]
+    ) -> Iterator[dict[str, tuple[str, Path]]]:
+        """Bisect worktrees for every target repository, removed when the block ends."""
+        bisect: dict[str, tuple[str, Path]] = {}
+        try:
+            for target in targets:
+                bisect[target.repository_name] = self._bisect_worktree(ctx, target)
+            yield bisect
+        finally:
+            for row_id, _ in bisect.values():
+                self.app.worktrees.remove(ctx, row_id, force=True)
 
     def _tips(self, stack_id: str, repos: list[StackRepoBase]) -> dict[str, str]:
         """The integration tip of each repository; its base while the worktree does not exist yet."""

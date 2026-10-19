@@ -137,20 +137,28 @@ applicable verification checks.
     repository scoped checks of the stack's repositories) run once, attributed to the parent task,
     with each repository's checks executing in its integration worktree at the current tip. The
     run's events carry the stack id and the tip shas. A stack with no full checks passes without a run.
+  - **Regression checks on the tip.** A required check in `baseline: "regression"` mode that fails on
+    the tip passes the stack when each failure signature it reports also fails the same check on the
+    stack's base. The base outcome comes from the most recent earlier run of the parent whose manifest
+    holds exactly the base commits (the check results of that run are reused), and otherwise from a new
+    run at the base in the bisect worktrees. A regression-mode failure with a new signature, a timeout,
+    or no parsed signature counts as failing. `absolute` checks are judged as before. The
+    `stack.verified` event carries the base failures it tolerated under `tolerated`.
   - **Pass.** Every merged item becomes `verified`, each child task moves `awaiting_verification`
     to `awaiting_review` (the reason names the run), and the stack becomes `verified`. Nothing is
     accepted; acceptance is a separate step.
   - **Fail: bisect.** The merge sequence is the items on the integration branch in `merge_order`.
     Prefix `k` takes, for each repository, the merge commit of the last of the first `k` items that
-    merged into it (the base commit if none). The required checks that failed on the tip are run
-    against successive prefixes, with a binary search for the smallest failing prefix, assuming
-    failure is monotonic. Probes run in one detached bisect worktree per repository at
-    `worktrees/stacks/<stack-id>/bisect-<repository>`, removed afterwards. Each probe is a
-    verification run and a `stack.bisect_probe` event with its shas and result.
-  - **Eject and rebuild.** If the base (prefix 0) fails, nothing is ejected: the stack returns to
-    `integrating` (`stack.verification_failed_on_base`) and the items stay `merged`. Otherwise the
-    culprit at the failing prefix moves to `ejected`, with its failing check names, failure
-    signatures and run id in the item `detail`. Its task returns to `ready` with a comment carrying
+    merged into it (the base commit if none). The checks that count against the tip (required checks
+    that failed, judged by the regression rule above) are run against successive prefixes, with a
+    binary search for the smallest failing prefix, assuming failure is monotonic. Probes run in one
+    detached bisect worktree per repository at `worktrees/stacks/<stack-id>/bisect-<repository>`,
+    removed afterwards. Each probe is a verification run and a `stack.bisect_probe` event with its
+    shas and result. A probe fails when it reports a new failure signature for those checks.
+  - **Eject and rebuild.** If an `absolute` check fails on the base, nothing is ejected: the stack
+    returns to `integrating` (`stack.verification_failed_on_base`) and the items stay `merged`.
+    Otherwise the culprit at the failing prefix moves to `ejected`, with its failing check names, the
+    new failure signatures (not the ones the base already had) and run id in the item `detail`. Its task returns to `ready` with a comment carrying
     the same information. Items that depend on the culprit, directly or through other items, move
     back to `pending` with the reason `dependency <KEY> was ejected`. Each integration branch is then
     reset to its base (`git reset --hard`, in the integration worktree only) and the remaining items

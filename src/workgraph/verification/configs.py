@@ -39,6 +39,11 @@ class CheckSpec(BaseModel):
     required: bool = True
     env: dict[str, str] = Field(default_factory=dict)
     parser: Literal["auto", "pytest", "generic", "cargo"] = "auto"
+    baseline: Literal["absolute", "regression"] = Field(
+        default="absolute",
+        description="absolute: the check must pass. regression: a failure counts only when it is not also a "
+        "failure of the same check on the stack's base, so a base that is already red does not block the stack",
+    )
     allow_shell: bool = Field(
         default=False, description="Permit a shell interpreter as the executable (explicit operator opt-in)"
     )

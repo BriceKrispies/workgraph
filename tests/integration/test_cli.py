@@ -157,6 +157,26 @@ def test_doctor_reports_health(run):
     assert report["healthy"] is True
 
 
+def test_task_show_survives_cp1252_console(run, home):
+    # A cp1252 console cannot encode arrows, em dashes or ≤; the CLI must replace them, not crash.
+    run("init")
+    run("task", "create", "Unicode task", "--description", "step a → b — c ≤ d")
+    env = {
+        **os.environ,
+        "WORKGRAPH_HOME": str(home),
+        "PYTHONIOENCODING": "cp1252",
+        "PYTHONUTF8": "0",
+    }
+    proc = subprocess.run(
+        [sys.executable, "-m", "workgraph", "-w", "default", "task", "show", "WG-1"],
+        env=env,
+        capture_output=True,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stderr.decode("ascii", "replace")
+    assert b"Unicode task" in proc.stdout
+
+
 def test_console_script_help():
     proc = subprocess.run(
         [sys.executable, "-m", "workgraph", "--help"],

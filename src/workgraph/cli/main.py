@@ -10,6 +10,7 @@ import typer
 from workgraph import __version__
 from workgraph.cli.commands import core, repo, task
 from workgraph.cli.common import STATE
+from workgraph.cli.entry import make_stdio_non_fatal
 
 app = typer.Typer(
     name="workgraph",
@@ -97,6 +98,7 @@ _register_optional_groups()
 
 
 def main() -> None:
+    make_stdio_non_fatal()
     argv = sys.argv[1:]
     # Fast path for Claude Code hooks: avoid importing anything heavy.
     if argv[:2] == ["claude", "hook"]:

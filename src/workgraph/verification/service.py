@@ -71,6 +71,8 @@ _CARGO_DOC_TESTS = re.compile(r"^Doc-tests\s+(\S+)$")
 _CARGO_TEST_FAILED = re.compile(r"^test (.+) \.\.\. FAILED$")
 _CARGO_BINARY_DIED = re.compile(r"^error: test failed, to rerun pass `")
 _CARGO_BUILD_FAILED = re.compile(r"^error: could not compile `([^`]+)`")
+_CARGO_TARGETS_FAILED = re.compile(r"^error: \d+ targets? failed:$")
+_CARGO_TARGET_LINE = re.compile(r"^`([^`]+)`$")
 
 
 class VerificationConfigOut(BaseModel):
@@ -166,18 +168,48 @@ def _cargo_binary_name(path: str) -> str:
     return re.sub(r"-[0-9a-f]+$", "", stem)
 
 
+def _cargo_target_binary(target: str) -> str | None:
+    """Binary name for one target in cargo's ``N targets failed`` summary.
+
+    ``-p rho --test courtyard_gpu`` -> ``courtyard_gpu``, ``-p rho-lowering --lib`` -> ``rho_lowering``.
+    Hyphens become underscores, matching the file names cargo uses under ``target/debug/deps``.
+    """
+    tokens = target.split()
+    crate: str | None = None
+    for i, word in enumerate(tokens[:-1]):
+        if word == "-p":
+            crate = tokens[i + 1]
+        elif word in ("--test", "--bin", "--example", "--bench"):
+            return tokens[i + 1].replace("-", "_")
+    if "--lib" in tokens or "--doc" in tokens:
+        return crate.replace("-", "_") if crate else None
+    return None
+
+
 def _cargo_signatures(lines: list[str]) -> list[str]:
     """Signatures from ``cargo test`` output, covering every test binary in the log.
 
     A failed test is ``test:<binary>::<name>`` (``test:<name>`` when no binary header was seen).
-    A binary that reports ``error: test failed`` without any failed test of its own is
-    ``binary:<binary>``. A crate that does not compile is ``build:<crate>``.
+    A binary that reports ``error: test failed`` or appears in the ``N targets failed`` summary
+    without any failed test of its own is ``binary:<binary>``. A crate that does not compile is
+    ``build:<crate>``.
     """
     signatures: list[str] = []
     binary: str | None = None
     binaries_with_failures: set[str] = set()
+    in_summary = False
     for raw in lines:
         line = raw.strip()
+        target = _CARGO_TARGET_LINE.match(line)
+        if in_summary and target:
+            name = _cargo_target_binary(target.group(1))
+            if name is not None and name not in binaries_with_failures:
+                signatures.append(f"binary:{name}")
+                binaries_with_failures.add(name)
+            continue
+        in_summary = _CARGO_TARGETS_FAILED.match(line) is not None
+        if in_summary:
+            continue
         if match := _CARGO_RUNNING.match(line):
             binary = _cargo_binary_name(match.group(1))
         elif match := _CARGO_DOC_TESTS.match(line):

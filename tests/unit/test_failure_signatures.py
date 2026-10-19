@@ -77,6 +77,60 @@ def test_cargo_binary_crash_is_not_reported_when_tests_failed():
     assert extract_failure_signatures(lines, "cargo") == ["test:one_version::sorted_once"]
 
 
+NO_FAIL_FAST_SUMMARY = r"""
+     Running unittests src/lib.rs (target\debug\deps\rho_lowering-0a1b2c3d4e5f6789.exe)
+
+running 1 test
+test lower::calls ... FAILED
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p rho-lowering --lib`
+
+     Running tests/courtyard_gpu.rs (target/debug/deps/courtyard_gpu-fedcba9876543210)
+
+running 1 test
+test upload::small ... ok
+error: 2 targets failed:
+    `-p rho-lowering --lib`
+    `-p rho --test courtyard_gpu`
+"""
+
+
+def test_cargo_no_fail_fast_summary_adds_binary_for_crashed_target():
+    lines = NO_FAIL_FAST_SUMMARY.splitlines()
+    assert extract_failure_signatures(lines, "cargo") == [
+        "test:rho_lowering::lower::calls",
+        "binary:courtyard_gpu",
+    ]
+
+
+def test_cargo_summary_singular_form_and_target_names():
+    lines = [
+        "     Running unittests src/main.rs (target/debug/deps/rho_gpu-0123456789abcdef)",
+        "test ok_case ... ok",
+        "error: 1 target failed:",
+        "    `-p rho-gpu --bin rho-gpu`",
+        "    `-p rho-lowering --doc`",
+        "    `-p rho-gpu --example demo-app`",
+    ]
+    assert extract_failure_signatures(lines, "cargo") == [
+        "binary:rho_gpu",
+        "binary:rho_lowering",
+        "binary:demo_app",
+    ]
+
+
+def test_cargo_summary_skips_targets_already_reported_with_test_signatures():
+    lines = [
+        "     Running unittests src/lib.rs (target/debug/deps/rho-0123456789abcdef)",
+        "test a::b ... FAILED",
+        "error: 1 target failed:",
+        "    `-p rho --lib`",
+    ]
+    assert extract_failure_signatures(lines, "cargo") == ["test:rho::a::b"]
+
+
 def test_cargo_test_name_with_spaces_is_kept_whole():
     lines = [
         "   Doc-tests rho_lexer",

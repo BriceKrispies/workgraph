@@ -45,11 +45,37 @@ def run_maintenance(app: Workgraph, worker_id: str, *, lease_seconds: int = 30) 
     if config.execution.enabled and config.execution.auto_schedule:
         report["scheduled_runs"] = app.scheduler.tick(ctx)
     report["replayed_hooks"] = app.hooks.replay_spool(limit=200)
+    report["tracker_syncs"] = _enqueue_tracker_syncs(app, ctx)
     if _due(app, "retention", RETENTION_INTERVAL):
         from workgraph.jobs.retention import compact
 
         report["retention"] = compact(app)
     return report
+
+
+def _enqueue_tracker_syncs(app: Workgraph, ctx: RequestContext) -> dict[str, int]:
+    """Queue each configured tracker's incremental and full syncs once their intervals elapse.
+
+    A failing connection is logged and skipped so that the other maintenance steps still run.
+    """
+    from workgraph.jobs.trackers import enqueue_tracker_sync
+
+    counts = {"incremental": 0, "full": 0, "failed": 0}
+    for name, connection in app.config.trackers.items():
+        for full, mode, interval in (
+            (False, "poll", timedelta(seconds=connection.poll_interval_seconds)),
+            (True, "full", timedelta(seconds=connection.full_sync_interval_seconds)),
+        ):
+            try:
+                if not _due(app, f"tracker:{name}:{mode}", interval):
+                    continue
+                enqueue_tracker_sync(app, ctx, name, full=full)
+            except Exception:
+                counts["failed"] += 1
+                log.exception("tracker sync enqueue failed", extra={"connection": name, "mode": mode})
+                continue
+            counts["full" if full else "incremental"] += 1
+    return counts
 
 
 def _due(app: Workgraph, name: str, interval: timedelta) -> bool:

@@ -66,6 +66,7 @@ def _register_optional_groups() -> None:
         jobs,
         servers,
         stacks,
+        tracker,
         ui,
     )
 
@@ -76,6 +77,7 @@ def _register_optional_groups() -> None:
     app.add_typer(jobs.worker_app, name="worker")
     app.add_typer(jobs.job_app, name="job")
     app.add_typer(gitcmd.git_app, name="git")
+    app.add_typer(tracker.tracker_app, name="tracker")
     app.add_typer(stacks.stack_app, name="stack")
     app.add_typer(experiments.experiment_app, name="experiment")
     app.add_typer(intelligence.classify_app, name="classify")

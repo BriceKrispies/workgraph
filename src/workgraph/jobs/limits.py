@@ -30,6 +30,11 @@ def verify_key(repository_id: str) -> str:
     return f"verify:{repository_id}"
 
 
+def tracker_key(connection: str) -> str:
+    """Held by the sync of one tracker connection, so at most one sync per connection runs at a time."""
+    return f"tracker:{connection}"
+
+
 def stack_key(stack_id: str, repository_id: str) -> str:
     """Held exclusively by a stack's own integration and verification in one of its repositories."""
     return f"exclusive:stack:{stack_id}:{repository_id}"
@@ -58,7 +63,7 @@ def resource_limit_resolver(app: Workgraph) -> LimitResolver:
             return config.jobs.per_repository_concurrency
         if key.startswith("verify:"):
             return config.jobs.verify_concurrency
-        if key.startswith("exclusive:"):
+        if key.startswith(("exclusive:", "tracker:")):
             return 1
         return None
 

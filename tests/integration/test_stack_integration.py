@@ -43,6 +43,14 @@ def tree(app, human, ws, make_repo):
 
 
 @pytest.fixture
+def manual_landing(app):
+    """Stacks wait for the parent's acceptance: turns auto_accept off for the test."""
+    config = app.config
+    config.stacks.auto_accept = False
+    app.config_store.save_global(config)
+
+
+@pytest.fixture
 def shared_tree(app, human, ws, make_repo):
     """A repository whose workgraph-demo.json makes every child write the same line of shared.py."""
     enable_fake_agent(app)
@@ -164,7 +172,7 @@ def test_merge_jobs_hold_the_repository_resource_key(app, human, ws, tree):
         assert f"repo:{repository_id}" in job.resource_keys
 
 
-def test_stacked_child_merges_after_its_sibling(app, human, ws, tree):
+def test_stacked_child_merges_after_its_sibling(app, human, ws, tree, manual_landing):
     repo, parent = tree
     _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
     first = _child(app, human, ws, parent, "First change")
@@ -185,7 +193,9 @@ def test_stacked_child_merges_after_its_sibling(app, human, ws, tree):
     repo.git("merge-base", "--is-ancestor", second_head, branch)
 
 
-def test_conflicting_pair_sends_the_second_child_back_with_the_integration_tip(app, human, ws, shared_tree):
+def test_conflicting_pair_sends_the_second_child_back_with_the_integration_tip(
+    app, human, ws, shared_tree, manual_landing
+):
     repo, parent = shared_tree
     _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
     first = _child(app, human, ws, parent, "First change")
@@ -268,7 +278,9 @@ def test_task_outside_a_stack_is_verified_with_every_tier(app, human, ws, tree):
     assert {entry["name"] for entry in run.config_snapshot} == {"types", "full"}
 
 
-def test_integrate_requests_for_an_unchanged_stack_collapse_into_one_job(app, human, ws, tree):
+def test_integrate_requests_for_an_unchanged_stack_collapse_into_one_job(
+    app, human, ws, tree, manual_landing
+):
     _, parent = tree
     _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
     first = _child(app, human, ws, parent, "First change")
@@ -301,7 +313,7 @@ def test_stack_child_without_fast_checks_is_ready_without_a_verification_run(app
     assert app.attempts.get(human, attempt_id).status == "succeeded"
 
 
-def test_integration_worktree_survives_recovery_and_cleanup(app, human, ws, tree):
+def test_integration_worktree_survives_recovery_and_cleanup(app, human, ws, tree, manual_landing):
     _, parent = tree
     _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
     child = _child(app, human, ws, parent, "Only change")
@@ -399,7 +411,7 @@ def test_bisect_ejects_the_child_that_completes_a_failing_combination(app, human
     assert types.count("stack.bisect_probe") >= 2
 
 
-def test_all_passing_full_checks_verify_every_item_with_one_run(app, human, ws, tree):
+def test_all_passing_full_checks_verify_every_item_with_one_run(app, human, ws, tree, manual_landing):
     _repo, parent = tree
     _enable_agent(app, "fake-a", "a.txt")
     _enable_agent(app, "fake-b", "b.txt")
@@ -494,7 +506,7 @@ def test_a_dependent_of_the_culprit_returns_to_pending(app, human, ws, tree):
     assert "b.txt" not in files and "c.txt" not in files
 
 
-def test_stack_verify_jobs_hold_the_repository_keys(app, human, ws, tree):
+def test_stack_verify_jobs_hold_the_repository_keys(app, human, ws, tree, manual_landing):
     _repo, parent = tree
     _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
     child = _child(app, human, ws, parent, "Only change")
@@ -565,7 +577,9 @@ def _accepted_rows(app, human, ws, key: str) -> list[TaskAcceptance]:
         )
 
 
-def test_accepting_the_parent_lands_the_verified_stack_on_the_default_branch(app, human, ws, tree):
+def test_accepting_the_parent_lands_the_verified_stack_on_the_default_branch(
+    app, human, ws, tree, manual_landing
+):
     repo, parent = tree
     first, second, stack = _verified_stack(app, human, ws, parent)
     branch = stack.repositories[0].integration_branch
@@ -592,7 +606,9 @@ def test_accepting_the_parent_lands_the_verified_stack_on_the_default_branch(app
     assert _landed_tips(app, stack.id) == {"svc": tip}
 
 
-def test_main_moving_before_acceptance_rebuilds_and_lands_after_reverification(app, human, ws, tree):
+def test_main_moving_before_acceptance_rebuilds_and_lands_after_reverification(
+    app, human, ws, tree, manual_landing
+):
     repo, parent = tree
     first, second, stack = _verified_stack(app, human, ws, parent)
     moved = repo.commit("unrelated change on main", {"extra.txt": "moved\n"})
@@ -621,7 +637,7 @@ def test_main_moving_before_acceptance_rebuilds_and_lands_after_reverification(a
     assert types.count("stack.verified") == 2 and "stack.landed" in types
 
 
-def test_dirty_user_checkout_refuses_the_landing_and_moves_no_ref(app, human, ws, tree):
+def test_dirty_user_checkout_refuses_the_landing_and_moves_no_ref(app, human, ws, tree, manual_landing):
     repo, parent = tree
     first, _second, stack = _verified_stack(app, human, ws, parent)
     branch = stack.repositories[0].integration_branch
@@ -660,18 +676,22 @@ def test_auto_accept_lands_the_stack_as_soon_as_it_verifies(app, human, ws, tree
     assert app.tasks.get(human, ws, first.key).status == "accepted"
 
 
-def test_auto_accept_is_off_by_default(app, human, ws, tree):
+def test_auto_accept_is_on_by_default(app, human, ws, tree):
     repo, parent = tree
-    base = repo.git("rev-parse", "main")
 
-    _verified_stack(app, human, ws, parent)
+    _, _, stack = _verified_stack(app, human, ws, parent)
 
-    assert app.config.stacks.auto_accept is False
-    assert repo.git("rev-parse", "main") == base
-    assert app.tasks.get(human, ws, parent.key).status == "awaiting_review"
+    assert app.config.stacks.auto_accept is True
+    assert repo.git("rev-parse", "main") == _landed_tips(app, stack.id)["svc"]
+    assert app.stacks.get(human, ws, parent.key).status == "landed"
+    assert app.tasks.get(human, ws, parent.key).status == "accepted"
+    (row,) = _accepted_rows(app, human, ws, parent.key)
+    assert row.mode == "automated" and row.reason == "stack.auto_accept"
 
 
-def test_accepting_a_merged_child_alone_removes_it_and_rebuilds_without_it(app, human, ws, tree):
+def test_accepting_a_merged_child_alone_removes_it_and_rebuilds_without_it(
+    app, human, ws, tree, manual_landing
+):
     repo, parent = tree
     first, second, stack = _verified_stack(app, human, ws, parent)
     branch = stack.repositories[0].integration_branch
@@ -719,7 +739,7 @@ def test_accepting_the_parent_of_a_stack_that_is_not_verified_is_refused(app, hu
     assert app.tasks.get(human, ws, parent.key).status != "accepted"
 
 
-def test_rejecting_the_parent_leaves_the_stack_verified_without_landing(app, human, ws, tree):
+def test_rejecting_the_parent_leaves_the_stack_verified_without_landing(app, human, ws, tree, manual_landing):
     repo, parent = tree
     _first, _second, stack = _verified_stack(app, human, ws, parent)
     base = repo.git("rev-parse", "main")
@@ -732,7 +752,7 @@ def test_rejecting_the_parent_leaves_the_stack_verified_without_landing(app, hum
     assert "stack.parent_rejected" in _event_types(app, stack.id)
 
 
-def test_history_lists_stack_events_with_their_verification_runs(app, human, ws, tree):
+def test_history_lists_stack_events_with_their_verification_runs(app, human, ws, tree, manual_landing):
     repo, parent = tree
     _first, _second, stack = _verified_stack(app, human, ws, parent)
     history = app.stacks.history(human, ws, parent.key)

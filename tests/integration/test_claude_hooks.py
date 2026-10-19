@@ -412,6 +412,28 @@ def test_subagent_transcript_binds_to_running_orchestrator_attempt(app, human, w
         assert attempt.adapter == "claude_code"  # the orchestrator's adapter is kept
 
 
+def test_a_repeated_subagent_stop_leaves_the_bound_orchestrator_attempt_open(app, human, ws, tmp_path):
+    # A subagent that waits on its own background work stops once per wake-up.
+    task, attempt_id = make_attempt(app, human, ws)
+    transcript = tmp_path / "agent-o2.jsonl"
+    write_subagent_transcript(transcript, task.key)
+    stop_untracked_subagent(app, "sess-repeat", "agent-o2", transcript, "2026-10-17T10:00:00+00:00")
+    hook(
+        app,
+        base(
+            "SubagentStop",
+            session="sess-repeat",
+            agent_id="agent-o2",
+            agent_type="general-purpose",
+            agent_transcript_path=str(transcript),
+        ),
+        received_at="2026-10-17T10:00:05+00:00",
+    )
+    with app.db.session() as session:
+        attempt = session.get(AgentAttempt, attempt_id)
+        assert attempt.status == "running" and attempt.finished_at is None
+
+
 def test_subagent_transcript_creates_attempt_when_only_finished_attempts_exist(app, human, ws, tmp_path):
     task = app.tasks.create(human, ws, TaskCreate(title="Already finished"))
     with app.db.session(write=True) as session:

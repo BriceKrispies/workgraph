@@ -391,10 +391,16 @@ def _apply(
                 workspace_id=agent_session.workspace_id,
                 at=at,
             )
-            # An attempt the hook only bound belongs to the orchestrator, which finishes it.
+            # Only a child attempt this hook created is finished here. An attempt the transcript bound
+            # belongs to the orchestrator, which finishes it; a subagent that waits on background work
+            # stops more than once, and a later stop must not conclude that attempt.
             if run.attempt_id and not transcript.attempt_bound:
                 child = session.get(AgentAttempt, run.attempt_id)
-                if child is not None and AttemptStatus(child.status) not in TERMINAL_ATTEMPT_STATUSES:
+                if (
+                    child is not None
+                    and child.parent_attempt_id is not None
+                    and AttemptStatus(child.status) not in TERMINAL_ATTEMPT_STATUSES
+                ):
                     from workgraph.core.services.attempts import finish_attempt
 
                     finish_attempt(

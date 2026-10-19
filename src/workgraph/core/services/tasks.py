@@ -68,11 +68,13 @@ from workgraph.core.models.schemas import (
     TaskUpdate,
 )
 from workgraph.core.policies.lifecycle import REQUIRES_DEPENDENCIES, check_task_transition
+from workgraph.core.policies.trackers import tracker_target_status
 from workgraph.core.services import resolve
 from workgraph.core.services.base import Service
 from workgraph.jobs import queue as jobqueue
 from workgraph.persistence.orm import (
     AgentAttempt,
+    ExternalItem,
     Project,
     Repository,
     Stack,
@@ -281,6 +283,7 @@ class TaskService(Service):
         *,
         reason: str | None = None,
         privileged: bool = False,
+        tracker: bool = False,
         extra: dict[str, Any] | None = None,
     ) -> str | None:
         """Validate and apply a status change; returns the status-change event id."""
@@ -298,7 +301,7 @@ class TaskService(Service):
                 reason = reason or "dependencies unsatisfied: " + ", ".join(b.key for b in blockers)
         if current == target:
             return None
-        check_task_transition(current, target, privileged=privileged)
+        check_task_transition(current, target, privileged=privileged, tracker=tracker)
         now = utcnow()
         task.status = target
         if target != TaskStatus.BLOCKED and (task.metadata_ or {}).get("blocked_reason"):
@@ -399,7 +402,7 @@ class TaskService(Service):
         task = Task(
             workspace_id=ws.id,
             number=number,
-            key=f"{ws.key_prefix}-{number}",
+            key=data.key or f"{ws.key_prefix}-{number}",
             title=data.title,
             description=data.description,
             description_hash=content_hash(data.title, data.description),
@@ -1207,6 +1210,32 @@ class TaskService(Service):
                     self._transition(session, ctx, task, TaskStatus.FAILED, reason="attempt reported failure")
             session.flush()
             return task_out(session, task)
+
+    def apply_tracker_status(
+        self, session: Session, ctx: RequestContext, task: Task, item: ExternalItem
+    ) -> str | None:
+        """Move a tracked task to the status its tracker issue requires; returns the status event id.
+
+        Called by the tracker sync inside its write transaction, after it has stored the issue's
+        status on ``item``.
+        """
+        connection = self.app.config.trackers.get(item.connection)
+        cancelled = connection.cancelled_resolutions if connection is not None else []
+        target = tracker_target_status(
+            TaskStatus(task.status), item.tracker_status_category, item.tracker_resolution, cancelled
+        )
+        if target is None:
+            return None
+        return self._transition(
+            session,
+            ctx,
+            task,
+            target,
+            reason=f"external:{item.connection}: {item.tracker_status}",
+            privileged=True,
+            tracker=True,
+            extra={"tracker": item.connection, "tracker_status": item.tracker_status},
+        )
 
     def release_expired_claims(self, ctx: RequestContext) -> builtins.list[str]:
         released: builtins.list[str] = []

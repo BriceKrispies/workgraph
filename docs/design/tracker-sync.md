@@ -49,7 +49,8 @@ An issue is split between the two systems by field, not by task:
 ### Keys
 
 A tracked task's key is the Jira key. Local tasks in the same workspace keep `<prefix>-<n>`.
-`tasks.number` becomes nullable; `(workspace_id, key)` stays unique, and Jira keys cannot collide
+`tasks.number` stays the workspace counter (every task still consumes one); `(workspace_id, key)` stays
+unique, and Jira keys cannot collide
 with local keys as long as the local prefix differs from every Jira project key (validated when a
 tracker connection is configured). `resolve.task` already matches on the key string, so
 `Task-ID: ABC-123` trailers, MCP calls and the CLI work unchanged. Commit attribution's message

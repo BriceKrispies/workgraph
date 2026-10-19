@@ -183,6 +183,45 @@ class VerificationConfig(_Strict):
     """Accept a task as soon as its full verification passes, instead of waiting for `workgraph task accept`."""
 
 
+class JiraTrackerConfig(_Strict):
+    """A read-only connection to a Jira site. Workgraph never writes to Jira."""
+
+    type: Literal["jira"] = "jira"
+    flavour: Literal["cloud", "data_center"] = "cloud"
+    base_url: str
+    workspace: str
+    """Workspace slug the issues are mirrored into."""
+    projects: list[str] = Field(min_length=1)
+    """Jira project keys; each maps to the Workgraph project whose slug is the key lowercased."""
+    email_env: str | None = None
+    """Cloud: environment variable holding the account email (Basic auth with the token)."""
+    token_env: str
+    """Environment variable holding the API token (Cloud) or personal access token (Data Center)."""
+    poll_interval_seconds: int = Field(default=300, ge=30)
+    full_sync_interval_seconds: int = Field(default=86400, ge=300)
+    overlap_seconds: int = Field(default=120, ge=0)
+    missing_grace_seconds: int = Field(default=86400, ge=0)
+    pr_fields: list[str] = Field(default_factory=list)
+    """Custom field ids (e.g. ``customfield_10042``) whose values hold pull request URLs."""
+    dev_panel: bool = True
+    """Also read pull requests from the GitHub for Jira development panel (dev-status endpoint)."""
+    cancelled_resolutions: list[str] = Field(default_factory=lambda: ["Won't Do", "Duplicate"])
+    """Resolutions of a done issue that cancel the task instead of accepting it."""
+    timeout_seconds: float = Field(default=30.0, gt=0)
+
+    @field_validator("projects")
+    @classmethod
+    def _project_keys(cls, value: list[str]) -> list[str]:
+        for key in value:
+            if not key or not key.isalnum() or not key[0].isalpha() or key.upper() != key:
+                raise ValueError(f"invalid Jira project key {key!r}")
+        return value
+
+
+# Becomes a discriminated union on `type` when a second tracker kind exists.
+TrackerConfig = JiraTrackerConfig
+
+
 class GlobalConfig(_Strict):
     schema_version: int = CONFIG_SCHEMA_VERSION
     default_workspace: str | None = None
@@ -196,6 +235,7 @@ class GlobalConfig(_Strict):
     retention: RetentionConfig = Field(default_factory=RetentionConfig)
     claude: ClaudeIntegrationConfig = Field(default_factory=ClaudeIntegrationConfig)
     automation: AutomationConfig = Field(default_factory=AutomationConfig)
+    trackers: dict[str, TrackerConfig] = Field(default_factory=dict)
 
 
 class WorkspaceOverrides(_Strict):

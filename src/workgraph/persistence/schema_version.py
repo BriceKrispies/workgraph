@@ -3,4 +3,4 @@
 ``tests/unit/test_migrations.py`` asserts this equals the real migration head.
 """
 
-SCHEMA_HEAD = "0007"
+SCHEMA_HEAD = "0008"

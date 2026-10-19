@@ -40,8 +40,16 @@ RESTRICTED_TARGETS = frozenset({S.ACCEPTED})
 REQUIRES_DEPENDENCIES = frozenset({S.READY, S.CLAIMED, S.RUNNING})
 
 
-def check_task_transition(current: TaskStatus, target: TaskStatus, *, privileged: bool = False) -> None:
+# A tracker closing its issue closes the mirrored task from any status (see core/policies/trackers.py).
+TRACKER_CLOSE_TARGETS = frozenset({S.ACCEPTED, S.CANCELLED})
+
+
+def check_task_transition(
+    current: TaskStatus, target: TaskStatus, *, privileged: bool = False, tracker: bool = False
+) -> None:
     if current == target:
+        return
+    if tracker and target in TRACKER_CLOSE_TARGETS:
         return
     if target in RESTRICTED_TARGETS and not privileged:
         raise InvalidTransitionError(

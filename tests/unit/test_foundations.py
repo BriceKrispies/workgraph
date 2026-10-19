@@ -65,7 +65,7 @@ def test_stacks_migration_upgrades_populated_0002(tmp_path):
             "'[]', '{}', 'test', 1, '2026-01-01', '2026-01-01')"
         )
     migrate.upgrade(db)
-    assert migrate.current_revision(db) == "0007" == SCHEMA_HEAD
+    assert migrate.current_revision(db) == "0008" == SCHEMA_HEAD
     stack_insert = (
         "INSERT INTO stacks (id, workspace_id, parent_task_id, status, created_at, updated_at) "
         "VALUES (:id, 'w', 't1', :status, '2026-01-01', '2026-01-01')"
@@ -112,7 +112,7 @@ def test_subagent_telemetry_migration_upgrades_populated_0004(tmp_path):
             "VALUES ('r1', 'as1', 'agent-1', 'Explore')"
         )
     migrate.upgrade(db)
-    assert migrate.current_revision(db) == "0007" == SCHEMA_HEAD
+    assert migrate.current_revision(db) == "0008" == SCHEMA_HEAD
     with db.engine.begin() as conn:
         row = conn.exec_driver_sql("SELECT model, usage, task_id, agent_type FROM subagent_runs").one()
         assert tuple(row) == (None, None, None, "Explore")
@@ -142,7 +142,7 @@ def test_experiments_migration_upgrades_populated_0004(tmp_path):
             "'[]', '{}', 'test', 1, '2026-01-01', '2026-01-01')"
         )
     migrate.upgrade(db)
-    assert migrate.current_revision(db) == "0007" == SCHEMA_HEAD
+    assert migrate.current_revision(db) == "0008" == SCHEMA_HEAD
     experiment_insert = (
         "INSERT INTO experiments (id, workspace_id, slug, title, question, status, protocol, frozen_at, "
         "created_at, updated_at) VALUES (:id, 'w', :slug, 'Exp', NULL, 'draft', '{}', NULL, '2026-01-01', "
@@ -187,7 +187,7 @@ def test_predictor_migration_upgrades_populated_0006(tmp_path):
             "'2026-01-01')"
         )
     migrate.upgrade(db)
-    assert migrate.current_revision(db) == "0007" == SCHEMA_HEAD
+    assert migrate.current_revision(db) == "0008" == SCHEMA_HEAD
     fit_insert = (
         "INSERT INTO predictor_fits (id, workspace_id, model, created_at, data_cutoff, trial_ids, feature_names, "
         "repositories, coef, penalty, n, converged, metrics, samples) VALUES (:id, 'w', 'claude-haiku-5-5', "

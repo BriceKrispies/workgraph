@@ -254,6 +254,9 @@ def _validate_tags(tags: list[str]) -> list[str]:
 
 
 class TaskCreate(InputSchema):
+    key: str | None = Field(
+        default=None, description="Tracker-supplied key (e.g. ABC-123); only the tracker sync sets it"
+    )
     title: str = Field(min_length=1, max_length=500)
     description: str = Field(default="", max_length=200_000)
     acceptance_criteria: list[str] = Field(default_factory=list)

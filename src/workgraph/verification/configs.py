@@ -47,6 +47,11 @@ class CheckSpec(BaseModel):
     allow_shell: bool = Field(
         default=False, description="Permit a shell interpreter as the executable (explicit operator opt-in)"
     )
+    error_exit_codes: list[int] = Field(
+        default_factory=list,
+        description="exit codes that mean the check could not judge anything; such a run is an error, "
+        "never a pass or a regression",
+    )
     tier: CheckTier = Field(
         default="full",
         description="fast checks (lint, format, type check) gate stack children and are listed for the agent; "

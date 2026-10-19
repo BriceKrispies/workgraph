@@ -580,6 +580,119 @@ def test_an_absolute_check_failing_on_the_base_still_ejects_nothing(app, human, 
     assert "stack.verified" not in types
 
 
+def _unjudgeable_check() -> dict[str, object]:
+    """A full check that exits 2 (the runner could not start) once c.txt exists, and judges nothing."""
+    code = (
+        "import os\n"
+        "import sys\n"
+        "if os.path.exists('c.txt'):\n"
+        "    print('runner could not start: no interpreter for c.txt')\n"
+        "    sys.exit(2)\n"
+    )
+    return {
+        "name": "suite",
+        "kind": "test",
+        "command": [sys.executable, "-c", code],
+        "error_exit_codes": [2],
+    }
+
+
+def _blind_base_check() -> dict[str, object]:
+    """A full check that fails with a signature once c.txt exists. Without it, it exits 2 and judges nothing."""
+    code = (
+        "import os\n"
+        "import sys\n"
+        "if os.path.exists('c.txt'):\n"
+        "    print('FAILED suite::late - c.txt exists')\n"
+        "    sys.exit(1)\n"
+        "print('runner could not start')\n"
+        "sys.exit(2)\n"
+    )
+    return {
+        "name": "suite",
+        "kind": "test",
+        "command": [sys.executable, "-c", code],
+        "error_exit_codes": [2],
+    }
+
+
+def test_a_check_that_judges_nothing_on_the_tip_stops_the_stack_without_bisecting(
+    app, human, ws, tree, manual_landing
+):
+    _repo, parent = tree
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "b.txt")
+    _enable_agent(app, "fake-c", "c.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, _unjudgeable_check()],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    third = _child(app, human, ws, parent, "Third change")
+    stack = app.stacks.create(human, ws, parent.key)
+
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    _run(app, human, ws, third.key, "fake-c")
+
+    assert app.stacks.get(human, ws, parent.key).status == "integrating"
+    items = _items(app, human, ws, parent)
+    assert all(items[task.key].state == "merged" for task in (first, second, third))
+    types = _event_types(app, stack.id)
+    assert "stack.verification_errored" in types
+    for absent in ("stack.bisect_probe", "stack.item_ejected", "stack.verified", "stack.verification_failed"):
+        assert absent not in types
+    errored = _event_data(app, stack.id, "stack.verification_errored")
+    assert errored["stage"] == "tip"
+    assert errored["checks"] == ["suite"]
+    assert "runner could not start" in errored["excerpt"]["suite"]
+    assert app.verification.get_run(human, errored["run_id"]).required_passed is False
+
+
+def test_an_errored_base_run_stops_the_stack_and_is_never_reused(app, human, ws, tree, manual_landing):
+    _repo, parent = tree
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "b.txt")
+    _enable_agent(app, "fake-c", "c.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, _blind_base_check()],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    third = _child(app, human, ws, parent, "Third change")
+    stack = app.stacks.create(human, ws, parent.key)
+
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    _run(app, human, ws, third.key, "fake-c")
+
+    # The tip fails with a signature, the base judges nothing: no bisection, no ejection.
+    assert app.stacks.get(human, ws, parent.key).status == "integrating"
+    assert len(_verification_runs(app, parent)) == 2
+    errored = _event_data(app, stack.id, "stack.verification_errored")
+    assert errored["stage"] == "base"
+    assert errored["checks"] == ["suite"]
+    types = _event_types(app, stack.id)
+    assert "stack.bisect_probe" not in types
+    assert "stack.item_ejected" not in types
+    assert "stack.verified" not in types
+
+    # A new verification does not reuse the errored base run: it measures the base again.
+    app.stack_verification.request(human, ws, parent.key)
+    drain(app)
+
+    assert app.stacks.get(human, ws, parent.key).status == "integrating"
+    assert len(_verification_runs(app, parent)) == 4
+    assert _event_types(app, stack.id).count("stack.verification_errored") == 2
+    assert "stack.item_ejected" not in _event_types(app, stack.id)
+
+
 def _runs_at(app, parent, sha: str) -> list[VerificationRun]:
     """The parent's verification runs whose manifest holds ``sha`` in some repository."""
     with app.db.session() as session:
@@ -628,6 +741,51 @@ def test_the_next_stack_reuses_the_previous_tip_run_as_its_base_outcome(app, hum
     # B's tip is new, but its base is A's tip: no run of B's parent was made at that base.
     assert _runs_at(app, parent_b, tip_a) == []
     assert len(_verification_runs(app, parent_b)) == 1
+    assert _event_data(app, stack_b.id, "stack.verified")["tolerated"] == {"suite": ["test:bad_a.txt"]}
+
+
+def test_a_cached_base_result_from_an_older_check_definition_is_not_reused(app, human, ws, red_base):
+    repo, parent_a = red_base
+    config = app.config
+    config.stacks.auto_accept = True
+    app.config_store.save_global(config)
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "c.txt")
+    _enable_agent(app, "fake-d", "d.txt")
+    _enable_agent(app, "fake-e", "e.txt")
+    fast = {**passing_check("types"), "kind": "typecheck", "tier": "fast"}
+    old = app.verification.create_config(
+        human, ws, scope_type="repository", scope="svc", name="gate", checks=[fast, _bad_files_check()]
+    )
+    first = _child(app, human, ws, parent_a, "First change")
+    second = _child(app, human, ws, parent_a, "Second change")
+    app.stacks.create(human, ws, parent_a.key)
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    assert app.stacks.get(human, ws, parent_a.key).status == "landed"
+    tip_a = repo.git("rev-parse", "main")
+
+    # The same check, with one changed setting, is a different definition: its old results are not its base.
+    app.verification.set_config_enabled(human, old.id, False)
+    app.verification.create_config(
+        human,
+        ws,
+        scope_type="repository",
+        scope="svc",
+        name="gate-v2",
+        checks=[fast, {**_bad_files_check(), "env": {"SUITE_VERSION": "2"}}],
+    )
+    parent_b = app.tasks.create(human, ws, TaskCreate(title="Next parent", repositories=["svc"]))
+    third = _child(app, human, ws, parent_b, "Third change")
+    fourth = _child(app, human, ws, parent_b, "Fourth change")
+    stack_b = app.stacks.create(human, ws, parent_b.key)
+    assert stack_b.repositories[0].base_sha == tip_a
+    _run(app, human, ws, third.key, "fake-d")
+    _run(app, human, ws, fourth.key, "fake-e")
+
+    assert app.stacks.get(human, ws, parent_b.key).status == "landed"
+    assert len(_runs_at(app, parent_b, tip_a)) == 1
+    assert len(_verification_runs(app, parent_b)) == 2
     assert _event_data(app, stack_b.id, "stack.verified")["tolerated"] == {"suite": ["test:bad_a.txt"]}
 
 

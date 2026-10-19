@@ -79,7 +79,14 @@ uv run workgraph verify config integration --scope-type project --scope platform
 Scopes: `workspace`, `project`, `repository` (runs in that repository's checkout), `task`.
 Check fields: `name`, `kind` (test, lint, typecheck, build, integration, custom), `command`,
 `repository`, `timeout_seconds`, `required`, `env`, `parser` (auto, pytest, generic, cargo), `tier`
-(`fast` or `full`, default `full`), `baseline` (`absolute` or `regression`, default `absolute`).
+(`fast` or `full`, default `full`), `baseline` (`absolute` or `regression`, default `absolute`), `error_exit_codes` (a list of exit codes that
+mean the check could not judge anything, default `[]`).
+
+A run whose exit code is in `error_exit_codes` has status `error`, not `failed`: the check neither passed
+nor found a regression. In a stack, an errored required check stops the verification (the stack returns
+to `integrating` with a `stack.verification_errored` event) and nothing is bisected, ejected or passed.
+An errored result is never reused as a base outcome. Use it for exits that mean the runner itself could
+not start, for example `"error_exit_codes": [2]` for a tool that exits 2 when it cannot run.
 
 `baseline` decides what a failure means on a stack. `absolute` requires the check to pass. `regression`
 passes a failing check when each of its failure signatures also appears when the same check runs on the

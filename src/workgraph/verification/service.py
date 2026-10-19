@@ -599,7 +599,7 @@ class VerificationService(Service):
             }
         if result.ok:
             status = VerificationStatus.PASSED
-        elif result.cancelled:
+        elif result.cancelled or result.exit_code in spec.error_exit_codes:
             status = VerificationStatus.ERROR
         else:
             status = VerificationStatus.FAILED

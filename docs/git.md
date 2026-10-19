@@ -146,7 +146,16 @@ applicable verification checks.
     holds exactly the base commits (the check results of that run are reused), and otherwise from a new
     run at the base in the bisect worktrees. A regression-mode failure with a new signature, a timeout,
     or no parsed signature counts as failing. `absolute` checks are judged as before. The
-    `stack.verified` event carries the base failures it tolerated under `tolerated`.
+    `stack.verified` event carries the base failures it tolerated under `tolerated`. A base outcome is
+    reused only when its check did not error and the run ran the check with the same definition as the
+    current `CheckSpec` (command, env, parser, baseline and the rest, compared with the run's
+    `config_snapshot`); otherwise the base is measured again.
+  - **Errored checks stop the stack.** A check whose run is `error` (its exit code is listed in
+    `error_exit_codes`, or it was cancelled) judged nothing. If a required check errors on the tip, on
+    the base or on a bisect probe, the verification stops: no pass, no bisection, no ejection. The stack
+    returns to `integrating` and `stack.verification_errored` records the run id, the stage (`tip`,
+    `base` or `bisect`), the errored check names and the tail of each output. Fix the check or the
+    runner, then verify again.
   - **Pass.** Every merged item becomes `verified`, each child task moves `awaiting_verification`
     to `awaiting_review` (the reason names the run), and the stack becomes `verified`. Nothing is
     accepted; acceptance is a separate step.
@@ -157,7 +166,8 @@ applicable verification checks.
     binary search for the smallest failing prefix, assuming failure is monotonic. Probes run in one
     detached bisect worktree per repository at `worktrees/stacks/<stack-id>/bisect-<repository>`,
     removed afterwards. Each probe is a verification run and a `stack.bisect_probe` event with its
-    shas and result. A probe fails when it reports a new failure signature for those checks.
+    shas and result. A probe fails when it reports a new failure signature for those checks. A probe
+    whose check errors stops the bisection (see errored checks above); nothing is ejected from it.
   - **Eject and rebuild.** If an `absolute` check fails on the base, nothing is ejected: the stack
     returns to `integrating` (`stack.verification_failed_on_base`) and the items stay `merged`.
     Otherwise the culprit at the failing prefix moves to `ejected`, with its failing check names, the

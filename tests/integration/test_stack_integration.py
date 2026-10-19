@@ -15,7 +15,14 @@ from workgraph.config.settings import CommandAgentConfig
 from workgraph.core.errors import ConflictError, ValidationFailed
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.integrations.git.cli import Git
-from workgraph.persistence.orm import Event, Job, TaskAcceptance, TaskComment, VerificationRun
+from workgraph.persistence.orm import (
+    Event,
+    Job,
+    RevisionManifest,
+    TaskAcceptance,
+    TaskComment,
+    VerificationRun,
+)
 
 
 def _enable_agent(app, name: str, file: str) -> None:
@@ -553,6 +560,57 @@ def test_an_absolute_check_failing_on_the_base_still_ejects_nothing(app, human, 
     assert "stack.verification_failed_on_base" in types
     assert "stack.item_ejected" not in types
     assert "stack.verified" not in types
+
+
+def _runs_at(app, parent, sha: str) -> list[VerificationRun]:
+    """The parent's verification runs whose manifest holds ``sha`` in some repository."""
+    with app.db.session() as session:
+        runs = session.scalars(select(VerificationRun).where(VerificationRun.task_id == parent.id)).all()
+        return [
+            run
+            for run in runs
+            if any(
+                entry.get("sha") == sha for entry in session.get(RevisionManifest, run.manifest_id).entries
+            )
+        ]
+
+
+def test_the_next_stack_reuses_the_previous_tip_run_as_its_base_outcome(app, human, ws, red_base):
+    repo, parent_a = red_base
+    config = app.config
+    config.stacks.auto_accept = True
+    app.config_store.save_global(config)
+    _enable_agent(app, "fake-a", "a.txt")
+    _enable_agent(app, "fake-b", "c.txt")
+    _enable_agent(app, "fake-d", "d.txt")
+    _enable_agent(app, "fake-e", "e.txt")
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, _bad_files_check()],
+    )
+    first = _child(app, human, ws, parent_a, "First change")
+    second = _child(app, human, ws, parent_a, "Second change")
+    app.stacks.create(human, ws, parent_a.key)
+    _run(app, human, ws, first.key, "fake-a")
+    _run(app, human, ws, second.key, "fake-b")
+    assert app.stacks.get(human, ws, parent_a.key).status == "landed"
+    tip_a = repo.git("rev-parse", "main")
+
+    parent_b = app.tasks.create(human, ws, TaskCreate(title="Next parent", repositories=["svc"]))
+    third = _child(app, human, ws, parent_b, "Third change")
+    fourth = _child(app, human, ws, parent_b, "Fourth change")
+    stack_b = app.stacks.create(human, ws, parent_b.key)
+    assert stack_b.repositories[0].base_sha == tip_a
+    _run(app, human, ws, third.key, "fake-d")
+    _run(app, human, ws, fourth.key, "fake-e")
+
+    assert app.stacks.get(human, ws, parent_b.key).status == "landed"
+    # B's tip is new, but its base is A's tip: no run of B's parent was made at that base.
+    assert _runs_at(app, parent_b, tip_a) == []
+    assert len(_verification_runs(app, parent_b)) == 1
+    assert _event_data(app, stack_b.id, "stack.verified")["tolerated"] == {"suite": ["test:bad_a.txt"]}
 
 
 def test_all_passing_full_checks_verify_every_item_with_one_run(app, human, ws, tree):

@@ -117,6 +117,17 @@ def _at_bases(entries: list[dict[str, Any]], repos: list[StackRepoBase]) -> bool
     return all(shas.get(repo.repository_id) == repo.base_sha for repo in repos)
 
 
+# How many of the workspace's most recent verification runs are scanned for a reusable base outcome.
+_CACHE_SCAN_LIMIT = 500
+
+
+def _failed_checks(run: VerificationRunOut) -> dict[str, str | None]:
+    """Required checks that did not pass, each with the repository its result was recorded against."""
+    return {
+        check.name: check.repository_id for check in run.checks if check.required and check.status != "passed"
+    }
+
+
 def _is_absolute(specs: dict[str, CheckSpec], name: str) -> bool:
     spec = specs.get(name)
     return spec is None or spec.baseline == "absolute"
@@ -195,6 +206,7 @@ class StackVerifier(Service):
             parent = session.get(Task, stack.parent_task_id)
             assert parent is not None
             parent_id = parent.id
+            workspace_id = stack.workspace_id
             repos = self._repos(session, stack)
             keep = _in_scope(repos)
             checks = [check for check in applicable_checks(session, parent) if keep(check)]
@@ -241,8 +253,8 @@ class StackVerifier(Service):
         if run.required_passed:
             return self._passed(ctx, stack_id, run_id=run.id, tips=tips, reason="full checks passed")
         specs = {check.spec.name: check.spec for check in checks}
-        failed = {check.name for check in run.checks if check.required and check.status != "passed"}
-        base = self._base_outcomes(ctx, stack_id, parent_id, repos, targets, failed)
+        failed = _failed_checks(run)
+        base = self._base_outcomes(ctx, stack_id, parent_id, workspace_id, repos, targets, failed)
         if not regressions(run, base, specs):
             tolerated = {
                 check.name: list(check.failure_signatures) for check in run.checks if check.name in failed
@@ -363,7 +375,7 @@ class StackVerifier(Service):
         specs: dict[str, CheckSpec],
     ) -> dict[str, Any]:
         failing = regressions(tip_run, base, specs)
-        failed = {check.name for check in tip_run.checks if check.required and check.status != "passed"}
+        failed = _failed_checks(tip_run)
         # An absolute check that fails on the base is a failure of the base itself, not of any child.
         on_base = sorted(
             name
@@ -668,15 +680,19 @@ class StackVerifier(Service):
         ctx: RequestContext,
         stack_id: str,
         parent_id: str,
+        workspace_id: str,
         repos: list[StackRepoBase],
         targets: list[IntegrationTarget],
-        names: set[str],
+        failed: dict[str, str | None],
     ) -> dict[str, CheckOutcome]:
-        """How each named check finished on the stack's base: from an earlier run at the base, else a new run."""
-        if not names:
+        """How each failed check finished on the stack's base: from an earlier run at the base, else a new run.
+
+        ``failed`` maps each check name to the repository its tip result was recorded against.
+        """
+        if not failed:
             return {}
-        outcomes = self._cached_outcomes(parent_id, repos, names)
-        missing = names - set(outcomes)
+        outcomes = self._cached_outcomes(workspace_id, repos, failed)
+        missing = {name for name in failed if name not in outcomes}
         if missing:
             bases = {repo.name: repo.base_sha for repo in repos}
             with self._worktrees(ctx, targets) as bisect:
@@ -684,35 +700,42 @@ class StackVerifier(Service):
                     ctx, stack_id, parent_id, targets, bisect, bases, missing, _in_scope(repos), position=0
                 )
             for check in run.checks:
-                if check.name in missing:
+                if check.name in missing and check.repository_id == failed[check.name]:
                     outcomes[check.name] = CheckOutcome(check.status, list(check.failure_signatures), run.id)
         return outcomes
 
     def _cached_outcomes(
-        self, parent_id: str, repos: list[StackRepoBase], names: set[str]
+        self, workspace_id: str, repos: list[StackRepoBase], failed: dict[str, str | None]
     ) -> dict[str, CheckOutcome]:
-        """Outcomes of the named checks from the most recent runs of the parent whose manifest is at the bases."""
+        """Outcomes of the failed checks from the newest runs in the workspace whose manifest is at the bases.
+
+        Only the most recent ``_CACHE_SCAN_LIMIT`` runs are scanned. A result is taken only when both the
+        check name and the repository it was recorded against match.
+        """
         found: dict[str, CheckOutcome] = {}
         with self.db.session() as session:
             runs = session.scalars(
                 select(VerificationRun)
-                .where(VerificationRun.task_id == parent_id)
+                .where(VerificationRun.workspace_id == workspace_id)
                 .order_by(VerificationRun.created_at.desc())
+                .limit(_CACHE_SCAN_LIMIT)
             ).all()
             for run in runs:
-                wanted = names - set(found)
-                if not wanted:
+                pending = [name for name in failed if name not in found]
+                if not pending:
                     break
                 manifest = session.get(RevisionManifest, run.manifest_id) if run.manifest_id else None
                 if manifest is None or not _at_bases(manifest.entries, repos):
                     continue
                 rows = session.scalars(
                     select(VerificationCheckResult).where(
-                        VerificationCheckResult.run_id == run.id, VerificationCheckResult.name.in_(wanted)
+                        VerificationCheckResult.run_id == run.id, VerificationCheckResult.name.in_(pending)
                     )
                 )
                 for row in rows:
-                    found.setdefault(row.name, CheckOutcome(row.status, list(row.failure_signatures), run.id))
+                    if row.name in found or row.repository_id != failed[row.name]:
+                        continue
+                    found[row.name] = CheckOutcome(row.status, list(row.failure_signatures), run.id)
         return found
 
     def _probe(

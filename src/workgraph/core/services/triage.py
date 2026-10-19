@@ -35,7 +35,10 @@ from workgraph.core.policies.lifecycle import check_task_transition
 from workgraph.core.services.tasks import TaskService
 
 VERDICTS = frozenset({"resolved", "obsolete", "open", "needs-decision", "needs-run", "unclear"})
-SIZES = frozenset({"small", "medium", "large"})
+# What a rewrite touches, never an effort estimate. Files written before the scope vocabulary may
+# still say small/medium/large; those are read as the scope they always meant.
+SIZES = frozenset({"one-file", "one-crate", "several-crates"})
+LEGACY_SIZES = {"small": "one-file", "medium": "one-crate", "large": "several-crates"}
 TRIAGE_TAG_PREFIX = "triage:"
 KIND_TAG_PREFIX = "kind:"
 DROPPED_TAG = "wg136"
@@ -164,7 +167,7 @@ def _shape_problem(entry: Any) -> str | None:
             if not _text(rewrite.get("description")):
                 return f"rewrite {i} is missing a description"
             size = rewrite.get("size")
-            if size is not None and size not in SIZES:
+            if size is not None and LEGACY_SIZES.get(size, size) not in SIZES:
                 return f"rewrite {i} has unknown size {size!r}"
             if not _str_list(rewrite.get("files", [])) or not _str_list(
                 rewrite.get("acceptance_criteria", [])
@@ -272,7 +275,7 @@ def _create_follow_up(
     tags = [t for t in original.tags if t != DROPPED_TAG and not t.startswith(KIND_TAG_PREFIX)]
     tags.append("triaged")
     if size:
-        tags.append(f"scope:{size}")
+        tags.append(f"scope:{LEGACY_SIZES.get(size, size)}")
 
     created = tasks.create(
         ctx,

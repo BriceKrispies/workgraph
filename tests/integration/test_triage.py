@@ -43,7 +43,7 @@ def _rewrite(**overrides):
         "description": "Do the thing.",
         "files": ["src/a.py", "src/b.py"],
         "acceptance_criteria": ["it works"],
-        "size": "small",
+        "size": "one-file",
     }
     rewrite.update(overrides)
     return rewrite
@@ -123,7 +123,7 @@ def test_open_creates_follow_ups_and_supersedes_original(app, human, ws):
     assert first.priority == "critical"
     assert first.acceptance_criteria == ["it works"]
     # wg136 and kind:* are dropped from the original's tags; triaged and scope:* are added.
-    assert sorted(first.tags) == ["area:core", "scope:small", "triaged", "triaged-before"]
+    assert sorted(first.tags) == ["area:core", "scope:one-file", "triaged", "triaged-before"]
     assert first.description == (
         f"Do the thing.\n\n**Files:** src/a.py, src/b.py\n\nTriaged from {key}: Half is done."
     )
@@ -131,7 +131,7 @@ def test_open_creates_follow_ups_and_supersedes_original(app, human, ws):
 
     second = _detail(app, human, ws, new_keys[1])
     assert "**Files:**" not in second.description
-    assert "scope:large" in second.tags
+    assert "scope:several-crates" in second.tags
 
     original = _detail(app, human, ws, key)
     assert original.status == "cancelled"
@@ -171,6 +171,31 @@ def test_non_cancelling_verdicts_keep_status(app, human, ws, verdict, extra, tag
         assert "Decision: Pick A or B?" in body
     if verdict == "needs-run":
         assert "Confirm with: cargo test -p rho" in body
+
+
+@pytest.mark.parametrize(
+    ("size", "tag"),
+    [
+        ("one-crate", "scope:one-crate"),
+        ("several-crates", "scope:several-crates"),
+        ("medium", "scope:one-crate"),
+    ],
+)
+def test_rewrite_size_is_a_scope_and_legacy_sizes_map_to_one(app, human, ws, size, tag):
+    key = _task(app, human, ws, "Scoped")
+    report = _apply(
+        app, human, ws, [{"key": key, "verdict": "open", "summary": "s", "rewrites": [_rewrite(size=size)]}]
+    )
+    assert report["errors"] == []
+    assert tag in _detail(app, human, ws, report["applied"][0]["new_keys"][0]).tags
+
+
+def test_unknown_rewrite_size_is_refused(app, human, ws):
+    key = _task(app, human, ws, "Badly sized")
+    report = _apply(
+        app, human, ws, [{"key": key, "verdict": "open", "summary": "s", "rewrites": [_rewrite(size="huge")]}]
+    )
+    assert report["errors"][0]["error"] == "rewrite 0 has unknown size 'huge'"
 
 
 def test_rerun_is_idempotent(app, human, ws):

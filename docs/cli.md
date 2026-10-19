@@ -21,7 +21,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `workspace` | `create`, `list`, `show`, `use`, `archive`, `set --allowed-root` |
 | `project` | `create`, `list`, `show`, `update`, `add-repo`, `remove-repo` |
 | `repo` | `register`, `list`, `show`, `refresh`, `status`, `update`, `remove`, `remove-checkout`, `depend` |
-| `task` | `create`, `list`, `ready`, `show`, `contract-check TASK --model M [--target 0.8]` (triage: `not_delegable`, `incomplete`, `split` or `leaf`, with the missing contract fields, reasons and the predicted success, labelled an inference; `--json` for the verdict), `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` (`--project`, `--repo`, `--open`) |
+| `task` | `create`, `list`, `ready`, `show`, `contract-check TASK --model M [--target 0.8]` (triage: `not_delegable`, `incomplete`, `split` or `leaf`, with the missing contract fields, reasons and the predicted success, labelled an inference; `--json` for the verdict), `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` (`--project`, `--repo`, `--open`), `triage-apply FILE [--dry-run] [--source TEXT]` (applies a JSON array of triage verdicts; see [Triage verdicts](#triage-verdicts)) |
 | `experiment` | `create SLUG --title T [--question Q] --protocol @file.json\|JSON`, `list [--status]`, `show EXP` (protocol summary and trials in order), `freeze EXP` (validates the protocol, freezes it and starts the experiment), `close EXP`, `trial add EXP TASK --arm A --phase P [--band N]` (a planned trial of a running experiment), `trial show TRIAL`, `trial start TRIAL` (clones the task's replay base into a fresh single-branch clone with no remote, runs the protocol's `setup`, prints the worktree, branch, base sha and brief), `trial grade TRIAL [--timeout S]` (runs the oracle and gates in the clone and records the outcome; a failure with flags is classed `gaming`), `trial classify TRIAL --cause C --source human\|agent\|mechanical [--notes N]`, `next EXP` (the pending trial, or a newly planned one from the protocol, or `done` with the reason), `report EXP` (per arm: bands with Wilson intervals, size fit with bootstrap intervals, usage, failure causes, invalid trials; `--json` for the data), `fit --model M [--repo-penalty X] [--feature-penalty X] [--samples N] [--seed S]` (fits the success predictor for one model over every graded trial with ex-ante features, stores the fit with its data cutoff and trial ids, and bootstraps it), `predict --model M (--task TASK \| --repo R --lines N --files F --packages P,Q) [--fit ID]` (probability of success with a 95% interval and the fit it came from; labelled an inference; `--packages` is a comma-separated list, may be empty) (see [Experiments](data-model.md#experiments)) ; `replay scan --repo R [--rev REV] [--limit N] [--min-lines N] [--max-lines N] [--include-excluded]` (commits that could become replay tasks, with size band and exclusion reasons), `replay create --repo R SHA... [--validate] [--oracle-template JSON-list] [--env K=V]... [--timeout S]` (one replay task per commit: `created`, `exists`, `skipped` or `rejected`) |
 | `stack` | `create PARENT`, `show PARENT` (repositories with base, integration branch and tip; children in merge order), `list [--all]`, `add PARENT TASK` and `remove PARENT TASK` (change the children of the active stack), `history PARENT` (the stack's events in order, with their verification runs), `integrate PARENT` (queues merging the ready children onto each repository's integration branch), `verify PARENT` (queues full verification of the integration tip, bisecting and ejecting a failing child). Acceptance goes through `task`: `task accept PARENT` (or `--manual --reason`) lands a verified stack on the default branch, refused with `landing: deferred` when the default branch moved and the stack is rebuilt to verify again; `task accept CHILD` accepts one child alone and removes it from its stack; `task reject PARENT` leaves the stack as it is (see [Git](git.md#stack-landing)) |
 | `attempt` | `list`, `show`, `create`, `finish`, `compare`, `manifests` |
@@ -44,6 +44,32 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `demo` | `e2e`, `seed` |
 
 Worktree discovery: `repo register` and `repo refresh` run `git worktree list` and record each linked worktree (kind `worktree`) and the main working tree (kind `clone`) as a checkout of the same repository. Workgraph's managed worktrees, bare entries and paths outside the workspace's allowed roots are not added; the skipped paths are listed in the repository's `health_detail.skipped_worktrees`. Refresh marks worktrees that were removed or are reported as prunable as unavailable, and records `repository.checkout_discovered` / `repository.checkout_lost` events.
+
+## Triage verdicts
+
+`task triage-apply FILE` applies a JSON array of verdicts written by a read-only review of old tasks. Each element:
+
+```json
+{"key": "WG-312", "verdict": "resolved", "summary": "...", "evidence": ["..."],
+ "rewrites": [{"title": "...", "description": "...", "files": ["..."], "acceptance_criteria": ["..."], "size": "small"}],
+ "decision": null, "command": null}
+```
+
+| Verdict | Effect |
+| --- | --- |
+| `resolved`, `obsolete` | comment, tag `triage:<verdict>`, move to `cancelled` (reason `triage: <verdict>`) |
+| `open` | one new task per rewrite (`follows_up` the original; priority, projects and repositories copied; tags = the original's minus `wg136` and `kind:*`, plus `triaged` and `size:<size>`), then the original is commented, tagged `triage:superseded` and cancelled |
+| `needs-decision` | comment with the decision, tags `needs-decision` and `triage:needs-decision`; status unchanged |
+| `needs-run` | comment with the `command` that confirms it, tag `triage:needs-run`; status unchanged; `command` is required |
+| `unclear` | comment, tag `triage:unclear`; status unchanged |
+
+- The whole file is validated before anything changes. An element with an unknown verdict or key, a missing key, an `open` without rewrites, a rewrite without title or description, a duplicate key, or a `cancelled` move the lifecycle refuses (for example an accepted task) is reported as an error and skipped; the other elements still apply.
+- A task that already has a `triage:*` tag is reported as `skipped`, so re-running a file is safe.
+- `--dry-run` prints the same table and errors as a real run and changes nothing.
+- `--source` names who triaged (e.g. `triage batch WG-1215`) and appears in each comment as `Triage (<source>): ...`. Without it the comment reads `Triage: ...`.
+- Output is a table (key, verdict, action, new keys or error). With `--json` the output is `{"applied": [...], "skipped": [...], "errors": [...]}`. The command exits 1 if any element errored.
+- Each service call commits on its own, so an element that fails part way through keeps the steps before the failure; it is reported as an error.
+- `TaskCreate` has no `category` field, so created tasks do not carry the original's category.
 
 ## Examples
 

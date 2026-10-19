@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import builtins
 import hashlib
+import re
 from collections import defaultdict, deque
 from collections.abc import Collection, Iterable
 from datetime import timedelta
@@ -71,6 +72,7 @@ from workgraph.core.policies.lifecycle import REQUIRES_DEPENDENCIES, check_task_
 from workgraph.core.policies.trackers import tracker_target_status
 from workgraph.core.services import resolve
 from workgraph.core.services.base import Service
+from workgraph.integrations.trackers.types import SYNC_ACTOR
 from workgraph.jobs import queue as jobqueue
 from workgraph.persistence.orm import (
     AgentAttempt,
@@ -82,6 +84,7 @@ from workgraph.persistence.orm import (
     Task,
     TaskComment,
     TaskDependency,
+    TaskLink,
     TaskProject,
     TaskRelation,
     TaskRepository,
@@ -92,6 +95,7 @@ from workgraph.search.indexer import index_task, to_fts_query
 from workgraph.security.permissions import Permission, require
 
 BLOCKED_BY_DEPENDENCIES = "dependencies"
+TRACKER_KEY_RE = re.compile(r"[A-Z][A-Z0-9]{0,9}-\d+")
 
 
 def content_hash(title: str, description: str) -> str:
@@ -100,6 +104,19 @@ def content_hash(title: str, description: str) -> str:
 
 
 # --------------------------------------------------------------------------- read helpers
+
+
+def _check_tracker_key(session: Session, ctx: RequestContext, ws: Workspace, key: str) -> None:
+    """Only the tracker sync may name a task after its tracker issue; the key must not shadow a local one."""
+    if ctx.actor != SYNC_ACTOR:
+        raise PermissionDenied(f"only {SYNC_ACTOR} may set a task key")
+    if TRACKER_KEY_RE.fullmatch(key) is None:
+        raise ValidationFailed(f"tracker key {key!r} must look like ABC-123")
+    prefix = key.split("-", 1)[0]
+    if prefix == ws.key_prefix:
+        raise ValidationFailed(f"tracker key prefix {prefix} is the workspace's own prefix")
+    if session.scalar(select(Task.id).where(Task.workspace_id == ws.id, Task.key == key)) is not None:
+        raise ConflictError(f"task {key} already exists in this workspace")
 
 
 def task_out(session: Session, task: Task, cls: type[TaskOut] = TaskOut) -> Any:
@@ -122,6 +139,9 @@ def task_out(session: Session, task: Task, cls: type[TaskOut] = TaskOut) -> Any:
     data["child_ids"] = list(child_ids)
     data["depends_on"] = sorted(depends_on)
     data["blocks"] = sorted(blocks)
+    data["links"] = session.scalars(
+        select(TaskLink).where(TaskLink.task_id == task.id).order_by(TaskLink.kind, TaskLink.url)
+    ).all()
     return cls.model_validate(data)
 
 
@@ -396,6 +416,8 @@ class TaskService(Service):
         ws = session.get(Workspace, ws_id)
         if ws is None:
             raise NotFoundError(f"workspace {ws_id} not found")
+        if data.key is not None:
+            _check_tracker_key(session, ctx, ws, data.key)
         number = ws.next_task_number
         ws.next_task_number = number + 1
         parent_id = resolve.task(session, ws.id, data.parent).id if data.parent else None
@@ -416,7 +438,6 @@ class TaskService(Service):
             due_at=data.due_at,
             scheduled_at=data.scheduled_at,
             estimated_effort=data.estimated_effort.model_dump() if data.estimated_effort else None,
-            external_refs=[r.model_dump() for r in data.external_refs],
             metadata_=data.metadata,
             created_by=ctx.actor,
         )
@@ -662,8 +683,6 @@ class TaskService(Service):
             change("priority", "priority", str(data.priority))
         if data.estimated_effort is not None:
             change("estimated_effort", "estimated_effort", data.estimated_effort.model_dump())
-        if data.external_refs is not None:
-            change("external_refs", "external_refs", [r.model_dump() for r in data.external_refs])
         if data.metadata is not None:
             merged = {**(task.metadata_ or {}), **data.metadata}
             change("metadata", "metadata_", merged)

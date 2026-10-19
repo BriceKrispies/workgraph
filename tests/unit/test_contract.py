@@ -49,7 +49,6 @@ def _task(
         claim_expires_at=None,
         auto_execute=False,
         estimated_effort=None,
-        external_refs=[],
         metadata={} if contract is None else {"contract": contract},
         due_at=None,
         scheduled_at=None,

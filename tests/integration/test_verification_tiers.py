@@ -107,3 +107,24 @@ def test_agent_manifest_lists_fast_checks_for_the_agent(app, human, ws, make_rep
     assert [c["name"] for c in manifest.agent_checks] == ["lint"]
     assert manifest.agent_checks[0]["command"] == [sys.executable, "-c", "print('lint ok')"]
     assert manifest.agent_checks[0]["repository"] == manifest.verification[0]["repository"]
+
+
+def test_failure_signature_comes_from_full_log_not_tail(app, human, ws):
+    # The FAILED line is far above the last 200 lines the runner keeps as its tail.
+    script = (
+        "print('     Running unittests src/lib.rs (target/debug/deps/demo-0123456789abcdef)'); "
+        "print('test a::b ... FAILED'); "
+        "[print('noise') for _ in range(500)]; raise SystemExit(1)"
+    )
+    task = app.tasks.create(human, ws, TaskCreate(title="Cargo log", status="ready"))
+    app.verification.create_config(
+        human,
+        ws,
+        scope_type="workspace",
+        scope=None,
+        name="cargo",
+        checks=[{"name": "cargo test", "parser": "cargo", "command": [sys.executable, "-c", script]}],
+    )
+    run = app.verification.run(human, ws, task.key)
+    assert run.checks[0].status == "failed"
+    assert run.checks[0].failure_signatures == ["test:demo::a::b"]

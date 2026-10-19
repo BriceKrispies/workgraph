@@ -78,8 +78,16 @@ uv run workgraph verify config integration --scope-type project --scope platform
 
 Scopes: `workspace`, `project`, `repository` (runs in that repository's checkout), `task`.
 Check fields: `name`, `kind` (test, lint, typecheck, build, integration, custom), `command`,
-`repository`, `timeout_seconds`, `required`, `env`, `parser` (auto, pytest, generic), `tier`
+`repository`, `timeout_seconds`, `required`, `env`, `parser` (auto, pytest, generic, cargo), `tier`
 (`fast` or `full`, default `full`).
+
+The `parser` picks how failure signatures are extracted from a failed check's log. `cargo` reads
+`cargo test` output across every test binary in the log: `test:<binary>::<test>` for each failed test
+(`test:<test>` when no binary header precedes it), `binary:<binary>` for a test binary that exits with
+`error: test failed` and had no failed test of its own, and `build:<crate>` for `error: could not
+compile`. `pytest` and `generic` match pytest's `FAILED` lines and `error:`-style lines. `auto` uses
+`cargo` signatures when the log has any, and otherwise falls back to pytest, then generic. Signatures
+are read from the whole log, not only the last lines of output.
 
 Tiers select checks by cost. `fast` checks (lint, format, type check) are the ones an agent is told
 to run itself: they are listed as `agent_checks` in the execution manifest. `workgraph verify run

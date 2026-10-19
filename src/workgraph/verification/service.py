@@ -66,6 +66,13 @@ from workgraph.verification.configs import (
 
 _PYTEST_FAILED = re.compile(r"^(?:FAILED|ERROR) (\S+::\S+)")
 _GENERIC_ERROR = re.compile(r"(?i)\b(error|failed|failure)\b[:\s](.{0,160})")
+_CARGO_RUNNING = re.compile(r"^Running\s+.*\(([^()]+)\)$")
+_CARGO_DOC_TESTS = re.compile(r"^Doc-tests\s+(\S+)$")
+_CARGO_TEST_FAILED = re.compile(r"^test (.+) \.\.\. FAILED$")
+_CARGO_BINARY_DIED = re.compile(r"^error: test failed, to rerun pass `")
+_CARGO_BUILD_FAILED = re.compile(r"^error: could not compile `([^`]+)`")
+_CARGO_TARGETS_FAILED = re.compile(r"^error: \d+ targets? failed:$")
+_CARGO_TARGET_LINE = re.compile(r"^`([^`]+)`$")
 
 
 class VerificationConfigOut(BaseModel):
@@ -154,7 +161,87 @@ class _PreparedRun:
     event_context: dict[str, Any] = field(default_factory=dict)
 
 
+def _cargo_binary_name(path: str) -> str:
+    """``target\\debug\\deps\\rho_lexer-0a1b2c3d4e5f6789.exe`` -> ``rho_lexer``."""
+    stem = re.split(r"[\\/]", path)[-1]
+    stem = re.sub(r"\.exe$", "", stem)
+    return re.sub(r"-[0-9a-f]+$", "", stem)
+
+
+def _cargo_target_binary(target: str) -> str | None:
+    """Binary name for one target in cargo's ``N targets failed`` summary.
+
+    ``-p rho --test courtyard_gpu`` -> ``courtyard_gpu``, ``-p rho-lowering --lib`` -> ``rho_lowering``.
+    Hyphens become underscores, matching the file names cargo uses under ``target/debug/deps``.
+    """
+    tokens = target.split()
+    crate: str | None = None
+    for i, word in enumerate(tokens[:-1]):
+        if word == "-p":
+            crate = tokens[i + 1]
+        elif word in ("--test", "--bin", "--example", "--bench"):
+            return tokens[i + 1].replace("-", "_")
+    if "--lib" in tokens or "--doc" in tokens:
+        return crate.replace("-", "_") if crate else None
+    return None
+
+
+def _cargo_signatures(lines: list[str]) -> list[str]:
+    """Signatures from ``cargo test`` output, covering every test binary in the log.
+
+    A failed test is ``test:<binary>::<name>`` (``test:<name>`` when no binary header was seen).
+    A binary that reports ``error: test failed`` or appears in the ``N targets failed`` summary
+    without any failed test of its own is ``binary:<binary>``. A crate that does not compile is
+    ``build:<crate>``.
+    """
+    signatures: list[str] = []
+    binary: str | None = None
+    binaries_with_failures: set[str] = set()
+    in_summary = False
+    for raw in lines:
+        line = raw.strip()
+        target = _CARGO_TARGET_LINE.match(line)
+        if in_summary and target:
+            name = _cargo_target_binary(target.group(1))
+            if name is not None and name not in binaries_with_failures:
+                signatures.append(f"binary:{name}")
+                binaries_with_failures.add(name)
+            continue
+        in_summary = _CARGO_TARGETS_FAILED.match(line) is not None
+        if in_summary:
+            continue
+        if match := _CARGO_RUNNING.match(line):
+            binary = _cargo_binary_name(match.group(1))
+        elif match := _CARGO_DOC_TESTS.match(line):
+            binary = match.group(1)
+        elif match := _CARGO_TEST_FAILED.match(line):
+            name = f"{binary}::{match.group(1)}" if binary else match.group(1)
+            signatures.append(f"test:{name}")
+            binaries_with_failures.add(binary or "")
+        elif _CARGO_BINARY_DIED.match(line):
+            if binary is not None and binary not in binaries_with_failures:
+                signatures.append(f"binary:{binary}")
+                binaries_with_failures.add(binary)
+        elif match := _CARGO_BUILD_FAILED.match(line):
+            signatures.append(f"build:{match.group(1)}")
+    return list(dict.fromkeys(signatures))
+
+
+def _failure_output(tail: list[str], log_path: Path) -> list[str]:
+    """The whole check log when it can be read, otherwise the captured tail."""
+    if log_path.exists():
+        try:
+            return log_path.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError:
+            pass
+    return tail
+
+
 def extract_failure_signatures(lines: list[str], parser: str) -> list[str]:
+    if parser in ("auto", "cargo"):
+        cargo = _cargo_signatures(lines)
+        if cargo or parser == "cargo":
+            return cargo
     signatures: list[str] = []
     if parser in ("auto", "pytest"):
         for line in lines:
@@ -513,7 +600,11 @@ class VerificationService(Service):
             status = VerificationStatus.ERROR
         else:
             status = VerificationStatus.FAILED
-        signatures = [] if result.ok else extract_failure_signatures(result.tail, spec.parser)
+        signatures = (
+            []
+            if result.ok
+            else extract_failure_signatures(_failure_output(result.tail, log_path), spec.parser)
+        )
         if result.timed_out:
             signatures.insert(0, "timeout")
         return {

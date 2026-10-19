@@ -64,7 +64,7 @@ entries are kept.
 | Verdict | Effect |
 | --- | --- |
 | `resolved`, `obsolete` | comment, tag `triage:<verdict>`, move to `cancelled` (reason `triage: <verdict>`) |
-| `open` | one new task per rewrite (`follows_up` the original; priority, projects and repositories copied; tags = the original's minus `wg136` and `kind:*`, plus `triaged` and `size:<size>`), then the original is commented, tagged `triage:superseded` and cancelled |
+| `open` | one new task per rewrite (`follows_up` the original; priority, projects and repositories copied; tags = the original's minus `wg136` and `kind:*`, plus `triaged` and `scope:<size>` (what the change touches: one-file, one-crate, several-crates)), then the original is commented, tagged `triage:superseded` and cancelled |
 | `needs-decision` | comment with the decision, tags `needs-decision` and `triage:needs-decision`; status unchanged |
 | `needs-run` | comment with the `command` that confirms it, tag `triage:needs-run`; status unchanged; `command` is required |
 | `unclear` | comment, tag `triage:unclear`; status unchanged |

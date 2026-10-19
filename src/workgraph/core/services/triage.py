@@ -272,7 +272,7 @@ def _create_follow_up(
     tags = [t for t in original.tags if t != DROPPED_TAG and not t.startswith(KIND_TAG_PREFIX)]
     tags.append("triaged")
     if size:
-        tags.append(f"size:{size}")
+        tags.append(f"scope:{size}")
 
     created = tasks.create(
         ctx,

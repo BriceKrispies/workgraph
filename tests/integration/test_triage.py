@@ -122,8 +122,8 @@ def test_open_creates_follow_ups_and_supersedes_original(app, human, ws):
     assert first.title == "Rewritten task"
     assert first.priority == "critical"
     assert first.acceptance_criteria == ["it works"]
-    # wg136 and kind:* are dropped from the original's tags; triaged and size:* are added.
-    assert sorted(first.tags) == ["area:core", "size:small", "triaged", "triaged-before"]
+    # wg136 and kind:* are dropped from the original's tags; triaged and scope:* are added.
+    assert sorted(first.tags) == ["area:core", "scope:small", "triaged", "triaged-before"]
     assert first.description == (
         f"Do the thing.\n\n**Files:** src/a.py, src/b.py\n\nTriaged from {key}: Half is done."
     )
@@ -131,7 +131,7 @@ def test_open_creates_follow_ups_and_supersedes_original(app, human, ws):
 
     second = _detail(app, human, ws, new_keys[1])
     assert "**Files:**" not in second.description
-    assert "size:large" in second.tags
+    assert "scope:large" in second.tags
 
     original = _detail(app, human, ws, key)
     assert original.status == "cancelled"

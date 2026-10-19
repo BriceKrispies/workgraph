@@ -97,6 +97,14 @@ from workgraph.security.permissions import Permission, require
 BLOCKED_BY_DEPENDENCIES = "dependencies"
 TRACKER_KEY_RE = re.compile(r"[A-Z][A-Z0-9]{0,9}-\d+")
 
+TRACKER_OWNED_FIELDS = frozenset(
+    {"title", "description", "acceptance_criteria", "priority", "assignee", "parent", "archived", "status"}
+)
+"""Fields a tracker owns on a tracked task. Only the sync may change them.
+
+``status`` is guarded only for changes that accept, cancel or reopen the task (see ``_update_in_session``).
+"""
+
 
 def content_hash(title: str, description: str) -> str:
     normalized = " ".join(title.split()).lower() + "\n" + " ".join(description.split()).lower()
@@ -143,6 +151,11 @@ def task_out(session: Session, task: Task, cls: type[TaskOut] = TaskOut) -> Any:
         select(TaskLink).where(TaskLink.task_id == task.id).order_by(TaskLink.kind, TaskLink.url)
     ).all()
     return cls.model_validate(data)
+
+
+def is_tracked(session: Session, task_id: str) -> ExternalItem | None:
+    """The tracker issue a task mirrors, or None for a local task."""
+    return session.scalar(select(ExternalItem).where(ExternalItem.task_id == task_id))
 
 
 def satisfied_dependencies(session: Session, edges: Collection[tuple[str, str]]) -> set[tuple[str, str]]:
@@ -392,6 +405,24 @@ class TaskService(Service):
                 self._transition(session, ctx, task, TaskStatus.READY, reason="all dependencies accepted")
         elif status == TaskStatus.READY and blockers:
             self._transition(session, ctx, task, TaskStatus.READY, reason="dependency reopened")
+
+    def _guard_tracker_owned(
+        self, session: Session, ctx: RequestContext, task: Task, fields: Collection[str]
+    ) -> None:
+        """Reject a change to tracker-owned fields of a tracked task unless the actor is the sync."""
+        if ctx.actor == SYNC_ACTOR:
+            return
+        owned = sorted(set(fields) & TRACKER_OWNED_FIELDS)
+        if not owned:
+            return
+        item = is_tracked(session, task.id)
+        if item is None:
+            return
+        raise PermissionDenied(
+            f"{task.key} mirrors {item.external_key} in {item.connection}; the tracker owns "
+            f"{', '.join(owned)} for it, so change them there",
+            details={"fields": owned, "connection": item.connection, "external_key": item.external_key},
+        )
 
     def _touch(self, task: Task, expected_version: int | None) -> None:
         if expected_version is not None and expected_version != task.version:
@@ -724,6 +755,15 @@ class TaskService(Service):
             task.description_hash = new_hash
             material = True
 
+        touched = {"parent" if field == "parent_id" else field for field in changes}
+        if data.status is not None:
+            target = TaskStatus(data.status)
+            current = TaskStatus(task.status)
+            closed = {TaskStatus.ACCEPTED, TaskStatus.CANCELLED}
+            if target != current and ({target, current} & closed):
+                touched.add("status")
+        self._guard_tracker_owned(session, ctx, task, touched)
+
         event_id: str | None = None
         if changes:
             task.version += 1
@@ -777,6 +817,8 @@ class TaskService(Service):
         with self.db.session(write=True) as session:
             ws_id = self._workspace_id(session, workspace) if workspace else None
             task = resolve.task(session, ws_id, ref)
+            if archived != (task.archived_at is not None):
+                self._guard_tracker_owned(session, ctx, task, {"archived"})
             if archived and task.archived_at is None:
                 task.archived_at = utcnow()
                 event_type = "task.archived"
@@ -852,6 +894,15 @@ class TaskService(Service):
             ws_id = self._workspace_id(session, workspace) if workspace else None
             task = resolve.task(session, ws_id, ref)
             dep = resolve.task(session, task.workspace_id, depends_on)
+            edge = session.scalar(
+                select(TaskDependency).where(
+                    TaskDependency.task_id == task.id, TaskDependency.depends_on_id == dep.id
+                )
+            )
+            if edge is not None and edge.created_by == SYNC_ACTOR and ctx.actor != SYNC_ACTOR:
+                raise PermissionDenied(
+                    f"the dependency of {task.key} on {dep.key} comes from the tracker; remove it there"
+                )
             result = session.execute(
                 delete(TaskDependency).where(
                     TaskDependency.task_id == task.id, TaskDependency.depends_on_id == dep.id
@@ -1245,6 +1296,11 @@ class TaskService(Service):
         )
         if target is None:
             return None
+        if target == TaskStatus.ACCEPTED:
+            accepted_event = self.app.verification.record_external_acceptance(
+                session, ctx, task, connection=item.connection
+            )
+            ctx = ctx.caused_by(accepted_event)
         return self._transition(
             session,
             ctx,

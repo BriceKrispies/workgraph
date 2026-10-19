@@ -158,3 +158,28 @@ of a stack lands the stack (see below).
   (automated, or `--manual --reason` as for any child) and removes it from the stack. If its commits
   were on the integration branch, the branch is rebuilt without them, its in-stack dependents go back
   to `pending`, and the remaining stack is verified again. Its change is not landed by the stack.
+
+## Tracked tasks
+
+A task that mirrors a tracker issue (a Jira issue, see [design](design/tracker-sync.md)) has an
+`external_items` row naming its connection. The tracker owns part of that task, and the rest stays
+local.
+
+- **Tracker-owned fields.** Title, description, acceptance criteria, priority, assignee, parent,
+  archiving, and the status moves that accept, cancel or reopen the task are changed only by the
+  tracker sync (`system:tracker-sync`). Any other actor gets `permission_denied` naming the fields.
+  Removing a dependency that the sync created is refused the same way; adding local dependencies is
+  allowed.
+- **Still local.** Claims, releases, attempts, progress and result reports, comments, tags,
+  repository links and local dependencies work on a tracked task as on any other.
+- **Status from the issue.** A done issue accepts the task, with an acceptance row of mode `external`
+  and reason `external:<connection>` and no verification run. A done issue whose resolution is in the
+  connection's `cancelled_resolutions` (`Won't Do` and `Duplicate` by default) cancels it instead. An
+  issue that leaves done reopens the task to `backlog` (`task.reopened`). An issue in progress does
+  not move the task.
+- **Acceptance belongs to the tracker.** `workgraph task accept` and `task accept --manual` are refused
+  for a tracked task, and verification never auto-accepts one: a passing run leaves it at
+  `awaiting_review`. Its dependents become ready when the issue reaches done, because accepted blockers
+  satisfy dependencies.
+
+Connections are configured in `[trackers.<name>]` (see [configuration](configuration.md)).

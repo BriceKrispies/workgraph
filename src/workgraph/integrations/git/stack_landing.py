@@ -310,6 +310,41 @@ class StackLander(Service):
             raise ConflictError(f"stack {stack.id} has no recorded verification")
         return event.data.get("run_id"), dict(event.data.get("tips", {}))
 
+    def rebase_if_stale(self, ctx: RequestContext, stack_id: str) -> bool:
+        """Rebuild a stack onto default branches that moved before it verified.
+
+        Returns True when a repository's default branch no longer equals its ``base_sha``: the stack is
+        rebuilt from the new heads and verification is queued again. No landing request is set; a request
+        already on the stack, or auto-accept, still lands it once it verifies. Returns False when every base
+        is current or a repository has no default branch.
+        """
+        targets = self._targets(stack_id)
+        with self.db.session() as session:
+            defaults = dict(
+                session.execute(
+                    select(StackRepository.repository_id, Repository.default_branch)
+                    .join(Repository, Repository.id == StackRepository.repository_id)
+                    .where(StackRepository.stack_id == stack_id)
+                ).all()
+            )
+        heads: dict[str, str] = {}
+        for target in targets:
+            if not defaults.get(target.repository_id):
+                return False
+            heads[target.repository_name] = Git(target.source_path).resolve_commit(
+                defaults[target.repository_id]
+            )
+        if all(heads[target.repository_name] == target.base_sha for target in targets):
+            return False
+        self._move_bases(
+            ctx,
+            stack_id,
+            heads,
+            event_type="stack.rebased",
+            data={"reason": "default branch moved before verification"},
+        )
+        return True
+
     def _defer(
         self,
         ctx: RequestContext,
@@ -328,6 +363,29 @@ class StackLander(Service):
                         "the stack's integration is queued or running; retry once it settles",
                         details={"stack_id": stack_id},
                     )
+        self._move_bases(
+            ctx,
+            stack_id,
+            heads,
+            event_type="stack.land_requested",
+            data={"mode": mode, "reason": reason},
+            land_request={"mode": mode, "reason": reason, "actor": ctx.actor},
+        )
+
+    def _move_bases(
+        self,
+        ctx: RequestContext,
+        stack_id: str,
+        heads: dict[str, str],
+        *,
+        event_type: str,
+        data: dict[str, Any],
+        land_request: dict[str, Any] | None = None,
+    ) -> None:
+        """Point each repository's base at its new head, record the move, and rebuild onto it.
+
+        ``land_request`` is stored on the stack in the same transaction when given.
+        """
         with self.db.session(write=True) as session:
             stack = session.get(Stack, stack_id)
             assert stack is not None
@@ -341,15 +399,14 @@ class StackLander(Service):
             ).all():
                 previous[name] = link.base_sha
                 link.base_sha = heads[name]
-            stack.land_request = json.dumps(
-                {"mode": mode, "reason": reason, "actor": ctx.actor}, sort_keys=True
-            )
+            if land_request is not None:
+                stack.land_request = json.dumps(land_request, sort_keys=True)
             stack.updated_at = utcnow()
             session.flush()
             record_event(
                 session,
                 ctx,
-                event_type="stack.land_requested",
+                event_type=event_type,
                 entity_type="stack",
                 entity_id=stack.id,
                 workspace_id=stack.workspace_id,
@@ -357,8 +414,7 @@ class StackLander(Service):
                     "parent_key": parent.key,
                     "base_shas": previous,
                     "new_base_shas": heads,
-                    "mode": mode,
-                    "reason": reason,
+                    **data,
                 },
             )
         self._rebuild(ctx, stack_id, bases=heads)

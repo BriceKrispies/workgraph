@@ -15,6 +15,8 @@ from workgraph.config.settings import CommandAgentConfig
 from workgraph.core.errors import ConflictError, ValidationFailed
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.integrations.git.cli import Git
+from workgraph.jobs.handlers import HANDLERS
+from workgraph.jobs.worker import Worker
 from workgraph.persistence.orm import (
     Event,
     Job,
@@ -1044,6 +1046,56 @@ def test_main_moving_before_acceptance_rebuilds_and_lands_after_reverification(
     assert app.stacks.get(human, ws, parent.key).status == "landed"
     types = _event_types(app, stack.id)
     assert types.count("stack.verified") == 2 and "stack.landed" in types
+
+
+def test_default_branch_moving_before_verification_rebuilds_the_stack_once(app, human, ws, tree):
+    repo, parent = tree
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, passing_check("suite")],
+    )
+    first = _child(app, human, ws, parent, "First change")
+    second = _child(app, human, ws, parent, "Second change")
+    stack = app.stacks.create(human, ws, parent.key)
+    base = repo.git("rev-parse", "main")
+    # Integrate both children but hold back the stack_verify job, so main can move before it runs.
+    kinds = [kind for kind in HANDLERS if kind != "stack_verify"]
+    for child, agent in ((first, "fake-a"), (second, "fake-b")):
+        attempt = app.runs.start(human, ws, child.key, agent=agent)
+        Worker(app, concurrency=2, poll_interval=0.05, maintenance_interval=0.2, kinds=kinds).run_until_idle(
+            timeout=120
+        )
+        assert app.attempts.get(human, attempt.id).status == "succeeded"
+    with app.db.session() as session:
+        queued = list(session.scalars(select(Job).where(Job.kind == "stack_verify", Job.status == "queued")))
+    assert len(queued) == 1
+
+    moved = repo.commit("unrelated change on main", {"extra.txt": "moved\n"})
+    drain(app)
+
+    assert app.stacks.get(human, ws, parent.key).repositories[0].base_sha == moved
+    with app.db.session() as session:
+        rebased = session.scalar(
+            select(Event.data).where(Event.entity_id == stack.id, Event.event_type == "stack.rebased")
+        )
+    assert rebased is not None
+    assert rebased["parent_key"] == parent.key
+    assert rebased["base_shas"] == {"svc": base}
+    assert rebased["new_base_shas"] == {"svc": moved}
+    assert rebased["reason"] == "default branch moved before verification"
+    # Only the rebuilt tip was verified: one run, one verification start, and no landing request.
+    assert len(_verification_runs(app, parent)) == 1
+    types = _event_types(app, stack.id)
+    assert types.count("stack.verification_started") == 1
+    assert types.count("stack.verified") == 1
+    assert "stack.land_requested" not in types
+    assert app.stacks.get(human, ws, parent.key).status == "landed"
+    landed = repo.git("rev-parse", "main")
+    repo.git("merge-base", "--is-ancestor", moved, landed)
+    assert {"a.py", "b.py", "extra.txt"} <= _branch_files(repo, "main")
+    assert app.tasks.get(human, ws, parent.key).status == "accepted"
 
 
 def test_dirty_user_checkout_refuses_the_landing_and_moves_no_ref(app, human, ws, tree, manual_landing):

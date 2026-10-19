@@ -235,6 +235,10 @@ class StackVerifier(Service):
             repos = self._repos(session, stack)
             keep = _in_scope(repos)
             checks = [check for check in applicable_checks(session, parent) if keep(check)]
+        # A default branch that moved since the stack was cut is rebuilt first, so the full checks run once,
+        # on the tip that lands. The rebuild queues a new verification.
+        if self.app.stack_lander.rebase_if_stale(ctx, stack_id):
+            return {"status": "rebased"}
         targets: list[IntegrationTarget] = []
         paths: dict[str, Path] = {}
         tips: dict[str, str] = {}

@@ -214,6 +214,8 @@ Accepting the parent task of a verified stack lands it (`workgraph task accept P
   event `stack.land_requested` records the old and new base shas. The accept call is refused with
   `landing: deferred`. When the rebuilt stack verifies, it lands by itself. If that verification
   fails, the stack goes to the usual bisection and the request stays pending for the next pass.
+- **Before verification.** A stack whose default branch moved before its verification started is rebuilt
+  onto the new head first (`stack.rebased`, no landing request), so the full checks run once, on the tip that lands.
 - **On landing.** Each verified child is accepted (`mode` `automated`, `verification_run_id` the
   stack's passing run, the accepted manifest from that run) and then the parent is accepted with the
   requested mode and reason. The stack becomes `landed`, the `stack.landed` event records the landed

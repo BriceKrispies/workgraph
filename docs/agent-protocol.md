@@ -79,6 +79,17 @@ push or merge, and do not modify read-only repositories.
 
 A reference implementation is `src/workgraph/demo/scripted_agent.py`.
 
+## External managed attempts
+
+An agent that runs outside Workgraph (for example a Claude Code subagent) gets the same managed worktrees
+through the attempt flow. `workgraph attempt start TASK` (MCP `attempt_start`) claims the task, records an
+attempt and prepares one checkout per linked repository, printing their paths. The agent works and commits
+in those checkouts with plain git, keeping the `Task-ID` trailer. `workgraph attempt submit ATTEMPT`
+(MCP `attempt_submit`) then concludes the attempt through the same path a Workgraph-run agent's result takes:
+outcome capture, commit attribution, read-only enforcement, fast checks or verification, stack gating, and
+release of the worktrees. `--failed` with `--error` reports a failure instead, which follows the orchestrated
+failure path (escalation after the attempt limit included).
+
 ## Writing a new built-in adapter
 
 Implement the `AgentProvider` protocol in `integrations/agents/base.py` (`capabilities`,

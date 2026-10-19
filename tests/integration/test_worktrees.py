@@ -6,7 +6,7 @@ import pytest
 
 from workgraph.core.errors import ResourceBusyError, ValidationFailed
 from workgraph.core.models.enums import AttemptStatus
-from workgraph.core.models.schemas import ClaimRequest, RepositoryRegister, TaskCreate
+from workgraph.core.models.schemas import AttemptCreate, ClaimRequest, RepositoryRegister, TaskCreate
 from workgraph.core.services import resolve
 from workgraph.core.services.attempts import new_attempt
 from workgraph.integrations.git.cli import Git
@@ -172,3 +172,71 @@ def test_attempt_start_refuses_backlog_task_and_bad_isolation(app, human, ws, ma
         app.runs.start_external(human, ws, ready.key, isolation="snapshot")
     assert app.tasks.get(human, ws, ready.key).status == "ready"
     assert app.attempts.list(human, ws, task=ready.key).total == 0
+
+
+def _commit_in_checkout(checkout: Path, name: str) -> str:
+    (checkout / name).write_text("agent work\n")
+    Git(checkout).run("add", "-A")
+    Git(checkout).run("-c", "user.name=a", "-c", "user.email=a@b", "commit", "-qm", f"agent: {name}")
+    return Git(checkout).head()
+
+
+def test_attempt_submit_concludes_committed_work_for_review(app, human, ws, make_repo):
+    repo = make_repo("api")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    task = app.tasks.create(
+        human, ws, TaskCreate(title="External work", repositories=["api"], status="ready")
+    )
+    started = app.runs.start_external(human, ws, task.key, agent_name="tester")
+    checkout = Path(started.repositories[0].checkout_path)
+    commit = _commit_in_checkout(checkout, "feature.txt")
+
+    result = app.runs.submit_external(human, started.attempt_id, summary="added the feature")
+
+    assert result["status"] == "succeeded" and result["verification"] is None
+    assert result["task_status"] == "awaiting_review" and result["attempt_status"] == "succeeded"
+    assert app.tasks.get(human, ws, task.key).status == "awaiting_review"
+    [change_set] = app.git.change_sets(human, ws, task.key)
+    [item] = change_set["items"]
+    assert item["head_sha"] == commit
+    assert commit in [c["sha"] for c in app.git.task_commits(human, ws, task.key)]
+    assert not app.worktrees.attempt_is_active(started.attempt_id)
+    assert checkout.exists()  # clean worktrees are released, the branch is kept
+    assert Git(repo.path).current_branch() == "main"
+
+
+def test_attempt_submit_failed_follows_the_orchestrated_failure_path(app, human, ws, make_repo):
+    repo = make_repo("api")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    task = app.tasks.create(
+        human, ws, TaskCreate(title="External work", repositories=["api"], status="ready")
+    )
+    started = app.runs.start_external(human, ws, task.key, agent_name="tester")
+
+    result = app.runs.submit_external(human, started.attempt_id, status="failed", error="tests are red")
+
+    assert result == {
+        "status": "failed",
+        "error": "tests are red",
+        "task_status": "failed",
+        "attempt_status": "failed",
+    }
+    attempt = app.attempts.get(human, started.attempt_id)
+    assert attempt.status == "failed" and attempt.exit_reason == "failed"
+    assert attempt.error == "tests are red"
+    assert app.tasks.get(human, ws, task.key).status == "failed"
+    assert not app.worktrees.attempt_is_active(started.attempt_id)
+
+
+def test_attempt_submit_refuses_an_attempt_without_a_managed_worktree(app, human, ws, make_repo):
+    repo = make_repo("api")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    task = app.tasks.create(
+        human, ws, TaskCreate(title="Recorded only", repositories=["api"], status="ready")
+    )
+    app.tasks.claim(human, ws, task.key, ClaimRequest())
+    attempt = app.attempts.create(human, ws, AttemptCreate(task=task.key, provider="tester"))
+
+    with pytest.raises(ValidationFailed, match="no managed worktree"):
+        app.runs.submit_external(human, attempt.id)
+    assert app.attempts.get(human, attempt.id).status == "running"

@@ -14,6 +14,7 @@ import platform
 import sys
 import threading
 import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -523,22 +524,7 @@ class RunService(Service):
         measured_ms = int((time.monotonic() - started) * 1000)
         recorder.flush()
 
-        outcome: dict[str, Any] = {}
-        # Without a captured outcome the attempt's commits are unknown, so it cannot count as a success:
-        # a stack would treat the child as having changed nothing and merge it without its commits.
-        capture_error: str | None = None
-        try:
-            outcome = self.app.worktrees.capture_outcome(ctx, attempt_id)
-        except WorkgraphError as exc:
-            capture_error = exc.message
-            outcome = {"error": exc.message}
-        if capture_error is None:
-            try:
-                self.app.git.link_attempt_commits(ctx, attempt_id)
-            except WorkgraphError as exc:
-                outcome = {**outcome, "link_error": exc.message}
-        succeeded = result.status == "succeeded" and not outcome.get("violations") and capture_error is None
-        with self.db.session(write=True) as session:
+        def record(session: Any) -> None:
             artifact = None
             if log_path.exists():
                 from workgraph.core.services.artifacts import register_file
@@ -566,58 +552,114 @@ class RunService(Service):
                 "progress_events": recorder.count,
             }
             attempt.telemetry = telemetry
-            usage_kwargs: dict[str, Any] = {}
-            if result.usage:
-                usage_kwargs = {"usage": result.usage, "usage_source": f"{provider.adapter_type}_reported"}
-            if result.cost_usd is not None:
-                usage_kwargs.update(cost_usd=result.cost_usd, cost_source=f"{provider.adapter_type}_reported")
+
+        usage_fields: dict[str, Any] = {}
+        if result.usage:
+            usage_fields = {"usage": result.usage, "usage_source": f"{provider.adapter_type}_reported"}
+        if result.cost_usd is not None:
+            usage_fields.update(cost_usd=result.cost_usd, cost_source=f"{provider.adapter_type}_reported")
+        return self.conclude_attempt(
+            ctx,
+            task_id,
+            attempt_id,
+            status=result.status,
+            summary=result.summary,
+            error=result.error,
+            exit_code=result.exit_code,
+            duration_ms=measured_ms,
+            should_cancel=job_ctx.cancel_requested,
+            usage_fields=usage_fields,
+            record=record,
+        )
+
+    def conclude_attempt(
+        self,
+        ctx: RequestContext,
+        task_id: str,
+        attempt_id: str,
+        *,
+        status: str,
+        summary: str | None,
+        error: str | None,
+        exit_code: int | None,
+        duration_ms: int | None,
+        should_cancel: Callable[[], bool],
+        usage_fields: dict[str, Any] | None = None,
+        record: Callable[[Any], None] | None = None,
+    ) -> dict[str, Any]:
+        """Conclude an attempt the way every Workgraph run concludes.
+
+        Captures the worktree outcome and links its commits, applies the read-only policy, then either fails the
+        attempt and its task (with escalation) or hands the task to review or verification, and releases the
+        worktrees. ``status`` is the agent's result status; ``record`` writes run-only records (telemetry, logs)
+        in the same transaction as the attempt's outcome.
+        """
+        outcome: dict[str, Any] = {}
+        # Without a captured outcome the attempt's commits are unknown, so it cannot count as a success:
+        # a stack would treat the child as having changed nothing and merge it without its commits.
+        capture_error: str | None = None
+        try:
+            outcome = self.app.worktrees.capture_outcome(ctx, attempt_id)
+        except WorkgraphError as exc:
+            capture_error = exc.message
+            outcome = {"error": exc.message}
+        if capture_error is None:
+            try:
+                self.app.git.link_attempt_commits(ctx, attempt_id)
+            except WorkgraphError as exc:
+                outcome = {**outcome, "link_error": exc.message}
+        succeeded = status == "succeeded" and not outcome.get("violations") and capture_error is None
+        with self.db.session(write=True) as session:
+            if record is not None:
+                record(session)
+            attempt = resolve.attempt(session, attempt_id)
             if succeeded:
-                for k, v in usage_kwargs.items():
+                for k, v in (usage_fields or {}).items():
                     setattr(attempt, k, v if k != "usage" else {**v})
-                attempt.summary = result.summary[:50_000] if result.summary else attempt.summary
-                attempt.exit_code = result.exit_code
-                attempt.duration_ms = measured_ms
+                attempt.summary = summary[:50_000] if summary else attempt.summary
+                attempt.exit_code = exit_code
+                attempt.duration_ms = duration_ms
             else:
-                status = {
+                attempt_status = {
                     "failed": AttemptStatus.FAILED,
                     "timed_out": AttemptStatus.TIMED_OUT,
                     "cancelled": AttemptStatus.CANCELLED,
                     "succeeded": AttemptStatus.FAILED,
-                }[result.status]
-                error = result.error or ""
+                }[status]
+                text = error or ""
                 if outcome.get("violations"):
-                    error = f"read-only repositories were modified: {outcome['violations']}. {error}".strip()
+                    text = f"read-only repositories were modified: {outcome['violations']}. {text}".strip()
                 if capture_error is not None:
-                    error = f"could not record the attempt's changes: {capture_error}. {error}".strip()
+                    text = f"could not record the attempt's changes: {capture_error}. {text}".strip()
                 finish_attempt(
                     session,
                     ctx,
                     attempt,
-                    status,
+                    attempt_status,
                     exit_reason=(
-                        result.status
-                        if result.status != "succeeded"
+                        status
+                        if status != "succeeded"
                         else "outcome_capture_failed"
                         if capture_error is not None
                         else "policy_violation"
                     ),
-                    exit_code=result.exit_code,
-                    error=error or "agent failed",
-                    summary=result.summary,
-                    duration_ms=measured_ms,
-                    **usage_kwargs,
+                    exit_code=exit_code,
+                    error=text or "agent failed",
+                    summary=summary,
+                    duration_ms=duration_ms,
+                    **(usage_fields or {}),
                 )
                 task = session.get(Task, task_id)
                 assert task is not None
-                target = TaskStatus.READY if status == AttemptStatus.CANCELLED else TaskStatus.FAILED
+                target = TaskStatus.READY if attempt_status == AttemptStatus.CANCELLED else TaskStatus.FAILED
                 if task.status in (TaskStatus.RUNNING, TaskStatus.CLAIMED):
                     self.app.tasks._transition(
-                        session, ctx, task, target, reason=f"attempt #{attempt.number} {status}"
+                        session, ctx, task, target, reason=f"attempt #{attempt.number} {attempt_status}"
                     )
                 self._maybe_escalate(session, ctx, task)
         if not succeeded:
             self.app.worktrees.release(ctx, attempt_id)
-            return {"status": result.status, "error": result.error}
+            return {"status": status, "error": error}
 
         # Agent claims success: that is not verification.
         with self.db.session(write=True) as session:
@@ -625,7 +667,7 @@ class RunService(Service):
             assert task is not None
             if task.status in (TaskStatus.RUNNING, TaskStatus.CLAIMED):
                 self.app.tasks._complete_in_session(
-                    session, ctx, task, summary=result.summary or "", attempt_id=attempt_id
+                    session, ctx, task, summary=summary or "", attempt_id=attempt_id
                 )
             attempt = resolve.attempt(session, attempt_id)
             needs_verification = task.status == TaskStatus.AWAITING_VERIFICATION
@@ -636,8 +678,8 @@ class RunService(Service):
                     attempt,
                     AttemptStatus.SUCCEEDED,
                     exit_reason="agent_succeeded",
-                    exit_code=result.exit_code,
-                    duration_ms=measured_ms,
+                    exit_code=exit_code,
+                    duration_ms=duration_ms,
                 )
         verification: dict[str, Any] | None = None
         # A stack child is gated by its fast tier; the full tier runs once on the integration tip instead.
@@ -651,8 +693,8 @@ class RunService(Service):
                     attempt,
                     AttemptStatus.SUCCEEDED,
                     exit_reason="agent_succeeded",
-                    exit_code=result.exit_code,
-                    duration_ms=measured_ms,
+                    exit_code=exit_code,
+                    duration_ms=duration_ms,
                 )
             self.app.stacks.mark_ready(ctx, task_id)
             verification = {"gate": "no_fast_checks"}
@@ -663,7 +705,7 @@ class RunService(Service):
                     None,
                     task_id,
                     attempt_id=attempt_id,
-                    should_cancel=job_ctx.cancel_requested,
+                    should_cancel=should_cancel,
                     tier="fast" if gate == "fast" else None,
                 )
                 verification = {"run_id": run.id, "status": run.status}
@@ -692,6 +734,62 @@ class RunService(Service):
             "verification": verification,
             "outcome": {k: v for k, v in outcome.items() if k != "commits"},
         }
+
+    def submit_external(
+        self,
+        ctx: RequestContext,
+        attempt_ref: str,
+        *,
+        status: str = "succeeded",
+        summary: str | None = None,
+        error: str | None = None,
+    ) -> dict[str, Any]:
+        """Conclude an external managed attempt from the commits the agent made in its worktrees.
+
+        Goes through :meth:`conclude_attempt`, the conclusion an orchestrated run gets, with the agent's own
+        report as the result. Returns that conclusion plus the task's and the attempt's status afterwards.
+        """
+        require(ctx, Permission.TASK_CLAIM)
+        require(ctx, Permission.ATTEMPT_WRITE)
+        require(ctx, Permission.VERIFY_RUN)
+        if status not in ("succeeded", "failed"):
+            raise ValidationFailed(f"status must be succeeded or failed, not {status!r}")
+        with self.db.session() as session:
+            attempt = resolve.attempt(session, attempt_ref)
+            attempt_id, task_id = attempt.id, attempt.task_id
+            attempt_status = AttemptStatus(attempt.status)
+            has_worktree = attempt.baseline_manifest_id is not None
+            task = session.get(Task, task_id)
+            assert task is not None
+            task_key, task_status = task.key, TaskStatus(task.status)
+        if attempt_status not in (AttemptStatus.RUNNING, AttemptStatus.PREPARING):
+            raise ValidationFailed(
+                f"attempt {attempt_id} is {attempt_status}; only a running attempt can be submitted"
+            )
+        if not has_worktree:
+            raise ValidationFailed(
+                f"attempt {attempt_id} has no managed worktree; submit applies to attempts from `attempt start`"
+            )
+        if task_status not in (TaskStatus.RUNNING, TaskStatus.CLAIMED):
+            raise ValidationFailed(f"task {task_key} is {task_status}; only a running task can be submitted")
+        if self.app.stacks.gate(task_id) is not None:
+            require(ctx, Permission.STACK_WRITE)
+        outcome = self.conclude_attempt(
+            ctx.with_attempt(attempt_id),
+            task_id,
+            attempt_id,
+            status=status,
+            summary=summary,
+            error=error,
+            exit_code=None,
+            duration_ms=None,
+            should_cancel=lambda: False,
+        )
+        with self.db.session() as session:
+            task = session.get(Task, task_id)
+            attempt = resolve.attempt(session, attempt_id)
+            assert task is not None
+            return {**outcome, "task_status": str(task.status), "attempt_status": str(attempt.status)}
 
     def _portable_home(self) -> bool:
         import os

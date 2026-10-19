@@ -116,6 +116,20 @@ def test_cli_attempt_start_json_keys(run, make_repo):
     assert run("task", "show", task["key"])["status"] == "running"
 
 
+def test_cli_attempt_submit_json_keys(run, make_repo):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    repo = make_repo("svc")
+    run("repo", "register", str(repo.path))
+    task = run("task", "create", "External work", "--ready", "--repo", "svc")
+    started = run("attempt", "start", task["key"], "--agent-name", "tester")
+
+    out = run("attempt", "submit", started["attempt_id"], "--failed", "--error", "tests are red")
+
+    assert out["status"] == "failed" and out["error"] == "tests are red"
+    assert out["task_status"] == "failed" and out["attempt_status"] == "failed"
+    assert run("task", "show", task["key"])["status"] == "failed"
+
+
 def test_cli_errors_and_exit_codes(run):
     run("init")
     err = run("task", "show", "WG-404", expect=4)

@@ -79,7 +79,13 @@ uv run workgraph verify config integration --scope-type project --scope platform
 Scopes: `workspace`, `project`, `repository` (runs in that repository's checkout), `task`.
 Check fields: `name`, `kind` (test, lint, typecheck, build, integration, custom), `command`,
 `repository`, `timeout_seconds`, `required`, `env`, `parser` (auto, pytest, generic, cargo), `tier`
-(`fast` or `full`, default `full`).
+(`fast` or `full`, default `full`), `baseline` (`absolute` or `regression`, default `absolute`).
+
+`baseline` decides what a failure means on a stack. `absolute` requires the check to pass. `regression`
+passes a failing check when each of its failure signatures also appears when the same check runs on the
+stack's base, so a base that is already red does not block the stack. A regression check that times out,
+or fails without any parsed signature, still fails. Regression mode needs a `parser` that yields
+signatures (`cargo` or `pytest`).
 
 The `parser` picks how failure signatures are extracted from a failed check's log. `cargo` reads
 `cargo test` output across every test binary in the log: `test:<binary>::<test>` for each failed test

@@ -164,6 +164,36 @@ def attempt_start(
     emit(out, _print_attempt_start)
 
 
+def _print_attempt_submit(attempt: str, out: dict[str, Any]) -> None:
+    console.print(
+        f"attempt {short(attempt)} {out['attempt_status']}; task {out['task_status']}"
+        + (f" ({out['status']})" if out["status"] != "succeeded" else "")
+    )
+    if out.get("verification"):
+        console.print(f"verification: {out['verification']}")
+    if out.get("error"):
+        console.print(f"error: {out['error']}")
+
+
+@attempt_app.command("submit")
+@handle_errors
+def attempt_submit(
+    attempt: str,
+    failed: bool = typer.Option(False, "--failed", help="Report the attempt as failed."),
+    summary: str | None = typer.Option(None, "--summary", "-m"),
+    error: str | None = typer.Option(None, "--error"),
+) -> None:
+    """Conclude an external managed attempt from the commits made in its worktrees."""
+    out = STATE.app().runs.submit_external(
+        STATE.ctx(),
+        attempt,
+        status="failed" if failed else "succeeded",
+        summary=summary,
+        error=error,
+    )
+    emit(out, lambda o: _print_attempt_submit(attempt, o))
+
+
 @attempt_app.command("finish")
 @handle_errors
 def attempt_finish(

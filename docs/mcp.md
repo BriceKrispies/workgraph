@@ -32,7 +32,7 @@ dimensions and typed filters.
 `task_search`, `task_list`, `task_update`, `task_claim`, `task_release`, `task_complete`,
 `task_get_ready`, `task_add_dependency`, `task_remove_dependency`, `task_add_relation`,
 `task_add_comment`, `task_get_history`, `task_get_attempts`, `task_link_repository`,
-`task_link_commit`, `task_report_progress`, `task_report_result`, `attempt_create`, `attempt_start`, `attempt_get`,
+`task_link_commit`, `task_report_progress`, `task_report_result`, `attempt_create`, `attempt_start`, `attempt_submit`, `attempt_get`,
 `attempt_list`, `run_start`, `run_get`, `run_cancel`, `git_get_changes`, `git_get_task_diff`,
 `classification_get`, `classification_request`, `analytics_query`, `analytics_report`, `analytics_subagents`,
 `automation_list`, `automation_trigger`, `stack_get`, `stack_list`, `stack_history`, `experiment_list`,
@@ -118,3 +118,11 @@ HTTP-capable clients connect to `http://127.0.0.1:8765/mcp/` with the bearer tok
 6. `task_link_commit` for anything not carrying the trailer.
 7. `task_report_result` with `succeeded`/`failed` (and measured token usage if your runtime has it).
    The task moves to awaiting verification/review; a human or configured verification accepts it.
+
+After `attempt_start`, finish with `attempt_submit` instead of step 7: it concludes the attempt from the
+commits you made in the managed checkouts, exactly as a Workgraph-run attempt is concluded. It captures the
+outcome and links the commits, enforces read-only repositories, runs the fast checks (or the full
+verification) and moves the task to review, or fails the attempt and task when you pass `status: "failed"`
+with an `error`. It returns `status`, `verification`, `outcome`, `task_status` and `attempt_status`. It requires
+`task:claim`, `attempt:write` and `verify:run`, and stack children also `stack:write`. An attempt without a
+managed worktree (from `attempt_create`) is refused.

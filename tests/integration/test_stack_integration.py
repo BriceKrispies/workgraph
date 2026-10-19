@@ -747,3 +747,28 @@ def test_history_lists_stack_events_with_their_verification_runs(app, human, ws,
     }
     tip = repo.git("rev-parse", stack.repositories[0].integration_branch)
     assert app.stacks.get(human, ws, parent.key).repositories[0].integration_tip == tip
+
+
+def test_external_submit_gates_a_stack_child_and_queues_its_integration(app, human, ws, tree):
+    _, parent = tree
+    _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
+    child = _child(app, human, ws, parent, "External change")
+    app.stacks.create(human, ws, parent.key)
+    started = app.runs.start_external(human, ws, child.key, agent_name="tester")
+    checkout = Path(started.repositories[0].checkout_path)
+    (checkout / "a.py").write_text("VALUE = 1\n")
+    Git(checkout).run("add", "-A")
+    Git(checkout).run("-c", "user.name=a", "-c", "user.email=a@b", "commit", "-qm", "external change")
+    commit = Git(checkout).head()
+
+    result = app.runs.submit_external(human, started.attempt_id)
+
+    assert result["status"] == "succeeded" and result["attempt_status"] == "succeeded"
+    assert result["verification"]["status"] == "passed"
+    assert _items(app, human, ws, parent)[child.key].state == "ready"
+    assert app.attempts.get(human, started.attempt_id).status == "succeeded"
+    assert app.git.change_sets(human, ws, child.key)[0]["items"][0]["head_sha"] == commit
+    with app.db.session() as session:
+        assert session.scalar(select(Job.id).where(Job.kind == "stack_integrate")) is not None
+    drain(app)
+    assert _items(app, human, ws, parent)[child.key].state == "verified"

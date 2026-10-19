@@ -697,6 +697,20 @@ def build_server(
             )
         )
 
+    @tool(
+        "attempt_submit",
+        "Conclude an external managed attempt after committing your work in the checkouts from attempt_start: "
+        "captures the commits, runs the fast checks or verification and moves the task to review. "
+        "Requires task:claim, attempt:write and verify:run.",
+    )
+    def attempt_submit(
+        attempt: Annotated[str, Field(description="Attempt UUID")],
+        status: Annotated[str, Field(pattern="^(succeeded|failed)$")] = "succeeded",
+        summary: str | None = None,
+        error: str | None = None,
+    ) -> dict[str, Any]:
+        return _dump(app.runs.submit_external(ctx(), attempt, status=status, summary=summary, error=error))
+
     @tool("attempt_get", "Get an attempt with telemetry, manifests and provenance.")
     def attempt_get(attempt_id: str) -> dict[str, Any]:
         return _dump(app.attempts.get(ctx(), attempt_id))

@@ -38,7 +38,7 @@ class CheckSpec(BaseModel):
     timeout_seconds: float = Field(default=900, gt=0, le=24 * 3600)
     required: bool = True
     env: dict[str, str] = Field(default_factory=dict)
-    parser: Literal["auto", "pytest", "generic"] = "auto"
+    parser: Literal["auto", "pytest", "generic", "cargo"] = "auto"
     allow_shell: bool = Field(
         default=False, description="Permit a shell interpreter as the executable (explicit operator opt-in)"
     )

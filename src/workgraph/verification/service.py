@@ -26,6 +26,7 @@ from workgraph.core.errors import (
     ConflictError,
     InvalidTransitionError,
     NotFoundError,
+    PermissionDenied,
     ProviderUnavailableError,
     ValidationFailed,
 )
@@ -41,6 +42,7 @@ from workgraph.core.services import resolve
 from workgraph.core.services.artifacts import register_file
 from workgraph.core.services.base import Service
 from workgraph.core.services.stacks import active_item
+from workgraph.core.services.tasks import is_tracked
 from workgraph.integrations.git.cli import Git
 from workgraph.integrations.process import base_environment, run_process
 from workgraph.persistence.orm import (
@@ -744,6 +746,9 @@ class VerificationService(Service):
             run = session.get(VerificationRun, prepared.run_id)
             if task is None or run is None or _ran_fast_tier_only(run, prepared.checks):
                 return
+            # A tracked task is closed by its tracker's issue reaching done, never by verification.
+            if is_tracked(session, task.id) is not None:
+                return
             if TaskStatus(task.status) != TaskStatus.AWAITING_REVIEW:
                 return
             if active_item(session, task.id) is not None:
@@ -887,6 +892,7 @@ class VerificationService(Service):
         Accepting the parent of a stack lands the stack instead (see ``StackLander``).
         """
         require(ctx, Permission.TASK_ACCEPT)
+        self._guard_tracked_acceptance(workspace, task_ref)
         stack_id = self._stack_of_parent(workspace, task_ref)
         if stack_id is not None:
             return self._land_stack(
@@ -932,6 +938,7 @@ class VerificationService(Service):
         require(ctx, Permission.TASK_ACCEPT)
         if not reason.strip():
             raise ValidationFailed("manual acceptance requires a recorded reason")
+        self._guard_tracked_acceptance(workspace, task_ref)
         stack_id = self._stack_of_parent(workspace, task_ref)
         if stack_id is not None:
             return self._land_stack(ctx, stack_id, mode="manual", reason=reason)
@@ -949,6 +956,18 @@ class VerificationService(Service):
             rebuild = self.app.stack_lander.release_child(session, ctx, task)
         self.app.stack_lander.rebuild_without(ctx, rebuild)
         return out
+
+    def _guard_tracked_acceptance(self, workspace: str | None, task_ref: str) -> None:
+        with self.db.session() as session:
+            ws_id = self.app.tasks._workspace_id(session, workspace) if workspace else None
+            task = resolve.task(session, ws_id, task_ref)
+            item = is_tracked(session, task.id)
+            if item is not None:
+                raise PermissionDenied(
+                    f"{task.key} is tracked by {item.connection}; the tracker closes it when "
+                    f"{item.external_key} reaches done",
+                    details={"connection": item.connection, "external_key": item.external_key},
+                )
 
     def _stack_of_parent(self, workspace: str | None, task_ref: str) -> str | None:
         """The id of the task's active stack when the task is that stack's parent."""
@@ -983,12 +1002,66 @@ class VerificationService(Service):
                 f"{task.key} is {task.status}; only completed work awaiting verification or review "
                 "can be accepted"
             )
-        latest_attempt = session.scalar(
+        acceptance, event_id = self._record_acceptance(
+            session,
+            ctx,
+            task,
+            mode=mode,
+            reason=reason,
+            run=run,
+            latest_attempt=self._latest_succeeded_attempt(session, task),
+        )
+        self.app.tasks._transition(
+            session,
+            ctx.caused_by(event_id),
+            task,
+            TaskStatus.ACCEPTED,
+            privileged=True,
+            reason=f"{mode} acceptance",
+        )
+        self._enqueue_surface(session, ctx, task, acceptance, event_id)
+        session.flush()
+        return AcceptanceOut.model_validate(acceptance)
+
+    def record_external_acceptance(
+        self, session: Session, ctx: RequestContext, task: Task, *, connection: str
+    ) -> str:
+        """Record the acceptance a tracker's done issue implies, with no verification run.
+
+        Returns the ``task.accepted`` event id. The caller moves the task to accepted.
+        """
+        acceptance, event_id = self._record_acceptance(
+            session,
+            ctx,
+            task,
+            mode="external",
+            reason=f"external:{connection}",
+            run=None,
+            latest_attempt=self._latest_succeeded_attempt(session, task),
+        )
+        self._enqueue_surface(session, ctx, task, acceptance, event_id)
+        return event_id
+
+    def _latest_succeeded_attempt(self, session: Session, task: Task) -> AgentAttempt | None:
+        return session.scalar(
             select(AgentAttempt)
             .where(AgentAttempt.task_id == task.id, AgentAttempt.status == AttemptStatus.SUCCEEDED)
             .order_by(AgentAttempt.number.desc())
             .limit(1)
         )
+
+    def _record_acceptance(
+        self,
+        session: Session,
+        ctx: RequestContext,
+        task: Task,
+        *,
+        mode: str,
+        reason: str,
+        run: VerificationRun | None,
+        latest_attempt: AgentAttempt | None,
+    ) -> tuple[TaskAcceptance, str]:
+        """Store the acceptance row and its ``task.accepted`` event; returns both (event id)."""
         manifest_id = None
         if run is not None and run.manifest_id:
             source = session.get(RevisionManifest, run.manifest_id)
@@ -1030,14 +1103,11 @@ class VerificationService(Service):
                 "manifest_id": manifest_id,
             },
         )
-        self.app.tasks._transition(
-            session,
-            ctx.caused_by(event.id),
-            task,
-            TaskStatus.ACCEPTED,
-            privileged=True,
-            reason=f"{mode} acceptance",
-        )
+        return acceptance, event.id
+
+    def _enqueue_surface(
+        self, session: Session, ctx: RequestContext, task: Task, acceptance: TaskAcceptance, causation_id: str
+    ) -> None:
         from workgraph.jobs import queue as jobqueue
 
         jobqueue.enqueue(
@@ -1047,11 +1117,9 @@ class VerificationService(Service):
             workspace_id=task.workspace_id,
             task_id=task.id,
             idempotency_key=f"surface:{task.id}:{acceptance.id}",
-            causation_id=event.id,
+            causation_id=causation_id,
             correlation_id=ctx.correlation_id,
         )
-        session.flush()
-        return AcceptanceOut.model_validate(acceptance)
 
     def reject(
         self, ctx: RequestContext, workspace: str | None, task_ref: str, *, reason: str

@@ -135,7 +135,7 @@ of a stack lands the stack (see below).
 - **The default branch moved.** If the default branch moved after the stack was cut, nothing lands
   and the call is refused with `landing: deferred`. The stack is rebuilt on the new head, verified
   again, and lands by itself once that verification passes.
-- **Auto-accept.** With `stacks.auto_accept` enabled, a stack lands as soon as it verifies, as an
+- **Auto-accept.** By default (`stacks.auto_accept = true`), a stack lands as soon as it verifies, as an
   automated acceptance of the parent with the reason `stack.auto_accept`.
 - **Rejecting the parent** (`task reject`) leaves the stack as it is and records `stack.parent_rejected`.
   Nothing lands.

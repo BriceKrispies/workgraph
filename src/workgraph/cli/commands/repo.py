@@ -156,15 +156,30 @@ def repo_update(
     description: str | None = typer.Option(None),
     access: AccessMode | None = typer.Option(None),
     default_branch: str | None = typer.Option(None),
+    track: list[str] = typer.Option(None, "--track", help="Track a branch for git sync (repeatable)"),
+    untrack: list[str] = typer.Option(None, "--untrack", help="Stop tracking a branch (repeatable)"),
     workspace: str | None = workspace_option(),
 ) -> None:
-    """Update registration metadata."""
+    """Update registration metadata. --track/--untrack edit the tracked branches git sync scans."""
+    app = STATE.app()
+    tracked: list[str] | None = None
+    if track or untrack:
+        tracked = list(app.repositories.get(STATE.ctx(), ws(workspace), ref).tracked_branches)
+        for branch in track or []:
+            if branch not in tracked:
+                tracked.append(branch)
+        tracked = [branch for branch in tracked if branch not in set(untrack or [])]
     emit(
-        STATE.app().repositories.update(
+        app.repositories.update(
             STATE.ctx(),
             ws(workspace),
             ref,
-            RepositoryUpdate(description=description, access_mode=access, default_branch=default_branch),
+            RepositoryUpdate(
+                description=description,
+                access_mode=access,
+                default_branch=default_branch,
+                tracked_branches=tracked,
+            ),
         ),
         _render_repo,
     )

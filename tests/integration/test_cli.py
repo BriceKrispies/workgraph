@@ -68,6 +68,31 @@ def test_cli_workflow_json(run, make_repo):
     metrics = run("analytics", "query", "tasks_created", "--by", "status")
     assert {r["status"] for r in metrics["rows"]} == {"accepted", "ready"}
     assert run("events", "verify")["consistent"] is True
+
+
+def test_repo_update_tracks_and_untracks_branches(run, make_repo):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    repo = make_repo("svc")
+    run("repo", "register", str(repo.path))
+
+    out = run("repo", "update", "svc", "--track", "release", "--track", "main", "--track", "feature")
+    assert out["tracked_branches"] == ["main", "release", "feature"]
+
+    out = run("repo", "update", "svc", "--untrack", "release", "--track", "hotfix")
+    assert out["tracked_branches"] == ["main", "feature", "hotfix"]
+
+
+def test_repo_update_default_branch_change_tracks_the_new_default(run, make_repo):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    repo = make_repo("svc")
+    run("repo", "register", str(repo.path))
+    run("repo", "update", "svc", "--track", "feature")
+    repo.git("branch", "develop")
+
+    out = run("repo", "update", "svc", "--default-branch", "develop")
+
+    assert out["default_branch"] == "develop"
+    assert out["tracked_branches"] == ["main", "feature", "develop"]
     assert run("config", "validate")["valid"] is True
     run("config", "set", "execution.max_concurrent_runs", "4")
     assert run("config", "show")["config"]["execution"]["max_concurrent_runs"] == 4

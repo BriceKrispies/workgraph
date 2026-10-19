@@ -97,7 +97,7 @@ lease_seconds = 60
 default_max_attempts = 5
 
 [stacks]
-auto_accept = false            # land a stack as soon as its full verification passes (no parent acceptance)
+auto_accept = true             # land a stack as soon as its full verification passes (no parent acceptance)
 
 [retention]
 telemetry_payload_days = 30    # raw hook payloads are compacted after this
@@ -117,7 +117,7 @@ to paths below the given directories.
 
 `[stacks] auto_accept` is read per workspace: a workspace file can set a `[stacks]` table of its own to
 override the global value. With it on, a stack whose full verification passes lands on the default
-branch without anyone accepting the parent (see [Git](git.md#stack-landing)). It is off by default, and
+branch without anyone accepting the parent (see [Git](git.md#stack-landing)). It is on by default, and
 it is the only setting in the `stacks` table. Project-level overrides do not exist yet, as for the
 other settings.
 

@@ -197,7 +197,7 @@ Accepting the parent task of a verified stack lands it (`workgraph task accept P
   review, dirty checkout, integration work in flight) is recorded as `stack.landing_refused` and changes nothing
   else. With `stacks.auto_accept` enabled, the landing runs when the stack verifies, and a refusal
   leaves the stack `verified` for a manual accept.
-- **Auto-accept.** `stacks.auto_accept` (global, overridable per workspace; see
+- **Auto-accept.** `stacks.auto_accept` (on by default; global, overridable per workspace; see
   [Configuration](configuration.md)) lands a stack as soon as it verifies, as an automated acceptance
   of the parent with the reason `stack.auto_accept`.
 

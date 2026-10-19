@@ -173,7 +173,7 @@ class AutomationConfig(_Strict):
 
 
 class StacksConfig(_Strict):
-    auto_accept: bool = False
+    auto_accept: bool = True
     """Land a stack as soon as its full verification passes, instead of waiting for the parent's acceptance."""
 
 

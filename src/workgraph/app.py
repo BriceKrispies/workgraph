@@ -46,6 +46,7 @@ if TYPE_CHECKING:
     from workgraph.integrations.git.stack_verification import StackVerifier
     from workgraph.integrations.git.worktrees import WorktreeManager
     from workgraph.integrations.llm.registry import LLMRegistry
+    from workgraph.integrations.trackers.sync import TrackerSyncService
     from workgraph.jobs.queue import JobQueue
     from workgraph.orchestration.runs import RunService
     from workgraph.orchestration.scheduler import Scheduler
@@ -203,6 +204,12 @@ class Workgraph:
         from workgraph.core.services.attempts import AttemptService
 
         return AttemptService(self)
+
+    @cached_property
+    def trackers(self) -> TrackerSyncService:
+        from workgraph.integrations.trackers.sync import TrackerSyncService
+
+        return TrackerSyncService(self)
 
     @cached_property
     def git(self) -> GitService:

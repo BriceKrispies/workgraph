@@ -67,6 +67,7 @@ from workgraph.persistence.orm.ops import (
     Worker,
 )
 from workgraph.persistence.orm.stacks import Stack, StackItem, StackRepository
+from workgraph.persistence.orm.trackers import ExternalItem, TaskLink
 
 __all__ = [
     "AgentAttempt",
@@ -91,6 +92,7 @@ __all__ = [
     "Event",
     "Experiment",
     "ExperimentTrial",
+    "ExternalItem",
     "Finding",
     "GitObjectGap",
     "HookEvent",
@@ -122,6 +124,7 @@ __all__ = [
     "TaskComment",
     "TaskDependency",
     "TaskEmbedding",
+    "TaskLink",
     "TaskProject",
     "TaskRelation",
     "TaskRepository",

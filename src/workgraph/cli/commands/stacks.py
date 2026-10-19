@@ -110,6 +110,13 @@ def stack_remove(parent: str, task: str, workspace: str | None = workspace_optio
     emit(STATE.app().stacks.remove_item(STATE.ctx(), ws(workspace), parent, task), _render_stack)
 
 
+@stack_app.command("readmit")
+@handle_errors
+def stack_readmit(parent: str, task: str, workspace: str | None = workspace_option()) -> None:
+    """Queue an ejected or pending child for integration again, without re-running its fast gate."""
+    emit(STATE.app().stacks.readmit_item(STATE.ctx(), ws(workspace), parent, task), _render_stack)
+
+
 def _event_summary(event: Any) -> str:
     keys = ("task_key", "from", "to", "position", "passed", "run_id", "verification_run_id", "failed_checks")
     return ", ".join(

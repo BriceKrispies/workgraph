@@ -127,6 +127,21 @@ def test_add_and_remove_children(app, human, ws, tree):
         app.stacks.remove_item(human, ws, parent.key, unrelated.key)
 
 
+def test_readmit_requeues_an_ejected_or_pending_child(app, human, ws, tree):
+    _, parent, first, second = tree
+    app.stacks.create(human, ws, parent.key)
+    for state in (StackItemState.READY, StackItemState.MERGED, StackItemState.EJECTED):
+        app.stacks.set_item_state(human, ws, parent.key, first.key, state)
+    stack = app.stacks.readmit_item(human, ws, parent.key, first.key)
+    assert _state(stack, first.key) == "ready"
+    # A child added (or re-added) to the stack starts pending; readmit skips the new fast gate.
+    stack = app.stacks.readmit_item(human, ws, parent.key, second.key)
+    assert _state(stack, second.key) == "ready"
+    app.stacks.set_item_state(human, ws, parent.key, first.key, StackItemState.MERGED)
+    with pytest.raises(ConflictError):
+        app.stacks.readmit_item(human, ws, parent.key, first.key)
+
+
 def test_child_in_another_repository_is_rejected(app, human, ws, tree, make_repo):
     _, parent, _, _ = tree
     app.stacks.create(human, ws, parent.key)

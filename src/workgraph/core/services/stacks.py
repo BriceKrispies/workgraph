@@ -469,6 +469,31 @@ class StackService(Service):
             self.transition_item(session, ctx, stack, parent, child, item, target, detail)
             return stack_out(session, stack)
 
+    def readmit_item(
+        self, ctx: RequestContext, workspace: str | None, parent_ref: str, task_ref: str
+    ) -> StackOut:
+        """Queue an ejected (or re-added, pending) child for integration again without a new fast gate.
+
+        For an operator who judged the ejection to be caused by something outside the change, such as
+        a polluted build or a timeout under load. The next integration merges it and full verification
+        judges it again.
+        """
+        require(ctx, Permission.STACK_WRITE)
+        with self.db.session(write=True) as session:
+            ws_id = self.app.tasks._workspace_id(session, workspace)
+            parent = resolve.task(session, ws_id, parent_ref)
+            stack = self._active_or_raise(session, parent)
+            child = resolve.task(session, ws_id, task_ref)
+            item = self._item(session, stack, child)
+            state = StackItemState(item.state)
+            if state not in (StackItemState.EJECTED, StackItemState.PENDING):
+                raise ConflictError(
+                    f"{child.key} is {state}; only an ejected or pending child can be readmitted",
+                    details={"task": child.key, "state": str(state)},
+                )
+            self.transition_item(session, ctx, stack, parent, child, item, StackItemState.READY, item.detail)
+            return stack_out(session, stack)
+
     def mark_ready(self, ctx: RequestContext, task_id: str) -> None:
         """Mark a stack child ready after its fast tier passed; a task outside an active stack is left alone."""
         require(ctx, Permission.STACK_WRITE)

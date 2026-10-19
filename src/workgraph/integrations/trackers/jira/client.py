@@ -12,9 +12,10 @@ import base64
 import logging
 import time
 from collections.abc import Callable, Iterator, Mapping, Sequence
-from datetime import UTC, datetime
+from datetime import UTC, datetime, tzinfo
 from typing import Any, Protocol
 from urllib.parse import quote
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import httpx
 
@@ -134,6 +135,7 @@ class JiraClient:
     ) -> None:
         self.flavour = flavour
         self._sleep = sleep
+        self._zone: tzinfo | None = None
         self._http = httpx.Client(
             base_url=base_url.rstrip("/"),
             timeout=timeout_seconds,
@@ -143,6 +145,25 @@ class JiraClient:
 
     def close(self) -> None:
         self._http.close()
+
+    def _user_zone(self) -> tzinfo:
+        """The authenticated user's timezone, read once from ``/myself`` and cached.
+
+        JQL reads bare date-times in the user's profile timezone, so ``since`` is formatted in it.
+        A request failure propagates and nothing is cached; a missing or unknown zone falls back to UTC.
+        """
+        if self._zone is None:
+            name = self._get(f"{self.flavour.api_path}/myself").get("timeZone")
+            zone: tzinfo = UTC
+            if not isinstance(name, str) or not name:
+                logger.warning("Jira /myself has no timeZone; formatting JQL dates in UTC")
+            else:
+                try:
+                    zone = ZoneInfo(name)
+                except (ZoneInfoNotFoundError, ValueError):
+                    logger.warning("Jira user timeZone %r is unknown; formatting JQL dates in UTC", name)
+            self._zone = zone
+        return self._zone
 
     def _get(self, path: str, params: Mapping[str, str | int] | None = None) -> dict[str, Any]:
         """The only method that sends requests. It sends GET, retries 429 and 5xx, and returns a JSON object."""
@@ -171,7 +192,7 @@ class JiraClient:
     def search_updated(self, projects: Sequence[str], since: datetime | None) -> Iterator[dict[str, Any]]:
         jql = f"project in ({_jql_list(projects)})"
         if since is not None:
-            jql += f' AND updated >= "{_jql_minute(since)}"'
+            jql += f' AND updated >= "{_jql_minute(since, self._user_zone())}"'
         jql += " ORDER BY updated ASC"
         return self.flavour.search(self._get, jql, "*all")
 
@@ -207,7 +228,8 @@ class JiraClient:
 
 
 def _is_retryable(status: int) -> bool:
-    return status == 429 or status >= 500
+    """429 and 5xx, except 501 (Not Implemented), which will not succeed on retry."""
+    return status == 429 or (status >= 500 and status != 501)
 
 
 def _retry_delay(response: httpx.Response, attempt: int) -> float:
@@ -229,8 +251,8 @@ def _jql_list(projects: Sequence[str]) -> str:
     return ",".join(_jql_string(project) for project in projects)
 
 
-def _jql_minute(since: datetime) -> str:
-    """JQL timestamp in UTC, truncated to the minute (the overlap window absorbs the truncation)."""
+def _jql_minute(since: datetime, zone: tzinfo) -> str:
+    """JQL timestamp in ``zone``, truncated to the minute. A naive ``since`` is taken as UTC."""
     if since.tzinfo is None:
         since = since.replace(tzinfo=UTC)
-    return since.astimezone(UTC).strftime("%Y-%m-%d %H:%M")
+    return since.astimezone(zone).strftime("%Y-%m-%d %H:%M")

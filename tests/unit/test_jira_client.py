@@ -118,19 +118,72 @@ def test_jql_without_since_has_no_updated_clause():
     client.close()
 
 
-def test_jql_with_since_is_formatted_in_utc_minutes():
+def myself_handler(time_zone: object | None):
+    """Answers ``/myself`` with ``timeZone`` (omitted when None) and every search with no issues."""
+
     def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/myself"):
+            body: dict[str, object] = {"accountId": "abc"}
+            if time_zone is not None:
+                body["timeZone"] = time_zone
+            return httpx.Response(200, json=body)
         return httpx.Response(200, json={"issues": [], "isLast": True})
 
-    client = make_jira_client(cloud_config(), env=ENV, transport=recording(handler))
+    return handler
+
+
+def test_jql_with_since_uses_the_user_timezone_and_caches_it():
+    client = make_jira_client(cloud_config(), env=ENV, transport=recording(myself_handler("America/Chicago")))
+    # 2026-10-18 is CDT (UTC-5): 09:30:45 UTC and 11:30 at UTC+2 are both 04:30 in Chicago.
     list(client.search_updated(["ABC", "DEF"], datetime(2026, 10, 18, 9, 30, 45, tzinfo=UTC)))
     list(client.search_updated(["ABC"], datetime(2026, 10, 18, 11, 30, tzinfo=timezone(timedelta(hours=2)))))
 
-    assert SEEN[0].url.params["jql"] == (
-        'project in ("ABC","DEF") AND updated >= "2026-10-18 09:30" ORDER BY updated ASC'
+    myself = [r for r in SEEN if r.url.path == "/rest/api/3/myself"]
+    assert len(myself) == 1
+    searches = [r for r in SEEN if r.url.path == "/rest/api/3/search/jql"]
+    assert searches[0].url.params["jql"] == (
+        'project in ("ABC","DEF") AND updated >= "2026-10-18 04:30" ORDER BY updated ASC'
     )
-    assert SEEN[1].url.params["jql"] == (
-        'project in ("ABC") AND updated >= "2026-10-18 09:30" ORDER BY updated ASC'
+    assert searches[1].url.params["jql"] == (
+        'project in ("ABC") AND updated >= "2026-10-18 04:30" ORDER BY updated ASC'
+    )
+    client.close()
+
+
+def test_missing_timezone_falls_back_to_utc_with_warning(caplog: pytest.LogCaptureFixture):
+    client = make_jira_client(cloud_config(), env=ENV, transport=recording(myself_handler(None)))
+    with caplog.at_level(logging.WARNING):
+        list(client.search_updated(["ABC"], datetime(2026, 10, 18, 9, 30, tzinfo=UTC)))
+    assert (
+        SEEN[-1].url.params["jql"]
+        == 'project in ("ABC") AND updated >= "2026-10-18 09:30" ORDER BY updated ASC'
+    )
+    assert "timeZone" in caplog.text
+    client.close()
+
+
+def test_unknown_timezone_falls_back_to_utc_with_warning(caplog: pytest.LogCaptureFixture):
+    client = make_jira_client(
+        cloud_config(), env=ENV, transport=recording(myself_handler("Mars/Olympus_Mons"))
+    )
+    with caplog.at_level(logging.WARNING):
+        list(client.search_updated(["ABC"], datetime(2026, 10, 18, 9, 30, tzinfo=UTC)))
+    assert (
+        SEEN[-1].url.params["jql"]
+        == 'project in ("ABC") AND updated >= "2026-10-18 09:30" ORDER BY updated ASC'
+    )
+    assert "Mars/Olympus_Mons" in caplog.text
+    client.close()
+
+
+def test_data_center_reads_its_own_myself_endpoint():
+    client = make_jira_client(dc_config(), env=ENV, transport=recording(myself_handler("Europe/Paris")))
+    list(client.search_updated(["ABC"], datetime(2026, 10, 18, 9, 30, tzinfo=UTC)))
+    assert SEEN[0].url.path == "/rest/api/2/myself"
+    # Paris is CEST (UTC+2) in October.
+    assert (
+        SEEN[1].url.params["jql"]
+        == 'project in ("ABC") AND updated >= "2026-10-18 11:30" ORDER BY updated ASC'
     )
     client.close()
 
@@ -171,6 +224,24 @@ def test_429_is_retried_after_retry_after_seconds():
     assert issue_json is not None and issue_json["key"] == "ABC-1"
     assert delays == [7.0]
     assert len(SEEN) == 2
+    client.close()
+
+
+def test_501_is_not_retried():
+    delays: list[float] = []
+    client = JiraClient(
+        "https://acme.atlassian.net",
+        CloudFlavour(EMAIL, TOKEN),
+        transport=recording(lambda request: httpx.Response(501)),
+        sleep=delays.append,
+    )
+
+    with pytest.raises(TrackerError) as raised:
+        client.get_issue("ABC-1")
+
+    assert raised.value.status == 501
+    assert len(SEEN) == 1
+    assert delays == []
     client.close()
 
 
@@ -263,6 +334,8 @@ def test_every_method_of_the_client_sends_only_get():
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path.startswith("/rest/dev-status"):
             return httpx.Response(200, json={"detail": []})
+        if request.url.path.endswith("/myself"):
+            return httpx.Response(200, json={"timeZone": "UTC"})
         if "/issue/" in request.url.path:
             return httpx.Response(200, json={"id": "1", "key": "ABC-1", "fields": {}})
         return httpx.Response(200, json={"issues": [issue("ABC-1", 1)], "isLast": True})
@@ -274,6 +347,6 @@ def test_every_method_of_the_client_sends_only_get():
     client.dev_pull_requests("1")
     client.close()
 
-    assert len(SEEN) == 4
+    assert len(SEEN) == 5
     assert {request.method for request in SEEN} == {"GET"}
     assert not any(hasattr(JiraClient, name) for name in ("post", "put", "patch", "delete"))

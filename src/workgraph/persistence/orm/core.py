@@ -174,7 +174,6 @@ class Task(Base):
     claim_expires_at: Mapped[datetime | None] = mapped_column(default=None)
     auto_execute: Mapped[bool] = mapped_column(Boolean, default=False)
     estimated_effort: Mapped[dict[str, Any] | None] = mapped_column(default=None)
-    external_refs: Mapped[list[dict[str, Any]]] = mapped_column(default=list)
     metadata_: Mapped[dict[str, Any]] = mapped_column("metadata", default=dict)
     due_at: Mapped[datetime | None] = mapped_column(default=None)
     scheduled_at: Mapped[datetime | None] = mapped_column(default=None)

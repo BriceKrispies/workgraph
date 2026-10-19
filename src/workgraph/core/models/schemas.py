@@ -230,12 +230,6 @@ class RepositoryStatus(Schema):
 # --------------------------------------------------------------------------- tasks
 
 
-class ExternalRef(InputSchema):
-    system: str = Field(min_length=1, max_length=100)
-    id: str = Field(min_length=1, max_length=200)
-    url: str | None = None
-
-
 class EffortEstimate(InputSchema):
     value: float = Field(ge=0)
     unit: Literal["points", "hours", "size"] = "points"
@@ -273,7 +267,6 @@ class TaskCreate(InputSchema):
     due_at: datetime | None = None
     scheduled_at: datetime | None = None
     estimated_effort: EffortEstimate | None = None
-    external_refs: list[ExternalRef] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     @field_validator("tags")
@@ -303,7 +296,6 @@ class TaskUpdate(InputSchema):
     due_at: datetime | None = None
     scheduled_at: datetime | None = None
     estimated_effort: EffortEstimate | None = None
-    external_refs: list[ExternalRef] | None = None
     metadata: dict[str, Any] | None = None
     reason: str | None = Field(default=None, max_length=2000)
 
@@ -320,6 +312,19 @@ class TaskBrief(Schema):
     status: str
     priority: str
     category: str | None = None
+
+
+class TaskLinkOut(Schema):
+    id: str
+    kind: str
+    provider: str
+    url: str
+    normalized_url: str
+    repo_full_name: str
+    number: int | None
+    repository_id: str | None
+    sources: list[str]
+    title: str
 
 
 class TaskOut(Schema):
@@ -346,7 +351,7 @@ class TaskOut(Schema):
     claim_expires_at: datetime | None
     auto_execute: bool
     estimated_effort: dict[str, Any] | None
-    external_refs: list[dict[str, Any]]
+    links: list[TaskLinkOut] = Field(default_factory=list)
     metadata: dict[str, Any]
     due_at: datetime | None
     scheduled_at: datetime | None

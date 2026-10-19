@@ -1,0 +1,96 @@
+{
+  "id": "10001",
+  "key": "ABC-123",
+  "self": "https://acme.atlassian.net/rest/api/3/issue/10001",
+  "fields": {
+    "summary": "Add retry budget to the billing client",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {"type": "text", "text": "Calls to the billing API fail intermittently. "},
+            {"type": "text", "text": "Bounded retries", "marks": [{"type": "strong"}]},
+            {"type": "text", "text": " are the fix."}
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Cap attempts at 3"}]}]},
+            {"type": "listItem", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Back off exponentially"}]}]}
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {"type": "text", "text": "Line one"},
+            {"type": "hardBreak"},
+            {"type": "text", "text": "Owner: "},
+            {"type": "mention", "attrs": {"id": "5b10a2844c20165700ede21g", "text": "@Priya Rao"}},
+            {"type": "text", "text": " see "},
+            {"type": "inlineCard", "attrs": {"url": "https://acme.atlassian.net/wiki/spaces/ENG/pages/1"}}
+          ]
+        }
+      ]
+    },
+    "priority": {"id": "2", "name": "High"},
+    "assignee": {"accountId": "557058:abc", "displayName": "Brice Lehew"},
+    "status": {"name": "In Progress", "statusCategory": {"key": "indeterminate", "name": "In Progress"}},
+    "resolution": null,
+    "issuetype": {"name": "Story"},
+    "project": {"key": "ABC", "name": "Billing"},
+    "parent": {
+      "id": "10000",
+      "key": "ABC-100",
+      "fields": {"summary": "Billing resilience", "issuetype": {"name": "Epic"}}
+    },
+    "issuelinks": [
+      {
+        "id": "20001",
+        "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
+        "inwardIssue": {"id": "10122", "key": "ABC-122", "fields": {"summary": "Billing client timeouts"}}
+      },
+      {
+        "id": "20002",
+        "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
+        "inwardIssue": {"id": "10118", "key": "ABC-118", "fields": {"summary": "Gateway quotas"}}
+      },
+      {
+        "id": "20003",
+        "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
+        "inwardIssue": {"id": "10118", "key": "ABC-118", "fields": {"summary": "Gateway quotas"}}
+      },
+      {
+        "id": "20004",
+        "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
+        "outwardIssue": {"id": "10124", "key": "ABC-124", "fields": {"summary": "Retry dashboard"}}
+      },
+      {
+        "id": "20005",
+        "type": {"name": "Relates", "inward": "relates to", "outward": "relates to"},
+        "inwardIssue": {"id": "10130", "key": "ABC-130", "fields": {"summary": "Unrelated"}}
+      }
+    ],
+    "customfield_10042": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {"type": "text", "text": "PR: "},
+            {"type": "inlineCard", "attrs": {"url": "https://github.com/acme/svc-billing/pull/42/files"}},
+            {"type": "text", "text": " and "},
+            {"type": "text", "text": "svc-web", "marks": [{"type": "link", "attrs": {"href": "https://github.com/Acme/Svc-Web/pull/7"}}]},
+            {"type": "text", "text": ". Issue tracker: https://github.com/acme/svc-billing/issues/9"}
+          ]
+        }
+      ]
+    },
+    "labels": ["billing", "retries"],
+    "updated": "2026-10-18T09:15:02.123+0000"
+  }
+}

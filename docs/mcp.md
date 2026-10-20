@@ -38,6 +38,10 @@ dimensions and typed filters.
 `automation_list`, `automation_trigger`, `stack_get`, `stack_list`, `stack_history`, `experiment_list`,
 `experiment_get`, `experiment_report`, `experiment_predict`, `task_contract_check`.
 
+`task_create` and `task_update` take `files` (a list of `{path, anchor?, note?}`; `task_update` also
+takes `add_files`, and `files: []` clears them). `task_get` returns them as `files`, and `task_list`
+takes `file` to filter by an exact path.
+
 `experiment_next` creates the next planned trial of an experiment, so it needs the `experiment:write` permission
 (`workgraph mcp --grant experiment:write`), like `trial_classify`.
 

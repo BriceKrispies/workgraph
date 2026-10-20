@@ -84,6 +84,7 @@ from workgraph.persistence.orm import (
     Task,
     TaskComment,
     TaskDependency,
+    TaskFile,
     TaskLink,
     TaskProject,
     TaskRelation,
@@ -127,6 +128,29 @@ def _check_tracker_key(session: Session, ctx: RequestContext, ws: Workspace, key
         raise ConflictError(f"task {key} already exists in this workspace")
 
 
+def _file_dicts(session: Session, task_id: str) -> builtins.list[dict[str, Any]]:
+    rows = session.execute(
+        select(TaskFile.path, TaskFile.anchor, TaskFile.note)
+        .where(TaskFile.task_id == task_id)
+        .order_by(TaskFile.position)
+    ).all()
+    return [{"path": path, "anchor": anchor, "note": note} for path, anchor, note in rows]
+
+
+def _set_files(session: Session, task_id: str, files: Iterable[dict[str, Any]]) -> None:
+    session.execute(delete(TaskFile).where(TaskFile.task_id == task_id))
+    for position, item in enumerate(files):
+        session.add(
+            TaskFile(
+                task_id=task_id,
+                position=position,
+                path=item["path"],
+                anchor=item["anchor"],
+                note=item["note"],
+            )
+        )
+
+
 def task_out(session: Session, task: Task, cls: type[TaskOut] = TaskOut) -> Any:
     project_ids = session.scalars(select(TaskProject.project_id).where(TaskProject.task_id == task.id)).all()
     repo_ids = session.scalars(
@@ -142,6 +166,7 @@ def task_out(session: Session, task: Task, cls: type[TaskOut] = TaskOut) -> Any:
     data = {c.key: getattr(task, c.key) for c in Task.__mapper__.column_attrs}
     data["metadata"] = data.pop("metadata_")
     data["tags"] = [t.tag for t in task.tags]
+    data["files"] = _file_dicts(session, task.id)
     data["project_ids"] = sorted(project_ids)
     data["repository_ids"] = sorted(repo_ids)
     data["child_ids"] = list(child_ids)
@@ -475,6 +500,7 @@ class TaskService(Service):
         session.add(task)
         session.flush()
         self._set_tags(task, data.tags)
+        _set_files(session, task.id, [f.model_dump() for f in data.files])
         project_ids = self._set_projects(session, task, data.projects)
         repo_ids: builtins.list[str] = []
         for ref in data.repositories:
@@ -594,6 +620,8 @@ class TaskService(Service):
             stmt = stmt.where(
                 Task.id.in_(select(TaskProject.task_id).where(TaskProject.project_id == proj.id))
             )
+        if flt.file:
+            stmt = stmt.where(Task.id.in_(select(TaskFile.task_id).where(TaskFile.path == flt.file)))
         if flt.repository:
             repo = resolve.repository(session, ws_id, flt.repository, include_archived=True)
             stmt = stmt.where(
@@ -729,6 +757,16 @@ class TaskService(Service):
         if new_tags != current_tags:
             changes["tags"] = [current_tags, new_tags]
             self._set_tags(task, new_tags)
+        current_files = _file_dicts(session, task.id)
+        new_files = [f.model_dump() for f in data.files] if data.files is not None else list(current_files)
+        known = {(f["path"], f["anchor"]) for f in new_files}
+        for item in data.add_files or []:
+            if (item.path, item.anchor) not in known:
+                known.add((item.path, item.anchor))
+                new_files.append(item.model_dump())
+        if new_files != current_files:
+            changes["files"] = [current_files, new_files]
+            _set_files(session, task.id, new_files)
         if data.projects is not None:
             before = sorted(
                 session.scalars(select(TaskProject.project_id).where(TaskProject.task_id == task.id))

@@ -247,6 +247,47 @@ def _validate_tags(tags: list[str]) -> list[str]:
     return cleaned
 
 
+class TaskFileIn(InputSchema):
+    """A file a task expects to change: ``path``, optionally narrowed to an ``anchor`` (symbol or heading)."""
+
+    path: str = Field(min_length=1, max_length=1000)
+    anchor: str | None = Field(default=None, max_length=300)
+    note: str = Field(default="", max_length=2000)
+
+    @field_validator("anchor")
+    @classmethod
+    def _anchor(cls, value: str | None) -> str | None:
+        return value or None
+
+
+class TaskFileOut(Schema):
+    path: str
+    anchor: str | None = None
+    note: str = ""
+
+
+def parse_task_file(spec: str) -> TaskFileIn:
+    """Parse ``PATH[:ANCHOR]``. A Windows drive letter (``C:``) belongs to the path, the first later colon starts the anchor.
+
+    Raises ``ValueError`` (pydantic's ``ValidationError``) when the path is empty.
+    """
+    match = re.fullmatch(r"((?:[A-Za-z]:)?[^:]*)(?::(.*))?", spec.strip(), flags=re.DOTALL)
+    assert match is not None  # the pattern matches any string
+    return TaskFileIn(path=match.group(1), anchor=match.group(2))
+
+
+def _validate_files(files: list[TaskFileIn]) -> list[TaskFileIn]:
+    """Drop repeated (path, anchor) pairs, keeping the first occurrence and its position."""
+    seen: set[tuple[str, str | None]] = set()
+    cleaned: list[TaskFileIn] = []
+    for item in files:
+        key = (item.path, item.anchor)
+        if key not in seen:
+            seen.add(key)
+            cleaned.append(item)
+    return cleaned
+
+
 class TaskCreate(InputSchema):
     key: str | None = Field(
         default=None, description="Tracker-supplied key (e.g. ABC-123); only the tracker sync sets it"
@@ -257,6 +298,7 @@ class TaskCreate(InputSchema):
     status: Literal["backlog", "ready"] = "backlog"
     priority: TaskPriority = TaskPriority.MEDIUM
     tags: list[str] = Field(default_factory=list)
+    files: list[TaskFileIn] = Field(default_factory=list, description="Files the task expects to change")
     projects: list[str] = Field(default_factory=list, description="Project ids or slugs")
     repositories: list[str] = Field(default_factory=list, description="Repository ids or names")
     parent: str | None = Field(default=None, description="Parent task id or key")
@@ -274,6 +316,11 @@ class TaskCreate(InputSchema):
     def _tags(cls, value: list[str]) -> list[str]:
         return _validate_tags(value)
 
+    @field_validator("files")
+    @classmethod
+    def _files(cls, value: list[TaskFileIn]) -> list[TaskFileIn]:
+        return _validate_files(value)
+
 
 class TaskUpdate(InputSchema):
     expected_version: int | None = Field(
@@ -287,6 +334,8 @@ class TaskUpdate(InputSchema):
     tags: list[str] | None = None
     add_tags: list[str] | None = None
     remove_tags: list[str] | None = None
+    files: list[TaskFileIn] | None = Field(default=None, description="Replaces the task's files")
+    add_files: list[TaskFileIn] | None = Field(default=None, description="Appends to the task's files")
     projects: list[str] | None = None
     parent: str | None = None
     clear_parent: bool = False
@@ -303,6 +352,11 @@ class TaskUpdate(InputSchema):
     @classmethod
     def _tags(cls, value: list[str] | None) -> list[str] | None:
         return None if value is None else _validate_tags(value)
+
+    @field_validator("files", "add_files")
+    @classmethod
+    def _files(cls, value: list[TaskFileIn] | None) -> list[TaskFileIn] | None:
+        return None if value is None else _validate_files(value)
 
 
 class TaskBrief(Schema):
@@ -339,6 +393,7 @@ class TaskOut(Schema):
     priority: str
     category: str | None
     tags: list[str]
+    files: list[TaskFileOut] = Field(default_factory=list)
     project_ids: list[str]
     repository_ids: list[str]
     parent_id: str | None
@@ -379,6 +434,7 @@ class TaskFilter(InputSchema):
     project: str | None = None
     repository: str | None = None
     tags: list[str] | None = None
+    file: str | None = Field(default=None, description="Only tasks that list this path in their files")
     category: str | None = None
     assignee: str | None = None
     parent: str | None = None

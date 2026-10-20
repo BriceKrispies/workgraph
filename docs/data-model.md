@@ -14,6 +14,7 @@ erDiagram
     REPOSITORY }o--o{ REPOSITORY : "declared dependencies"
     TASK }o--o{ PROJECT : "task_projects"
     TASK }o--o{ REPOSITORY : "task_repositories (access)"
+    TASK ||--o{ TASK_FILE : "files to change (path, anchor, note)"
     TASK ||--o{ TASK : "parent / children"
     TASK }o--o{ TASK : "task_dependencies / task_relations"
     TASK ||--o{ TASK_COMMENT : comments
@@ -52,6 +53,7 @@ erDiagram
 | `tasks` | Current task state, optimistic `version`, lifecycle timestamps, `current_classification_id`. A tracker-synced task's `key` is the tracker key (`ABC-123`); local tasks keep `<prefix>-<n>`. `number` counts every task in the workspace. |
 | `external_items` | The tracker issue a task mirrors (Jira): connection, the tracker's stable id and current key, tracker status and category, the raw snapshot and its hash, sync timestamps and `missing_since`. Unique on `(connection, external_id)`. Written only by the tracker sync. See [Tracker sync](design/tracker-sync.md). |
 | `task_links` | Typed links from a task to something outside Workgraph: `kind` (`pull_request`, `external_ref`), `provider`, `url`, `normalized_url`, the `repository_id` it resolved to (null while unregistered), and `sources` (which extractors found it). Unique on `(task_id, kind, normalized_url)`. Replaces `tasks.external_refs`. |
+| `task_files` | Files a task expects to change: `path` (indexed, matched exactly by `task list --file`), an optional `anchor` (symbol or heading) and a `note`. Ordered by `position`, which is the caller's order. Written with the task, replaced by `task update --file`, appended by `--add-file`. |
 | `task_dependencies`, `task_relations`, `task_tags`, `task_projects`, `task_repositories` | Relationships. Dependencies are global within a workspace (cross-project, cross-repository). |
 | `events` | Append-only domain events (`seq`, actor, correlation/causation, attempt, schema version). |
 | `agent_attempts` | One execution of a task: provider, adapter, model, session, timings, manifests, measured usage/cost with provenance, telemetry, nesting/retry/rerun links. |

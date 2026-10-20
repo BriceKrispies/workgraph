@@ -217,6 +217,21 @@ class TaskRepository(Base):
     created_at: Mapped[datetime] = created_col()
 
 
+class TaskFile(Base):
+    """A file a task expects to change, optionally at an anchor (a symbol or heading) and with a note.
+
+    ``position`` keeps the order the caller gave; the (task, position) pair is the key.
+    """
+
+    __tablename__ = "task_files"
+
+    task_id: Mapped[str] = mapped_column(ForeignKey("tasks.id", ondelete="CASCADE"), primary_key=True)
+    position: Mapped[int] = mapped_column(Integer, primary_key=True)
+    path: Mapped[str] = mapped_column(String(1000), index=True)
+    anchor: Mapped[str | None] = mapped_column(String(300), default=None)
+    note: Mapped[str] = mapped_column(Text, default="")
+
+
 class TaskDependency(Base):
     """``task_id`` cannot proceed until ``depends_on_id`` is accepted."""
 

@@ -85,6 +85,9 @@ uv run workgraph task create "Fix crash" --description @notes.md -c "no crash on
 uv run workgraph task list --status ready --priority high --repo api --search "token" --sort priority --asc
 uv run workgraph --json task show WG-12
 uv run workgraph task update WG-12 --status blocked --reason "waiting for infra" --expected-version 4
+uv run workgraph task create "Add token expiry" --file src/auth/token.rs:refresh --file docs/auth.md
+uv run workgraph task update WG-12 --add-file src/auth/session.rs --expected-version 5
+uv run workgraph task list --file src/auth/token.rs
 uv run workgraph task depend WG-13 WG-12
 uv run workgraph task bulk-update WG-1 WG-2 WG-3 --add-tag sprint-42
 uv run workgraph git sync --full

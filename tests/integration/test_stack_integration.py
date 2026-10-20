@@ -232,9 +232,7 @@ def test_conflicting_pair_sends_the_second_child_back_with_the_integration_tip(
     # The merge was aborted: the integration worktree is clean and the branch did not move.
     assert Git(_integration_path(app, stack)).is_clean()
     assert repo.git("rev-parse", branch) == tip
-    # The stack verified around the conflict, but the parent cannot land while a child is unfinished.
-    with pytest.raises(ConflictError, match=f"unfinished children: {second.key} \\(conflict\\)"):
-        app.verification.accept_manually(human, ws, parent.key, reason="looks fine")
+    # The stack verified around the conflict; nothing lands until the conflicted child is fixed or released.
     assert repo.git("rev-parse", "main") != tip
 
     retry = _run(app, human, ws, second.key)
@@ -396,7 +394,7 @@ def test_an_operator_ejects_a_known_culprit_and_the_stack_rebuilds_without_it(
         app.stack_verification.eject(human, ws, parent.key, second.key, "again")
 
 
-def test_bisect_ejects_the_child_that_completes_a_failing_combination(app, human, ws, tree):
+def test_bisect_ejects_the_child_that_completes_a_failing_combination(app, human, ws, tree, manual_landing):
     repo, parent = tree
     _enable_agent(app, "fake-a", "a.txt")
     _enable_agent(app, "fake-b", "b.txt")
@@ -1303,3 +1301,34 @@ def test_external_submit_gates_a_stack_child_and_queues_its_integration(app, hum
         assert session.scalar(select(Job.id).where(Job.kind == "stack_integrate")) is not None
     drain(app)
     assert _items(app, human, ws, parent)[child.key].state == "verified"
+
+
+def test_landing_releases_an_ejected_child_and_lands_the_verified_rest(app, human, ws, tree, manual_landing):
+    repo, parent = tree
+    first, second, stack = _verified_stack(app, human, ws, parent)
+    branch = stack.repositories[0].integration_branch
+    app.stack_verification.eject(human, ws, parent.key, second.key, "evidence names the second change")
+    drain(app)
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+    tip = repo.git("rev-parse", branch)
+
+    acceptance = app.verification.accept_manually(human, ws, parent.key, reason="reviewed without second")
+
+    assert acceptance.mode == "manual"
+    assert repo.git("rev-parse", "main") == tip
+    assert (repo.path / "a.py").exists() and not (repo.path / "b.py").exists()
+    assert app.tasks.get(human, ws, first.key).status == "accepted"
+    assert app.tasks.get(human, ws, second.key).status == "ready"
+    assert app.tasks.get(human, ws, parent.key).status == "accepted"
+    landed = app.stacks.get(human, ws, parent.key)
+    assert landed.status == "landed"
+    assert second.key not in {item.task_key for item in landed.items}
+    with app.db.session() as session:
+        released = session.scalar(
+            select(Event.data).where(Event.entity_id == stack.id, Event.event_type == "stack.landed")
+        )
+    assert released["released"] == [second.key]
+    assert any(
+        f"landed without {second.key}" in body
+        for body in _task_comments(app, app.tasks.get(human, ws, second.key).id)
+    )

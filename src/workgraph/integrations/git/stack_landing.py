@@ -34,10 +34,16 @@ from workgraph.core.models.enums import (
     TaskStatus,
     WorktreeStatus,
 )
+from workgraph.core.models.schemas import CommentCreate
 from workgraph.core.services.base import Service
 from workgraph.core.services.stacks import active_item
 from workgraph.integrations.git.cli import Git
-from workgraph.integrations.git.stack_integration import IntegrationTarget, dump_detail
+from workgraph.integrations.git.stack_integration import (
+    RETURNABLE_TASK_STATUSES,
+    IntegrationTarget,
+    dump_detail,
+    load_detail,
+)
 from workgraph.integrations.git.stack_verification import StackRepoBase, StackVerifier
 from workgraph.persistence.orm import (
     Event,
@@ -248,20 +254,26 @@ class StackLander(Service):
                     f"{parent.key} is {parent.status}; only completed work awaiting review can be accepted",
                     details={"parent": parent.key},
                 )
-            # Accepting the parent means the whole piece of work is done, so every child must land with it.
-            unfinished = sorted(
+            # A child that is not verified is not on the verified tip, so it is released from the stack when the
+            # parent lands. The exception is a child with merges on the integration branch: the tip contains
+            # those merges, so landing it would land unverified work, and the parent waits for that child.
+            partial = sorted(
                 f"{task.key} ({item.state})"
                 for item, task in StackVerifier.item_rows(session, stack)
                 if StackItemState(item.state) != StackItemState.VERIFIED
+                and load_detail(item.detail)["merges"]
             )
-            if unfinished:
+            if partial:
                 raise ConflictError(
-                    f"{parent.key}'s stack has unfinished children: {', '.join(unfinished)}; finish them or "
-                    "remove them from the stack before accepting the parent",
-                    details={"parent": parent.key, "unfinished": unfinished},
+                    f"{parent.key}'s stack has unverified children with merges on the integration branch: "
+                    f"{', '.join(partial)}; verify the stack again or remove those children before accepting "
+                    "the parent",
+                    details={"parent": parent.key, "unfinished": partial},
                 )
             children = []
-            for _item, task in StackVerifier.item_rows(session, stack):
+            for item, task in StackVerifier.item_rows(session, stack):
+                if StackItemState(item.state) != StackItemState.VERIFIED:
+                    continue
                 if TaskStatus(task.status) not in ACCEPTABLE_TASK_STATUSES:
                     raise ConflictError(
                         f"{task.key} is {task.status}; a verified child cannot be accepted in that state",
@@ -488,6 +500,7 @@ class StackLander(Service):
             parent = session.get(Task, stack.parent_task_id)
             assert parent is not None
             run = session.get(VerificationRun, run_id) if run_id else None
+            released = self._release_unverified(session, ctx, stack, parent)
             accepted = []
             for item, task in StackVerifier.item_rows(session, stack):
                 if StackItemState(item.state) != StackItemState.VERIFIED:
@@ -513,12 +526,42 @@ class StackLander(Service):
                     "tips": {target.repository_name: tip for target, _, tip in plans},
                     "run_id": run_id,
                     "tasks": accepted,
+                    "released": released,
                     "mode": mode,
                     "reason": reason,
                 },
             )
         self._remove_integration(ctx, stack_id, [target for target, _, _ in plans])
         return parent_acceptance
+
+    def _release_unverified(
+        self, session: Session, ctx: RequestContext, stack: Stack, parent: Task
+    ) -> list[str]:
+        """Take every unverified child out of the stack, back to ready, so the parent can land without it."""
+        released = []
+        for item, task in StackVerifier.item_rows(session, stack):
+            if StackItemState(item.state) == StackItemState.VERIFIED:
+                continue
+            if TaskStatus(task.status) in RETURNABLE_TASK_STATUSES:
+                self.app.tasks._transition(
+                    session, ctx, task, TaskStatus.READY, reason=f"stack {parent.key} landed without it"
+                )
+            self.app.tasks._comment(
+                session,
+                ctx,
+                task,
+                CommentCreate(
+                    body=(
+                        f"Stack {parent.key} landed without {task.key}: it was {item.state} and not verified on "
+                        "the integration tip, so it was released from the stack. Next step: resolve it and "
+                        f"add it to a new stack with: workgraph stack add {parent.key} {task.key}."
+                    ),
+                    data={"stack_item_release": {"state": str(item.state), "stack_id": stack.id}},
+                ),
+            )
+            self.release_child(session, ctx, task)
+            released.append(task.key)
+        return released
 
     def _remove_integration(
         self, ctx: RequestContext, stack_id: str, targets: list[IntegrationTarget]

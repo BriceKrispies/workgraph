@@ -73,8 +73,8 @@ def _render_stack(s: Any) -> None:
         unfinished = [f"{i.task_key} ({i.state})" for i in s.items if i.state != "verified"]
         if unfinished:
             console.print(
-                f"Verified on the integration tip, but it cannot land while children are unfinished: "
-                f"{', '.join(unfinished)}. Finish them or remove them with: workgraph stack remove {s.parent_key} <TASK>"
+                f"Verified on the integration tip. Landing releases the unverified children from the stack "
+                f"({', '.join(unfinished)}) and lands the rest. Land it with: workgraph task accept {s.parent_key}"
             )
         else:
             console.print(

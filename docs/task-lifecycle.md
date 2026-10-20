@@ -146,10 +146,13 @@ of a stack lands the stack (see below).
   (`mode` `automated`, linked to the stack's passing run), then the parent is accepted, and the stack
   becomes `landed`. The default branch moves to the verified integration tip. The details are in
   [Git](git.md#stack-landing).
-- **Unfinished children refuse the landing.** Accepting the parent means the whole piece of work is
-  done, so every item must be `verified`. A stack with a `pending`, `ready`, `conflict` or `ejected`
-  child is refused, the refusal names each unfinished child and its state, and the children are either
-  finished or removed from the stack first.
+- **Unverified children are released by the landing.** The verified integration tip does not contain
+  a `pending`, `ready`, `conflict` or `ejected` child that has no merges on the branch, so landing
+  takes those children out of the stack: each goes back to `ready` (when it was awaiting verification
+  or review), gets a comment, and is no longer part of the stack. The parent and the verified children
+  land without them. A child that still has merges on the integration branch (a partly merged conflict)
+  refuses the landing, which names it; verify again or remove it first. The `stack.landed` event lists
+  the released children.
 - **The default branch moved.** If the default branch moved after the stack was cut, nothing lands
   and the call is refused with `landing: deferred`. The stack is rebuilt on the new head, verified
   again, and lands by itself once that verification passes.

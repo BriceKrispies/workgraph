@@ -8,10 +8,10 @@ from typer.testing import CliRunner
 
 from workgraph.cli.common import STATE
 from workgraph.cli.main import app as cli
-from workgraph.core.errors import ProviderUnavailableError
+from workgraph.core.errors import ProviderUnavailableError, ValidationFailed
 from workgraph.core.models.schemas import TaskCreate
 from workgraph.demo.scenario import _free_port, _start_api
-from workgraph.integrations.browser import BROWSER_ENV, find_browser
+from workgraph.integrations.browser import BROWSER_ENV, _capture, find_browser, screenshot
 
 STATIC_UI = Path(__file__).parents[2] / "src" / "workgraph" / "api" / "static" / "index.html"
 
@@ -75,3 +75,40 @@ def test_screenshot_of_the_graph_page(app, human, ws, home, monkeypatch, tmp_pat
     assert data[:8] == b"\x89PNG\r\n\x1a\n"
     width, height = int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
     assert (width, height) == (800, 600)
+
+
+class _RecordingCdp:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, dict]] = []
+
+    def call(self, method: str, **params):
+        self.calls.append((method, params))
+        return {"data": "iVBORw0KGgo="} if method == "Page.captureScreenshot" else {}
+
+    def evaluate(self, expression: str):
+        return True
+
+
+def test_capture_emulates_a_dark_touch_phone(tmp_path):
+    cdp = _RecordingCdp()
+    _capture(cdp, "http://x/", tmp_path / "p.png", 390, 844, 3, None, None, 0, 5, theme="dark", mobile=True)
+    calls = dict(cdp.calls)
+    assert calls["Emulation.setDeviceMetricsOverride"]["mobile"] is True
+    assert calls["Emulation.setTouchEmulationEnabled"]["enabled"] is True
+    assert calls["Emulation.setEmulatedMedia"]["features"] == [
+        {"name": "prefers-color-scheme", "value": "dark"}
+    ]
+
+
+def test_capture_leaves_the_desktop_default_alone(tmp_path):
+    cdp = _RecordingCdp()
+    _capture(cdp, "http://x/", tmp_path / "p.png", 800, 600, 1, None, None, 0, 5)
+    methods = [m for m, _ in cdp.calls]
+    assert "Emulation.setEmulatedMedia" not in methods
+    assert "Emulation.setTouchEmulationEnabled" not in methods
+    assert dict(cdp.calls)["Emulation.setDeviceMetricsOverride"]["mobile"] is False
+
+
+def test_screenshot_rejects_an_unknown_theme(tmp_path):
+    with pytest.raises(ValidationFailed, match="theme"):
+        screenshot("http://x/", tmp_path / "p.png", theme="sepia")

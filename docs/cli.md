@@ -110,7 +110,11 @@ can be captured:
 ```sh
 workgraph ui screenshot "graph?repo=rho&linked=1" -o rho-graph.png --width 2400 --height 1500 --scale 2
 workgraph ui screenshot tasks/WG-12 -o wg-12.png
+workgraph ui screenshot tasks -o tasks-phone.png --mobile --width 390 --height 844 --scale 3 --theme dark
 ```
+
+`--mobile` emulates a touch phone (mobile viewport, touch input) and `--theme light|dark` emulates the
+system colour scheme, so the phone layout and both themes can be checked without a device.
 
 No browser is bundled: Chrome, Edge or Chromium is found on `PATH` or in its standard install location,
 or named with `--browser` / `WORKGRAPH_BROWSER`. The capture waits until nothing on the page is marked

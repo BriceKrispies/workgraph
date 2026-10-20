@@ -148,15 +148,20 @@ def screenshot(
     settle: float = 1.0,
     timeout: float = 60.0,
     browser: str | None = None,
+    theme: str | None = None,
+    mobile: bool = False,
 ) -> Capture:
     """Load ``url`` headless and write a PNG of the viewport to ``out``.
 
     Waits for the page to finish loading, for ``wait_for`` (a CSS selector) to match and
     ``wait_gone`` to stop matching (by default: nothing marked ``aria-busy``), then ``settle``
-    seconds for layout and animations.
+    seconds for layout and animations. ``theme`` ("light" or "dark") emulates the system colour
+    scheme; ``mobile`` emulates a touch phone (mobile viewport and touch input).
     """
     if width < 200 or height < 200 or not 0.25 <= scale <= 4:
         raise ValidationFailed("width and height must be at least 200 and scale between 0.25 and 4")
+    if theme not in (None, "light", "dark"):
+        raise ValidationFailed("theme must be light or dark")
     exe = find_browser(browser)
     out = out.resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -183,7 +188,10 @@ def screenshot(
 
             port = _devtools_port(profile, proc, timeout=30)
             with connect(_page_websocket(port, timeout=30), max_size=None, open_timeout=30) as ws:
-                _capture(_Cdp(ws), url, out, width, height, scale, wait_for, wait_gone, settle, timeout)
+                _capture(
+                    _Cdp(ws), url, out, width, height, scale, wait_for, wait_gone, settle, timeout,
+                    theme=theme, mobile=mobile,
+                )  # fmt: skip
         finally:
             proc.terminate()
             try:
@@ -205,14 +213,21 @@ def _capture(
     wait_gone: str | None,
     settle: float,
     timeout: float,
+    *,
+    theme: str | None = None,
+    mobile: bool = False,
 ) -> None:
     cdp.call(
         "Emulation.setDeviceMetricsOverride",
         width=width,
         height=height,
         deviceScaleFactor=scale,
-        mobile=False,
+        mobile=mobile,
     )
+    if mobile:
+        cdp.call("Emulation.setTouchEmulationEnabled", enabled=True, maxTouchPoints=5)
+    if theme:
+        cdp.call("Emulation.setEmulatedMedia", features=[{"name": "prefers-color-scheme", "value": theme}])
     cdp.call("Page.navigate", url=url)
     deadline = time.monotonic() + timeout
     ready = "document.readyState === 'complete'"

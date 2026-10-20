@@ -41,6 +41,7 @@ from workgraph.core.models.schemas import (
     RepositoryRegister,
     ResultReport,
     TaskCreate,
+    TaskFileIn,
     TaskFilter,
     TaskUpdate,
 )
@@ -382,6 +383,7 @@ def build_server(
         priority: TaskPriority = TaskPriority.MEDIUM,
         ready: bool = False,
         tags: list[str] | None = None,
+        files: list[TaskFileIn] | None = None,
         projects: list[str] | None = None,
         repositories: list[str] | None = None,
         parent: str | None = None,
@@ -399,6 +401,7 @@ def build_server(
                     priority=priority,
                     status="ready" if ready else "backlog",
                     tags=tags or [],
+                    files=files or [],
                     projects=projects or [],
                     repositories=repositories or [],
                     parent=parent,
@@ -407,7 +410,10 @@ def build_server(
             )
         )
 
-    @tool("task_get", "Get full task details: description, criteria, comments, dependencies, rollup.")
+    @tool(
+        "task_get",
+        "Get full task details: description, criteria, files, comments, dependencies, rollup.",
+    )
     def task_get(task: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
         return _dump(app.tasks.detail(ctx(), workspace, task))
 
@@ -442,6 +448,9 @@ def build_server(
         project: str | None = None,
         repository: str | None = None,
         tags: list[str] | None = None,
+        file: Annotated[
+            str | None, Field(description="Only tasks that list this path in their files")
+        ] = None,
         category: str | None = None,
         parent: str | None = None,
         text: str | None = None,
@@ -463,6 +472,7 @@ def build_server(
                     project=project,
                     repository=repository,
                     tags=tags,
+                    file=file,
                     category=category,
                     parent=parent,
                     text=text,
@@ -485,6 +495,10 @@ def build_server(
         add_tags: list[str] | None = None,
         remove_tags: list[str] | None = None,
         acceptance_criteria: list[str] | None = None,
+        files: Annotated[
+            list[TaskFileIn] | None, Field(description="Replaces the task's files; [] clears them")
+        ] = None,
+        add_files: Annotated[list[TaskFileIn] | None, Field(description="Appends files")] = None,
         reason: str | None = None,
         workspace: Workspace = None,
     ) -> dict[str, Any]:
@@ -497,6 +511,8 @@ def build_server(
             "add_tags": add_tags,
             "remove_tags": remove_tags,
             "acceptance_criteria": acceptance_criteria,
+            "files": files,
+            "add_files": add_files,
             "reason": reason,
         }
         return _dump(

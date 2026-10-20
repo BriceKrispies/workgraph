@@ -143,6 +143,40 @@ async def test_stdio_server_discovery_invocation_and_persistence(app, human, ws,
 
 
 @pytest.mark.slow
+async def test_task_files_round_trip_over_mcp(app, human, ws, home):
+    params = StdioServerParameters(
+        command=sys.executable,
+        args=["-m", "workgraph", "mcp", "--agent-name", "tester"],
+        env={**os.environ, "WORKGRAPH_HOME": str(home)},
+    )
+    async with Client(params, read_timeout_seconds=60) as client:
+        created = await client.call_tool(
+            "task_create",
+            {
+                "title": "Files over MCP",
+                "files": [{"path": "src/a.rs", "anchor": "fn_x"}, {"path": "c.md", "note": "see section"}],
+            },
+        )
+        assert not created.is_error
+        key = created.structured_content["key"]
+        assert created.structured_content["files"] == [
+            {"path": "src/a.rs", "anchor": "fn_x", "note": ""},
+            {"path": "c.md", "anchor": None, "note": "see section"},
+        ]
+        added = await client.call_tool("task_update", {"task": key, "add_files": [{"path": "d.py"}]})
+        assert not added.is_error
+        got = await client.call_tool("task_get", {"task": key})
+        assert [f["path"] for f in got.structured_content["files"]] == ["src/a.rs", "c.md", "d.py"]
+        listed = await client.call_tool("task_list", {"file": "d.py"})
+        assert [t["key"] for t in listed.structured_content["items"]] == [key]
+        cleared = await client.call_tool("task_update", {"task": key, "files": []})
+        assert not cleared.is_error
+        assert (await client.call_tool("task_get", {"task": key})).structured_content["files"] == []
+        refused = await client.call_tool("task_create", {"title": "Bad path", "files": [{"path": ""}]})
+        assert refused.is_error
+
+
+@pytest.mark.slow
 async def test_stack_mutations_need_stack_write(app, human, ws, home, make_repo):
     repo = make_repo("stack-mcp")
     app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))

@@ -30,6 +30,7 @@ from workgraph.core.models.schemas import (
     TaskCreate,
     TaskOut,
     TaskUpdate,
+    parse_task_file,
 )
 from workgraph.core.policies.lifecycle import check_task_transition
 from workgraph.core.services.tasks import TaskService
@@ -179,9 +180,22 @@ def _shape_problem(entry: Any) -> str | None:
                 rewrite.get("acceptance_criteria", [])
             ):
                 return f"rewrite {i} files and acceptance_criteria must be lists of strings"
+            bad = next(
+                (spec for spec in rewrite.get("files", []) if spec.strip() and not _is_file_spec(spec)), None
+            )
+            if bad is not None:
+                return f"rewrite {i} has a file that is not a path: {bad!r}"
     if verdict == "needs-run" and not _text(entry.get("command")):
         return "needs-run verdict needs a command"
     return None
+
+
+def _is_file_spec(spec: str) -> bool:
+    try:
+        parse_task_file(spec)
+    except ValueError:
+        return False
+    return True
 
 
 def _text(value: Any) -> bool:
@@ -305,6 +319,7 @@ def _create_follow_up(
             acceptance_criteria=list(rewrite.get("acceptance_criteria") or []),
             priority=TaskPriority(original.priority),
             tags=list(dict.fromkeys(tags)),
+            files=[parse_task_file(spec) for spec in files if spec.strip()],
             projects=list(original.project_ids),
             repositories=list(original.repository_ids),
         ),

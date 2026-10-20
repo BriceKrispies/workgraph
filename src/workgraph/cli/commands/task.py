@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import typer
+from rich.markup import escape
 
 from workgraph.cli.common import (
     STATE,
@@ -30,12 +31,32 @@ from workgraph.core.models.schemas import (
     RelationCreate,
     ResultReport,
     TaskCreate,
+    TaskFileIn,
     TaskFilter,
     TaskUpdate,
+    parse_task_file,
 )
 from workgraph.core.services import triage
 
 task_app = typer.Typer(help="Create, query and move tasks through their lifecycle.", no_args_is_help=True)
+
+
+def _file_specs(specs: list[str] | None) -> list[TaskFileIn]:
+    """Parse repeatable ``--file PATH[:ANCHOR]`` options, refusing the whole command on a bad one."""
+    parsed: list[TaskFileIn] = []
+    for spec in specs or []:
+        try:
+            parsed.append(parse_task_file(spec))
+        except ValueError as exc:
+            fail(
+                f"invalid --file {spec!r}: a path is required before any ':ANCHOR'",
+                details={"error": str(exc)},
+            )
+    return parsed
+
+
+def _file_label(item: Any) -> str:
+    return f"{item.path}:{item.anchor}" if item.anchor else item.path
 
 
 def _row(t: Any) -> tuple[Any, ...]:
@@ -62,6 +83,7 @@ def _render_task(t: Any) -> None:
             ("blocks", len(t.blocks) or None),
             ("projects", len(t.project_ids) or None),
             ("repositories", len(t.repository_ids) or None),
+            ("files", len(t.files) or None),
             ("version", t.version),
             ("created", when(t.created_at)),
             ("completed", when(t.completed_at)),
@@ -76,6 +98,11 @@ def _render_task(t: Any) -> None:
         console.print("\n[bold]Acceptance criteria[/bold]")
         for item in t.acceptance_criteria:
             console.print(f"  - {item}")
+    if t.files:
+        console.print("\n[bold]Files[/bold]")
+        for item in t.files:
+            note = f" - {escape(item.note)}" if item.note else ""
+            console.print(f"  - {escape(_file_label(item))}{note}")
     rollup = getattr(t, "rollup", None)
     if rollup:
         console.print(
@@ -98,6 +125,7 @@ def task_create(
     priority: TaskPriority = typer.Option(TaskPriority.MEDIUM, "--priority", "-P"),
     ready: bool = typer.Option(False, "--ready", help="Create in the ready state"),
     tag: list[str] = typer.Option(None, "--tag", "-t"),
+    file: list[str] = typer.Option(None, "--file", help="File to change, PATH[:ANCHOR] (repeatable)"),
     project: list[str] = typer.Option(None, "--project", "-p"),
     repo: list[str] = typer.Option(None, "--repo", "-r"),
     parent: str | None = typer.Option(None, "--parent"),
@@ -123,6 +151,7 @@ def task_create(
             priority=priority,
             status="ready" if ready else "backlog",
             tags=tag or [],
+            files=_file_specs(file),
             projects=project or [],
             repositories=repo or [],
             parent=parent,
@@ -144,6 +173,9 @@ def task_list(
     project: str | None = typer.Option(None, "--project", "-p"),
     repo: str | None = typer.Option(None, "--repo", "-r"),
     tag: list[str] = typer.Option(None, "--tag", "-t"),
+    file_path: str | None = typer.Option(
+        None, "--file", help="Only tasks that list this PATH in their files"
+    ),
     category: str | None = typer.Option(None),
     assignee: str | None = typer.Option(None),
     parent: str | None = typer.Option(None),
@@ -166,6 +198,7 @@ def task_list(
             project=project,
             repository=repo,
             tags=tag or None,
+            file=file_path,
             category=category,
             assignee=assignee,
             parent=parent,
@@ -264,6 +297,9 @@ def task_update(
     priority: TaskPriority | None = typer.Option(None, "--priority", "-P"),
     add_tag: list[str] = typer.Option(None, "--add-tag"),
     remove_tag: list[str] = typer.Option(None, "--remove-tag"),
+    file: list[str] = typer.Option(None, "--file", help="Replace the files with PATH[:ANCHOR] (repeatable)"),
+    add_file: list[str] = typer.Option(None, "--add-file", help="Append a file, PATH[:ANCHOR] (repeatable)"),
+    clear_files: bool = typer.Option(False, "--clear-files", help="Remove all of the task's files"),
     parent: str | None = typer.Option(None),
     clear_parent: bool = typer.Option(False),
     assignee: str | None = typer.Option(None),
@@ -275,6 +311,8 @@ def task_update(
     workspace: str | None = workspace_option(),
 ) -> None:
     """Update task fields and/or status (validated transitions)."""
+    if clear_files and file:
+        fail("--clear-files cannot be combined with --file")
     fields: dict[str, Any] = {
         "title": title,
         "description": description,
@@ -282,6 +320,8 @@ def task_update(
         "priority": priority,
         "add_tags": add_tag or None,
         "remove_tags": remove_tag or None,
+        "files": [] if clear_files else (_file_specs(file) if file else None),
+        "add_files": _file_specs(add_file) or None,
         "parent": parent,
         "clear_parent": clear_parent,
         "assignee": assignee,

@@ -9,7 +9,9 @@ from workgraph.core.models.enums import AttemptStatus
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.core.services import resolve
 from workgraph.core.services.attempts import new_attempt
-from workgraph.persistence.orm import Task
+from sqlalchemy import select
+
+from workgraph.persistence.orm import Repository, Stack, StackRepository, Task
 
 
 @pytest.fixture
@@ -157,6 +159,28 @@ def test_passing_full_run_accepts_the_task(app, human, ws, make_repo):
     assert acceptance.mode == "automated"
     assert acceptance.reason == "verification.auto_accept"
     assert acceptance.verification_run_id == run.id
+
+
+def test_unstacked_task_in_a_stack_landing_repository_stays_awaiting_review(app, human, ws, make_repo):
+    # A repository that has taken part in a stack lands its work through stacks; a task outside any
+    # stack must not be accepted there, or its commits would never reach the integration branch.
+    task = setup_tiered_task(app, human, ws, make_repo)
+    parent = app.tasks.create(human, ws, TaskCreate(title="Earlier batch"))
+    with app.db.session(write=True) as session:
+        repository = session.scalar(select(Repository).where(Repository.name == "svc"))
+        stack = Stack(workspace_id=repository.workspace_id, parent_task_id=parent.id, status="landed")
+        session.add(stack)
+        session.flush()
+        session.add(
+            StackRepository(
+                stack_id=stack.id, repository_id=repository.id, base_sha="0" * 40, integration_branch="main"
+            )
+        )
+    _await_verification(app, task)
+    run = app.verification.run(human, ws, task.key)
+    assert run.required_passed
+    assert app.tasks.get(human, ws, task.key).status == "awaiting_review"
+    assert _acceptances(app, human, ws, task) == []
 
 
 def test_auto_accept_off_leaves_the_task_awaiting_review(app, human, ws, make_repo, manual_verification):

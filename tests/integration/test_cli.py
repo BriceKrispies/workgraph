@@ -70,6 +70,14 @@ def test_cli_workflow_json(run, make_repo):
     assert run("events", "verify")["consistent"] is True
 
 
+def test_task_tags_accept_comma_separated_values(run):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    task = run("task", "create", "Retro it", "-t", "rho,retro", "-t", " bug , ,")
+    assert sorted(task["tags"]) == ["bug", "retro", "rho"]
+    updated = run("task", "update", "AC-1", "--add-tag", "ops,ci", "--remove-tag", "bug, ")
+    assert sorted(updated["tags"]) == ["ci", "ops", "retro", "rho"]
+
+
 def test_repo_update_tracks_and_untracks_branches(run, make_repo):
     run("init", "--workspace", "acme", "--prefix", "AC")
     repo = make_repo("svc")

@@ -55,6 +55,13 @@ def _file_specs(specs: list[str] | None) -> list[TaskFileIn]:
     return parsed
 
 
+def _tag_values(values: list[str] | None) -> list[str] | None:
+    """Expand repeatable ``--tag`` values: each may hold comma-separated tags; blanks are dropped."""
+    if values is None:
+        return None
+    return [part.strip() for value in values for part in value.split(",") if part.strip()]
+
+
 def _file_label(item: Any) -> str:
     return f"{item.path}:{item.anchor}" if item.anchor else item.path
 
@@ -150,7 +157,7 @@ def task_create(
             acceptance_criteria=criteria or [],
             priority=priority,
             status="ready" if ready else "backlog",
-            tags=tag or [],
+            tags=_tag_values(tag) or [],
             files=_file_specs(file),
             projects=project or [],
             repositories=repo or [],
@@ -318,8 +325,8 @@ def task_update(
         "description": description,
         "status": status,
         "priority": priority,
-        "add_tags": add_tag or None,
-        "remove_tags": remove_tag or None,
+        "add_tags": _tag_values(add_tag) or None,
+        "remove_tags": _tag_values(remove_tag) or None,
         "files": [] if clear_files else (_file_specs(file) if file else None),
         "add_files": _file_specs(add_file) or None,
         "parent": parent,
@@ -348,7 +355,10 @@ def task_bulk(
 ) -> None:
     """Apply one change to many tasks."""
     update = TaskUpdate(
-        status=status, priority=priority, add_tags=add_tag or None, remove_tags=remove_tag or None
+        status=status,
+        priority=priority,
+        add_tags=_tag_values(add_tag) or None,
+        remove_tags=_tag_values(remove_tag) or None,
     )
     result = STATE.app().tasks.bulk_update(STATE.ctx(), ws(workspace), BulkUpdate(tasks=refs, update=update))
     emit(

@@ -51,6 +51,7 @@ from workgraph.persistence.orm import (
     ChangeSetItem,
     Repository,
     RevisionManifest,
+    StackRepository,
     Task,
     TaskAcceptance,
     TaskRepository,
@@ -259,6 +260,21 @@ def extract_failure_signatures(lines: list[str], parser: str) -> list[str]:
                 if len(signatures) >= 5:
                     break
     return list(dict.fromkeys(signatures))
+
+
+def _lands_through_stacks(session: Session, manifest: list[dict[str, Any]]) -> bool:
+    """Whether any repository in ``manifest`` has taken part in a stack, i.e. lands its work through stacks."""
+    repository_ids = {e["repository_id"] for e in manifest if e.get("repository_id")}
+    if not repository_ids:
+        return False
+    return (
+        session.scalar(
+            select(StackRepository.repository_id)
+            .where(StackRepository.repository_id.in_(repository_ids))
+            .limit(1)
+        )
+        is not None
+    )
 
 
 def manifest_from_checkouts(app: Any, session: Session, task: Task) -> list[dict[str, Any]]:
@@ -732,7 +748,9 @@ class VerificationService(Service):
         """Accept a task whose full verification just passed, when ``verification.auto_accept`` is on.
 
         Runs in its own write session after the run is finalized. Stack children are accepted by the
-        stack landing and a stack parent lands its stack, so neither is accepted here.
+        stack landing and a stack parent lands its stack, so neither is accepted here. A task in no
+        stack whose change is in a repository that lands through stacks is left at awaiting_review:
+        accepting it would leave its commits off that repository's integration branch.
         """
         if Permission.TASK_ACCEPT not in ctx.permissions:
             return
@@ -754,6 +772,8 @@ class VerificationService(Service):
             if active_item(session, task.id) is not None:
                 return
             if self.app.stack_lander.active_stack_of_parent(session, task.id) is not None:
+                return
+            if _lands_through_stacks(session, prepared.manifest):
                 return
             latest = session.scalar(
                 select(VerificationRun)

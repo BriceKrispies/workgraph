@@ -1332,3 +1332,27 @@ def test_landing_releases_an_ejected_child_and_lands_the_verified_rest(app, huma
         f"landed without {second.key}" in body
         for body in _task_comments(app, app.tasks.get(human, ws, second.key).id)
     )
+
+
+def test_readmit_refuses_an_attempt_branch_that_moved_after_submit(app, human, ws, tree, manual_landing):
+    import re
+
+    repo, parent = tree
+    _, second, _ = _verified_stack(app, human, ws, parent)
+    app.stack_verification.eject(human, ws, parent.key, second.key, "evidence names the second change")
+    recorded = app.git.change_sets(human, ws, second.key)[0]["items"][0]
+    head, branch = recorded["head_sha"], recorded["branch"]
+    assert head and branch
+    # A fix committed on the attempt branch after submit, which the change set never recorded.
+    fix = repo.git(
+        "commit-tree", repo.git("rev-parse", f"{head}^{{tree}}"), "-p", head, "-m", "fix after submit"
+    )
+    repo.git("update-ref", f"refs/heads/{branch}", fix)
+
+    with pytest.raises(ConflictError, match=re.escape(f"is at {fix}") + ".*" + re.escape(f"is {head}")):
+        app.stacks.readmit_item(human, ws, parent.key, second.key)
+    assert _items(app, human, ws, parent)[second.key].state == "ejected"
+
+    repo.git("update-ref", f"refs/heads/{branch}", head)
+    readmitted = app.stacks.readmit_item(human, ws, parent.key, second.key)
+    assert {i.task_key: i.state for i in readmitted.items}[second.key] == "ready"

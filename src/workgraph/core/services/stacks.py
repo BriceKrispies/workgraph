@@ -150,8 +150,14 @@ def stack_base(session: Session, task: Task, repo: Repository) -> StackBase | No
 
 def latest_head(session: Session, task_id: str, repository_id: str) -> str | None:
     """The head the task's latest succeeded attempt left in the repository, if it touched it."""
-    return session.scalar(
-        select(ChangeSetItem.head_sha)
+    recorded = latest_recorded(session, task_id, repository_id)
+    return recorded[0] if recorded is not None else None
+
+
+def latest_recorded(session: Session, task_id: str, repository_id: str) -> tuple[str, str | None] | None:
+    """The head recorded at submit for the task's latest succeeded attempt, with that attempt's branch."""
+    row = session.execute(
+        select(ChangeSetItem.head_sha, ChangeSetItem.branch)
         .join(ChangeSet, ChangeSet.id == ChangeSetItem.change_set_id)
         .join(AgentAttempt, AgentAttempt.id == ChangeSet.attempt_id)
         .where(
@@ -162,7 +168,8 @@ def latest_head(session: Session, task_id: str, repository_id: str) -> str | Non
         )
         .order_by(ChangeSet.created_at.desc(), AgentAttempt.number.desc())
         .limit(1)
-    )
+    ).first()
+    return (row[0], row[1]) if row is not None else None
 
 
 def active_item(session: Session, task_id: str) -> tuple[Stack, StackItem] | None:
@@ -492,6 +499,7 @@ class StackService(Service):
                     f"{child.key} is {state}; only an ejected or pending child can be readmitted",
                     details={"task": child.key, "state": str(state)},
                 )
+            self._refuse_unrecorded_commits(session, stack, child)
             self.transition_item(session, ctx, stack, parent, child, item, StackItemState.READY, item.detail)
             # An ejection returned the task to ready; its submitted change comes back with the item, so
             # the task goes back to awaiting verification (through running, as the lifecycle requires),
@@ -503,6 +511,48 @@ class StackService(Service):
                     session, ctx, child, TaskStatus.AWAITING_VERIFICATION, reason=reason
                 )
             return stack_out(session, stack)
+
+    @staticmethod
+    def _refuse_unrecorded_commits(session: Session, stack: Stack, child: Task) -> None:
+        """Refuse a readmit whose attempt branch moved after submit: integration would miss those commits.
+
+        Integration merges the head recorded at submit. A commit added to the attempt branch since then is
+        not in the change set, so readmitting would silently leave it out. The fix is a new attempt.
+        """
+        rows = session.execute(
+            select(StackRepository.repository_id, Repository)
+            .join(Repository, Repository.id == StackRepository.repository_id)
+            .where(StackRepository.stack_id == stack.id)
+            .order_by(Repository.name)
+        ).all()
+        for repository_id, repo in rows:
+            recorded = latest_recorded(session, child.id, repository_id)
+            if recorded is None or recorded[1] is None:
+                continue
+            head, branch = recorded
+            checkout = primary_checkout(repo)
+            if checkout is None:
+                raise ValidationFailed(f"repository {repo.name!r} has no available checkout")
+            # Branches are shared by every worktree of a repository, so the primary checkout reads the tip.
+            tip = (
+                Git(Path(checkout.path))
+                .run("rev-parse", "--verify", "--quiet", f"refs/heads/{branch}", check=False)
+                .stdout.strip()
+            )
+            # A branch that no longer exists cannot have moved; the recorded head is what integrates.
+            if tip and tip != head:
+                raise ConflictError(
+                    f"{child.key}'s attempt branch {branch} in {repo.name!r} is at {tip}, but the head recorded "
+                    f"at submit is {head}: commits added after submit would be left out of the readmit. "
+                    f"Resubmit through a new attempt (attempt start, then submit) so the new head is recorded.",
+                    details={
+                        "task": child.key,
+                        "repository": repo.name,
+                        "branch": branch,
+                        "branch_tip": tip,
+                        "recorded_head": head,
+                    },
+                )
 
     def mark_ready(self, ctx: RequestContext, task_id: str) -> None:
         """Mark a stack child ready after its fast tier passed; a task outside an active stack is left alone."""

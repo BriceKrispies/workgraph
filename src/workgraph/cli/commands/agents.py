@@ -194,6 +194,24 @@ def attempt_submit(
     emit(out, lambda o: _print_attempt_submit(attempt, o))
 
 
+@attempt_app.command("abandon")
+@handle_errors
+def attempt_abandon(
+    attempt: str,
+    reason: str = typer.Option(
+        "agent stopped without submitting", "--reason", "-m", help="Why the attempt is abandoned."
+    ),
+) -> None:
+    """Abandon an external attempt whose agent stopped without submitting: the task returns to ready."""
+    out = STATE.app().runs.abandon_external(STATE.ctx(), attempt, reason=reason)
+    emit(
+        out,
+        lambda o: console.print(
+            f"attempt {short(o['attempt_id'])} abandoned; task {o['task']} {o['task_status']}"
+        ),
+    )
+
+
 @attempt_app.command("finish")
 @handle_errors
 def attempt_finish(

@@ -735,6 +735,50 @@ class RunService(Service):
             "outcome": {k: v for k, v in outcome.items() if k != "commits"},
         }
 
+    def abandon_external(self, ctx: RequestContext, attempt_ref: str, *, reason: str) -> dict[str, Any]:
+        """Conclude an external attempt whose agent stopped without submitting.
+
+        The attempt is marked abandoned with the reason, its task returns to ready (the claim is released
+        with it) and its worktrees are released. Only attempts started with ``attempt start`` qualify; an
+        orchestrated run is concluded by its own worker.
+        """
+        require(ctx, Permission.TASK_CLAIM)
+        require(ctx, Permission.ATTEMPT_WRITE)
+        if not reason.strip():
+            raise ValidationFailed("abandoning an attempt needs a reason")
+        with self.db.session(write=True) as session:
+            attempt = resolve.attempt(session, attempt_ref)
+            if not attempt.config_snapshot.get("external"):
+                raise ValidationFailed(
+                    f"attempt {attempt.id} was not started with attempt start; only external attempts are abandoned"
+                )
+            status = AttemptStatus(attempt.status)
+            if status not in (AttemptStatus.RUNNING, AttemptStatus.PREPARING):
+                raise ValidationFailed(
+                    f"attempt {attempt.id} is {status}; only a running attempt can be abandoned"
+                )
+            task = session.get(Task, attempt.task_id)
+            assert task is not None
+            finish_attempt(
+                session, ctx, attempt, AttemptStatus.ABANDONED, exit_reason="abandoned", error=reason
+            )
+            if TaskStatus(task.status) in (TaskStatus.CLAIMED, TaskStatus.RUNNING):
+                self.app.tasks._transition(
+                    session,
+                    ctx,
+                    task,
+                    TaskStatus.READY,
+                    reason=f"attempt #{attempt.number} abandoned: {reason}"[:200],
+                )
+            attempt_id, task_key = attempt.id, task.key
+        self.app.worktrees.release(ctx, attempt_id)
+        return {
+            "attempt_id": attempt_id,
+            "task": task_key,
+            "attempt_status": "abandoned",
+            "task_status": "ready",
+        }
+
     def submit_external(
         self,
         ctx: RequestContext,

@@ -240,3 +240,26 @@ def test_attempt_submit_refuses_an_attempt_without_a_managed_worktree(app, human
     with pytest.raises(ValidationFailed, match="no managed worktree"):
         app.runs.submit_external(human, attempt.id)
     assert app.attempts.get(human, attempt.id).status == "running"
+
+
+def test_attempt_abandon_returns_the_task_to_ready_and_frees_the_worktree(app, human, ws, make_repo):
+    repo = make_repo("api")
+    app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
+    task = app.tasks.create(
+        human, ws, TaskCreate(title="Abandoned work", repositories=["api"], status="ready")
+    )
+    started = app.runs.start_external(human, ws, task.key, agent_name="tester")
+
+    out = app.runs.abandon_external(human, started.attempt_id, reason="subagent stopped without submitting")
+
+    assert out["attempt_status"] == "abandoned" and out["task_status"] == "ready"
+    attempt = app.attempts.get(human, started.attempt_id)
+    assert attempt.status == "abandoned" and attempt.error == "subagent stopped without submitting"
+    released = app.tasks.get(human, ws, task.key)
+    assert released.status == "ready" and released.claimed_by is None
+    assert not app.worktrees.attempt_is_active(started.attempt_id)
+    assert all(row["status"] != "active" for row in app.worktrees.list(human, ws))
+    with pytest.raises(ValidationFailed, match="only a running attempt"):
+        app.runs.abandon_external(human, started.attempt_id, reason="again")
+    again = app.runs.start_external(human, ws, task.key, agent_name="tester")
+    assert again.attempt_number == 2

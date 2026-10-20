@@ -10,22 +10,32 @@ import {
   ErrorBanner,
   Field,
   KeyValue,
+  List,
+  ListRow,
+  Meta as MetaLine,
   Modal,
+  Notice,
+  PageHeader,
+  SectionTitle,
+  Segmented,
   Skeleton,
   Stat,
   StatusBadge,
-  Table,
   inputClass,
-  td,
+  selectClass,
+  textareaClass,
 } from "../components/ui";
 import { useTaskIndex } from "../hooks/lookups";
+import { useDesktop } from "../hooks/media";
 import { useWorkspace } from "../hooks/workspace";
-import { ago, label, ms, num, short } from "../lib/format";
+import { ago, label, ms, num, sentence, short } from "../lib/format";
+import { toneOf } from "../lib/tone";
 
 const ACTIVE = ["queued", "preparing", "running", "verifying"];
 
 export function ExecutionPage() {
   const { ws } = useWorkspace();
+  const desktop = useDesktop();
   const [params, setParams] = useSearchParams();
   const selected = params.get("attempt");
   const [scope, setScope] = useState<"active" | "all">("all");
@@ -45,100 +55,130 @@ export function ExecutionPage() {
   const runningCount = attempts.data?.items.filter((a) => a.status === "running" || a.status === "verifying").length ?? 0;
   const queuedCount = attempts.data?.items.filter((a) => a.status === "queued" || a.status === "preparing").length ?? 0;
   const liveWorkers = workers.data?.filter((w) => w.status === "running") ?? [];
+  const select = (id: string | null) => setParams(id ? { attempt: id } : {}, { replace: !!selected && !!id });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900">Agent execution</h1>
-        <Button variant="primary" onClick={() => setStarting(true)}>
-          Start run
-        </Button>
-      </div>
+    <div>
+      <PageHeader
+        title="Agent runs"
+        actions={
+          <Button variant="primary" icon="plus" onClick={() => setStarting(true)}>
+            <span className="sm:hidden">Start</span>
+            <span className="hidden sm:inline">Start run</span>
+          </Button>
+        }
+      />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Stat label="Running" value={runningCount} />
-        <Stat label="Queued" value={queuedCount} />
-        <Stat label="Live workers" value={liveWorkers.length} hint={liveWorkers.length ? undefined : "start one: workgraph worker run"} />
-        <Stat label="Queued jobs (all kinds)" value={jobs.data?.stats.queued ?? 0} hint={`${jobs.data?.stats.dead ?? 0} dead`} />
+        <Stat label="Running" value={runningCount} tone="active" />
+        <Stat label="Queued" value={queuedCount} tone="ready" />
+        <Stat label="Live workers" value={liveWorkers.length} tone={liveWorkers.length ? "done" : "idle"} hint={liveWorkers.length ? undefined : "Start one: workgraph worker run"} />
+        <Stat label="Queued jobs" value={jobs.data?.stats.queued ?? 0} hint={`${jobs.data?.stats.dead ?? 0} dead, all kinds`} />
       </div>
-      <div className="grid gap-4 xl:grid-cols-5">
-        <Card
-          title="Attempts"
-          className="xl:col-span-3"
-          bodyClass="p-0"
-          actions={
-            <select aria-label="Attempt scope" className="rounded border border-slate-300 px-1.5 py-0.5 text-[12px]" value={scope} onChange={(e) => setScope(e.target.value as "active" | "all")}>
-              <option value="all">all</option>
-              <option value="active">active</option>
-            </select>
-          }
-        >
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+        <section className="min-w-0">
+          <SectionTitle
+            actions={
+              <Segmented
+                label="Attempt scope"
+                value={scope}
+                onChange={setScope}
+                options={[
+                  ["all", "All"],
+                  ["active", "Active"],
+                ]}
+              />
+            }
+          >
+            Attempts
+          </SectionTitle>
           <ErrorBanner error={attempts.error} />
           {!attempts.data ? (
-            <Skeleton rows={6} />
+            <Card bodyClass="p-0">
+              <Skeleton rows={6} />
+            </Card>
           ) : attempts.data.items.length === 0 ? (
-            <div className="p-3">
-              <Empty title="No attempts">Agent runs and externally reported attempts appear here.</Empty>
-            </div>
+            <Card>
+              <Empty title={scope === "active" ? "Nothing running" : "No attempts"}>Agent runs and attempts reported from elsewhere appear here.</Empty>
+            </Card>
           ) : (
-            <Table head={["Task", "#", "Status", "Agent", "Duration", "Queue", "Exit", "When"]} testId="attempts">
+            <List testId="attempts">
               {attempts.data.items.map((a) => (
-                <tr
-                  key={a.id}
-                  className={`cursor-pointer hover:bg-slate-50 ${selected === a.id ? "bg-sky-50" : ""}`}
-                  onClick={() => setParams({ attempt: a.id })}
-                >
-                  <td className={`${td} mono text-[12px]`}>{index.get(a.task_id)?.key ?? short(a.task_id)}</td>
-                  <td className={td}>
-                    {a.number}
-                    {a.parent_attempt_id && <span className="ml-1 text-[11px] text-slate-400">sub</span>}
-                  </td>
-                  <td className={td}>
+                <ListRow key={a.id} tone={toneOf(a.status)} selected={selected === a.id} onClick={() => select(a.id)}>
+                  <div className="flex items-center gap-2">
+                    <span className="mono text-[13px] font-medium">{index.get(a.task_id)?.key ?? short(a.task_id)}</span>
+                    <span className="text-[13px] text-ink-3">
+                      #{a.number}
+                      {a.parent_attempt_id && ", subagent"}
+                    </span>
                     <StatusBadge status={a.status} />
-                  </td>
-                  <td className={td}>{a.provider}</td>
-                  <td className={td}>{ms(a.duration_ms)}</td>
-                  <td className={td}>{ms(a.queue_wait_ms)}</td>
-                  <td className={`${td} text-[12px] text-slate-600`}>{label(a.exit_reason)}</td>
-                  <td className={`${td} whitespace-nowrap text-slate-500`}>{ago(a.created_at)}</td>
-                </tr>
+                    <span className="ml-auto whitespace-nowrap text-[13px] text-ink-3">{ago(a.created_at)}</span>
+                  </div>
+                  {index.get(a.task_id)?.title && <div className="mt-1 line-clamp-1 text-[14px] text-ink-2">{index.get(a.task_id)?.title}</div>}
+                  <MetaLine>
+                    <span>{a.provider}</span>
+                    <span>Ran {ms(a.duration_ms)}</span>
+                    <span>Queued {ms(a.queue_wait_ms)}</span>
+                    {a.exit_reason && <span>{sentence(a.exit_reason)}</span>}
+                  </MetaLine>
+                </ListRow>
               ))}
-            </Table>
+            </List>
           )}
-        </Card>
-        <div className="space-y-4 xl:col-span-2">
-          {selected ? <AttemptPanel attemptId={selected} /> : <Card title="Attempt"><Empty title="Select an attempt">Details, live progress and logs appear here.</Empty></Card>}
-          <Card title="Workers" bodyClass="p-0">
-            {workers.data?.length ? (
-              <Table head={["Worker", "Status", "Running", "Done", "Failed", "Heartbeat"]}>
-                {workers.data.slice(0, 8).map((w) => (
-                  <tr key={w.id}>
-                    <td className={`${td} mono text-[11px]`}>{w.id}</td>
-                    <td className={td}>
-                      <StatusBadge status={w.status === "running" ? "ok" : w.status} />
-                    </td>
-                    <td className={td}>
-                      {w.current_jobs.length}/{w.concurrency}
-                    </td>
-                    <td className={td}>{w.jobs_completed}</td>
-                    <td className={td}>{w.jobs_failed}</td>
-                    <td className={`${td} text-slate-500`}>{ago(w.heartbeat_at)}</td>
-                  </tr>
-                ))}
-              </Table>
+        </section>
+
+        <div className="min-w-0 space-y-4">
+          {desktop &&
+            (selected ? (
+              <AttemptPanel attemptId={selected} />
             ) : (
-              <div className="p-3">
-                <Empty title="No workers have run">Background jobs need `workgraph worker run` or `workgraph serve`.</Empty>
-              </div>
+              <Card title="Attempt">
+                <Empty title="Select an attempt">Its details, live progress and log appear here.</Empty>
+              </Card>
+            ))}
+          <section>
+            <SectionTitle>Workers</SectionTitle>
+            {workers.data?.length ? (
+              <List>
+                {workers.data.slice(0, 8).map((w) => (
+                  <ListRow key={w.id} tone={w.status === "running" ? "done" : "idle"}>
+                    <div className="flex items-center gap-2">
+                      <span className="mono min-w-0 truncate text-[13px]">{w.id}</span>
+                      <StatusBadge status={w.status === "running" ? "ok" : w.status} />
+                    </div>
+                    <MetaLine>
+                      <span>
+                        {w.current_jobs.length} of {w.concurrency} slots busy
+                      </span>
+                      <span>{w.jobs_completed} done</span>
+                      <span>{w.jobs_failed} failed</span>
+                      <span>Heartbeat {ago(w.heartbeat_at)}</span>
+                    </MetaLine>
+                  </ListRow>
+                ))}
+              </List>
+            ) : (
+              <Card>
+                <Empty title="No workers have run">
+                  Background jobs need <span className="mono">workgraph worker run</span> or <span className="mono">workgraph serve</span>.
+                </Empty>
+              </Card>
             )}
-          </Card>
+          </section>
         </div>
       </div>
-      <StartRunDialog open={starting} onClose={() => setStarting(false)} onStarted={(id) => setParams({ attempt: id })} />
+
+      {!desktop && (
+        <Modal title="Attempt" open={!!selected} onClose={() => select(null)} wide>
+          {selected && <AttemptPanel attemptId={selected} bare />}
+        </Modal>
+      )}
+      <StartRunDialog open={starting} onClose={() => setStarting(false)} onStarted={(id) => select(id)} />
     </div>
   );
 }
 
-function AttemptPanel({ attemptId }: { attemptId: string }) {
+function AttemptPanel({ attemptId, bare }: { attemptId: string; bare?: boolean }) {
   const client = useQueryClient();
   const run = useQuery({
     queryKey: ["run", attemptId],
@@ -158,75 +198,91 @@ function AttemptPanel({ attemptId }: { attemptId: string }) {
       void client.invalidateQueries({ queryKey: ["run"] });
     },
   });
-  if (!run.data) return <Card title="Attempt">{run.error ? <ErrorBanner error={run.error} /> : <Skeleton />}</Card>;
+  if (!run.data) {
+    const body = run.error ? <ErrorBanner error={run.error} /> : <Skeleton />;
+    return bare ? body : <Card title="Attempt">{body}</Card>;
+  }
   const a = run.data.attempt;
   const progress = run.data.recent_events.filter((e) => e.event_type.startsWith("attempt."));
-  return (
-    <Card
-      title={`Attempt #${a.number} · ${short(a.id)}`}
-      actions={
-        <>
-          {active && (
-            <Button size="sm" variant="danger" busy={act.isPending} onClick={() => act.mutate("cancel")}>
-              Cancel
-            </Button>
-          )}
-          {!active && a.status !== "succeeded" && (
-            <Button size="sm" busy={act.isPending} onClick={() => act.mutate("retry")}>
-              Retry
-            </Button>
-          )}
-          {!active && (
-            <Button size="sm" variant="ghost" busy={act.isPending} onClick={() => act.mutate("rerun")}>
-              Rerun
-            </Button>
-          )}
-        </>
-      }
-    >
+  const buttons = (
+    <>
+      {active && (
+        <Button size="sm" variant="danger" busy={act.isPending} onClick={() => act.mutate("cancel")}>
+          Cancel
+        </Button>
+      )}
+      {!active && a.status !== "succeeded" && (
+        <Button size="sm" busy={act.isPending} onClick={() => act.mutate("retry")}>
+          Retry
+        </Button>
+      )}
+      {!active && (
+        <Button size="sm" variant="ghost" busy={act.isPending} onClick={() => act.mutate("rerun")}>
+          Rerun
+        </Button>
+      )}
+    </>
+  );
+  const body = (
+    <div className="space-y-5">
+      {bare && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-semibold">Attempt {a.number}</span>
+          <span className="mono text-[13px] text-ink-3">{short(a.id)}</span>
+          <div className="ml-auto flex gap-1.5">{buttons}</div>
+        </div>
+      )}
       <ErrorBanner error={act.error} />
       <KeyValue
         items={[
           ["status", <StatusBadge status={a.status} />],
-          ["job", run.data.job_status ?? "—"],
+          ["job", run.data.job_status ? sentence(run.data.job_status) : "—"],
           ["agent", `${a.provider} (${a.adapter})`],
           ["model", a.model],
-          ["session", a.session_id],
+          ["session", a.session_id ? <span className="mono text-[12px]">{a.session_id}</span> : null],
           ["duration", ms(a.duration_ms)],
           ["queue wait", ms(a.queue_wait_ms)],
-          ["usage", Object.keys(a.usage).length ? `${num(a.usage.input_tokens)} in / ${num(a.usage.output_tokens)} out (${a.usage_source})` : "not measured"],
-          ["cost", a.cost_usd !== null ? `$${a.cost_usd.toFixed(4)}` : "not measured"],
+          ["usage", Object.keys(a.usage).length ? `${num(a.usage.input_tokens)} in, ${num(a.usage.output_tokens)} out (${a.usage_source})` : "Not measured"],
+          ["cost", a.cost_usd !== null ? `$${a.cost_usd.toFixed(4)}` : "Not measured"],
           ["exit", label(a.exit_reason)],
-          ["error", a.error ? <span className="text-rose-700">{a.error}</span> : null],
+          ["error", a.error ? <span className="text-danger">{a.error}</span> : null],
           ["summary", a.summary],
         ]}
       />
-      <div className="mt-3">
-        <div className="mb-1 text-[12px] font-semibold uppercase tracking-wide text-slate-500">Progress</div>
-        <ol className="max-h-48 space-y-0.5 overflow-y-auto text-[12px]" data-testid="attempt-progress">
+      <div>
+        <div className="mb-2 text-[14px] font-semibold">Progress</div>
+        <ol className="max-h-56 space-y-1.5 overflow-y-auto text-[13px]" data-testid="attempt-progress">
           {progress.length ? (
             progress.map((e) => (
-              <li key={e.id} className="flex gap-2">
-                <span className="mono shrink-0 text-slate-400">{e.event_type.replace("attempt.", "")}</span>
-                <span className="truncate">{String(e.data.message ?? e.data.to ?? e.data.status ?? "")}</span>
+              <li key={e.id} className="flex gap-3">
+                <span className="mono w-20 shrink-0 truncate text-[12px] text-ink-3">{e.event_type.replace("attempt.", "")}</span>
+                <span className="min-w-0 break-words">{String(e.data.message ?? e.data.to ?? e.data.status ?? "")}</span>
               </li>
             ))
           ) : (
-            <li className="text-slate-400">no progress events</li>
+            <li className="text-ink-3">No progress events</li>
           )}
         </ol>
       </div>
-      <div className="mt-3">
-        <div className="mb-1 text-[12px] font-semibold uppercase tracking-wide text-slate-500">
-          Agent log {log.data?.total_lines ? `(${log.data.total_lines} lines)` : ""}
+      <div>
+        <div className="mb-2 flex items-baseline justify-between text-[14px] font-semibold">
+          Agent log
+          {log.data?.total_lines ? <span className="text-[12px] font-normal text-ink-3">{log.data.total_lines} lines</span> : null}
         </div>
-        <pre className="mono max-h-64 overflow-auto rounded bg-slate-900 p-2 text-[11px] text-slate-100">
+        <pre className="mono max-h-80 overflow-auto rounded-xl bg-code p-3 text-[11.5px] leading-relaxed text-code-ink">
           {log.data?.available ? log.data.lines.join("\n") || "(empty)" : "(no log yet)"}
         </pre>
       </div>
-      <Link to={`/tasks/${a.task_id}`} className="mt-2 inline-block text-[12px] text-sky-700 hover:underline">
-        open task →
+      <Link to={`/tasks/${a.task_id}`} className="inline-flex min-h-10 items-center text-[14px] font-medium text-accent hover:underline">
+        Open task
       </Link>
+    </div>
+  );
+  return bare ? (
+    body
+  ) : (
+    <Card title={`Attempt ${a.number}`} actions={buttons}>
+      {body}
     </Card>
   );
 }
@@ -249,37 +305,31 @@ function StartRunDialog({ open, onClose, onStarted }: { open: boolean; onClose: 
   return (
     <Modal title="Start agent run" open={open} onClose={onClose}>
       <form
-        className="space-y-3"
+        className="space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
           start.mutate();
         }}
       >
-        {!meta.data?.execution_enabled && (
-          <div className="rounded bg-amber-50 px-2 py-1 text-[12px] text-amber-800">
-            Agent execution is disabled. Enable it under Settings (execution.enabled).
-          </div>
-        )}
+        {!meta.data?.execution_enabled && <Notice tone="warn">Agent execution is turned off. Turn it on under Settings, Execution and jobs.</Notice>}
         <Field label="Task key">
-          <input className={`${inputClass} mono`} value={task} onChange={(e) => setTask(e.target.value)} required placeholder="WG-12" />
+          <input className={`${inputClass} mono`} value={task} onChange={(e) => setTask(e.target.value)} required placeholder="WG-12" autoCapitalize="characters" />
         </Field>
         <Field label="Agent adapter">
-          <select className={inputClass} value={agent} onChange={(e) => setAgent(e.target.value)}>
-            <option value="">default</option>
+          <select className={`${selectClass} w-full`} value={agent} onChange={(e) => setAgent(e.target.value)}>
+            <option value="">Default</option>
             {meta.data?.agents.map((a) => (
               <option key={a}>{a}</option>
             ))}
           </select>
         </Field>
-        <Field label="Additional instructions (optional)">
-          <textarea className={`${inputClass} h-20`} value={instructions} onChange={(e) => setInstructions(e.target.value)} />
+        <Field label="Additional instructions" hint="Optional">
+          <textarea className={`${textareaClass} h-24`} value={instructions} onChange={(e) => setInstructions(e.target.value)} />
         </Field>
         <ErrorBanner error={start.error} />
-        <div className="flex justify-end">
-          <Button type="submit" variant="primary" busy={start.isPending}>
-            Queue run
-          </Button>
-        </div>
+        <Button type="submit" variant="primary" className="w-full md:ml-auto md:flex md:w-auto" busy={start.isPending}>
+          Queue run
+        </Button>
       </form>
     </Modal>
   );

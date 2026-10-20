@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { get, patch, post } from "../api/client";
 import { PRIORITIES, type Project, type Repository, type Task } from "../api/types";
-import { Button, ErrorBanner, Field, inputClass } from "../components/ui";
+import { Button, Checkbox, Chip, ErrorBanner, Field, inputClass, selectClass, textareaClass } from "../components/ui";
+import { sentence } from "../lib/format";
 import { useWorkspace } from "../hooks/workspace";
 
 const splitList = (value: string, sep: RegExp) =>
@@ -59,7 +60,7 @@ export function TaskForm({ task, onDone }: { task?: Task; onDone: (task: Task) =
 
   return (
     <form
-      className="space-y-3"
+      className="space-y-4"
       onSubmit={(e) => {
         e.preventDefault();
         mutation.mutate();
@@ -69,76 +70,82 @@ export function TaskForm({ task, onDone }: { task?: Task; onDone: (task: Task) =
       <Field label="Title">
         <input className={inputClass} value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={500} />
       </Field>
-      <Field label="Description (Markdown)">
-        <textarea className={`${inputClass} mono h-32`} value={description} onChange={(e) => setDescription(e.target.value)} />
+      <Field label="Description" hint="Markdown">
+        <textarea className={`${textareaClass} mono h-36 text-[14px]`} value={description} onChange={(e) => setDescription(e.target.value)} />
       </Field>
       <Field label="Acceptance criteria" hint="One per line">
-        <textarea className={`${inputClass} h-16`} value={criteria} onChange={(e) => setCriteria(e.target.value)} />
+        <textarea className={`${textareaClass} h-24`} value={criteria} onChange={(e) => setCriteria(e.target.value)} />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Priority">
-          <select className={inputClass} value={priority} onChange={(e) => setPriority(e.target.value)}>
+          <select className={`${selectClass} w-full`} value={priority} onChange={(e) => setPriority(e.target.value)}>
             {PRIORITIES.map((p) => (
-              <option key={p}>{p}</option>
+              <option key={p} value={p}>
+                {sentence(p)}
+              </option>
             ))}
           </select>
         </Field>
         <Field label="Tags" hint="Comma separated">
-          <input className={inputClass} value={tags} onChange={(e) => setTags(e.target.value)} />
+          <input className={inputClass} value={tags} onChange={(e) => setTags(e.target.value)} autoCapitalize="none" />
         </Field>
       </div>
       {!task && (
         <>
-          <div className="grid grid-cols-2 gap-3">
-            <fieldset>
-              <legend className="mb-0.5 text-[12px] font-medium text-slate-600">Projects</legend>
-              <div className="max-h-28 space-y-0.5 overflow-y-auto">
-                {projects.data?.map((p) => (
-                  <label key={p.id} className="flex items-center gap-1.5 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={selectedProjects.includes(p.slug)}
-                      onChange={() => toggle(selectedProjects, p.slug, setSelectedProjects)}
-                    />
-                    {p.name}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend className="mb-0.5 text-[12px] font-medium text-slate-600">Repositories</legend>
-              <div className="max-h-28 space-y-0.5 overflow-y-auto">
-                {repos.data?.map((r) => (
-                  <label key={r.id} className="flex items-center gap-1.5 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={selectedRepos.includes(r.name)}
-                      onChange={() => toggle(selectedRepos, r.name, setSelectedRepos)}
-                    />
-                    {r.name}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Parent task" hint="Key, e.g. WG-1">
-              <input className={inputClass} value={parent} onChange={(e) => setParent(e.target.value)} />
+          <Choices
+            legend="Projects"
+            options={(projects.data ?? []).map((p) => [p.slug, p.name])}
+            selected={selectedProjects}
+            onToggle={(v) => toggle(selectedProjects, v, setSelectedProjects)}
+          />
+          <Choices
+            legend="Repositories"
+            options={(repos.data ?? []).map((r) => [r.name, r.name])}
+            selected={selectedRepos}
+            onToggle={(v) => toggle(selectedRepos, v, setSelectedRepos)}
+          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Parent task" hint="Key, for example WG-1">
+              <input className={`${inputClass} mono`} value={parent} onChange={(e) => setParent(e.target.value)} autoCapitalize="characters" />
             </Field>
-            <Field label="Depends on" hint="Keys separated by commas">
-              <input className={inputClass} value={dependsOn} onChange={(e) => setDependsOn(e.target.value)} />
+            <Field label="Depends on" hint="Keys, separated by commas">
+              <input className={`${inputClass} mono`} value={dependsOn} onChange={(e) => setDependsOn(e.target.value)} autoCapitalize="characters" />
             </Field>
           </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={ready} onChange={(e) => setReady(e.target.checked)} /> Create as ready
-          </label>
+          <Checkbox label="Create as ready" checked={ready} onChange={setReady} />
         </>
       )}
-      <div className="flex justify-end gap-2">
-        <Button type="submit" variant="primary" busy={mutation.isPending}>
+      <div className="sticky bottom-0 -mx-5 border-t border-line bg-surface px-5 pt-3 md:static md:mx-0 md:flex md:justify-end md:border-0 md:px-0">
+        <Button type="submit" variant="primary" className="w-full md:w-auto" busy={mutation.isPending}>
           {task ? "Save changes" : "Create task"}
         </Button>
       </div>
     </form>
+  );
+}
+
+function Choices({
+  legend,
+  options,
+  selected,
+  onToggle,
+}: {
+  legend: string;
+  options: [string, string][];
+  selected: string[];
+  onToggle: (value: string) => void;
+}) {
+  if (!options.length) return null;
+  return (
+    <fieldset>
+      <legend className="mb-1.5 text-[14px] font-medium text-ink-2 lg:text-[13px]">{legend}</legend>
+      <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
+        {options.map(([value, text]) => (
+          <Chip key={value} active={selected.includes(value)} onClick={() => onToggle(value)}>
+            {text}
+          </Chip>
+        ))}
+      </div>
+    </fieldset>
   );
 }

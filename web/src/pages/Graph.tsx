@@ -1,9 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Background, Controls, MarkerType, MiniMap, Position, ReactFlow, type Edge, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import type { GraphNode } from "../api/types";
-import { Card, Empty, ErrorBanner, Loading, inputBase } from "../components/ui";
+import { Button, Checkbox, Empty, ErrorBanner, Loading, PageHeader, selectClass } from "../components/ui";
+import { useDesktop } from "../hooks/media";
+import { TONE_HEX, toneOf, type Tone } from "../lib/tone";
 import { useGraph, useProjectNames, useRepoNames } from "../hooks/lookups";
 import { useWorkspace } from "../hooks/workspace";
 import { label } from "../lib/format";
@@ -11,37 +13,13 @@ import { TASK_W, buildGroupedGraph, linkedIds, type GroupMode, type TaskGroup } 
 
 export { layeredLayout, linkedIds } from "../lib/graph";
 
-const STATUS_FILL: Record<string, string> = {
-  accepted: "#dcfce7",
-  failed: "#ffe4e6",
-  blocked: "#fef3c7",
-  running: "#ede9fe",
-  claimed: "#e0e7ff",
-  ready: "#e0f2fe",
-  awaiting_review: "#ccfbf1",
-  awaiting_verification: "#cffafe",
-  cancelled: "#f1f5f9",
-  backlog: "#f8fafc",
-};
-
-// darker shades of STATUS_FILL for the status bar on a collapsed group
-const STATUS_BAR: Record<string, string> = {
-  accepted: "#4ade80",
-  failed: "#fb7185",
-  blocked: "#fbbf24",
-  running: "#a78bfa",
-  claimed: "#818cf8",
-  ready: "#38bdf8",
-  awaiting_review: "#2dd4bf",
-  awaiting_verification: "#22d3ee",
-  cancelled: "#cbd5e1",
-  backlog: "#94a3b8",
-};
+// node fill: the status tone washed into the surface, so it works in both themes
+const fill = (status: string) => `color-mix(in oklab, var(--tone-${toneOf(status)}) 16%, var(--wg-surface))`;
 
 const GROUP_MODES: { value: GroupMode; label: string }[] = [
-  { value: "parent", label: "group: parent / batch, then area" },
-  { value: "area", label: "group: area tag" },
-  { value: "none", label: "no grouping" },
+  { value: "parent", label: "Group by parent or batch, then area" },
+  { value: "area", label: "Group by area tag" },
+  { value: "none", label: "No grouping" },
 ];
 
 function statusCounts(members: GraphNode[]): [string, number][] {
@@ -54,7 +32,7 @@ function GroupHeading({ group }: { group: TaskGroup }) {
   return (
     <div className="flex justify-between gap-2 text-[11px]">
       <span className="mono truncate font-semibold">{group.headKey ?? group.key}</span>
-      <span className="shrink-0 text-slate-500">{group.members.length} tasks</span>
+      <span className="shrink-0 text-ink-3">{group.members.length} tasks</span>
     </div>
   );
 }
@@ -68,15 +46,15 @@ function CollapsedGroup({ group }: { group: TaskGroup }) {
       <div className="line-clamp-2 text-[12px] font-medium leading-tight">{group.title}</div>
       <div className="mt-1 flex h-1.5 overflow-hidden rounded-full" aria-hidden>
         {counts.map(([status, n]) => (
-          <span key={status} style={{ flexGrow: n, background: STATUS_BAR[status] ?? "#94a3b8" }} />
+          <span key={status} className={`tone-${toneOf(status)}`} style={{ flexGrow: n, background: "var(--t)" }} />
         ))}
       </div>
-      <div className="mt-0.5 truncate text-[10px] text-slate-500">
+      <div className="mt-0.5 truncate text-[10px] text-ink-3">
         {counts
           .slice(0, 3)
           .map(([status, n]) => `${n} ${label(status)}`)
-          .join(" · ")}
-        {blocked > 0 && <span className="text-amber-600"> · {blocked} blocked</span>}
+          .join(", ")}
+        {blocked > 0 && <span className="text-warn">, {blocked} blocked</span>}
       </div>
     </div>
   );
@@ -113,6 +91,8 @@ export function GraphPage() {
     setParam("expand", [...keys].join(","));
   };
   const graph = useGraph(ws, project || undefined, repository || undefined);
+  const desktop = useDesktop();
+  const [optionsOpen, setOptionsOpen] = useState(false);
 
   const { nodes, edges, counts, groupKeys } = useMemo(() => {
     const data = graph.data ?? { nodes: [], edges: [] };
@@ -136,16 +116,17 @@ export function GraphPage() {
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
       data: {
+        tone: toneOf(n.status),
         label: (
           <div className="text-left">
             <div className="flex justify-between gap-2 text-[11px]">
               <span className="mono font-semibold">{n.key}</span>
-              <span className="text-slate-500">{label(n.status)}</span>
+              <span className="text-ink-3">{label(n.status)}</span>
             </div>
             <div className="line-clamp-2 text-[12px] leading-tight">{n.title}</div>
             {n.repository_ids.length > 0 && (
-              <div className="mt-0.5 truncate text-[10px] text-slate-500">
-                {n.repository_ids.map((r) => repoNames.get(r) ?? r.slice(0, 6)).join(" · ")}
+              <div className="mt-0.5 truncate text-[10px] text-ink-3">
+                {n.repository_ids.map((r) => repoNames.get(r) ?? r.slice(0, 6)).join(", ")}
               </div>
             )}
           </div>
@@ -153,8 +134,9 @@ export function GraphPage() {
       },
       style: {
         width: TASK_W,
-        background: STATUS_FILL[n.status] ?? "#fff",
-        border: n.blocked ? "2px solid #d97706" : "1px solid #cbd5e1",
+        background: fill(n.status),
+        color: "var(--wg-ink)",
+        border: n.blocked ? "2px solid var(--tone-blocked)" : "1px solid var(--wg-line-strong)",
         borderRadius: 8,
         padding: 6,
       },
@@ -175,11 +157,12 @@ export function GraphPage() {
           data: { label: <CollapsedGroup group={u.group} />, groupKey: u.group.key },
           style: {
             width: TASK_W,
-            background: "#fff",
-            border: "1px solid #64748b",
+            background: "var(--wg-surface)",
+            color: "var(--wg-ink)",
+            border: "1px solid var(--wg-ink-3)",
             borderRadius: 8,
             padding: 6,
-            boxShadow: "3px 3px 0 #cbd5e1, 6px 6px 0 #e2e8f0",
+            boxShadow: "3px 3px 0 var(--wg-line-strong), 6px 6px 0 var(--wg-line)",
             cursor: "pointer",
           },
         });
@@ -197,7 +180,7 @@ export function GraphPage() {
                 </div>
                 <button
                   type="button"
-                  className="nodrag shrink-0 rounded border border-slate-300 bg-white px-1.5 text-[11px] hover:bg-slate-100"
+                  className="nodrag shrink-0 rounded-md border border-line-strong bg-surface px-2 py-0.5 text-[11px] text-ink hover:bg-sunken"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleGroup(u.group.key);
@@ -212,8 +195,9 @@ export function GraphPage() {
           style: {
             width: u.size.w,
             height: u.size.h,
-            background: "rgba(241, 245, 249, 0.6)",
-            border: "1px dashed #64748b",
+            background: "color-mix(in oklab, var(--wg-sunken) 70%, transparent)",
+            color: "var(--wg-ink)",
+            border: "1px dashed var(--wg-ink-3)",
             borderRadius: 10,
             padding: "6px 10px",
           },
@@ -230,12 +214,13 @@ export function GraphPage() {
         label: e.count > 1 ? `${e.count} edges` : kindLabel,
         animated: e.kind === "depends_on" && e.count === 1 && blocked.has(e.target),
         style: {
-          stroke: e.kind === "depends_on" ? "#475569" : e.kind === "parent" ? "#94a3b8" : "#a855f7",
+          stroke: e.kind === "depends_on" ? "var(--wg-ink-2)" : e.kind === "parent" ? "var(--wg-ink-3)" : "var(--tone-active)",
           strokeDasharray: e.kind === "depends_on" ? undefined : "4 3",
           strokeWidth: e.count > 1 ? Math.min(1 + Math.log2(e.count), 5) : 1,
         },
         markerEnd: { type: MarkerType.ArrowClosed },
-        labelStyle: { fontSize: 10 },
+        labelStyle: { fontSize: 10, fill: "var(--wg-ink-2)" },
+        labelBgStyle: { fill: "var(--wg-surface)" },
       };
     });
     const groupCount = grouped.groups.filter((g) => g.members.length > 1).length;
@@ -247,21 +232,34 @@ export function GraphPage() {
     };
   }, [graph.data, openOnly, linkedOnly, showRelations, repoNames, groupMode, expandParam]);
 
+  const optionCount = [project, repository, linkedOnly, !openOnly, !showRelations, groupMode !== "parent"].filter(Boolean).length;
   return (
-    <div className="flex h-full flex-col gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold text-slate-900">Task graph</h1>
-        <div className="flex flex-wrap items-center gap-3 text-sm">
-          <select aria-label="Project filter" className={`${inputBase} w-44`} value={project} onChange={(e) => setParam("project", e.target.value)}>
-            <option value="">all projects</option>
+    <div className="flex flex-col">
+      <PageHeader
+        title="Task graph"
+        actions={
+          <Button
+            icon="filter"
+            aria-expanded={optionsOpen}
+            onClick={() => setOptionsOpen((v) => !v)}
+            className={`lg:hidden ${optionCount ? "border-accent text-accent" : ""}`}
+          >
+            {optionCount ? `View ${optionCount}` : "View"}
+          </Button>
+        }
+      />
+      <div className={`${optionsOpen ? "flex" : "hidden"} mb-3 flex-col gap-3 rounded-2xl border border-line bg-surface p-4 lg:flex lg:border-0 lg:bg-transparent lg:p-0`}>
+        <div className="grid gap-2 sm:grid-cols-3 lg:flex lg:flex-wrap lg:items-center">
+          <select aria-label="Project filter" className={`${selectClass} w-full lg:w-48`} value={project} onChange={(e) => setParam("project", e.target.value)}>
+            <option value="">All projects</option>
             {[...projects.values()].map((p) => (
               <option key={p.id} value={p.slug}>
                 {p.name}
               </option>
             ))}
           </select>
-          <select aria-label="Repository filter" className={`${inputBase} w-44`} value={repository} onChange={(e) => setParam("repo", e.target.value)}>
-            <option value="">all repositories</option>
+          <select aria-label="Repository filter" className={`${selectClass} w-full lg:w-48`} value={repository} onChange={(e) => setParam("repo", e.target.value)}>
+            <option value="">All repositories</option>
             {[...new Set(repoNames.values())].sort().map((name) => (
               <option key={name} value={name}>
                 {name}
@@ -270,7 +268,7 @@ export function GraphPage() {
           </select>
           <select
             aria-label="Grouping"
-            className={`${inputBase} w-60`}
+            className={`${selectClass} w-full lg:w-72`}
             value={groupMode}
             onChange={(e) => {
               setParams(
@@ -291,51 +289,45 @@ export function GraphPage() {
               </option>
             ))}
           </select>
-          {groupMode !== "none" && (
-            <>
-              <button type="button" className="text-xs text-slate-600 underline" onClick={() => setParam("expand", groupKeys.join(","))}>
-                expand all
-              </button>
-              <button type="button" className="text-xs text-slate-600 underline" onClick={() => setParam("expand", null)}>
-                collapse all
-              </button>
-            </>
-          )}
-          <label className="flex items-center gap-1">
-            <input type="checkbox" checked={openOnly} onChange={(e) => setParam("open", e.target.checked ? null : "0")} /> open only
-          </label>
-          <label className="flex items-center gap-1">
-            <input type="checkbox" checked={linkedOnly} onChange={(e) => setParam("linked", e.target.checked ? "1" : null)} /> linked only
-          </label>
-          <label className="flex items-center gap-1">
-            <input type="checkbox" checked={showRelations} onChange={(e) => setParam("relations", e.target.checked ? null : "0")} /> relations
-          </label>
         </div>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-0">
+          <Checkbox label="Open only" checked={openOnly} onChange={(v) => setParam("open", v ? null : "0")} />
+          <Checkbox label="Linked only" checked={linkedOnly} onChange={(v) => setParam("linked", v ? "1" : null)} />
+          <Checkbox label="Relations" checked={showRelations} onChange={(v) => setParam("relations", v ? null : "0")} />
+          {groupMode !== "none" && (
+            <div className="flex gap-1">
+              <Button size="sm" variant="ghost" onClick={() => setParam("expand", groupKeys.join(","))}>
+                Expand all
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setParam("expand", null)}>
+                Collapse all
+              </Button>
+            </div>
+          )}
+        </div>
+        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-ink-3">
+          <li>Solid arrow: dependency, pointing at the dependent task</li>
+          <li>Dashed: parent to child</li>
+          <li style={{ color: "var(--tone-active-ink)" }}>Dashed purple: relation</li>
+          <li className="text-warn">Orange border: blocked</li>
+          {groupMode !== "none" && <li>Stacked card: a group, tap to expand. Thick edge: merged edges</li>}
+          <li>Unlinked tasks sit in a grid below the layers</li>
+        </ul>
       </div>
-      <div className="flex flex-wrap gap-3 text-[11px] text-slate-500">
-        <span>— dependency (arrow points to the dependent task)</span>
-        <span>- - parent → child</span>
-        <span className="text-purple-600">- - relation</span>
-        <span className="text-amber-600">orange border = blocked</span>
-        {groupMode !== "none" && <span>stacked card = group, click to expand · thick edge = merged edges</span>}
-        <span>unlinked tasks are gridded below the layers</span>
-        {graph.data && (
-          <span className="ml-auto" data-testid="graph-counts">
-            {counts.tasks} tasks · {counts.linked} linked · {counts.edges} edges
-            {groupMode !== "none" && ` · ${counts.groups} groups`}
-          </span>
-        )}
-      </div>
+      {graph.data && (
+        <div className="mb-2 px-1 text-[13px] text-ink-3 tnum" data-testid="graph-counts">
+          {counts.tasks} tasks · {counts.linked} linked · {counts.edges} edges
+          {groupMode !== "none" && ` · ${counts.groups} groups`}
+        </div>
+      )}
       <ErrorBanner error={graph.error} />
-      <Card className="min-h-[520px] flex-1" bodyClass="h-full min-h-[520px] p-0">
+      <div className="-mx-4 overflow-hidden border-y border-line bg-surface lg:mx-0 lg:rounded-2xl lg:border">
         {graph.isLoading ? (
           <Loading />
         ) : nodes.length === 0 ? (
-          <div className="p-4">
-            <Empty title="No tasks to show" />
-          </div>
+          <Empty title="No tasks to show">Loosen the view options to see more.</Empty>
         ) : (
-          <div className="h-[calc(100vh-220px)] min-h-[520px]" data-testid="task-graph">
+          <div className="h-[calc(100dvh-var(--tabbar-h)-13rem)] min-h-[420px] lg:h-[calc(100dvh-16rem)] lg:min-h-[520px]" data-testid="task-graph">
             <ReactFlow
               // remount on filter changes so the view is fitted to what is now shown
               key={`${project}|${repository}|${openOnly}|${linkedOnly}|${showRelations}|${groupMode}`}
@@ -343,7 +335,8 @@ export function GraphPage() {
               edges={edges}
               fitView
               minZoom={0.02}
-              nodesDraggable
+              nodesDraggable={desktop}
+              colorMode="system"
               onNodeClick={(_, node) => {
                 const groupKey = (node.data as { groupKey?: string }).groupKey;
                 if (groupKey) {
@@ -355,13 +348,21 @@ export function GraphPage() {
                 if (n) navigate(`/tasks/${n.key}`);
               }}
             >
-              <Background gap={16} color="#e2e8f0" />
-              <Controls />
-              <MiniMap pannable zoomable nodeColor={(node) => String((node.style as { background?: string } | undefined)?.background ?? "#cbd5e1")} />
+              <Background gap={16} color="var(--wg-line)" />
+              <Controls showInteractive={false} />
+              {desktop && (
+                <MiniMap
+                  pannable
+                  zoomable
+                  bgColor="var(--wg-sunken)"
+                  maskColor="color-mix(in oklab, var(--wg-canvas) 60%, transparent)"
+                  nodeColor={(node) => TONE_HEX[((node.data as { tone?: Tone }).tone ?? "idle") as Tone]}
+                />
+              )}
             </ReactFlow>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

@@ -5,45 +5,18 @@ import { useStack, useStackHistory, useTaskStacks } from "../hooks/stacks";
 import { useWorkspace } from "../hooks/workspace";
 import { label } from "../lib/format";
 import { describeStackEvent, type TimelineEntry, type Tone } from "../lib/stacks";
+import { STRUCK, toneOf } from "../lib/tone";
 
-const STACK_STATUS_COLORS: Record<StackStatus, string> = {
-  open: "bg-slate-100 text-slate-700",
-  integrating: "bg-indigo-100 text-indigo-800",
-  verifying: "bg-cyan-100 text-cyan-800",
-  verified: "bg-teal-100 text-teal-800",
-  landed: "bg-emerald-100 text-emerald-800",
-  abandoned: "bg-slate-200 text-slate-500 line-through",
-};
-
-const ITEM_STATE_COLORS: Record<StackItemState, string> = {
-  pending: "bg-slate-100 text-slate-600",
-  ready: "bg-sky-100 text-sky-800",
-  merged: "bg-indigo-100 text-indigo-800",
-  conflict: "bg-amber-100 text-amber-800",
-  ejected: "bg-rose-100 text-rose-800",
-  verified: "bg-emerald-100 text-emerald-800",
-};
-
-const TONE_DOT: Record<Tone, string> = {
-  ok: "bg-emerald-500",
-  fail: "bg-rose-500",
-  warn: "bg-amber-500",
-  info: "bg-slate-400",
-};
-
-const TONE_TEXT: Record<Tone, string> = {
-  ok: "text-emerald-800",
-  fail: "text-rose-800",
-  warn: "text-amber-800",
-  info: "text-slate-700",
+const TONE_CLASS: Record<Tone, string> = {
+  ok: "tone-done",
+  fail: "tone-failed",
+  warn: "tone-blocked",
+  info: "tone-idle",
 };
 
 export function StackStatusBadge({ status }: { status: StackStatus }) {
   return (
-    <span
-      data-testid="stack-status"
-      className={`inline-block whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] font-medium ${STACK_STATUS_COLORS[status]}`}
-    >
+    <span data-testid="stack-status" className={`badge tone-${toneOf(status)} ${STRUCK.has(status) ? "is-struck" : ""}`}>
       {label(status)}
     </span>
   );
@@ -51,10 +24,7 @@ export function StackStatusBadge({ status }: { status: StackStatus }) {
 
 export function ItemStateBadge({ state, count }: { state: StackItemState; count?: number }) {
   return (
-    <span
-      data-testid={`state-${state}`}
-      className={`inline-block whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] font-medium ${ITEM_STATE_COLORS[state]}`}
-    >
+    <span data-testid={`state-${state}`} className={`badge tone-${toneOf(state)} ${count === 0 ? "opacity-50" : ""}`}>
       {count === undefined ? label(state) : `${count} ${label(state)}`}
     </span>
   );
@@ -68,14 +38,14 @@ export function TaskStackLinks({ taskKey }: { taskKey: string }) {
   const items = memberOf.data ?? [];
   if (!parentOf.data && items.length === 0) return null;
   return (
-    <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[12px] text-slate-600" data-testid="task-stack-links">
+    <div className="mt-3 flex flex-wrap items-center gap-2 text-[14px]" data-testid="task-stack-links">
       {parentOf.data && (
-        <Link className="font-medium text-sky-700 hover:underline" to={`/stacks/${parentOf.data.parent_key}`}>
+        <Link className="inline-flex min-h-9 items-center gap-2 rounded-full border border-line bg-surface px-3 font-medium text-ink hover:border-accent" to={`/stacks/${parentOf.data.parent_key}`}>
           Stack for {parentOf.data.parent_key} <StackStatusBadge status={parentOf.data.status} />
         </Link>
       )}
       {items.map((stack) => (
-        <Link key={stack.id} className="font-medium text-sky-700 hover:underline" to={`/stacks/${stack.parent_key}`}>
+        <Link key={stack.id} className="inline-flex min-h-9 items-center gap-2 rounded-full border border-line bg-surface px-3 font-medium text-ink hover:border-accent" to={`/stacks/${stack.parent_key}`}>
           In stack {stack.parent_key} <StackStatusBadge status={stack.status} />
         </Link>
       ))}
@@ -91,7 +61,7 @@ export function StackTimeline({ ws, ref }: { ws: string; ref: string }) {
   if (!history.data.length) return <Empty title="No events yet" />;
   const rows = history.data.map((event: EventOut) => ({ event, entry: describeStackEvent(event) }));
   return (
-    <ol className="relative space-y-3 border-l border-slate-200 pl-4" data-testid="stack-timeline">
+    <ol className="relative ml-1 space-y-4 border-l-2 border-line pl-5" data-testid="stack-timeline">
       {rows.map(({ event, entry }) => (
         <TimelineRow key={event.seq} event={event} entry={entry} />
       ))}
@@ -102,19 +72,19 @@ export function StackTimeline({ ws, ref }: { ws: string; ref: string }) {
 function TimelineRow({ event, entry }: { event: EventOut; entry: TimelineEntry }) {
   return (
     <li
-      className={`relative ${entry.culprit ? "rounded-md bg-rose-50 px-2 py-1 ring-1 ring-rose-200" : ""}`}
+      className={`relative ${entry.culprit ? "-ml-2 rounded-xl bg-danger-soft px-2 py-2" : ""}`}
       data-testid={entry.run ? `timeline-${entry.run.kind}-${entry.run.passed ? "passed" : "failed"}` : undefined}
       data-culprit={entry.culprit ? "true" : undefined}
     >
-      <span className={`absolute -left-[21px] top-1.5 h-2 w-2 rounded-full ${TONE_DOT[entry.tone]}`} />
-      <div className={`flex flex-wrap items-baseline gap-2 text-[13px] font-medium ${TONE_TEXT[entry.tone]}`}>
+      <span className={`dot absolute top-1.5 ring-4 ring-canvas ${entry.culprit ? "-left-[18px]" : "-left-[26px]"} ${TONE_CLASS[entry.tone]}`} />
+      <div className={`flex flex-wrap items-baseline gap-2 text-[14px] font-medium ${entry.tone === "info" ? "text-ink" : TONE_CLASS[entry.tone]}`} style={entry.tone === "info" ? undefined : { color: "var(--t-ink)" }}>
         <span>{entry.title}</span>
-        {entry.culprit && <span className="text-[11px] font-semibold uppercase text-rose-700">culprit</span>}
+        {entry.culprit && <span className="text-[12px] font-semibold text-danger">Culprit</span>}
       </div>
-      <div className="flex flex-wrap items-baseline gap-2 text-[12px] text-slate-500">
-        <span className="mono">{event.event_type}</span>
-        {entry.detail && <span>{entry.detail}</span>}
-        <span className="mono text-slate-400">#{event.seq}</span>
+      <div className="mt-0.5 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-[13px] text-ink-3">
+        {entry.detail && <span className="text-ink-2">{entry.detail}</span>}
+        <span className="mono text-[12px]">{event.event_type}</span>
+        <span className="mono text-[12px]">#{event.seq}</span>
       </div>
     </li>
   );

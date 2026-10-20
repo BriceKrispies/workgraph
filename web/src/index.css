@@ -1,25 +1,205 @@
 @import "tailwindcss";
+@import "@fontsource-variable/ibm-plex-sans/wght.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
-  --color-ink: #0f172a;
-  --color-accent: #0ea5e9;
+/* Colours are runtime variables so one set of utilities serves the light and dark themes. */
+@theme inline {
+  --font-sans: "IBM Plex Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  --color-canvas: var(--wg-canvas);
+  --color-surface: var(--wg-surface);
+  --color-sunken: var(--wg-sunken);
+  --color-ink: var(--wg-ink);
+  --color-ink-2: var(--wg-ink-2);
+  --color-ink-3: var(--wg-ink-3);
+  --color-line: var(--wg-line);
+  --color-line-strong: var(--wg-line-strong);
+  --color-accent: var(--wg-accent);
+  --color-accent-ink: var(--wg-accent-ink);
+  --color-accent-soft: var(--wg-accent-soft);
+  --color-danger: var(--wg-danger);
+  --color-danger-soft: var(--wg-danger-soft);
+  --color-ok: var(--wg-ok);
+  --color-warn: var(--wg-warn);
+  --color-warn-soft: var(--wg-warn-soft);
+  --color-code: var(--wg-code);
+  --color-code-ink: var(--wg-code-ink);
 }
 
-html, body, #root { height: 100%; }
-body { @apply bg-slate-50 text-slate-800 antialiased; font-size: 13.5px; }
-:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
-.mono { font-family: var(--font-mono); }
+:root {
+  color-scheme: light dark;
+  --wg-canvas: #f2f4f7;
+  --wg-surface: #ffffff;
+  --wg-sunken: #f6f7f9;
+  --wg-ink: #151b28;
+  --wg-ink-2: #4a5468;
+  --wg-ink-3: #7a8396;
+  --wg-line: #e2e6ec;
+  --wg-line-strong: #c8ced8;
+  --wg-accent: #0e6e87;
+  --wg-accent-ink: #ffffff;
+  --wg-accent-soft: #e0f0f4;
+  --wg-danger: #c2304a;
+  --wg-danger-soft: #fdecef;
+  --wg-ok: #1e8a5a;
+  --wg-warn: #a86400;
+  --wg-warn-soft: #fff4e0;
+  --wg-code: #151b28;
+  --wg-code-ink: #dfe5ee;
+
+  /* Lifecycle tones: --t is the strong mark (rails, dots, bars), --t-ink the readable text. */
+  --tone-idle: #94a0b2;       --tone-idle-ink: #4a5468;
+  --tone-ready: #1f8fd1;      --tone-ready-ink: #0b5f8f;
+  --tone-blocked: #d99000;    --tone-blocked-ink: #8a5300;
+  --tone-claimed: #5965e0;    --tone-claimed-ink: #3a43a8;
+  --tone-active: #8b5cf6;     --tone-active-ink: #6232c4;
+  --tone-review: #0aa2a8;     --tone-review-ink: #0a6f73;
+  --tone-done: #1e9e62;       --tone-done-ink: #146b43;
+  --tone-failed: #e0405c;     --tone-failed-ink: #a8233b;
+
+  --tabbar-h: 0px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --wg-canvas: #0d1118;
+    --wg-surface: #151b25;
+    --wg-sunken: #11161e;
+    --wg-ink: #e8ecf2;
+    --wg-ink-2: #a9b2c2;
+    --wg-ink-3: #7c8698;
+    --wg-line: #252d3a;
+    --wg-line-strong: #343e4e;
+    --wg-accent: #56b9d2;
+    --wg-accent-ink: #062029;
+    --wg-accent-soft: #11303a;
+    --wg-danger: #f0788c;
+    --wg-danger-soft: #3a1820;
+    --wg-ok: #4cc38a;
+    --wg-warn: #e3a33b;
+    --wg-warn-soft: #33260f;
+    --wg-code: #0a0e14;
+    --wg-code-ink: #d6dde8;
+
+    --tone-idle: #6b7689;       --tone-idle-ink: #a9b2c2;
+    --tone-ready: #45aee8;      --tone-ready-ink: #8fd0f5;
+    --tone-blocked: #e8a530;    --tone-blocked-ink: #f3c878;
+    --tone-claimed: #8790f0;    --tone-claimed-ink: #b8bdf8;
+    --tone-active: #a585f8;     --tone-active-ink: #cbb7fb;
+    --tone-review: #2fc4c9;     --tone-review-ink: #86e2e5;
+    --tone-done: #3fc283;       --tone-done-ink: #8adfb5;
+    --tone-failed: #f06b82;     --tone-failed-ink: #f7a9b6;
+  }
+}
+
+/* Below the desktop breakpoint navigation lives in a bottom tab bar. */
+@media (max-width: 1023.98px) {
+  :root { --tabbar-h: calc(3.75rem + var(--safe-bottom)); }
+  /* a pinned ActionBar sits on top of the tab bar; keep the page end clear of both */
+  .has-action-bar main { padding-bottom: calc(var(--tabbar-h) + 6rem); }
+}
+
+html, body, #root { min-height: 100%; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  @apply bg-canvas text-ink antialiased;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (min-width: 1024px) { body { font-size: 14px; } }
+
+:focus-visible { outline: 2px solid var(--wg-accent); outline-offset: 2px; border-radius: 4px; }
+.mono { font-family: var(--font-mono); font-feature-settings: "zero" 1; }
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* 16px form text keeps iOS from zooming the page when a field takes focus. */
+input, select, textarea { font-size: 16px; }
+@media (min-width: 1024px) { input, select, textarea { font-size: 14px; } }
+
+.scroll-x { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.scroll-x::-webkit-scrollbar { display: none; }
+.pb-safe { padding-bottom: var(--safe-bottom); }
+
+/* Tone classes set --t/--t-ink; .badge, .rail and .dot read them. */
+.tone-idle { --t: var(--tone-idle); --t-ink: var(--tone-idle-ink); }
+.tone-ready { --t: var(--tone-ready); --t-ink: var(--tone-ready-ink); }
+.tone-blocked { --t: var(--tone-blocked); --t-ink: var(--tone-blocked-ink); }
+.tone-claimed { --t: var(--tone-claimed); --t-ink: var(--tone-claimed-ink); }
+.tone-active { --t: var(--tone-active); --t-ink: var(--tone-active-ink); }
+.tone-review { --t: var(--tone-review); --t-ink: var(--tone-review-ink); }
+.tone-done { --t: var(--tone-done); --t-ink: var(--tone-done-ink); }
+.tone-failed { --t: var(--tone-failed); --t-ink: var(--tone-failed-ink); }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  white-space: nowrap; border-radius: 999px;
+  padding: 0.125rem 0.55rem 0.125rem 0.45rem;
+  font-size: 12px; font-weight: 500; line-height: 1.35;
+  color: var(--t-ink);
+  background: color-mix(in oklab, var(--t) 14%, transparent);
+}
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: var(--t); flex: none; }
+.badge.is-struck { text-decoration: line-through; }
+.rail { box-shadow: inset 3px 0 0 var(--t); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 999px; background: var(--t); flex: none; }
+
+@keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+.anim-sheet { animation: sheet-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.anim-fade { animation: fade-in 160ms ease-out; }
+@media (min-width: 768px) { .anim-sheet { animation: pop-in 180ms ease-out; } }
+@media (prefers-reduced-motion: reduce) {
+  .anim-sheet, .anim-fade { animation: none; }
+  * { scroll-behavior: auto !important; }
+}
+
+.markdown { overflow-wrap: anywhere; }
 .markdown h1 { @apply text-lg font-semibold mt-3 mb-1; }
 .markdown h2 { @apply text-base font-semibold mt-3 mb-1; }
 .markdown h3 { @apply font-semibold mt-2 mb-1; }
-.markdown p { @apply my-1.5 leading-relaxed; }
-.markdown ul { @apply list-disc pl-5 my-1.5; }
-.markdown ol { @apply list-decimal pl-5 my-1.5; }
-.markdown code { font-family: var(--font-mono); @apply bg-slate-100 px-1 rounded text-[12px]; }
-.markdown pre { font-family: var(--font-mono); @apply bg-slate-900 text-slate-100 p-3 rounded my-2 overflow-x-auto text-[12px]; }
-.markdown pre code { @apply bg-transparent p-0; }
-.markdown a { @apply text-sky-700 underline; }
-.markdown blockquote { @apply border-l-2 border-slate-300 pl-3 text-slate-600; }
+.markdown p { @apply my-2 leading-relaxed; }
+.markdown ul { @apply list-disc pl-5 my-2; }
+.markdown ol { @apply list-decimal pl-5 my-2; }
+.markdown li { @apply my-0.5; }
+.markdown code { font-family: var(--font-mono); @apply bg-sunken border border-line px-1 rounded text-[0.85em]; }
+.markdown pre { font-family: var(--font-mono); @apply bg-code text-code-ink p-3 rounded-lg my-2 overflow-x-auto text-[12px]; }
+.markdown pre code { @apply bg-transparent border-0 p-0; }
+.markdown a { @apply text-accent underline underline-offset-2; }
+.markdown blockquote { @apply border-l-2 border-line-strong pl-3 text-ink-2; }
+
 .react-flow__attribution { display: none; }
+.react-flow__controls { box-shadow: none; }
+.react-flow__controls-button { width: 36px; height: 36px; background: var(--wg-surface); border-color: var(--wg-line); fill: var(--wg-ink); }
+.react-flow__controls-button svg { fill: var(--wg-ink); }
+
+/* Task rows: stacked card on phones, one aligned line on desktop. */
+.task-row {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  grid-template-areas: "key status prio time" "title title title title" "meta meta meta meta";
+  column-gap: 0.625rem;
+  align-items: center;
+}
+.task-row > .a-key { grid-area: key; }
+.task-row > .a-status { grid-area: status; }
+.task-row > .a-prio { grid-area: prio; justify-self: end; }
+.task-row > .a-time { grid-area: time; }
+.task-row > .a-title { grid-area: title; margin-top: 0.3rem; }
+.task-row > .a-meta { grid-area: meta; }
+@media (min-width: 1024px) {
+  .task-row {
+    grid-template-columns: 6.5rem minmax(0, 1fr) 11rem 5.5rem 4.5rem;
+    grid-template-areas: "key title status prio time" "key meta status prio time";
+    column-gap: 1rem;
+  }
+  .task-row > .a-key { align-self: start; padding-top: 0.15rem; }
+  .task-row > .a-title { margin-top: 0; }
+  .task-row > .a-prio { justify-self: start; }
+  .task-row > .a-time { justify-self: end; }
+}

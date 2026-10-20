@@ -6,23 +6,31 @@ import type { AnalyticsResult, Repository, RepositoryStatus } from "../api/types
 import {
   Button,
   Card,
+  Checkbox,
+  Diff,
   Empty,
   ErrorBanner,
   Field,
   KeyValue,
+  List,
+  ListRow,
   Loading,
+  Meta,
   Modal,
+  Notice,
+  PageHeader,
+  SectionTitle,
   Skeleton,
   StatusBadge,
-  Table,
   Tag,
   inputClass,
-  td,
 } from "../components/ui";
 import { CategoryBars } from "../features/charts";
 import { useProjectNames } from "../hooks/lookups";
+import { useDesktop } from "../hooks/media";
 import { useWorkspace } from "../hooks/workspace";
 import { ago, short } from "../lib/format";
+import { toneOf } from "../lib/tone";
 
 interface CommitRow {
   id: string;
@@ -82,70 +90,77 @@ export function RepositoriesPage() {
     },
   });
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900">Repositories</h1>
-        <Button variant="primary" onClick={() => setRegistering(true)}>
-          Register repository
-        </Button>
-      </div>
+    <div>
+      <PageHeader
+        title="Repositories"
+        actions={
+          <Button variant="primary" icon="plus" onClick={() => setRegistering(true)}>
+            Register
+          </Button>
+        }
+      />
       <ErrorBanner error={repos.error} />
-      <Card bodyClass="p-0">
-        {!repos.data ? (
+      {!repos.data ? (
+        <Card bodyClass="p-0">
           <Skeleton />
-        ) : repos.data.length === 0 ? (
-          <div className="p-4">
-            <Empty title="No repositories registered">Register a local Git checkout to start ingesting history.</Empty>
-          </div>
-        ) : (
-          <Table head={["Name", "Health", "Access", "Default branch", "Checkouts", "Projects", "Last scan"]} testId="repositories">
-            {repos.data.map((r) => (
-              <tr key={r.id}>
-                <td className={td}>
-                  <Link to={`/repositories/${r.name}`} className="font-medium text-sky-700 hover:underline">
-                    {r.name}
-                  </Link>
-                  <div className="mono truncate text-[11px] text-slate-400">{r.checkouts[0]?.path}</div>
-                </td>
-                <td className={td}>
-                  <StatusBadge status={r.health_status} />
-                </td>
-                <td className={td}>{r.access_mode === "read_only" ? "read-only" : "read/write"}</td>
-                <td className={td}>{r.default_branch ?? "—"}</td>
-                <td className={td}>{r.checkouts.length}</td>
-                <td className={td}>
-                  <div className="flex flex-wrap gap-1">
+        </Card>
+      ) : repos.data.length === 0 ? (
+        <Card>
+          <Empty
+            title="No repositories registered"
+            action={
+              <Button variant="primary" onClick={() => setRegistering(true)}>
+                Register repository
+              </Button>
+            }
+          >
+            Register a local Git checkout to start ingesting its history.
+          </Empty>
+        </Card>
+      ) : (
+        <List testId="repositories">
+          {repos.data.map((r) => (
+            <ListRow key={r.id} to={`/repositories/${r.name}`} tone={toneOf(r.health_status)}>
+              <div className="flex items-center gap-2">
+                <span className="truncate font-semibold">{r.name}</span>
+                <StatusBadge status={r.health_status} />
+              </div>
+              {r.checkouts[0] && <div className="mono mt-0.5 truncate text-[12px] text-ink-3">{r.checkouts[0].path}</div>}
+              <Meta>
+                <span>{r.default_branch ?? "No default branch"}</span>
+                <span>{r.access_mode === "read_only" ? "Read-only" : "Read and write"}</span>
+                <span>
+                  {r.checkouts.length} {r.checkouts.length === 1 ? "checkout" : "checkouts"}
+                </span>
+                <span>{r.last_scanned_at ? `Scanned ${ago(r.last_scanned_at)}` : "Never scanned"}</span>
+                {r.project_ids.length > 0 && (
+                  <span className="flex flex-wrap gap-1">
                     {r.project_ids.map((p) => (
                       <Tag key={p}>{projects.get(p)?.slug ?? p.slice(0, 6)}</Tag>
                     ))}
-                  </div>
-                </td>
-                <td className={`${td} text-slate-500`}>{ago(r.last_scanned_at) || "never"}</td>
-              </tr>
-            ))}
-          </Table>
-        )}
-      </Card>
+                  </span>
+                )}
+              </Meta>
+            </ListRow>
+          ))}
+        </List>
+      )}
       <Modal title="Register repository" open={registering} onClose={() => setRegistering(false)}>
         <form
-          className="space-y-3"
+          className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
             register.mutate();
           }}
         >
-          <Field label="Local path" hint="An existing Git working tree. Files are never modified or deleted.">
-            <input className={`${inputClass} mono`} value={path} onChange={(e) => setPath(e.target.value)} required />
+          <Field label="Local path" hint="An existing Git working tree. Workgraph never modifies or deletes its files.">
+            <input className={`${inputClass} mono`} value={path} onChange={(e) => setPath(e.target.value)} required autoCapitalize="none" autoCorrect="off" />
           </Field>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={readOnly} onChange={(e) => setReadOnly(e.target.checked)} /> Read-only for agents
-          </label>
+          <Checkbox label="Read-only for agents" checked={readOnly} onChange={setReadOnly} />
           <ErrorBanner error={register.error} />
-          <div className="flex justify-end">
-            <Button type="submit" variant="primary" busy={register.isPending}>
-              Register
-            </Button>
-          </div>
+          <Button type="submit" variant="primary" className="w-full md:ml-auto md:flex md:w-auto" busy={register.isPending}>
+            Register
+          </Button>
         </form>
       </Modal>
     </div>
@@ -155,6 +170,7 @@ export function RepositoriesPage() {
 export function RepositoryDetailPage() {
   const { ref = "" } = useParams();
   const { ws } = useWorkspace();
+  const desktop = useDesktop();
   const client = useQueryClient();
   const [params, setParams] = useSearchParams();
   const sha = params.get("sha");
@@ -167,11 +183,6 @@ export function RepositoryDetailPage() {
   const commits = useQuery({
     queryKey: ["repositories", ws, ref, "commits", linkedOnly],
     queryFn: () => get<{ total: number; items: CommitRow[] }>(`/ws/${ws}/repositories/${ref}/commits`, { limit: 100, linked_only: linkedOnly }),
-  });
-  const detail = useQuery({
-    queryKey: ["repositories", ws, ref, "commit", sha],
-    queryFn: () => get<CommitDetail>(`/ws/${ws}/repositories/${ref}/commits/${sha}`),
-    enabled: !!sha,
   });
   const hotspots = useQuery({
     queryKey: ["analytics", ws, "module_hotspots", ref],
@@ -187,192 +198,219 @@ export function RepositoryDetailPage() {
   const r = repo.data;
   const s = status.data;
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <div className="text-sm text-slate-500">
-            <Link to="/repositories" className="hover:underline">
-              Repositories
-            </Link>{" "}
-            / {r.name}
-          </div>
-          <h1 className="flex items-center gap-2 text-xl font-semibold text-slate-900">
-            {r.name} <StatusBadge status={r.health_status} />
-          </h1>
-        </div>
-        <div className="flex gap-1.5">
-          <Button busy={refresh.isPending} onClick={() => refresh.mutate()}>
+    <div>
+      <PageHeader back={{ to: "/repositories", label: "Repositories" }} eyebrow={<StatusBadge status={r.health_status} />} title={r.name}>
+        <div className="flex gap-2 [&>*]:flex-1 sm:[&>*]:flex-none">
+          <Button busy={refresh.isPending} icon="refresh" onClick={() => refresh.mutate()}>
             Health check
           </Button>
           <Button busy={sync.isPending} onClick={() => sync.mutate()}>
             Sync commits
           </Button>
         </div>
-      </div>
-      <ErrorBanner error={refresh.error ?? sync.error} />
-      {sync.data !== undefined && (
-        <div className="text-[12px] text-slate-500">Sync result: {JSON.stringify(sync.data)}</div>
-      )}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card title="Identity">
-          <KeyValue
-            items={[
-              ["id", <span className="mono text-[11px]">{r.id}</span>],
-              ["fingerprint", r.identity_fingerprint ? <span className="mono text-[11px]">{short(r.identity_fingerprint, 16)}</span> : "no commits"],
-              ["default branch", r.default_branch],
-              ["tracked", r.tracked_branches.join(", ")],
-              ["access", r.access_mode],
-              ["shallow", r.is_shallow ? "yes" : "no"],
-              ["last scanned", ago(r.last_scanned_at)],
-              ["remotes", r.remotes.length ? r.remotes.map((m) => `${m.name}: ${m.url}`).join(", ") : "none"],
-            ]}
-          />
-        </Card>
-        <Card title="Working tree">
-          <ErrorBanner error={status.error} />
-          {s ? (
-            s.available ? (
-              <KeyValue
-                items={[
-                  ["path", <span className="mono text-[11px]">{s.checkout_path}</span>],
-                  ["branch", s.branch ?? "(detached)"],
-                  ["head", <span className="mono text-[11px]">{short(s.head, 12)}</span>],
-                  ["ahead / behind", s.ahead !== null ? `${s.ahead} / ${s.behind}` : null],
-                  ["staged", s.staged.length],
-                  ["unstaged", s.unstaged.length],
-                  ["untracked", s.untracked.length],
-                ]}
-              />
+      </PageHeader>
+      {/* phones put the commits first; the repository facts follow */}
+      <div className="flex flex-col gap-4">
+        <ErrorBanner error={refresh.error ?? sync.error} />
+        {sync.data !== undefined && (
+          <Notice>
+            Sync result: <span className="mono break-all text-[12px]">{JSON.stringify(sync.data)}</span>
+          </Notice>
+        )}
+        <div className="order-3 grid gap-4 lg:order-none lg:grid-cols-3">
+          <Card title="Identity">
+            <KeyValue
+              items={[
+                ["id", <span className="mono text-[12px]">{r.id}</span>],
+                ["fingerprint", r.identity_fingerprint ? <span className="mono text-[12px]">{short(r.identity_fingerprint, 16)}</span> : "No commits"],
+                ["default branch", r.default_branch],
+                ["tracked", r.tracked_branches.join(", ")],
+                ["access", r.access_mode === "read_only" ? "Read-only" : "Read and write"],
+                ["shallow", r.is_shallow ? "Yes" : "No"],
+                ["last scanned", ago(r.last_scanned_at)],
+                ["remotes", r.remotes.length ? r.remotes.map((m) => `${m.name}: ${m.url}`).join(", ") : "None"],
+              ]}
+            />
+          </Card>
+          <Card title="Working tree">
+            <ErrorBanner error={status.error} />
+            {s ? (
+              s.available ? (
+                <KeyValue
+                  items={[
+                    ["path", <span className="mono break-all text-[12px]">{s.checkout_path}</span>],
+                    ["branch", s.branch ?? "(detached)"],
+                    ["head", <span className="mono text-[12px]">{short(s.head, 12)}</span>],
+                    ["ahead, behind", s.ahead !== null ? `${s.ahead}, ${s.behind}` : null],
+                    ["staged", s.staged.length],
+                    ["unstaged", s.unstaged.length],
+                    ["untracked", s.untracked.length],
+                  ]}
+                />
+              ) : (
+                <Empty title="Checkout unavailable">{s.error}</Empty>
+              )
             ) : (
-              <Empty title="Checkout unavailable">{s.error}</Empty>
-            )
-          ) : (
-            <Skeleton />
-          )}
-        </Card>
-        <Card title="Checkouts">
-          <ul className="space-y-1.5">
-            {r.checkouts.map((c) => (
-              <li key={c.id} className="text-[12px]">
-                <div className="mono break-all">{c.path}</div>
-                <div className="text-slate-500">
-                  {c.kind} {c.is_primary && "· primary"} · {c.available ? "available" : <span className="text-rose-600">unavailable</span>}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
-      {sha && (
-        <Card
-          title={`Commit ${short(sha, 10)}`}
-          actions={
-            <Button size="sm" variant="ghost" onClick={() => setParams({})}>
-              close
-            </Button>
-          }
-        >
-          <ErrorBanner error={detail.error} />
-          {detail.data ? (
-            <div className="space-y-3">
-              <div>
-                <div className="font-medium">{detail.data.subject}</div>
-                <div className="text-[12px] text-slate-500">
-                  {detail.data.author.name} · {ago(detail.data.author.at)} · parents {detail.data.parents.map((p) => short(p, 8)).join(", ")}
-                  {!detail.data.reachable && <span className="ml-2 text-amber-700">unreachable (rewritten history)</span>}
-                </div>
-                {detail.data.trailers.length > 0 && (
-                  <div className="mt-1 flex flex-wrap gap-1">
-                    {detail.data.trailers.map((t) => (
-                      <Tag key={t.key + t.value}>
-                        {t.key}: {t.value}
-                      </Tag>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <KeyValue
-                items={[
-                  ["tasks", detail.data.tasks.map((t) => `${t.task_key} (${t.source}, ${t.confidence.toFixed(2)})`).join(", ") || "none"],
-                  [
-                    "structure",
-                    detail.data.analysis
-                      ? `${detail.data.analysis.functions_affected} functions, ${detail.data.analysis.types_affected} types (${detail.data.analysis.files_parsed} parsed, ${detail.data.analysis.files_fallback} line-level)`
-                      : "not analysed yet",
-                  ],
-                  ["equivalences", detail.data.equivalences.map((e) => e.kind).join(", ")],
-                ]}
-              />
-              <Table head={["", "Path", "Lines", "Class", "Language", "Symbols"]}>
-                {detail.data.files.map((f) => (
-                  <tr key={f.path}>
-                    <td className={`${td} mono`}>{f.change_type}</td>
-                    <td className={`${td} mono text-[12px]`}>
-                      {f.old_path ? `${f.old_path} → ` : ""}
-                      {f.path}
-                    </td>
-                    <td className={td}>{f.binary ? "binary" : `+${f.insertions} -${f.deletions}`}</td>
-                    <td className={td}>{f.file_class}</td>
-                    <td className={td}>{f.language ?? "—"}</td>
-                    <td className={`${td} text-[12px]`}>{f.symbols.map((sym) => `${sym.name} (${sym.change})`).join(", ")}</td>
-                  </tr>
-                ))}
-              </Table>
-            </div>
-          ) : (
-            !detail.error && <Skeleton />
-          )}
-        </Card>
-      )}
-      <div className="grid gap-4 xl:grid-cols-3">
-        <Card
-          title={`Commits (${commits.data?.total ?? "…"})`}
-          className="xl:col-span-2"
-          bodyClass="p-0"
-          actions={
-            <label className="flex items-center gap-1 text-[12px] normal-case">
-              <input type="checkbox" checked={linkedOnly} onChange={(e) => setLinkedOnly(e.target.checked)} /> task-linked only
-            </label>
-          }
-        >
-          <ErrorBanner error={commits.error} />
-          {!commits.data ? (
-            <Skeleton />
-          ) : commits.data.items.length === 0 ? (
-            <div className="p-3">
-              <Empty title="No commits ingested">Use “Sync commits”.</Empty>
-            </div>
-          ) : (
-            <Table head={["SHA", "Subject", "Author", "Lines", "Tasks", "When"]} testId="repo-commits">
-              {commits.data.items.map((c) => (
-                <tr key={c.id} className="cursor-pointer hover:bg-slate-50" onClick={() => setParams({ sha: c.sha })}>
-                  <td className={`${td} mono text-[12px]`}>{short(c.sha, 10)}</td>
-                  <td className={td}>
-                    {c.subject}
-                    {c.is_merge && <Tag>merge</Tag>}
-                  </td>
-                  <td className={`${td} text-slate-600`}>{c.author}</td>
-                  <td className={`${td} whitespace-nowrap`}>
-                    <span className="text-emerald-700">+{c.insertions}</span> <span className="text-rose-700">-{c.deletions}</span>
-                  </td>
-                  <td className={td} onClick={(e) => e.stopPropagation()}>
-                    {c.tasks.map((t) => (
-                      <Link key={t.task_key + t.source} to={`/tasks/${t.task_key}`} className="mono mr-1 text-[12px] text-sky-700 hover:underline" title={`${t.source} (${t.confidence})`}>
-                        {t.task_key}
-                      </Link>
-                    ))}
-                  </td>
-                  <td className={`${td} whitespace-nowrap text-slate-500`}>{ago(c.committed_at)}</td>
-                </tr>
+              <Skeleton />
+            )}
+          </Card>
+          <Card title="Checkouts" bodyClass="p-0">
+            <ul className="divide-y divide-line">
+              {r.checkouts.map((c) => (
+                <li key={c.id} className="px-4 py-3">
+                  <div className="mono break-all text-[12px]">{c.path}</div>
+                  <Meta>
+                    <span>{c.kind}</span>
+                    {c.is_primary && <span>Primary</span>}
+                    {c.available ? <span>Available</span> : <span className="text-danger">Unavailable</span>}
+                  </Meta>
+                </li>
               ))}
-            </Table>
-          )}
-        </Card>
-        <Card title="Change volume by module">
-          <ErrorBanner error={hotspots.error} />
-          {hotspots.data ? <CategoryBars rows={hotspots.data.rows} category="module" height={200} /> : <Skeleton />}
-          <p className="mt-1 text-[11px] text-slate-400">Lines changed by task-linked commits. Lines are not a measure of difficulty.</p>
-        </Card>
+            </ul>
+          </Card>
+        </div>
+
+        {sha && desktop && (
+          <Card
+            title={<span className="mono">Commit {short(sha, 10)}</span>}
+            actions={
+              <Button size="sm" variant="ghost" onClick={() => setParams({})}>
+                Close
+              </Button>
+            }
+          >
+            <CommitDetailView ws={ws} repo={ref} sha={sha} />
+          </Card>
+        )}
+
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] xl:items-start">
+          <section className="min-w-0">
+            <SectionTitle actions={<Checkbox label="Task-linked only" checked={linkedOnly} onChange={setLinkedOnly} />}>
+              Commits <span className="font-normal text-ink-3 tnum">{commits.data?.total ?? ""}</span>
+            </SectionTitle>
+            <ErrorBanner error={commits.error} />
+            {!commits.data ? (
+              <Card bodyClass="p-0">
+                <Skeleton />
+              </Card>
+            ) : commits.data.items.length === 0 ? (
+              <Card>
+                <Empty title="No commits ingested">Use Sync commits to read them from Git.</Empty>
+              </Card>
+            ) : (
+              <List testId="repo-commits">
+                {commits.data.items.map((c) => (
+                  <ListRow key={c.id} selected={sha === c.sha} onClick={() => setParams({ sha: c.sha })}>
+                    <div className="line-clamp-2 font-medium leading-snug">
+                      {c.subject}
+                      {c.is_merge && (
+                        <span className="ml-2 align-middle">
+                          <Tag>merge</Tag>
+                        </span>
+                      )}
+                    </div>
+                    <Meta>
+                      <span className="mono text-[12px] text-ink-2">{short(c.sha, 10)}</span>
+                      <span>{c.author}</span>
+                      <Diff added={c.insertions} removed={c.deletions} />
+                      <span>{ago(c.committed_at)}</span>
+                      {c.tasks.map((t) => (
+                        <Link
+                          key={t.task_key + t.source}
+                          to={`/tasks/${t.task_key}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="mono text-[12px] font-medium text-accent hover:underline"
+                          title={`${t.source} (${t.confidence})`}
+                        >
+                          {t.task_key}
+                        </Link>
+                      ))}
+                    </Meta>
+                  </ListRow>
+                ))}
+              </List>
+            )}
+          </section>
+          <Card title="Change volume by module" footer="Lines changed by task-linked commits. Lines are not a measure of difficulty.">
+            <ErrorBanner error={hotspots.error} />
+            {hotspots.data ? <CategoryBars rows={hotspots.data.rows} category="module" /> : <Skeleton />}
+          </Card>
+        </div>
+      </div>
+      {!desktop && (
+        <Modal title={sha ? `Commit ${short(sha, 10)}` : "Commit"} open={!!sha} onClose={() => setParams({})} wide>
+          {sha && <CommitDetailView ws={ws} repo={ref} sha={sha} />}
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function CommitDetailView({ ws, repo, sha }: { ws: string; repo: string; sha: string }) {
+  const detail = useQuery({
+    queryKey: ["repositories", ws, repo, "commit", sha],
+    queryFn: () => get<CommitDetail>(`/ws/${ws}/repositories/${repo}/commits/${sha}`),
+  });
+  if (detail.error) return <ErrorBanner error={detail.error} />;
+  if (!detail.data) return <Skeleton />;
+  const d = detail.data;
+  return (
+    <div className="space-y-4">
+      <div>
+        <div className="font-semibold leading-snug">{d.subject}</div>
+        <Meta>
+          <span>{d.author.name}</span>
+          <span>{ago(d.author.at)}</span>
+          <span className="mono text-[12px]">parents {d.parents.map((p) => short(p, 8)).join(", ")}</span>
+          {!d.reachable && <span className="text-warn">Unreachable (history was rewritten)</span>}
+        </Meta>
+        {d.trailers.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {d.trailers.map((t) => (
+              <Tag key={t.key + t.value}>
+                {t.key}: {t.value}
+              </Tag>
+            ))}
+          </div>
+        )}
+      </div>
+      <KeyValue
+        items={[
+          ["tasks", d.tasks.map((t) => `${t.task_key} (${t.source}, ${t.confidence.toFixed(2)})`).join(", ") || "None"],
+          [
+            "structure",
+            d.analysis
+              ? `${d.analysis.functions_affected} functions, ${d.analysis.types_affected} types (${d.analysis.files_parsed} parsed, ${d.analysis.files_fallback} line-level)`
+              : "Not analysed yet",
+          ],
+          ["equivalences", d.equivalences.map((e) => e.kind).join(", ")],
+        ]}
+      />
+      <div>
+        <div className="mb-2 text-[14px] font-semibold">Files ({d.files.length})</div>
+        <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line">
+          {d.files.map((f) => (
+            <li key={f.path} className="px-3 py-2.5">
+              <div className="flex items-start gap-2">
+                <span className="mono mt-px w-5 shrink-0 text-center text-[12px] font-semibold text-ink-3" title={f.change_type}>
+                  {f.change_type}
+                </span>
+                <span className="mono min-w-0 flex-1 break-all text-[12px]">
+                  {f.old_path ? `${f.old_path} → ` : ""}
+                  {f.path}
+                </span>
+                {f.binary ? <span className="text-[12px] text-ink-3">binary</span> : <Diff added={f.insertions} removed={f.deletions} />}
+              </div>
+              <div className="ml-7">
+                <Meta className="mt-0.5 text-[12px]">
+                  <span>{f.file_class}</span>
+                  {f.language && <span>{f.language}</span>}
+                </Meta>
+                {f.symbols.length > 0 && <div className="mt-1 text-[12px] text-ink-2">{f.symbols.map((sym) => `${sym.name} (${sym.change})`).join(", ")}</div>}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

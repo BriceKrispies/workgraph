@@ -4,57 +4,68 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { post } from "../api/client";
 import type { Stack, StackIntegrationJobs, StackVerificationJob } from "../api/types";
 import { ItemStateBadge, StackStatusBadge, StackTimeline } from "../features/stacks";
-import { Button, Card, Empty, ErrorBanner, KeyValue, Loading, Skeleton, Table, td } from "../components/ui";
+import {
+  ActionBar,
+  Button,
+  Card,
+  Checkbox,
+  Empty,
+  ErrorBanner,
+  KeyValue,
+  List,
+  ListRow,
+  Loading,
+  Meta,
+  Notice,
+  PageHeader,
+  SectionTitle,
+  Skeleton,
+} from "../components/ui";
 import { useStack, useStacks } from "../hooks/stacks";
 import { useWorkspace } from "../hooks/workspace";
 import { ago, dateTime, short } from "../lib/format";
 import { ITEM_STATES, countStates, inMergeOrder, parseItemDetail } from "../lib/stacks";
+import { toneOf } from "../lib/tone";
 
 export function StacksPage() {
   const { ws } = useWorkspace();
   const [inactive, setInactive] = useState(false);
   const stacks = useStacks(ws, inactive);
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold text-slate-900">Stacks</h1>
-        <label className="flex items-center gap-2 text-sm text-slate-600">
-          <input type="checkbox" checked={inactive} onChange={(e) => setInactive(e.target.checked)} /> Include landed and
-          abandoned
-        </label>
+    <div>
+      <PageHeader title="Stacks">
+        <p className="max-w-prose text-[15px] text-ink-2">A parent task's children, merged in order onto an integration branch and verified together.</p>
+      </PageHeader>
+      <div className="mb-2 px-1">
+        <Checkbox label="Include landed and abandoned" checked={inactive} onChange={setInactive} />
       </div>
       <ErrorBanner error={stacks.error} />
-      <Card bodyClass="p-0">
-        {!stacks.data ? (
+      {!stacks.data ? (
+        <Card bodyClass="p-0">
           <Skeleton />
-        ) : stacks.data.length === 0 ? (
-          <div className="p-4">
-            <Empty title="No stacks">
-              Stack a parent task's children with <span className="mono">workgraph stack create PARENT</span>.
-            </Empty>
-          </div>
-        ) : (
-          <Table head={["Parent", "Status", "Repositories", "Tasks by state", "Updated"]} testId="stacks">
-            {stacks.data.map((s) => (
-              <tr key={s.id} data-testid="stack-row">
-                <td className={td}>
-                  <Link to={`/stacks/${s.parent_key}`} className="font-medium text-sky-700 hover:underline">
-                    <span className="mono">{s.parent_key}</span> {s.parent_title}
-                  </Link>
-                </td>
-                <td className={td}>
-                  <StackStatusBadge status={s.status} />
-                </td>
-                <td className={td}>{s.repositories.map((r) => r.repository_name).join(", ")}</td>
-                <td className={td}>
-                  <StateCounts stack={s} />
-                </td>
-                <td className={`${td} text-slate-500`}>{ago(s.updated_at)}</td>
-              </tr>
-            ))}
-          </Table>
-        )}
-      </Card>
+        </Card>
+      ) : stacks.data.length === 0 ? (
+        <Card>
+          <Empty title="No stacks">
+            Stack a parent task's children with <span className="mono">workgraph stack create PARENT</span>.
+          </Empty>
+        </Card>
+      ) : (
+        <List testId="stacks">
+          {stacks.data.map((s) => (
+            <ListRow key={s.id} testId="stack-row" to={`/stacks/${s.parent_key}`} tone={toneOf(s.status)}>
+              <div className="flex items-center gap-2">
+                <span className="mono text-[13px] text-ink-3">{s.parent_key}</span>
+                <StackStatusBadge status={s.status} />
+                <span className="ml-auto text-[13px] text-ink-3">{ago(s.updated_at)}</span>
+              </div>
+              <div className="mt-1 font-medium leading-snug">{s.parent_title}</div>
+              <StateCounts stack={s} />
+              {s.repositories.length > 0 && <Meta>{s.repositories.map((r) => r.repository_name).join(", ")}</Meta>}
+            </ListRow>
+          ))}
+        </List>
+      )}
     </div>
   );
 }
@@ -62,9 +73,9 @@ export function StacksPage() {
 function StateCounts({ stack }: { stack: Stack }) {
   const counts = countStates(stack.items);
   const present = ITEM_STATES.filter((state) => counts[state] > 0);
-  if (!present.length) return <span className="text-slate-400">no tasks</span>;
+  if (!present.length) return <Meta>No tasks yet</Meta>;
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="mt-2 flex flex-wrap gap-1.5">
       {present.map((state) => (
         <ItemStateBadge key={state} state={state} count={counts[state]} />
       ))}
@@ -104,121 +115,141 @@ export function StackDetailPage() {
   const unfinished = s.items.filter((i) => i.state !== "verified");
   const counts = countStates(s.items);
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="text-sm text-slate-500">
-            <Link to="/stacks" className="hover:underline">
-              Stacks
-            </Link>{" "}
-            / <span className="mono">{s.parent_key}</span>
-          </div>
-          <h1 className="mt-0.5 flex flex-wrap items-center gap-2 text-xl font-semibold text-slate-900">
-            <Link to={`/tasks/${s.parent_key}`} className="hover:underline">
-              {s.parent_title}
+    <div>
+      <PageHeader
+        back={{ to: "/stacks", label: "Stacks" }}
+        eyebrow={
+          <>
+            <Link to={`/tasks/${s.parent_key}`} className="mono text-accent hover:underline">
+              {s.parent_key}
             </Link>
             <StackStatusBadge status={s.status} />
-          </h1>
-        </div>
-        <div className="flex flex-wrap gap-1.5" data-testid="stack-actions">
+          </>
+        }
+        title={s.parent_title}
+      />
+      <div className="lg:mb-4">
+        <ActionBar testId="stack-actions">
           <Button busy={integrate.isPending} disabled={inactive} onClick={() => integrate.mutate()}>
             Integrate
           </Button>
-          <Button busy={verify.isPending} disabled={inactive} onClick={() => verify.mutate()}>
+          <Button variant="primary" busy={verify.isPending} disabled={inactive} onClick={() => verify.mutate()}>
             Verify
           </Button>
+        </ActionBar>
+      </div>
+
+      <div className="space-y-4">
+        <ErrorBanner error={integrate.error ?? verify.error} />
+        {notice && !integrate.error && !verify.error && <Notice>{notice}</Notice>}
+        {s.status === "verified" && unfinished.length === 0 && (
+          <Notice tone="ok" testId="stack-landing">
+            Verified on the integration tip. Accepting the parent lands it on the default branch:{" "}
+            <span className="mono font-medium">workgraph task accept {s.parent_key}</span>
+          </Notice>
+        )}
+        {s.status === "verified" && unfinished.length > 0 && (
+          <Notice tone="warn" testId="stack-landing">
+            Verified on the integration tip, but it cannot land while children are unfinished:{" "}
+            <span className="mono font-medium">{unfinished.map((i) => `${i.task_key} (${i.state})`).join(", ")}</span>. Finish them or
+            remove them from the stack with <span className="mono">workgraph stack remove {s.parent_key} &lt;TASK&gt;</span>.
+          </Notice>
+        )}
+
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] xl:items-start">
+          <div className="min-w-0 space-y-4">
+            <section>
+              <SectionTitle>Tasks in merge order</SectionTitle>
+              <div className="scroll-x -mx-4 mb-3 flex gap-1.5 px-4">
+                {ITEM_STATES.map((state) => (
+                  <ItemStateBadge key={state} state={state} count={counts[state]} />
+                ))}
+              </div>
+              {s.items.length === 0 ? (
+                <Card>
+                  <Empty title="No tasks in this stack" />
+                </Card>
+              ) : (
+                <List testId="stack-items">
+                  {inMergeOrder(s.items).map((item) => {
+                    const detail = parseItemDetail(item.detail);
+                    return (
+                      <ListRow key={item.id} testId="stack-item" to={`/tasks/${item.task_key}`} tone={toneOf(item.state)}>
+                        <div className="flex items-start gap-3">
+                          <span
+                            className="mono flex h-7 min-w-7 shrink-0 items-center justify-center rounded-lg bg-sunken px-1 text-[13px] font-medium text-ink-2"
+                            data-testid="merge-order"
+                            title="Merge order"
+                          >
+                            {item.merge_order ?? "—"}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="mono text-[13px] text-ink-3">{item.task_key}</span>
+                              <ItemStateBadge state={item.state} />
+                              <span className="ml-auto text-[13px] text-ink-3">{ago(item.updated_at)}</span>
+                            </div>
+                            <div className="mt-0.5 font-medium leading-snug">{item.task_title}</div>
+                            <div className="mt-1 space-y-0.5 text-[13px] text-ink-2 empty:hidden">
+                              {detail.conflicts.map((c) => (
+                                <div key={c.repository}>
+                                  <span className="font-medium">Conflict in {c.repository}:</span>{" "}
+                                  <span className="mono break-all text-[12px]">{c.paths.length ? c.paths.join(", ") : "no paths reported"}</span>
+                                </div>
+                              ))}
+                              {detail.ejection && (
+                                <div>
+                                  Ejected at prefix {detail.ejection.position ?? "?"}
+                                  {detail.ejection.failedChecks.length ? `: ${detail.ejection.failedChecks.join(", ")}` : ""}
+                                </div>
+                              )}
+                              {detail.reason && <div>{detail.reason}</div>}
+                            </div>
+                          </div>
+                        </div>
+                      </ListRow>
+                    );
+                  })}
+                </List>
+              )}
+            </section>
+
+            <section>
+              <SectionTitle>Repositories</SectionTitle>
+              <List testId="stack-repositories">
+                {s.repositories.map((r) => (
+                  <ListRow key={r.repository_id}>
+                    <div className="font-medium">{r.repository_name}</div>
+                    <dl className="mt-2 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 text-[13px]">
+                      <dt className="text-ink-3">Base</dt>
+                      <dd className="mono truncate">{short(r.base_sha, 12)}</dd>
+                      <dt className="text-ink-3">Branch</dt>
+                      <dd className="mono truncate">{r.integration_branch}</dd>
+                      <dt className="text-ink-3">Tip</dt>
+                      <dd className="mono truncate">{r.integration_tip ? short(r.integration_tip, 12) : "—"}</dd>
+                    </dl>
+                  </ListRow>
+                ))}
+              </List>
+            </section>
+          </div>
+
+          <div className="min-w-0 space-y-4">
+            <Card title="Timeline">
+              <StackTimeline ws={ws} ref={s.parent_key} />
+            </Card>
+            <Card title="Stack">
+              <KeyValue
+                items={[
+                  ["Created", dateTime(s.created_at)],
+                  ["Updated", dateTime(s.updated_at)],
+                  ["Id", <span key="id" className="mono text-[12px]">{s.id}</span>],
+                ]}
+              />
+            </Card>
+          </div>
         </div>
       </div>
-      <ErrorBanner error={integrate.error ?? verify.error} />
-      {notice && !integrate.error && !verify.error && <div className="text-[12px] text-slate-500">{notice}</div>}
-      {s.status === "verified" && unfinished.length === 0 && (
-        <div className="rounded-md border border-teal-200 bg-teal-50 px-3 py-2 text-sm text-teal-900" data-testid="stack-landing">
-          Verified on the integration tip. Accepting the parent lands it on the default branch:{" "}
-          <span className="mono">workgraph task accept {s.parent_key}</span>
-        </div>
-      )}
-      {s.status === "verified" && unfinished.length > 0 && (
-        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" data-testid="stack-landing">
-          Verified on the integration tip, but it cannot land while children are unfinished:{" "}
-          <span className="mono">{unfinished.map((i) => `${i.task_key} (${i.state})`).join(", ")}</span>. Finish them
-          or remove them from the stack (<span className="mono">workgraph stack remove {s.parent_key} &lt;TASK&gt;</span>).
-        </div>
-      )}
-
-      <Card title="Repositories" bodyClass="p-0">
-        <Table head={["Repository", "Base", "Integration branch", "Tip"]} testId="stack-repositories">
-          {s.repositories.map((r) => (
-            <tr key={r.repository_id}>
-              <td className={`${td} font-medium`}>{r.repository_name}</td>
-              <td className={`${td} mono text-[12px]`}>{short(r.base_sha, 12)}</td>
-              <td className={`${td} mono text-[12px]`}>{r.integration_branch}</td>
-              <td className={`${td} mono text-[12px]`}>{r.integration_tip ? short(r.integration_tip, 12) : "—"}</td>
-            </tr>
-          ))}
-        </Table>
-      </Card>
-
-      <Card title="Tasks in merge order" bodyClass="p-0">
-        <div className="flex flex-wrap gap-1.5 px-3 pt-2.5">
-          {ITEM_STATES.map((state) => (
-            <ItemStateBadge key={state} state={state} count={counts[state]} />
-          ))}
-        </div>
-        {s.items.length === 0 ? (
-          <div className="p-4">
-            <Empty title="No tasks in this stack" />
-          </div>
-        ) : (
-          <Table head={["Merge order", "Task", "State", "Detail", "Updated"]} testId="stack-items">
-            {inMergeOrder(s.items).map((item) => {
-              const detail = parseItemDetail(item.detail);
-              return (
-                <tr key={item.id} data-testid="stack-item">
-                  <td className={`${td} mono`}>{item.merge_order ?? "—"}</td>
-                  <td className={td}>
-                    <Link to={`/tasks/${item.task_key}`} className="font-medium text-sky-700 hover:underline">
-                      <span className="mono">{item.task_key}</span> {item.task_title}
-                    </Link>
-                  </td>
-                  <td className={td}>
-                    <ItemStateBadge state={item.state} />
-                  </td>
-                  <td className={`${td} text-[12px] text-slate-600`}>
-                    {detail.conflicts.map((c) => (
-                      <div key={c.repository}>
-                        <span className="font-medium">Conflict in {c.repository}:</span>{" "}
-                        <span className="mono">{c.paths.length ? c.paths.join(", ") : "no paths reported"}</span>
-                      </div>
-                    ))}
-                    {detail.ejection && (
-                      <div>
-                        Ejected at prefix {detail.ejection.position ?? "?"}
-                        {detail.ejection.failedChecks.length ? `: ${detail.ejection.failedChecks.join(", ")}` : ""}
-                      </div>
-                    )}
-                    {detail.reason && <div>{detail.reason}</div>}
-                  </td>
-                  <td className={`${td} text-slate-500`}>{ago(item.updated_at)}</td>
-                </tr>
-              );
-            })}
-          </Table>
-        )}
-      </Card>
-
-      <Card title="Timeline">
-        <StackTimeline ws={ws} ref={s.parent_key} />
-      </Card>
-
-      <Card title="Stack">
-        <KeyValue
-          items={[
-            ["Created", dateTime(s.created_at)],
-            ["Updated", dateTime(s.updated_at)],
-            ["Id", <span key="id" className="mono text-[12px]">{s.id}</span>],
-          ]}
-        />
-      </Card>
     </div>
   );
 }

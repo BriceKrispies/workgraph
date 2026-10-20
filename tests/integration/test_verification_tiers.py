@@ -148,6 +148,10 @@ def test_failure_signature_comes_from_full_log_not_tail(app, human, ws):
 
 
 def test_passing_full_run_accepts_the_task(app, human, ws, make_repo):
+    # Unstacked tasks are accepted only when the workspace does not land work through stacks.
+    config = app.config
+    config.stacks.auto_accept = False
+    app.config_store.save_global(config)
     task = setup_tiered_task(app, human, ws, make_repo)
     _await_verification(app, task)
     run = app.verification.run(human, ws, task.key)
@@ -157,6 +161,17 @@ def test_passing_full_run_accepts_the_task(app, human, ws, make_repo):
     assert acceptance.mode == "automated"
     assert acceptance.reason == "verification.auto_accept"
     assert acceptance.verification_run_id == run.id
+
+
+def test_unstacked_task_stays_awaiting_review_when_stacks_auto_accept(app, human, ws, make_repo):
+    # With stacks.auto_accept on, work lands through stacks; an unstacked task must not bypass them.
+    task = setup_tiered_task(app, human, ws, make_repo)
+    assert app.config.verification.auto_accept and app.config.stacks.auto_accept
+    _await_verification(app, task)
+    run = app.verification.run(human, ws, task.key)
+    assert run.required_passed
+    assert app.tasks.get(human, ws, task.key).status == "awaiting_review"
+    assert _acceptances(app, human, ws, task) == []
 
 
 def test_auto_accept_off_leaves_the_task_awaiting_review(app, human, ws, make_repo, manual_verification):

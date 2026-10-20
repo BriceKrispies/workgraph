@@ -732,12 +732,14 @@ class VerificationService(Service):
         """Accept a task whose full verification just passed, when ``verification.auto_accept`` is on.
 
         Runs in its own write session after the run is finalized. Stack children are accepted by the
-        stack landing and a stack parent lands its stack, so neither is accepted here.
+        stack landing and a stack parent lands its stack, so neither is accepted here. When
+        ``stacks.auto_accept`` is on, work lands through stacks, so an unstacked task is left for its
+        stack instead of being accepted (its commits would never reach the integration branch).
         """
         if Permission.TASK_ACCEPT not in ctx.permissions:
             return
         config = self.app.effective_config(self.app.workspace_slug(prepared.workspace_id))
-        if not config.verification.auto_accept:
+        if not config.verification.auto_accept or config.stacks.auto_accept:
             return
         if not any(check.spec.required for check in prepared.checks):
             return

@@ -209,8 +209,13 @@ def test_multi_workspace_isolation(app, human, ws):
 
 def test_graph(app, human, ws):
     a = app.tasks.create(human, ws, TaskCreate(title="A", status="ready"))
-    b = app.tasks.create(human, ws, TaskCreate(title="B", status="ready", depends_on=[a.key], parent=a.key))
+    b = app.tasks.create(
+        human,
+        ws,
+        TaskCreate(title="B", status="ready", depends_on=[a.key], parent=a.key, tags=["area:x", "rho"]),
+    )
     graph = app.tasks.graph(human, ws)
+    assert {n.key: n.tags for n in graph.nodes} == {a.key: [], b.key: ["area:x", "rho"]}
     kinds = sorted(e.kind for e in graph.edges)
     assert kinds == ["depends_on", "parent"]
     blocked = {n.key: n.blocked for n in graph.nodes}

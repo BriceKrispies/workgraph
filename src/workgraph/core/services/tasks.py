@@ -1385,6 +1385,11 @@ class TaskService(Service):
                 )
             ):
                 repos_by_task[tid].append(rid)
+            tags_by_task: dict[str, builtins.list[str]] = defaultdict(list)
+            for tid, tag in session.execute(
+                select(TaskTag.task_id, TaskTag.tag).where(TaskTag.task_id.in_(ids))
+            ):
+                tags_by_task[tid].append(tag)
             dep_rows = session.execute(
                 select(TaskDependency.task_id, TaskDependency.depends_on_id).where(
                     and_(TaskDependency.task_id.in_(ids), TaskDependency.depends_on_id.in_(ids))
@@ -1403,6 +1408,7 @@ class TaskService(Service):
                     parent_id=t.parent_id if t.parent_id in tasks else None,
                     project_ids=sorted(projects_by_task[t.id]),
                     repository_ids=sorted(repos_by_task[t.id]),
+                    tags=sorted(tags_by_task[t.id]),
                     blocked=t.status == TaskStatus.BLOCKED or t.id in unsatisfied,
                 )
                 for t in sorted(tasks.values(), key=lambda t: t.number)

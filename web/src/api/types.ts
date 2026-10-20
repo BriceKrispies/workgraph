@@ -375,6 +375,7 @@ export interface GraphNode {
   parent_id: string | null;
   project_ids: string[];
   repository_ids: string[];
+  tags: string[];
   blocked: boolean;
 }
 

@@ -463,6 +463,7 @@ class GraphNode(Schema):
     parent_id: str | None
     project_ids: list[str]
     repository_ids: list[str]
+    tags: list[str] = []
     blocked: bool
 
 

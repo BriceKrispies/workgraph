@@ -43,6 +43,12 @@ def screenshot_command(
     browser: str | None = typer.Option(
         None, help="Chrome/Edge/Chromium executable (default: $WORKGRAPH_BROWSER, then auto-detect)"
     ),
+    theme: str | None = typer.Option(
+        None, help="Emulate the system colour scheme: light or dark (default: the browser's)"
+    ),
+    mobile: bool = typer.Option(
+        False, "--mobile", help="Emulate a touch phone; pair with a phone size, e.g. --width 390 --height 844"
+    ),
 ) -> None:
     """Capture a page of the running web UI to a PNG with a headless browser."""
     import httpx
@@ -68,6 +74,8 @@ def screenshot_command(
         settle=settle,
         timeout=timeout,
         browser=browser,
+        theme=theme,
+        mobile=mobile,
     )
     result = {
         "url": capture.url,
@@ -76,5 +84,7 @@ def screenshot_command(
         "height": capture.height,
         "scale": capture.scale,
         "browser": str(capture.browser),
+        "theme": theme,
+        "mobile": mobile,
     }
     emit(result, lambda r: kv([(k, r[k]) for k in ("url", "file", "width", "height", "scale", "browser")]))

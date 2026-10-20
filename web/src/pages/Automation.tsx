@@ -1,23 +1,31 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, get, post, put } from "../api/client";
 import type { AutomationRun, Job, Rule } from "../api/types";
 import {
   Button,
   Card,
+  Chip,
+  Collapsible,
   Empty,
   ErrorBanner,
   Field,
+  List,
+  ListRow,
+  Meta,
   Modal,
+  PageHeader,
   Skeleton,
   StatusBadge,
-  Table,
+  Switch,
   Tabs,
   inputClass,
-  td,
+  textareaClass,
 } from "../components/ui";
 import { useWorkspace } from "../hooks/workspace";
-import { ago, label, short } from "../lib/format";
+import { ago, label, sentence, short } from "../lib/format";
+import { toneOf } from "../lib/tone";
 
 const TEMPLATE = {
   name: "tag critical bugs",
@@ -31,29 +39,40 @@ const TEMPLATE = {
 };
 
 type TabId = "rules" | "runs" | "jobs" | "notifications";
+const TABS: [TabId, string][] = [
+  ["rules", "Rules"],
+  ["runs", "Trigger history"],
+  ["jobs", "Jobs"],
+  ["notifications", "Notifications"],
+];
 
 export function AutomationPage() {
   const { ws } = useWorkspace();
-  const [tab, setTab] = useState<TabId>("rules");
+  const [params, setParams] = useSearchParams();
+  const tab = (TABS.find(([id]) => id === params.get("tab"))?.[0] ?? "rules") as TabId;
   return (
-    <div className="space-y-3">
-      <h1 className="text-xl font-semibold text-slate-900">Automation</h1>
-      <Tabs<TabId>
-        value={tab}
-        onChange={setTab}
-        tabs={[
-          ["rules", "Rules"],
-          ["runs", "Trigger history"],
-          ["jobs", "Jobs"],
-          ["notifications", "Notifications"],
-        ]}
-      />
-      {tab === "rules" && <Rules ws={ws} />}
-      {tab === "runs" && <Runs ws={ws} />}
-      {tab === "jobs" && <Jobs ws={ws} />}
-      {tab === "notifications" && <Notifications ws={ws} />}
+    <div>
+      <PageHeader title="Automation" />
+      <Tabs<TabId> value={tab} onChange={(t) => setParams(t === "rules" ? {} : { tab: t }, { replace: true })} tabs={TABS} />
+      <div className="pt-4">
+        {tab === "rules" && <Rules ws={ws} />}
+        {tab === "runs" && <Runs ws={ws} />}
+        {tab === "jobs" && <Jobs ws={ws} />}
+        {tab === "notifications" && <Notifications ws={ws} />}
+      </div>
     </div>
   );
+}
+
+function describeTrigger(trigger: Record<string, unknown>): string {
+  const detail = Array.isArray(trigger.event_types)
+    ? (trigger.event_types as string[]).join(", ")
+    : trigger.cron
+      ? `cron ${String(trigger.cron)}`
+      : trigger.interval_seconds
+        ? `every ${String(trigger.interval_seconds)}s`
+        : "";
+  return `${sentence(String(trigger.type))}${detail ? `: ${detail}` : ""}`;
 }
 
 function Rules({ ws }: { ws: string }) {
@@ -70,86 +89,84 @@ function Rules({ ws }: { ws: string }) {
     mutationFn: (rule: Rule) => post(`/ws/${ws}/automation/rules/${encodeURIComponent(rule.name)}/${rule.enabled ? "disable" : "enable"}`),
     onSuccess: () => client.invalidateQueries({ queryKey: ["automation"] }),
   });
+  const visible = rules.data?.filter((r) => !r.name.startsWith("[preview]")) ?? [];
   return (
-    <div className="space-y-3">
-      <div className="flex justify-end">
-        <Button variant="primary" onClick={() => setEditing("new")}>
-          New rule
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[14px] text-ink-2">Rules react to events, schedules or a manual trigger.</p>
+        <Button variant="primary" icon="plus" onClick={() => setEditing("new")}>
+          <span className="sm:hidden">New</span>
+          <span className="hidden sm:inline">New rule</span>
         </Button>
       </div>
       <ErrorBanner error={rules.error ?? toggle.error} />
-      <Card bodyClass="p-0">
-        {!rules.data ? (
+      {!rules.data ? (
+        <Card bodyClass="p-0">
           <Skeleton />
-        ) : rules.data.length === 0 ? (
-          <div className="p-4">
-            <Empty title="No automation rules">Rules react to events, schedules or manual triggers.</Empty>
-          </div>
-        ) : (
-          <Table head={["Rule", "Trigger", "Actions", "Author", "Enabled", ""]} testId="rules">
-            {rules.data.filter((r) => !r.name.startsWith("[preview]")).map((r) => (
-              <tr key={r.id}>
-                <td className={td}>
-                  <div className="font-medium">{r.name}</div>
-                  <div className="text-[12px] text-slate-500">{r.description}</div>
-                </td>
-                <td className={`${td} text-[12px]`}>
-                  {String(r.trigger.type)}{" "}
-                  {Array.isArray(r.trigger.event_types) ? (r.trigger.event_types as string[]).join(", ") : String(r.trigger.cron ?? r.trigger.interval_seconds ?? "")}
-                </td>
-                <td className={`${td} text-[12px]`}>{r.actions.map((a) => label(String(a.type))).join(", ")}</td>
-                <td className={`${td} text-[12px] text-slate-500`}>{r.created_by}</td>
-                <td className={td}>
-                  <button
-                    role="switch"
-                    aria-checked={r.enabled}
-                    aria-label={`toggle ${r.name}`}
-                    onClick={() => toggle.mutate(r)}
-                    className={`relative h-5 w-9 rounded-full transition ${r.enabled ? "bg-emerald-500" : "bg-slate-300"}`}
-                  >
-                    <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition ${r.enabled ? "left-4" : "left-0.5"}`} />
-                  </button>
-                </td>
-                <td className={`${td} whitespace-nowrap`}>
-                  <Button size="sm" variant="ghost" onClick={() => setPreviewing(r)}>
-                    Dry run
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setTriggering(r)}>
-                    Trigger
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>
-                    Edit
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </Table>
-        )}
-      </Card>
+        </Card>
+      ) : visible.length === 0 ? (
+        <Card>
+          <Empty title="No automation rules">Start from the template under New rule.</Empty>
+        </Card>
+      ) : (
+        <List testId="rules">
+          {visible.map((r) => (
+            <ListRow key={r.id} tone={r.enabled ? "done" : "idle"} trailing={<Switch checked={r.enabled} onChange={() => toggle.mutate(r)} label={`toggle ${r.name}`} />}>
+              <div className="font-semibold">{r.name}</div>
+              {r.description && <div className="mt-0.5 text-[14px] text-ink-2">{r.description}</div>}
+              <Meta>
+                <span>{describeTrigger(r.trigger)}</span>
+                <span>Then {r.actions.map((a) => label(String(a.type))).join(", ")}</span>
+                <span>By {r.created_by}</span>
+              </Meta>
+              <div className="-ml-2 mt-2 flex flex-wrap gap-1">
+                <Button size="sm" variant="ghost" onClick={() => setPreviewing(r)}>
+                  Dry run
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setTriggering(r)}>
+                  Trigger
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>
+                  Edit
+                </Button>
+              </div>
+            </ListRow>
+          ))}
+        </List>
+      )}
       {catalog.data && (
-        <Card title="Supported building blocks">
-          <div className="grid gap-3 text-[12px] md:grid-cols-3">
-            <div>
-              <div className="font-semibold text-slate-600">Event triggers</div>
-              {Object.entries(catalog.data.triggers).map(([k, v]) => (
-                <div key={k}>
-                  <span className="mono">{k}</span> — {v}
-                </div>
-              ))}
-              <div className="mt-1 text-slate-500">plus schedule (cron / interval_seconds) and manual</div>
+        <Card>
+          <Collapsible title="Supported building blocks">
+            <h3 className="mb-3 hidden text-[15px] font-semibold lg:block">Supported building blocks</h3>
+            <div className="grid gap-4 pt-2 text-[13px] md:grid-cols-3 lg:pt-0">
+              <div>
+                <div className="mb-1 font-semibold text-ink-2">Event triggers</div>
+                <ul className="space-y-1">
+                  {Object.entries(catalog.data.triggers).map(([k, v]) => (
+                    <li key={k}>
+                      <span className="mono text-[12px]">{k}</span> <span className="text-ink-3">{v}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-2 text-ink-3">Plus schedule (cron or interval_seconds) and manual.</div>
+              </div>
+              <div>
+                <div className="mb-1 font-semibold text-ink-2">Actions</div>
+                <ul className="space-y-1">
+                  {catalog.data.actions.map((a) => (
+                    <li key={a} className="mono text-[12px]">
+                      {a}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <div className="mb-1 font-semibold text-ink-2">Condition operators</div>
+                <div className="mono text-[12px]">{catalog.data.operators.join(", ")}</div>
+                <div className="mt-2 text-ink-3">Combine with all, any and not. Fields: task.*, event.*, classification.*, attempt.*</div>
+              </div>
             </div>
-            <div>
-              <div className="font-semibold text-slate-600">Actions</div>
-              {catalog.data.actions.map((a) => (
-                <div key={a}>{a}</div>
-              ))}
-            </div>
-            <div>
-              <div className="font-semibold text-slate-600">Condition operators</div>
-              <div>{catalog.data.operators.join(", ")}</div>
-              <div className="mt-1 text-slate-500">Combine with all / any / not. Fields: task.*, event.*, classification.*, attempt.*</div>
-            </div>
-          </div>
+          </Collapsible>
         </Card>
       )}
       {editing && <RuleEditor ws={ws} rule={editing === "new" ? null : editing} onClose={() => setEditing(null)} />}
@@ -198,18 +215,20 @@ function RuleEditor({ ws, rule, onClose }: { ws: string; rule: Rule | null; onCl
   };
   return (
     <Modal title={rule ? `Edit ${rule.name}` : "New automation rule"} open onClose={onClose} wide>
-      <div className="space-y-3">
+      <div className="space-y-4">
         <textarea
           aria-label="Rule JSON"
           spellCheck={false}
-          className={`${inputClass} mono h-80 text-[12px]`}
+          autoCapitalize="none"
+          autoCorrect="off"
+          className={`${textareaClass} mono h-[50dvh] text-[13px] md:h-80`}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-        {parseError && <div className="text-[12px] text-rose-700">{parseError}</div>}
+        {parseError && <div className="text-[13px] text-danger">{parseError}</div>}
         <ErrorBanner error={save.error ?? preview.error} />
         {validationErrors(save.error).length > 0 && (
-          <ul className="list-disc pl-5 text-[12px] text-rose-700">
+          <ul className="list-disc pl-5 text-[13px] text-danger">
             {validationErrors(save.error).map((e, i) => (
               <li key={i}>
                 {e.loc.join(".")}: {e.msg}
@@ -218,7 +237,7 @@ function RuleEditor({ ws, rule, onClose }: { ws: string; rule: Rule | null; onCl
           </ul>
         )}
         {preview.data && <PreviewResult run={preview.data} />}
-        <div className="flex justify-end gap-2">
+        <div className="flex gap-2 [&>*]:flex-1 md:justify-end md:[&>*]:flex-none">
           <Button
             onClick={() => {
               const spec = parsed();
@@ -253,25 +272,28 @@ function validationErrors(error: unknown): { msg: string; loc: unknown[] }[] {
 
 function PreviewResult({ run }: { run: AutomationRun }) {
   return (
-    <div className="rounded border border-slate-200 bg-slate-50 p-2 text-[12px]" data-testid="preview-result">
-      <div className="mb-1 flex items-center gap-2">
-        <StatusBadge status={run.status} /> matched: <b>{String(run.matched)}</b> — {run.reason}
+    <div className="space-y-2 rounded-xl border border-line bg-sunken p-3 text-[13px]" data-testid="preview-result">
+      <div className="flex flex-wrap items-center gap-2">
+        <StatusBadge status={run.status} />
+        <span>{run.matched ? "Matched" : "Did not match"}</span>
+        <span className="text-ink-3">{run.reason}</span>
       </div>
       {run.condition_trace.length > 0 && (
-        <Table head={["Field", "Op", "Expected", "Actual", "Result"]}>
+        <ul className="divide-y divide-line rounded-lg border border-line bg-surface">
           {run.condition_trace.map((t, i) => (
-            <tr key={i}>
-              <td className={`${td} mono`}>{t.field}</td>
-              <td className={td}>{t.op}</td>
-              <td className={td}>{JSON.stringify(t.expected)}</td>
-              <td className={td}>{JSON.stringify(t.actual)}</td>
-              <td className={td}>{t.result ? "✓" : "✗"}</td>
-            </tr>
+            <li key={i} className="flex items-start gap-2 px-3 py-2">
+              <span className={`mt-1.5 dot ${t.result ? "tone-done" : "tone-failed"}`} aria-label={t.result ? "passed" : "failed"} />
+              <span className="min-w-0 break-words">
+                <span className="mono text-[12px]">{t.field}</span> {t.op} <span className="mono text-[12px]">{JSON.stringify(t.expected)}</span>
+                <span className="text-ink-3">, actual </span>
+                <span className="mono text-[12px]">{JSON.stringify(t.actual)}</span>
+              </span>
+            </li>
           ))}
-        </Table>
+        </ul>
       )}
       {run.action_results.map((a, i) => (
-        <div key={i}>would {String(a.planned ?? a.type)}</div>
+        <div key={i}>Would {String(a.planned ?? a.type)}</div>
       ))}
     </div>
   );
@@ -285,22 +307,20 @@ function PreviewDialog({ ws, rule, onClose }: { ws: string; rule: Rule; onClose:
   return (
     <Modal title={`Dry run: ${rule.name}`} open onClose={onClose} wide>
       <form
-        className="space-y-3"
+        className="space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
           preview.mutate();
         }}
       >
-        <Field label="Task context" hint="Evaluate conditions against this task (key)">
-          <input className={`${inputClass} mono`} value={task} onChange={(e) => setTask(e.target.value)} placeholder="WG-1" />
+        <Field label="Task context" hint="Evaluate the conditions against this task key">
+          <input className={`${inputClass} mono`} value={task} onChange={(e) => setTask(e.target.value)} placeholder="WG-1" autoCapitalize="characters" />
         </Field>
         <ErrorBanner error={preview.error} />
         {preview.data && <PreviewResult run={preview.data} />}
-        <div className="flex justify-end">
-          <Button type="submit" variant="primary" busy={preview.isPending}>
-            Evaluate (no side effects)
-          </Button>
-        </div>
+        <Button type="submit" variant="primary" className="w-full md:ml-auto md:flex md:w-auto" busy={preview.isPending}>
+          Evaluate without side effects
+        </Button>
       </form>
     </Modal>
   );
@@ -316,26 +336,26 @@ function TriggerDialog({ ws, rule, onClose }: { ws: string; rule: Rule; onClose:
   return (
     <Modal title={`Trigger ${rule.name}`} open onClose={onClose}>
       <form
-        className="space-y-3"
+        className="space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
           trigger.mutate();
         }}
       >
-        <Field label="Task (optional)">
-          <input className={`${inputClass} mono`} value={task} onChange={(e) => setTask(e.target.value)} />
+        <Field label="Task" hint="Optional">
+          <input className={`${inputClass} mono`} value={task} onChange={(e) => setTask(e.target.value)} autoCapitalize="characters" />
         </Field>
         <ErrorBanner error={trigger.error} />
         {trigger.data && (
-          <div className="text-[12px]">
-            Run {short(trigger.data.id)}: <StatusBadge status={trigger.data.status} /> {trigger.data.reason}
+          <div className="flex flex-wrap items-center gap-2 text-[13px]">
+            <span className="mono">Run {short(trigger.data.id)}</span>
+            <StatusBadge status={trigger.data.status} />
+            <span className="text-ink-3">{trigger.data.reason}</span>
           </div>
         )}
-        <div className="flex justify-end">
-          <Button type="submit" variant="primary" busy={trigger.isPending}>
-            Trigger now
-          </Button>
-        </div>
+        <Button type="submit" variant="primary" className="w-full md:ml-auto md:flex md:w-auto" busy={trigger.isPending}>
+          Trigger now
+        </Button>
       </form>
     </Modal>
   );
@@ -347,31 +367,32 @@ function Runs({ ws }: { ws: string }) {
   const names = new Map((rules.data ?? []).map((r) => [r.id, r.name]));
   if (runs.error) return <ErrorBanner error={runs.error} />;
   if (!runs.data) return <Skeleton />;
-  if (!runs.data.length) return <Empty title="No rule runs yet" />;
+  if (!runs.data.length)
+    return (
+      <Card>
+        <Empty title="No rule runs yet" />
+      </Card>
+    );
   return (
-    <Card bodyClass="p-0">
-      <Table head={["When", "Rule", "Trigger", "Depth", "Status", "Reason", "Actions"]} testId="automation-runs">
-        {runs.data.map((r) => (
-          <tr key={r.id}>
-            <td className={`${td} whitespace-nowrap text-slate-500`}>{ago(r.created_at)}</td>
-            <td className={td}>{names.get(r.rule_id) ?? short(r.rule_id)}</td>
-            <td className={td}>
-              {r.trigger_type}
-              {r.dry_run && <span className="ml-1 text-[11px] text-sky-600">dry run</span>}
-            </td>
-            <td className={td}>{r.depth}</td>
-            <td className={td}>
-              <StatusBadge status={r.status} />
-            </td>
-            <td className={`${td} text-[12px]`}>
-              {r.reason}
-              {r.error && <div className="text-rose-700">{r.error}</div>}
-            </td>
-            <td className={`${td} text-[12px]`}>{r.action_results.map((a) => `${String(a.type ?? a.planned ?? "")}:${String(a.status ?? "planned")}`).join(", ")}</td>
-          </tr>
-        ))}
-      </Table>
-    </Card>
+    <List testId="automation-runs">
+      {runs.data.map((r) => (
+        <ListRow key={r.id} tone={toneOf(r.status)}>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-medium">{names.get(r.rule_id) ?? short(r.rule_id)}</span>
+            <StatusBadge status={r.status} />
+            {r.dry_run && <span className="text-[12px] font-medium text-accent">Dry run</span>}
+            <span className="ml-auto text-[13px] text-ink-3">{ago(r.created_at)}</span>
+          </div>
+          {r.reason && <div className="mt-0.5 text-[14px] text-ink-2">{r.reason}</div>}
+          {r.error && <div className="mt-0.5 text-[13px] text-danger">{r.error}</div>}
+          <Meta>
+            <span>{sentence(r.trigger_type)}</span>
+            <span>Depth {r.depth}</span>
+            {r.action_results.length > 0 && <span>{r.action_results.map((a) => `${String(a.type ?? a.planned ?? "")}: ${String(a.status ?? "planned")}`).join(", ")}</span>}
+          </Meta>
+        </ListRow>
+      ))}
+    </List>
   );
 }
 
@@ -387,56 +408,63 @@ function Jobs({ ws }: { ws: string }) {
     onSuccess: () => client.invalidateQueries({ queryKey: ["jobs"] }),
   });
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center gap-2 text-sm">
+    <div className="space-y-3">
+      <div className="scroll-x -mx-4 flex gap-2 px-4" role="group" aria-label="Job status">
         {["dead", "failed", "queued", "running", "succeeded", "cancelled", ""].map((s) => (
-          <Button key={s || "all"} size="sm" variant={status === s ? "primary" : "secondary"} onClick={() => setStatus(s)}>
-            {s || "all"} {s && jobs.data?.stats[s] !== undefined ? `(${jobs.data.stats[s]})` : ""}
-          </Button>
+          <Chip key={s || "all"} active={status === s} tone={s ? toneOf(s) : undefined} onClick={() => setStatus(s)}>
+            {s ? sentence(s) : "All"}
+            {s && jobs.data?.stats[s] !== undefined && <span className="tnum opacity-70">{jobs.data.stats[s]}</span>}
+          </Chip>
         ))}
       </div>
       <ErrorBanner error={jobs.error ?? act.error} />
-      <Card bodyClass="p-0">
-        {!jobs.data ? (
+      {!jobs.data ? (
+        <Card bodyClass="p-0">
           <Skeleton />
-        ) : jobs.data.items.length === 0 ? (
-          <div className="p-3">
-            <Empty title={`No ${status || ""} jobs`} />
-          </div>
-        ) : (
-          <Table head={["Job", "Kind", "Status", "Attempts", "Error", "Created", ""]} testId="jobs">
-            {jobs.data.items.map((j) => (
-              <tr key={j.id}>
-                <td className={`${td} mono text-[11px]`}>{short(j.id)}</td>
-                <td className={td}>{j.kind}</td>
-                <td className={td}>
-                  <StatusBadge status={j.status} />
-                </td>
-                <td className={td}>
-                  {j.attempts}/{j.max_attempts}
-                </td>
-                <td className={`${td} max-w-sm text-[12px] text-rose-700`}>
-                  {j.error_kind && <span className="mono mr-1 text-slate-500">[{j.error_kind}]</span>}
+        </Card>
+      ) : jobs.data.items.length === 0 ? (
+        <Card>
+          <Empty title={status ? `No ${label(status)} jobs` : "No jobs"} />
+        </Card>
+      ) : (
+        <List testId="jobs">
+          {jobs.data.items.map((j) => (
+            <ListRow
+              key={j.id}
+              tone={toneOf(j.status)}
+              trailing={
+                ["dead", "cancelled", "failed"].includes(j.status) ? (
+                  <Button size="sm" onClick={() => act.mutate({ id: j.id, kind: "retry" })}>
+                    Retry
+                  </Button>
+                ) : ["queued", "running"].includes(j.status) ? (
+                  <Button size="sm" variant="danger" onClick={() => act.mutate({ id: j.id, kind: "cancel" })}>
+                    Cancel
+                  </Button>
+                ) : undefined
+              }
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-medium">{sentence(j.kind)}</span>
+                <StatusBadge status={j.status} />
+              </div>
+              <Meta>
+                <span className="mono text-[12px]">{short(j.id)}</span>
+                <span>
+                  Attempt {j.attempts} of {j.max_attempts}
+                </span>
+                <span>{ago(j.created_at)}</span>
+              </Meta>
+              {(j.last_error || j.error_kind) && (
+                <div className="mt-1 line-clamp-3 break-words text-[13px] text-danger">
+                  {j.error_kind && <span className="mono mr-1 text-[12px] text-ink-3">[{j.error_kind}]</span>}
                   {j.last_error}
-                </td>
-                <td className={`${td} whitespace-nowrap text-slate-500`}>{ago(j.created_at)}</td>
-                <td className={`${td} whitespace-nowrap`}>
-                  {["dead", "cancelled", "failed"].includes(j.status) && (
-                    <Button size="sm" onClick={() => act.mutate({ id: j.id, kind: "retry" })}>
-                      Retry
-                    </Button>
-                  )}
-                  {["queued", "running"].includes(j.status) && (
-                    <Button size="sm" variant="danger" onClick={() => act.mutate({ id: j.id, kind: "cancel" })}>
-                      Cancel
-                    </Button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </Table>
-        )}
-      </Card>
+                </div>
+              )}
+            </ListRow>
+          ))}
+        </List>
+      )}
     </div>
   );
 }
@@ -450,28 +478,37 @@ function Notifications({ ws }: { ws: string }) {
   const read = useMutation({ mutationFn: (id: string) => post(`/notifications/${id}/read`), onSuccess: () => client.invalidateQueries({ queryKey: ["automation"] }) });
   if (notes.error) return <ErrorBanner error={notes.error} />;
   if (!notes.data) return <Skeleton />;
-  if (!notes.data.length) return <Empty title="No notifications" />;
+  if (!notes.data.length)
+    return (
+      <Card>
+        <Empty title="No notifications">Rules with a notify action post here.</Empty>
+      </Card>
+    );
+  const levelTone: Record<string, string> = { error: "failed", warning: "blocked", info: "ready" };
   return (
-    <div className="space-y-2">
+    <List>
       {notes.data.map((n) => (
-        <div key={n.id} className={`flex items-start justify-between rounded border p-2 ${n.read_at ? "border-slate-200 bg-white" : "border-sky-200 bg-sky-50"}`}>
-          <div>
-            <div className="font-medium">
-              <span className="mr-1 text-[11px] uppercase text-slate-500">{n.level}</span>
-              {n.title}
-            </div>
-            {n.body && <div className="text-[12px] text-slate-600">{n.body}</div>}
-            <div className="text-[11px] text-slate-400">
-              {n.source} · {ago(n.created_at)}
-            </div>
-          </div>
-          {!n.read_at && (
-            <Button size="sm" variant="ghost" onClick={() => read.mutate(n.id)}>
-              mark read
-            </Button>
-          )}
-        </div>
+        <ListRow
+          key={n.id}
+          tone={n.read_at ? undefined : ((levelTone[n.level] ?? "ready") as never)}
+          selected={!n.read_at}
+          trailing={
+            !n.read_at ? (
+              <Button size="sm" variant="ghost" onClick={() => read.mutate(n.id)}>
+                Mark read
+              </Button>
+            ) : undefined
+          }
+        >
+          <div className={n.read_at ? "text-ink-2" : "font-semibold"}>{n.title}</div>
+          {n.body && <div className="mt-0.5 text-[14px] text-ink-2">{n.body}</div>}
+          <Meta>
+            <span>{sentence(n.level)}</span>
+            <span>{n.source}</span>
+            <span>{ago(n.created_at)}</span>
+          </Meta>
+        </ListRow>
       ))}
-    </div>
+    </List>
   );
 }

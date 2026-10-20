@@ -11,9 +11,24 @@ import {
   type TaskClassifications,
   type VerificationRun,
 } from "../api/types";
-import { Button, Card, Empty, ErrorBanner, KeyValue, Skeleton, StatusBadge, Table, inputClass, td } from "../components/ui";
+import {
+  Button,
+  Card,
+  Diff,
+  Empty,
+  ErrorBanner,
+  KeyValue,
+  List,
+  ListRow,
+  Meta,
+  Skeleton,
+  StatusBadge,
+  inputClass,
+  selectClass,
+} from "../components/ui";
 import { describeEvent } from "../pages/Overview";
-import { ago, dateTime, label, ms, num, pct, short } from "../lib/format";
+import { ago, dateTime, label, ms, num, pct, sentence, short } from "../lib/format";
+import { toneOf } from "../lib/tone";
 
 export function HistoryPanel({ ws, taskKey }: { ws: string; taskKey: string }) {
   const history = useQuery({
@@ -24,21 +39,35 @@ export function HistoryPanel({ ws, taskKey }: { ws: string; taskKey: string }) {
   if (!history.data) return <Skeleton />;
   if (!history.data.length) return <Empty title="No history" />;
   return (
-    <ol className="relative space-y-2 border-l border-slate-200 pl-4" data-testid="history">
-      {[...history.data].reverse().map((e) => (
-        <li key={e.id} className="relative">
-          <span className="absolute -left-[21px] top-1.5 h-2 w-2 rounded-full bg-slate-400" />
-          <div className="flex flex-wrap items-baseline gap-2">
-            <span className="mono text-[12px] text-slate-800">{e.event_type}</span>
-            <span className="text-[12px] text-slate-500">{e.actor}</span>
-            <span className="text-[11px] text-slate-400" title={dateTime(e.occurred_at)}>
-              {ago(e.occurred_at)}
-            </span>
-          </div>
-          <div className="text-[12px] text-slate-600">{describeEvent(e)}</div>
-        </li>
-      ))}
+    <ol className="relative ml-1 space-y-4 border-l-2 border-line pl-5" data-testid="history">
+      {[...history.data].reverse().map((e) => {
+        const to = (e.data as Record<string, unknown>).to;
+        return (
+          <li key={e.id} className="relative">
+            <span className={`dot absolute -left-[26px] top-1.5 ring-4 ring-canvas tone-${typeof to === "string" ? toneOf(to) : "idle"}`} />
+            <div className="break-words text-[14px] text-ink">{describeEvent(e) || e.event_type}</div>
+            <Meta>
+              <span className="mono text-[12px]">{e.event_type}</span>
+              <span>{e.actor}</span>
+              <span title={dateTime(e.occurred_at)}>{ago(e.occurred_at)}</span>
+            </Meta>
+          </li>
+        );
+      })}
     </ol>
+  );
+}
+
+function Figures({ items }: { items: [string, React.ReactNode][] }) {
+  return (
+    <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {items.map(([k, v]) => (
+        <div key={k} className="rounded-xl bg-sunken px-3 py-2">
+          <dt className="text-[12px] text-ink-3">{k}</dt>
+          <dd className="text-[17px] font-semibold tnum">{v}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -61,89 +90,94 @@ export function ChangesPanel({ ws, taskKey, repoNames }: { ws: string; taskKey: 
   if (!changes.data) return <Skeleton />;
   const { commits, cumulative_churn: churn, final_change_surface: surface, definitions } = changes.data;
   return (
-    <div className="space-y-3">
-      <div className="grid gap-3 md:grid-cols-2">
-        <Card title="Cumulative churn">
-          <KeyValue
-            items={[
-              ["commits", churn.commits],
-              ["lines added", `+${churn.insertions}`],
-              ["lines removed", `-${churn.deletions}`],
-              ["files touched", churn.files_touched],
-              ["repeated file edits", churn.repeated_file_edits],
-              ["functions affected", churn.functions_affected],
-            ]}
-          />
-          <p className="mt-2 text-[11px] text-slate-400">{definitions?.cumulative_churn}</p>
-        </Card>
-        <Card title="Final change surface">
-          {surface.length ? (
-            surface.map((s) => (
-              <div key={s.repository_id} className="mb-2">
-                <div className="mb-1 font-medium">{repoNames.get(s.repository_id) ?? short(s.repository_id)}</div>
+    <div className="space-y-4">
+      <Card title="Cumulative churn" footer={definitions?.cumulative_churn}>
+        <Figures
+          items={[
+            ["Commits", churn.commits],
+            ["Lines added", `+${churn.insertions}`],
+            ["Lines removed", `−${churn.deletions}`],
+            ["Files touched", churn.files_touched],
+            ["Repeated file edits", churn.repeated_file_edits],
+            ["Functions affected", churn.functions_affected],
+          ]}
+        />
+      </Card>
+      <Card title="Final change surface" footer={definitions?.final_change_surface}>
+        {surface.length ? (
+          <div className="space-y-4">
+            {surface.map((s) => (
+              <div key={s.repository_id}>
+                <div className="mb-2 font-medium">{repoNames.get(s.repository_id) ?? short(s.repository_id)}</div>
                 <KeyValue
                   items={[
                     ["range", <span className="mono text-[12px]">{`${short(s.base_sha, 10)}..${short(s.final_sha, 10)}`}</span>],
                     ["files", s.files_changed],
-                    ["lines", `+${s.insertions} / -${s.deletions}`],
-                    ["renames / binary", `${s.renames} / ${s.binary_files}`],
-                    ["functions / types", `${s.functions_affected} / ${s.types_affected}`],
+                    ["lines", <Diff added={s.insertions} removed={s.deletions} />],
+                    ["renames, binary", `${s.renames}, ${s.binary_files}`],
+                    ["functions, types", `${s.functions_affected}, ${s.types_affected}`],
                   ]}
                 />
               </div>
-            ))
-          ) : (
-            <Empty title="Not computed">Computed when the task is accepted.</Empty>
-          )}
-          <p className="mt-2 text-[11px] text-slate-400">{definitions?.final_change_surface}</p>
-        </Card>
-      </div>
-      <Card title={`Linked commits (${commits.length})`} bodyClass="p-0" actions={<Button size="sm" onClick={() => setShowDiff((v) => !v)}>{showDiff ? "hide diff" : "show diff"}</Button>}>
-        {commits.length ? (
-          <Table head={["Repository", "SHA", "Subject", "Lines", "Attribution", "When"]} testId="task-commits">
-            {commits.map((c) => (
-              <tr key={c.commit_id}>
-                <td className={td}>
-                  <Link className="text-sky-700 hover:underline" to={`/repositories/${c.repository}?sha=${c.sha}`}>
-                    {c.repository}
-                  </Link>
-                </td>
-                <td className={`${td} mono text-[12px]`}>{short(c.sha, 10)}{!c.reachable && <span className="ml-1 text-amber-600">(unreachable)</span>}</td>
-                <td className={td}>{c.subject}</td>
-                <td className={`${td} whitespace-nowrap`}>
-                  <span className="text-emerald-700">+{c.insertions}</span> <span className="text-rose-700">-{c.deletions}</span>
-                </td>
-                <td className={td}>
-                  {c.links.map((l, i) => (
-                    <div key={i} className="whitespace-nowrap text-[12px]" title={JSON.stringify(l.evidence)}>
-                      {label(l.source)} <span className="text-slate-400">({l.confidence.toFixed(2)})</span>
-                    </div>
-                  ))}
-                </td>
-                <td className={`${td} whitespace-nowrap text-slate-500`}>{ago(c.committed_at)}</td>
-              </tr>
             ))}
-          </Table>
-        ) : (
-          <div className="p-3">
-            <Empty title="No linked commits">Commits are attributed via Task-ID trailers, agent runs or explicit links.</Empty>
           </div>
+        ) : (
+          <Empty title="Not computed yet">Computed when the task is accepted.</Empty>
         )}
       </Card>
+      <div>
+        <div className="mb-2 flex items-center justify-between px-1">
+          <h3 className="text-[15px] font-semibold">Linked commits ({commits.length})</h3>
+          {commits.length > 0 && (
+            <Button size="sm" onClick={() => setShowDiff((v) => !v)}>
+              {showDiff ? "Hide diff" : "Show diff"}
+            </Button>
+          )}
+        </div>
+        {commits.length ? (
+          <List testId="task-commits">
+            {commits.map((c) => (
+              <ListRow key={c.commit_id} to={`/repositories/${c.repository}?sha=${c.sha}`}>
+                <div className="line-clamp-2 font-medium leading-snug">{c.subject}</div>
+                <Meta>
+                  <span className="mono text-[12px] text-ink-2">{short(c.sha, 10)}</span>
+                  <span>{c.repository}</span>
+                  <Diff added={c.insertions} removed={c.deletions} />
+                  {!c.reachable && <span className="text-warn">Unreachable</span>}
+                  <span>{ago(c.committed_at)}</span>
+                </Meta>
+                <div className="mt-1 text-[12px] text-ink-3">
+                  {c.links.map((l, i) => (
+                    <span key={i} className="mr-3" title={JSON.stringify(l.evidence)}>
+                      via {label(l.source)} ({l.confidence.toFixed(2)})
+                    </span>
+                  ))}
+                </div>
+              </ListRow>
+            ))}
+          </List>
+        ) : (
+          <Card>
+            <Empty title="No linked commits">Commits are attributed through Task-ID trailers, agent runs or explicit links.</Empty>
+          </Card>
+        )}
+      </div>
       {showDiff && (
-        <Card title="Diff (read live from Git)">
-          <ErrorBanner error={diff.error} />
+        <Card title="Diff, read live from Git" bodyClass="p-0">
+          <div className="p-4 empty:hidden">
+            <ErrorBanner error={diff.error} />
+          </div>
           {!diff.data && !diff.error && <Skeleton />}
           {diff.data?.parts.map((part, i) => (
-            <div key={i} className="mb-3">
-              <div className="mb-1 text-[12px] font-medium">
-                {part.repository} {part.range ?? short(part.sha, 10)}
+            <div key={i} className="border-t border-line first:border-t-0">
+              <div className="px-4 py-2 text-[13px] font-medium">
+                {part.repository} <span className="mono text-ink-3">{part.range ?? short(part.sha, 10)}</span>
               </div>
-              <pre className="mono max-h-96 overflow-auto rounded bg-slate-900 p-2 text-[11px] text-slate-100">
+              <pre className="mono max-h-[28rem] overflow-auto bg-code px-4 py-3 text-[11.5px] leading-relaxed text-code-ink">
                 {part.diff.split("\n").map((line, n) => (
                   <div
                     key={n}
-                    className={line.startsWith("+") && !line.startsWith("+++") ? "text-emerald-300" : line.startsWith("-") && !line.startsWith("---") ? "text-rose-300" : ""}
+                    className={line.startsWith("+") && !line.startsWith("+++") ? "text-[#7ee2a8]" : line.startsWith("-") && !line.startsWith("---") ? "text-[#ff9aa9]" : line.startsWith("@@") ? "text-[#8fc7ff]" : ""}
                   >
                     {line || " "}
                   </div>
@@ -152,7 +186,7 @@ export function ChangesPanel({ ws, taskKey, repoNames }: { ws: string; taskKey: 
             </div>
           ))}
           {diff.data && diff.data.missing_objects.length > 0 && (
-            <div className="text-[12px] text-amber-700">Some Git objects are no longer available: {JSON.stringify(diff.data.missing_objects)}</div>
+            <div className="px-4 py-3 text-[13px] text-warn">Some Git objects are no longer available: {JSON.stringify(diff.data.missing_objects)}</div>
           )}
         </Card>
       )}
@@ -167,42 +201,43 @@ export function AttemptsPanel({ ws, taskKey }: { ws: string; taskKey: string }) 
   });
   if (attempts.error) return <ErrorBanner error={attempts.error} />;
   if (!attempts.data) return <Skeleton />;
-  if (!attempts.data.items.length) return <Empty title="No attempts yet">Start an agent run or record an attempt via MCP.</Empty>;
+  if (!attempts.data.items.length)
+    return (
+      <Card>
+        <Empty title="No attempts yet">Start an agent run, or report an attempt through MCP.</Empty>
+      </Card>
+    );
   return (
-    <Table head={["#", "Status", "Agent", "Model", "Duration", "Queue", "Usage", "Exit", "Started"]} testId="task-attempts">
+    <List testId="task-attempts">
       {attempts.data.items.map((a) => (
-        <tr key={a.id}>
-          <td className={td}>
-            <Link to={`/execution?attempt=${a.id}`} className="text-sky-700 hover:underline">
-              #{a.number}
-            </Link>
-            {a.parent_attempt_id && <div className="text-[11px] text-slate-400">subagent</div>}
-            {a.retry_of_attempt_id && <div className="text-[11px] text-slate-400">retry</div>}
-          </td>
-          <td className={td}>
+        <ListRow key={a.id} to={`/execution?attempt=${a.id}`} tone={toneOf(a.status)}>
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">Attempt {a.number}</span>
             <StatusBadge status={a.status} />
-          </td>
-          <td className={td}>{a.provider}</td>
-          <td className={`${td} text-slate-500`}>{a.model ?? "—"}</td>
-          <td className={td}>{ms(a.duration_ms)}</td>
-          <td className={td}>{ms(a.queue_wait_ms)}</td>
-          <td className={`${td} text-[12px]`}>
-            {Object.keys(a.usage).length ? (
+            {a.parent_attempt_id && <span className="text-[12px] text-ink-3">Subagent</span>}
+            {a.retry_of_attempt_id && <span className="text-[12px] text-ink-3">Retry</span>}
+            <span className="ml-auto text-[13px] text-ink-3">{ago(a.started_at)}</span>
+          </div>
+          <Meta>
+            <span>
+              {a.provider}
+              {a.model && ` / ${a.model}`}
+            </span>
+            <span>Ran {ms(a.duration_ms)}</span>
+            <span>Queued {ms(a.queue_wait_ms)}</span>
+            {Object.keys(a.usage).length > 0 ? (
               <span title={a.usage_source ?? ""}>
-                {num(a.usage.input_tokens)} in / {num(a.usage.output_tokens)} out
+                {num(a.usage.input_tokens)} in, {num(a.usage.output_tokens)} out
               </span>
             ) : (
-              <span className="text-slate-400">not measured</span>
+              <span>Usage not measured</span>
             )}
-          </td>
-          <td className={`${td} text-[12px]`}>
-            {label(a.exit_reason)}
-            {a.error && <div className="max-w-xs truncate text-rose-700" title={a.error}>{a.error}</div>}
-          </td>
-          <td className={`${td} whitespace-nowrap text-slate-500`}>{ago(a.started_at)}</td>
-        </tr>
+            {a.exit_reason && <span>{sentence(a.exit_reason)}</span>}
+          </Meta>
+          {a.error && <div className="mt-1 line-clamp-2 text-[13px] text-danger">{a.error}</div>}
+        </ListRow>
       ))}
-    </Table>
+    </List>
   );
 }
 
@@ -221,55 +256,68 @@ export function VerificationPanel({ ws, taskKey }: { ws: string; taskKey: string
     onSuccess: () => client.invalidateQueries({ queryKey: ["task"] }),
   });
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="text-[12px] text-slate-500">
-          {checks.data?.length ? `${checks.data.length} approved check(s) apply: ${checks.data.map((c) => c.name).join(", ")}` : "No verification configured — acceptance must be recorded manually."}
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-[14px] text-ink-2">
+          {checks.data?.length
+            ? `${checks.data.length} approved ${checks.data.length === 1 ? "check applies" : "checks apply"}: ${checks.data.map((c) => c.name).join(", ")}`
+            : "No verification is configured, so acceptance has to be recorded manually."}
         </div>
-        <Button size="sm" disabled={!checks.data?.length} busy={verify.isPending} onClick={() => verify.mutate()}>
+        <Button disabled={!checks.data?.length} busy={verify.isPending} onClick={() => verify.mutate()}>
           Run verification
         </Button>
       </div>
       <ErrorBanner error={runs.error ?? verify.error} />
-      {verify.data && <div className="text-[12px] text-slate-500">Queued job {short(verify.data.job_id)} (needs a running worker).</div>}
+      {verify.data && <Meta>Queued job {short(verify.data.job_id)}. A running worker picks it up.</Meta>}
       {!runs.data ? (
         <Skeleton />
       ) : !runs.data.length ? (
-        <Empty title="No verification runs" />
+        <Card>
+          <Empty title="No verification runs" />
+        </Card>
       ) : (
         runs.data.map((run) => (
           <Card
             key={run.id}
             title={
-              <span className="flex items-center gap-2 normal-case tracking-normal">
-                <StatusBadge status={run.status} /> run {short(run.id)} · {ago(run.created_at)} · by {run.triggered_by}
+              <span className="flex flex-wrap items-center gap-2 font-medium">
+                <StatusBadge status={run.status} />
+                <span className="mono text-[13px]">run {short(run.id)}</span>
               </span>
             }
+            actions={<span className="text-[13px] text-ink-3">{ago(run.created_at)}</span>}
             bodyClass="p-0"
+            footer={
+              <>
+                Triggered by {run.triggered_by}. Manifest: {run.manifest.map((m) => `${m.repository}@${short(m.sha ?? "", 10)}`).join(", ") || "none"}
+              </>
+            }
           >
-            <div className="px-3 py-1.5 text-[12px] text-slate-500">
-              manifest: {run.manifest.map((m) => `${m.repository}@${short(m.sha ?? "", 10)}`).join(", ") || "—"}
-            </div>
-            <Table head={["Check", "Kind", "Required", "Status", "Exit", "Duration", "Failures"]}>
+            <ul className="divide-y divide-line">
               {run.checks.map((c) => (
-                <tr key={c.id}>
-                  <td className={td}>
-                    <details>
-                      <summary className="cursor-pointer">{c.name}</summary>
-                      <pre className="mono mt-1 max-h-48 overflow-auto rounded bg-slate-900 p-2 text-[11px] text-slate-100">{c.output_excerpt || "(no output)"}</pre>
-                    </details>
-                  </td>
-                  <td className={td}>{c.kind}</td>
-                  <td className={td}>{c.required ? "required" : "optional"}</td>
-                  <td className={td}>
-                    <StatusBadge status={c.status} />
-                  </td>
-                  <td className={td}>{c.exit_code ?? "—"}</td>
-                  <td className={td}>{ms(c.duration_ms)}</td>
-                  <td className={`${td} mono text-[11px] text-rose-700`}>{c.failure_signatures.join(", ")}</td>
-                </tr>
+                <li key={c.id}>
+                  <details className="group">
+                    <summary className={`rail tone-${toneOf(c.status)} flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-2.5 hover:bg-sunken`}>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-medium">{c.name}</span>
+                          <StatusBadge status={c.status} />
+                        </div>
+                        <Meta>
+                          <span>{c.kind}</span>
+                          <span>{c.required ? "Required" : "Optional"}</span>
+                          <span>Exit {c.exit_code ?? "—"}</span>
+                          <span>{ms(c.duration_ms)}</span>
+                        </Meta>
+                        {c.failure_signatures.length > 0 && <div className="mono mt-1 break-all text-[12px] text-danger">{c.failure_signatures.join(", ")}</div>}
+                      </div>
+                      <span className="text-[12px] text-ink-3 group-open:hidden">Output</span>
+                    </summary>
+                    <pre className="mono max-h-72 overflow-auto bg-code px-4 py-3 text-[11.5px] text-code-ink">{c.output_excerpt || "(no output)"}</pre>
+                  </details>
+                </li>
               ))}
-            </Table>
+            </ul>
           </Card>
         ))
       )}
@@ -301,71 +349,82 @@ export function ClassificationPanel({ ws, taskKey }: { ws: string; taskKey: stri
   if (!data.data) return <Skeleton />;
   const current = data.data.current;
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <ErrorBanner error={request.error ?? confirm.error} />
-      <div className="grid gap-3 md:grid-cols-2">
-        <Card title="Current classification" actions={<Button size="sm" busy={request.isPending} onClick={() => request.mutate()}>Re-classify</Button>}>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card
+          title="Current classification"
+          actions={
+            <Button size="sm" busy={request.isPending} onClick={() => request.mutate()}>
+              Re-classify
+            </Button>
+          }
+          footer={data.data.note}
+        >
           {current ? (
             <KeyValue
               items={[
-                ["category", <strong>{label(current.category)}</strong>],
+                ["category", <strong>{sentence(current.category)}</strong>],
                 ["subtype", current.subtype],
                 ["domain", current.domain],
                 ["complexity", current.complexity],
                 ["confidence", current.confidence !== null ? pct(current.confidence) : null],
-                ["source", current.source === "manual" ? "human-confirmed" : `${current.provider}/${current.model}`],
-                ["prompt / taxonomy", `${current.prompt_version ?? "—"} / ${current.taxonomy_version}`],
+                ["source", current.source === "manual" ? "Confirmed by a person" : `${current.provider}/${current.model}`],
+                ["prompt, taxonomy", `${current.prompt_version ?? "—"}, ${current.taxonomy_version}`],
                 ["rationale", current.rationale],
               ]}
             />
           ) : (
             <Empty title="Not classified yet" />
           )}
-          {request.isSuccess && <div className="mt-2 text-[12px] text-slate-500">Classification job queued.</div>}
-          <p className="mt-2 text-[11px] text-slate-400">{data.data.note}</p>
+          {request.isSuccess && <div className="mt-3 text-[13px] text-ink-3">Classification job queued.</div>}
         </Card>
-        <Card title="Confirm manually">
+        <Card title="Confirm manually" footer="A person's classification is authoritative and joins the gold evaluation set.">
           <form
-            className="space-y-2"
+            className="space-y-3"
             onSubmit={(e) => {
               e.preventDefault();
               confirm.mutate();
             }}
           >
-            <select aria-label="Confirmed category" className={inputClass} value={category} onChange={(e) => setCategory(e.target.value)} required>
-              <option value="">choose category…</option>
+            <select aria-label="Confirmed category" className={`${selectClass} w-full`} value={category} onChange={(e) => setCategory(e.target.value)} required>
+              <option value="">Choose a category…</option>
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
-                  {label(c)}
+                  {sentence(c)}
                 </option>
               ))}
             </select>
-            <input className={inputClass} placeholder="note (optional)" value={note} onChange={(e) => setNote(e.target.value)} />
-            <Button type="submit" variant="primary" size="sm" busy={confirm.isPending} disabled={!category}>
+            <input className={inputClass} placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} />
+            <Button type="submit" variant="primary" className="w-full sm:w-auto" busy={confirm.isPending} disabled={!category}>
               Confirm classification
             </Button>
-            <p className="text-[11px] text-slate-400">Human classifications are authoritative and join the gold evaluation set.</p>
           </form>
         </Card>
       </div>
-      <Card title={`History${data.data.disagreement ? " — models disagree" : ""}`} bodyClass="p-0">
-        <Table head={["When", "Source", "Model", "Category", "Confidence", "Validation", "Current"]}>
+      <div>
+        <h3 className="mb-2 px-1 text-[15px] font-semibold">
+          History{data.data.disagreement && <span className="ml-2 text-[13px] font-normal text-warn">Models disagree</span>}
+        </h3>
+        <List>
           {data.data.history.map((c) => (
-            <tr key={c.id}>
-              <td className={`${td} text-slate-500`}>{ago(c.created_at)}</td>
-              <td className={td}>{c.source}</td>
-              <td className={`${td} text-[12px]`}>{c.provider ? `${c.provider}/${c.model}` : "—"}</td>
-              <td className={td}>{label(c.category)}</td>
-              <td className={td}>{c.confidence !== null ? pct(c.confidence) : "—"}</td>
-              <td className={`${td} text-[12px]`}>
-                {c.validation_status}
-                {c.error && <div className="text-rose-700">{c.error}</div>}
-              </td>
-              <td className={td}>{c.is_current ? "✓" : ""}</td>
-            </tr>
+            <ListRow key={c.id} tone={c.is_current ? "done" : undefined}>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-medium">{sentence(c.category)}</span>
+                {c.is_current && <span className="text-[12px] font-medium text-ok">Current</span>}
+                <span className="ml-auto text-[13px] text-ink-3">{ago(c.created_at)}</span>
+              </div>
+              <Meta>
+                <span>{c.source}</span>
+                {c.provider && <span>{`${c.provider}/${c.model}`}</span>}
+                {c.confidence !== null && <span>{pct(c.confidence)} confidence</span>}
+                <span>{c.validation_status}</span>
+              </Meta>
+              {c.error && <div className="mt-1 text-[13px] text-danger">{c.error}</div>}
+            </ListRow>
           ))}
-        </Table>
-      </Card>
+        </List>
+      </div>
     </div>
   );
 }
@@ -401,74 +460,83 @@ export function InsightsPanel({ ws, taskKey }: { ws: string; taskKey: string }) 
   const estimate = useQuery({ queryKey: ["task", ws, taskKey, "estimate"], queryFn: () => get<EstimateResult>(`/ws/${ws}/tasks/${taskKey}/estimate`) });
   const fmt = (name: string, v: number | null) => (v === null ? "—" : name.endsWith("_ms") ? ms(v) : num(v));
   return (
-    <div className="grid gap-3 lg:grid-cols-2">
-      <Card title={`Similar tasks${similar.data ? ` (${similar.data.method})` : ""}`} bodyClass="p-0">
+    <div className="grid gap-4 lg:grid-cols-2">
+      <div className="min-w-0">
+        <h3 className="mb-2 px-1 text-[15px] font-semibold">
+          Similar tasks {similar.data && <span className="font-normal text-ink-3">by {similar.data.method}</span>}
+        </h3>
         <ErrorBanner error={similar.error} />
         {!similar.data ? (
           !similar.error && <Skeleton />
         ) : similar.data.similar.length ? (
-          <Table head={["Task", "Score", "Status", "Implementation"]}>
+          <List>
             {similar.data.similar.map((s) => (
-              <tr key={s.task_id}>
-                <td className={td}>
-                  <Link to={`/tasks/${s.key}`} className="mono text-[12px] text-sky-700 hover:underline">
-                    {s.key}
-                  </Link>{" "}
-                  {s.title}
-                </td>
-                <td className={td}>{s.score.toFixed(2)}</td>
-                <td className={td}>
+              <ListRow key={s.task_id} to={`/tasks/${s.key}`} tone={toneOf(s.status)}>
+                <div className="flex items-center gap-2">
+                  <span className="mono text-[13px] text-ink-3">{s.key}</span>
                   <StatusBadge status={s.status} />
-                </td>
-                <td className={`${td} mono text-[11px]`}>{s.implementation.map((i) => short(i.sha, 8)).join(" ")}</td>
-              </tr>
+                  <span className="ml-auto text-[13px] text-ink-3 tnum">score {s.score.toFixed(2)}</span>
+                </div>
+                <div className="mt-1 line-clamp-2 font-medium leading-snug">{s.title}</div>
+                {s.implementation.length > 0 && <Meta className="mono text-[12px]">{s.implementation.map((i) => short(i.sha, 8)).join(" ")}</Meta>}
+              </ListRow>
             ))}
-          </Table>
+          </List>
         ) : (
-          <div className="p-3">
+          <Card>
             <Empty title="No comparable tasks yet" />
-          </div>
+          </Card>
         )}
-      </Card>
+      </div>
       <Card title="Historical estimate">
         <ErrorBanner error={estimate.error} />
         {!estimate.data ? (
           !estimate.error && <Skeleton />
         ) : estimate.data.status !== "ok" ? (
-          <div className="space-y-1 text-sm">
-            <div className="font-medium text-amber-700">Insufficient data</div>
-            <div className="text-slate-600">{estimate.data.message}</div>
+          <div className="space-y-1 text-[14px]">
+            <div className="font-medium text-warn">Not enough data</div>
+            <div className="text-ink-2">{estimate.data.message}</div>
           </div>
         ) : (
-          <div className="space-y-2 text-[12px]">
-            <div className="text-slate-500">
+          <div className="space-y-4 text-[13px]">
+            <p className="text-ink-2">
               Based on {estimate.data.sample_size} comparable tasks ({estimate.data.method}). {estimate.data.uncertainty}
-            </div>
-            <Table head={["Measure", "n", "p25", "median", "p75", "p90"]}>
+            </p>
+            <div className="space-y-2">
               {Object.entries(estimate.data.distributions ?? {}).map(([name, d]) => (
-                <tr key={name}>
-                  <td className={td}>{label(name)}</td>
-                  <td className={td}>{d.n}</td>
-                  <td className={td}>{fmt(name, d.p25)}</td>
-                  <td className={`${td} font-medium`}>{fmt(name, d.median)}</td>
-                  <td className={td}>{fmt(name, d.p75)}</td>
-                  <td className={td}>{fmt(name, d.p90)}</td>
-                </tr>
-              ))}
-            </Table>
-            <div>
-              <div className="font-medium text-slate-600">Basis</div>
-              {estimate.data.basis?.map((b) => (
-                <div key={b.key}>
-                  <Link to={`/tasks/${b.key}`} className="mono text-sky-700">
-                    {b.key}
-                  </Link>{" "}
-                  {b.reasons.join("; ")}
+                <div key={name} className="rounded-xl bg-sunken p-3">
+                  <div className="flex items-baseline justify-between">
+                    <span className="font-medium">{sentence(name.replace(/_ms$/, ""))}</span>
+                    <span className="text-ink-3">n = {d.n}</span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-4 gap-1 text-center">
+                    {(["p25", "median", "p75", "p90"] as const).map((k) => (
+                      <div key={k}>
+                        <div className="text-[11px] text-ink-3">{k}</div>
+                        <div className={`tnum ${k === "median" ? "font-semibold" : ""}`}>{fmt(name, d[k])}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
+            {!!estimate.data.basis?.length && (
+              <div>
+                <div className="mb-1 font-medium text-ink-2">Basis</div>
+                <ul className="space-y-1">
+                  {estimate.data.basis.map((b) => (
+                    <li key={b.key}>
+                      <Link to={`/tasks/${b.key}`} className="mono text-accent">
+                        {b.key}
+                      </Link>{" "}
+                      <span className="text-ink-2">{b.reasons.join("; ")}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {estimate.data.caveats?.map((c) => (
-              <p key={c} className="text-[11px] text-slate-400">
+              <p key={c} className="text-[12px] text-ink-3">
                 {c}
               </p>
             ))}

@@ -154,7 +154,7 @@ describe("GraphPage", () => {
     await waitFor(() => expect(screen.getByTestId("graph-counts")).toHaveTextContent("2 tasks · 2 linked · 1 edges"));
     const graphCall = calls.find((c) => c.path === "/ws/main/graph")!;
     expect(graphCall.search.get("repository")).toBe("rho");
-    expect(screen.getByRole("checkbox", { name: /linked only/ })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: /linked only/i })).toBeChecked();
   });
 
   it("hides closed tasks by default and counts groups", async () => {
@@ -168,7 +168,7 @@ describe("GraphPage", () => {
     });
     renderPage(<GraphPage />, { path: "/graph", route: "/graph" });
     await waitFor(() => expect(screen.getByTestId("graph-counts")).toHaveTextContent("3 tasks · 2 linked · 1 edges · 1 groups"));
-    expect(screen.getByRole("checkbox", { name: /open only/ })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: /open only/i })).toBeChecked();
     expect(screen.getByRole("combobox", { name: "Grouping" })).toHaveValue("parent");
   });
 });

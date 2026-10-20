@@ -105,6 +105,6 @@ export function renderMarkdown(source: string): ReactNode[] {
 }
 
 export function Markdown({ source, className = "" }: { source: string; className?: string }) {
-  if (!source.trim()) return <p className="text-slate-400 italic">No description.</p>;
+  if (!source.trim()) return <p className="text-ink-3 italic">No description.</p>;
   return <div className={`markdown ${className}`}>{renderMarkdown(source)}</div>;
 }

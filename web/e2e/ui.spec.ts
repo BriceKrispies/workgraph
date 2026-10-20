@@ -29,7 +29,7 @@ test("tasks list and task detail show commits and attempts", async ({ page }) =>
   await page.goto(`${base()}/tasks`);
   const table = page.getByTestId("tasks-table");
   await expect(table).toBeVisible();
-  const rows = table.locator("tbody tr");
+  const rows = table.getByTestId("task-row");
   expect(await rows.count()).toBeGreaterThan(0);
   // Open an accepted task: it has linked commits and attempts.
   await page.getByLabel("Status").selectOption("accepted");
@@ -38,7 +38,7 @@ test("tasks list and task detail show commits and attempts", async ({ page }) =>
   await expect(page.getByTestId("history")).toBeVisible();
   await page.getByRole("tab", { name: "Commits & changes" }).click();
   await expect(page.getByTestId("task-commits")).toBeVisible();
-  expect(await page.getByTestId("task-commits").locator("tbody tr").count()).toBeGreaterThan(0);
+  expect(await page.getByTestId("task-commits").locator("li").count()).toBeGreaterThan(0);
   await expect(page.getByText("Cumulative churn")).toBeVisible();
   await page.getByRole("tab", { name: "Attempts" }).click();
   await expect(page.getByTestId("task-attempts")).toBeVisible();
@@ -62,16 +62,16 @@ test("graph, analytics and automation pages render data", async ({ page }) => {
   await page.goto(`${base()}/automation`);
   await expect(page.getByRole("tab", { name: "Rules" })).toBeVisible();
   await page.getByRole("tab", { name: "Jobs" }).click();
-  await expect(page.getByRole("button", { name: /^all/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^all/i })).toBeVisible();
 
   await page.goto(`${base()}/execution`);
   await expect(page.getByTestId("attempts")).toBeVisible();
-  await page.getByTestId("attempts").locator("tbody tr").first().click();
+  await page.getByTestId("attempts").locator("li [role=button]").first().click();
   await expect(page.getByTestId("attempt-progress")).toBeVisible();
 
   await page.goto(`${base()}/repositories`);
   await expect(page.getByTestId("repositories")).toBeVisible();
-  await page.getByTestId("repositories").locator("tbody tr a").first().click();
+  await page.getByTestId("repositories").locator("li a").first().click();
   await expect(page.getByTestId("repo-commits")).toBeVisible();
 
   await page.goto(`${base()}/settings`);

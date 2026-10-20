@@ -44,3 +44,9 @@ export function pct(value: number | string | null | undefined): string {
 
 export const short = (value: string | null | undefined, n = 8) => (value ? value.slice(0, n) : "");
 export const label = (value: string | null | undefined) => (value ? value.replace(/_/g, " ") : "—");
+
+/** "awaiting_review" -> "Awaiting review" */
+export const sentence = (value: string | null | undefined) => {
+  const text = label(value);
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};

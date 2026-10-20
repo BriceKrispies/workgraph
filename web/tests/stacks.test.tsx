@@ -141,7 +141,7 @@ describe("StackDetailPage", () => {
     expect(repos).toHaveTextContent("fedcba987654");
 
     const rows = within(screen.getByTestId("stack-items")).getAllByTestId("stack-item");
-    expect(rows.map((r) => r.querySelector("td")?.textContent)).toEqual(["1", "2", "3", "—"]);
+    expect(rows.map((r) => within(r).getByTestId("merge-order").textContent)).toEqual(["1", "2", "3", "—"]);
     expect(rows[1]).toHaveTextContent("WG-3");
     expect(within(rows[1]).getByTestId("state-conflict")).toBeInTheDocument();
     expect(rows[1]).toHaveTextContent("Conflict in svc: src/auth.py, src/session.py");

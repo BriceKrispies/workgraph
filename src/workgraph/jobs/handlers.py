@@ -104,7 +104,9 @@ def stack_integrate(app: Workgraph, job: JobContext) -> dict[str, Any]:
 
 
 def stack_verify(app: Workgraph, job: JobContext) -> dict[str, Any]:
-    return app.stack_verification.verify(_ctx(job, "stacks"), job.job.payload["stack_id"])
+    return app.stack_verification.verify(
+        _ctx(job, "stacks"), job.job.payload["stack_id"], should_cancel=job.cancel_requested
+    )
 
 
 def decompose_task(app: Workgraph, job: JobContext) -> dict[str, Any]:

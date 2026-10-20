@@ -1334,6 +1334,21 @@ def test_landing_releases_an_ejected_child_and_lands_the_verified_rest(app, huma
     )
 
 
+def test_a_manual_ejection_cancels_the_stacks_queued_verification_jobs(app, human, ws, tree, manual_landing):
+    repo, parent = tree
+    _, second, stack = _verified_stack(app, human, ws, parent)
+    requested = app.stack_verification.request(human, ws, parent.key)["job_id"]
+
+    app.stack_verification.eject(human, ws, parent.key, second.key, "evidence names the second change")
+
+    with app.db.session() as session:
+        assert str(session.get(Job, requested).status) == "cancelled"
+    drain(app)
+    assert app.stacks.get(human, ws, parent.key).status == "verified"
+    assert _items(app, human, ws, parent)[second.key].state == "ejected"
+    assert "b.py" not in _branch_files(repo, stack.repositories[0].integration_branch)
+
+
 def test_readmit_refuses_an_attempt_branch_that_moved_after_submit(app, human, ws, tree, manual_landing):
     import re
 

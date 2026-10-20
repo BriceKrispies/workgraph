@@ -64,6 +64,7 @@ from workgraph.integrations.git.stack_integration import (
 from workgraph.jobs import queue as jobqueue
 from workgraph.jobs.limits import stack_key, verify_key
 from workgraph.persistence.orm import (
+    Job,
     ManagedWorktree,
     Repository,
     RevisionManifest,
@@ -147,6 +148,10 @@ def _tail(excerpt: str, lines: int = 20) -> str:
     return "\n".join(excerpt.splitlines()[-lines:])
 
 
+def _cancelled(should_cancel: Callable[[], bool] | None) -> bool:
+    return should_cancel is not None and should_cancel()
+
+
 def _is_absolute(specs: dict[str, CheckSpec], name: str) -> bool:
     spec = specs.get(name)
     return spec is None or spec.baseline == "absolute"
@@ -226,8 +231,14 @@ class StackVerifier(Service):
 
     # ------------------------------------------------------------------ job
 
-    def verify(self, ctx: RequestContext, stack_id: str) -> dict[str, Any]:
-        """Verify the integration tip once the stack has settled; bisect and eject on failure."""
+    def verify(
+        self, ctx: RequestContext, stack_id: str, *, should_cancel: Callable[[], bool] | None = None
+    ) -> dict[str, Any]:
+        """Verify the integration tip once the stack has settled; bisect and eject on failure.
+
+        A cancelled job (``should_cancel`` turns true, as after a manual ejection) records no verdict: it
+        stops at the next check boundary, so the integration of readmitted children is not held behind it.
+        """
         with self.db.session() as session:
             stack = session.get(Stack, stack_id)
             if stack is None or stack.status in INACTIVE_STACK_STATUSES:
@@ -282,9 +293,12 @@ class StackVerifier(Service):
             tier="full",
             check_filter=keep,
             event_context={"stack": {"id": stack_id, "tips": tips}},
+            should_cancel=should_cancel,
         )
         for path in paths.values():
             Git(path).run("clean", "-ffdx", check=False)
+        if _cancelled(should_cancel):
+            return {"status": "cancelled", "run_id": run.id}
         errored = _errored_checks(run)
         if errored:
             return self._verification_errored(
@@ -322,7 +336,9 @@ class StackVerifier(Service):
                 reason="no new failures against the base",
                 extra={"tolerated": tolerated},
             )
-        return self._bisect(ctx, stack_id, parent_id, repos, targets, run, tips, base, specs)
+        return self._bisect(
+            ctx, stack_id, parent_id, repos, targets, run, tips, base, specs, should_cancel=should_cancel
+        )
 
     # ------------------------------------------------------------------ errored
 
@@ -454,6 +470,8 @@ class StackVerifier(Service):
         tips: dict[str, str],
         base: dict[str, CheckOutcome],
         specs: dict[str, CheckSpec],
+        *,
+        should_cancel: Callable[[], bool] | None = None,
     ) -> dict[str, Any]:
         failing = regressions(tip_run, base, specs)
         failed = _failed_checks(tip_run)
@@ -503,11 +521,24 @@ class StackVerifier(Service):
         low, high, high_run = 0, len(sequence), tip_run
         with self._worktrees(ctx, targets) as bisect:
             while high - low > 1:
+                if _cancelled(should_cancel):
+                    return {"status": "cancelled"}
                 middle = (low + high) // 2
                 shas = _prefix_shas(bases, sequence, middle)
                 run = self._probe(
-                    ctx, stack_id, parent_id, targets, bisect, shas, set(failing), in_scope, middle
+                    ctx,
+                    stack_id,
+                    parent_id,
+                    targets,
+                    bisect,
+                    shas,
+                    set(failing),
+                    in_scope,
+                    middle,
+                    should_cancel=should_cancel,
                 )
+                if _cancelled(should_cancel):
+                    return {"status": "cancelled"}
                 errored = _errored_checks(run)
                 if errored:
                     return self._verification_errored(
@@ -541,6 +572,8 @@ class StackVerifier(Service):
                     low = middle
                 else:
                     high, high_run = middle, run
+        if _cancelled(should_cancel):
+            return {"status": "cancelled"}
         culprit = sequence[high - 1]
         task_key = self._eject(ctx, stack_id, culprit, high, high_run, regressions(high_run, base, specs))
         self.rebuild(ctx, stack_id, targets, repos)
@@ -607,8 +640,28 @@ class StackVerifier(Service):
         ejection = {"manual": True, "reason": reason}
         comment = f"Ejected from stack {{parent}} by {ctx.actor}: {reason}"
         task_key = self._apply_ejection(ctx, culprit, ejection, comment, reason=reason)
+        # The ejection supersedes any verification or bisection of the stack's previous state. Their queued
+        # jobs are cancelled and a running one stops at its next check boundary; the rebuild then queues a
+        # fresh verification of the rebuilt tip.
+        self._cancel_verify_jobs(stack_id)
         self.app.stack_lander.rebuild_without(ctx, stack_id)
         return {"status": "ejected", "task": task_key, "stack_id": stack_id}
+
+    def _cancel_verify_jobs(self, stack_id: str) -> list[str]:
+        """Cancel the stack's queued ``stack_verify`` jobs and request cancellation of a running one."""
+        with self.db.session() as session:
+            job_ids = [
+                job_id
+                for job_id, payload in session.execute(
+                    select(Job.id, Job.payload).where(
+                        Job.kind == "stack_verify", Job.status.in_(["queued", "running"])
+                    )
+                ).all()
+                if payload.get("stack_id") == stack_id
+            ]
+        for job_id in job_ids:
+            self.app.queue.cancel(job_id)
+        return job_ids
 
     def _apply_ejection(
         self, ctx: RequestContext, culprit: _Entry, ejection: dict[str, Any], comment: str, *, reason: str
@@ -897,6 +950,8 @@ class StackVerifier(Service):
         names: set[str],
         in_scope: Callable[[ApplicableCheck], bool],
         position: int,
+        *,
+        should_cancel: Callable[[], bool] | None = None,
     ) -> VerificationRunOut:
         """Check out one revision in the bisect worktrees and run the named full checks there."""
         for name, sha in shas.items():
@@ -913,6 +968,7 @@ class StackVerifier(Service):
             tier="full",
             check_filter=lambda check: in_scope(check) and check.spec.name in names,
             event_context={"stack": {"id": stack_id, "position": position, "shas": shas}},
+            should_cancel=should_cancel,
         )
 
     @contextmanager

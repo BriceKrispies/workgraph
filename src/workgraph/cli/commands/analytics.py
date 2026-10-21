@@ -246,6 +246,128 @@ def subagents(
     emit(result, human)
 
 
+@analytics_app.command("time")
+@handle_errors
+def agent_time(
+    since: datetime | None = typer.Option(None, help="Inclusive start date (UTC)"),
+    until: datetime | None = typer.Option(None, help="Exclusive end date (UTC)"),
+    by: str = typer.Option("class", "--by", help="class, model, task or description"),
+    model: str | None = typer.Option(None, "--model", help="Only runs of this model"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Where subagent wall time went: share by tool class, or per model, task or agent description."""
+    result = STATE.app().agent_time.breakdown(
+        STATE.ctx(), ws(workspace), since=since, until=until, by=cast(Any, by), model=model
+    )
+
+    def human(r: dict[str, Any]) -> None:
+        totals = r["totals"]
+        console.print(
+            f"{totals['runs']} runs, {totals['accounted_seconds'] / 3600:.2f} agent-hours accounted "
+            f"(model {_share_text(totals['model_share'])}, waiting {_share_text(totals['waiting_share'])}, "
+            f"polling {_share_text(totals['polling_share'])})"
+        )
+        if r["by"] == "class":
+            table(
+                [
+                    (
+                        row["class"],
+                        row["kind"],
+                        f"{row['seconds'] / 60:.1f}",
+                        row["calls"],
+                        _share_text(row["share"]),
+                    )
+                    for row in r["rows"]
+                ],
+                ["class", "kind", "minutes", "calls", "share"],
+                title="subagent time by class",
+            )
+        else:
+            table(
+                [
+                    (
+                        row["key"],
+                        row["runs"],
+                        f"{row['accounted_seconds'] / 60:.1f}",
+                        f"{row['waiting_seconds'] / 60:.1f}",
+                        _share_text(row["polling_share"]),
+                        ", ".join(f"{c['class']} {c['seconds'] / 60:.1f}m" for c in row["top_classes"]),
+                    )
+                    for row in r["rows"]
+                ],
+                [by, "runs", "minutes", "waiting min", "polling", "top classes"],
+                title=f"subagent time by {by}",
+            )
+        for note in r["notes"]:
+            console.print(f"[dim]note: {note}[/dim]")
+
+    emit(result, human)
+
+
+@analytics_app.command("bottlenecks")
+@handle_errors
+def bottlenecks(
+    since: datetime | None = typer.Option(None, help="Inclusive start date (UTC)"),
+    until: datetime | None = typer.Option(None, help="Exclusive end date (UTC)"),
+    top: int = typer.Option(15, help="How many slowest calls and tasks to show"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """What slows subagents down: time by class, the slowest calls with live-agent concurrency, and per-task wall time."""
+    result = STATE.app().agent_time.bottlenecks(STATE.ctx(), ws(workspace), since=since, until=until, top=top)
+
+    def human(r: dict[str, Any]) -> None:
+        totals = r["totals"]
+        console.print(
+            f"{totals['runs']} runs, {totals['span_seconds'] / 3600:.2f} agent-hours of wall time; "
+            f"peak concurrency {r['concurrency']['peak_during_window']} agents; "
+            f"waiting {_share_text(totals['waiting_share'])} and polling {_share_text(totals['polling_share'])} "
+            "of accounted time"
+        )
+        table(
+            [
+                (row["class"], row["kind"], f"{row['seconds'] / 60:.1f}", _share_text(row["share"]))
+                for row in r["classes"]
+            ],
+            ["class", "kind", "minutes", "share"],
+            title="share of time by class",
+        )
+        table(
+            [
+                (
+                    f"{call['seconds']:.0f}",
+                    call["class"],
+                    "-" if call["concurrent_runs"] is None else call["concurrent_runs"],
+                    call["description"],
+                    (call["command"] or "")[:70],
+                )
+                for call in r["slowest_calls"]
+            ],
+            ["seconds", "class", "concurrent", "agent", "call"],
+            title="slowest calls",
+        )
+        table(
+            [
+                (
+                    row["key"],
+                    row["runs"],
+                    f"{row['span_seconds'] / 60:.1f}",
+                    ", ".join(f"{c['class']} {c['seconds'] / 60:.1f}m" for c in row["top_classes"]),
+                )
+                for row in r["by_task"]
+            ],
+            ["task", "runs", "wall min", "top classes"],
+            title="agent wall time by task",
+        )
+        for note in r["notes"]:
+            console.print(f"[dim]note: {note}[/dim]")
+
+    emit(result, human)
+
+
+def _share_text(share: float | None) -> str:
+    return "-" if share is None else f"{share * 100:.1f}%"
+
+
 def _rate_text(rate: float | None, interval: list[float] | None) -> str:
     if rate is None or interval is None:
         return "-"

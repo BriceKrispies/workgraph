@@ -21,6 +21,7 @@ from workgraph.persistence import migrate
 from workgraph.persistence.db import Database
 
 if TYPE_CHECKING:
+    from workgraph.analytics.agent_time import AgentTimeReport
     from workgraph.analytics.service import AnalyticsService
     from workgraph.analytics.subagents import SubagentReport
     from workgraph.automation.engine import AutomationService
@@ -300,6 +301,12 @@ class Workgraph:
         from workgraph.analytics.subagents import SubagentReport
 
         return SubagentReport(self)
+
+    @cached_property
+    def agent_time(self) -> AgentTimeReport:
+        from workgraph.analytics.agent_time import AgentTimeReport
+
+        return AgentTimeReport(self)
 
     @cached_property
     def hooks(self) -> HookIngestor:

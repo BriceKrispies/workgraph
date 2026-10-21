@@ -391,6 +391,31 @@ def analytics_failures(app: AppDep, ctx: CtxDep, ws: str) -> Any:
     return app.analytics.failures(ctx, ws)
 
 
+@router.get("/ws/{ws}/analytics/agent-time")
+def analytics_agent_time(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    since: datetime | None = None,
+    until: datetime | None = None,
+    by: Literal["class", "model", "task", "description"] = "class",
+    model: str | None = None,
+) -> Any:
+    return app.agent_time.breakdown(ctx, ws, since=since, until=until, by=by, model=model)
+
+
+@router.get("/ws/{ws}/analytics/bottlenecks")
+def analytics_bottlenecks(
+    app: AppDep,
+    ctx: CtxDep,
+    ws: str,
+    since: datetime | None = None,
+    until: datetime | None = None,
+    top: int = Query(15, ge=1, le=100),
+) -> Any:
+    return app.agent_time.bottlenecks(ctx, ws, since=since, until=until, top=top)
+
+
 @router.get("/ws/{ws}/analytics/history")
 def analytics_history(
     app: AppDep,

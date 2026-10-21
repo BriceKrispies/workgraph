@@ -22,6 +22,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, NamedTuple
 
+from workgraph.integrations.claude_code.timing import breakdown
+
 SYNTHETIC_MODEL = "<synthetic>"
 USAGE_FIELDS = ("input_tokens", "output_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")
 TASK_KEY_RE = re.compile(r"^[ \t]*Task-ID:[ \t]*([A-Z][A-Z0-9]{0,9}-\d+)\b", re.MULTILINE)
@@ -45,6 +47,7 @@ class TranscriptStats:
     requested_model: str | None = None  # sidecar: the alias the parent asked for
     description: str | None = None  # sidecar
     agent_type: str | None = None  # sidecar
+    time: dict[str, Any] | None = None  # where the wall time went (see timing.py)
 
     def telemetry(self) -> dict[str, Any]:
         """JSON-safe dict of every field except ``usage``, which has its own column."""
@@ -63,6 +66,7 @@ class TranscriptStats:
             "ended_at": self.ended_at,
             "description": self.description,
             "agent_type": self.agent_type,
+            "time": self.time,
         }
 
 
@@ -82,6 +86,7 @@ def parse_transcript(path: str | Path) -> TranscriptStats | None:
     meta = _read_sidecar(transcript)
 
     turns: dict[str, _Turn] = {}
+    records: list[Any] = []
     tool_uses: dict[str, str] = {}
     tool_errors = 0
     prompt: str | None = None
@@ -95,6 +100,7 @@ def parse_transcript(path: str | Path) -> TranscriptStats | None:
             continue
         if not isinstance(record, dict):
             continue
+        records.append(record)
         timestamp = record.get("timestamp")
         if isinstance(timestamp, str):
             started_at = started_at or timestamp
@@ -152,6 +158,7 @@ def parse_transcript(path: str | Path) -> TranscriptStats | None:
         requested_model=_text_field(meta, "model"),
         description=_text_field(meta, "description"),
         agent_type=_text_field(meta, "agentType"),
+        time=breakdown(records),
     )
 
 

@@ -99,6 +99,10 @@ event is recorded. Its status is left alone, because the orchestrator finishes i
 attempt exists is a finished top-level attempt created for the task (adapter `claude_code_subagent`).
 Finished attempts are never reused. A missing or unreadable transcript leaves the run unchanged.
 
+The transcript's timestamps also give the run's wall-time breakdown (`telemetry.time`: seconds and calls per
+tool class, model and waiting time, and the ten slowest calls). Runs stored before this existed get it from
+`workgraph claude backfill-time`, which fills only that key.
+
 Transcripts that were not readable when the hook fired (or that predate this) can be applied later:
 
 ```sh
@@ -107,3 +111,6 @@ uv run workgraph claude backfill-transcripts [--limit N]
 
 It processes runs with a transcript path and no model, prints `parsed`, `missing`, `linked` and
 `attempts_created`, and is idempotent.
+
+`uv run workgraph claude backfill-time [--limit N]` stores the wall-time breakdown (`telemetry.time`) on
+runs that lack it, reading the same transcripts. It writes nothing else and is idempotent.

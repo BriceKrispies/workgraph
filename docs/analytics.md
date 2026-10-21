@@ -145,6 +145,23 @@ change surface and no linked commits, or with zero changed lines, is in the `unk
 
 To link runs, start the subagent prompt with `Task-ID: <KEY>` as its first line.
 
+## Where subagent time goes
+
+`workgraph analytics time [--since] [--until] [--by class|model|task|description] [--model M]`
+(MCP: `analytics_agent_time`) splits the measured wall time of subagent runs. `analytics bottlenecks [--since]
+[--until] [--top N]` (MCP: `analytics_bottlenecks`) adds the slowest calls, the number of subagent runs live
+when each one ran, and agent wall time per task. The web Analytics page shows the same under "Agents & models".
+
+The breakdown is computed from each run's transcript when it is read (`integrations/claude_code/timing.py`).
+Every tool call is paired with its result by id, so its duration is measured. Model time is the gap before each
+assistant message. Waiting is the gap from a turn that ended without a tool call to the notification that
+resumed the agent. Calls are classified by the `TOOL_CLASSES` table, which is data: a shell command takes the
+first class whose pattern matches it. Shares are of accounted time (tool + model + waiting), so they sum to 1.
+
+Concurrency is machine-wide: it counts every stopped subagent run, in any workspace, whose interval contains
+the call's start. Runs recorded before this breakdown existed have none; `workgraph claude backfill-time`
+computes it from their transcripts. It is idempotent and writes only `telemetry.time`.
+
 ## Measurements versus interpretations
 
 | Measured (facts) | Interpreted (model output) |

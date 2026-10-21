@@ -1,9 +1,33 @@
 import { useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { get, post } from "../api/client";
-import { CATEGORIES, type AnalyticsResult, type MetricDefinition, type Project, type Row } from "../api/types";
-import { Button, Card, Empty, ErrorBanner, Field, List, ListRow, Meta, PageHeader, Skeleton, Tabs, inputBase, selectClass } from "../components/ui";
+import {
+  CATEGORIES,
+  type AnalyticsResult,
+  type Bottlenecks,
+  type MetricDefinition,
+  type Project,
+  type Row,
+  type SlowCall,
+} from "../api/types";
+import {
+  Button,
+  Card,
+  Empty,
+  ErrorBanner,
+  Field,
+  List,
+  ListRow,
+  Meta,
+  PageHeader,
+  Skeleton,
+  Table,
+  Tabs,
+  inputBase,
+  selectClass,
+  td,
+} from "../components/ui";
 import { CategoryBars, Distribution, PeriodSeries } from "../features/charts";
 import { useWorkspace } from "../hooks/workspace";
 import { label, ms, num, pct, sentence } from "../lib/format";
@@ -66,7 +90,11 @@ function MetricCard({
 
 export function AnalyticsPage() {
   const { ws } = useWorkspace();
-  const [tab, setTab] = useState<TabId>("throughput");
+  const [params, setParams] = useSearchParams();
+  const tabs: TabId[] = ["throughput", "execution", "agents", "code", "coupling", "failures", "history", "definitions"];
+  const requested = params.get("tab") as TabId | null;
+  const tab: TabId = requested && tabs.includes(requested) ? requested : "throughput";
+  const setTab = (next: TabId) => setParams(next === "throughput" ? {} : { tab: next });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>({ since: "", until: "", category: "", project: "" });
   const projects = useQuery({ queryKey: ["projects", ws], queryFn: () => get<Project[]>(`/ws/${ws}/projects`) });
@@ -244,6 +272,70 @@ function Figure({ name, value, strong }: { name: string; value: ReactNode; stron
   );
 }
 
+function AgentTime({ ws, filters }: { ws: string; filters: Filters }) {
+  const since = filters.since ? new Date(filters.since).toISOString() : null;
+  const until = filters.until ? new Date(filters.until).toISOString() : null;
+  const report = useQuery({
+    queryKey: ["agent-time", ws, since, until],
+    queryFn: () => get<Bottlenecks>(`/ws/${ws}/analytics/bottlenecks`, { since, until, top: 10 }),
+  });
+  const data = report.data;
+  const minutes = (seconds: number) => `${(seconds / 60).toFixed(1)} min`;
+  return (
+    <Card title="Where subagent time goes" className="lg:col-span-2">
+      <ErrorBanner error={report.error} />
+      {!data ? (
+        report.isLoading ? <Skeleton /> : null
+      ) : data.totals.runs === 0 ? (
+        <Empty title="No timed subagent runs in this window" />
+      ) : (
+        <div className="space-y-4">
+          <p className="text-[12px] text-slate-600">
+            {data.totals.runs} runs, {(data.totals.span_seconds / 3600).toFixed(2)} agent-hours of wall time. Waiting on background work{" "}
+            {pct(data.totals.waiting_share)}, polling loops {pct(data.totals.polling_share)}, model {pct(data.totals.model_share)} of accounted
+            time. Peak concurrency {data.concurrency.peak_during_window} live agents.
+          </p>
+          <CategoryBars
+            height={200}
+            rows={data.classes.map((row) => ({ class: label(row.class), minutes: row.seconds / 60 }) as Row)}
+            category="class"
+            value="minutes"
+            format={(v) => `${v.toFixed(0)} min`}
+          />
+          <Table head={["Seconds", "Class", "Live agents", "Agent", "Call"]} testId="slowest-calls">
+            {data.slowest_calls.map((call: SlowCall, index) => (
+              <tr key={index}>
+                <td className={td}>{call.seconds.toFixed(0)}</td>
+                <td className={td}>{label(call.class)}</td>
+                <td className={td}>{call.concurrent_runs ?? "—"}</td>
+                <td className={td}>{call.description}</td>
+                <td className={`${td} max-w-[28rem] truncate font-mono text-[11px]`} title={call.command ?? ""}>
+                  {call.command ?? "—"}
+                </td>
+              </tr>
+            ))}
+          </Table>
+          <Table head={["Task", "Runs", "Wall time", "Top classes"]}>
+            {data.by_task.map((row) => (
+              <tr key={row.key}>
+                <td className={td}>{row.key}</td>
+                <td className={td}>{row.runs}</td>
+                <td className={td}>{minutes(row.span_seconds)}</td>
+                <td className={td}>{row.top_classes.map((c) => `${label(c.class)} ${minutes(c.seconds)}`).join(", ")}</td>
+              </tr>
+            ))}
+          </Table>
+          {data.notes.map((note) => (
+            <p key={note} className="text-[11px] text-slate-400">
+              {note}
+            </p>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+}
+
 function Agents({ ws, filters }: { ws: string; filters: Filters }) {
   const completion = useMetric(ws, "agent_completion_rate", ["provider", "model"], filters);
   const duration = useMetric(ws, "agent_duration", ["provider", "model"], filters);
@@ -293,6 +385,7 @@ function Agents({ ws, filters }: { ws: string; filters: Filters }) {
         {completion.data && <p className="mt-2 px-1 text-[12px] text-ink-3">{completion.data.metric.caveats.join(" ")}</p>}
       </section>
       <div className="grid gap-4 lg:grid-cols-2">
+        <AgentTime ws={ws} filters={filters} />
         <MetricCard title="Completion rate by agent and category" result={byCategory}>
           {(rows) =>
             rows.length ? (

@@ -464,3 +464,50 @@ export interface AnalyticsResult {
   notes: string[];
   provenance: { sql: string };
 }
+
+/** `GET /ws/{ws}/analytics/bottlenecks`: where subagent wall time went (see analytics/agent_time.py). */
+export interface AgentTimeClass {
+  class: string;
+  kind: "tool" | "model" | "waiting";
+  seconds: number;
+  calls: number;
+  share: number | null;
+}
+
+export interface SlowCall {
+  class: string;
+  seconds: number;
+  tool: string | null;
+  command: string | null;
+  at: string | null;
+  description: string;
+  model: string | null;
+  task: string | null;
+  concurrent_runs: number | null;
+}
+
+export interface TaskWallTime {
+  key: string;
+  runs: number;
+  span_seconds: number;
+  accounted_seconds: number;
+  waiting_seconds: number;
+  polling_share: number | null;
+  top_classes: { class: string; seconds: number }[];
+}
+
+export interface Bottlenecks {
+  totals: {
+    runs: number;
+    span_seconds: number;
+    accounted_seconds: number;
+    waiting_share: number | null;
+    polling_share: number | null;
+    model_share: number | null;
+  };
+  classes: AgentTimeClass[];
+  slowest_calls: SlowCall[];
+  concurrency: { peak_during_window: number; median_at_slowest_calls: number | null; scope: string };
+  by_task: TaskWallTime[];
+  notes: string[];
+}

@@ -132,6 +132,18 @@ def backfill_transcripts(
     )
 
 
+@claude_app.command("backfill-time")
+@handle_errors
+def backfill_time(
+    limit: int | None = typer.Option(None, help="Process at most this many subagent runs"),
+) -> None:
+    """Store the wall-time breakdown from transcripts on subagent runs that lack it (idempotent)."""
+    emit(
+        STATE.app().hooks.backfill_time(STATE.ctx(), limit=limit),
+        lambda r: kv(r.items(), title="backfill-time"),
+    )
+
+
 @claude_app.command("bind")
 @handle_errors
 def bind(

@@ -887,6 +887,43 @@ def build_server(
             ctx(), workspace, period=period, since=since_at, until=until_at, model=model
         )
 
+    @tool(
+        "analytics_agent_time",
+        "Where subagent wall time went: the measured share by tool class (or per model, task or agent "
+        "description), with model time, waiting on background work and polling loops.",
+    )
+    def analytics_agent_time(
+        since: Annotated[str | None, Field(description="Inclusive start, ISO date or datetime (UTC)")] = None,
+        until: Annotated[str | None, Field(description="Exclusive end, ISO date or datetime (UTC)")] = None,
+        by: Literal["class", "model", "task", "description"] = "class",
+        model: str | None = None,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        try:
+            since_at = datetime.fromisoformat(since) if since else None
+            until_at = datetime.fromisoformat(until) if until else None
+        except ValueError as exc:
+            raise ToolError(f"invalid date: {exc}") from exc
+        return app.agent_time.breakdown(ctx(), workspace, since=since_at, until=until_at, by=by, model=model)
+
+    @tool(
+        "analytics_bottlenecks",
+        "What slows subagents down: time by class, the slowest calls with the number of subagent runs active "
+        "at the time (machine saturation), and agent wall time per task.",
+    )
+    def analytics_bottlenecks(
+        since: Annotated[str | None, Field(description="Inclusive start, ISO date or datetime (UTC)")] = None,
+        until: Annotated[str | None, Field(description="Exclusive end, ISO date or datetime (UTC)")] = None,
+        top: Annotated[int, Field(ge=1, le=100)] = 15,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        try:
+            since_at = datetime.fromisoformat(since) if since else None
+            until_at = datetime.fromisoformat(until) if until else None
+        except ValueError as exc:
+            raise ToolError(f"invalid date: {exc}") from exc
+        return app.agent_time.bottlenecks(ctx(), workspace, since=since_at, until=until_at, top=top)
+
     # ------------------------------------------------------------------ automation
 
     @tool("automation_list", "List automation rules and their recent runs.")

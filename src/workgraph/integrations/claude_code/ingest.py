@@ -729,6 +729,35 @@ class HookIngestor:
                 counts["attempts_created"] += int(result.attempt_created)
         return counts
 
+    def backfill_time(self, ctx: RequestContext, limit: int | None = None) -> dict[str, int]:
+        """Store the wall-time breakdown on subagent runs whose telemetry lacks it (idempotent).
+
+        Only ``telemetry["time"]`` is written: the run's model, usage, task link and attempts are left as
+        they are, so a run already ingested keeps its state. A run with a ``time`` key is skipped.
+        """
+        from workgraph.security.permissions import Permission, require
+
+        require(ctx, Permission.TELEMETRY_INGEST)
+        counts = {"parsed": 0, "missing": 0, "skipped": 0}
+        with self.app.db.session(write=True) as session:
+            stmt = (
+                select(SubagentRun).where(SubagentRun.transcript_path.is_not(None)).order_by(SubagentRun.id)
+            )
+            if limit is not None:
+                stmt = stmt.limit(limit)
+            for run in list(session.scalars(stmt)):
+                telemetry = dict(run.telemetry or {})
+                if "time" in telemetry:
+                    counts["skipped"] += 1
+                    continue
+                stats = _parse_transcript_quietly(run.transcript_path or "")
+                if stats is None or stats.time is None:
+                    counts["missing"] += 1
+                    continue
+                run.telemetry = {**telemetry, "time": stats.time}
+                counts["parsed"] += 1
+        return counts
+
     def replay_spool(self, limit: int = 500) -> dict[str, int]:
         """Ingest spooled hook records; a record failing five times is set aside as ``.failed``."""
         from workgraph.core.fsutil import atomic_write_text

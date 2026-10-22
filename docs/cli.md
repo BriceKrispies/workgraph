@@ -16,7 +16,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | Group | Commands |
 | --- | --- |
 | `init`, `doctor` | create storage/schema/first workspace; health checks (`--verify-events`) |
-| `serve` | HTTP API + UI + Streamable HTTP MCP at `/mcp/` + in-process worker (`--no-worker`, `--no-mcp`) |
+| `serve` | HTTP API + UI + Streamable HTTP MCP at `/mcp/` + in-process worker (`--no-worker`, `--no-mcp`); also serves paired devices on the local network unless `--local` |
 | `mcp` | MCP server over stdio (default) or HTTP; `--agent-name`, `--grant run:start` |
 | `workspace` | `create`, `list`, `show`, `use`, `archive`, `set --allowed-root` |
 | `project` | `create`, `list`, `show`, `update`, `add-repo`, `remove-repo` |

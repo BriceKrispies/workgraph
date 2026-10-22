@@ -36,6 +36,20 @@ class ServerConfig(_Strict):
     host: str = "127.0.0.1"
     port: int = Field(default=8765, ge=1, le=65535)
     allow_non_loopback: bool = False
+    # Also serve on this machine's local-network address so other devices (a phone on the
+    # same Wi-Fi) can open the UI once paired. Only private-network clients are answered.
+    lan: bool = True
+    lan_address: str | None = None  # override the detected address
+    lan_networks: list[str] = Field(default_factory=list)  # client networks; default RFC 1918
+
+    @field_validator("lan_networks")
+    @classmethod
+    def _lan_networks(cls, value: list[str]) -> list[str]:
+        from ipaddress import ip_network
+
+        for net in value:
+            ip_network(net, strict=False)
+        return value
 
     @field_validator("host")
     @classmethod

@@ -4,6 +4,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from workgraph.api.app import create_app
+from workgraph.api.security import DEVICE_COOKIE, PAIRING_MAX_FAILURES, LanAccess
 from workgraph.core.models.schemas import RepositoryRegister
 
 
@@ -216,3 +217,47 @@ def test_spa_fallback_serves_ui_shell(client):
     page = client.get("/tasks/WG-1")
     assert page.status_code == 200 and "Workgraph" in page.text
     assert client.get("/api/v1/does-not-exist").status_code == 404
+
+
+def _lan_client(asgi, ip: str, base_url: str = "http://192.168.1.20:8765") -> TestClient:
+    return TestClient(asgi, base_url=base_url, client=(ip, 50000), follow_redirects=False)
+
+
+def test_lan_mode_requires_pairing_before_handing_out_the_token(app, ws):
+    lan = LanAccess.build("192.168.1.20")
+    asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=True, lan=lan)
+    token = app.api_token()
+    # Not entered as a context manager: the MCP lifespan may only run once per app.
+    assert token in _lan_client(asgi, "127.0.0.1", "http://127.0.0.1:8765").get("/").text
+    with _lan_client(asgi, "192.168.1.42") as phone:
+        page = phone.get("/tasks")
+        assert page.status_code == 303 and page.headers["location"] == "/pair"
+        assert token not in phone.get("/pair").text
+        assert phone.get("/api/v1/workspaces").status_code == 401
+        wrong = phone.post("/pair", data={"code": "AAAA-AAAA"})
+        assert wrong.status_code == 403 and DEVICE_COOKIE not in wrong.cookies
+        ok = phone.post("/pair", data={"code": lan.pairing_code.lower()})
+        assert ok.status_code == 303 and DEVICE_COOKIE in ok.cookies
+        assert token in phone.get("/").text
+        auth = {"Authorization": f"Bearer {token}"}
+        assert phone.get("/api/v1/workspaces", headers=auth).status_code == 200
+        # MCP stays loopback-only even with the token.
+        assert phone.post("/mcp/", headers=auth, json={}).status_code == 403
+
+
+def test_lan_mode_rejects_public_clients_and_locks_pairing(app, ws):
+    lan = LanAccess.build("192.168.1.20")
+    asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=False, lan=lan)
+    with _lan_client(asgi, "203.0.113.9") as outsider:
+        r = outsider.get("/")
+        assert r.status_code == 403 and r.json()["error"]["code"] == "forbidden_client"
+    with _lan_client(asgi, "192.168.1.42") as phone:
+        for _ in range(PAIRING_MAX_FAILURES):
+            phone.post("/pair", data={"code": "WRONG"})
+        assert phone.post("/pair", data={"code": lan.pairing_code}).status_code == 429
+
+
+def test_lan_networks_narrow_the_allowed_clients():
+    lan = LanAccess.build("192.168.1.20", ["192.168.1.0/24"])
+    assert lan.client_allowed("192.168.1.7") and lan.client_allowed("127.0.0.1")
+    assert not lan.client_allowed("10.0.0.5") and not lan.client_allowed("testclient")

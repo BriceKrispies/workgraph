@@ -3,17 +3,27 @@
 from __future__ import annotations
 
 import contextlib
+import html
 from collections.abc import AsyncGenerator
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from starlette.types import ASGIApp
 
 from workgraph import __version__
-from workgraph.api.security import LocalSecurityMiddleware, security_headers
+from workgraph.api.security import (
+    DEVICE_COOKIE,
+    LanAccess,
+    LocalSecurityMiddleware,
+    device_cookie_value,
+    device_paired,
+    is_loopback_client,
+    security_headers,
+)
 from workgraph.app import Workgraph
 from workgraph.core.errors import WorkgraphError
 from workgraph.core.logging import get_logger
@@ -39,6 +49,27 @@ def _index_html(token: str) -> str:
     return html.replace("</head>", f"{meta}</head>", 1)
 
 
+def _pair_html(error: str | None = None) -> str:
+    message = f'<p class="error">{html.escape(error)}</p>' if error else ""
+    return (
+        "<!doctype html><html lang='en'><head><meta charset='utf-8'>"
+        "<meta name='viewport' content='width=device-width, initial-scale=1'>"
+        "<meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title>"
+        "<style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;"
+        "justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}"
+        "input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;"
+        "border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}"
+        "button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}"
+        ".error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1>"
+        "<p>Enter the pairing code that <code>workgraph serve</code> printed on the computer "
+        "running Workgraph.</p>"
+        f"{message}<form method='post' action='/pair'>"
+        "<input name='code' autocomplete='one-time-code' autocapitalize='characters' "
+        "placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button>"
+        "</form></main></body></html>"
+    )
+
+
 def create_app(
     app: Workgraph,
     *,
@@ -46,6 +77,7 @@ def create_app(
     port: int = 8765,
     with_mcp: bool = True,
     mcp_agent: str = "mcp-http-client",
+    lan: LanAccess | None = None,
 ) -> ASGIApp:
     token = app.api_token()
     mcp_server = None
@@ -114,8 +146,41 @@ def create_app(
 
     assets = static_dir()
 
+    def trusted_browser(request: Request) -> bool:
+        """Loopback browsers get the token as before; other devices only once paired."""
+        return lan is None or is_loopback_client(request) or device_paired(request, token)
+
+    @api.get("/pair", include_in_schema=False)
+    async def pair_form(request: Request) -> Response:
+        if trusted_browser(request):
+            return RedirectResponse("/", status_code=303)
+        return HTMLResponse(_pair_html(), headers={"Cache-Control": "no-store"})
+
+    @api.post("/pair", include_in_schema=False)
+    async def pair_submit(request: Request) -> Response:
+        if lan is None:
+            return RedirectResponse("/", status_code=303)
+        if lan.locked:
+            return HTMLResponse(
+                _pair_html("Too many wrong codes. Restart workgraph serve to pair again."), status_code=429
+            )
+        code = parse_qs((await request.body()).decode("utf-8", "replace")).get("code", [""])[0]
+        if not lan.try_pair(code):
+            log.warning("rejected pairing attempt from %s", request.client.host if request.client else "?")
+            return HTMLResponse(_pair_html("That code is not right."), status_code=403)
+        log.info("paired device %s", request.client.host if request.client else "?")
+        response = RedirectResponse("/", status_code=303)
+        response.set_cookie(
+            DEVICE_COOKIE,
+            device_cookie_value(token),
+            max_age=400 * 24 * 3600,
+            httponly=True,
+            samesite="strict",
+        )
+        return response
+
     @api.get("/{path:path}", include_in_schema=False)
-    async def spa(path: str) -> Response:
+    async def spa(path: str, request: Request) -> Response:
         if path.startswith(("api/", "mcp")):
             return JSONResponse(
                 {"error": {"code": "not_found", "message": f"/{path} not found"}}, status_code=404
@@ -123,9 +188,11 @@ def create_app(
         candidate = (assets / path).resolve()
         if path and candidate.is_file() and assets.resolve() in candidate.parents:
             return FileResponse(candidate)
+        if not trusted_browser(request):
+            return RedirectResponse("/pair", status_code=303)
         return HTMLResponse(_index_html(token), headers={"Cache-Control": "no-store"})
 
-    return LocalSecurityMiddleware(api, token=token, host=host, port=port)
+    return LocalSecurityMiddleware(api, token=token, host=host, port=port, lan=lan)
 
 
 def jsonable_errors(errors: Any) -> Any:

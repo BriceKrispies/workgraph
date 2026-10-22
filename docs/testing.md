@@ -28,10 +28,10 @@ Layout: `tests/unit` (pure logic, queue semantics, parsers, configuration, migra
 ## Frontend
 
 ```sh
-pnpm --dir web typecheck
-pnpm --dir web test
-pnpm --dir web build
-pnpm --dir web test:e2e
+bun run --cwd web typecheck
+bun run --cwd web test
+bun run --cwd web build
+bun run --cwd web test:e2e
 ```
 
 Component tests use Vitest and Testing Library. The Playwright suite starts the real backend

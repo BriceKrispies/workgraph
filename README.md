@@ -13,12 +13,12 @@ how the work went. Everything runs on your machine with SQLite. It needs no acco
 
 ## Install
 
-Requires Python 3.12+, [uv](https://docs.astral.sh/uv/) and Git. The web UI also needs Node.js 20+ and pnpm.
+Requires Python 3.12+, [uv](https://docs.astral.sh/uv/) and Git. The web UI also needs [Bun](https://bun.sh).
 
 ```sh
 uv sync
 uv run workgraph init
-pnpm --dir web install && pnpm --dir web build
+bun install --cwd web && bun run --cwd web build
 uv tool install .   # optional: install the `workgraph` command globally
 ```
 

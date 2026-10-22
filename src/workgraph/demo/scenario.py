@@ -595,9 +595,9 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:
                 return {
                     "ui_built": built,
                     "ui_status": index.status_code,
-                    "note": "browser-level checks: pnpm --dir web test:e2e"
+                    "note": "browser-level checks: bun run --cwd web test:e2e"
                     if built
-                    else "web UI not built; run pnpm --dir web build to serve it",
+                    else "web UI not built; run bun run --cwd web build to serve it",
                 }
 
             say(report.step(24, "Verify the web frontend serves the persisted data", s24))

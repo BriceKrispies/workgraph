@@ -36,6 +36,7 @@ IGNORE_GLOBS = (
     "poetry.lock",
     "package-lock.json",
     "pnpm-lock.yaml",
+    "bun.lock",
     "**/generated/**",
 )
 MANIFESTS = ("Cargo.toml", "pyproject.toml", "package.json")

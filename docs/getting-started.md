@@ -6,7 +6,7 @@
 | --- | --- |
 | Python 3.12+ and [uv](https://docs.astral.sh/uv/) | Runs Workgraph and manages its environment |
 | Git 2.40+ | Authoritative Git operations (ingestion, worktrees, diffs) |
-| Node.js 20+ and pnpm (optional) | Builds the web UI |
+| Bun (optional) | Builds the web UI |
 | Ollama (optional) | Local model classification, embeddings and narratives |
 | Claude Code (optional) | Claude Code agent adapter and lifecycle hooks |
 
@@ -15,8 +15,8 @@ From a checkout:
 ```sh
 uv sync
 uv run workgraph init
-pnpm --dir web install
-pnpm --dir web build
+bun install --cwd web
+bun run --cwd web build
 ```
 
 `uv run workgraph doctor` checks Python, Git, the schema, database integrity, configuration,

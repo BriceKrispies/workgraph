@@ -25,6 +25,7 @@ uv run workgraph doctor --verify-events
 | Hooks not recorded | `workgraph claude status` shows installation and ingestion counts; `workgraph claude replay` ingests spooled events; inspect `<data>/spool/claude-hooks/*.failed`. |
 | Web UI shows "API is running" | The UI is not built: `pnpm --dir web install` then `pnpm --dir web build`. |
 | `401 unauthorized` from scripts | Send `Authorization: Bearer $(cat <config>/api-token)` (path from `workgraph config path`). |
+| Phone cannot reach the UI | Use the address `serve` prints, on the same network. Windows: allow Python through the firewall on *Private* networks and check the network profile is Private. `forbidden_client` means the phone's address is outside `server.lan_networks`. A `429` on the pairing page means too many wrong codes; restart `serve`. |
 | `421` / `403` from the API | Host or Origin not allowed. Use `http://127.0.0.1:<port>`; for development set `WORKGRAPH_ALLOWED_ORIGINS`. |
 | `database is locked` warnings | Another process held a write transaction longer than 15 s; check for stuck external tools. Workgraph never holds write transactions during external calls. |
 | Worktree left behind after a crash | `workgraph worker recover` then `workgraph git cleanup-worktrees --apply` (only clean, Workgraph-owned worktrees are removed; branches are kept). |

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import socket
 import threading
 from ipaddress import ip_address
 
@@ -19,6 +20,18 @@ def _is_loopback(host: str) -> bool:
         return False
 
 
+def _bind(host: str, port: int) -> socket.socket:
+    family = socket.AF_INET6 if ":" in host else socket.AF_INET
+    sock = socket.socket(family, socket.SOCK_STREAM)
+    try:
+        sock.bind((host.strip("[]"), port))
+    except OSError as exc:
+        sock.close()
+        fail(f"cannot listen on {host}:{port}: {exc}", 2)
+    sock.set_inheritable(True)
+    return sock
+
+
 @handle_errors
 def serve_command(
     host: str | None = typer.Option(None, help="Bind address (default from config: 127.0.0.1)"),
@@ -26,11 +39,18 @@ def serve_command(
     worker: bool = typer.Option(True, "--worker/--no-worker", help="Run a background job worker in-process"),
     mcp: bool = typer.Option(True, "--mcp/--no-mcp", help="Expose the Streamable HTTP MCP endpoint at /mcp/"),
     allow_remote: bool = typer.Option(False, help="Permit binding to a non-loopback address"),
+    lan: bool | None = typer.Option(
+        None,
+        "--lan/--local",
+        help="Also serve on this machine's local-network address for paired devices "
+        "(default from config: on), or loopback only",
+    ),
 ) -> None:
     """Run the local HTTP API, web UI and (optionally) a background worker."""
     import uvicorn
 
     from workgraph.api.app import create_app
+    from workgraph.api.security import LanAccess, detect_lan_address
     from workgraph.core.logging import configure_logging
     from workgraph.jobs.worker import Worker
 
@@ -40,8 +60,18 @@ def serve_command(
     bind_port = port or config.port
     if not _is_loopback(bind_host) and not (allow_remote or config.allow_non_loopback):
         fail(f"refusing to bind to non-loopback address {bind_host}; pass --allow-remote to opt in", 2)
+    lan_access: LanAccess | None = None
+    if (config.lan if lan is None else lan) and _is_loopback(bind_host):
+        address = config.lan_address or detect_lan_address()
+        if address is None:
+            err_console.print("[yellow]No private local-network address found; serving on loopback only.[/]")
+        else:
+            lan_access = LanAccess.build(address, config.lan_networks)
     configure_logging("INFO", app.paths.log_dir)
-    asgi = create_app(app, host=bind_host, port=bind_port, with_mcp=mcp)
+    asgi = create_app(app, host=bind_host, port=bind_port, with_mcp=mcp, lan=lan_access)
+    sockets = [_bind(bind_host, bind_port)]
+    if lan_access is not None:
+        sockets.append(_bind(lan_access.address, bind_port))
     background: Worker | None = None
     thread: threading.Thread | None = None
     if worker:
@@ -51,8 +81,14 @@ def serve_command(
     err_console.print(
         f"Workgraph listening on http://{bind_host}:{bind_port}/  (API token: {app.paths.api_token_file})"
     )
+    if lan_access is not None:
+        err_console.print(
+            f"Local network: http://{lan_access.address}:{bind_port}/  "
+            f"pairing code [bold]{lan_access.pairing_code}[/] (enter it once per device)"
+        )
+    server = uvicorn.Server(uvicorn.Config(asgi, log_level="warning"))
     try:
-        uvicorn.run(asgi, host=bind_host, port=bind_port, log_level="warning")
+        server.run(sockets=sockets)
     finally:
         if background is not None:
             background.stop()

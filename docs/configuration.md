@@ -30,6 +30,9 @@ default_workspace = "acme"
 host = "127.0.0.1"          # loopback by default
 port = 8765
 allow_non_loopback = false  # binding elsewhere also needs --allow-remote
+lan = true                  # also serve on the local-network address for paired devices
+# lan_address = "192.168.1.20"       # override the detected address
+# lan_networks = ["192.168.1.0/24"]  # narrow the allowed clients (default: RFC 1918 ranges)
 
 [llm]
 auto_classify = true        # enqueue classification on create / material description change

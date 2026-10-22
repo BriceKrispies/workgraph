@@ -54,8 +54,18 @@ privilege.
 
 ## HTTP API and Streamable HTTP MCP
 
-- Binds to `127.0.0.1` by default; non-loopback binding requires both configuration and
-  `--allow-remote`.
+- Binds to `127.0.0.1`, plus, by default, this machine's private local-network address (the
+  interface with the default route, never `0.0.0.0`). `--local` or `server.lan = false` turns
+  the second listener off; it is also skipped when no RFC 1918 address is found. Binding any
+  other address requires both configuration and `--allow-remote`.
+- On the local-network listener only clients in `server.lan_networks` (default: RFC 1918 and
+  IPv6 unique-local ranges) and loopback are answered; `/mcp` answers loopback clients only.
+- A browser on another device is not given the token until it is paired: `serve` prints a
+  random 8-character code (~39 bits) per process; entering it on `/pair` sets an `HttpOnly`,
+  `SameSite=Strict` cookie derived from the API token, so rotating the token unpairs every
+  device. After 10 wrong codes pairing is disabled until `serve` restarts.
+- The local-network listener is plain HTTP: anyone able to sniff the network can read the
+  token. It is intended for a trusted home or office network.
 - Every `/api` and `/mcp` request requires the local bearer token (constant-time comparison).
   The bundled UI receives it embedded in `index.html`; no CORS headers are ever sent, so other
   origins cannot read it.

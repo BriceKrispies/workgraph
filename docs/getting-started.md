@@ -51,6 +51,10 @@ uv run workgraph serve
 
 Then open <http://127.0.0.1:8765/>.
 
+`serve` also listens on this machine's local-network address, so a phone on the same Wi-Fi can
+use the UI. It prints that address and a pairing code; open the address on the phone and enter
+the code once. `workgraph serve --local` (or `server.lan = false`) keeps it on loopback only.
+
 Agents typically:
 
 ```sh

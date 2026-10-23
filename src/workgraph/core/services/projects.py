@@ -77,6 +77,12 @@ class ProjectService(Service):
         with self.db.session(write=True) as session:
             ws = resolve.workspace(session, workspace)
             project = resolve.project(session, ws.id, ref)
+            if data.slug is not None and data.slug != project.slug:
+                taken = session.scalar(
+                    select(Project).where(Project.workspace_id == ws.id, Project.slug == data.slug)
+                )
+                if taken is not None:
+                    raise ConflictError(f"project slug {data.slug!r} is already used in this workspace")
             changes = {}
             for field, value in data.model_dump(exclude_unset=True).items():
                 if value is not None and getattr(project, field) != value:

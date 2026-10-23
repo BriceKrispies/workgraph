@@ -706,15 +706,21 @@ class TaskService(Service):
 
     # ------------------------------------------------------------------ update
 
-    def update(self, ctx: RequestContext, workspace: str | None, ref: str, data: TaskUpdate) -> TaskOut:
+    def update(
+        self, ctx: RequestContext, workspace: str | None, ref: str, data: TaskUpdate, *, enrich: bool = True
+    ) -> TaskOut:
+        """Apply ``data``. ``enrich=False`` keeps a text change from queueing reclassification and
+        re-embedding: a mechanical rewrite (a renamed term) changes the words, not the task."""
         require(ctx, Permission.TASK_WRITE)
         with self.db.session(write=True) as session:
             ws_id = self._workspace_id(session, workspace) if workspace else None
             task = resolve.task(session, ws_id, ref)
-            self._update_in_session(session, ctx, task, data)
+            self._update_in_session(session, ctx, task, data, enrich=enrich)
             return task_out(session, task)
 
-    def _update_in_session(self, session: Session, ctx: RequestContext, task: Task, data: TaskUpdate) -> None:
+    def _update_in_session(
+        self, session: Session, ctx: RequestContext, task: Task, data: TaskUpdate, *, enrich: bool = True
+    ) -> None:
         self._touch(task, data.expected_version)
         changes: dict[str, builtins.list[Any]] = {}
 
@@ -830,7 +836,7 @@ class TaskService(Service):
             self._transition(session, status_ctx, task, target, reason=data.reason)
         if changes or data.status is not None:
             index_task(session, task.id)
-        if material and event_id:
+        if material and event_id and enrich:
             self._enqueue_enrichment(session, ctx, task, event_id)
         session.flush()
 

@@ -117,10 +117,18 @@ class ProjectCreate(InputSchema):
 
 
 class ProjectUpdate(InputSchema):
+    slug: str | None = None
     name: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = None
     status: Literal["active", "archived"] | None = None
     settings: dict[str, Any] | None = None
+
+    @field_validator("slug")
+    @classmethod
+    def _slug(cls, value: str | None) -> str | None:
+        if value is not None and not SLUG_RE.match(value):
+            raise ValueError("slug must be lowercase letters, digits and dashes")
+        return value
 
 
 class ProjectOut(Schema):
@@ -204,6 +212,7 @@ class RepositoryOut(Schema):
 
 
 class RepositoryUpdate(InputSchema):
+    name: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = None
     access_mode: AccessMode | None = None
     default_branch: str | None = None

@@ -24,6 +24,7 @@ from workgraph.cli.common import (
     ws,
 )
 from workgraph.core.models.schemas import ProjectCreate, ProjectUpdate, WorkspaceCreate
+from workgraph.core.services import rename
 
 config_app = typer.Typer(help="Inspect, validate and migrate configuration.", no_args_is_help=True)
 workspace_app = typer.Typer(help="Manage workspaces.", no_args_is_help=True)
@@ -466,6 +467,65 @@ def project_update(
         ProjectUpdate(name=name, description=description, status=cast(Any, status)),
     )
     emit(out, lambda p: console.print(f"updated {p.slug}"))
+
+
+@project_app.command("rename-term")
+@handle_errors
+def project_rename_term(
+    ref: str,
+    old: str = typer.Option(..., "--from", help="The word as it is spelled now, e.g. Rho"),
+    new: str = typer.Option(..., "--to", help="The word it becomes, e.g. Nyn"),
+    keep: list[str] = typer.Option(
+        None, "--keep", help="A token containing the word that is not it (repeatable)"
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Report what would change; change nothing"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Rename a word across a project: open tasks, every task's tags, the project, its repositories
+    and their verification checks. Closed tasks keep their text as the record it is."""
+    app = STATE.app()
+    term = rename.Term(old, new, tuple(keep or ()))
+    report = rename.rename_term(
+        app, STATE.ctx(), ws(workspace) or app.default_workspace_id(), ref, term, dry_run=dry_run
+    )
+    emit(report, _render_rename)
+    if report["errors"]:
+        raise typer.Exit(1)
+
+
+def _render_rename(report: dict[str, Any]) -> None:
+    verb = "would change" if report["dry_run"] else "changed"
+    project = report["project"]
+    if project:
+        console.print(
+            f"project: {project['slug']} -> {project['new_slug']} ({project['name']} -> {project['new_name']})"
+        )
+    for repo in report["repositories"]:
+        console.print(f"repository: {repo['name']} -> {repo['new_name']} (checkout paths unchanged)")
+    for config in report["verification_configs"]:
+        console.print(f"verification config {config['name']}: {config['sites']} site(s)")
+        for path in config["missing_paths"]:
+            console.print(f"  [yellow]names a path that does not exist:[/yellow] {path}")
+    open_tasks = [t for t in report["tasks"] if not t["closed"]]
+    fields: dict[str, int] = {}
+    for task in open_tasks:
+        for name, sites in task["fields"].items():
+            if name != "tags":
+                fields[name] = fields.get(name, 0) + sites
+    console.print(
+        f"open tasks: {verb} {len(open_tasks)}"
+        + (" (" + ", ".join(f"{n} {k}" for k, n in sorted(fields.items())) + " sites)" if fields else "")
+    )
+    console.print(
+        f"tags: {verb} {report['tags_renamed']} on {sum('tags' in t['fields'] for t in report['tasks'])} task(s)"
+    )
+    console.print(
+        f"closed tasks whose text still says {report['from']}, kept as records: {report['closed_kept']}"
+    )
+    for error in report["errors"]:
+        console.print(f"[red]error[/red] {error['target']}: {error['error']}")
+    if report["dry_run"]:
+        console.print("(dry run: nothing changed)")
 
 
 @project_app.command("add-repo")

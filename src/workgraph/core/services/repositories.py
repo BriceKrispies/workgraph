@@ -334,6 +334,12 @@ class RepositoryService(Service):
         with self.db.session(write=True) as session:
             ws_id = self.app.tasks._workspace_id(session, workspace)
             repo = resolve.repository(session, ws_id, ref)
+            if data.name is not None and data.name != repo.name:
+                taken = session.scalar(
+                    select(Repository).where(Repository.workspace_id == ws_id, Repository.name == data.name)
+                )
+                if taken is not None:
+                    raise ConflictError(f"repository name {data.name!r} is already used in this workspace")
             updates = data.model_dump(exclude_unset=True)
             if data.default_branch and data.default_branch != repo.default_branch:
                 # A new default branch is always tracked, so git sync never misses it.

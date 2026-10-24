@@ -43,7 +43,7 @@ exported as CSV, JSON or Parquet (`workgraph analytics export`).
 | Database | WAL mode; transactions are atomic. `workgraph doctor` runs `PRAGMA integrity_check`. |
 | Jobs | A crashed worker stops heartbeating; its jobs' leases expire and are re-queued (or dead-lettered) by the next maintenance pass or `workgraph worker recover`. |
 | Workers | Workers without a heartbeat for 2 minutes are marked `lost`. |
-| Worktrees | Every worker start and `worker recover` reconcile `managed_worktrees` with disk: missing ones become `orphaned`, finished attempts' worktrees `released`, interrupted preparations `active`. Unknown directories are reported, never deleted. |
+| Worktrees | Every worker start and `worker recover` reconcile `managed_worktrees` with disk: missing ones become `orphaned`, worktrees of finished attempts, of tasks that were accepted, cancelled or archived, and of landed or abandoned stacks `released`, interrupted preparations `active`. Unknown directories are reported, never deleted. |
 | Claude Code hooks | Payloads that cannot be ingested are spooled and replayed; a record failing five times is set aside as `.failed` for inspection. |
 | Event log | `workgraph events verify` replays task events against current state. |
 

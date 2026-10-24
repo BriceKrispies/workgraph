@@ -37,6 +37,8 @@ from workgraph.core.models.enums import (
     AttemptStatus,
     ChangeSetItemStatus,
     ChangeSetStatus,
+    StackStatus,
+    TaskStatus,
     WorktreeStatus,
 )
 from workgraph.core.services.base import Service
@@ -51,6 +53,7 @@ from workgraph.persistence.orm import (
     Repository,
     ResourceLease,
     RevisionManifest,
+    Stack,
     Task,
     TaskRepository,
 )
@@ -587,18 +590,41 @@ class WorktreeManager(Service):
                     )
                 )
             ]
-            attempt_status = {
-                a.id: a.status
+            attempts = {
+                a.id: (a.status, a.task_id)
                 for a in session.scalars(
                     select(AgentAttempt).where(AgentAttempt.id.in_([r[3] for r in rows if r[3]]))
                 )
             }
+            # An attempt left running on a task that was cancelled or accepted will never finish.
+            closed_tasks = set(
+                session.scalars(
+                    select(Task.id).where(
+                        Task.id.in_({task_id for _, task_id in attempts.values()}),
+                        Task.status.in_([TaskStatus.ACCEPTED, TaskStatus.CANCELLED])
+                        | Task.archived_at.is_not(None),
+                    )
+                )
+            )
+            stack_ids = {stack_id for r in rows if (stack_id := self._stack_of(r[1])) is not None}
+            ended_stacks = set(
+                session.scalars(
+                    select(Stack.id).where(
+                        Stack.id.in_(stack_ids), Stack.status.in_([StackStatus.LANDED, StackStatus.ABANDONED])
+                    )
+                )
+            )
             known_paths = {Path(p).resolve() for p in session.scalars(select(ManagedWorktree.path))}
         updates: dict[str, str] = {}
         for worktree_id, path, status, attempt_id in rows:
             exists = Path(path).exists() and Git(path).is_repository()
-            # Stack integration worktrees have no attempt and stay active while their stack is open.
-            finished = attempt_id is not None and attempt_status.get(attempt_id) in TERMINAL_ATTEMPT_STATUSES
+            attempt_status, task_id = attempts.get(attempt_id, (None, None)) if attempt_id else (None, None)
+            # Stack worktrees have no attempt and stay active while their stack is open.
+            finished = (
+                attempt_status in TERMINAL_ATTEMPT_STATUSES
+                or task_id in closed_tasks
+                or self._stack_of(path) in ended_stacks
+            )
             if not exists:
                 updates[worktree_id] = WorktreeStatus.ORPHANED
                 fixed["orphaned"].append(path)
@@ -633,6 +659,14 @@ class WorktreeManager(Service):
                     data={k: len(v) for k, v in fixed.items()},
                 )
         return fixed
+
+    def _stack_of(self, path: str) -> str | None:
+        """The stack id of a stack worktree (``<worktrees>/stacks/<stack id>/<directory>``), else None."""
+        relative = Path(path).resolve()
+        stacks = (self.root / "stacks").resolve()
+        if not is_within(relative, stacks) or relative.parent.parent != stacks:
+            return None
+        return relative.parent.name
 
     def list(
         self, ctx: RequestContext, workspace: str | None = None, *, status: str | None = None

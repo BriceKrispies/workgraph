@@ -263,3 +263,18 @@ def test_attempt_abandon_returns_the_task_to_ready_and_frees_the_worktree(app, h
         app.runs.abandon_external(human, started.attempt_id, reason="again")
     again = app.runs.start_external(human, ws, task.key, agent_name="tester")
     assert again.attempt_number == 2
+
+
+def test_recovery_releases_the_worktree_of_an_archived_task(app, human, ws, make_repo):
+    """An attempt left running on a task that was closed will never finish; its worktree is released."""
+    _repos, task, attempt_id = setup_task(app, human, ws, make_repo, names=("stale",))
+    manifest = app.worktrees.prepare(human, attempt_id)
+    path = manifest.repositories[0].checkout_path
+    app.worktrees.recover(human)
+    assert [r["status"] for r in app.worktrees.list(human, ws)] == ["active"]
+
+    app.tasks.archive(human, ws, task.key)
+    report = app.worktrees.recover(human)
+
+    assert report["released"] == [path]
+    assert [r["path"] for r in app.worktrees.cleanup(human, dry_run=True)] == [path]

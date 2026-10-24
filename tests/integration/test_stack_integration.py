@@ -1371,3 +1371,19 @@ def test_readmit_refuses_an_attempt_branch_that_moved_after_submit(app, human, w
     repo.git("update-ref", f"refs/heads/{branch}", head)
     readmitted = app.stacks.readmit_item(human, ws, parent.key, second.key)
     assert {i.task_key: i.state for i in readmitted.items}[second.key] == "ready"
+
+
+def test_recovery_releases_the_worktrees_of_a_landed_stack(app, human, ws, tree, manual_landing):
+    _, parent = tree
+    _gate(app, human, ws, [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}])
+    child = _child(app, human, ws, parent, "Only change")
+    stack = app.stacks.create(human, ws, parent.key)
+    _run(app, human, ws, child.key, "fake-a")
+    path = str(_integration_path(app, stack))
+    with app.db.session(write=True) as session:
+        session.get(Stack, stack.id).status = "landed"
+
+    report = app.worktrees.recover(human)
+
+    assert path in report["released"]
+    assert path in {row["path"] for row in app.worktrees.cleanup(human, dry_run=True)}

@@ -2,7 +2,7 @@
 
 Writes golden/jira/*.json from the Python implementation in
 src/workgraph/integrations/trackers/mapper.py and src/workgraph/core/policies/trackers.py.
-Run with: uv run python tools/golden/jira.py
+Run with: uv run python tools/golden/gen_jira.py
 """
 
 from __future__ import annotations

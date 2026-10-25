@@ -6,7 +6,7 @@ URL normaliser in ``integrations/git/cli.py``, and the path classification in
 
 Throwaway repositories are created under a temporary directory with fixed identities and dates,
 so every commit SHA, and therefore every byte of git output, is reproducible. Run from the
-repository root with ``uv run python tools/golden/gitparse.py``. Writes ``golden/gitparse/*.json``.
+repository root with ``uv run python tools/golden/gen_gitparse.py``. Writes ``golden/gitparse/*.json``.
 """
 
 from __future__ import annotations

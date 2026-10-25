@@ -15,8 +15,8 @@ work is ordered by dependency.
 
 ## 0. Summary
 
-* **What must not change.** 185 CLI commands under 31 top-level names, 8 exit codes, the `--json`
-  and human output; 65 MCP tools, 2 resources and 5 resource templates with their exact JSON
+* **What must not change.** 186 CLI commands under 31 top-level names, 8 exit codes, the `--json`
+  and human output; 66 MCP tools, 2 resources and 5 resource templates with their exact JSON
   Schemas; 124 HTTP operations over 109 paths, 73 component schemas and 7 routes outside the OpenAPI
   document (SPA, pairing, `/mcp/`, Swagger); a 72-table SQLite schema at Alembic revision `0010`, with
   existing databases opening unchanged; 38 configuration keys and 3 named-table families in TOML
@@ -772,11 +772,11 @@ that prints nothing yet. Deps: none.
 Touches: `tools/contracts/dump.py` (extracts the CLI tree, MCP tools/resources, OpenAPI, `sqlite_master`
 at head, config JSON Schema), `contracts/{cli,mcp,openapi,config-schema}.json`, `contracts/schema-0010.sql`,
 `tests/unit/test_contract_snapshots.py`.
-Accept: counts equal the inventory (185, 65, 2+5, 124/109/73, 72 tables, 207 indexes); the test
+Accept: counts equal the inventory (186, 66, 2+5, 124/109/73, 72 tables, 207 indexes); the test
 passes on `main` and fails when an option is renamed (shown in the task report with a scratch edit
 that is not committed); dump output is deterministic. Deps: none.
 
-**GV-01 to GV-21 Golden vectors** (each: a deterministic script `tools/golden/<name>.py` that writes
+**GV-01 to GV-21 Golden vectors** (each: a deterministic script `tools/golden/gen_<name>.py` (the `gen_` prefix keeps a script from shadowing the package it vectors, such as `pydantic`, `rich` or `queue`) that writes
 `golden/<name>/*.json`; two runs give identical bytes; every file under 2 MB; the report lists the
 cases and which Python tests' cases they include). Deps: none.
 

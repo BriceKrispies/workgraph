@@ -1,6 +1,6 @@
 """GV-14 golden vectors: Pydantic validation of the request models and MCP tool arguments.
 
-Writes ``golden/pydantic/`` (run ``uv run python tools/golden/pydantic.py``):
+Writes ``golden/pydantic/`` (run ``uv run python tools/golden/gen_pydantic.py``):
 
 * ``request/<Model>.json`` for every ``InputSchema`` subclass in ``workgraph.core.models.schemas``;
 * ``mcp/<tool>.json`` for every MCP tool registered by ``workgraph.mcp.server.build_server``, validated

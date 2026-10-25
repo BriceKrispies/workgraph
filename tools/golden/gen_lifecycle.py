@@ -1,6 +1,6 @@
 """Golden vectors for the task and attempt lifecycle policy (GV-01).
 
-Run from the repository root with `uv run python tools/golden/lifecycle.py`. Writes
+Run from the repository root with `uv run python tools/golden/gen_lifecycle.py`. Writes
 `golden/lifecycle/*.json`. The output is deterministic: sorted keys, LF line endings, UTF-8.
 
 Files written:

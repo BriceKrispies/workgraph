@@ -21,9 +21,9 @@ the code and the snapshot disagree. Task CF-02 regenerates this file from those 
 
 | Contract | Count |
 | --- | --- |
-| CLI leaf commands | 185, under 31 top-level names (`task` 23, `experiment` 16, `analytics` 13, `automation` 12, `git` 12, `claude` 11, `stack` 10, `attempt` 9, `classify` 9, `repo` 9, `run` 8, `job` 7, `project` 7, `workspace` 6, `config` 5, `verify` 5, `tracker` 3, `worker` 3, `agent` 2, `demo` 2, `events` 2, `export` 2, and `backup`, `doctor`, `import`, `init`, `mcp`, `restore`, `search`, `serve`, `ui` with one each) |
+| CLI leaf commands | 186, under 31 top-level names (`task` 24, `experiment` 16, `analytics` 13, `automation` 12, `git` 12, `claude` 11, `stack` 10, `attempt` 9, `classify` 9, `repo` 9, `run` 8, `job` 7, `project` 7, `workspace` 6, `config` 5, `verify` 5, `tracker` 3, `worker` 3, `agent` 2, `demo` 2, `events` 2, `export` 2, and `backup`, `doctor`, `import`, `init`, `mcp`, `restore`, `search`, `serve`, `ui` with one each) |
 | CLI exit codes | 8 (0 to 7) plus 130 on interrupt and Click's 2 for usage errors |
-| MCP tools | 65 |
+| MCP tools | 66 |
 | MCP resources | 2 static, 5 templates |
 | HTTP operations in OpenAPI | 124 over 109 paths, 73 component schemas |
 | HTTP routes outside OpenAPI | 7 (X1 to X7) |
@@ -248,7 +248,7 @@ The sections below are generated from the snapshots.
 
 ### 13.1 CLI
 
-Extracted from the Typer application (`workgraph.cli.main:app`): **185 leaf commands** under 31 top-level names. Notation: `ARG` required argument, `[ARG]` optional, `ARG...` variadic; option types are Click type names, `{a,b}` a choice, `*` repeatable, `=x` default, `env X` the environment variable it reads. Every command also accepts the global `--json` (removed from argv wherever it appears, before parsing) and `--help`.
+Extracted from the Typer application (`workgraph.cli.main:app`): **186 leaf commands** under 31 top-level names. Notation: `ARG` required argument, `[ARG]` optional, `ARG...` variadic; option types are Click type names, `{a,b}` a choice, `*` repeatable, `=x` default, `env X` the environment variable it reads. Every command also accepts the global `--json` (removed from argv wherever it appears, before parsing) and `--help`.
 
 Root options: `--home` path env WORKGRAPH_HOME; `--workspace/-w` text env WORKGRAPH_WORKSPACE; `--version`. `--version` prints `workgraph <version>` and exits 0. With no arguments the root help is printed (Typer `no_args_is_help`).
 
@@ -444,7 +444,7 @@ Fast path: `workgraph claude hook ...` is dispatched before the CLI parser is bu
 
 ### 13.2 MCP server
 
-Server name `workgraph`, title `Workgraph`, version = package version, instructions text as in `src/workgraph/mcp/server.py` `INSTRUCTIONS`. **65 tools**, all registered with structured output (an object output schema), **2 static resources** and **5 resource templates**; no prompts. Parameters marked `!` are required. Errors are tool errors whose text is `{"error": {code, message, details}}`. The exact input and output JSON Schemas (descriptions, bounds such as `limit` 1..200, and titles such as `task_createArguments`) are part of the contract and are snapshotted by task CF-03. Transports: stdio (`workgraph mcp`), Streamable HTTP (`/mcp/` under `serve`, or `workgraph mcp --transport http`).
+Server name `workgraph`, title `Workgraph`, version = package version, instructions text as in `src/workgraph/mcp/server.py` `INSTRUCTIONS`. **66 tools**, all registered with structured output (an object output schema), **2 static resources** and **5 resource templates**; no prompts. Parameters marked `!` are required. Errors are tool errors whose text is `{"error": {code, message, details}}`. The exact input and output JSON Schemas (descriptions, bounds such as `limit` 1..200, and titles such as `task_createArguments`) are part of the contract and are snapshotted by task CF-03. Transports: stdio (`workgraph mcp`), Streamable HTTP (`/mcp/` under `serve`, or `workgraph mcp --transport http`).
 
 | # | Tool | Parameters | Description |
 | --- | --- | --- | --- |

@@ -7218,6 +7218,121 @@
       ]
     },
     {
+      "command": "workgraph task import-breakdown",
+      "params": [
+        {
+          "default": null,
+          "kind": "argument",
+          "name": "path",
+          "nargs": 1,
+          "required": true,
+          "type": "file"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--section"
+          ],
+          "required": true,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--parent"
+          ],
+          "required": true,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": true,
+          "opts": [
+            "--tag",
+            "-t"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--project",
+            "-p"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--repo",
+            "-r"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": false,
+          "envvar": null,
+          "is_flag": true,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--dry-run"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "boolean"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_WORKSPACE",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--workspace",
+            "-w"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        }
+      ]
+    },
+    {
       "command": "workgraph task link-repo",
       "params": [
         {
@@ -9000,7 +9115,7 @@
       ]
     }
   ],
-  "leaf_count": 185,
+  "leaf_count": 186,
   "root_options": [
     {
       "choices": null,

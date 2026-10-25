@@ -11,7 +11,7 @@ Writes golden/intel/*.json from the Python implementation:
 * fts.json        - FTS5 MATCH expressions for generated and adversarial user queries
 * search.json     - cosine similarity and reciprocal rank fusion as in SearchService.search
 
-Run: uv run python tools/golden/intel.py
+Run: uv run python tools/golden/gen_intel.py
 Output is deterministic: sorted keys, LF line endings, UTF-8, fixed PRNG seed.
 """
 

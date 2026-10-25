@@ -5,7 +5,7 @@ inputs (the cases of ``tests/unit/test_attribution.py``, plus trailer edge cases
 generated trailers and messages from a fixed seed, and writes the input/output pairs to
 ``golden/attribution/``. Output is deterministic: sorted keys, LF line endings, UTF-8.
 
-Usage: ``uv run python tools/golden/attribution.py``
+Usage: ``uv run python tools/golden/gen_attribution.py``
 """
 
 from __future__ import annotations

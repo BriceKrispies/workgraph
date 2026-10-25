@@ -13,7 +13,7 @@ Inputs are stored as a tagged tree (see ``build`` below) so the Rust side can re
 Python-level value without evaluating Python. Floats are stored as their ``repr`` text, datetimes
 as ISO strings parsed with ``datetime.fromisoformat``. Errors are recorded by exception class name.
 
-Run: ``uv run python tools/golden/jsonfmt.py``. Output is deterministic (sorted keys, ``\\n``
+Run: ``uv run python tools/golden/gen_jsonfmt.py``. Output is deterministic (sorted keys, ``\\n``
 line endings, UTF-8, no timestamps of the run).
 """
 

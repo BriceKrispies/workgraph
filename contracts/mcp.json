@@ -2645,6 +2645,108 @@
       }
     },
     {
+      "description": "Create or update the tasks of one section of a markdown breakdown document, given as text. Bold headers (**V1. Title**) are tasks; a ranged header followed by a table makes one task per row; 'Depends on:' / 'Deps:' lists link tasks. SOURCE names the document (stored with each task so a re-run updates instead of duplicating). dry_run reports the plan and changes nothing.",
+      "input_schema": {
+        "properties": {
+          "dry_run": {
+            "default": false,
+            "title": "Dry Run",
+            "type": "boolean"
+          },
+          "markdown": {
+            "description": "The markdown document text",
+            "minLength": 1,
+            "title": "Markdown",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Parent task key or id",
+            "minLength": 1,
+            "title": "Parent",
+            "type": "string"
+          },
+          "project": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Project"
+          },
+          "repository": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repository"
+          },
+          "section": {
+            "description": "Heading text of the section to import",
+            "minLength": 1,
+            "title": "Section",
+            "type": "string"
+          },
+          "source": {
+            "description": "Document name, stored with each task",
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tags"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "markdown",
+          "section",
+          "source",
+          "parent"
+        ],
+        "title": "task_import_breakdownArguments",
+        "type": "object"
+      },
+      "name": "task_import_breakdown",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_import_breakdownDictOutput",
+        "type": "object"
+      }
+    },
+    {
       "description": "Explicitly link a commit (SHA or ref) to a task with confidence 1.0.",
       "input_schema": {
         "properties": {

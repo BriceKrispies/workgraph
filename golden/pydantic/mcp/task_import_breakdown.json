@@ -1,0 +1,1893 @@
+{
+  "base": {
+    "markdown": "example",
+    "parent": "example",
+    "section": "example",
+    "source": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:markdown",
+      "input": {
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "parent": "example",
+              "section": "example",
+              "source": "example"
+            },
+            "loc": [
+              "markdown"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:markdown:none",
+      "input": {
+        "markdown": null,
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "markdown"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:markdown:int",
+      "input": {
+        "markdown": 12,
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "markdown"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:markdown:float",
+      "input": {
+        "markdown": 1.5,
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "markdown"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:markdown:bool",
+      "input": {
+        "markdown": true,
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "markdown"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:markdown:str",
+      "input": {
+        "markdown": "x",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "x",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:markdown:list",
+      "input": {
+        "markdown": [
+          "a"
+        ],
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "markdown"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:markdown:dict",
+      "input": {
+        "markdown": {
+          "k": 1
+        },
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "markdown"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:markdown",
+      "input": {
+        "markdown": "Not valid!",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "Not valid!",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "min_length:markdown",
+      "input": {
+        "markdown": "",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "markdown"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing:section",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "markdown": "example",
+              "parent": "example",
+              "source": "example"
+            },
+            "loc": [
+              "section"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:section:none",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": null,
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "section"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:section:int",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": 12,
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "section"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:section:float",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": 1.5,
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "section"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:section:bool",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": true,
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "section"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:section:str",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "x",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "x",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:section:list",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": [
+          "a"
+        ],
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "section"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:section:dict",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": {
+          "k": 1
+        },
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "section"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:section",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "Not valid!",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "Not valid!",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "min_length:section",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "section"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing:source",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "markdown": "example",
+              "parent": "example",
+              "section": "example"
+            },
+            "loc": [
+              "source"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:none",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:int",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:float",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:bool",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:str",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "x"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "x",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:source:list",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:dict",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:source",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "Not valid!",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "min_length:source",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": ""
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "source"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing:parent",
+      "input": {
+        "markdown": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "markdown": "example",
+              "section": "example",
+              "source": "example"
+            },
+            "loc": [
+              "parent"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:none",
+      "input": {
+        "markdown": "example",
+        "parent": null,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:int",
+      "input": {
+        "markdown": "example",
+        "parent": 12,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:float",
+      "input": {
+        "markdown": "example",
+        "parent": 1.5,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:bool",
+      "input": {
+        "markdown": "example",
+        "parent": true,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:str",
+      "input": {
+        "markdown": "example",
+        "parent": "x",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "x",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:list",
+      "input": {
+        "markdown": "example",
+        "parent": [
+          "a"
+        ],
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:dict",
+      "input": {
+        "markdown": "example",
+        "parent": {
+          "k": 1
+        },
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:parent",
+      "input": {
+        "markdown": "example",
+        "parent": "Not valid!",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "Not valid!",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "min_length:parent",
+      "input": {
+        "markdown": "example",
+        "parent": "",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "parent"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:none",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "tags": null
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:int",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "tags": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:float",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "tags": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:bool",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "tags": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:str",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "tags": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:list",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "tags": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": [
+            "a"
+          ],
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:dict",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "tags": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:tags",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "tags": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": [
+            "Not valid!"
+          ],
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:none",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "project": null,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:int",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "project": 12,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:float",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "project": 1.5,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:bool",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "project": true,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:str",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "project": "x",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": "x",
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:list",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "project": [
+          "a"
+        ],
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:dict",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "project": {
+          "k": 1
+        },
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:project",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "project": "Not valid!",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": "Not valid!",
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:none",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "repository": null,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:int",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "repository": 12,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:float",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "repository": 1.5,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:bool",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "repository": true,
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:str",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "repository": "x",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": "x",
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:list",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "repository": [
+          "a"
+        ],
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:dict",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "repository": {
+          "k": 1
+        },
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:repository",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "repository": "Not valid!",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": "Not valid!",
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:dry_run:none",
+      "input": {
+        "dry_run": null,
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "dry_run"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:dry_run:int",
+      "input": {
+        "dry_run": 12,
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "dry_run"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:dry_run:float",
+      "input": {
+        "dry_run": 1.5,
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "dry_run"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:dry_run:bool",
+      "input": {
+        "dry_run": true,
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "ok": {
+          "dry_run": true,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:dry_run:str",
+      "input": {
+        "dry_run": "x",
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "dry_run"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:dry_run:list",
+      "input": {
+        "dry_run": [
+          "a"
+        ],
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "dry_run"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:dry_run:dict",
+      "input": {
+        "dry_run": {
+          "k": 1
+        },
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "dry_run"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "markdown": "example",
+        "parent": "example",
+        "section": "example",
+        "source": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "dry_run": false,
+          "markdown": "example",
+          "parent": "example",
+          "project": null,
+          "repository": null,
+          "section": "example",
+          "source": "example",
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "task_import_breakdownArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of task_import_breakdownArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_import_breakdown"
+}

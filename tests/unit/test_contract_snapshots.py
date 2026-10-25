@@ -20,9 +20,9 @@ CONTRACTS_DIR = ROOT / "contracts"
 DUMP_PATH = ROOT / "tools" / "contracts" / "dump.py"
 
 # Counts measured at 5aecab8 and recorded in docs/rust-rewrite-contracts.md (Counts table).
-CLI_LEAF_COMMANDS = 185
+CLI_LEAF_COMMANDS = 186
 CLI_TOP_LEVEL_NAMES = 31
-MCP_TOOLS = 65
+MCP_TOOLS = 66
 MCP_STATIC_RESOURCES = 2
 MCP_RESOURCE_TEMPLATES = 5
 OPENAPI_OPERATIONS = 124

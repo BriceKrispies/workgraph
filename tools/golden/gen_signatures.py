@@ -5,7 +5,7 @@ is computed by the Python implementation (workgraph.verification.service.extract
 and workgraph.integrations.git.regression.regressions); the script additionally checks that the
 logs and check fixtures taken from tests/unit reproduce the assertions written in those tests.
 
-Usage: uv run python tools/golden/signatures.py
+Usage: uv run python tools/golden/gen_signatures.py
 """
 
 from __future__ import annotations

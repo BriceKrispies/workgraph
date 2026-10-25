@@ -1,6 +1,6 @@
 """Golden vectors for ``workgraph.automation``: cron next times, templates and rule conditions.
 
-Run from the repository root with ``uv run python tools/golden/automation.py``. The script
+Run from the repository root with ``uv run python tools/golden/gen_automation.py``. The script
 imports the Python implementation, runs it over curated and generated inputs and writes
 ``golden/automation/{cron,templates,conditions}.json``. It reads no clock: every reference
 time is a fixed ISO string, so two runs produce identical bytes.

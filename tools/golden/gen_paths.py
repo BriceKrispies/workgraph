@@ -12,7 +12,7 @@ inputs are simulated, so the output is the same on every host:
   hook, set to the same value as ``LOCALAPPDATA``.
 
 Writes ``golden/paths/vectors.json``. Run from the repository root with
-``uv run python tools/golden/paths.py``.
+``uv run python tools/golden/gen_paths.py``.
 """
 
 from __future__ import annotations

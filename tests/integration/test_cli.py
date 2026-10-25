@@ -162,6 +162,44 @@ def test_task_list_limit_above_maximum_is_a_validation_error(run, home, monkeypa
     assert "Traceback" not in result.output
 
 
+def test_cli_task_show_single_ref_shape(run):
+    run("init")
+    run("task", "create", "Solo")
+    shown = run("task", "show", "WG-1")
+    assert shown["key"] == "WG-1" and "items" not in shown
+
+
+def test_cli_task_show_several_refs(run, monkeypatch):
+    run("init")
+    run("task", "create", "First")
+    run("task", "create", "Second")
+    run("task", "comment", "WG-1", "first note")
+    run("task", "comment", "WG-2", "second note")
+    single = run("task", "show", "WG-1")
+
+    opened = []
+    original_app = STATE.app
+    monkeypatch.setattr(STATE, "app", lambda: opened.append(1) or original_app())
+    many = run("task", "show", "WG-2", "WG-1")
+
+    assert len(opened) == 1
+    assert set(many) == {"items", "errors"}
+    assert [item["key"] for item in many["items"]] == ["WG-2", "WG-1"]
+    assert many["items"][1] == single
+    assert [c["body"] for c in many["items"][1]["comments"]] == ["first note"]
+    assert [c["body"] for c in many["items"][0]["comments"]] == ["second note"]
+    assert many["errors"] == []
+
+
+def test_cli_task_show_unknown_ref_among_several(run):
+    run("init")
+    run("task", "create", "Known")
+    out = run("task", "show", "WG-404", "WG-1", expect=4)
+    assert [item["key"] for item in out["items"]] == ["WG-1"]
+    assert out["errors"][0]["ref"] == "WG-404"
+    assert out["errors"][0]["error"]["code"] == "not_found"
+
+
 def test_cli_backup_restore_export_import(run, tmp_path, home):
     run("init")
     run("task", "create", "Keep me", "--description", "important")

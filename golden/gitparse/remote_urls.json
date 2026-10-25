@@ -1,0 +1,193 @@
+{
+  "cases": [
+    {
+      "input": {
+        "url": "git@github.com:Org/Repo.git"
+      },
+      "name": "url:0",
+      "output": {
+        "normalized": "github.com/Org/Repo"
+      }
+    },
+    {
+      "input": {
+        "url": "https://github.com/Org/Repo"
+      },
+      "name": "url:1",
+      "output": {
+        "normalized": "github.com/Org/Repo"
+      }
+    },
+    {
+      "input": {
+        "url": "ssh://git@GitHub.com/Org/Repo.git"
+      },
+      "name": "url:2",
+      "output": {
+        "normalized": "github.com/Org/Repo"
+      }
+    },
+    {
+      "input": {
+        "url": "https://user:pw@github.com/Org/Repo.git/"
+      },
+      "name": "url:3",
+      "output": {
+        "normalized": "github.com/Org/Repo"
+      }
+    },
+    {
+      "input": {
+        "url": "https://github.com:443/Org/Repo.git"
+      },
+      "name": "url:4",
+      "output": {
+        "normalized": "github.com/443/Org/Repo"
+      }
+    },
+    {
+      "input": {
+        "url": "ssh://git@host.example:2222/team/proj.git"
+      },
+      "name": "url:5",
+      "output": {
+        "normalized": "host.example/2222/team/proj"
+      }
+    },
+    {
+      "input": {
+        "url": "ssh://git@github.com:22/Org/Repo.git"
+      },
+      "name": "url:6",
+      "output": {
+        "normalized": "github.com/22/Org/Repo"
+      }
+    },
+    {
+      "input": {
+        "url": "git+ssh://git@example.com/a/b"
+      },
+      "name": "url:7",
+      "output": {
+        "normalized": "example.com/a/b"
+      }
+    },
+    {
+      "input": {
+        "url": "git://example.com/a/b.git"
+      },
+      "name": "url:8",
+      "output": {
+        "normalized": "example.com/a/b"
+      }
+    },
+    {
+      "input": {
+        "url": "http://Example.COM/a/b"
+      },
+      "name": "url:9",
+      "output": {
+        "normalized": "example.com/a/b"
+      }
+    },
+    {
+      "input": {
+        "url": "HTTPS://GITHUB.COM/ORG/REPO.GIT"
+      },
+      "name": "url:10",
+      "output": {
+        "normalized": "https///GITHUB.COM/ORG/REPO.GIT"
+      }
+    },
+    {
+      "input": {
+        "url": "https://user@github.com/Org/Repo"
+      },
+      "name": "url:11",
+      "output": {
+        "normalized": "github.com/Org/Repo"
+      }
+    },
+    {
+      "input": {
+        "url": "git@gitlab.com:group/sub/repo.git"
+      },
+      "name": "url:12",
+      "output": {
+        "normalized": "gitlab.com/group/sub/repo"
+      }
+    },
+    {
+      "input": {
+        "url": "git@github.com:12345/repo.git"
+      },
+      "name": "url:13",
+      "output": {
+        "normalized": "github.com/12345/repo"
+      }
+    },
+    {
+      "input": {
+        "url": "git@bitbucket.org:team/repo"
+      },
+      "name": "url:14",
+      "output": {
+        "normalized": "bitbucket.org/team/repo"
+      }
+    },
+    {
+      "input": {
+        "url": "https://dev.azure.com/org/project/_git/repo"
+      },
+      "name": "url:15",
+      "output": {
+        "normalized": "dev.azure.com/org/project/_git/repo"
+      }
+    },
+    {
+      "input": {
+        "url": "https://github.com/org/repo.git"
+      },
+      "name": "url:16",
+      "output": {
+        "normalized": "github.com/org/repo"
+      }
+    },
+    {
+      "input": {
+        "url": "file:///C:/repos/demo.git"
+      },
+      "name": "url:17",
+      "output": {
+        "normalized": "/C:/repos/demo"
+      }
+    },
+    {
+      "input": {
+        "url": "/srv/git/demo.git"
+      },
+      "name": "url:18",
+      "output": {
+        "normalized": "/srv/git/demo"
+      }
+    },
+    {
+      "input": {
+        "url": "   https://github.com/a/b.git  "
+      },
+      "name": "url:19",
+      "output": {
+        "normalized": "github.com/a/b"
+      }
+    },
+    {
+      "input": {
+        "url": ""
+      },
+      "name": "url:20",
+      "output": {
+        "normalized": ""
+      }
+    }
+  ]
+}

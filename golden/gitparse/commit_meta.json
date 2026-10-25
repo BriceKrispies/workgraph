@@ -1,0 +1,550 @@
+{
+  "cases": [
+    {
+      "input": {
+        "raw": "\u001ed09220581ad07e9f28c7ea5490676ae0c929a421\u001f6291dd68fb1ed19472fefef55485aac73cafb314\u001f\u001fAda Lovelace\u001fada@example.test\u001f2023-11-14T22:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-14T22:13:20Z\u001fTask-ID: WG-1\u001dReviewed-by: Grace Hopper <grace@example.test>\u001fInitial import\n\nBody of the root commit.\n\nTask-ID: WG-1\nReviewed-by: Grace Hopper <grace@example.test>\n\n"
+      },
+      "name": "commit:root",
+      "output": {
+        "commits": [
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-14T22:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-14T22:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Initial import\n\nBody of the root commit.\n\nTask-ID: WG-1\nReviewed-by: Grace Hopper <grace@example.test>",
+            "parents": [],
+            "sha": "d09220581ad07e9f28c7ea5490676ae0c929a421",
+            "subject": "Initial import",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-1"
+              },
+              {
+                "key": "Reviewed-by",
+                "value": "Grace Hopper <grace@example.test>"
+              }
+            ],
+            "tree": "6291dd68fb1ed19472fefef55485aac73cafb314"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001e6b640932d0b8228c659c5f766080f0e9b7311297\u001fbf58d205d02aa8536d2002f1d0d5972cb82be140\u001fd09220581ad07e9f28c7ea5490676ae0c929a421\u001fZoë Ångström\u001fzoe@example.test\u001f2023-11-15T04:43:20+05:30\u001fCarl Sagan\u001fcarl@example.test\u001f2023-11-14T16:13:20-08:00\u001fTask-ID: WG-2\u001fRefactor main, add assets\n\nTask-ID: WG-2\n\n"
+      },
+      "name": "commit:refactor",
+      "output": {
+        "commits": [
+          {
+            "author_email": "zoe@example.test",
+            "author_name": "Zoë Ångström",
+            "authored_at": "2023-11-14T23:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T00:13:20+00:00",
+            "committer_email": "carl@example.test",
+            "committer_name": "Carl Sagan",
+            "message": "Refactor main, add assets\n\nTask-ID: WG-2",
+            "parents": [
+              "d09220581ad07e9f28c7ea5490676ae0c929a421"
+            ],
+            "sha": "6b640932d0b8228c659c5f766080f0e9b7311297",
+            "subject": "Refactor main, add assets",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-2"
+              }
+            ],
+            "tree": "bf58d205d02aa8536d2002f1d0d5972cb82be140"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001e40c61add745373188520db6656aaee5c5913fa05\u001f4753306a2ec5c5b894c1f5f31298ed5169f7806f\u001f6b640932d0b8228c659c5f766080f0e9b7311297\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T01:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T01:13:20Z\u001fTask-ID: WG-3\u001fAdd feature flag\n\nTask-ID: WG-3\n\n"
+      },
+      "name": "commit:feature",
+      "output": {
+        "commits": [
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-15T01:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T01:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Add feature flag\n\nTask-ID: WG-3",
+            "parents": [
+              "6b640932d0b8228c659c5f766080f0e9b7311297"
+            ],
+            "sha": "40c61add745373188520db6656aaee5c5913fa05",
+            "subject": "Add feature flag",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-3"
+              }
+            ],
+            "tree": "4753306a2ec5c5b894c1f5f31298ed5169f7806f"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001e97f1f8347ffc3264bab453fd5ba7f0229c633002\u001fd38470a30b85a8dc8aced0978fa0a17551d4d1aa\u001f6b640932d0b8228c659c5f766080f0e9b7311297\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T02:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T02:13:20Z\u001fTask-ID: WG-5\u001fCopy main and tweak the original\n\nTask-ID: WG-5\n\n"
+      },
+      "name": "commit:copy",
+      "output": {
+        "commits": [
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-15T02:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T02:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Copy main and tweak the original\n\nTask-ID: WG-5",
+            "parents": [
+              "6b640932d0b8228c659c5f766080f0e9b7311297"
+            ],
+            "sha": "97f1f8347ffc3264bab453fd5ba7f0229c633002",
+            "subject": "Copy main and tweak the original",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-5"
+              }
+            ],
+            "tree": "d38470a30b85a8dc8aced0978fa0a17551d4d1aa"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001e0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f\u001f9e54fd3708691509f809f4a685228711dc9289fb\u001f97f1f8347ffc3264bab453fd5ba7f0229c633002\u001fCarl Sagan\u001fcarl@example.test\u001f2023-11-15T03:13:20Z\u001fCarl Sagan\u001fcarl@example.test\u001f2023-11-15T03:13:20Z\u001fTask-ID: WG-4\u001fFix guide wording\n\nTask-ID: WG-4\n\n"
+      },
+      "name": "commit:guide",
+      "output": {
+        "commits": [
+          {
+            "author_email": "carl@example.test",
+            "author_name": "Carl Sagan",
+            "authored_at": "2023-11-15T03:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T03:13:20+00:00",
+            "committer_email": "carl@example.test",
+            "committer_name": "Carl Sagan",
+            "message": "Fix guide wording\n\nTask-ID: WG-4",
+            "parents": [
+              "97f1f8347ffc3264bab453fd5ba7f0229c633002"
+            ],
+            "sha": "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f",
+            "subject": "Fix guide wording",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-4"
+              }
+            ],
+            "tree": "9e54fd3708691509f809f4a685228711dc9289fb"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001e15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc\u001f9d502a6a0308380d4ece2976033c12e91e8f116c\u001f0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f 40c61add745373188520db6656aaee5c5913fa05\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T04:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T04:13:20Z\u001fTask-ID: WG-3\u001fMerge feature into main\n\nTask-ID: WG-3\n\n"
+      },
+      "name": "commit:merge",
+      "output": {
+        "commits": [
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-15T04:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T04:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Merge feature into main\n\nTask-ID: WG-3",
+            "parents": [
+              "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f",
+              "40c61add745373188520db6656aaee5c5913fa05"
+            ],
+            "sha": "15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc",
+            "subject": "Merge feature into main",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-3"
+              }
+            ],
+            "tree": "9d502a6a0308380d4ece2976033c12e91e8f116c"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001e8a9fdb575e89099e92db23cc24b084b44805d324\u001fa3512fdf29ef4161645f5fc70cbff2f3d8a2a4ee\u001f6b640932d0b8228c659c5f766080f0e9b7311297\u001fCarl Sagan\u001fcarl@example.test\u001f2023-11-15T03:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T05:13:20Z\u001fTask-ID: WG-4\u001d(cherry picked from commit 0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f)\u001fFix guide wording\n\nTask-ID: WG-4\n(cherry picked from commit 0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f)\n\n"
+      },
+      "name": "commit:cherry",
+      "output": {
+        "commits": [
+          {
+            "author_email": "carl@example.test",
+            "author_name": "Carl Sagan",
+            "authored_at": "2023-11-15T03:13:20+00:00",
+            "cherry_picked_from": "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f",
+            "committed_at": "2023-11-15T05:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Fix guide wording\n\nTask-ID: WG-4\n(cherry picked from commit 0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f)",
+            "parents": [
+              "6b640932d0b8228c659c5f766080f0e9b7311297"
+            ],
+            "sha": "8a9fdb575e89099e92db23cc24b084b44805d324",
+            "subject": "Fix guide wording",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-4"
+              }
+            ],
+            "tree": "a3512fdf29ef4161645f5fc70cbff2f3d8a2a4ee"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001e96b484e722ef10c0b8fe5608f4cee827e8b9273a\u001f9d502a6a0308380d4ece2976033c12e91e8f116c\u001f15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T06:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T06:13:20Z\u001f\u001fEmpty checkpoint\n\n"
+      },
+      "name": "commit:empty",
+      "output": {
+        "commits": [
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-15T06:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T06:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Empty checkpoint",
+            "parents": [
+              "15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc"
+            ],
+            "sha": "96b484e722ef10c0b8fe5608f4cee827e8b9273a",
+            "subject": "Empty checkpoint",
+            "trailers": [],
+            "tree": "9d502a6a0308380d4ece2976033c12e91e8f116c"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001e642537e12ecc67a5bf08a05f1e047f75458ff270\u001f9d502a6a0308380d4ece2976033c12e91e8f116c\u001f96b484e722ef10c0b8fe5608f4cee827e8b9273a\u001fZoë Ångström\u001fzoe@example.test\u001f2023-11-15T07:13:20Z\u001fZoë Ångström\u001fzoe@example.test\u001f2023-11-15T07:13:20Z\u001fReviewed-by: Zoë Ångström <zoe@example.test>\u001dReviewed-by: Carl Sagan <carl@example.test>\u001fSchöne Grüße ✓\n\nReviewed-by: Zoë Ångström <zoe@example.test>\nReviewed-by: Carl Sagan <carl@example.test>\n\n"
+      },
+      "name": "commit:unicode",
+      "output": {
+        "commits": [
+          {
+            "author_email": "zoe@example.test",
+            "author_name": "Zoë Ångström",
+            "authored_at": "2023-11-15T07:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T07:13:20+00:00",
+            "committer_email": "zoe@example.test",
+            "committer_name": "Zoë Ångström",
+            "message": "Schöne Grüße ✓\n\nReviewed-by: Zoë Ångström <zoe@example.test>\nReviewed-by: Carl Sagan <carl@example.test>",
+            "parents": [
+              "96b484e722ef10c0b8fe5608f4cee827e8b9273a"
+            ],
+            "sha": "642537e12ecc67a5bf08a05f1e047f75458ff270",
+            "subject": "Schöne Grüße ✓",
+            "trailers": [
+              {
+                "key": "Reviewed-by",
+                "value": "Zoë Ångström <zoe@example.test>"
+              },
+              {
+                "key": "Reviewed-by",
+                "value": "Carl Sagan <carl@example.test>"
+              }
+            ],
+            "tree": "9d502a6a0308380d4ece2976033c12e91e8f116c"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001ed09220581ad07e9f28c7ea5490676ae0c929a421\u001f6291dd68fb1ed19472fefef55485aac73cafb314\u001f\u001fAda Lovelace\u001fada@example.test\u001f2023-11-14T22:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-14T22:13:20Z\u001fTask-ID: WG-1\u001dReviewed-by: Grace Hopper <grace@example.test>\u001fInitial import\n\nBody of the root commit.\n\nTask-ID: WG-1\nReviewed-by: Grace Hopper <grace@example.test>\n\n\u001e6b640932d0b8228c659c5f766080f0e9b7311297\u001fbf58d205d02aa8536d2002f1d0d5972cb82be140\u001fd09220581ad07e9f28c7ea5490676ae0c929a421\u001fZoë Ångström\u001fzoe@example.test\u001f2023-11-15T04:43:20+05:30\u001fCarl Sagan\u001fcarl@example.test\u001f2023-11-14T16:13:20-08:00\u001fTask-ID: WG-2\u001fRefactor main, add assets\n\nTask-ID: WG-2\n\n\u001e40c61add745373188520db6656aaee5c5913fa05\u001f4753306a2ec5c5b894c1f5f31298ed5169f7806f\u001f6b640932d0b8228c659c5f766080f0e9b7311297\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T01:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T01:13:20Z\u001fTask-ID: WG-3\u001fAdd feature flag\n\nTask-ID: WG-3\n\n\u001e97f1f8347ffc3264bab453fd5ba7f0229c633002\u001fd38470a30b85a8dc8aced0978fa0a17551d4d1aa\u001f6b640932d0b8228c659c5f766080f0e9b7311297\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T02:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T02:13:20Z\u001fTask-ID: WG-5\u001fCopy main and tweak the original\n\nTask-ID: WG-5\n\n\u001e0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f\u001f9e54fd3708691509f809f4a685228711dc9289fb\u001f97f1f8347ffc3264bab453fd5ba7f0229c633002\u001fCarl Sagan\u001fcarl@example.test\u001f2023-11-15T03:13:20Z\u001fCarl Sagan\u001fcarl@example.test\u001f2023-11-15T03:13:20Z\u001fTask-ID: WG-4\u001fFix guide wording\n\nTask-ID: WG-4\n\n\u001e15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc\u001f9d502a6a0308380d4ece2976033c12e91e8f116c\u001f0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f 40c61add745373188520db6656aaee5c5913fa05\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T04:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T04:13:20Z\u001fTask-ID: WG-3\u001fMerge feature into main\n\nTask-ID: WG-3\n\n\u001e8a9fdb575e89099e92db23cc24b084b44805d324\u001fa3512fdf29ef4161645f5fc70cbff2f3d8a2a4ee\u001f6b640932d0b8228c659c5f766080f0e9b7311297\u001fCarl Sagan\u001fcarl@example.test\u001f2023-11-15T03:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T05:13:20Z\u001fTask-ID: WG-4\u001d(cherry picked from commit 0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f)\u001fFix guide wording\n\nTask-ID: WG-4\n(cherry picked from commit 0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f)\n\n\u001e96b484e722ef10c0b8fe5608f4cee827e8b9273a\u001f9d502a6a0308380d4ece2976033c12e91e8f116c\u001f15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T06:13:20Z\u001fAda Lovelace\u001fada@example.test\u001f2023-11-15T06:13:20Z\u001f\u001fEmpty checkpoint\n\n\u001e642537e12ecc67a5bf08a05f1e047f75458ff270\u001f9d502a6a0308380d4ece2976033c12e91e8f116c\u001f96b484e722ef10c0b8fe5608f4cee827e8b9273a\u001fZoë Ångström\u001fzoe@example.test\u001f2023-11-15T07:13:20Z\u001fZoë Ångström\u001fzoe@example.test\u001f2023-11-15T07:13:20Z\u001fReviewed-by: Zoë Ångström <zoe@example.test>\u001dReviewed-by: Carl Sagan <carl@example.test>\u001fSchöne Grüße ✓\n\nReviewed-by: Zoë Ångström <zoe@example.test>\nReviewed-by: Carl Sagan <carl@example.test>\n\n"
+      },
+      "name": "history:all_commits",
+      "output": {
+        "commits": [
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-14T22:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-14T22:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Initial import\n\nBody of the root commit.\n\nTask-ID: WG-1\nReviewed-by: Grace Hopper <grace@example.test>",
+            "parents": [],
+            "sha": "d09220581ad07e9f28c7ea5490676ae0c929a421",
+            "subject": "Initial import",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-1"
+              },
+              {
+                "key": "Reviewed-by",
+                "value": "Grace Hopper <grace@example.test>"
+              }
+            ],
+            "tree": "6291dd68fb1ed19472fefef55485aac73cafb314"
+          },
+          {
+            "author_email": "zoe@example.test",
+            "author_name": "Zoë Ångström",
+            "authored_at": "2023-11-14T23:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T00:13:20+00:00",
+            "committer_email": "carl@example.test",
+            "committer_name": "Carl Sagan",
+            "message": "Refactor main, add assets\n\nTask-ID: WG-2",
+            "parents": [
+              "d09220581ad07e9f28c7ea5490676ae0c929a421"
+            ],
+            "sha": "6b640932d0b8228c659c5f766080f0e9b7311297",
+            "subject": "Refactor main, add assets",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-2"
+              }
+            ],
+            "tree": "bf58d205d02aa8536d2002f1d0d5972cb82be140"
+          },
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-15T01:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T01:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Add feature flag\n\nTask-ID: WG-3",
+            "parents": [
+              "6b640932d0b8228c659c5f766080f0e9b7311297"
+            ],
+            "sha": "40c61add745373188520db6656aaee5c5913fa05",
+            "subject": "Add feature flag",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-3"
+              }
+            ],
+            "tree": "4753306a2ec5c5b894c1f5f31298ed5169f7806f"
+          },
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-15T02:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T02:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Copy main and tweak the original\n\nTask-ID: WG-5",
+            "parents": [
+              "6b640932d0b8228c659c5f766080f0e9b7311297"
+            ],
+            "sha": "97f1f8347ffc3264bab453fd5ba7f0229c633002",
+            "subject": "Copy main and tweak the original",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-5"
+              }
+            ],
+            "tree": "d38470a30b85a8dc8aced0978fa0a17551d4d1aa"
+          },
+          {
+            "author_email": "carl@example.test",
+            "author_name": "Carl Sagan",
+            "authored_at": "2023-11-15T03:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T03:13:20+00:00",
+            "committer_email": "carl@example.test",
+            "committer_name": "Carl Sagan",
+            "message": "Fix guide wording\n\nTask-ID: WG-4",
+            "parents": [
+              "97f1f8347ffc3264bab453fd5ba7f0229c633002"
+            ],
+            "sha": "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f",
+            "subject": "Fix guide wording",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-4"
+              }
+            ],
+            "tree": "9e54fd3708691509f809f4a685228711dc9289fb"
+          },
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-15T04:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T04:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Merge feature into main\n\nTask-ID: WG-3",
+            "parents": [
+              "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f",
+              "40c61add745373188520db6656aaee5c5913fa05"
+            ],
+            "sha": "15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc",
+            "subject": "Merge feature into main",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-3"
+              }
+            ],
+            "tree": "9d502a6a0308380d4ece2976033c12e91e8f116c"
+          },
+          {
+            "author_email": "carl@example.test",
+            "author_name": "Carl Sagan",
+            "authored_at": "2023-11-15T03:13:20+00:00",
+            "cherry_picked_from": "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f",
+            "committed_at": "2023-11-15T05:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Fix guide wording\n\nTask-ID: WG-4\n(cherry picked from commit 0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f)",
+            "parents": [
+              "6b640932d0b8228c659c5f766080f0e9b7311297"
+            ],
+            "sha": "8a9fdb575e89099e92db23cc24b084b44805d324",
+            "subject": "Fix guide wording",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-4"
+              }
+            ],
+            "tree": "a3512fdf29ef4161645f5fc70cbff2f3d8a2a4ee"
+          },
+          {
+            "author_email": "ada@example.test",
+            "author_name": "Ada Lovelace",
+            "authored_at": "2023-11-15T06:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T06:13:20+00:00",
+            "committer_email": "ada@example.test",
+            "committer_name": "Ada Lovelace",
+            "message": "Empty checkpoint",
+            "parents": [
+              "15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc"
+            ],
+            "sha": "96b484e722ef10c0b8fe5608f4cee827e8b9273a",
+            "subject": "Empty checkpoint",
+            "trailers": [],
+            "tree": "9d502a6a0308380d4ece2976033c12e91e8f116c"
+          },
+          {
+            "author_email": "zoe@example.test",
+            "author_name": "Zoë Ångström",
+            "authored_at": "2023-11-15T07:13:20+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2023-11-15T07:13:20+00:00",
+            "committer_email": "zoe@example.test",
+            "committer_name": "Zoë Ångström",
+            "message": "Schöne Grüße ✓\n\nReviewed-by: Zoë Ångström <zoe@example.test>\nReviewed-by: Carl Sagan <carl@example.test>",
+            "parents": [
+              "96b484e722ef10c0b8fe5608f4cee827e8b9273a"
+            ],
+            "sha": "642537e12ecc67a5bf08a05f1e047f75458ff270",
+            "subject": "Schöne Grüße ✓",
+            "trailers": [
+              {
+                "key": "Reviewed-by",
+                "value": "Zoë Ångström <zoe@example.test>"
+              },
+              {
+                "key": "Reviewed-by",
+                "value": "Carl Sagan <carl@example.test>"
+              }
+            ],
+            "tree": "9d502a6a0308380d4ece2976033c12e91e8f116c"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "\u001eaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\u001ftree\u001fp1 p2\u001fA\u001fa@x\u001f2026-01-01T00:00:00+00:00\u001fC\u001fc@x\u001f2026-01-01T00:00:00+00:00\u001fTask-ID: WG-1\u001dReviewed-by: X\u001fSubject\n\nBody\n"
+      },
+      "name": "synthetic:test_foundations.test_parse_diff_tree_and_meta",
+      "output": {
+        "commits": [
+          {
+            "author_email": "a@x",
+            "author_name": "A",
+            "authored_at": "2026-01-01T00:00:00+00:00",
+            "cherry_picked_from": null,
+            "committed_at": "2026-01-01T00:00:00+00:00",
+            "committer_email": "c@x",
+            "committer_name": "C",
+            "message": "Subject\n\nBody",
+            "parents": [
+              "p1",
+              "p2"
+            ],
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "subject": "Subject",
+            "trailers": [
+              {
+                "key": "Task-ID",
+                "value": "WG-1"
+              },
+              {
+                "key": "Reviewed-by",
+                "value": "X"
+              }
+            ],
+            "tree": "tree"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": ""
+      },
+      "name": "synthetic:empty",
+      "output": {
+        "commits": []
+      }
+    }
+  ]
+}

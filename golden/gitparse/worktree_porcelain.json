@@ -1,0 +1,202 @@
+{
+  "cases": [
+    {
+      "input": {
+        "nul": true,
+        "output": "worktree @ROOT@/history\u0000HEAD 642537e12ecc67a5bf08a05f1e047f75458ff270\u0000branch refs/heads/main\u0000\u0000worktree @ROOT@/wt/detached\u0000HEAD 6b640932d0b8228c659c5f766080f0e9b7311297\u0000detached\u0000\u0000worktree @ROOT@/wt/feature\u0000HEAD 40c61add745373188520db6656aaee5c5913fa05\u0000branch refs/heads/feature\u0000\u0000worktree @ROOT@/wt/gone\u0000HEAD 6b640932d0b8228c659c5f766080f0e9b7311297\u0000branch refs/heads/gone\u0000prunable gitdir file points to non-existent location\u0000\u0000worktree @ROOT@/wt/locked\u0000HEAD 0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f\u0000branch refs/heads/locked-branch\u0000locked rebase in progress\u0000\u0000"
+      },
+      "name": "history:z",
+      "output": {
+        "entries": [
+          {
+            "bare": false,
+            "branch": "main",
+            "detached": false,
+            "head": "642537e12ecc67a5bf08a05f1e047f75458ff270",
+            "locked": false,
+            "path": "@ROOT@/history",
+            "prunable": false
+          },
+          {
+            "bare": false,
+            "branch": null,
+            "detached": true,
+            "head": "6b640932d0b8228c659c5f766080f0e9b7311297",
+            "locked": false,
+            "path": "@ROOT@/wt/detached",
+            "prunable": false
+          },
+          {
+            "bare": false,
+            "branch": "feature",
+            "detached": false,
+            "head": "40c61add745373188520db6656aaee5c5913fa05",
+            "locked": false,
+            "path": "@ROOT@/wt/feature",
+            "prunable": false
+          },
+          {
+            "bare": false,
+            "branch": "gone",
+            "detached": false,
+            "head": "6b640932d0b8228c659c5f766080f0e9b7311297",
+            "locked": false,
+            "path": "@ROOT@/wt/gone",
+            "prunable": true
+          },
+          {
+            "bare": false,
+            "branch": "locked-branch",
+            "detached": false,
+            "head": "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f",
+            "locked": true,
+            "path": "@ROOT@/wt/locked",
+            "prunable": false
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "nul": false,
+        "output": "worktree @ROOT@/history\nHEAD 642537e12ecc67a5bf08a05f1e047f75458ff270\nbranch refs/heads/main\n\nworktree @ROOT@/wt/detached\nHEAD 6b640932d0b8228c659c5f766080f0e9b7311297\ndetached\n\nworktree @ROOT@/wt/feature\nHEAD 40c61add745373188520db6656aaee5c5913fa05\nbranch refs/heads/feature\n\nworktree @ROOT@/wt/gone\nHEAD 6b640932d0b8228c659c5f766080f0e9b7311297\nbranch refs/heads/gone\nprunable gitdir file points to non-existent location\n\nworktree @ROOT@/wt/locked\nHEAD 0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f\nbranch refs/heads/locked-branch\nlocked rebase in progress\n\n"
+      },
+      "name": "history:plain",
+      "output": {
+        "entries": [
+          {
+            "bare": false,
+            "branch": "main",
+            "detached": false,
+            "head": "642537e12ecc67a5bf08a05f1e047f75458ff270",
+            "locked": false,
+            "path": "@ROOT@/history",
+            "prunable": false
+          },
+          {
+            "bare": false,
+            "branch": null,
+            "detached": true,
+            "head": "6b640932d0b8228c659c5f766080f0e9b7311297",
+            "locked": false,
+            "path": "@ROOT@/wt/detached",
+            "prunable": false
+          },
+          {
+            "bare": false,
+            "branch": "feature",
+            "detached": false,
+            "head": "40c61add745373188520db6656aaee5c5913fa05",
+            "locked": false,
+            "path": "@ROOT@/wt/feature",
+            "prunable": false
+          },
+          {
+            "bare": false,
+            "branch": "gone",
+            "detached": false,
+            "head": "6b640932d0b8228c659c5f766080f0e9b7311297",
+            "locked": false,
+            "path": "@ROOT@/wt/gone",
+            "prunable": true
+          },
+          {
+            "bare": false,
+            "branch": "locked-branch",
+            "detached": false,
+            "head": "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f",
+            "locked": true,
+            "path": "@ROOT@/wt/locked",
+            "prunable": false
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "nul": true,
+        "output": "worktree @ROOT@/bare.git\u0000bare\u0000\u0000"
+      },
+      "name": "bare:z",
+      "output": {
+        "entries": [
+          {
+            "bare": true,
+            "branch": null,
+            "detached": false,
+            "head": null,
+            "locked": false,
+            "path": "@ROOT@/bare.git",
+            "prunable": false
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "nul": true,
+        "output": "worktree C:/dev/repo\u0000HEAD 1111111111111111111111111111111111111111\u0000branch refs/heads/main\u0000\u0000worktree C:/dev/wt-detached\u0000HEAD 2222222222222222222222222222222222222222\u0000detached\u0000\u0000worktree C:/dev/wt-locked\u0000HEAD 3333333333333333333333333333333333333333\u0000branch refs/heads/feature/x\u0000locked rebase in progress\u0000\u0000worktree C:/dev/wt-gone\u0000HEAD 4444444444444444444444444444444444444444\u0000branch refs/heads/old\u0000prunable gitdir file points to non-existent location\u0000\u0000worktree C:/dev/bare.git\u0000bare\u0000\u0000"
+      },
+      "name": "synthetic:test_foundations.test_parse_worktree_porcelain_entries_in_both_framings",
+      "output": {
+        "entries": [
+          {
+            "bare": false,
+            "branch": "main",
+            "detached": false,
+            "head": "1111111111111111111111111111111111111111",
+            "locked": false,
+            "path": "C:/dev/repo",
+            "prunable": false
+          },
+          {
+            "bare": false,
+            "branch": null,
+            "detached": true,
+            "head": "2222222222222222222222222222222222222222",
+            "locked": false,
+            "path": "C:/dev/wt-detached",
+            "prunable": false
+          },
+          {
+            "bare": false,
+            "branch": "feature/x",
+            "detached": false,
+            "head": "3333333333333333333333333333333333333333",
+            "locked": true,
+            "path": "C:/dev/wt-locked",
+            "prunable": false
+          },
+          {
+            "bare": false,
+            "branch": "old",
+            "detached": false,
+            "head": "4444444444444444444444444444444444444444",
+            "locked": false,
+            "path": "C:/dev/wt-gone",
+            "prunable": true
+          },
+          {
+            "bare": true,
+            "branch": null,
+            "detached": false,
+            "head": null,
+            "locked": false,
+            "path": "C:/dev/bare.git",
+            "prunable": false
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "nul": true,
+        "output": ""
+      },
+      "name": "synthetic:empty",
+      "output": {
+        "entries": []
+      }
+    }
+  ]
+}

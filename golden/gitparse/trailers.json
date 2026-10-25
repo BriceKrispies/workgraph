@@ -1,0 +1,71 @@
+{
+  "cases": [
+    {
+      "input": {
+        "raw": ""
+      },
+      "name": "raw:0",
+      "output": {
+        "trailers": []
+      }
+    },
+    {
+      "input": {
+        "raw": "Task-ID: WG-1\u001dReviewed-by: X"
+      },
+      "name": "raw:1",
+      "output": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "WG-1"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "X"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "Task-ID:WG-9\u001dNo colon line\u001d   \u001dLink: https://x.example/y:1"
+      },
+      "name": "raw:2",
+      "output": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "WG-9"
+          },
+          {
+            "key": "Link",
+            "value": "https://x.example/y:1"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "Key-2: value with spaces   \u001dEmpty:\u001dok: yes"
+      },
+      "name": "raw:3",
+      "output": {
+        "trailers": [
+          {
+            "key": "Key-2",
+            "value": "value with spaces"
+          },
+          {
+            "key": "Empty",
+            "value": ""
+          },
+          {
+            "key": "ok",
+            "value": "yes"
+          }
+        ]
+      }
+    }
+  ]
+}

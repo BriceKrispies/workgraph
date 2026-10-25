@@ -1,0 +1,263 @@
+{
+  "cases": [
+    {
+      "input": {
+        "raw": "-\t-\tassets/logo.bin\u00001\t0\t\u0000docs/README.md\u0000docs/GUIDE.md\u00003\t0\tsrc/a b.py\u00003\t0\tsrc/app/main.py\u00001\t0\tsrc/naïve.py\u00000\t2\ttests/test_main.py\u0000"
+      },
+      "name": "range:root..refactor",
+      "output": {
+        "files": [
+          {
+            "binary": true,
+            "deletions": 0,
+            "insertions": 0,
+            "old_path": null,
+            "path": "assets/logo.bin",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 1,
+            "old_path": "docs/README.md",
+            "path": "docs/GUIDE.md",
+            "similarity": null,
+            "status": "R"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 3,
+            "old_path": null,
+            "path": "src/a b.py",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 3,
+            "old_path": null,
+            "path": "src/app/main.py",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 1,
+            "old_path": null,
+            "path": "src/naïve.py",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 2,
+            "insertions": 0,
+            "old_path": null,
+            "path": "tests/test_main.py",
+            "similarity": null,
+            "status": "M"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "2\t0\tsrc/app/main.py\u00005\t0\tsrc/app/main_copy.py\u0000"
+      },
+      "name": "range:refactor..copy",
+      "output": {
+        "files": [
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 2,
+            "old_path": null,
+            "path": "src/app/main.py",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 5,
+            "old_path": null,
+            "path": "src/app/main_copy.py",
+            "similarity": null,
+            "status": "M"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "1\t0\tsrc/feature.py\u0000"
+      },
+      "name": "range:refactor..feature",
+      "output": {
+        "files": [
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 1,
+            "old_path": null,
+            "path": "src/feature.py",
+            "similarity": null,
+            "status": "M"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "1\t0\tdocs/GUIDE.md\u0000"
+      },
+      "name": "range:copy..guide",
+      "output": {
+        "files": [
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 1,
+            "old_path": null,
+            "path": "docs/GUIDE.md",
+            "similarity": null,
+            "status": "M"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "1\t0\tdocs/GUIDE.md\u0000"
+      },
+      "name": "range:refactor..cherry",
+      "output": {
+        "files": [
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 1,
+            "old_path": null,
+            "path": "docs/GUIDE.md",
+            "similarity": null,
+            "status": "M"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "1\t0\tsrc/feature.py\u0000"
+      },
+      "name": "range:guide..merge",
+      "output": {
+        "files": [
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 1,
+            "old_path": null,
+            "path": "src/feature.py",
+            "similarity": null,
+            "status": "M"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "raw": "-\t-\tassets/logo.bin\u00005\t0\tdocs/GUIDE.md\u00000\t3\tdocs/README.md\u00003\t0\tsrc/a b.py\u00005\t0\tsrc/app/main.py\u00005\t0\tsrc/app/main_copy.py\u00001\t0\tsrc/feature.py\u00001\t0\tsrc/naïve.py\u00000\t2\ttests/test_main.py\u0000"
+      },
+      "name": "range:root..unicode",
+      "output": {
+        "files": [
+          {
+            "binary": true,
+            "deletions": 0,
+            "insertions": 0,
+            "old_path": null,
+            "path": "assets/logo.bin",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 5,
+            "old_path": null,
+            "path": "docs/GUIDE.md",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 3,
+            "insertions": 0,
+            "old_path": null,
+            "path": "docs/README.md",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 3,
+            "old_path": null,
+            "path": "src/a b.py",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 5,
+            "old_path": null,
+            "path": "src/app/main.py",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 5,
+            "old_path": null,
+            "path": "src/app/main_copy.py",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 1,
+            "old_path": null,
+            "path": "src/feature.py",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 0,
+            "insertions": 1,
+            "old_path": null,
+            "path": "src/naïve.py",
+            "similarity": null,
+            "status": "M"
+          },
+          {
+            "binary": false,
+            "deletions": 2,
+            "insertions": 0,
+            "old_path": null,
+            "path": "tests/test_main.py",
+            "similarity": null,
+            "status": "M"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,295 @@
+{
+  "cases": [
+    {
+      "input": {
+        "raw": "d09220581ad07e9f28c7ea5490676ae0c929a421\u0000:000000 100644 0000000000000000000000000000000000000000 f3879d4748d428099b667ba6c587326f1ee5b86a A\u0000docs/README.md\u0000:000000 100644 0000000000000000000000000000000000000000 b575dda7ea0321844b657459f6924f4ee783733e A\u0000src/app/main.py\u0000:000000 100644 0000000000000000000000000000000000000000 e6ef5c801fa38477c3c2c841537830bb359d9a1a A\u0000tests/test_main.py\u00003\t0\tdocs/README.md\u00002\t0\tsrc/app/main.py\u00002\t0\ttests/test_main.py\u0000"
+      },
+      "name": "commit:root",
+      "output": {
+        "commits": {
+          "d09220581ad07e9f28c7ea5490676ae0c929a421": {
+            "files": [
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 3,
+                "old_path": null,
+                "path": "docs/README.md",
+                "similarity": null,
+                "status": "A"
+              },
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 2,
+                "old_path": null,
+                "path": "src/app/main.py",
+                "similarity": null,
+                "status": "A"
+              },
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 2,
+                "old_path": null,
+                "path": "tests/test_main.py",
+                "similarity": null,
+                "status": "A"
+              }
+            ],
+            "sha": "d09220581ad07e9f28c7ea5490676ae0c929a421"
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "raw": "6b640932d0b8228c659c5f766080f0e9b7311297\u0000:000000 100644 0000000000000000000000000000000000000000 c86626638e0bc8cf47ca49bb1525b40e9737ee64 A\u0000assets/logo.bin\u0000:100644 100644 f3879d4748d428099b667ba6c587326f1ee5b86a d46e177d1846d67e20045d2a7f134f053d20afdb R060\u0000docs/README.md\u0000docs/GUIDE.md\u0000:000000 100644 0000000000000000000000000000000000000000 8f942ad3c8d886cfbc255e407dcaca32ef30cebc A\u0000src/a b.py\u0000:100644 100644 b575dda7ea0321844b657459f6924f4ee783733e 758ce353629d04472ee1c705d1057e6b1178ae06 M\u0000src/app/main.py\u0000:000000 100644 0000000000000000000000000000000000000000 1fca9fb57babf8124b6cad1668d41b5c4c2a73f5 A\u0000src/naïve.py\u0000:100644 000000 e6ef5c801fa38477c3c2c841537830bb359d9a1a 0000000000000000000000000000000000000000 D\u0000tests/test_main.py\u0000-\t-\tassets/logo.bin\u00001\t0\t\u0000docs/README.md\u0000docs/GUIDE.md\u00003\t0\tsrc/a b.py\u00003\t0\tsrc/app/main.py\u00001\t0\tsrc/naïve.py\u00000\t2\ttests/test_main.py\u0000"
+      },
+      "name": "commit:refactor",
+      "output": {
+        "commits": {
+          "6b640932d0b8228c659c5f766080f0e9b7311297": {
+            "files": [
+              {
+                "binary": true,
+                "deletions": 0,
+                "insertions": 0,
+                "old_path": null,
+                "path": "assets/logo.bin",
+                "similarity": null,
+                "status": "A"
+              },
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 1,
+                "old_path": "docs/README.md",
+                "path": "docs/GUIDE.md",
+                "similarity": 60,
+                "status": "R"
+              },
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 3,
+                "old_path": null,
+                "path": "src/a b.py",
+                "similarity": null,
+                "status": "A"
+              },
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 3,
+                "old_path": null,
+                "path": "src/app/main.py",
+                "similarity": null,
+                "status": "M"
+              },
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 1,
+                "old_path": null,
+                "path": "src/naïve.py",
+                "similarity": null,
+                "status": "A"
+              },
+              {
+                "binary": false,
+                "deletions": 2,
+                "insertions": 0,
+                "old_path": null,
+                "path": "tests/test_main.py",
+                "similarity": null,
+                "status": "D"
+              }
+            ],
+            "sha": "6b640932d0b8228c659c5f766080f0e9b7311297"
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "raw": "40c61add745373188520db6656aaee5c5913fa05\u0000:000000 100644 0000000000000000000000000000000000000000 e3b2e57fc2445af2deedcabd50d2c5daec52132f A\u0000src/feature.py\u00001\t0\tsrc/feature.py\u0000"
+      },
+      "name": "commit:feature",
+      "output": {
+        "commits": {
+          "40c61add745373188520db6656aaee5c5913fa05": {
+            "files": [
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 1,
+                "old_path": null,
+                "path": "src/feature.py",
+                "similarity": null,
+                "status": "A"
+              }
+            ],
+            "sha": "40c61add745373188520db6656aaee5c5913fa05"
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "raw": "97f1f8347ffc3264bab453fd5ba7f0229c633002\u0000:100644 100644 758ce353629d04472ee1c705d1057e6b1178ae06 9c098566a778013ee4b3e3b0eae2b27a8a648f13 M\u0000src/app/main.py\u0000:100644 100644 758ce353629d04472ee1c705d1057e6b1178ae06 758ce353629d04472ee1c705d1057e6b1178ae06 C100\u0000src/app/main.py\u0000src/app/main_copy.py\u00002\t0\tsrc/app/main.py\u00000\t0\t\u0000src/app/main.py\u0000src/app/main_copy.py\u0000"
+      },
+      "name": "commit:copy",
+      "output": {
+        "commits": {
+          "97f1f8347ffc3264bab453fd5ba7f0229c633002": {
+            "files": [
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 2,
+                "old_path": null,
+                "path": "src/app/main.py",
+                "similarity": null,
+                "status": "M"
+              },
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 0,
+                "old_path": "src/app/main.py",
+                "path": "src/app/main_copy.py",
+                "similarity": 100,
+                "status": "C"
+              }
+            ],
+            "sha": "97f1f8347ffc3264bab453fd5ba7f0229c633002"
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "raw": "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f\u0000:100644 100644 d46e177d1846d67e20045d2a7f134f053d20afdb ac0ead365cd9b73e172c8e720a6b48dbb66855ab M\u0000docs/GUIDE.md\u00001\t0\tdocs/GUIDE.md\u0000"
+      },
+      "name": "commit:guide",
+      "output": {
+        "commits": {
+          "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f": {
+            "files": [
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 1,
+                "old_path": null,
+                "path": "docs/GUIDE.md",
+                "similarity": null,
+                "status": "M"
+              }
+            ],
+            "sha": "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f"
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "raw": "15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc\u0000:000000 100644 0000000000000000000000000000000000000000 e3b2e57fc2445af2deedcabd50d2c5daec52132f A\u0000src/feature.py\u00001\t0\tsrc/feature.py\u0000"
+      },
+      "name": "commit:merge",
+      "output": {
+        "commits": {
+          "15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc": {
+            "files": [
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 1,
+                "old_path": null,
+                "path": "src/feature.py",
+                "similarity": null,
+                "status": "A"
+              }
+            ],
+            "sha": "15b99485deb4310cb9f3b5f1ac3589edb0c3e8bc"
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "raw": "8a9fdb575e89099e92db23cc24b084b44805d324\u0000:100644 100644 d46e177d1846d67e20045d2a7f134f053d20afdb ac0ead365cd9b73e172c8e720a6b48dbb66855ab M\u0000docs/GUIDE.md\u00001\t0\tdocs/GUIDE.md\u0000"
+      },
+      "name": "commit:cherry",
+      "output": {
+        "commits": {
+          "8a9fdb575e89099e92db23cc24b084b44805d324": {
+            "files": [
+              {
+                "binary": false,
+                "deletions": 0,
+                "insertions": 1,
+                "old_path": null,
+                "path": "docs/GUIDE.md",
+                "similarity": null,
+                "status": "M"
+              }
+            ],
+            "sha": "8a9fdb575e89099e92db23cc24b084b44805d324"
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "raw": ""
+      },
+      "name": "commit:empty",
+      "output": {
+        "commits": {}
+      }
+    },
+    {
+      "input": {
+        "raw": ""
+      },
+      "name": "commit:unicode",
+      "output": {
+        "commits": {}
+      }
+    },
+    {
+      "input": {
+        "raw": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\u0000:100644 100644 1111111 2222222 R087\u0000old.py\u0000new.py\u0000:000000 100644 0000000 3333333 A\u0000bin.dat\u00003\t1\t\u0000old.py\u0000new.py\u0000-\t-\tbin.dat\u0000"
+      },
+      "name": "synthetic:test_foundations.test_parse_diff_tree_and_meta",
+      "output": {
+        "commits": {
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+            "files": [
+              {
+                "binary": false,
+                "deletions": 1,
+                "insertions": 3,
+                "old_path": "old.py",
+                "path": "new.py",
+                "similarity": 87,
+                "status": "R"
+              },
+              {
+                "binary": true,
+                "deletions": 0,
+                "insertions": 0,
+                "old_path": null,
+                "path": "bin.dat",
+                "similarity": null,
+                "status": "A"
+              }
+            ],
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        }
+      }
+    }
+  ]
+}

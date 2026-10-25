@@ -763,14 +763,14 @@ TOML files: `<config>/config.toml` (global) and `<config>/workspaces/<slug>.toml
 | `server.allow_non_loopback` | boolean | false |  |
 | `server.lan` | boolean | true |  |
 | `server.lan_address` | string\|null | null |  |
-| `server.lan_networks` | array | null |  |
+| `server.lan_networks` | array<string> | [] |  |
 | `llm.providers.<name>` | table: OllamaProviderConfig or HeuristicProviderConfig or OpenAICompatibleProviderConfig |  |  |
-| `llm.classification.provider` | string | null |  |
-| `llm.classification.model` | string | null |  |
-| `llm.embeddings.provider` | string | null |  |
-| `llm.embeddings.model` | string | null |  |
-| `llm.summarization.provider` | string | null |  |
-| `llm.summarization.model` | string | null |  |
+| `llm.classification.provider` | string | "ollama" |  |
+| `llm.classification.model` | string | "qwen2.5:7b-instruct" |  |
+| `llm.embeddings.provider` | string | "ollama" |  |
+| `llm.embeddings.model` | string | "nomic-embed-text" |  |
+| `llm.summarization.provider` | string | "ollama" |  |
+| `llm.summarization.model` | string | "qwen2.5:7b-instruct" |  |
 | `llm.auto_classify` | boolean | true |  |
 | `llm.auto_embed` | boolean | true |  |
 | `agents.<name>` | table: ClaudeCodeAgentConfig or CommandAgentConfig |  |  |
@@ -803,6 +803,6 @@ Typed sub-tables (selected by `type`); `!` marks a required key:
 - `OllamaProviderConfig`: `type`="ollama", `base_url`="http://127.0.0.1:11434", `timeout_seconds`=120.0, `max_retries`=2, `backoff_seconds`=1.0, `api_key_env`=null
 - `OpenAICompatibleProviderConfig`: `type`="openai_compatible", `base_url`!, `timeout_seconds`=120.0, `max_retries`=2, `backoff_seconds`=1.0, `api_key_env`=null
 - `HeuristicProviderConfig`: `type`="heuristic"
-- `ClaudeCodeAgentConfig`: `type`="claude_code", `executable`="claude", `model`=null, `permission_mode`="acceptEdits", `allowed_tools`!, `max_turns`=null, `max_budget_usd`=null, `timeout_seconds`=3600.0, `extra_args`!
-- `CommandAgentConfig`: `type`="command", `executable`!, `args`!, `env`!, `timeout_seconds`=1800.0, `supports_progress`=true, `supports_usage`=false, `supports_resume`=false
-- `JiraTrackerConfig`: `type`="jira", `flavour`="cloud", `base_url`!, `workspace`!, `projects`!, `email_env`=null, `token_env`!, `poll_interval_seconds`=300, `full_sync_interval_seconds`=86400, `overlap_seconds`=120, `missing_grace_seconds`=86400, `pr_fields`!, `dev_panel`=true, `cancelled_resolutions`!, `timeout_seconds`=30.0
+- `ClaudeCodeAgentConfig`: `type`="claude_code", `executable`="claude", `model`=null, `permission_mode`="acceptEdits", `allowed_tools`=[], `max_turns`=null, `max_budget_usd`=null, `timeout_seconds`=3600.0, `extra_args`=[]
+- `CommandAgentConfig`: `type`="command", `executable`!, `args`=[], `env`={}, `timeout_seconds`=1800.0, `supports_progress`=true, `supports_usage`=false, `supports_resume`=false
+- `JiraTrackerConfig`: `type`="jira", `flavour`="cloud", `base_url`!, `workspace`!, `projects`!, `email_env`=null, `token_env`!, `poll_interval_seconds`=300, `full_sync_interval_seconds`=86400, `overlap_seconds`=120, `missing_grace_seconds`=86400, `pr_fields`=[], `dev_panel`=true, `cancelled_resolutions`=["Won't Do", "Duplicate"], `timeout_seconds`=30.0

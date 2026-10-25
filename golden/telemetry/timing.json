@@ -1,0 +1,1341 @@
+{
+  "breakdown": [
+    {
+      "expected": {
+        "classes": {
+          "cargo test": {
+            "calls": 1,
+            "seconds": 60.0
+          },
+          "git": {
+            "calls": 1,
+            "seconds": 2.0
+          },
+          "polling loop": {
+            "calls": 1,
+            "seconds": 120.0
+          },
+          "search/read": {
+            "calls": 1,
+            "seconds": 1.0
+          }
+        },
+        "model_seconds": 22.0,
+        "slowest": [
+          {
+            "at": "2026-10-14T08:01:12+00:00",
+            "class": "polling loop",
+            "command": "until grep -q done out.txt; do sleep 5; done",
+            "seconds": 120.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:00:05+00:00",
+            "class": "cargo test",
+            "command": "cargo test -p workgraph",
+            "seconds": 60.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:10:20+00:00",
+            "class": "git",
+            "command": "git status --short",
+            "seconds": 2.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:01:08+00:00",
+            "class": "search/read",
+            "command": "src/lib.rs",
+            "seconds": 1.0,
+            "tool": "Read"
+          }
+        ],
+        "span_seconds": 625.0,
+        "tool_seconds": 183.0,
+        "version": 1,
+        "waiting_seconds": 420.0
+      },
+      "from": "test_transcript_timing.py::test_known_run_splits_exactly_into_model_waiting_and_tool_classes",
+      "id": "known_run_splits_exactly",
+      "records": [
+        {
+          "message": {
+            "content": "do the work",
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:00Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "t1",
+                "input": {
+                  "command": "cargo test -p workgraph"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-5",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:05Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "t1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:01:05Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "r1",
+                "input": {
+                  "file_path": "src/lib.rs"
+                },
+                "name": "Read",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-68",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:08Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "r1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:01:09Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "p1",
+                "input": {
+                  "command": "until grep -q done out.txt; do sleep 5; done"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-72",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:12Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "p1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:03:12Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "text": "waiting for the build",
+                "type": "text"
+              }
+            ],
+            "id": "msg-195",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:03:15Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": "<task-notification>done</task-notification>",
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:10:15Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "g1",
+                "input": {
+                  "command": "git status --short"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-620",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:10:20Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "g1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:10:22Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "text": "all done",
+                "type": "text"
+              }
+            ],
+            "id": "msg-625",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:10:25Z",
+          "type": "assistant"
+        }
+      ]
+    },
+    {
+      "expected": {
+        "classes": {
+          "cargo test": {
+            "calls": 1,
+            "seconds": 60.0
+          },
+          "git": {
+            "calls": 1,
+            "seconds": 2.0
+          },
+          "polling loop": {
+            "calls": 1,
+            "seconds": 120.0
+          },
+          "search/read": {
+            "calls": 1,
+            "seconds": 1.0
+          }
+        },
+        "model_seconds": 22.0,
+        "slowest": [
+          {
+            "at": "2026-10-14T08:01:12+00:00",
+            "class": "polling loop",
+            "command": "until grep -q done out.txt; do sleep 5; done",
+            "seconds": 120.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:00:05+00:00",
+            "class": "cargo test",
+            "command": "cargo test -p workgraph",
+            "seconds": 60.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:10:20+00:00",
+            "class": "git",
+            "command": "git status --short",
+            "seconds": 2.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:01:08+00:00",
+            "class": "search/read",
+            "command": "src/lib.rs",
+            "seconds": 1.0,
+            "tool": "Read"
+          }
+        ],
+        "span_seconds": 625.0,
+        "tool_seconds": 183.0,
+        "version": 1,
+        "waiting_seconds": 420.0
+      },
+      "from": "test_transcript_timing.py::test_slowest_calls_name_the_call_and_its_start",
+      "id": "known_run_slowest_calls",
+      "records": [
+        {
+          "message": {
+            "content": "do the work",
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:00Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "t1",
+                "input": {
+                  "command": "cargo test -p workgraph"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-5",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:05Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "t1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:01:05Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "r1",
+                "input": {
+                  "file_path": "src/lib.rs"
+                },
+                "name": "Read",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-68",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:08Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "r1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:01:09Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "p1",
+                "input": {
+                  "command": "until grep -q done out.txt; do sleep 5; done"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-72",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:12Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "p1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:03:12Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "text": "waiting for the build",
+                "type": "text"
+              }
+            ],
+            "id": "msg-195",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:03:15Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": "<task-notification>done</task-notification>",
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:10:15Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "g1",
+                "input": {
+                  "command": "git status --short"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-620",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:10:20Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "g1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:10:22Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "text": "all done",
+                "type": "text"
+              }
+            ],
+            "id": "msg-625",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:10:25Z",
+          "type": "assistant"
+        }
+      ]
+    },
+    {
+      "expected": {
+        "classes": {
+          "cargo build/check": {
+            "calls": 1,
+            "seconds": 10.0
+          }
+        },
+        "model_seconds": 4.0,
+        "slowest": [
+          {
+            "at": "2026-10-14T08:00:04+00:00",
+            "class": "cargo build/check",
+            "command": "cargo build",
+            "seconds": 10.0,
+            "tool": "Bash"
+          }
+        ],
+        "span_seconds": 14.0,
+        "tool_seconds": 10.0,
+        "version": 1,
+        "waiting_seconds": 0.0
+      },
+      "from": "test_transcript_timing.py::test_split_message_lines_count_a_tool_use_once_from_its_first_line",
+      "id": "split_message_lines_once",
+      "records": [
+        {
+          "message": {
+            "content": "do the work",
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:00Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "t1",
+                "input": {
+                  "command": "cargo build"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "m1",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:04Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "t1",
+                "input": {
+                  "command": "cargo build"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "m1",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:05Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "t1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:14Z",
+          "type": "user"
+        }
+      ]
+    },
+    {
+      "expected": {
+        "classes": {
+          "cargo test (launch)": {
+            "calls": 1,
+            "seconds": 0.0
+          }
+        },
+        "model_seconds": 2.0,
+        "slowest": [
+          {
+            "at": "2026-10-14T08:00:02+00:00",
+            "class": "cargo test (launch)",
+            "command": "cargo test",
+            "seconds": 0.0,
+            "tool": "Bash"
+          }
+        ],
+        "span_seconds": 2.0,
+        "tool_seconds": 0.0,
+        "version": 1,
+        "waiting_seconds": 0.0
+      },
+      "from": "test_transcript_timing.py::test_background_launch_is_its_own_class_and_synthetic_or_bad_records_are_ignored",
+      "id": "background_launch_and_bad_records",
+      "records": [
+        {
+          "message": {
+            "content": "do the work",
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:00Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "b1",
+                "input": {
+                  "command": "cargo test",
+                  "run_in_background": true
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-2",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:02Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "b1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:02Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [],
+            "model": "<synthetic>"
+          },
+          "timestamp": "2026-10-14T08:00:03Z",
+          "type": "assistant"
+        },
+        "not a record",
+        {
+          "message": {
+            "content": "junk"
+          },
+          "timestamp": "not a time",
+          "type": "user"
+        }
+      ]
+    },
+    {
+      "expected": {
+        "classes": {
+          "search/read": {
+            "calls": 13,
+            "seconds": 91.0
+          }
+        },
+        "model_seconds": 55.0,
+        "slowest": [
+          {
+            "at": "2026-10-14T08:02:01+00:00",
+            "class": "search/read",
+            "command": "rg xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "seconds": 13.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:01:51+00:00",
+            "class": "search/read",
+            "command": "rg pattern11",
+            "seconds": 12.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:01:41+00:00",
+            "class": "search/read",
+            "command": "rg pattern10",
+            "seconds": 11.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:01:31+00:00",
+            "class": "search/read",
+            "command": "rg pattern9",
+            "seconds": 10.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:01:21+00:00",
+            "class": "search/read",
+            "command": "rg pattern8",
+            "seconds": 9.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:01:11+00:00",
+            "class": "search/read",
+            "command": "rg pattern7",
+            "seconds": 8.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:01:01+00:00",
+            "class": "search/read",
+            "command": "rg pattern6",
+            "seconds": 7.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:00:51+00:00",
+            "class": "search/read",
+            "command": "rg pattern5",
+            "seconds": 6.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:00:41+00:00",
+            "class": "search/read",
+            "command": "rg pattern4",
+            "seconds": 5.0,
+            "tool": "Bash"
+          },
+          {
+            "at": "2026-10-14T08:00:31+00:00",
+            "class": "search/read",
+            "command": "rg pattern3",
+            "seconds": 4.0,
+            "tool": "Bash"
+          }
+        ],
+        "span_seconds": 134.0,
+        "tool_seconds": 91.0,
+        "version": 1,
+        "waiting_seconds": 0.0
+      },
+      "from": "test_transcript_timing.py::test_slowest_is_capped_and_long_commands_are_truncated",
+      "id": "slowest_capped_and_truncated",
+      "records": [
+        {
+          "message": {
+            "content": "do the work",
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:00Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s0",
+                "input": {
+                  "command": "rg pattern0"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-1",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:01Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s0",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:02Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s1",
+                "input": {
+                  "command": "rg pattern1"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-11",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:11Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:13Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s2",
+                "input": {
+                  "command": "rg pattern2"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-21",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:21Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s2",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:24Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s3",
+                "input": {
+                  "command": "rg pattern3"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-31",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:31Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s3",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:35Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s4",
+                "input": {
+                  "command": "rg pattern4"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-41",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:41Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s4",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:46Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s5",
+                "input": {
+                  "command": "rg pattern5"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-51",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:00:51Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s5",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:00:57Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s6",
+                "input": {
+                  "command": "rg pattern6"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-61",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:01Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s6",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:01:08Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s7",
+                "input": {
+                  "command": "rg pattern7"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-71",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:11Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s7",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:01:19Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s8",
+                "input": {
+                  "command": "rg pattern8"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-81",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:21Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s8",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:01:30Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s9",
+                "input": {
+                  "command": "rg pattern9"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-91",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:31Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s9",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:01:41Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s10",
+                "input": {
+                  "command": "rg pattern10"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-101",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:41Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s10",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:01:52Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s11",
+                "input": {
+                  "command": "rg pattern11"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-111",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:01:51Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s11",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:02:03Z",
+          "type": "user"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "id": "s12",
+                "input": {
+                  "command": "rg xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                },
+                "name": "Bash",
+                "type": "tool_use"
+              }
+            ],
+            "id": "msg-121",
+            "model": "claude-haiku-5-5"
+          },
+          "timestamp": "2026-10-14T08:02:01Z",
+          "type": "assistant"
+        },
+        {
+          "message": {
+            "content": [
+              {
+                "content": "x",
+                "tool_use_id": "s12",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          },
+          "timestamp": "2026-10-14T08:02:14Z",
+          "type": "user"
+        }
+      ]
+    },
+    {
+      "expected": {
+        "classes": {},
+        "model_seconds": 0.0,
+        "slowest": [],
+        "span_seconds": 0.0,
+        "tool_seconds": 0,
+        "version": 1,
+        "waiting_seconds": 0.0
+      },
+      "from": "generated",
+      "id": "empty_records",
+      "records": []
+    }
+  ],
+  "class_names": [
+    "polling loop",
+    "cargo test",
+    "cargo build/check",
+    "dylint gate",
+    "rho build/run",
+    "program run",
+    "git",
+    "search/read",
+    "edit",
+    "script",
+    "spawn subagent",
+    "background control",
+    "other shell",
+    "other tool"
+  ],
+  "classify": [
+    {
+      "class": "cargo test",
+      "id": "cargo_test",
+      "input": {
+        "command": "cargo test -p workgraph"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "cargo build/check",
+      "id": "cargo_clippy",
+      "input": {
+        "command": "cargo clippy --all"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "polling loop",
+      "id": "start_sleep",
+      "input": {
+        "command": "Start-Sleep -Seconds 30"
+      },
+      "name": "PowerShell"
+    },
+    {
+      "class": "polling loop",
+      "id": "while_loop",
+      "input": {
+        "command": "while ! test -f x; do sleep 2; done"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "polling loop",
+      "id": "sleep_number",
+      "input": {
+        "command": "sleep 60"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "git",
+      "id": "git_after_cd",
+      "input": {
+        "command": "cd C:/x && git log -3"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "rho build/run",
+      "id": "rho_build",
+      "input": {
+        "command": "rho.exe build --release"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "program run",
+      "id": "program_exe",
+      "input": {
+        "command": "target/debug/tool.exe --check"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "search/read",
+      "id": "rg_search",
+      "input": {
+        "command": "rg TODO src"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "script",
+      "id": "python_script",
+      "input": {
+        "command": "python scripts/gen.py"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "other shell",
+      "id": "unknown_shell",
+      "input": {
+        "command": "make everything"
+      },
+      "name": "Bash"
+    },
+    {
+      "class": "other shell",
+      "id": "shell_without_command",
+      "input": {},
+      "name": "Bash"
+    },
+    {
+      "class": "search/read",
+      "id": "read_tool",
+      "input": {
+        "file_path": "a"
+      },
+      "name": "Read"
+    },
+    {
+      "class": "search/read",
+      "id": "grep_tool",
+      "input": {
+        "pattern": "x"
+      },
+      "name": "Grep"
+    },
+    {
+      "class": "edit",
+      "id": "edit_tool",
+      "input": {
+        "file_path": "a"
+      },
+      "name": "Edit"
+    },
+    {
+      "class": "spawn subagent",
+      "id": "agent_tool",
+      "input": {
+        "prompt": "x"
+      },
+      "name": "Agent"
+    },
+    {
+      "class": "other tool",
+      "id": "web_search_tool",
+      "input": {
+        "query": "x"
+      },
+      "name": "WebSearch"
+    },
+    {
+      "class": "background control",
+      "id": "monitor_tool",
+      "input": {},
+      "name": "Monitor"
+    },
+    {
+      "class": "dylint gate",
+      "id": "dylint_gate",
+      "input": {
+        "command": "cargo dylint --all"
+      },
+      "name": "Bash"
+    }
+  ],
+  "command_chars": 160,
+  "file": "timing.json",
+  "slowest_calls": 10,
+  "vector": "telemetry",
+  "version": 1
+}

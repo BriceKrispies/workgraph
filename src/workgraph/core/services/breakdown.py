@@ -38,6 +38,11 @@ TIER_RE = re.compile(r"(?i)\bTier\s*:\s*(mid|top)\b")
 TIER_CUT_RE = re.compile(r"(?i)\bTier\s*:")
 PAREN_RE = re.compile(r"^(.*?)\s*\((.*)\)\s*$")
 SEPARATOR_RE = re.compile(r"\s*(?:[,;]|\.(?=\s|$)|\band\b)\s*")
+# "all IF and SC tasks": every task of the section whose id prefix is one of the listed prefixes.
+ALL_PHRASE_RE = re.compile(r"\b[Aa]ll\s+([A-Z][A-Z]*(?:\s*(?:,|\band\b|\bor\b)\s*[A-Z][A-Z]*)*)\s+tasks?\b")
+PHRASE_MARK_RE = re.compile("\x00(\\d+)\x00")
+PHRASE_PREFIX = "all-prefixes:"
+DEP_COLUMNS = ("deps", "dependencies", "depends on")  # header names of a table's dependency column
 
 TIER_TAGS = ("tier-mid", "tier-top")
 NO_DEPS = frozenset({"none", "-", "—"})  # "none" and dashes in a Deps cell
@@ -101,12 +106,29 @@ def _expand(token: str) -> list[str] | None:
     return [f"{match.group(1)}{number:0{width}d}" for number in range(first, last + 1)]
 
 
+def _prefix(task_id: str) -> str:
+    match = re.match(r"[A-Z]+", task_id)
+    return match.group(0) if match else ""
+
+
 def _dep_tokens(rest: str) -> list[str]:
     """Split the text after ``Depends on:`` into ids and free text (a parenthetical is its own token)."""
     rest = TIER_CUT_RE.split(rest, maxsplit=1)[0]
+    phrases: list[str] = []
+
+    def keep_phrase(match: re.Match[str]) -> str:
+        prefixes = [p for p in re.split(r"\s*(?:,|\band\b|\bor\b)\s*", match.group(1)) if p]
+        phrases.append(PHRASE_PREFIX + ",".join(prefixes) + "\x01" + match.group(0))
+        return f" \x00{len(phrases) - 1}\x00 "
+
+    rest = ALL_PHRASE_RE.sub(keep_phrase, rest)
     tokens: list[str] = []
     for piece in SEPARATOR_RE.split(rest):
         piece = piece.strip().rstrip(".").strip()
+        marked = PHRASE_MARK_RE.fullmatch(piece)
+        if marked:
+            tokens.append(phrases[int(marked.group(1))])
+            continue
         if not piece or piece.lower() in NO_DEPS:
             continue
         paren = PAREN_RE.match(piece)
@@ -152,20 +174,29 @@ def _cells(line: str) -> list[str]:
     return [cell.strip() for cell in line.strip().strip("|").split("|")]
 
 
-def _table_columns(table: list[str]) -> dict[str, int]:
-    """Column index by lower-cased header name; the header is the first row that is neither an id nor a rule."""
+def _table_rows(table: list[str]) -> list[tuple[str, list[str], dict[str, int]]]:
+    """The id rows of a block's tables, each with the column index of the header above it.
+
+    A header is the first non-rule line that does not start with an id; a table that follows another
+    table gets its own header, so its Deps and Tier columns are its own.
+    """
+    rows: list[tuple[str, list[str], dict[str, int]]] = []
+    columns: dict[str, int] = {}
     for line in table:
         cells = _cells(line)
-        if cells and not ID_RE.match(cells[0]) and not set(cells[0]) <= set("-: "):
-            return {cell.lower(): index for index, cell in enumerate(cells)}
-    return {}
+        if ID_RE.match(cells[0]):
+            rows.append((line, cells, columns))
+        elif not set(cells[0]) <= set("-: "):
+            columns = {cell.lower(): index for index, cell in enumerate(cells)}
+    return rows
 
 
 def _row_fields(cells: list[str], columns: dict[str, int]) -> tuple[list[str], list[str]]:
+    """The dependency and tier values of one table row. Only the column named as a dependency column counts."""
     deps: list[str] = []
-    for name in ("deps", "depends on"):
-        if name in columns and columns[name] < len(cells):
-            deps.extend(_dep_tokens(cells[columns[name]]))
+    name = next((name for name in DEP_COLUMNS if name in columns), None)
+    if name is not None and columns[name] < len(cells):
+        deps.extend(_dep_tokens(cells[columns[name]]))
     tiers: list[str] = []
     index = columns.get("tier")
     if index is not None and index < len(cells) and cells[index].lower() in ("mid", "top"):
@@ -187,6 +218,24 @@ def _blocks(lines: list[str]) -> list[tuple[str, str | None, str, list[str]]]:
     return blocks
 
 
+def _expand_phrases(items: list[Item]) -> None:
+    """Replace each "all X and Y tasks" dependency with the section's ids having those prefixes.
+
+    A phrase that matches no id of the section stays as free text, so it is reported as unresolved.
+    """
+    for item in items:
+        resolved: list[str] = []
+        for token in item.deps:
+            if not token.startswith(PHRASE_PREFIX):
+                resolved.append(token)
+                continue
+            prefixes, _, text = token[len(PHRASE_PREFIX) :].partition("\x01")
+            wanted = set(prefixes.split(","))
+            matches = [other.id for other in items if other.id != item.id and _prefix(other.id) in wanted]
+            resolved.extend(matches or [text])
+        item.deps = _unique(resolved)
+
+
 def parse_items(lines: list[str]) -> list[Item]:
     """Turn the lines of one section into the tasks it describes, in document order."""
     items: list[Item] = []
@@ -206,12 +255,10 @@ def parse_items(lines: list[str]) -> list[Item]:
         table = [line for line in body if line.lstrip().startswith("|")]
         prose = "\n".join(line for line in body if not line.lstrip().startswith("|")).strip()
         deps, tiers = _text_fields(prose.splitlines())
-        columns = _table_columns(table)
-        rows = [(line, _cells(line)) for line in table]
-        rows = [(line, cells) for line, cells in rows if ID_RE.match(cells[0])]
+        rows = _table_rows(table)
         if not rows:
             raise ValidationFailed(f"ranged block {block_id} to {range_end} ({name}) has no table rows")
-        for line, cells in rows:
+        for line, cells, columns in rows:
             row_name = cells[1] if len(cells) > 1 and cells[1] else ""
             # A "Deps" or "Tier" column, when the table has one, applies to its row only.
             row_deps, row_tiers = _row_fields(cells, columns)
@@ -225,6 +272,7 @@ def parse_items(lines: list[str]) -> list[Item]:
                     block=block_id,
                 )
             )
+    _expand_phrases(items)
     seen: set[str] = set()
     for item in items:
         if item.id in seen:

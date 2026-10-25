@@ -176,3 +176,63 @@ def test_deps_and_tier_columns_apply_per_row():
     assert items["CORE-03"].deps == ["CORE-02"]
     assert items["CORE-03"].tier_tags == []
     assert items["CORE-03"].title == "Domain crates: `wg-tasks`: create"
+
+
+# A multi-column table: Contracts is not a dependency column, Deps is, Tier follows Deps.
+MULTI_COLUMN_DOC = """\
+## S
+
+**IF-01 to IF-03 Interface** (each: a module)
+
+| Id | Commands | Contracts | Deps | Tier |
+| --- | --- | --- | --- | --- |
+| IF-01 | `init` | C001-C003 | none | mid |
+| IF-02 | `init`, `doctor` | C058-C062, C065 | IF-01, LIB-09 | top |
+| IF-03 | `status` | C070 | IF-01 to IF-02 | mid |
+
+**SC-01 Scenarios** Deps: all IF and SC tasks.
+
+**CF-01 to CF-02 Config**
+
+| Id | Contracts | Dependencies | Tier |
+| --- | --- | --- | --- |
+| CF-01 | C090 | IF-01 | mid |
+| CF-02 | C091 | none | top |
+
+**XX-01 Unknown group** Deps: all QQ tasks.
+"""
+
+
+def test_table_dependency_column_is_read_by_header_name():
+    items = {item.id: item for item in parse_items(section_lines(MULTI_COLUMN_DOC, "S"))}
+    # Contracts ("C058-C062, C065") is ignored; the Deps cell is read, and "none" means no dependency.
+    assert items["IF-01"].deps == []
+    assert items["IF-02"].deps == ["IF-01", "LIB-09"]
+    assert "C058-C062" not in items["IF-02"].deps
+    assert items["CF-01"].deps == ["IF-01"]
+    assert items["CF-02"].deps == []
+
+
+def test_tier_column_is_not_a_dependency():
+    items = {item.id: item for item in parse_items(section_lines(MULTI_COLUMN_DOC, "S"))}
+    assert items["IF-02"].tier_tags == ["tier-top"]
+    assert items["IF-02"].deps == ["IF-01", "LIB-09"]
+    assert items["IF-01"].tier_tags == ["tier-mid"]
+    assert "mid" not in items["IF-01"].deps and "top" not in items["IF-02"].deps
+    assert items["CF-02"].tier_tags == ["tier-top"]
+
+
+def test_id_range_in_a_dependency_cell_expands():
+    items = {item.id: item for item in parse_items(section_lines(MULTI_COLUMN_DOC, "S"))}
+    assert items["IF-03"].deps == ["IF-01", "IF-02"]
+
+
+def test_all_prefixes_phrase_expands_to_section_ids_of_those_prefixes():
+    items = {item.id: item for item in parse_items(section_lines(MULTI_COLUMN_DOC, "S"))}
+    # Every IF task of the section; the SC task does not depend on itself.
+    assert items["SC-01"].deps == ["IF-01", "IF-02", "IF-03"]
+
+
+def test_all_phrase_matching_no_id_stays_as_text():
+    items = {item.id: item for item in parse_items(section_lines(MULTI_COLUMN_DOC, "S"))}
+    assert items["XX-01"].deps == ["all QQ tasks"]

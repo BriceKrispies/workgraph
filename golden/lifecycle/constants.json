@@ -1,0 +1,118 @@
+{
+  "attempt_transitions": {
+    "abandoned": [],
+    "cancelled": [],
+    "failed": [],
+    "preparing": [
+      "abandoned",
+      "cancelled",
+      "failed",
+      "running"
+    ],
+    "queued": [
+      "abandoned",
+      "cancelled",
+      "failed",
+      "preparing",
+      "running"
+    ],
+    "running": [
+      "abandoned",
+      "cancelled",
+      "failed",
+      "succeeded",
+      "timed_out",
+      "verifying"
+    ],
+    "succeeded": [],
+    "timed_out": [],
+    "verifying": [
+      "abandoned",
+      "cancelled",
+      "failed",
+      "succeeded"
+    ]
+  },
+  "requires_dependencies": [
+    "claimed",
+    "ready",
+    "running"
+  ],
+  "restricted_targets": [
+    "accepted"
+  ],
+  "task_transitions": {
+    "accepted": [
+      "backlog",
+      "ready"
+    ],
+    "awaiting_review": [
+      "accepted",
+      "cancelled",
+      "claimed",
+      "failed",
+      "ready",
+      "running"
+    ],
+    "awaiting_verification": [
+      "accepted",
+      "awaiting_review",
+      "cancelled",
+      "claimed",
+      "failed",
+      "ready",
+      "running"
+    ],
+    "backlog": [
+      "blocked",
+      "cancelled",
+      "ready"
+    ],
+    "blocked": [
+      "backlog",
+      "cancelled",
+      "ready"
+    ],
+    "cancelled": [
+      "backlog",
+      "ready"
+    ],
+    "claimed": [
+      "awaiting_review",
+      "awaiting_verification",
+      "blocked",
+      "cancelled",
+      "failed",
+      "ready",
+      "running"
+    ],
+    "failed": [
+      "backlog",
+      "blocked",
+      "cancelled",
+      "claimed",
+      "ready",
+      "running"
+    ],
+    "ready": [
+      "backlog",
+      "blocked",
+      "cancelled",
+      "claimed",
+      "running"
+    ],
+    "running": [
+      "awaiting_review",
+      "awaiting_verification",
+      "blocked",
+      "cancelled",
+      "claimed",
+      "failed",
+      "ready"
+    ]
+  },
+  "tracker_close_targets": [
+    "accepted",
+    "cancelled"
+  ]
+}

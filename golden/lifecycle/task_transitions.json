@@ -1,0 +1,4563 @@
+{
+  "vectors": [
+    {
+      "from": "backlog",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "backlog",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "backlog",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "backlog",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "backlog",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "backlog",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "claimed"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to claimed",
+      "privileged": false,
+      "result": "error",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "claimed"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to claimed",
+      "privileged": false,
+      "result": "error",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "claimed"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to claimed",
+      "privileged": true,
+      "result": "error",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "claimed"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to claimed",
+      "privileged": true,
+      "result": "error",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "running"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to running",
+      "privileged": false,
+      "result": "error",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "running"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to running",
+      "privileged": false,
+      "result": "error",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "running"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to running",
+      "privileged": true,
+      "result": "error",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "running"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to running",
+      "privileged": true,
+      "result": "error",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "awaiting_verification"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "awaiting_verification"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "awaiting_verification"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "awaiting_verification"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "awaiting_review"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "awaiting_review"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "awaiting_review"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "awaiting_review"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "from": "backlog",
+        "to": "accepted"
+      },
+      "from": "backlog",
+      "message": "tasks enter accepted only through acceptance (verification or recorded manual acceptance)",
+      "privileged": false,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "accepted"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to accepted",
+      "privileged": true,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "failed"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "failed"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "failed"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "blocked",
+          "cancelled",
+          "ready"
+        ],
+        "from": "backlog",
+        "to": "failed"
+      },
+      "from": "backlog",
+      "message": "cannot move task from backlog to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "backlog",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "backlog",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "backlog",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "awaiting_verification"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "awaiting_verification"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "awaiting_verification"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "awaiting_verification"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "awaiting_review"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "awaiting_review"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "awaiting_review"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "awaiting_review"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "from": "ready",
+        "to": "accepted"
+      },
+      "from": "ready",
+      "message": "tasks enter accepted only through acceptance (verification or recorded manual acceptance)",
+      "privileged": false,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "accepted"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to accepted",
+      "privileged": true,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "failed"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "failed"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "failed"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "running"
+        ],
+        "from": "ready",
+        "to": "failed"
+      },
+      "from": "ready",
+      "message": "cannot move task from ready to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "ready",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "blocked",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "blocked",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "blocked",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "blocked",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "blocked",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "blocked",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "claimed"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to claimed",
+      "privileged": false,
+      "result": "error",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "claimed"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to claimed",
+      "privileged": false,
+      "result": "error",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "claimed"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to claimed",
+      "privileged": true,
+      "result": "error",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "claimed"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to claimed",
+      "privileged": true,
+      "result": "error",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "running"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to running",
+      "privileged": false,
+      "result": "error",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "running"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to running",
+      "privileged": false,
+      "result": "error",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "running"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to running",
+      "privileged": true,
+      "result": "error",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "running"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to running",
+      "privileged": true,
+      "result": "error",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "awaiting_verification"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "awaiting_verification"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "awaiting_verification"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "awaiting_verification"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "awaiting_review"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "awaiting_review"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "awaiting_review"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "awaiting_review"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "from": "blocked",
+        "to": "accepted"
+      },
+      "from": "blocked",
+      "message": "tasks enter accepted only through acceptance (verification or recorded manual acceptance)",
+      "privileged": false,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "accepted"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to accepted",
+      "privileged": true,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "failed"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "failed"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "failed"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "cancelled",
+          "ready"
+        ],
+        "from": "blocked",
+        "to": "failed"
+      },
+      "from": "blocked",
+      "message": "cannot move task from blocked to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "blocked",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "blocked",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "blocked",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "claimed",
+        "to": "backlog"
+      },
+      "from": "claimed",
+      "message": "cannot move task from claimed to backlog",
+      "privileged": false,
+      "result": "error",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "claimed",
+        "to": "backlog"
+      },
+      "from": "claimed",
+      "message": "cannot move task from claimed to backlog",
+      "privileged": false,
+      "result": "error",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "claimed",
+        "to": "backlog"
+      },
+      "from": "claimed",
+      "message": "cannot move task from claimed to backlog",
+      "privileged": true,
+      "result": "error",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "claimed",
+        "to": "backlog"
+      },
+      "from": "claimed",
+      "message": "cannot move task from claimed to backlog",
+      "privileged": true,
+      "result": "error",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "from": "claimed",
+        "to": "accepted"
+      },
+      "from": "claimed",
+      "message": "tasks enter accepted only through acceptance (verification or recorded manual acceptance)",
+      "privileged": false,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "claimed",
+        "to": "accepted"
+      },
+      "from": "claimed",
+      "message": "cannot move task from claimed to accepted",
+      "privileged": true,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "claimed",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready"
+        ],
+        "from": "running",
+        "to": "backlog"
+      },
+      "from": "running",
+      "message": "cannot move task from running to backlog",
+      "privileged": false,
+      "result": "error",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready"
+        ],
+        "from": "running",
+        "to": "backlog"
+      },
+      "from": "running",
+      "message": "cannot move task from running to backlog",
+      "privileged": false,
+      "result": "error",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready"
+        ],
+        "from": "running",
+        "to": "backlog"
+      },
+      "from": "running",
+      "message": "cannot move task from running to backlog",
+      "privileged": true,
+      "result": "error",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready"
+        ],
+        "from": "running",
+        "to": "backlog"
+      },
+      "from": "running",
+      "message": "cannot move task from running to backlog",
+      "privileged": true,
+      "result": "error",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "from": "running",
+        "to": "accepted"
+      },
+      "from": "running",
+      "message": "tasks enter accepted only through acceptance (verification or recorded manual acceptance)",
+      "privileged": false,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "awaiting_review",
+          "awaiting_verification",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready"
+        ],
+        "from": "running",
+        "to": "accepted"
+      },
+      "from": "running",
+      "message": "cannot move task from running to accepted",
+      "privileged": true,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "running",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "awaiting_review",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_verification",
+        "to": "backlog"
+      },
+      "from": "awaiting_verification",
+      "message": "cannot move task from awaiting_verification to backlog",
+      "privileged": false,
+      "result": "error",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "awaiting_review",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_verification",
+        "to": "backlog"
+      },
+      "from": "awaiting_verification",
+      "message": "cannot move task from awaiting_verification to backlog",
+      "privileged": false,
+      "result": "error",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "awaiting_review",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_verification",
+        "to": "backlog"
+      },
+      "from": "awaiting_verification",
+      "message": "cannot move task from awaiting_verification to backlog",
+      "privileged": true,
+      "result": "error",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "awaiting_review",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_verification",
+        "to": "backlog"
+      },
+      "from": "awaiting_verification",
+      "message": "cannot move task from awaiting_verification to backlog",
+      "privileged": true,
+      "result": "error",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "awaiting_review",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_verification",
+        "to": "blocked"
+      },
+      "from": "awaiting_verification",
+      "message": "cannot move task from awaiting_verification to blocked",
+      "privileged": false,
+      "result": "error",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "awaiting_review",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_verification",
+        "to": "blocked"
+      },
+      "from": "awaiting_verification",
+      "message": "cannot move task from awaiting_verification to blocked",
+      "privileged": false,
+      "result": "error",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "awaiting_review",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_verification",
+        "to": "blocked"
+      },
+      "from": "awaiting_verification",
+      "message": "cannot move task from awaiting_verification to blocked",
+      "privileged": true,
+      "result": "error",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "awaiting_review",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_verification",
+        "to": "blocked"
+      },
+      "from": "awaiting_verification",
+      "message": "cannot move task from awaiting_verification to blocked",
+      "privileged": true,
+      "result": "error",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "from": "awaiting_verification",
+        "to": "accepted"
+      },
+      "from": "awaiting_verification",
+      "message": "tasks enter accepted only through acceptance (verification or recorded manual acceptance)",
+      "privileged": false,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_verification",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "backlog"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to backlog",
+      "privileged": false,
+      "result": "error",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "backlog"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to backlog",
+      "privileged": false,
+      "result": "error",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "backlog"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to backlog",
+      "privileged": true,
+      "result": "error",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "backlog"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to backlog",
+      "privileged": true,
+      "result": "error",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "blocked"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to blocked",
+      "privileged": false,
+      "result": "error",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "blocked"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to blocked",
+      "privileged": false,
+      "result": "error",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "blocked"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to blocked",
+      "privileged": true,
+      "result": "error",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "blocked"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to blocked",
+      "privileged": true,
+      "result": "error",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "awaiting_verification"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "awaiting_verification"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "awaiting_verification"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "accepted",
+          "cancelled",
+          "claimed",
+          "failed",
+          "ready",
+          "running"
+        ],
+        "from": "awaiting_review",
+        "to": "awaiting_verification"
+      },
+      "from": "awaiting_review",
+      "message": "cannot move task from awaiting_review to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "from": "awaiting_review",
+        "to": "accepted"
+      },
+      "from": "awaiting_review",
+      "message": "tasks enter accepted only through acceptance (verification or recorded manual acceptance)",
+      "privileged": false,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "awaiting_review",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "accepted",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "accepted",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "accepted",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "accepted",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "accepted",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "accepted",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "accepted",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "accepted",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "blocked"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to blocked",
+      "privileged": false,
+      "result": "error",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "blocked"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to blocked",
+      "privileged": false,
+      "result": "error",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "blocked"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to blocked",
+      "privileged": true,
+      "result": "error",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "blocked"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to blocked",
+      "privileged": true,
+      "result": "error",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "claimed"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to claimed",
+      "privileged": false,
+      "result": "error",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "claimed"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to claimed",
+      "privileged": false,
+      "result": "error",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "claimed"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to claimed",
+      "privileged": true,
+      "result": "error",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "claimed"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to claimed",
+      "privileged": true,
+      "result": "error",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "running"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to running",
+      "privileged": false,
+      "result": "error",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "running"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to running",
+      "privileged": false,
+      "result": "error",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "running"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to running",
+      "privileged": true,
+      "result": "error",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "running"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to running",
+      "privileged": true,
+      "result": "error",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "awaiting_verification"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "awaiting_verification"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "awaiting_verification"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "awaiting_verification"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "awaiting_review"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "awaiting_review"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "awaiting_review"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "awaiting_review"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "from": "accepted",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "accepted",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "from": "accepted",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "accepted",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "failed"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "failed"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "failed"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "failed"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "cancelled"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to cancelled",
+      "privileged": false,
+      "result": "error",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "accepted",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "accepted",
+        "to": "cancelled"
+      },
+      "from": "accepted",
+      "message": "cannot move task from accepted to cancelled",
+      "privileged": true,
+      "result": "error",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "accepted",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "ready",
+          "running"
+        ],
+        "from": "failed",
+        "to": "awaiting_verification"
+      },
+      "from": "failed",
+      "message": "cannot move task from failed to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "ready",
+          "running"
+        ],
+        "from": "failed",
+        "to": "awaiting_verification"
+      },
+      "from": "failed",
+      "message": "cannot move task from failed to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "ready",
+          "running"
+        ],
+        "from": "failed",
+        "to": "awaiting_verification"
+      },
+      "from": "failed",
+      "message": "cannot move task from failed to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "ready",
+          "running"
+        ],
+        "from": "failed",
+        "to": "awaiting_verification"
+      },
+      "from": "failed",
+      "message": "cannot move task from failed to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "ready",
+          "running"
+        ],
+        "from": "failed",
+        "to": "awaiting_review"
+      },
+      "from": "failed",
+      "message": "cannot move task from failed to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "ready",
+          "running"
+        ],
+        "from": "failed",
+        "to": "awaiting_review"
+      },
+      "from": "failed",
+      "message": "cannot move task from failed to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "ready",
+          "running"
+        ],
+        "from": "failed",
+        "to": "awaiting_review"
+      },
+      "from": "failed",
+      "message": "cannot move task from failed to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "ready",
+          "running"
+        ],
+        "from": "failed",
+        "to": "awaiting_review"
+      },
+      "from": "failed",
+      "message": "cannot move task from failed to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "from": "failed",
+        "to": "accepted"
+      },
+      "from": "failed",
+      "message": "tasks enter accepted only through acceptance (verification or recorded manual acceptance)",
+      "privileged": false,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "blocked",
+          "cancelled",
+          "claimed",
+          "ready",
+          "running"
+        ],
+        "from": "failed",
+        "to": "accepted"
+      },
+      "from": "failed",
+      "message": "cannot move task from failed to accepted",
+      "privileged": true,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "failed",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "cancelled",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "cancelled",
+      "privileged": false,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "cancelled",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": false
+    },
+    {
+      "from": "cancelled",
+      "privileged": true,
+      "result": "ok",
+      "to": "backlog",
+      "tracker": true
+    },
+    {
+      "from": "cancelled",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "cancelled",
+      "privileged": false,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "from": "cancelled",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": false
+    },
+    {
+      "from": "cancelled",
+      "privileged": true,
+      "result": "ok",
+      "to": "ready",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "blocked"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to blocked",
+      "privileged": false,
+      "result": "error",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "blocked"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to blocked",
+      "privileged": false,
+      "result": "error",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "blocked"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to blocked",
+      "privileged": true,
+      "result": "error",
+      "to": "blocked",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "blocked"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to blocked",
+      "privileged": true,
+      "result": "error",
+      "to": "blocked",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "claimed"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to claimed",
+      "privileged": false,
+      "result": "error",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "claimed"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to claimed",
+      "privileged": false,
+      "result": "error",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "claimed"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to claimed",
+      "privileged": true,
+      "result": "error",
+      "to": "claimed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "claimed"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to claimed",
+      "privileged": true,
+      "result": "error",
+      "to": "claimed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "running"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to running",
+      "privileged": false,
+      "result": "error",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "running"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to running",
+      "privileged": false,
+      "result": "error",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "running"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to running",
+      "privileged": true,
+      "result": "error",
+      "to": "running",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "running"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to running",
+      "privileged": true,
+      "result": "error",
+      "to": "running",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "awaiting_verification"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "awaiting_verification"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to awaiting_verification",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "awaiting_verification"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "awaiting_verification"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to awaiting_verification",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_verification",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "awaiting_review"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "awaiting_review"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to awaiting_review",
+      "privileged": false,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "awaiting_review"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "awaiting_review"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to awaiting_review",
+      "privileged": true,
+      "result": "error",
+      "to": "awaiting_review",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "from": "cancelled",
+        "to": "accepted"
+      },
+      "from": "cancelled",
+      "message": "tasks enter accepted only through acceptance (verification or recorded manual acceptance)",
+      "privileged": false,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "cancelled",
+      "privileged": false,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "accepted"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to accepted",
+      "privileged": true,
+      "result": "error",
+      "to": "accepted",
+      "tracker": false
+    },
+    {
+      "from": "cancelled",
+      "privileged": true,
+      "result": "ok",
+      "to": "accepted",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "failed"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "failed"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to failed",
+      "privileged": false,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "failed"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": false
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "backlog",
+          "ready"
+        ],
+        "from": "cancelled",
+        "to": "failed"
+      },
+      "from": "cancelled",
+      "message": "cannot move task from cancelled to failed",
+      "privileged": true,
+      "result": "error",
+      "to": "failed",
+      "tracker": true
+    },
+    {
+      "from": "cancelled",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "cancelled",
+      "privileged": false,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    },
+    {
+      "from": "cancelled",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": false
+    },
+    {
+      "from": "cancelled",
+      "privileged": true,
+      "result": "ok",
+      "to": "cancelled",
+      "tracker": true
+    }
+  ]
+}

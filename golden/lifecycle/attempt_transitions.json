@@ -1,0 +1,852 @@
+{
+  "vectors": [
+    {
+      "from": "queued",
+      "result": "ok",
+      "to": "queued"
+    },
+    {
+      "from": "queued",
+      "result": "ok",
+      "to": "preparing"
+    },
+    {
+      "from": "queued",
+      "result": "ok",
+      "to": "running"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "preparing",
+          "running"
+        ],
+        "from": "queued",
+        "to": "verifying"
+      },
+      "from": "queued",
+      "message": "cannot move attempt from queued to verifying",
+      "result": "error",
+      "to": "verifying"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "preparing",
+          "running"
+        ],
+        "from": "queued",
+        "to": "succeeded"
+      },
+      "from": "queued",
+      "message": "cannot move attempt from queued to succeeded",
+      "result": "error",
+      "to": "succeeded"
+    },
+    {
+      "from": "queued",
+      "result": "ok",
+      "to": "failed"
+    },
+    {
+      "from": "queued",
+      "result": "ok",
+      "to": "cancelled"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "preparing",
+          "running"
+        ],
+        "from": "queued",
+        "to": "timed_out"
+      },
+      "from": "queued",
+      "message": "cannot move attempt from queued to timed_out",
+      "result": "error",
+      "to": "timed_out"
+    },
+    {
+      "from": "queued",
+      "result": "ok",
+      "to": "abandoned"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "running"
+        ],
+        "from": "preparing",
+        "to": "queued"
+      },
+      "from": "preparing",
+      "message": "cannot move attempt from preparing to queued",
+      "result": "error",
+      "to": "queued"
+    },
+    {
+      "from": "preparing",
+      "result": "ok",
+      "to": "preparing"
+    },
+    {
+      "from": "preparing",
+      "result": "ok",
+      "to": "running"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "running"
+        ],
+        "from": "preparing",
+        "to": "verifying"
+      },
+      "from": "preparing",
+      "message": "cannot move attempt from preparing to verifying",
+      "result": "error",
+      "to": "verifying"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "running"
+        ],
+        "from": "preparing",
+        "to": "succeeded"
+      },
+      "from": "preparing",
+      "message": "cannot move attempt from preparing to succeeded",
+      "result": "error",
+      "to": "succeeded"
+    },
+    {
+      "from": "preparing",
+      "result": "ok",
+      "to": "failed"
+    },
+    {
+      "from": "preparing",
+      "result": "ok",
+      "to": "cancelled"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "running"
+        ],
+        "from": "preparing",
+        "to": "timed_out"
+      },
+      "from": "preparing",
+      "message": "cannot move attempt from preparing to timed_out",
+      "result": "error",
+      "to": "timed_out"
+    },
+    {
+      "from": "preparing",
+      "result": "ok",
+      "to": "abandoned"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "succeeded",
+          "timed_out",
+          "verifying"
+        ],
+        "from": "running",
+        "to": "queued"
+      },
+      "from": "running",
+      "message": "cannot move attempt from running to queued",
+      "result": "error",
+      "to": "queued"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "succeeded",
+          "timed_out",
+          "verifying"
+        ],
+        "from": "running",
+        "to": "preparing"
+      },
+      "from": "running",
+      "message": "cannot move attempt from running to preparing",
+      "result": "error",
+      "to": "preparing"
+    },
+    {
+      "from": "running",
+      "result": "ok",
+      "to": "running"
+    },
+    {
+      "from": "running",
+      "result": "ok",
+      "to": "verifying"
+    },
+    {
+      "from": "running",
+      "result": "ok",
+      "to": "succeeded"
+    },
+    {
+      "from": "running",
+      "result": "ok",
+      "to": "failed"
+    },
+    {
+      "from": "running",
+      "result": "ok",
+      "to": "cancelled"
+    },
+    {
+      "from": "running",
+      "result": "ok",
+      "to": "timed_out"
+    },
+    {
+      "from": "running",
+      "result": "ok",
+      "to": "abandoned"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "succeeded"
+        ],
+        "from": "verifying",
+        "to": "queued"
+      },
+      "from": "verifying",
+      "message": "cannot move attempt from verifying to queued",
+      "result": "error",
+      "to": "queued"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "succeeded"
+        ],
+        "from": "verifying",
+        "to": "preparing"
+      },
+      "from": "verifying",
+      "message": "cannot move attempt from verifying to preparing",
+      "result": "error",
+      "to": "preparing"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "succeeded"
+        ],
+        "from": "verifying",
+        "to": "running"
+      },
+      "from": "verifying",
+      "message": "cannot move attempt from verifying to running",
+      "result": "error",
+      "to": "running"
+    },
+    {
+      "from": "verifying",
+      "result": "ok",
+      "to": "verifying"
+    },
+    {
+      "from": "verifying",
+      "result": "ok",
+      "to": "succeeded"
+    },
+    {
+      "from": "verifying",
+      "result": "ok",
+      "to": "failed"
+    },
+    {
+      "from": "verifying",
+      "result": "ok",
+      "to": "cancelled"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [
+          "abandoned",
+          "cancelled",
+          "failed",
+          "succeeded"
+        ],
+        "from": "verifying",
+        "to": "timed_out"
+      },
+      "from": "verifying",
+      "message": "cannot move attempt from verifying to timed_out",
+      "result": "error",
+      "to": "timed_out"
+    },
+    {
+      "from": "verifying",
+      "result": "ok",
+      "to": "abandoned"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "succeeded",
+        "to": "queued"
+      },
+      "from": "succeeded",
+      "message": "cannot move attempt from succeeded to queued",
+      "result": "error",
+      "to": "queued"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "succeeded",
+        "to": "preparing"
+      },
+      "from": "succeeded",
+      "message": "cannot move attempt from succeeded to preparing",
+      "result": "error",
+      "to": "preparing"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "succeeded",
+        "to": "running"
+      },
+      "from": "succeeded",
+      "message": "cannot move attempt from succeeded to running",
+      "result": "error",
+      "to": "running"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "succeeded",
+        "to": "verifying"
+      },
+      "from": "succeeded",
+      "message": "cannot move attempt from succeeded to verifying",
+      "result": "error",
+      "to": "verifying"
+    },
+    {
+      "from": "succeeded",
+      "result": "ok",
+      "to": "succeeded"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "succeeded",
+        "to": "failed"
+      },
+      "from": "succeeded",
+      "message": "cannot move attempt from succeeded to failed",
+      "result": "error",
+      "to": "failed"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "succeeded",
+        "to": "cancelled"
+      },
+      "from": "succeeded",
+      "message": "cannot move attempt from succeeded to cancelled",
+      "result": "error",
+      "to": "cancelled"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "succeeded",
+        "to": "timed_out"
+      },
+      "from": "succeeded",
+      "message": "cannot move attempt from succeeded to timed_out",
+      "result": "error",
+      "to": "timed_out"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "succeeded",
+        "to": "abandoned"
+      },
+      "from": "succeeded",
+      "message": "cannot move attempt from succeeded to abandoned",
+      "result": "error",
+      "to": "abandoned"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "failed",
+        "to": "queued"
+      },
+      "from": "failed",
+      "message": "cannot move attempt from failed to queued",
+      "result": "error",
+      "to": "queued"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "failed",
+        "to": "preparing"
+      },
+      "from": "failed",
+      "message": "cannot move attempt from failed to preparing",
+      "result": "error",
+      "to": "preparing"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "failed",
+        "to": "running"
+      },
+      "from": "failed",
+      "message": "cannot move attempt from failed to running",
+      "result": "error",
+      "to": "running"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "failed",
+        "to": "verifying"
+      },
+      "from": "failed",
+      "message": "cannot move attempt from failed to verifying",
+      "result": "error",
+      "to": "verifying"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "failed",
+        "to": "succeeded"
+      },
+      "from": "failed",
+      "message": "cannot move attempt from failed to succeeded",
+      "result": "error",
+      "to": "succeeded"
+    },
+    {
+      "from": "failed",
+      "result": "ok",
+      "to": "failed"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "failed",
+        "to": "cancelled"
+      },
+      "from": "failed",
+      "message": "cannot move attempt from failed to cancelled",
+      "result": "error",
+      "to": "cancelled"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "failed",
+        "to": "timed_out"
+      },
+      "from": "failed",
+      "message": "cannot move attempt from failed to timed_out",
+      "result": "error",
+      "to": "timed_out"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "failed",
+        "to": "abandoned"
+      },
+      "from": "failed",
+      "message": "cannot move attempt from failed to abandoned",
+      "result": "error",
+      "to": "abandoned"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "cancelled",
+        "to": "queued"
+      },
+      "from": "cancelled",
+      "message": "cannot move attempt from cancelled to queued",
+      "result": "error",
+      "to": "queued"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "cancelled",
+        "to": "preparing"
+      },
+      "from": "cancelled",
+      "message": "cannot move attempt from cancelled to preparing",
+      "result": "error",
+      "to": "preparing"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "cancelled",
+        "to": "running"
+      },
+      "from": "cancelled",
+      "message": "cannot move attempt from cancelled to running",
+      "result": "error",
+      "to": "running"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "cancelled",
+        "to": "verifying"
+      },
+      "from": "cancelled",
+      "message": "cannot move attempt from cancelled to verifying",
+      "result": "error",
+      "to": "verifying"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "cancelled",
+        "to": "succeeded"
+      },
+      "from": "cancelled",
+      "message": "cannot move attempt from cancelled to succeeded",
+      "result": "error",
+      "to": "succeeded"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "cancelled",
+        "to": "failed"
+      },
+      "from": "cancelled",
+      "message": "cannot move attempt from cancelled to failed",
+      "result": "error",
+      "to": "failed"
+    },
+    {
+      "from": "cancelled",
+      "result": "ok",
+      "to": "cancelled"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "cancelled",
+        "to": "timed_out"
+      },
+      "from": "cancelled",
+      "message": "cannot move attempt from cancelled to timed_out",
+      "result": "error",
+      "to": "timed_out"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "cancelled",
+        "to": "abandoned"
+      },
+      "from": "cancelled",
+      "message": "cannot move attempt from cancelled to abandoned",
+      "result": "error",
+      "to": "abandoned"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "timed_out",
+        "to": "queued"
+      },
+      "from": "timed_out",
+      "message": "cannot move attempt from timed_out to queued",
+      "result": "error",
+      "to": "queued"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "timed_out",
+        "to": "preparing"
+      },
+      "from": "timed_out",
+      "message": "cannot move attempt from timed_out to preparing",
+      "result": "error",
+      "to": "preparing"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "timed_out",
+        "to": "running"
+      },
+      "from": "timed_out",
+      "message": "cannot move attempt from timed_out to running",
+      "result": "error",
+      "to": "running"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "timed_out",
+        "to": "verifying"
+      },
+      "from": "timed_out",
+      "message": "cannot move attempt from timed_out to verifying",
+      "result": "error",
+      "to": "verifying"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "timed_out",
+        "to": "succeeded"
+      },
+      "from": "timed_out",
+      "message": "cannot move attempt from timed_out to succeeded",
+      "result": "error",
+      "to": "succeeded"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "timed_out",
+        "to": "failed"
+      },
+      "from": "timed_out",
+      "message": "cannot move attempt from timed_out to failed",
+      "result": "error",
+      "to": "failed"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "timed_out",
+        "to": "cancelled"
+      },
+      "from": "timed_out",
+      "message": "cannot move attempt from timed_out to cancelled",
+      "result": "error",
+      "to": "cancelled"
+    },
+    {
+      "from": "timed_out",
+      "result": "ok",
+      "to": "timed_out"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "timed_out",
+        "to": "abandoned"
+      },
+      "from": "timed_out",
+      "message": "cannot move attempt from timed_out to abandoned",
+      "result": "error",
+      "to": "abandoned"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "abandoned",
+        "to": "queued"
+      },
+      "from": "abandoned",
+      "message": "cannot move attempt from abandoned to queued",
+      "result": "error",
+      "to": "queued"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "abandoned",
+        "to": "preparing"
+      },
+      "from": "abandoned",
+      "message": "cannot move attempt from abandoned to preparing",
+      "result": "error",
+      "to": "preparing"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "abandoned",
+        "to": "running"
+      },
+      "from": "abandoned",
+      "message": "cannot move attempt from abandoned to running",
+      "result": "error",
+      "to": "running"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "abandoned",
+        "to": "verifying"
+      },
+      "from": "abandoned",
+      "message": "cannot move attempt from abandoned to verifying",
+      "result": "error",
+      "to": "verifying"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "abandoned",
+        "to": "succeeded"
+      },
+      "from": "abandoned",
+      "message": "cannot move attempt from abandoned to succeeded",
+      "result": "error",
+      "to": "succeeded"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "abandoned",
+        "to": "failed"
+      },
+      "from": "abandoned",
+      "message": "cannot move attempt from abandoned to failed",
+      "result": "error",
+      "to": "failed"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "abandoned",
+        "to": "cancelled"
+      },
+      "from": "abandoned",
+      "message": "cannot move attempt from abandoned to cancelled",
+      "result": "error",
+      "to": "cancelled"
+    },
+    {
+      "code": "invalid_transition",
+      "details": {
+        "allowed": [],
+        "from": "abandoned",
+        "to": "timed_out"
+      },
+      "from": "abandoned",
+      "message": "cannot move attempt from abandoned to timed_out",
+      "result": "error",
+      "to": "timed_out"
+    },
+    {
+      "from": "abandoned",
+      "result": "ok",
+      "to": "abandoned"
+    }
+  ]
+}

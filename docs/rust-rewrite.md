@@ -90,7 +90,7 @@ Non-goals:
 | Ids | Contract |
 | --- | --- |
 | C001-C185 | CLI leaf commands, arguments and options |
-| M01-M65 | MCP tools, plus the resource table |
+| M01-M66 | MCP tools, plus the resource table |
 | H001-H124, X1-X7 | HTTP operations and routes outside OpenAPI |
 | sections 13.4, 11 | database tables, indexes, triggers, migration chain |
 | section 13.5 | configuration keys and typed sub-tables |
@@ -825,7 +825,7 @@ module comment; world roots, dependency allowlist and banned calls read from
 `docs/rust-rewrite-contracts.md` from `contracts/`; output equals the committed section. Deps: CF-01.
 
 **CF-03 MCP transcripts**: `tools/contracts/record_mcp.py`, `contracts/mcp/*.jsonl` (section 3.3, stdio
-and Streamable HTTP). Accept: one success and one error per tool M01-M65, the listings, `initialize`,
+and Streamable HTTP). Accept: one success and one error per tool M01-M66, the listings, `initialize`,
 unknown tool, invalid arguments. Deps: CF-01.
 
 **CF-04 HTTP extras**: `tools/contracts/record_http.py`, `contracts/http/*` (section 3.3). Accept:

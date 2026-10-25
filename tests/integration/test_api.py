@@ -228,7 +228,13 @@ def _lan_client(asgi, ip: str, base_url: str = "http://192.168.1.20:8765") -> Te
     return TestClient(asgi, base_url=base_url, client=(ip, 50000), follow_redirects=False)
 
 
-def test_lan_mode_requires_pairing_before_handing_out_the_token(app, ws):
+def test_lan_mode_requires_pairing_before_handing_out_the_token(app, ws, tmp_path, monkeypatch):
+    # The UI shell comes from the built web bundle, which a fresh checkout does not have; serve a
+    # minimal shell so the token-injection behaviour under test does not depend on `pnpm build`.
+    shell = tmp_path / "static"
+    shell.mkdir()
+    (shell / "index.html").write_text("<!doctype html><html><head></head><body>UI</body></html>", "utf-8")
+    monkeypatch.setattr("workgraph.api.app.static_dir", lambda: shell)
     lan = LanAccess.build("192.168.1.20")
     asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=True, lan=lan)
     token = app.api_token()

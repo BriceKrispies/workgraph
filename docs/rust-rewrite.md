@@ -1164,3 +1164,22 @@ HTTP route groups (each: the routes registered and in the OpenAPI snapshot, SC-3
 | CO-03 | Switch the installed `workgraph` to the Rust binary (5.3), verify the MCP registration and the hook handlers, document the rollback in `docs/getting-started.md` | CO-01, user's decision Q12 |
 | CO-04 | Retire Python (5.4) | CO-02, CO-03, user's decision Q12 |
 | CO-05 | Documentation rewrite: `README.md`, `architecture.md`, `testing.md`, `getting-started.md`, `extending.md`, `troubleshooting.md` describe the Rust implementation; this document's status updated | CO-04 |
+
+## 11. Decisions from the user (2026-10-25)
+
+The user adopted the recommended answers to the open questions:
+
+1. `--help` and usage errors keep the same content; clap's layout is acceptable (help text is not parsed by tools).
+2. Human output is UTF-8 everywhere, including when piped on Windows.
+3. Python contracts are frozen during the rewrite. Defect fixes are allowed, each with a paired Rust task, so both versions change together.
+4. The schema is frozen (no migration `0011`) while both versions share a database.
+5. `arch-lint` is copied into this repository, not shared with noether.
+6. `/api/docs` is served byte-identical, CDN links included.
+7. The one-line Vite output-directory change is acceptable at retirement.
+8. The demo uses a companion `workgraph-demo-agent` instead of `python check.py`.
+9. Statistics computed through `exp`/`log` are compared with a 1e-12 relative tolerance.
+10. The coordinator adds the Rust checks to this repository's verification config (the CLI runs as the user, who holds `config:manage`).
+11. At retirement the 164 interface tests that drive the CLI, MCP and HTTP stay as contract tests against the Rust binary; the 502 in-process tests are deleted with the Python code.
+12. The side-by-side period ends after one complete real stack-landing cycle on the Rust binary with zero divergence reports.
+
+Work lands on the `rust-integration` branch through tested stacks and is merged into `main` (the live checkout) only at green waves.

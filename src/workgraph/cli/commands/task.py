@@ -37,7 +37,7 @@ from workgraph.core.models.schemas import (
     TaskUpdate,
     parse_task_file,
 )
-from workgraph.core.services import triage
+from workgraph.core.services import breakdown, triage
 
 task_app = typer.Typer(help="Create, query and move tasks through their lifecycle.", no_args_is_help=True)
 
@@ -458,6 +458,53 @@ def task_promote_ready(
             f"{'would promote' if dry_run else 'promoted'} {len(keys)}"
             + (f": {', '.join(keys)}" if keys else "")
         ),
+    )
+
+
+@task_app.command("import-breakdown")
+@handle_errors
+def task_import_breakdown(
+    path: Path = typer.Argument(..., exists=True, dir_okay=False, readable=True, help="Markdown file"),
+    section: str = typer.Option(..., "--section", help="Heading text of the section to import"),
+    parent: str = typer.Option(..., "--parent", help="Parent task key or id for every imported task"),
+    tag: list[str] = typer.Option(None, "--tag", "-t", help="Extra tag on every task (repeatable)"),
+    project: str | None = typer.Option(None, "--project", "-p", help="Project for tasks created by this run"),
+    repo: str | None = typer.Option(None, "--repo", "-r", help="Repository for tasks created by this run"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Report what would change; change nothing"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Create or update the tasks of a markdown breakdown section (re-runs are idempotent)."""
+    result = breakdown.import_breakdown(
+        STATE.app().tasks,
+        STATE.ctx(),
+        ws(workspace),
+        path.read_text(encoding="utf-8"),
+        section=section,
+        source=path.resolve().as_posix(),
+        parent=parent,
+        tags=_tag_values(tag) or [],
+        project=project,
+        repository=repo,
+        dry_run=dry_run,
+    )
+    emit(result, _render_breakdown)
+
+
+def _render_breakdown(result: dict[str, Any]) -> None:
+    table(
+        [(t["id"], t["key"] or "-", t["action"], t["status"], t["title"][:60]) for t in result["tasks"]],
+        ["id", "key", "action", "status", "title"],
+        title="import breakdown" + (" (dry run)" if result["dry_run"] else ""),
+    )
+    for item in result["unresolved"]:
+        console.print(
+            f"[yellow]unresolved[/yellow] {item['id']} depends on {item['dependency']!r}: {item['reason']}"
+        )
+    counts = result["counts"]
+    console.print(
+        f"{counts['created']} created, {counts['updated']} updated, {counts['unchanged']} unchanged; "
+        f"{counts['ready']} ready, {counts['backlog']} backlog"
+        + (" (nothing changed)" if result["dry_run"] else "")
     )
 
 

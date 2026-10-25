@@ -9,3 +9,9 @@ description = "ids, task keys, timestamps, enums, actors, permissions, errors"
 
 [lints]
 workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+time = { version = "0.3", default-features = false, features = ["std"] }
+uuid = { version = "1", default-features = false, features = ["std", "serde"] }

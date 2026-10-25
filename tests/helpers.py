@@ -62,25 +62,38 @@ def rust_binary() -> Path:
 @dataclass(frozen=True)
 class CliResult:
     exit_code: int
-    stdout: str
-    stderr: str
+    # str for run_cli and for run_cli_process with text/encoding; bytes for run_cli_process otherwise.
+    stdout: str | bytes
+    stderr: str | bytes
     # Python mode: Click's combined output. Rust mode: stdout followed by stderr.
-    output: str
+    output: str | bytes
+
+
+def _merged_env(env: Mapping[str, str | None] | None) -> dict[str, str]:
+    """``os.environ`` with ``env`` applied on top; a ``None`` value unsets that variable."""
+    merged = dict(os.environ)
+    for key, value in (env or {}).items():
+        if value is None:
+            merged.pop(key, None)
+        else:
+            merged[key] = value
+    return merged
 
 
 def run_cli(args: Sequence[str], env: Mapping[str, str] | None = None) -> CliResult:
     """Run one CLI invocation with extra environment variables and capture its result.
 
-    Pass ``--json`` in ``args`` where a test wants machine-readable output.
+    Pass ``--json`` in ``args`` where a test wants machine-readable output. In python mode the
+    flag is handled the way ``main()`` handles it (stripped from argv, sets ``STATE.json``), since
+    ``CliRunner`` does not go through ``main()``.
     """
     if impl_mode() == "rust":
-        merged = {**os.environ, **(env or {})}
         proc = subprocess.run(
             [str(rust_binary()), *args],
             capture_output=True,
             text=True,
             encoding="utf-8",
-            env=merged,
+            env=_merged_env(env),
             stdin=subprocess.DEVNULL,
             timeout=CLI_TIMEOUT_SECONDS,
             check=False,
@@ -92,13 +105,41 @@ def run_cli(args: Sequence[str], env: Mapping[str, str] | None = None) -> CliRes
     from workgraph.cli.common import STATE
     from workgraph.cli.main import app as cli
 
+    argv = [arg for arg in args if arg != "--json"]
+    STATE.json = len(argv) != len(args)
+    STATE.home = None
     try:
-        result = CliRunner().invoke(cli, list(args), env=dict(env or {}), catch_exceptions=False)
+        result = CliRunner().invoke(cli, argv, env=dict(env or {}), catch_exceptions=False)
     finally:
         STATE.close()
         STATE.json = False
         STATE.home = None
     return CliResult(result.exit_code, result.stdout, result.stderr, result.output)
+
+
+def run_cli_process(
+    args: Sequence[str], env: Mapping[str, str | None] | None = None, **popen_kwargs: object
+) -> CliResult:
+    """Spawn the selected implementation as a real process and capture its raw output.
+
+    Python mode runs ``python -m workgraph``; Rust mode runs the ``WORKGRAPH_RUST_BIN`` executable.
+    ``env`` is applied on top of ``os.environ``; a ``None`` value unsets that variable. Extra keyword
+    arguments go to ``subprocess.run``. Without ``text``/``encoding`` the streams are bytes.
+    """
+    if impl_mode() == "rust":
+        command = [str(rust_binary()), *args]
+    else:
+        command = [sys.executable, "-m", "workgraph", *args]
+    popen_kwargs.setdefault("timeout", CLI_TIMEOUT_SECONDS)
+    proc = subprocess.run(
+        command,
+        capture_output=True,
+        stdin=subprocess.DEVNULL,
+        env=_merged_env(env),
+        check=False,
+        **popen_kwargs,
+    )
+    return CliResult(proc.returncode, proc.stdout, proc.stderr, proc.stdout + proc.stderr)
 
 
 def mcp_stdio_params(

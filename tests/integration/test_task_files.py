@@ -5,10 +5,8 @@ from __future__ import annotations
 import json
 
 import pytest
-from typer.testing import CliRunner
 
-from workgraph.cli.common import STATE
-from workgraph.cli.main import app as cli
+from tests.helpers import run_cli
 from workgraph.core.models.schemas import TaskCreate, TaskFileIn, TaskFilter, TaskUpdate, parse_task_file
 from workgraph.core.services import triage
 
@@ -16,16 +14,9 @@ from workgraph.core.services import triage
 @pytest.fixture
 def cli_run(home, monkeypatch):
     monkeypatch.setenv("WORKGRAPH_HOME", str(home))
-    runner = CliRunner()
 
     def invoke(*args: str, expect: int = 0, json_out: bool = True) -> str:
-        STATE.json = json_out
-        STATE.home = None
-        try:
-            result = runner.invoke(cli, list(args), catch_exceptions=False)
-        finally:
-            STATE.close()
-            STATE.json = False
+        result = run_cli(["--json", *args] if json_out else list(args))
         assert result.exit_code == expect, f"{args}: exit {result.exit_code}\n{result.output}"
         return result.output
 

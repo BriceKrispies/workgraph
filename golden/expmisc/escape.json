@@ -1,0 +1,2477 @@
+{
+  "cases": [
+    {
+      "covers": [
+        "test_backslashes_become_slashes_and_text_is_lowercased"
+      ],
+      "id": "normalize-backslashes-lowercased",
+      "input": {
+        "text": "C:\\Dev\\Rho\\src"
+      },
+      "output": {
+        "normalized": "c:/dev/rho/src"
+      }
+    },
+    {
+      "covers": [
+        "test_msys_drive_prefix_becomes_a_windows_drive"
+      ],
+      "id": "normalize-msys-drive-in-command",
+      "input": {
+        "text": "cd /c/dev/rho && git log"
+      },
+      "output": {
+        "normalized": "cd c:/dev/rho && git log"
+      }
+    },
+    {
+      "covers": [
+        "test_msys_drive_prefix_becomes_a_windows_drive"
+      ],
+      "id": "normalize-msys-drive-start",
+      "input": {
+        "text": "/D/work"
+      },
+      "output": {
+        "normalized": "d:/work"
+      }
+    },
+    {
+      "covers": [
+        "test_repeated_slashes_collapse_before_the_drive_prefix_is_read"
+      ],
+      "id": "normalize-repeated-slashes",
+      "input": {
+        "text": "c://dev///rho"
+      },
+      "output": {
+        "normalized": "c:/dev/rho"
+      }
+    },
+    {
+      "covers": [
+        "test_repeated_slashes_collapse_before_the_drive_prefix_is_read"
+      ],
+      "id": "normalize-double-slash-drive",
+      "input": {
+        "text": "//c/dev"
+      },
+      "output": {
+        "normalized": "c:/dev"
+      }
+    },
+    {
+      "covers": [
+        "test_relative_segments_that_look_like_drives_are_left_alone"
+      ],
+      "id": "normalize-relative-drive-lookalike",
+      "input": {
+        "text": "c:/c/dev"
+      },
+      "output": {
+        "normalized": "c:/c/dev"
+      }
+    },
+    {
+      "covers": [
+        "test_relative_segments_that_look_like_drives_are_left_alone"
+      ],
+      "id": "normalize-relative-path",
+      "input": {
+        "text": "src/a/b"
+      },
+      "output": {
+        "normalized": "src/a/b"
+      }
+    },
+    {
+      "covers": [],
+      "id": "normalize-unicode",
+      "input": {
+        "text": "C:\\Données\\Ü"
+      },
+      "output": {
+        "normalized": "c:/données/ü"
+      }
+    },
+    {
+      "covers": [],
+      "id": "normalize-empty",
+      "input": {
+        "text": ""
+      },
+      "output": {
+        "normalized": ""
+      }
+    },
+    {
+      "covers": [
+        "test_a_sibling_directory_with_the_root_as_prefix_does_not_match"
+      ],
+      "id": "find-sibling-prefix-no-match",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "file_path": "c:/dev/rho-other/x.rs"
+            },
+            "name": "Read",
+            "tool_use_id": "t1"
+          }
+        ],
+        "roots": [
+          "C:\\dev\\rho"
+        ]
+      },
+      "output": {
+        "escapes": []
+      }
+    },
+    {
+      "covers": [
+        "test_the_root_itself_and_paths_under_it_match"
+      ],
+      "id": "find-root-and-children",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "command": "c:/dev/rho"
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "input": {
+              "command": "c:/dev/rho/x"
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "input": {
+              "command": "\"c:/dev/rho\""
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "input": {
+              "command": "cd /c/dev/rho && git log"
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          }
+        ],
+        "roots": [
+          "C:\\dev\\rho"
+        ]
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "excerpt": "c:/dev/rho/x",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "excerpt": "\"c:/dev/rho\"",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "excerpt": "cd /c/dev/rho && git log",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "t1"
+          }
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_root_followed_by_shell_operators_matches"
+      ],
+      "id": "find-shell-operators",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "command": "c:/dev/rho;ls"
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "input": {
+              "command": "c:/dev/rho&&ls"
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "input": {
+              "command": "c:/dev/rho|cat"
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "input": {
+              "command": "c:/dev/rho\nls"
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          }
+        ],
+        "roots": [
+          "C:\\dev\\rho"
+        ]
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho;ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "excerpt": "c:/dev/rho&&ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "excerpt": "c:/dev/rho|cat",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "t1"
+          },
+          {
+            "excerpt": "c:/dev/rho\nls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "t1"
+          }
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_nested_dict_and_list_values_are_searched"
+      ],
+      "id": "find-nested-values",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "edits": [
+                {
+                  "new": "b",
+                  "old": "a"
+                },
+                {
+                  "path": [
+                    "x",
+                    {
+                      "deep": "C:\\dev\\rho\\pkg\\mod.py"
+                    }
+                  ]
+                }
+              ],
+              "meta": {
+                "description": "unrelated"
+              }
+            },
+            "name": "Edit",
+            "tool_use_id": "t1"
+          }
+        ],
+        "roots": [
+          "C:\\dev\\rho"
+        ]
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho\\pkg\\mod.py",
+            "root": "C:\\dev\\rho",
+            "tool": "Edit",
+            "tool_use_id": "t1"
+          }
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_keys_and_non_string_values_are_ignored"
+      ],
+      "id": "find-keys-and-non-strings",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "c:/dev/rho": 1,
+              "flag": true,
+              "n": 2
+            },
+            "name": "Read",
+            "tool_use_id": "t1"
+          }
+        ],
+        "roots": [
+          "C:\\dev\\rho"
+        ]
+      },
+      "output": {
+        "escapes": []
+      }
+    },
+    {
+      "covers": [
+        "test_one_escape_per_call_and_root"
+      ],
+      "id": "find-one-per-call-and-root",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "a": "c:/dev/rho/x",
+              "b": "c:/dev/rho/y",
+              "c": "C:/dev/rho/other"
+            },
+            "name": "Read",
+            "tool_use_id": "t1"
+          }
+        ],
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho-other-clone/../rho"
+        ]
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho/x",
+            "root": "C:\\dev\\rho",
+            "tool": "Read",
+            "tool_use_id": "t1"
+          }
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_one_escape_per_call_and_root"
+      ],
+      "id": "find-nested-roots",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "a": "c:/dev/rho/x",
+              "b": "c:/dev/rho/y",
+              "c": "C:/dev/rho/other"
+            },
+            "name": "Read",
+            "tool_use_id": "t9"
+          }
+        ],
+        "roots": [
+          "C:\\dev\\rho",
+          "C:\\dev\\rho\\other"
+        ]
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho/x",
+            "root": "C:\\dev\\rho",
+            "tool": "Read",
+            "tool_use_id": "t9"
+          },
+          {
+            "excerpt": "C:/dev/rho/other",
+            "root": "C:\\dev\\rho\\other",
+            "tool": "Read",
+            "tool_use_id": "t9"
+          }
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_each_call_is_checked_separately"
+      ],
+      "id": "find-each-call-separately",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "f": "c:/dev/rho/a"
+            },
+            "name": "Read",
+            "tool_use_id": "t1"
+          },
+          {
+            "input": {
+              "f": "c:/other/a"
+            },
+            "name": "Read",
+            "tool_use_id": "t2"
+          }
+        ],
+        "roots": [
+          "C:\\dev\\rho"
+        ]
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho/a",
+            "root": "C:\\dev\\rho",
+            "tool": "Read",
+            "tool_use_id": "t1"
+          }
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_excerpt_is_cut_to_300_characters"
+      ],
+      "id": "find-excerpt-cut",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "command": "c:/dev/rho/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          }
+        ],
+        "roots": [
+          "C:\\dev\\rho"
+        ]
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "t1"
+          }
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_empty_roots_are_ignored"
+      ],
+      "id": "find-empty-roots-ignored",
+      "input": {
+        "calls": [
+          {
+            "input": {
+              "command": "anything"
+            },
+            "name": "Bash",
+            "tool_use_id": "t1"
+          }
+        ],
+        "roots": [
+          "",
+          "/"
+        ]
+      },
+      "output": {
+        "escapes": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-''",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-'/x'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho/x"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho/x",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho/x",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho/x",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho/x"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-';ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho;ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho;ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho;ls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho;ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho;ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-' '",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho "
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho ",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho ",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho ",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho "
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-'\"'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho\""
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho\"",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho\"",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho\"",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho\""
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-'&&ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho&&ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho&&ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho&&ls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho&&ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho&&ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-'|cat'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho|cat"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho|cat",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho|cat",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho|cat",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho|cat"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-'\\nls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho\nls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho\nls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho\nls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho\nls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho\nls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-'rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhorho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhorho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhorho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-'/../rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho/../rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho/../rho",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho/../rho",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "c:/dev/rho/../rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho/../rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-''",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-'/x'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rho/x"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho/x",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho/x",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho/x",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho/x"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-';ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rho;ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho;ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho;ls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho;ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho;ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-' '",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rho "
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho ",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho ",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho ",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho "
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-'\"'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rho\""
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho\"",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho\"",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho\"",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho\""
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-'&&ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rho&&ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho&&ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho&&ls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho&&ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho&&ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-'|cat'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rho|cat"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho|cat",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho|cat",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho|cat",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho|cat"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-'\\nls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rho\nls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho\nls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho\nls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho\nls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho\nls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-'rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rhorho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rhorho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhorho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-C:\\dev\\rho-'/../rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "C:\\dev\\rho/../rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "C:\\dev\\rho/../rho",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho/../rho",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "C:\\dev\\rho/../rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho/../rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-''",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rho",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-'/x'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rho/x"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rho/x",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho/x",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho/x",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho/x"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-';ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rho;ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rho;ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho;ls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho;ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho;ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-' '",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rho "
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rho ",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho ",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho ",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho "
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-'\"'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rho\""
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rho\"",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho\"",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho\"",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho\""
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-'&&ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rho&&ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rho&&ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho&&ls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho&&ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho&&ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-'|cat'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rho|cat"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rho|cat",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho|cat",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho|cat",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho|cat"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-'\\nls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rho\nls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rho\nls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho\nls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho\nls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho\nls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-'rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rhorho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rhorho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhorho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-/c/dev/rho-'/../rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "/c/dev/rho/../rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "/c/dev/rho/../rho",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho/../rho",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "/c/dev/rho/../rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho/../rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-''",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rho",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-'/x'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rho/x"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rho/x",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho/x",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho/x",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho/x"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-';ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rho;ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rho;ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho;ls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho;ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho;ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-' '",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rho "
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rho ",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho ",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho ",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho "
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-'\"'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rho\""
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rho\"",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho\"",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho\"",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho\""
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-'&&ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rho&&ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rho&&ls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho&&ls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho&&ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho&&ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-'|cat'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rho|cat"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rho|cat",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho|cat",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho|cat",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho|cat"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-'\\nls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rho\nls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rho\nls",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho\nls",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho\nls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho\nls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-'rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rhorho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rhorho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhorho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-//c//dev//rho-'/../rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "//c//dev//rho/../rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "//c//dev//rho/../rho",
+            "root": "C:\\dev\\rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho/../rho",
+            "root": "c:/dev/rho",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          },
+          {
+            "excerpt": "//c//dev//rho/../rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho/../rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-''",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-other"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-other",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-other"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-'/x'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-other/x"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-other/x",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-other/x"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-';ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-other;ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-other;ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-other;ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-' '",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-other "
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-other ",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-other "
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-'\"'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-other\""
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-other\"",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-other\""
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-'&&ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-other&&ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-other&&ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-other&&ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-'|cat'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-other|cat"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-other|cat",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-other|cat"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-'\\nls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-other\nls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-other\nls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-other\nls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-'rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-otherrho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-otherrho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-otherrho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rho-other-'/../rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rho-other/../rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rho-other/../rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rho-other/../rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-''",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoX"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoX",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhox"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-'/x'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoX/x"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoX/x",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhox/x"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-';ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoX;ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoX;ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhox;ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-' '",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoX "
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoX ",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhox "
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-'\"'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoX\""
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoX\"",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhox\""
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-'&&ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoX&&ls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoX&&ls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhox&&ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-'|cat'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoX|cat"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoX|cat",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhox|cat"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-'\\nls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoX\nls"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoX\nls",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhox\nls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-'rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoXrho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoXrho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhoxrho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-c:/dev/rhoX-'/../rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "c:/dev/rhoX/../rho"
+      },
+      "output": {
+        "escapes": [
+          {
+            "excerpt": "c:/dev/rhoX/../rho",
+            "root": "c:/dev",
+            "tool": "Bash",
+            "tool_use_id": "g1"
+          }
+        ],
+        "normalized": "c:/dev/rhox/../rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-''",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rho"
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-'/x'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rho/x"
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rho/x"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-';ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rho;ls"
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rho;ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-' '",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rho "
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rho "
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-'\"'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rho\""
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rho\""
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-'&&ls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rho&&ls"
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rho&&ls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-'|cat'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rho|cat"
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rho|cat"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-'\\nls'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rho\nls"
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rho\nls"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-'rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rhorho"
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rhorho"
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-find-src/rho-'/../rho'",
+      "input": {
+        "roots": [
+          "C:\\dev\\rho",
+          "c:/dev/rho",
+          "c:/dev"
+        ],
+        "text": "src/rho/../rho"
+      },
+      "output": {
+        "escapes": [],
+        "normalized": "src/rho/../rho"
+      }
+    }
+  ],
+  "file": "escape",
+  "vector": "expmisc"
+}

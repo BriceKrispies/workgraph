@@ -1,0 +1,2391 @@
+{
+  "cases": [
+    {
+      "covers": [
+        "test_complete_contract_has_no_problems"
+      ],
+      "id": "complete",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [
+        "test_each_not_delegable_tag_is_named"
+      ],
+      "id": "tag-needs-decision",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": [
+          "needs-decision"
+        ]
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": [
+          "tag needs-decision makes the task not delegable"
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_each_not_delegable_tag_is_named"
+      ],
+      "id": "tag-kind:report",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": [
+          "kind:report"
+        ]
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": [
+          "tag kind:report makes the task not delegable"
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_each_not_delegable_tag_is_named"
+      ],
+      "id": "tag-kind:register-row",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": [
+          "kind:register-row"
+        ]
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": [
+          "tag kind:register-row makes the task not delegable"
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_each_not_delegable_tag_is_named"
+      ],
+      "id": "tag-kind:split-status",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": [
+          "kind:split-status"
+        ]
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": [
+          "tag kind:split-status makes the task not delegable"
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_each_not_delegable_tag_is_named"
+      ],
+      "id": "tag-kind:manifest",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": [
+          "kind:manifest"
+        ]
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": [
+          "tag kind:manifest makes the task not delegable"
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_unrelated_tags_are_delegable"
+      ],
+      "id": "unrelated-tag",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": [
+          "capability-frontier"
+        ]
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [
+        "test_no_oracle_and_no_criteria_is_not_delegable"
+      ],
+      "id": "no-oracle-no-criteria",
+      "input": {
+        "acceptance_criteria": [],
+        "metadata": {
+          "contract": {
+            "checks": [],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.oracle"
+        ],
+        "not_delegable": [
+          "no checkable oracle: the task has no contract oracle and no acceptance criteria"
+        ]
+      }
+    },
+    {
+      "covers": [
+        "test_criteria_without_a_contract_oracle_are_still_checkable"
+      ],
+      "id": "criteria-without-oracle",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.oracle"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [
+        "test_missing_contract_names_every_field"
+      ],
+      "id": "missing-contract",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {},
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.files",
+          "contract.oracle",
+          "contract.gates",
+          "contract.out_of_scope",
+          "contract.checks (1 acceptance criteria, none checks, one non-empty each)",
+          "contract.predicted.src_lines",
+          "contract.predicted.src_files",
+          "contract.predicted.packages"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [
+        "test_malformed_fields_are_named"
+      ],
+      "id": "malformed-fields",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [],
+            "gates": [
+              []
+            ],
+            "oracle": [
+              [
+                "pytest",
+                ""
+              ]
+            ],
+            "out_of_scope": [
+              ""
+            ],
+            "predicted": {
+              "packages": "pkg",
+              "src_files": true,
+              "src_lines": 0
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.files",
+          "contract.oracle",
+          "contract.gates",
+          "contract.out_of_scope",
+          "contract.predicted.src_lines",
+          "contract.predicted.src_files",
+          "contract.predicted.packages"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [
+        "test_gates_may_be_empty"
+      ],
+      "id": "gates-empty",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [
+        "test_packages_may_be_empty"
+      ],
+      "id": "packages-empty",
+      "input": {
+        "acceptance_criteria": [
+          "the function returns 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/test_mod.py::test_f"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [],
+              "src_files": 1,
+              "src_lines": 4
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [
+        "test_checks_must_match_the_criteria_count"
+      ],
+      "id": "checks-count-mismatch",
+      "input": {
+        "acceptance_criteria": [
+          "one",
+          "two"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/a.py::t"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (2 acceptance criteria, 1 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [
+        "test_blank_check_is_malformed"
+      ],
+      "id": "blank-check",
+      "input": {
+        "acceptance_criteria": [
+          "one"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "  "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (1 acceptance criteria, 1 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria0-checks0-blank0",
+      "input": {
+        "acceptance_criteria": [],
+        "metadata": {
+          "contract": {
+            "checks": [],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria0-checks0-blank1",
+      "input": {
+        "acceptance_criteria": [],
+        "metadata": {
+          "contract": {
+            "checks": [],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria0-checks1-blank0",
+      "input": {
+        "acceptance_criteria": [],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (0 acceptance criteria, 1 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria0-checks1-blank1",
+      "input": {
+        "acceptance_criteria": [],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (0 acceptance criteria, 1 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria0-checks2-blank0",
+      "input": {
+        "acceptance_criteria": [],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (0 acceptance criteria, 2 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria0-checks2-blank1",
+      "input": {
+        "acceptance_criteria": [],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (0 acceptance criteria, 2 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria0-checks3-blank0",
+      "input": {
+        "acceptance_criteria": [],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1",
+              "tests/t.py::case_2"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (0 acceptance criteria, 3 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria0-checks3-blank1",
+      "input": {
+        "acceptance_criteria": [],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1",
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (0 acceptance criteria, 3 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria1-checks0-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (1 acceptance criteria, 0 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria1-checks0-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (1 acceptance criteria, 0 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria1-checks1-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria1-checks1-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (1 acceptance criteria, 1 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria1-checks2-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (1 acceptance criteria, 2 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria1-checks2-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (1 acceptance criteria, 2 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria1-checks3-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1",
+              "tests/t.py::case_2"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (1 acceptance criteria, 3 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria1-checks3-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1",
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (1 acceptance criteria, 3 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria2-checks0-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (2 acceptance criteria, 0 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria2-checks0-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (2 acceptance criteria, 0 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria2-checks1-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (2 acceptance criteria, 1 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria2-checks1-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (2 acceptance criteria, 1 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria2-checks2-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria2-checks2-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (2 acceptance criteria, 2 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria2-checks3-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1",
+              "tests/t.py::case_2"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (2 acceptance criteria, 3 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria2-checks3-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1",
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (2 acceptance criteria, 3 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria3-checks0-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1",
+          "criterion 2"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (3 acceptance criteria, 0 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria3-checks0-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1",
+          "criterion 2"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (3 acceptance criteria, 0 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria3-checks1-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1",
+          "criterion 2"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (3 acceptance criteria, 1 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria3-checks1-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1",
+          "criterion 2"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (3 acceptance criteria, 1 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria3-checks2-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1",
+          "criterion 2"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (3 acceptance criteria, 2 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria3-checks2-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1",
+          "criterion 2"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (3 acceptance criteria, 2 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria3-checks3-blank0",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1",
+          "criterion 2"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1",
+              "tests/t.py::case_2"
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [],
+        "not_delegable": []
+      }
+    },
+    {
+      "covers": [],
+      "id": "generated-criteria3-checks3-blank1",
+      "input": {
+        "acceptance_criteria": [
+          "criterion 0",
+          "criterion 1",
+          "criterion 2"
+        ],
+        "metadata": {
+          "contract": {
+            "checks": [
+              "tests/t.py::case_0",
+              "tests/t.py::case_1",
+              "   "
+            ],
+            "files": [
+              "pkg/mod.py",
+              "tests/test_mod.py"
+            ],
+            "gates": [
+              [
+                "ruff",
+                "check",
+                "."
+              ]
+            ],
+            "oracle": [
+              [
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "out_of_scope": [
+              "the CLI"
+            ],
+            "predicted": {
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40
+            }
+          }
+        },
+        "tags": []
+      },
+      "output": {
+        "missing": [
+          "contract.checks (3 acceptance criteria, 3 checks, one non-empty each)"
+        ],
+        "not_delegable": []
+      }
+    }
+  ],
+  "file": "contract",
+  "vector": "expmisc"
+}

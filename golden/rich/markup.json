@@ -1,0 +1,2002 @@
+{
+  "cases": [
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-0",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [      │ [     │ [     │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[",
+          "[",
+          "["
+        ]
+      ],
+      "text": "[",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-1",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "["
+        ]
+      ],
+      "text": "[",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-2",
+      "output": {
+        "stderr": "error: [\n",
+        "stdout": ""
+      },
+      "text": "[",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-3",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ]      │ ]     │ ]     │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "]",
+          "]",
+          "]"
+        ]
+      ],
+      "text": "]",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-4",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "]"
+        ]
+      ],
+      "text": "]",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-5",
+      "output": {
+        "stderr": "error: ]\n",
+        "stdout": ""
+      },
+      "text": "]",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-6",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [/     │ [/    │ [/    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[/",
+          "[/",
+          "[/"
+        ]
+      ],
+      "text": "[/",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-7",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [/\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[/"
+        ]
+      ],
+      "text": "[/",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-8",
+      "output": {
+        "stderr": "error: [/\n",
+        "stdout": ""
+      },
+      "text": "[/",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-9",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [bold  │ [bold │ [bold │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[bold",
+          "[bold",
+          "[bold"
+        ]
+      ],
+      "text": "[bold",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-10",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [bold\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[bold"
+        ]
+      ],
+      "text": "[bold",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-11",
+      "output": {
+        "stderr": "error: [bold\n",
+        "stdout": ""
+      },
+      "text": "[bold",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-12",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ a b    │ a b   │ a b   │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "a [red]b",
+          "a [red]b",
+          "a [red]b"
+        ]
+      ],
+      "text": "a [red]b",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-13",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: a b\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "a [red]b"
+        ]
+      ],
+      "text": "a [red]b",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-14",
+      "output": {
+        "stderr": "error: a b\n",
+        "stdout": ""
+      },
+      "text": "a [red]b",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-15",
+      "output": {
+        "stderr": "",
+        "stdout": "               Markup                \n┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓\n┃ markup    ┃ again     ┃ third     ┃\n┡━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩\n│ [escaped] │ [escaped] │ [escaped] │\n└───────────┴───────────┴───────────┘\n"
+      },
+      "rows": [
+        [
+          "\\[escaped]",
+          "\\[escaped]",
+          "\\[escaped]"
+        ]
+      ],
+      "text": "\\[escaped]",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-16",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [escaped]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "\\[escaped]"
+        ]
+      ],
+      "text": "\\[escaped]",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-17",
+      "output": {
+        "stderr": "error: [escaped]\n",
+        "stdout": ""
+      },
+      "text": "\\[escaped]",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-18",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│        │       │       │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[not a tag]",
+          "[not a tag]",
+          "[not a tag]"
+        ]
+      ],
+      "text": "[not a tag]",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-19",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: \n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[not a tag]"
+        ]
+      ],
+      "text": "[not a tag]",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-20",
+      "output": {
+        "stderr": "error: \n",
+        "stdout": ""
+      },
+      "text": "[not a tag]",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-21",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ]]     │ ]]    │ ]]    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "]]",
+          "]]",
+          "]]"
+        ]
+      ],
+      "text": "]]",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-22",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ]]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "]]"
+        ]
+      ],
+      "text": "]]",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-23",
+      "output": {
+        "stderr": "error: ]]\n",
+        "stdout": ""
+      },
+      "text": "]]",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-24",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ []     │ []    │ []    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[[double]]",
+          "[[double]]",
+          "[[double]]"
+        ]
+      ],
+      "text": "[[double]]",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-25",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: []\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[[double]]"
+        ]
+      ],
+      "text": "[[double]]",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-26",
+      "output": {
+        "stderr": "error: []\n",
+        "stdout": ""
+      },
+      "text": "[[double]]",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-27",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 2 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "rows": [
+        [
+          "x [/bold] y",
+          "x [/bold] y",
+          "x [/bold] y"
+        ]
+      ],
+      "text": "x [/bold] y",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-28",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 22 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "pairs": [
+        [
+          "key",
+          "x [/bold] y"
+        ]
+      ],
+      "text": "x [/bold] y",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-29",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 20 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "text": "x [/bold] y",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w40-30",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ short  │ short │ short │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[b]short[/b]",
+          "[b]short[/b]",
+          "[b]short[/b]"
+        ]
+      ],
+      "text": "[b]short[/b]",
+      "width": 40
+    },
+    {
+      "id": "markup-kv-w40-31",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: short\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[b]short[/b]"
+        ]
+      ],
+      "text": "[b]short[/b]",
+      "width": 40
+    },
+    {
+      "id": "markup-fail-w40-32",
+      "output": {
+        "stderr": "error: short\n",
+        "stdout": ""
+      },
+      "text": "[b]short[/b]",
+      "width": 40
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-33",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [      │ [     │ [     │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[",
+          "[",
+          "["
+        ]
+      ],
+      "text": "[",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-34",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "["
+        ]
+      ],
+      "text": "[",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-35",
+      "output": {
+        "stderr": "error: [\n",
+        "stdout": ""
+      },
+      "text": "[",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-36",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ]      │ ]     │ ]     │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "]",
+          "]",
+          "]"
+        ]
+      ],
+      "text": "]",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-37",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "]"
+        ]
+      ],
+      "text": "]",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-38",
+      "output": {
+        "stderr": "error: ]\n",
+        "stdout": ""
+      },
+      "text": "]",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-39",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [/     │ [/    │ [/    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[/",
+          "[/",
+          "[/"
+        ]
+      ],
+      "text": "[/",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-40",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [/\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[/"
+        ]
+      ],
+      "text": "[/",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-41",
+      "output": {
+        "stderr": "error: [/\n",
+        "stdout": ""
+      },
+      "text": "[/",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-42",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [bold  │ [bold │ [bold │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[bold",
+          "[bold",
+          "[bold"
+        ]
+      ],
+      "text": "[bold",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-43",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [bold\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[bold"
+        ]
+      ],
+      "text": "[bold",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-44",
+      "output": {
+        "stderr": "error: [bold\n",
+        "stdout": ""
+      },
+      "text": "[bold",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-45",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ a b    │ a b   │ a b   │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "a [red]b",
+          "a [red]b",
+          "a [red]b"
+        ]
+      ],
+      "text": "a [red]b",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-46",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: a b\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "a [red]b"
+        ]
+      ],
+      "text": "a [red]b",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-47",
+      "output": {
+        "stderr": "error: a b\n",
+        "stdout": ""
+      },
+      "text": "a [red]b",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-48",
+      "output": {
+        "stderr": "",
+        "stdout": "               Markup                \n┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓\n┃ markup    ┃ again     ┃ third     ┃\n┡━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩\n│ [escaped] │ [escaped] │ [escaped] │\n└───────────┴───────────┴───────────┘\n"
+      },
+      "rows": [
+        [
+          "\\[escaped]",
+          "\\[escaped]",
+          "\\[escaped]"
+        ]
+      ],
+      "text": "\\[escaped]",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-49",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [escaped]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "\\[escaped]"
+        ]
+      ],
+      "text": "\\[escaped]",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-50",
+      "output": {
+        "stderr": "error: [escaped]\n",
+        "stdout": ""
+      },
+      "text": "\\[escaped]",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-51",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│        │       │       │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[not a tag]",
+          "[not a tag]",
+          "[not a tag]"
+        ]
+      ],
+      "text": "[not a tag]",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-52",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: \n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[not a tag]"
+        ]
+      ],
+      "text": "[not a tag]",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-53",
+      "output": {
+        "stderr": "error: \n",
+        "stdout": ""
+      },
+      "text": "[not a tag]",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-54",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ]]     │ ]]    │ ]]    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "]]",
+          "]]",
+          "]]"
+        ]
+      ],
+      "text": "]]",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-55",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ]]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "]]"
+        ]
+      ],
+      "text": "]]",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-56",
+      "output": {
+        "stderr": "error: ]]\n",
+        "stdout": ""
+      },
+      "text": "]]",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-57",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ []     │ []    │ []    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[[double]]",
+          "[[double]]",
+          "[[double]]"
+        ]
+      ],
+      "text": "[[double]]",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-58",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: []\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[[double]]"
+        ]
+      ],
+      "text": "[[double]]",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-59",
+      "output": {
+        "stderr": "error: []\n",
+        "stdout": ""
+      },
+      "text": "[[double]]",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-60",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 2 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "rows": [
+        [
+          "x [/bold] y",
+          "x [/bold] y",
+          "x [/bold] y"
+        ]
+      ],
+      "text": "x [/bold] y",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-61",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 22 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "pairs": [
+        [
+          "key",
+          "x [/bold] y"
+        ]
+      ],
+      "text": "x [/bold] y",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-62",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 20 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "text": "x [/bold] y",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w80-63",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ short  │ short │ short │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[b]short[/b]",
+          "[b]short[/b]",
+          "[b]short[/b]"
+        ]
+      ],
+      "text": "[b]short[/b]",
+      "width": 80
+    },
+    {
+      "id": "markup-kv-w80-64",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: short\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[b]short[/b]"
+        ]
+      ],
+      "text": "[b]short[/b]",
+      "width": 80
+    },
+    {
+      "id": "markup-fail-w80-65",
+      "output": {
+        "stderr": "error: short\n",
+        "stdout": ""
+      },
+      "text": "[b]short[/b]",
+      "width": 80
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-66",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [      │ [     │ [     │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[",
+          "[",
+          "["
+        ]
+      ],
+      "text": "[",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-67",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "["
+        ]
+      ],
+      "text": "[",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-68",
+      "output": {
+        "stderr": "error: [\n",
+        "stdout": ""
+      },
+      "text": "[",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-69",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ]      │ ]     │ ]     │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "]",
+          "]",
+          "]"
+        ]
+      ],
+      "text": "]",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-70",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "]"
+        ]
+      ],
+      "text": "]",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-71",
+      "output": {
+        "stderr": "error: ]\n",
+        "stdout": ""
+      },
+      "text": "]",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-72",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [/     │ [/    │ [/    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[/",
+          "[/",
+          "[/"
+        ]
+      ],
+      "text": "[/",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-73",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [/\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[/"
+        ]
+      ],
+      "text": "[/",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-74",
+      "output": {
+        "stderr": "error: [/\n",
+        "stdout": ""
+      },
+      "text": "[/",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-75",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [bold  │ [bold │ [bold │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[bold",
+          "[bold",
+          "[bold"
+        ]
+      ],
+      "text": "[bold",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-76",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [bold\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[bold"
+        ]
+      ],
+      "text": "[bold",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-77",
+      "output": {
+        "stderr": "error: [bold\n",
+        "stdout": ""
+      },
+      "text": "[bold",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-78",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ a b    │ a b   │ a b   │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "a [red]b",
+          "a [red]b",
+          "a [red]b"
+        ]
+      ],
+      "text": "a [red]b",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-79",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: a b\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "a [red]b"
+        ]
+      ],
+      "text": "a [red]b",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-80",
+      "output": {
+        "stderr": "error: a b\n",
+        "stdout": ""
+      },
+      "text": "a [red]b",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-81",
+      "output": {
+        "stderr": "",
+        "stdout": "               Markup                \n┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓\n┃ markup    ┃ again     ┃ third     ┃\n┡━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩\n│ [escaped] │ [escaped] │ [escaped] │\n└───────────┴───────────┴───────────┘\n"
+      },
+      "rows": [
+        [
+          "\\[escaped]",
+          "\\[escaped]",
+          "\\[escaped]"
+        ]
+      ],
+      "text": "\\[escaped]",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-82",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [escaped]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "\\[escaped]"
+        ]
+      ],
+      "text": "\\[escaped]",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-83",
+      "output": {
+        "stderr": "error: [escaped]\n",
+        "stdout": ""
+      },
+      "text": "\\[escaped]",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-84",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│        │       │       │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[not a tag]",
+          "[not a tag]",
+          "[not a tag]"
+        ]
+      ],
+      "text": "[not a tag]",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-85",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: \n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[not a tag]"
+        ]
+      ],
+      "text": "[not a tag]",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-86",
+      "output": {
+        "stderr": "error: \n",
+        "stdout": ""
+      },
+      "text": "[not a tag]",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-87",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ]]     │ ]]    │ ]]    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "]]",
+          "]]",
+          "]]"
+        ]
+      ],
+      "text": "]]",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-88",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ]]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "]]"
+        ]
+      ],
+      "text": "]]",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-89",
+      "output": {
+        "stderr": "error: ]]\n",
+        "stdout": ""
+      },
+      "text": "]]",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-90",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ []     │ []    │ []    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[[double]]",
+          "[[double]]",
+          "[[double]]"
+        ]
+      ],
+      "text": "[[double]]",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-91",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: []\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[[double]]"
+        ]
+      ],
+      "text": "[[double]]",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-92",
+      "output": {
+        "stderr": "error: []\n",
+        "stdout": ""
+      },
+      "text": "[[double]]",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-93",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 2 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "rows": [
+        [
+          "x [/bold] y",
+          "x [/bold] y",
+          "x [/bold] y"
+        ]
+      ],
+      "text": "x [/bold] y",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-94",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 22 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "pairs": [
+        [
+          "key",
+          "x [/bold] y"
+        ]
+      ],
+      "text": "x [/bold] y",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-95",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 20 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "text": "x [/bold] y",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w120-96",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ short  │ short │ short │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[b]short[/b]",
+          "[b]short[/b]",
+          "[b]short[/b]"
+        ]
+      ],
+      "text": "[b]short[/b]",
+      "width": 120
+    },
+    {
+      "id": "markup-kv-w120-97",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: short\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[b]short[/b]"
+        ]
+      ],
+      "text": "[b]short[/b]",
+      "width": 120
+    },
+    {
+      "id": "markup-fail-w120-98",
+      "output": {
+        "stderr": "error: short\n",
+        "stdout": ""
+      },
+      "text": "[b]short[/b]",
+      "width": 120
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-99",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [      │ [     │ [     │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[",
+          "[",
+          "["
+        ]
+      ],
+      "text": "[",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-100",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "["
+        ]
+      ],
+      "text": "[",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-101",
+      "output": {
+        "stderr": "error: [\n",
+        "stdout": ""
+      },
+      "text": "[",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-102",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ]      │ ]     │ ]     │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "]",
+          "]",
+          "]"
+        ]
+      ],
+      "text": "]",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-103",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "]"
+        ]
+      ],
+      "text": "]",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-104",
+      "output": {
+        "stderr": "error: ]\n",
+        "stdout": ""
+      },
+      "text": "]",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-105",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [/     │ [/    │ [/    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[/",
+          "[/",
+          "[/"
+        ]
+      ],
+      "text": "[/",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-106",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [/\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[/"
+        ]
+      ],
+      "text": "[/",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-107",
+      "output": {
+        "stderr": "error: [/\n",
+        "stdout": ""
+      },
+      "text": "[/",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-108",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ [bold  │ [bold │ [bold │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[bold",
+          "[bold",
+          "[bold"
+        ]
+      ],
+      "text": "[bold",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-109",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [bold\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[bold"
+        ]
+      ],
+      "text": "[bold",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-110",
+      "output": {
+        "stderr": "error: [bold\n",
+        "stdout": ""
+      },
+      "text": "[bold",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-111",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ a b    │ a b   │ a b   │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "a [red]b",
+          "a [red]b",
+          "a [red]b"
+        ]
+      ],
+      "text": "a [red]b",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-112",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: a b\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "a [red]b"
+        ]
+      ],
+      "text": "a [red]b",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-113",
+      "output": {
+        "stderr": "error: a b\n",
+        "stdout": ""
+      },
+      "text": "a [red]b",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-114",
+      "output": {
+        "stderr": "",
+        "stdout": "               Markup                \n┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓\n┃ markup    ┃ again     ┃ third     ┃\n┡━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩\n│ [escaped] │ [escaped] │ [escaped] │\n└───────────┴───────────┴───────────┘\n"
+      },
+      "rows": [
+        [
+          "\\[escaped]",
+          "\\[escaped]",
+          "\\[escaped]"
+        ]
+      ],
+      "text": "\\[escaped]",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-115",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: [escaped]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "\\[escaped]"
+        ]
+      ],
+      "text": "\\[escaped]",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-116",
+      "output": {
+        "stderr": "error: [escaped]\n",
+        "stdout": ""
+      },
+      "text": "\\[escaped]",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-117",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│        │       │       │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[not a tag]",
+          "[not a tag]",
+          "[not a tag]"
+        ]
+      ],
+      "text": "[not a tag]",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-118",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: \n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[not a tag]"
+        ]
+      ],
+      "text": "[not a tag]",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-119",
+      "output": {
+        "stderr": "error: \n",
+        "stdout": ""
+      },
+      "text": "[not a tag]",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-120",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ]]     │ ]]    │ ]]    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "]]",
+          "]]",
+          "]]"
+        ]
+      ],
+      "text": "]]",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-121",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ]]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "]]"
+        ]
+      ],
+      "text": "]]",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-122",
+      "output": {
+        "stderr": "error: ]]\n",
+        "stdout": ""
+      },
+      "text": "]]",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-123",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ []     │ []    │ []    │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[[double]]",
+          "[[double]]",
+          "[[double]]"
+        ]
+      ],
+      "text": "[[double]]",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-124",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: []\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[[double]]"
+        ]
+      ],
+      "text": "[[double]]",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-125",
+      "output": {
+        "stderr": "error: []\n",
+        "stdout": ""
+      },
+      "text": "[[double]]",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-126",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 2 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "rows": [
+        [
+          "x [/bold] y",
+          "x [/bold] y",
+          "x [/bold] y"
+        ]
+      ],
+      "text": "x [/bold] y",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-127",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 22 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "pairs": [
+        [
+          "key",
+          "x [/bold] y"
+        ]
+      ],
+      "text": "x [/bold] y",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-128",
+      "output": {
+        "exception": "MarkupError: closing tag '[/bold]' at position 20 doesn't match any open tag",
+        "stderr": "",
+        "stdout": ""
+      },
+      "text": "x [/bold] y",
+      "width": 200
+    },
+    {
+      "headers": [
+        "markup",
+        "again",
+        "third"
+      ],
+      "id": "markup-table-w200-129",
+      "output": {
+        "stderr": "",
+        "stdout": "          Markup          \n┏━━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ markup ┃ again ┃ third ┃\n┡━━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ short  │ short │ short │\n└────────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[b]short[/b]",
+          "[b]short[/b]",
+          "[b]short[/b]"
+        ]
+      ],
+      "text": "[b]short[/b]",
+      "width": 200
+    },
+    {
+      "id": "markup-kv-w200-130",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: short\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[b]short[/b]"
+        ]
+      ],
+      "text": "[b]short[/b]",
+      "width": 200
+    },
+    {
+      "id": "markup-fail-w200-131",
+      "output": {
+        "stderr": "error: short\n",
+        "stdout": ""
+      },
+      "text": "[b]short[/b]",
+      "width": 200
+    }
+  ],
+  "forced": {
+    "_environ": {},
+    "color_system": null,
+    "highlight": false,
+    "no_color": true
+  }
+}

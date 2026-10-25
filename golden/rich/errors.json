@@ -1,0 +1,419 @@
+{
+  "cases": [
+    {
+      "code": "not_found",
+      "details": {
+        "task": "WG-404"
+      },
+      "id": "error-not-found-w40",
+      "message": "task WG-404 not found",
+      "output": {
+        "stderr": "error (not_found): task WG-404 not found\n  task: WG-404\n",
+        "stdout": ""
+      },
+      "width": 40
+    },
+    {
+      "code": "validation_failed",
+      "details": {
+        "errors": [
+          {
+            "loc": [
+              "title"
+            ]
+          }
+        ],
+        "field": "title",
+        "value": ""
+      },
+      "id": "error-validation-w40",
+      "message": "title must not be empty",
+      "output": {
+        "stderr": "error (validation_failed): title must \nnot be empty\n  field: title\n  value: \n",
+        "stdout": ""
+      },
+      "width": 40
+    },
+    {
+      "code": "conflict",
+      "details": {
+        "actual": 4,
+        "expected": 3,
+        "task": "WG-1"
+      },
+      "id": "error-conflict-w40",
+      "message": "version changed",
+      "output": {
+        "stderr": "error (conflict): version changed\n  expected: 3\n  actual: 4\n  task: WG-1\n",
+        "stdout": ""
+      },
+      "width": 40
+    },
+    {
+      "code": "permission_denied",
+      "details": {
+        "needed": "config:manage"
+      },
+      "id": "error-permission-w40",
+      "message": "config:manage required",
+      "output": {
+        "stderr": "error (permission_denied): config:manage\nrequired\n  needed: config:manage\n",
+        "stdout": ""
+      },
+      "width": 40
+    },
+    {
+      "code": "dependency_cycle",
+      "details": {},
+      "id": "error-cycle-w40",
+      "message": "dependency cycle: WG-1 -> WG-2 -> WG-1",
+      "output": {
+        "stderr": "error (dependency_cycle): dependency \ncycle: WG-1 -> WG-2 -> WG-1\n",
+        "stdout": ""
+      },
+      "width": 40
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "emoji": "🚀",
+        "任务": "数据库"
+      },
+      "id": "error-unicode-w40",
+      "message": "任务 WG-9 不存在",
+      "output": {
+        "stderr": "error (not_found): 任务 WG-9 不存在\n  任务: 数据库\n  emoji: 🚀\n",
+        "stdout": ""
+      },
+      "width": 40
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "[key]": "[value]"
+      },
+      "id": "error-markup-w40",
+      "message": "[bold]not found[/bold] [red]",
+      "output": {
+        "stderr": "error (not_found): not found \n  : \n",
+        "stdout": ""
+      },
+      "width": 40
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "task": "WG-404"
+      },
+      "id": "error-not-found-w80",
+      "message": "task WG-404 not found",
+      "output": {
+        "stderr": "error (not_found): task WG-404 not found\n  task: WG-404\n",
+        "stdout": ""
+      },
+      "width": 80
+    },
+    {
+      "code": "validation_failed",
+      "details": {
+        "errors": [
+          {
+            "loc": [
+              "title"
+            ]
+          }
+        ],
+        "field": "title",
+        "value": ""
+      },
+      "id": "error-validation-w80",
+      "message": "title must not be empty",
+      "output": {
+        "stderr": "error (validation_failed): title must not be empty\n  field: title\n  value: \n",
+        "stdout": ""
+      },
+      "width": 80
+    },
+    {
+      "code": "conflict",
+      "details": {
+        "actual": 4,
+        "expected": 3,
+        "task": "WG-1"
+      },
+      "id": "error-conflict-w80",
+      "message": "version changed",
+      "output": {
+        "stderr": "error (conflict): version changed\n  expected: 3\n  actual: 4\n  task: WG-1\n",
+        "stdout": ""
+      },
+      "width": 80
+    },
+    {
+      "code": "permission_denied",
+      "details": {
+        "needed": "config:manage"
+      },
+      "id": "error-permission-w80",
+      "message": "config:manage required",
+      "output": {
+        "stderr": "error (permission_denied): config:manage required\n  needed: config:manage\n",
+        "stdout": ""
+      },
+      "width": 80
+    },
+    {
+      "code": "dependency_cycle",
+      "details": {},
+      "id": "error-cycle-w80",
+      "message": "dependency cycle: WG-1 -> WG-2 -> WG-1",
+      "output": {
+        "stderr": "error (dependency_cycle): dependency cycle: WG-1 -> WG-2 -> WG-1\n",
+        "stdout": ""
+      },
+      "width": 80
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "emoji": "🚀",
+        "任务": "数据库"
+      },
+      "id": "error-unicode-w80",
+      "message": "任务 WG-9 不存在",
+      "output": {
+        "stderr": "error (not_found): 任务 WG-9 不存在\n  任务: 数据库\n  emoji: 🚀\n",
+        "stdout": ""
+      },
+      "width": 80
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "[key]": "[value]"
+      },
+      "id": "error-markup-w80",
+      "message": "[bold]not found[/bold] [red]",
+      "output": {
+        "stderr": "error (not_found): not found \n  : \n",
+        "stdout": ""
+      },
+      "width": 80
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "task": "WG-404"
+      },
+      "id": "error-not-found-w120",
+      "message": "task WG-404 not found",
+      "output": {
+        "stderr": "error (not_found): task WG-404 not found\n  task: WG-404\n",
+        "stdout": ""
+      },
+      "width": 120
+    },
+    {
+      "code": "validation_failed",
+      "details": {
+        "errors": [
+          {
+            "loc": [
+              "title"
+            ]
+          }
+        ],
+        "field": "title",
+        "value": ""
+      },
+      "id": "error-validation-w120",
+      "message": "title must not be empty",
+      "output": {
+        "stderr": "error (validation_failed): title must not be empty\n  field: title\n  value: \n",
+        "stdout": ""
+      },
+      "width": 120
+    },
+    {
+      "code": "conflict",
+      "details": {
+        "actual": 4,
+        "expected": 3,
+        "task": "WG-1"
+      },
+      "id": "error-conflict-w120",
+      "message": "version changed",
+      "output": {
+        "stderr": "error (conflict): version changed\n  expected: 3\n  actual: 4\n  task: WG-1\n",
+        "stdout": ""
+      },
+      "width": 120
+    },
+    {
+      "code": "permission_denied",
+      "details": {
+        "needed": "config:manage"
+      },
+      "id": "error-permission-w120",
+      "message": "config:manage required",
+      "output": {
+        "stderr": "error (permission_denied): config:manage required\n  needed: config:manage\n",
+        "stdout": ""
+      },
+      "width": 120
+    },
+    {
+      "code": "dependency_cycle",
+      "details": {},
+      "id": "error-cycle-w120",
+      "message": "dependency cycle: WG-1 -> WG-2 -> WG-1",
+      "output": {
+        "stderr": "error (dependency_cycle): dependency cycle: WG-1 -> WG-2 -> WG-1\n",
+        "stdout": ""
+      },
+      "width": 120
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "emoji": "🚀",
+        "任务": "数据库"
+      },
+      "id": "error-unicode-w120",
+      "message": "任务 WG-9 不存在",
+      "output": {
+        "stderr": "error (not_found): 任务 WG-9 不存在\n  任务: 数据库\n  emoji: 🚀\n",
+        "stdout": ""
+      },
+      "width": 120
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "[key]": "[value]"
+      },
+      "id": "error-markup-w120",
+      "message": "[bold]not found[/bold] [red]",
+      "output": {
+        "stderr": "error (not_found): not found \n  : \n",
+        "stdout": ""
+      },
+      "width": 120
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "task": "WG-404"
+      },
+      "id": "error-not-found-w200",
+      "message": "task WG-404 not found",
+      "output": {
+        "stderr": "error (not_found): task WG-404 not found\n  task: WG-404\n",
+        "stdout": ""
+      },
+      "width": 200
+    },
+    {
+      "code": "validation_failed",
+      "details": {
+        "errors": [
+          {
+            "loc": [
+              "title"
+            ]
+          }
+        ],
+        "field": "title",
+        "value": ""
+      },
+      "id": "error-validation-w200",
+      "message": "title must not be empty",
+      "output": {
+        "stderr": "error (validation_failed): title must not be empty\n  field: title\n  value: \n",
+        "stdout": ""
+      },
+      "width": 200
+    },
+    {
+      "code": "conflict",
+      "details": {
+        "actual": 4,
+        "expected": 3,
+        "task": "WG-1"
+      },
+      "id": "error-conflict-w200",
+      "message": "version changed",
+      "output": {
+        "stderr": "error (conflict): version changed\n  expected: 3\n  actual: 4\n  task: WG-1\n",
+        "stdout": ""
+      },
+      "width": 200
+    },
+    {
+      "code": "permission_denied",
+      "details": {
+        "needed": "config:manage"
+      },
+      "id": "error-permission-w200",
+      "message": "config:manage required",
+      "output": {
+        "stderr": "error (permission_denied): config:manage required\n  needed: config:manage\n",
+        "stdout": ""
+      },
+      "width": 200
+    },
+    {
+      "code": "dependency_cycle",
+      "details": {},
+      "id": "error-cycle-w200",
+      "message": "dependency cycle: WG-1 -> WG-2 -> WG-1",
+      "output": {
+        "stderr": "error (dependency_cycle): dependency cycle: WG-1 -> WG-2 -> WG-1\n",
+        "stdout": ""
+      },
+      "width": 200
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "emoji": "🚀",
+        "任务": "数据库"
+      },
+      "id": "error-unicode-w200",
+      "message": "任务 WG-9 不存在",
+      "output": {
+        "stderr": "error (not_found): 任务 WG-9 不存在\n  任务: 数据库\n  emoji: 🚀\n",
+        "stdout": ""
+      },
+      "width": 200
+    },
+    {
+      "code": "not_found",
+      "details": {
+        "[key]": "[value]"
+      },
+      "id": "error-markup-w200",
+      "message": "[bold]not found[/bold] [red]",
+      "output": {
+        "stderr": "error (not_found): not found \n  : \n",
+        "stdout": ""
+      },
+      "width": 200
+    },
+    {
+      "id": "error-json-mode-w80",
+      "output": {
+        "exit_code": 4,
+        "stderr": "",
+        "stdout": "{\"error\": {\"code\": \"not_found\", \"message\": \"task WG-404 not found\", \"details\": {\"task\": \"WG-404\"}}}\n"
+      },
+      "width": 80
+    }
+  ],
+  "forced": {
+    "_environ": {},
+    "color_system": null,
+    "highlight": false,
+    "no_color": true
+  }
+}

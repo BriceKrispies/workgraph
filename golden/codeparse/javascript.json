@@ -1,0 +1,208 @@
+{
+  "analyzer_version": "ts-1",
+  "cases": [
+    {
+      "added_lines": [
+        2,
+        9,
+        10,
+        11,
+        12,
+        15,
+        16,
+        18,
+        19
+      ],
+      "deleted_lines": [
+        2,
+        11,
+        12
+      ],
+      "diff": "@@ -2 +2 @@\n-  return text.trim();\n+  return text.trim().toLowerCase();\n@@ -8,0 +9,4 @@\n+\n+  peek() {\n+    return 2;\n+  }\n@@ -11,2 +15,2 @@\n-function drop() {\n-  return 0;\n+function* ticks() {\n+  yield 1;\n@@ -13,0 +18,2 @@\n+\n+class Token {}\n",
+      "expected": {
+        "changes": [
+          {
+            "change": "added",
+            "end_line": 12,
+            "kind": "function",
+            "lines_changed": 3,
+            "name": "Lexer.peek",
+            "start_line": 10
+          },
+          {
+            "change": "deleted",
+            "end_line": 13,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "drop",
+            "start_line": 11
+          },
+          {
+            "change": "modified",
+            "end_line": 3,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "parse",
+            "start_line": 1
+          },
+          {
+            "change": "added",
+            "end_line": 17,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "ticks",
+            "start_line": 15
+          },
+          {
+            "change": "modified",
+            "end_line": 13,
+            "kind": "type",
+            "lines_changed": 1,
+            "name": "Lexer",
+            "start_line": 5
+          },
+          {
+            "change": "added",
+            "end_line": 19,
+            "kind": "type",
+            "lines_changed": 1,
+            "name": "Token",
+            "start_line": 19
+          }
+        ],
+        "functions": 4,
+        "mode": "structural",
+        "reason": null,
+        "types": 2,
+        "unattributed_lines": 1
+      },
+      "id": "parser-lexer",
+      "language": "javascript",
+      "new": "function parse(text) {\n  return text.trim().toLowerCase();\n}\n\nclass Lexer {\n  next() {\n    return 1;\n  }\n\n  peek() {\n    return 2;\n  }\n}\n\nfunction* ticks() {\n  yield 1;\n}\n\nclass Token {}\n",
+      "old": "function parse(text) {\n  return text.trim();\n}\n\nclass Lexer {\n  next() {\n    return 1;\n  }\n}\n\nfunction drop() {\n  return 0;\n}\n",
+      "path": "parser-lexer.javascript",
+      "symbols_new": [
+        {
+          "end_line": 3,
+          "kind": "function",
+          "name": "parse",
+          "start_line": 1
+        },
+        {
+          "end_line": 13,
+          "kind": "type",
+          "name": "Lexer",
+          "start_line": 5
+        },
+        {
+          "end_line": 8,
+          "kind": "function",
+          "name": "Lexer.next",
+          "start_line": 6
+        },
+        {
+          "end_line": 12,
+          "kind": "function",
+          "name": "Lexer.peek",
+          "start_line": 10
+        },
+        {
+          "end_line": 17,
+          "kind": "function",
+          "name": "ticks",
+          "start_line": 15
+        },
+        {
+          "end_line": 19,
+          "kind": "type",
+          "name": "Token",
+          "start_line": 19
+        }
+      ],
+      "symbols_old": [
+        {
+          "end_line": 3,
+          "kind": "function",
+          "name": "parse",
+          "start_line": 1
+        },
+        {
+          "end_line": 9,
+          "kind": "type",
+          "name": "Lexer",
+          "start_line": 5
+        },
+        {
+          "end_line": 8,
+          "kind": "function",
+          "name": "Lexer.next",
+          "start_line": 6
+        },
+        {
+          "end_line": 13,
+          "kind": "function",
+          "name": "drop",
+          "start_line": 11
+        }
+      ]
+    },
+    {
+      "added_lines": [
+        1,
+        2
+      ],
+      "deleted_lines": [
+        1,
+        2
+      ],
+      "diff": "@@ -1,2 +1,2 @@\n-function oldName(a) {\n-  return a;\n+function newName(a) {\n+  return a + 1;\n",
+      "expected": {
+        "changes": [
+          {
+            "change": "added",
+            "end_line": 3,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "newName",
+            "start_line": 1
+          },
+          {
+            "change": "deleted",
+            "end_line": 3,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "oldName",
+            "start_line": 1
+          }
+        ],
+        "functions": 2,
+        "mode": "structural",
+        "reason": null,
+        "types": 0,
+        "unattributed_lines": 0
+      },
+      "id": "rename-function",
+      "language": "javascript",
+      "new": "function newName(a) {\n  return a + 1;\n}\n",
+      "old": "function oldName(a) {\n  return a;\n}\n",
+      "path": "rename-function.javascript",
+      "symbols_new": [
+        {
+          "end_line": 3,
+          "kind": "function",
+          "name": "newName",
+          "start_line": 1
+        }
+      ],
+      "symbols_old": [
+        {
+          "end_line": 3,
+          "kind": "function",
+          "name": "oldName",
+          "start_line": 1
+        }
+      ]
+    }
+  ],
+  "compare": "changes are sorted by (kind, name, change); compare as lists after that sort"
+}

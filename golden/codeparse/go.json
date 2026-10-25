@@ -1,0 +1,106 @@
+{
+  "analyzer_version": "ts-1",
+  "cases": [
+    {
+      "added_lines": [
+        5,
+        9,
+        12,
+        13
+      ],
+      "deleted_lines": [
+        8,
+        11,
+        12
+      ],
+      "diff": "@@ -4,0 +5 @@\n+    mode int\n@@ -8 +9 @@\n-    return s.path\n+    return s.path + \"!\"\n@@ -11,2 +12,2 @@\n-func Legacy() int {\n-    return 1\n+type Cache interface {\n+    Get(key string) string\n",
+      "expected": {
+        "changes": [
+          {
+            "change": "deleted",
+            "end_line": 13,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "Legacy",
+            "start_line": 11
+          },
+          {
+            "change": "modified",
+            "end_line": 10,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "Load",
+            "start_line": 8
+          },
+          {
+            "change": "added",
+            "end_line": 14,
+            "kind": "type",
+            "lines_changed": 2,
+            "name": "Cache",
+            "start_line": 12
+          },
+          {
+            "change": "modified",
+            "end_line": 6,
+            "kind": "type",
+            "lines_changed": 1,
+            "name": "Store",
+            "start_line": 3
+          }
+        ],
+        "functions": 2,
+        "mode": "structural",
+        "reason": null,
+        "types": 2,
+        "unattributed_lines": 0
+      },
+      "id": "store",
+      "language": "go",
+      "new": "package store\n\ntype Store struct {\n    path string\n    mode int\n}\n\nfunc (s *Store) Load() string {\n    return s.path + \"!\"\n}\n\ntype Cache interface {\n    Get(key string) string\n}\n",
+      "old": "package store\n\ntype Store struct {\n    path string\n}\n\nfunc (s *Store) Load() string {\n    return s.path\n}\n\nfunc Legacy() int {\n    return 1\n}\n",
+      "path": "store.go",
+      "symbols_new": [
+        {
+          "end_line": 6,
+          "kind": "type",
+          "name": "Store",
+          "start_line": 3
+        },
+        {
+          "end_line": 10,
+          "kind": "function",
+          "name": "Load",
+          "start_line": 8
+        },
+        {
+          "end_line": 14,
+          "kind": "type",
+          "name": "Cache",
+          "start_line": 12
+        }
+      ],
+      "symbols_old": [
+        {
+          "end_line": 5,
+          "kind": "type",
+          "name": "Store",
+          "start_line": 3
+        },
+        {
+          "end_line": 9,
+          "kind": "function",
+          "name": "Load",
+          "start_line": 7
+        },
+        {
+          "end_line": 13,
+          "kind": "function",
+          "name": "Legacy",
+          "start_line": 11
+        }
+      ]
+    }
+  ],
+  "compare": "changes are sorted by (kind, name, change); compare as lists after that sort"
+}

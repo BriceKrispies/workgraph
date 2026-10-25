@@ -1,0 +1,300 @@
+{
+  "analyzer_version": "ts-1",
+  "cases": [
+    {
+      "added_lines": [
+        1
+      ],
+      "deleted_lines": [
+        1
+      ],
+      "diff": "@@ -1 +1 @@\n-alpha\n+beta\n",
+      "expected": {
+        "changes": [],
+        "functions": 0,
+        "mode": "fallback",
+        "reason": "unsupported language",
+        "types": 0,
+        "unattributed_lines": 0
+      },
+      "id": "unsupported-no-language",
+      "language": null,
+      "new": "beta\n",
+      "old": "alpha\n",
+      "path": "notes.txt",
+      "symbols_new": null,
+      "symbols_old": null
+    },
+    {
+      "added_lines": [
+        1
+      ],
+      "deleted_lines": [
+        1
+      ],
+      "diff": "@@ -1 +1 @@\n-# A\n+# B\n",
+      "expected": {
+        "changes": [],
+        "functions": 0,
+        "mode": "fallback",
+        "reason": "unsupported language",
+        "types": 0,
+        "unattributed_lines": 0
+      },
+      "id": "unsupported-markdown",
+      "language": "markdown",
+      "new": "# B\n",
+      "old": "# A\n",
+      "path": "README.md",
+      "symbols_new": null,
+      "symbols_old": null
+    },
+    {
+      "added_lines": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "deleted_lines": [],
+      "diff": "@@ -0,0 +1,6 @@\n+def first():\n+    return 1\n+\n+\n+class Second:\n+    pass\n",
+      "expected": {
+        "changes": [
+          {
+            "change": "added",
+            "end_line": 2,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "first",
+            "start_line": 1
+          },
+          {
+            "change": "added",
+            "end_line": 6,
+            "kind": "type",
+            "lines_changed": 2,
+            "name": "Second",
+            "start_line": 5
+          }
+        ],
+        "functions": 1,
+        "mode": "structural",
+        "reason": null,
+        "types": 1,
+        "unattributed_lines": 2
+      },
+      "id": "added-file-python",
+      "language": "python",
+      "new": "def first():\n    return 1\n\n\nclass Second:\n    pass\n",
+      "old": null,
+      "path": "src/new.py",
+      "symbols_new": [
+        {
+          "end_line": 2,
+          "kind": "function",
+          "name": "first",
+          "start_line": 1
+        },
+        {
+          "end_line": 6,
+          "kind": "type",
+          "name": "Second",
+          "start_line": 5
+        }
+      ],
+      "symbols_old": []
+    },
+    {
+      "added_lines": [],
+      "deleted_lines": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "diff": "@@ -1,5 +0,0 @@\n-package main\n-\n-func Gone() int {\n-    return 1\n-}\n",
+      "expected": {
+        "changes": [
+          {
+            "change": "deleted",
+            "end_line": 5,
+            "kind": "function",
+            "lines_changed": 3,
+            "name": "Gone",
+            "start_line": 3
+          }
+        ],
+        "functions": 1,
+        "mode": "structural",
+        "reason": null,
+        "types": 0,
+        "unattributed_lines": 2
+      },
+      "id": "deleted-file-go",
+      "language": "go",
+      "new": null,
+      "old": "package main\n\nfunc Gone() int {\n    return 1\n}\n",
+      "path": "cmd/old.go",
+      "symbols_new": [],
+      "symbols_old": [
+        {
+          "end_line": 5,
+          "kind": "function",
+          "name": "Gone",
+          "start_line": 3
+        }
+      ]
+    },
+    {
+      "added_lines": [
+        1
+      ],
+      "deleted_lines": [],
+      "diff": "@@ -0,0 +1 @@\n+# note\n",
+      "expected": {
+        "changes": [],
+        "functions": 0,
+        "mode": "structural",
+        "reason": null,
+        "types": 0,
+        "unattributed_lines": 1
+      },
+      "id": "comment-only-python",
+      "language": "python",
+      "new": "# note\nx = 1\n\ndef f():\n    return 1\n",
+      "old": "x = 1\n\ndef f():\n    return 1\n",
+      "path": "tool.py",
+      "symbols_new": [
+        {
+          "end_line": 5,
+          "kind": "function",
+          "name": "f",
+          "start_line": 4
+        }
+      ],
+      "symbols_old": [
+        {
+          "end_line": 4,
+          "kind": "function",
+          "name": "f",
+          "start_line": 3
+        }
+      ]
+    },
+    {
+      "added_lines": [
+        1,
+        2
+      ],
+      "deleted_lines": [
+        1
+      ],
+      "diff": "@@ -1 +1,2 @@\n-]]] ((( }}}\n+def ok():\n+    return 1\n",
+      "expected": {
+        "changes": [],
+        "functions": 0,
+        "mode": "fallback",
+        "reason": "unparsable source",
+        "types": 0,
+        "unattributed_lines": 0
+      },
+      "id": "unparsable-old-python",
+      "language": "python",
+      "new": "def ok():\n    return 1\n",
+      "old": "]]] ((( }}}\n",
+      "path": "broken.py",
+      "symbols_new": [
+        {
+          "end_line": 2,
+          "kind": "function",
+          "name": "ok",
+          "start_line": 1
+        }
+      ],
+      "symbols_old": null
+    },
+    {
+      "added_lines": [
+        2,
+        4,
+        5
+      ],
+      "deleted_lines": [
+        2,
+        4,
+        5
+      ],
+      "diff": "@@ -2 +2 @@\n-    return 1\n+    return 10\n@@ -4,2 +4,2 @@\n",
+      "expected": {
+        "changes": [
+          {
+            "change": "modified",
+            "end_line": 2,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "a",
+            "start_line": 1
+          },
+          {
+            "change": "deleted",
+            "end_line": 5,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "b",
+            "start_line": 4
+          },
+          {
+            "change": "added",
+            "end_line": 5,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "c",
+            "start_line": 4
+          }
+        ],
+        "functions": 3,
+        "mode": "structural",
+        "reason": null,
+        "types": 0,
+        "unattributed_lines": 0
+      },
+      "id": "test-foundations-hunks",
+      "language": "python",
+      "new": "def a():\n    return 10\n\ndef c():\n    return 3\n",
+      "old": "def a():\n    return 1\n\ndef b():\n    return 2\n",
+      "path": "m.py",
+      "symbols_new": [
+        {
+          "end_line": 2,
+          "kind": "function",
+          "name": "a",
+          "start_line": 1
+        },
+        {
+          "end_line": 5,
+          "kind": "function",
+          "name": "c",
+          "start_line": 4
+        }
+      ],
+      "symbols_old": [
+        {
+          "end_line": 2,
+          "kind": "function",
+          "name": "a",
+          "start_line": 1
+        },
+        {
+          "end_line": 5,
+          "kind": "function",
+          "name": "b",
+          "start_line": 4
+        }
+      ]
+    }
+  ],
+  "compare": "changes are sorted by (kind, name, change); compare as lists after that sort"
+}

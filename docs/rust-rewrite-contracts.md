@@ -426,7 +426,7 @@ Fast path: `workgraph claude hook ...` is dispatched before the CLI parser is bu
 | C168 | `workgraph tracker list` | - | Configured tracker connections. |
 | C169 | `workgraph tracker status` | [CONNECTION] | Cursor, last sync, tracked task counts and unresolved pull request repositories. |
 | C170 | `workgraph tracker sync` | CONNECTION; `--full`; `--queue` | Mirror a connection's issues into tasks, now or as a queued job. |
-| C171 | `workgraph ui screenshot` | [PAGE]; `--out/-o` path =WindowsPath('workgraph-screenshot.png'); `--width` int =1600; `--height` int =1000; `--scale` float =1.0; `--wait-for` str; `--settle` float =1.0; `--timeout` float =60.0; `--url` str; `--browser` str; `--theme` str; `--mobile` | Capture a page of the running web UI to a PNG with a headless browser. |
+| C171 | `workgraph ui screenshot` | [PAGE]; `--out/-o` path =workgraph-screenshot.png; `--width` int =1600; `--height` int =1000; `--scale` float =1.0; `--wait-for` str; `--settle` float =1.0; `--timeout` float =60.0; `--url` str; `--browser` str; `--theme` str; `--mobile` | Capture a page of the running web UI to a PNG with a headless browser. |
 | C172 | `workgraph verify config` | NAME; `--scope-type` str =repository; `--scope` str; `--check` str * required; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Create or update an approved verification configuration (trusted commands only). |
 | C173 | `workgraph verify configs` | `--workspace/-w` str env WORKGRAPH_WORKSPACE | List verification configurations. |
 | C174 | `workgraph verify failures` | `--check` str; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Historical verification failures. |
@@ -441,6 +441,7 @@ Fast path: `workgraph claude hook ...` is dispatched before the CLI parser is bu
 | C183 | `workgraph workspace set` | REF; `--allowed-root` str * | Update workspace settings such as allowed repository roots. |
 | C184 | `workgraph workspace show` | [REF] | Show a workspace summary. |
 | C185 | `workgraph workspace use` | REF | Set the default workspace. |
+| C186 | `workgraph task import-breakdown` | PATH; `--section` str required; `--parent` str required; `--tag/-t` str *; `--project/-p` str; `--repo/-r` str; `--dry-run`; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Create or update the tasks of a markdown breakdown section (re-runs are idempotent). |
 
 ### 13.2 MCP server
 
@@ -495,8 +496,8 @@ Server name `workgraph`, title `Workgraph`, version = package version, instructi
 | M45 | `task_report_progress` | !task: string, !message: string, percent: number\|null, attempt_id: string\|null, workspace: string\|null | Report progress (message and optional percent) on a task or attempt. |
 | M46 | `task_report_result` | !task: string, !outcome: {succeeded,failed}, summary: string, attempt_id: string\|null, input_tokens: integer\|null, output_tokens: integer\|null, workspace: string\|null | Report an attempt outcome. Include usage only if your runtime measured it. |
 | M47 | `attempt_create` | !task: string, model: string\|null, session_id: string\|null, parent_attempt: string\|null, workspace: string\|null | Register an attempt for work you are doing on a claimed task. |
-| M48 | `attempt_start` | !task: string, model: string\|null, adapter: string, isolation: string\|null, workspace: string\|null | Claim a ready task (or continue your claim), record an attempt and prepare its managed git worktrees (stack base included). Returns the checkouts to work in. Requires task:claim and attempt:write. |
-| M49 | `attempt_submit` | !attempt: string, status: string, summary: string\|null, error: string\|null | Conclude an external managed attempt after committing your work in the checkouts from attempt_start: captures the commits, runs the fast checks or verification and moves the task to review. Requires task:claim, attempt:write and verify:run. |
+| M48 | `attempt_start` | !task: string, model: string\|null, adapter: string, isolation: {worktree,in_place}\|null, workspace: string\|null | Claim a ready task (or continue your claim), record an attempt and prepare its managed git worktrees (stack base included). Returns the checkouts to work in. Requires task:claim and attempt:write. |
+| M49 | `attempt_submit` | !attempt: string, status: {succeeded,failed}, summary: string\|null, error: string\|null | Conclude an external managed attempt after committing your work in the checkouts from attempt_start: captures the commits, runs the fast checks or verification and moves the task to review. Requires task:claim, attempt:write and verify:run. |
 | M50 | `attempt_get` | !attempt_id: string | Get an attempt with telemetry, manifests and provenance. |
 | M51 | `attempt_list` | task: string\|null, statuses: list[string]\|null, provider: string\|null, limit: integer, offset: integer, workspace: string\|null | List attempts in a workspace (filter by task, status or provider). |
 | M52 | `run_start` | !task: string, agent: string\|null, model: string\|null, workspace: string\|null | Start a Workgraph-managed agent run (requires run:start and execution enabled). |
@@ -513,6 +514,7 @@ Server name `workgraph`, title `Workgraph`, version = package version, instructi
 | M63 | `analytics_bottlenecks` | since: string\|null, until: string\|null, top: integer, workspace: string\|null | What slows subagents down: time by class, the slowest calls with the number of subagent runs active at the time (machine saturation), and agent wall time per task. |
 | M64 | `automation_list` | workspace: string\|null | List automation rules and their recent runs. |
 | M65 | `automation_trigger` | !rule: string, task: string\|null, workspace: string\|null | Trigger a manual automation rule (rules are authored by humans). |
+| M66 | `task_import_breakdown` | dry_run: boolean, !markdown: string, !parent: string, project: string\|null, repository: string\|null, !section: string, !source: string, tags: list[string]\|null, workspace: string\|null | Create or update the tasks of one section of a markdown breakdown document, given as text. Bold headers (**V1. Title**) are tasks; a ranged header followed by a table makes one task per row; 'Depends on:' / 'Deps:' lists link tasks. SOURCE names the document (stored with each task so a re-run updates instead of duplicating). dry_run reports the plan and changes nothing. |
 
 Resources:
 
@@ -682,7 +684,7 @@ SQLite file `<data>/workgraph.db`, WAL, `busy_timeout=15000`, `foreign_keys=ON`,
 | `alembic_version` | version_num | 0 |
 | `artifacts` | id, workspace_id, task_id, attempt_id, kind, name, media_type, path, size_bytes, sha256, retention, purged_at, metadata, created_at | 3 |
 | `automation_rules` | id, workspace_id, name, description, enabled, trigger, conditions, actions, retry_max_attempts, max_depth, last_scheduled_at, next_run_at, created_by, version, created_at, updated_at | 1 |
-| `automation_runs` | id, rule_id, workspace_id, trigger_type, trigger_key, trigger_event_id, depth, dry_run, status, matched, reason, condition_trace, action_results, error, attempts, correlation_id, created_at, finished_at | 2 |
+| `automation_runs` | id, rule_id, workspace_id, trigger_type, trigger_key, trigger_event_id, depth, dry_run, status, matched, reason, condition_trace, action_results, error, attempts, correlation_id, created_at, finished_at, inputs | 2 |
 | `change_set_items` | id, change_set_id, repository_id, base_sha, head_sha, branch, commit_shas, status, detail, updated_at | 1 |
 | `change_sets` | id, workspace_id, task_id, attempt_id, title, status, created_at, updated_at | 2 |
 | `classification_evaluations` | id, workspace_id, provider, model, prompt_version, taxonomy_version, sample_size, failures, accuracy, macro_f1, per_class, confusion, results, created_at | 1 |
@@ -720,7 +722,7 @@ SQLite file `<data>/workgraph.db`, WAL, `busy_timeout=15000`, `foreign_keys=ON`,
 | `session_bindings` | id, workspace_id, task_id, provider, external_session_id, cwd_prefix, active, created_by, created_at | 2 |
 | `stack_items` | id, stack_id, task_id, state, merge_order, detail, created_at, updated_at | 2 |
 | `stack_repositories` | stack_id, repository_id, base_sha, integration_branch, created_at | 1 |
-| `stacks` | id, workspace_id, parent_task_id, status, created_at, updated_at | 3 |
+| `stacks` | id, workspace_id, parent_task_id, status, created_at, updated_at, land_request | 3 |
 | `subagent_runs` | id, session_id, external_agent_id, agent_type, attempt_id, started_at, stopped_at, last_message_excerpt, transcript_path, requested_model, model, usage, telemetry, task_id | 2 |
 | `system_cursors` | name, value, updated_at | 0 |
 | `task_acceptances` | id, task_id, attempt_id, verification_run_id, decision, mode, reason, actor, manifest_id, created_at | 1 |
@@ -730,11 +732,11 @@ SQLite file `<data>/workgraph.db`, WAL, `busy_timeout=15000`, `foreign_keys=ON`,
 | `task_embeddings` | id, task_id, provider, model, dimensions, vector, input_hash, created_at | 1 |
 | `task_files` | task_id, position, path, anchor, note | 1 |
 | `task_fts` | task_id UNINDEXED, workspace_id UNINDEXED, key, title, description, comments, tags, summary, tokenize='porter unicode61' | 0 |
-| `task_fts_config` | k | 0 |
-| `task_fts_content` | id | 0 |
-| `task_fts_data` | id | 0 |
-| `task_fts_docsize` | id | 0 |
-| `task_fts_idx` | segid, | 0 |
+| `task_fts_config` | k, v | 0 |
+| `task_fts_content` | id, c0, c1, c2, c3, c4, c5, c6, c7 | 0 |
+| `task_fts_data` | id, block | 0 |
+| `task_fts_docsize` | id, sz | 0 |
+| `task_fts_idx` | segid, term, pgno | 0 |
 | `task_links` | id, task_id, kind, provider, url, normalized_url, repo_full_name, number, repository_id, sources, title, created_by, created_at, updated_at | 3 |
 | `task_projects` | task_id, project_id | 1 |
 | `task_relations` | id, source_task_id, target_task_id, relation_type, created_by, created_at | 2 |

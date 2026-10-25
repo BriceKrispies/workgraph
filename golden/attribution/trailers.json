@@ -1,0 +1,7345 @@
+{
+  "cases": [
+    {
+      "id": "generated:trailer:000",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": ", ABCD-100  WG-3, , "
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": ",,wg-22"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:001",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:002",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:003",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "7\t"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "WG-1,,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-1 ,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": ","
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7\t"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-1,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:004",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:005",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:006",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:007",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:008",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "XYZ  ABC-7 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: XYZ  ABC-7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: XYZ  ABC-7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:009",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "wg-22,WG-1 , WG-,"
+          },
+          {
+            "key": "Task-ID",
+            "value": "é-1 XYZ\t"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "XYZ\twg-22 ABCD-100,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22,WG-1 , WG-,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22,WG-1 , WG-,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22,WG-1 , WG-,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1 XYZ\t"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1 XYZ\t"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ\twg-22 ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ\twg-22 ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ\twg-22 ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:010",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:011",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": "é-1,7 , WG- ,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "ABC-7, ABC-7 , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: é-1,7 , WG- ,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: é-1,7 , WG- ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: é-1,7 , WG- ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABC-7, ABC-7 , "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABC-7, ABC-7 , "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:012",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:013",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": "XYZ ABCD-100,XYZ"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ ABCD-100,XYZ"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ ABCD-100,XYZ"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ ABCD-100,XYZ"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:014",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:015",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:016",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          },
+          {
+            "key": "WG-Task",
+            "value": "WG-  WG-  WG-3,"
+          },
+          {
+            "key": "WG-Task",
+            "value": "WG-1 , ABC-7,,XYZ  "
+          },
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-  WG-  WG-3,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-  WG-  WG-3,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-  WG-  WG-3,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-1 , ABC-7,,XYZ  "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-1 , ABC-7,,XYZ  "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-1 , ABC-7,,XYZ  "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:017",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "XYZ  7 ,"
+          },
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "wg-22 , WG-, ABC-7,"
+          },
+          {
+            "key": "wg-task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:018",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "WG-, XYZ\tABCD-100 "
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "WG-1  WG-3,"
+          },
+          {
+            "key": "Fixes",
+            "value": "ABCD-100\tWG-3, , XYZ,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-, XYZ\tABCD-100 "
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-, XYZ\tABCD-100 "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-, XYZ\tABCD-100 "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:019",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "é-1 wg-22"
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:020",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          },
+          {
+            "key": "WG-Task",
+            "value": ""
+          },
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-  7  ABC-7 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-  7  ABC-7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-  7  ABC-7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-  7  ABC-7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:021",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "wg-22, 7, "
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "é-1"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: wg-22, 7, "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: wg-22, 7, "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: é-1"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:022",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:023",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:024",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:025",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "7 , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: 7 , "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:026",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": "ABC-7 , WG- , "
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "WG-3,, 7 wg-22, "
+          },
+          {
+            "key": "wg-task",
+            "value": "7, XYZ,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "ABCD-100,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABC-7 , WG- , "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABC-7 , WG- , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7, XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7, XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:027",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "XYZ"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "é-1 , WG-3, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:028",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:029",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "XYZ,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": " , XYZ, ABCD-100,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:030",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:031",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:032",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": ",WG-3,"
+          },
+          {
+            "key": "Task-ID",
+            "value": "WG-1, 7,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-1, 7,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-1, 7,,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:033",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "TASK-ID",
+            "value": "XYZ,"
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-1,\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:034",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": " wg-22 ,"
+          },
+          {
+            "key": "wg-task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID:  wg-22 ,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:035",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "wg-22, WG-, é-1 , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:036",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:037",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:038",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:039",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:040",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": "7 XYZ, ABCD-100"
+          },
+          {
+            "key": "WG-Task",
+            "value": "wg-22,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "wg-22,  XYZ, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7 XYZ, ABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7 XYZ, ABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7 XYZ, ABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: wg-22,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: wg-22,  XYZ, "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: wg-22,  XYZ, "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:041",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "XYZ,,XYZ "
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "wg-22\tXYZ, XYZ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:042",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": ""
+          },
+          {
+            "key": "task-id",
+            "value": " ABCD-100 XYZ  "
+          },
+          {
+            "key": "TASK-ID",
+            "value": "ABCD-100, "
+          },
+          {
+            "key": "task-id",
+            "value": "ABCD-100\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id:  ABCD-100 XYZ  "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id:  ABCD-100 XYZ  "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABCD-100, "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100\t"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:043",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "wg-22 , WG-,é-1\t"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "XYZ,WG-,7 , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22 , WG-,é-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22 , WG-,é-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22 , WG-,é-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:044",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": ""
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "7 , XYZ  WG-1"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:045",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "XYZ ,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "ABCD-100,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: XYZ ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:046",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "XYZ, WG-"
+          },
+          {
+            "key": "Task-ID",
+            "value": "7 , WG-1"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: XYZ, WG-"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: XYZ, WG-"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: 7 , WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: 7 , WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:047",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "wg-22  ABC-7, WG-3,, "
+          },
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "Task-ID",
+            "value": "WG-,,WG-1\tWG-3,,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "XYZ,,XYZ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22  ABC-7, WG-3,, "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22  ABC-7, WG-3,, "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22  ABC-7, WG-3,, "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-,,WG-1\tWG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-,,WG-1\tWG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-,,WG-1\tWG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:048",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:049",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "WG-1 , WG-3,  "
+          },
+          {
+            "key": "WG-Task",
+            "value": "WG-3,,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "ABCD-100, ABCD-100,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-1 , WG-3,  "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-1 , WG-3,  "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABCD-100, ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABCD-100, ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:050",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": "7 , WG-3, , "
+          },
+          {
+            "key": "WG-Task",
+            "value": "7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: 7 , WG-3, , "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: 7 , WG-3, , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: 7,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:051",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:052",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:053",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:054",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "XYZ\t\tWG-3,,"
+          },
+          {
+            "key": "WG-Task",
+            "value": "XYZ, 7 ABCD-100,,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "7\tXYZ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ, 7 ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ, 7 ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ, 7 ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: 7\tXYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: 7\tXYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:055",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:056",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "WG-1,WG-1\t"
+          },
+          {
+            "key": "task-id",
+            "value": "é-1 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:057",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-"
+          },
+          {
+            "key": "WG-Task",
+            "value": "XYZ,,WG-1  ABC-7,,"
+          },
+          {
+            "key": "Fixes",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ,,WG-1  ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ,,WG-1  ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ,,WG-1  ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:058",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ","
+          },
+          {
+            "key": "Fixes",
+            "value": "é-1,,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:059",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "wg-task",
+            "value": "7  "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7  "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:060",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "WG-3,,"
+          },
+          {
+            "key": "WG-Task",
+            "value": "WG-,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": ""
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:061",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-1, wg-22  "
+          },
+          {
+            "key": "WG-Task",
+            "value": "XYZ 7\tABCD-100 ,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-1, wg-22  "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-1, wg-22  "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ 7\tABCD-100 ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ 7\tABCD-100 ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ 7\tABCD-100 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:062",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "ABC-7"
+          },
+          {
+            "key": "WG-Task",
+            "value": ""
+          },
+          {
+            "key": "Task-ID",
+            "value": "WG-\tXYZ , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-\tXYZ , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-\tXYZ , "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:063",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "é-1 WG- WG-3,,,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": " XYZ,ABCD-100  "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID:  XYZ,ABCD-100  "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID:  XYZ,ABCD-100  "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:064",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": ""
+          },
+          {
+            "key": "wg-task",
+            "value": ""
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "ABC-7, 7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:065",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "Fixes",
+            "value": "7 7\t,"
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:066",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:067",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:068",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "WG-3,  XYZ ,"
+          },
+          {
+            "key": "Fixes",
+            "value": "WG-3,,WG-1,,é-1"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:069",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": ""
+          },
+          {
+            "key": "wg-task",
+            "value": "ABC-7, é-1,WG-,"
+          },
+          {
+            "key": "Fixes",
+            "value": "WG-"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-3,\twg-22  "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABC-7, é-1,WG-,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABC-7, é-1,WG-,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABC-7, é-1,WG-,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:070",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:071",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:072",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "é-1,,ABCD-100 ,"
+          },
+          {
+            "key": "task-id",
+            "value": "wg-22 ABC-7,,ABC-7,,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "XYZ,,WG-3,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1,,ABCD-100 ,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1,,ABCD-100 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22 ABC-7,,ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22 ABC-7,,ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22 ABC-7,,ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:073",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "ABC-7,,é-1, 7\t"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:074",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "WG-Task",
+            "value": "XYZ "
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "é-1, "
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "XYZ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:075",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:076",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "ABC-7 XYZ, ABCD-100 "
+          },
+          {
+            "key": "task-id",
+            "value": "ABCD-100 7,ABC-7 ,"
+          },
+          {
+            "key": "wg-task",
+            "value": ""
+          },
+          {
+            "key": "wg-task",
+            "value": "7,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100 7,ABC-7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100 7,ABC-7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100 7,ABC-7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7,,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:077",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "ABCD-100 , "
+          },
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "Fixes",
+            "value": "ABC-7 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABCD-100 , "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:078",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:079",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "wg-22 "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:080",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": ""
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "WG-3,,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "7,,WG- , ABCD-100, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:081",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-1,, , ABCD-100,,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "ABCD-100\t,ABC-7,,"
+          },
+          {
+            "key": "WG-Task",
+            "value": "wg-22 WG-, WG-3,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100\t,ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100\t,ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: wg-22 WG-, WG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: wg-22 WG-, WG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: wg-22 WG-, WG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:082",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "é-1\té-1  ABCD-100 "
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-3,\tABC-7"
+          },
+          {
+            "key": "Task-ID",
+            "value": ",WG-3,,"
+          },
+          {
+            "key": "task-id",
+            "value": "é-1, é-1,,7, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ,WG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1, é-1,,7, "
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1, é-1,,7, "
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1, é-1,,7, "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:083",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "ABC-7\twg-22"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:084",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": "é-1 ,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": ""
+          },
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: é-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:085",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "wg-22\tWG-3,  ABCD-100,"
+          },
+          {
+            "key": "wg-task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:086",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "wg-task",
+            "value": "ABCD-100,,"
+          },
+          {
+            "key": "Fixes",
+            "value": ",ABCD-100\tWG-3, ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABCD-100,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:087",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:088",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": "XYZ,,é-1 , é-1 ,"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-3,,WG-3, WG- ,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "wg-22  WG-3,\t"
+          },
+          {
+            "key": "wg-task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ,,é-1 , é-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ,,é-1 , é-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ,,é-1 , é-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:089",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "7 , ABC-7, WG-,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "XYZ"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "WG-  ABCD-100,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "7 , 7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:090",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "é-1, "
+          },
+          {
+            "key": "TASK-ID",
+            "value": "é-1\tABCD-100"
+          },
+          {
+            "key": "WG-Task",
+            "value": "é-1  WG-1\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1, "
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: é-1\tABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: é-1\tABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: é-1  WG-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: é-1  WG-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:091",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "WG-3, , "
+          },
+          {
+            "key": "WG-Task",
+            "value": "WG-3,  WG-3,\tXYZ,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": " é-1\t"
+          },
+          {
+            "key": "Fixes",
+            "value": "WG-1\tWG- ABC-7 , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-3,  WG-3,\tXYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-3,  WG-3,\tXYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-3,  WG-3,\tXYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:092",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:093",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "XYZ, wg-22,é-1"
+          },
+          {
+            "key": "Fixes",
+            "value": "ABCD-100 wg-22, wg-22 ,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "WG-1\té-1, ABCD-100 , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:094",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "ABCD-100 , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABCD-100 , "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:095",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "ABCD-100"
+          },
+          {
+            "key": "wg-task",
+            "value": "7, , XYZ,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "WG-  é-1  é-1 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7, , XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7, , XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:096",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ","
+          },
+          {
+            "key": "Fixes",
+            "value": ""
+          },
+          {
+            "key": "Fixes",
+            "value": "  \tWG-\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:097",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "7,WG-"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": " , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: 7,WG-"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: 7,WG-"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:098",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "é-1, XYZ,,,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "é-1,,\t"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "ABCD-100\tWG-  WG-\t"
+          },
+          {
+            "key": "wg-task",
+            "value": "XYZ\tWG-1  wg-22,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1, XYZ,,,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1, XYZ,,,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: é-1,,\t"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100\tWG-  WG-\t"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100\tWG-  WG-\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100\tWG-  WG-\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: XYZ\tWG-1  wg-22,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: XYZ\tWG-1  wg-22,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: XYZ\tWG-1  wg-22,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:099",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "WG-3,, WG-3,,,"
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "WG-,é-1,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-3,, WG-3,,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-3,, WG-3,,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:100",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-, wg-22,"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": ""
+          },
+          {
+            "key": "task-id",
+            "value": "ABCD-100, "
+          },
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100, "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:101",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-  WG-1"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": ", "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-  WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-  WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:102",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "ABCD-100, ABC-7,é-1"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "WG-1 , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:103",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "7,,WG-3,, ABCD-100 , "
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "ABCD-100,WG-\tABCD-100 ,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-, WG-1, WG-3,,"
+          },
+          {
+            "key": "task-id",
+            "value": "WG-3, , XYZ "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-, WG-1, WG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-, WG-1, WG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-, WG-1, WG-3,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-3, , XYZ "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-3, , XYZ "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:104",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:105",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:106",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": ", wg-22\t7, "
+          },
+          {
+            "key": "task-id",
+            "value": "WG-1, WG-3, , "
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "ABCD-100,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: , wg-22\t7, "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: , wg-22\t7, "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-1, WG-3, , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-1, WG-3, , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:107",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          },
+          {
+            "key": "task-id",
+            "value": "wg-22 , 7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22 , 7,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22 , 7,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:108",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "wg-22,ABC-7,"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "é-1 , WG-1, WG-"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:109",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-3,, XYZ,,"
+          },
+          {
+            "key": "WG-Task",
+            "value": "XYZ , ABC-7,"
+          },
+          {
+            "key": "Task-ID",
+            "value": "wg-22,7,,é-1,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ , ABC-7,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: XYZ , ABC-7,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22,7,,é-1,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22,7,,é-1,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22,7,,é-1,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:110",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          },
+          {
+            "key": "wg-task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:111",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "wg-22 ABCD-100,,WG-3,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "ABCD-100,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22 ABCD-100,,WG-3,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22 ABCD-100,,WG-3,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22 ABCD-100,,WG-3,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:112",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "WG-1, wg-22,,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "WG-3,, wg-22  "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-1, wg-22,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-1, wg-22,,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:113",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:114",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:115",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-3,, "
+          },
+          {
+            "key": "Fixes",
+            "value": "é-1,XYZ XYZ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:116",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-\tABC-7 ,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          },
+          {
+            "key": "Task-ID",
+            "value": "é-1,,7 ABC-7, "
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-1,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1,,7 ABC-7, "
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1,,7 ABC-7, "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1,,7 ABC-7, "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:117",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "ABCD-100, WG-1"
+          },
+          {
+            "key": "Fixes",
+            "value": ",  XYZ"
+          },
+          {
+            "key": "wg-task",
+            "value": "ABCD-100,,ABC-7\tXYZ"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABCD-100, WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABCD-100, WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABCD-100,,ABC-7\tXYZ"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABCD-100,,ABC-7\tXYZ"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABCD-100,,ABC-7\tXYZ"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:118",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "WG- , WG-1  "
+          },
+          {
+            "key": "task-id",
+            "value": "7  ABCD-100"
+          },
+          {
+            "key": "Task-ID",
+            "value": "ABCD-100  "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG- , WG-1  "
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG- , WG-1  "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: 7  ABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: 7  ABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABCD-100  "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:119",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "  7  WG-1"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID:   7  WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID:   7  WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:120",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "WG-3,  wg-22\t7 ,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "7\tWG-1\té-1,"
+          },
+          {
+            "key": "wg-task",
+            "value": "WG-3,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-3,  wg-22\t7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-3,  wg-22\t7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-3,  wg-22\t7 ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: 7\tWG-1\té-1,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: 7\tWG-1\té-1,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: 7\tWG-1\té-1,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-3,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:121",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": "7 ,,WG-3, "
+          },
+          {
+            "key": "Task-ID",
+            "value": "WG-3, ABC-7 , WG-1"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7 ,,WG-3, "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7 ,,WG-3, "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-3, ABC-7 , WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-3, ABC-7 , WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-3, ABC-7 , WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:122",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "7 , \tWG-3, ,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "wg-22  XYZ,"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: wg-22  XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: wg-22  XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:123",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:124",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "7, wg-22,,"
+          },
+          {
+            "key": "wg-task",
+            "value": "ABC-7,,WG-1,WG-1\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7, wg-22,,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7, wg-22,,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABC-7,,WG-1,WG-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABC-7,,WG-1,WG-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABC-7,,WG-1,WG-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:125",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": ", é-1 "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:126",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:127",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": "WG-1\tXYZ,"
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "wg-task",
+            "value": "WG-3,  WG-1\tABCD-100 , "
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "é-1,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-1\tXYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG-1\tXYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-3,  WG-1\tABCD-100 , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-3,  WG-1\tABCD-100 , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-3,  WG-1\tABCD-100 , "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: é-1,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:128",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "é-1,WG-1  ,"
+          },
+          {
+            "key": "task-id",
+            "value": "XYZ , XYZ"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: XYZ , XYZ"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: XYZ , XYZ"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:129",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": ""
+          },
+          {
+            "key": "TASK-ID",
+            "value": "WG-3,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "WG-, é-1 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-3,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:130",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "ABCD-100,,WG-  WG-3,,"
+          },
+          {
+            "key": "WG-Task",
+            "value": "ABCD-100, "
+          },
+          {
+            "key": "Signed-off-by",
+            "value": " , 7,,,"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "ABCD-100,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABCD-100, "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:131",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "TASK-ID",
+            "value": ","
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:132",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "Fixes",
+            "value": "wg-22  ABCD-100  WG-1,,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:133",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "ABCD-100 , WG-1,,  "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:134",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "é-1,,WG-1 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: é-1,,WG-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: é-1,,WG-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:135",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:136",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": "é-1 , "
+          },
+          {
+            "key": "Fixes",
+            "value": "wg-22,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "XYZ\tABCD-100, wg-22 , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: é-1 , "
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ\tABCD-100, wg-22 , "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ\tABCD-100, wg-22 , "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ\tABCD-100, wg-22 , "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:137",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "XYZ , ABC-7, é-1"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:138",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:139",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "wg-22 ,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "7"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: wg-22 ,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: 7"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:140",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "XYZ,,WG-3,\tWG-3,,,"
+          },
+          {
+            "key": "Fixes",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:141",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:142",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "wg-22\t"
+          },
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "Fixes",
+            "value": "é-1\tWG-3,  "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:143",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "wg-22,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:144",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:145",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "WG-3, , WG-,ABC-7  "
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "wg-task",
+            "value": " , wg-22  ABC-7, "
+          },
+          {
+            "key": "Fixes",
+            "value": "ABCD-100,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task:  , wg-22  ABC-7, "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task:  , wg-22  ABC-7, "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:146",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": ""
+          },
+          {
+            "key": "Task-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:147",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "WG-1\t"
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "Task-ID",
+            "value": "XYZ\tWG-  é-1 ,"
+          },
+          {
+            "key": "wg-task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: XYZ\tWG-  é-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: XYZ\tWG-  é-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: XYZ\tWG-  é-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:148",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:149",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ",wg-22 "
+          },
+          {
+            "key": "task-id",
+            "value": "WG- , ,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG- , ,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:150",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:151",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "WG-\tWG-1 , "
+          },
+          {
+            "key": "WG-Task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-\tWG-1 , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-\tWG-1 , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:152",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:153",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-3,  "
+          },
+          {
+            "key": "task-id",
+            "value": "é-1  7,"
+          },
+          {
+            "key": "Task-ID",
+            "value": "wg-22 wg-22,,WG-1 , "
+          },
+          {
+            "key": "Task-ID",
+            "value": "7\tABC-7 , 7  "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-3,  "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1  7,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1  7,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22 wg-22,,WG-1 , "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22 wg-22,,WG-1 , "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: wg-22 wg-22,,WG-1 , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: 7\tABC-7 , 7  "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: 7\tABC-7 , 7  "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: 7\tABC-7 , 7  "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:154",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": "ABCD-100,,WG-3, , WG-3,\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABCD-100,,WG-3, , WG-3,\t"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABCD-100,,WG-3, , WG-3,\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABCD-100,,WG-3, , WG-3,\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:155",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "ABCD-100 , ABC-7,wg-22 , "
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "ABCD-100,,ABC-7, 7,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "WG-1 XYZ  XYZ "
+          },
+          {
+            "key": "WG-Task",
+            "value": "ABCD-100"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABCD-100 , ABC-7,wg-22 , "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABCD-100 , ABC-7,wg-22 , "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABCD-100 , ABC-7,wg-22 , "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-1 XYZ  XYZ "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-1 XYZ  XYZ "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-1 XYZ  XYZ "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:156",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "XYZ  XYZ, "
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "XYZ,WG-1 , é-1"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "7, ABCD-100, ABC-7"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:157",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "XYZ,,7,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "XYZ, WG-3,,,7"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ, WG-3,,,7"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ, WG-3,,,7"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ, WG-3,,,7"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:158",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ",,é-1  é-1 , "
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "7,,7 , XYZ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7,,7 , XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7,,7 , XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7,,7 , XYZ,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:159",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "ABC-7, XYZ 7, "
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-1\tXYZ , "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-1\tXYZ , "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-1\tXYZ , "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:160",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "WG-Task",
+            "value": "7\tWG-, 7"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "ABCD-100 é-1, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: 7\tWG-, 7"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: 7\tWG-, 7"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: 7\tWG-, 7"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABCD-100 é-1, "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABCD-100 é-1, "
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:161",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:162",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "ABC-7"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:163",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:164",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:165",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:166",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "ABCD-100,ABC-7,,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "é-1,, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:167",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "WG-, é-1"
+          },
+          {
+            "key": "Fixes",
+            "value": "WG-3,  7 XYZ,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "WG-3,  ABCD-100,WG-3,\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:168",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "é-1,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-3, WG-,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-3, WG-,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-3, WG-,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:169",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:170",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "wg-22, WG-3,  wg-22  "
+          },
+          {
+            "key": "TASK-ID",
+            "value": "WG-3, ,"
+          },
+          {
+            "key": "Task-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-3, ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:171",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": ""
+          },
+          {
+            "key": "task-id",
+            "value": "XYZ  , ABC-7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: XYZ  , ABC-7,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: XYZ  , ABC-7,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:172",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "é-1,,WG-  WG-"
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:173",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:174",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:175",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "wg-22 WG-"
+          },
+          {
+            "key": "wg-task",
+            "value": "WG-"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: wg-22 WG-"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: wg-22 WG-"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:176",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:177",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": ""
+          },
+          {
+            "key": "Task-ID",
+            "value": "WG-,ABC-7,,  "
+          },
+          {
+            "key": "task-id",
+            "value": "é-1,WG-1   "
+          },
+          {
+            "key": "Reviewed-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-,ABC-7,,  "
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-,ABC-7,,  "
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1,WG-1   "
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1,WG-1   "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:178",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:179",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "é-1 WG-1,,WG-3,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:180",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "wg-22,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:181",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "WG-Task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:182",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "7\té-1,7 , "
+          },
+          {
+            "key": "task-id",
+            "value": "ABCD-100  7\tABC-7"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7\té-1,7 , "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7\té-1,7 , "
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7\té-1,7 , "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100  7\tABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100  7\tABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100  7\tABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:183",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "ABC-7\tWG-1, WG-1 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABC-7\tWG-1, WG-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABC-7\tWG-1, WG-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABC-7\tWG-1, WG-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:184",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "ABC-7\tWG-,,wg-22,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:185",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:186",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "7"
+          },
+          {
+            "key": "Fixes",
+            "value": " , XYZ,,WG-3,,,"
+          },
+          {
+            "key": "WG-Task",
+            "value": "7"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: 7"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:187",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": ""
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-\t7,"
+          },
+          {
+            "key": "task-id",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-\t7,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-\t7,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:188",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:189",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:190",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "7 , 7,,ABC-7,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: 7 , 7,,ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: 7 , 7,,ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: 7 , 7,,ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:191",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "WG-1,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:192",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "ABC-7"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:193",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "ABC-7 "
+          },
+          {
+            "key": "Fixes",
+            "value": "XYZ, WG-1\tWG-1"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:194",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:195",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": "XYZ, wg-22,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "ABC-7\té-1 ,,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "WG-3, , 7  "
+          },
+          {
+            "key": "Fixes",
+            "value": "WG-1,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ, wg-22,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: XYZ, wg-22,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABC-7\té-1 ,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABC-7\té-1 ,,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:196",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "Fixes",
+            "value": "7, ABC-7,,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:197",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": ", 7  WG-1,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:198",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "WG-Task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:199",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "wg-22 ABCD-100,WG-1,"
+          },
+          {
+            "key": "task-id",
+            "value": "WG-3,, ABC-7,,"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": ", é-1\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22 ABCD-100,WG-1,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22 ABCD-100,WG-1,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: wg-22 ABCD-100,WG-1,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-3,, ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-3,, ABC-7,,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:200",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "WG-1,,XYZ,,wg-22"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "wg-22 WG-3,, WG-3,, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-1,,XYZ,,wg-22"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-1,,XYZ,,wg-22"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: WG-1,,XYZ,,wg-22"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: wg-22 WG-3,, WG-3,, "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: wg-22 WG-3,, WG-3,, "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: wg-22 WG-3,, WG-3,, "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:201",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": "7, wg-22\t"
+          },
+          {
+            "key": "wg-task",
+            "value": "WG-  7,"
+          },
+          {
+            "key": "wg-task",
+            "value": "WG-1 "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7, wg-22\t"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7, wg-22\t"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-  7,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-  7,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-1 "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:202",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:203",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "ABCD-100"
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-3,,é-1,ABCD-100\t"
+          },
+          {
+            "key": "wg-task",
+            "value": ",,ABCD-100 , ABCD-100,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ,,ABCD-100 , ABCD-100,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ,,ABCD-100 , ABCD-100,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:204",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:205",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "WG-1,,é-1 ABC-7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:206",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "ABC-7, \tABC-7"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "XYZ,XYZ, WG-,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABC-7, \tABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABC-7, \tABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:207",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "XYZ  wg-22, XYZ"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-3,,,"
+          },
+          {
+            "key": "task-id",
+            "value": "ABC-7,ABCD-100 , WG-1,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-3,,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABC-7,ABCD-100 , WG-1,"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABC-7,ABCD-100 , WG-1,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABC-7,ABCD-100 , WG-1,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:208",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "WG-1\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-1\t"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:209",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:210",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:211",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:212",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": " ,"
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "ABCD-100,,7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100,,7,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: ABCD-100,,7,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:213",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "é-1\t7, ABCD-100\t"
+          },
+          {
+            "key": "TASK-ID",
+            "value": ""
+          },
+          {
+            "key": "WG-Task",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1\t7, ABCD-100\t"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1\t7, ABCD-100\t"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1\t7, ABCD-100\t"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:214",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:215",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": ",,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "ABC-7  "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:216",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "wg-22,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": " , wg-22,"
+          },
+          {
+            "key": "WG-Task",
+            "value": ""
+          },
+          {
+            "key": "Fixes",
+            "value": "é-1\tWG-3,, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: wg-22,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:217",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "WG- , ABC-7"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "é-1 WG-1, ABC-7,"
+          },
+          {
+            "key": "Fixes",
+            "value": ""
+          },
+          {
+            "key": "wg-task",
+            "value": "ABCD-100  7\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG- , ABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG- , ABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABCD-100  7\t"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABCD-100  7\t"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:218",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "é-1, ABCD-100,"
+          },
+          {
+            "key": "Task-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1, ABCD-100,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: é-1, ABCD-100,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:219",
+      "input": {
+        "trailers": [
+          {
+            "key": "TASK-ID",
+            "value": "WG-3,,,"
+          },
+          {
+            "key": "Fixes",
+            "value": "\t, ,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "ABC-7 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG-3,,,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:220",
+      "input": {
+        "trailers": [
+          {
+            "key": "Reviewed-by",
+            "value": "WG-3,  WG-1,"
+          },
+          {
+            "key": "wg-task",
+            "value": "é-1\twg-22, 7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1\twg-22, 7,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1\twg-22, 7,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1\twg-22, 7,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:221",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": ""
+          },
+          {
+            "key": "Fixes",
+            "value": "wg-22,,7,,wg-22, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:222",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "wg-22,,"
+          },
+          {
+            "key": "Fixes",
+            "value": "WG-"
+          },
+          {
+            "key": "task-id",
+            "value": "7 "
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": "WG-,,é-1, 7\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: 7 "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:223",
+      "input": {
+        "trailers": [
+          {
+            "key": "wg-task",
+            "value": "ABCD-100  "
+          },
+          {
+            "key": "task-id",
+            "value": "ABCD-100\tABCD-100, WG-1 ,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: ABCD-100  "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100\tABCD-100, WG-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100\tABCD-100, WG-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100\tABCD-100, WG-1 ,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:224",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": "ABC-7 WG-,,WG-1"
+          },
+          {
+            "key": "wg-task",
+            "value": "é-1 ABCD-100,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "ABCD-100 , WG-1 "
+          },
+          {
+            "key": "Workgraph-Task",
+            "value": "WG-1,,WG-1,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABC-7 WG-,,WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABC-7 WG-,,WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABC-7 WG-,,WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1 ABCD-100,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: é-1 ABCD-100,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABCD-100 , WG-1 "
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: ABCD-100 , WG-1 "
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-1,,WG-1,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: WG-1,,WG-1,"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:225",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "ABC-7"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: ABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:226",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": ""
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "WG-,"
+          },
+          {
+            "key": "Reviewed-by",
+            "value": "\tWG-3,\tWG-,"
+          },
+          {
+            "key": "wg-task",
+            "value": "7\tABCD-100,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7\tABCD-100,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: 7\tABCD-100,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:227",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:228",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "ABC-7  XYZ,,WG-\t"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:229",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": ""
+          },
+          {
+            "key": "Fixes",
+            "value": "ABC-7,,"
+          },
+          {
+            "key": "WG-Task",
+            "value": "ABCD-100\tWG-\tABC-7"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABCD-100\tWG-\tABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABCD-100\tWG-\tABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: ABCD-100\tWG-\tABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:230",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "ABCD-100,,7,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100,,7,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: ABCD-100,,7,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:231",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:232",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:233",
+      "input": {
+        "trailers": []
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:234",
+      "input": {
+        "trailers": [
+          {
+            "key": "Workgraph-Task",
+            "value": "7 , ABCD-100 ,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "é-1,,ABC-7 WG-3,,,"
+          },
+          {
+            "key": "WG-Task",
+            "value": "7  wg-22 "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7 , ABCD-100 ,"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Workgraph-Task: 7 , ABCD-100 ,"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: 7  wg-22 "
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: 7  wg-22 "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:235",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": ", WG-1\tABC-7,,"
+          },
+          {
+            "key": "TASK-ID",
+            "value": "WG- "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: WG- "
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:236",
+      "input": {
+        "trailers": [
+          {
+            "key": "Fixes",
+            "value": "WG-3, , XYZ, "
+          },
+          {
+            "key": "TASK-ID",
+            "value": "XYZ, ABCD-100"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: XYZ, ABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "TASK-ID: XYZ, ABCD-100"
+          },
+          "source": "trailer",
+          "task_ref": "ABCD-100"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:237",
+      "input": {
+        "trailers": [
+          {
+            "key": "Co-Authored-By",
+            "value": "ABC-7,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "7,,"
+          },
+          {
+            "key": "Signed-off-by",
+            "value": "WG-3,\tXYZ  7,"
+          },
+          {
+            "key": "Fixes",
+            "value": ", ABC-7, "
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": []
+    },
+    {
+      "id": "generated:trailer:238",
+      "input": {
+        "trailers": [
+          {
+            "key": "task-id",
+            "value": "XYZ, é-1 , WG-3, "
+          },
+          {
+            "key": "WG-Task",
+            "value": "WG- 7 wg-22"
+          },
+          {
+            "key": "Fixes",
+            "value": "WG-3,, "
+          },
+          {
+            "key": "Co-Authored-By",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: XYZ, é-1 , WG-3, "
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: XYZ, é-1 , WG-3, "
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "task-id: XYZ, é-1 , WG-3, "
+          },
+          "source": "trailer",
+          "task_ref": "WG-3"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG- 7 wg-22"
+          },
+          "source": "trailer",
+          "task_ref": "WG-"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG- 7 wg-22"
+          },
+          "source": "trailer",
+          "task_ref": "7"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: WG- 7 wg-22"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        }
+      ]
+    },
+    {
+      "id": "generated:trailer:239",
+      "input": {
+        "trailers": [
+          {
+            "key": "WG-Task",
+            "value": "wg-22 "
+          },
+          {
+            "key": "Task-ID",
+            "value": "é-1  wg-22 XYZ,,"
+          }
+        ]
+      },
+      "origin": "generated (seed 20251025)",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "WG-Task: wg-22 "
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1  wg-22 XYZ,,"
+          },
+          "source": "trailer",
+          "task_ref": "é-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1  wg-22 XYZ,,"
+          },
+          "source": "trailer",
+          "task_ref": "wg-22"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: é-1  wg-22 XYZ,,"
+          },
+          "source": "trailer",
+          "task_ref": "XYZ"
+        }
+      ]
+    },
+    {
+      "id": "curated:trailer:000",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "WG-1, WG-2"
+          }
+        ]
+      },
+      "origin": "hand-written trailer edge case",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-1, WG-2"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-1, WG-2"
+          },
+          "source": "trailer",
+          "task_ref": "WG-2"
+        }
+      ]
+    },
+    {
+      "id": "curated:trailer:001",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "WG-1\tWG-2  ABC-7"
+          }
+        ]
+      },
+      "origin": "hand-written trailer edge case",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-1\tWG-2  ABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-1\tWG-2  ABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "WG-2"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-1\tWG-2  ABC-7"
+          },
+          "source": "trailer",
+          "task_ref": "ABC-7"
+        }
+      ]
+    },
+    {
+      "id": "curated:trailer:002",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": ""
+          }
+        ]
+      },
+      "origin": "hand-written trailer edge case",
+      "output": []
+    },
+    {
+      "id": "curated:trailer:003",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": " , , "
+          }
+        ]
+      },
+      "origin": "hand-written trailer edge case",
+      "output": []
+    },
+    {
+      "id": "curated:trailer:004",
+      "input": {
+        "trailers": [
+          {
+            "key": "Signed-off-by",
+            "value": "WG-1"
+          }
+        ]
+      },
+      "origin": "hand-written trailer edge case",
+      "output": []
+    },
+    {
+      "id": "curated:trailer:005",
+      "input": {
+        "trailers": [
+          {
+            "key": "Task-ID",
+            "value": "WG-1"
+          },
+          {
+            "key": "wg-task",
+            "value": "WG-2"
+          }
+        ]
+      },
+      "origin": "hand-written trailer edge case",
+      "output": [
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "Task-ID: WG-1"
+          },
+          "source": "trailer",
+          "task_ref": "WG-1"
+        },
+        {
+          "confidence": 0.95,
+          "evidence": {
+            "trailer": "wg-task: WG-2"
+          },
+          "source": "trailer",
+          "task_ref": "WG-2"
+        }
+      ]
+    },
+    {
+      "id": "curated:trailer:006",
+      "input": {
+        "trailers": []
+      },
+      "origin": "hand-written trailer edge case",
+      "output": []
+    }
+  ],
+  "function": "trailer_candidates"
+}

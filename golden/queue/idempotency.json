@@ -1,0 +1,68 @@
+{
+  "cases": [
+    {
+      "name": "idempotency_keys",
+      "steps": [
+        {
+          "key": "k1",
+          "label": "first",
+          "op": "enqueue",
+          "payload": {
+            "x": 1
+          },
+          "same_job": true
+        },
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "first",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "key": "k1",
+          "op": "enqueue_after_success",
+          "same_job": true,
+          "status": "succeeded"
+        },
+        {
+          "labels": [
+            "first"
+          ],
+          "op": "list",
+          "total": 1
+        },
+        {
+          "key": "k2",
+          "op": "enqueue",
+          "resource_keys": [
+            "gpu"
+          ],
+          "same_job": true
+        },
+        {
+          "key": "k3",
+          "kind": "report",
+          "op": "enqueue",
+          "same_job": true
+        },
+        {
+          "key": "k4",
+          "op": "enqueue_after_cancel",
+          "same_job": true,
+          "status": "cancelled"
+        },
+        {
+          "distinct": true,
+          "labels": [
+            "anon-a",
+            "anon-b"
+          ],
+          "op": "enqueue_without_key"
+        }
+      ]
+    }
+  ],
+  "group": "idempotency"
+}

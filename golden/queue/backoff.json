@@ -1,0 +1,411 @@
+{
+  "cases": [
+    {
+      "name": "backoff_delay_table",
+      "vectors": [
+        {
+          "attempt": 0,
+          "base": 0.0,
+          "delay": 0.0
+        },
+        {
+          "attempt": 1,
+          "base": 0.0,
+          "delay": 0.0
+        },
+        {
+          "attempt": 2,
+          "base": 0.0,
+          "delay": 0.0
+        },
+        {
+          "attempt": 3,
+          "base": 0.0,
+          "delay": 0.0
+        },
+        {
+          "attempt": 4,
+          "base": 0.0,
+          "delay": 0.0
+        },
+        {
+          "attempt": 8,
+          "base": 0.0,
+          "delay": 0.0
+        },
+        {
+          "attempt": 12,
+          "base": 0.0,
+          "delay": 0.0
+        },
+        {
+          "attempt": 13,
+          "base": 0.0,
+          "delay": 0.0
+        },
+        {
+          "attempt": 0,
+          "base": 0.5,
+          "delay": 0.5
+        },
+        {
+          "attempt": 1,
+          "base": 0.5,
+          "delay": 0.5
+        },
+        {
+          "attempt": 2,
+          "base": 0.5,
+          "delay": 1.0
+        },
+        {
+          "attempt": 3,
+          "base": 0.5,
+          "delay": 2.0
+        },
+        {
+          "attempt": 4,
+          "base": 0.5,
+          "delay": 4.0
+        },
+        {
+          "attempt": 8,
+          "base": 0.5,
+          "delay": 64.0
+        },
+        {
+          "attempt": 12,
+          "base": 0.5,
+          "delay": 1024.0
+        },
+        {
+          "attempt": 13,
+          "base": 0.5,
+          "delay": 2048.0
+        },
+        {
+          "attempt": 0,
+          "base": 2.0,
+          "delay": 2.0
+        },
+        {
+          "attempt": 1,
+          "base": 2.0,
+          "delay": 2.0
+        },
+        {
+          "attempt": 2,
+          "base": 2.0,
+          "delay": 4.0
+        },
+        {
+          "attempt": 3,
+          "base": 2.0,
+          "delay": 8.0
+        },
+        {
+          "attempt": 4,
+          "base": 2.0,
+          "delay": 16.0
+        },
+        {
+          "attempt": 8,
+          "base": 2.0,
+          "delay": 256.0
+        },
+        {
+          "attempt": 12,
+          "base": 2.0,
+          "delay": 3600.0
+        },
+        {
+          "attempt": 13,
+          "base": 2.0,
+          "delay": 3600.0
+        },
+        {
+          "attempt": 0,
+          "base": 10.0,
+          "delay": 10.0
+        },
+        {
+          "attempt": 1,
+          "base": 10.0,
+          "delay": 10.0
+        },
+        {
+          "attempt": 2,
+          "base": 10.0,
+          "delay": 20.0
+        },
+        {
+          "attempt": 3,
+          "base": 10.0,
+          "delay": 40.0
+        },
+        {
+          "attempt": 4,
+          "base": 10.0,
+          "delay": 80.0
+        },
+        {
+          "attempt": 8,
+          "base": 10.0,
+          "delay": 1280.0
+        },
+        {
+          "attempt": 12,
+          "base": 10.0,
+          "delay": 3600.0
+        },
+        {
+          "attempt": 13,
+          "base": 10.0,
+          "delay": 3600.0
+        }
+      ]
+    },
+    {
+      "name": "backoff_delay_capped",
+      "vectors": [
+        {
+          "attempt": 1,
+          "base": 2.0,
+          "cap": 30.0,
+          "delay": 2.0
+        },
+        {
+          "attempt": 2,
+          "base": 2.0,
+          "cap": 30.0,
+          "delay": 4.0
+        },
+        {
+          "attempt": 3,
+          "base": 2.0,
+          "cap": 30.0,
+          "delay": 8.0
+        },
+        {
+          "attempt": 4,
+          "base": 2.0,
+          "cap": 30.0,
+          "delay": 16.0
+        },
+        {
+          "attempt": 5,
+          "base": 2.0,
+          "cap": 30.0,
+          "delay": 30.0
+        },
+        {
+          "attempt": 1,
+          "base": 10.0,
+          "cap": 30.0,
+          "delay": 10.0
+        },
+        {
+          "attempt": 2,
+          "base": 10.0,
+          "cap": 30.0,
+          "delay": 20.0
+        },
+        {
+          "attempt": 3,
+          "base": 10.0,
+          "cap": 30.0,
+          "delay": 30.0
+        },
+        {
+          "attempt": 4,
+          "base": 10.0,
+          "cap": 30.0,
+          "delay": 30.0
+        },
+        {
+          "attempt": 5,
+          "base": 10.0,
+          "cap": 30.0,
+          "delay": 30.0
+        }
+      ]
+    },
+    {
+      "name": "retry_schedule",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "retry-job",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "fail",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": null,
+            "label": "retry-job",
+            "last_error": "boom at 0.0",
+            "max_attempts": 4,
+            "resource_keys": [],
+            "run_at": 2.0,
+            "status": "queued"
+          },
+          "status": "queued"
+        },
+        {
+          "at": 1.0,
+          "got": null,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "at": 2.0,
+          "attempt": 2,
+          "got": "retry-job",
+          "lease_expires_at": 62.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "fail",
+          "row": {
+            "attempts": 2,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": null,
+            "label": "retry-job",
+            "last_error": "boom at 2.0",
+            "max_attempts": 4,
+            "resource_keys": [],
+            "run_at": 6.0,
+            "status": "queued"
+          },
+          "status": "queued"
+        },
+        {
+          "at": 5.0,
+          "got": null,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "at": 6.0,
+          "attempt": 3,
+          "got": "retry-job",
+          "lease_expires_at": 66.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "fail",
+          "row": {
+            "attempts": 3,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": null,
+            "label": "retry-job",
+            "last_error": "boom at 6.0",
+            "max_attempts": 4,
+            "resource_keys": [],
+            "run_at": 14.0,
+            "status": "queued"
+          },
+          "status": "queued"
+        },
+        {
+          "at": 13.0,
+          "got": null,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "at": 14.0,
+          "attempt": 4,
+          "got": "retry-job",
+          "lease_expires_at": 74.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "fail",
+          "row": {
+            "attempts": 4,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": 14.0,
+            "label": "retry-job",
+            "last_error": "boom at 14.0",
+            "max_attempts": 4,
+            "resource_keys": [],
+            "run_at": 14.0,
+            "status": "dead"
+          },
+          "status": "dead"
+        },
+        {
+          "op": "runs",
+          "runs": [
+            {
+              "attempt_number": 1,
+              "error": "boom at 0.0",
+              "finished_at": 0.0,
+              "status": "failed",
+              "worker": "w"
+            },
+            {
+              "attempt_number": 2,
+              "error": "boom at 2.0",
+              "finished_at": 2.0,
+              "status": "failed",
+              "worker": "w"
+            },
+            {
+              "attempt_number": 3,
+              "error": "boom at 6.0",
+              "finished_at": 6.0,
+              "status": "failed",
+              "worker": "w"
+            },
+            {
+              "attempt_number": 4,
+              "error": "boom at 14.0",
+              "finished_at": 14.0,
+              "status": "dead",
+              "worker": "w"
+            }
+          ]
+        },
+        {
+          "op": "fail",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": null,
+            "label": "zero-base",
+            "last_error": "x",
+            "max_attempts": 3,
+            "resource_keys": [],
+            "run_at": 100.0,
+            "status": "queued"
+          },
+          "status": "queued"
+        },
+        {
+          "at": 100.0,
+          "attempt": 2,
+          "got": "zero-base",
+          "lease_expires_at": 160.0,
+          "op": "claim",
+          "worker": "w"
+        }
+      ]
+    }
+  ],
+  "group": "backoff"
+}

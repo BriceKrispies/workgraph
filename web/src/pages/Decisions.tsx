@@ -36,12 +36,12 @@ export function DecisionsPage() {
   // Keyed by workspace and held until the workspace resolves, so the cards do not flash in and out on first load.
   const open = useQuery({
     queryKey: ["decisions", ws, "open"],
-    queryFn: () => get<DecisionList>("/decisions", { status: "open", limit: 100 }),
+    queryFn: () => get<DecisionList>(`/ws/${ws}/decisions`, { status: "open", limit: 100 }),
     enabled: !!ws,
   });
   const decided = useQuery({
     queryKey: ["decisions", ws, "decided"],
-    queryFn: () => get<DecisionList>("/decisions", { status: "decided", limit: 20 }),
+    queryFn: () => get<DecisionList>(`/ws/${ws}/decisions`, { status: "decided", limit: 20 }),
     enabled: !!ws,
   });
 
@@ -146,12 +146,13 @@ export function DecisionCard({
   const [detailsOpen, setDetailsOpen] = useState(false);
   const hasOptions = item.options.length > 0;
 
+  const { ws } = useWorkspace();
   const choose = useMutation({
     mutationFn: () => {
       const body: { option_id?: string; other_text?: string; note?: string } =
         choice === OTHER ? { other_text: otherText.trim() } : { option_id: choice ?? undefined };
       if (note.trim()) body.note = note.trim();
-      return post<DecisionOut>(`/decisions/${item.id}/choose`, body);
+      return post<DecisionOut>(`/ws/${ws}/decisions/${item.id}/choose`, body);
     },
     onSuccess: () => onDone(),
   });

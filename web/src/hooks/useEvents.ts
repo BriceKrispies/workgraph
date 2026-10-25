@@ -46,7 +46,8 @@ export function useEventStream(ws: string): { connected: boolean } {
         schedule("run");
       }
       if (prefix === "automation" || prefix === "notification") schedule("automation");
-      if (prefix === "decision") schedule("decisions");
+      // Decision events are task events; a cancelled or archived task also drops out of the open list.
+      if (prefix === "task") schedule("decisions");
       if (prefix === "repository" || prefix === "git") schedule("repositories");
       if (prefix === "stack" || prefix === "verification") schedule("stacks");
     });

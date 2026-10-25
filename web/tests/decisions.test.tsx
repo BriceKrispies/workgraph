@@ -40,7 +40,7 @@ const openDecision = {
 describe("DecisionsPage", () => {
   it("renders open decisions with their options", async () => {
     mockApi({
-      "GET /decisions": (url: URL) => ({ items: url.searchParams.get("status") === "open" ? [openDecision] : [] }),
+      "GET /ws/main/decisions": (url: URL) => ({ items: url.searchParams.get("status") === "open" ? [openDecision] : [] }),
     });
     renderPage(<DecisionsPage />, { path: "/decisions", route: "/decisions" });
     expect(await screen.findByText("Which database should the cache use?")).toBeInTheDocument();
@@ -54,31 +54,31 @@ describe("DecisionsPage", () => {
 
   it("posts the selected option when Decide is clicked", async () => {
     const calls = mockApi({
-      "GET /decisions": (url: URL) => ({ items: url.searchParams.get("status") === "open" ? [openDecision] : [] }),
-      "POST /decisions/d1/choose": { ...openDecision, status: "decided", chosen_option_id: "a" },
+      "GET /ws/main/decisions": (url: URL) => ({ items: url.searchParams.get("status") === "open" ? [openDecision] : [] }),
+      "POST /ws/main/decisions/d1/choose": { ...openDecision, status: "decided", chosen_option_id: "a" },
     });
     renderPage(<DecisionsPage />, { path: "/decisions", route: "/decisions" });
     fireEvent.click(await screen.findByRole("radio", { name: /Use SQLite/ }));
     const decide = screen.getByRole("button", { name: "Decide" });
     expect(decide).toBeEnabled();
     fireEvent.click(decide);
-    await waitFor(() => expect(calls.some((c) => c.method === "POST" && c.path === "/decisions/d1/choose")).toBe(true));
-    const post = calls.find((c) => c.path === "/decisions/d1/choose")!;
+    await waitFor(() => expect(calls.some((c) => c.method === "POST" && c.path === "/ws/main/decisions/d1/choose")).toBe(true));
+    const post = calls.find((c) => c.path === "/ws/main/decisions/d1/choose")!;
     expect(post.body).toEqual({ option_id: "a" });
   });
 
   it("sends other_text and the note when Other is chosen", async () => {
     const calls = mockApi({
-      "GET /decisions": (url: URL) => ({ items: url.searchParams.get("status") === "open" ? [openDecision] : [] }),
-      "POST /decisions/d1/choose": { ...openDecision, status: "decided", other_text: "Use Postgres" },
+      "GET /ws/main/decisions": (url: URL) => ({ items: url.searchParams.get("status") === "open" ? [openDecision] : [] }),
+      "POST /ws/main/decisions/d1/choose": { ...openDecision, status: "decided", other_text: "Use Postgres" },
     });
     renderPage(<DecisionsPage />, { path: "/decisions", route: "/decisions" });
     fireEvent.click(await screen.findByRole("radio", { name: "Other" }));
     fireEvent.change(screen.getByLabelText("Other answer"), { target: { value: "  Use Postgres " } });
     fireEvent.change(screen.getByLabelText(/Note/), { target: { value: "Keep it boring" } });
     fireEvent.click(screen.getByRole("button", { name: "Decide" }));
-    await waitFor(() => expect(calls.some((c) => c.method === "POST" && c.path === "/decisions/d1/choose")).toBe(true));
-    const post = calls.find((c) => c.path === "/decisions/d1/choose")!;
+    await waitFor(() => expect(calls.some((c) => c.method === "POST" && c.path === "/ws/main/decisions/d1/choose")).toBe(true));
+    const post = calls.find((c) => c.path === "/ws/main/decisions/d1/choose")!;
     expect(post.body).toEqual({ other_text: "Use Postgres", note: "Keep it boring" });
   });
 });

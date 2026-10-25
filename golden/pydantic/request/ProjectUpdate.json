@@ -1,0 +1,830 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {
+          "description": null,
+          "name": null,
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:slug:none",
+      "input": {
+        "slug": null
+      },
+      "output": {
+        "ok": {
+          "description": null,
+          "name": null,
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:slug:int",
+      "input": {
+        "slug": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:float",
+      "input": {
+        "slug": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:bool",
+      "input": {
+        "slug": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:str",
+      "input": {
+        "slug": "x"
+      },
+      "output": {
+        "ok": {
+          "description": null,
+          "name": null,
+          "settings": null,
+          "slug": "x",
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:slug:list",
+      "input": {
+        "slug": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:dict",
+      "input": {
+        "slug": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:slug",
+      "input": {
+        "slug": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "slug must be lowercase letters, digits and dashes"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "slug"
+            ],
+            "msg": "Value error, slug must be lowercase letters, digits and dashes",
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:none",
+      "input": {
+        "name": null
+      },
+      "output": {
+        "ok": {
+          "description": null,
+          "name": null,
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:name:int",
+      "input": {
+        "name": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:float",
+      "input": {
+        "name": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:bool",
+      "input": {
+        "name": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:str",
+      "input": {
+        "name": "x"
+      },
+      "output": {
+        "ok": {
+          "description": null,
+          "name": "x",
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:name:list",
+      "input": {
+        "name": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:dict",
+      "input": {
+        "name": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:name",
+      "input": {
+        "name": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "description": null,
+          "name": "Not valid!",
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "min_length:name",
+      "input": {
+        "name": ""
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "name"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "max_length:name",
+      "input": {
+        "name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "max_length": 200
+            },
+            "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "loc": [
+              "name"
+            ],
+            "msg": "String should have at most 200 characters",
+            "type": "string_too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:none",
+      "input": {
+        "description": null
+      },
+      "output": {
+        "ok": {
+          "description": null,
+          "name": null,
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:description:int",
+      "input": {
+        "description": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:float",
+      "input": {
+        "description": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:bool",
+      "input": {
+        "description": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:str",
+      "input": {
+        "description": "x"
+      },
+      "output": {
+        "ok": {
+          "description": "x",
+          "name": null,
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:description:list",
+      "input": {
+        "description": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:dict",
+      "input": {
+        "description": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:description",
+      "input": {
+        "description": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "description": "Not valid!",
+          "name": null,
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:status:none",
+      "input": {
+        "status": null
+      },
+      "output": {
+        "ok": {
+          "description": null,
+          "name": null,
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:status:int",
+      "input": {
+        "status": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'active' or 'archived'"
+            },
+            "input": 12,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'active' or 'archived'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:float",
+      "input": {
+        "status": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'active' or 'archived'"
+            },
+            "input": 1.5,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'active' or 'archived'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:bool",
+      "input": {
+        "status": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'active' or 'archived'"
+            },
+            "input": true,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'active' or 'archived'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:str",
+      "input": {
+        "status": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'active' or 'archived'"
+            },
+            "input": "x",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'active' or 'archived'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:list",
+      "input": {
+        "status": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'active' or 'archived'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'active' or 'archived'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:dict",
+      "input": {
+        "status": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'active' or 'archived'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'active' or 'archived'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:status",
+      "input": {
+        "status": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'active' or 'archived'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'active' or 'archived'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:settings:none",
+      "input": {
+        "settings": null
+      },
+      "output": {
+        "ok": {
+          "description": null,
+          "name": null,
+          "settings": null,
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "wrong:settings:int",
+      "input": {
+        "settings": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "settings"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:settings:float",
+      "input": {
+        "settings": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "settings"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:settings:bool",
+      "input": {
+        "settings": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "settings"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:settings:str",
+      "input": {
+        "settings": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "settings"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:settings:list",
+      "input": {
+        "settings": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "settings"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:settings:dict",
+      "input": {
+        "settings": {
+          "k": 1
+        }
+      },
+      "output": {
+        "ok": {
+          "description": null,
+          "name": null,
+          "settings": {
+            "k": 1
+          },
+          "slug": null,
+          "status": null
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "ProjectUpdate"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of ProjectUpdate",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "ProjectUpdate"
+}

@@ -1,0 +1,2437 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:statuses:none",
+      "input": {
+        "statuses": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:statuses:int",
+      "input": {
+        "statuses": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:float",
+      "input": {
+        "statuses": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:bool",
+      "input": {
+        "statuses": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:str",
+      "input": {
+        "statuses": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:list",
+      "input": {
+        "statuses": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": "a",
+            "loc": [
+              "statuses",
+              0
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:dict",
+      "input": {
+        "statuses": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:statuses",
+      "input": {
+        "statuses": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "statuses",
+              0
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:none",
+      "input": {
+        "priorities": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:priorities:int",
+      "input": {
+        "priorities": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:float",
+      "input": {
+        "priorities": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:bool",
+      "input": {
+        "priorities": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:str",
+      "input": {
+        "priorities": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:list",
+      "input": {
+        "priorities": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "a",
+            "loc": [
+              "priorities",
+              0
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:dict",
+      "input": {
+        "priorities": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:priorities",
+      "input": {
+        "priorities": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "priorities",
+              0
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:none",
+      "input": {
+        "project": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:int",
+      "input": {
+        "project": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:float",
+      "input": {
+        "project": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:bool",
+      "input": {
+        "project": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:str",
+      "input": {
+        "project": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": "x",
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:list",
+      "input": {
+        "project": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:dict",
+      "input": {
+        "project": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:project",
+      "input": {
+        "project": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": "Not valid!",
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:none",
+      "input": {
+        "repository": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:int",
+      "input": {
+        "repository": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:float",
+      "input": {
+        "repository": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:bool",
+      "input": {
+        "repository": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:str",
+      "input": {
+        "repository": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": "x",
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:list",
+      "input": {
+        "repository": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:dict",
+      "input": {
+        "repository": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:repository",
+      "input": {
+        "repository": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": "Not valid!",
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:none",
+      "input": {
+        "tags": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:int",
+      "input": {
+        "tags": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:float",
+      "input": {
+        "tags": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:bool",
+      "input": {
+        "tags": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:str",
+      "input": {
+        "tags": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:list",
+      "input": {
+        "tags": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": [
+            "a"
+          ],
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:dict",
+      "input": {
+        "tags": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:tags",
+      "input": {
+        "tags": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": [
+            "Not valid!"
+          ],
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:file:none",
+      "input": {
+        "file": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:file:int",
+      "input": {
+        "file": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:file:float",
+      "input": {
+        "file": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:file:bool",
+      "input": {
+        "file": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:file:str",
+      "input": {
+        "file": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": "x",
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:file:list",
+      "input": {
+        "file": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:file:dict",
+      "input": {
+        "file": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:file",
+      "input": {
+        "file": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": "Not valid!",
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:category:none",
+      "input": {
+        "category": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:category:int",
+      "input": {
+        "category": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:float",
+      "input": {
+        "category": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:bool",
+      "input": {
+        "category": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:str",
+      "input": {
+        "category": "x"
+      },
+      "output": {
+        "ok": {
+          "category": "x",
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:category:list",
+      "input": {
+        "category": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:dict",
+      "input": {
+        "category": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:category",
+      "input": {
+        "category": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": "Not valid!",
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:none",
+      "input": {
+        "parent": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:int",
+      "input": {
+        "parent": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:float",
+      "input": {
+        "parent": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:bool",
+      "input": {
+        "parent": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:str",
+      "input": {
+        "parent": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": "x",
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:list",
+      "input": {
+        "parent": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:dict",
+      "input": {
+        "parent": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:parent",
+      "input": {
+        "parent": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": "Not valid!",
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:text:none",
+      "input": {
+        "text": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:text:int",
+      "input": {
+        "text": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:text:float",
+      "input": {
+        "text": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:text:bool",
+      "input": {
+        "text": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:text:str",
+      "input": {
+        "text": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:text:list",
+      "input": {
+        "text": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:text:dict",
+      "input": {
+        "text": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:text",
+      "input": {
+        "text": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:sort:none",
+      "input": {
+        "sort": null
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": null,
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:int",
+      "input": {
+        "sort": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": 12,
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:float",
+      "input": {
+        "sort": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": 1.5,
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:bool",
+      "input": {
+        "sort": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": true,
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:str",
+      "input": {
+        "sort": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": "x",
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:list",
+      "input": {
+        "sort": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:dict",
+      "input": {
+        "sort": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:sort",
+      "input": {
+        "sort": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:none",
+      "input": {
+        "descending": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:int",
+      "input": {
+        "descending": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:float",
+      "input": {
+        "descending": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:bool",
+      "input": {
+        "descending": true
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:descending:str",
+      "input": {
+        "descending": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:list",
+      "input": {
+        "descending": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:dict",
+      "input": {
+        "descending": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:none",
+      "input": {
+        "limit": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:int",
+      "input": {
+        "limit": 12
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 12,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:limit:float",
+      "input": {
+        "limit": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:bool",
+      "input": {
+        "limit": true
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 1,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:limit:str",
+      "input": {
+        "limit": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:list",
+      "input": {
+        "limit": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:dict",
+      "input": {
+        "limit": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:limit",
+      "input": {
+        "limit": 0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1
+            },
+            "input": 0,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:limit",
+      "input": {
+        "limit": 201
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 200
+            },
+            "input": 201,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be less than or equal to 200",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:none",
+      "input": {
+        "offset": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:int",
+      "input": {
+        "offset": 12
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 12,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:offset:float",
+      "input": {
+        "offset": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:bool",
+      "input": {
+        "offset": true
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 1,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:offset:str",
+      "input": {
+        "offset": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:list",
+      "input": {
+        "offset": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:dict",
+      "input": {
+        "offset": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:offset",
+      "input": {
+        "offset": -1
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0
+            },
+            "input": -1,
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "descending": true,
+          "file": null,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "task_listArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of task_listArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_list"
+}

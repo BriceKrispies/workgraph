@@ -1,0 +1,1361 @@
+{
+  "base": {
+    "model": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "model": "example"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:model",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "model"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:none",
+      "input": {
+        "model": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:int",
+      "input": {
+        "model": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:float",
+      "input": {
+        "model": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:bool",
+      "input": {
+        "model": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:str",
+      "input": {
+        "model": "x"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "x",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:model:list",
+      "input": {
+        "model": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:dict",
+      "input": {
+        "model": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:model",
+      "input": {
+        "model": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "Not valid!",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "model": "example",
+        "task": null
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "model": "example",
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "model": "example",
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "model": "example",
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "model": "example",
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "model": "example",
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "model": "example",
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "model": "example",
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:none",
+      "input": {
+        "model": "example",
+        "repository": null
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:int",
+      "input": {
+        "model": "example",
+        "repository": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:float",
+      "input": {
+        "model": "example",
+        "repository": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:bool",
+      "input": {
+        "model": "example",
+        "repository": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:str",
+      "input": {
+        "model": "example",
+        "repository": "x"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": "x",
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:list",
+      "input": {
+        "model": "example",
+        "repository": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:dict",
+      "input": {
+        "model": "example",
+        "repository": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:repository",
+      "input": {
+        "model": "example",
+        "repository": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": "Not valid!",
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:src_lines:none",
+      "input": {
+        "model": "example",
+        "src_lines": null
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:src_lines:int",
+      "input": {
+        "model": "example",
+        "src_lines": 12
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": 12.0,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:src_lines:float",
+      "input": {
+        "model": "example",
+        "src_lines": 1.5
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": 1.5,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:src_lines:bool",
+      "input": {
+        "model": "example",
+        "src_lines": true
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": 1.0,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:src_lines:str",
+      "input": {
+        "model": "example",
+        "src_lines": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "src_lines"
+            ],
+            "msg": "Input should be a valid number, unable to parse string as a number",
+            "type": "float_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:src_lines:list",
+      "input": {
+        "model": "example",
+        "src_lines": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "src_lines"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:src_lines:dict",
+      "input": {
+        "model": "example",
+        "src_lines": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "src_lines"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:src_lines",
+      "input": {
+        "model": "example",
+        "src_lines": -1
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0.0
+            },
+            "input": -1,
+            "loc": [
+              "src_lines"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:src_files:none",
+      "input": {
+        "model": "example",
+        "src_files": null
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:src_files:int",
+      "input": {
+        "model": "example",
+        "src_files": 12
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": 12.0,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:src_files:float",
+      "input": {
+        "model": "example",
+        "src_files": 1.5
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": 1.5,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:src_files:bool",
+      "input": {
+        "model": "example",
+        "src_files": true
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": 1.0,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:src_files:str",
+      "input": {
+        "model": "example",
+        "src_files": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "src_files"
+            ],
+            "msg": "Input should be a valid number, unable to parse string as a number",
+            "type": "float_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:src_files:list",
+      "input": {
+        "model": "example",
+        "src_files": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "src_files"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:src_files:dict",
+      "input": {
+        "model": "example",
+        "src_files": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "src_files"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:src_files",
+      "input": {
+        "model": "example",
+        "src_files": -1
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0.0
+            },
+            "input": -1,
+            "loc": [
+              "src_files"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:packages:none",
+      "input": {
+        "model": "example",
+        "packages": null
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:packages:int",
+      "input": {
+        "model": "example",
+        "packages": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "packages"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:packages:float",
+      "input": {
+        "model": "example",
+        "packages": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "packages"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:packages:bool",
+      "input": {
+        "model": "example",
+        "packages": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "packages"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:packages:str",
+      "input": {
+        "model": "example",
+        "packages": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "packages"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:packages:list",
+      "input": {
+        "model": "example",
+        "packages": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": [
+            "a"
+          ],
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:packages:dict",
+      "input": {
+        "model": "example",
+        "packages": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "packages"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:packages",
+      "input": {
+        "model": "example",
+        "packages": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": [
+            "Not valid!"
+          ],
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:fit:none",
+      "input": {
+        "fit": null,
+        "model": "example"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:fit:int",
+      "input": {
+        "fit": 12,
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "fit"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:fit:float",
+      "input": {
+        "fit": 1.5,
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "fit"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:fit:bool",
+      "input": {
+        "fit": true,
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "fit"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:fit:str",
+      "input": {
+        "fit": "x",
+        "model": "example"
+      },
+      "output": {
+        "ok": {
+          "fit": "x",
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:fit:list",
+      "input": {
+        "fit": [
+          "a"
+        ],
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "fit"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:fit:dict",
+      "input": {
+        "fit": {
+          "k": 1
+        },
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "fit"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:fit",
+      "input": {
+        "fit": "Not valid!",
+        "model": "example"
+      },
+      "output": {
+        "ok": {
+          "fit": "Not valid!",
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "model": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "model": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "model": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "model": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "model": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "model": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "model": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "model": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "model": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "fit": null,
+          "model": "example",
+          "packages": null,
+          "repository": null,
+          "src_files": null,
+          "src_lines": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "experiment_predictArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of experiment_predictArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "experiment_predict"
+}

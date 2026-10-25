@@ -1,0 +1,1017 @@
+{
+  "base": {
+    "outcome": "succeeded"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "outcome": "succeeded"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": null,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:attempt_id:none",
+      "input": {
+        "attempt_id": null,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": null,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:attempt_id:int",
+      "input": {
+        "attempt_id": 12,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:float",
+      "input": {
+        "attempt_id": 1.5,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:bool",
+      "input": {
+        "attempt_id": true,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:str",
+      "input": {
+        "attempt_id": "x",
+        "outcome": "succeeded"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": "x",
+          "cost_usd": null,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:attempt_id:list",
+      "input": {
+        "attempt_id": [
+          "a"
+        ],
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:dict",
+      "input": {
+        "attempt_id": {
+          "k": 1
+        },
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:attempt_id",
+      "input": {
+        "attempt_id": "Not valid!",
+        "outcome": "succeeded"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": "Not valid!",
+          "cost_usd": null,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "missing:outcome",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "outcome"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:outcome:none",
+      "input": {
+        "outcome": null
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'succeeded' or 'failed'"
+            },
+            "input": null,
+            "loc": [
+              "outcome"
+            ],
+            "msg": "Input should be 'succeeded' or 'failed'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:outcome:int",
+      "input": {
+        "outcome": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'succeeded' or 'failed'"
+            },
+            "input": 12,
+            "loc": [
+              "outcome"
+            ],
+            "msg": "Input should be 'succeeded' or 'failed'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:outcome:float",
+      "input": {
+        "outcome": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'succeeded' or 'failed'"
+            },
+            "input": 1.5,
+            "loc": [
+              "outcome"
+            ],
+            "msg": "Input should be 'succeeded' or 'failed'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:outcome:bool",
+      "input": {
+        "outcome": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'succeeded' or 'failed'"
+            },
+            "input": true,
+            "loc": [
+              "outcome"
+            ],
+            "msg": "Input should be 'succeeded' or 'failed'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:outcome:str",
+      "input": {
+        "outcome": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'succeeded' or 'failed'"
+            },
+            "input": "x",
+            "loc": [
+              "outcome"
+            ],
+            "msg": "Input should be 'succeeded' or 'failed'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:outcome:list",
+      "input": {
+        "outcome": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'succeeded' or 'failed'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "outcome"
+            ],
+            "msg": "Input should be 'succeeded' or 'failed'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:outcome:dict",
+      "input": {
+        "outcome": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'succeeded' or 'failed'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "outcome"
+            ],
+            "msg": "Input should be 'succeeded' or 'failed'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:outcome",
+      "input": {
+        "outcome": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'succeeded' or 'failed'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "outcome"
+            ],
+            "msg": "Input should be 'succeeded' or 'failed'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:none",
+      "input": {
+        "outcome": "succeeded",
+        "summary": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:int",
+      "input": {
+        "outcome": "succeeded",
+        "summary": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:float",
+      "input": {
+        "outcome": "succeeded",
+        "summary": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:bool",
+      "input": {
+        "outcome": "succeeded",
+        "summary": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:str",
+      "input": {
+        "outcome": "succeeded",
+        "summary": "x"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": null,
+          "outcome": "succeeded",
+          "summary": "x",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:summary:list",
+      "input": {
+        "outcome": "succeeded",
+        "summary": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:dict",
+      "input": {
+        "outcome": "succeeded",
+        "summary": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:summary",
+      "input": {
+        "outcome": "succeeded",
+        "summary": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": null,
+          "outcome": "succeeded",
+          "summary": "Not valid!",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:artifacts:none",
+      "input": {
+        "artifacts": null,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "artifacts"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:artifacts:int",
+      "input": {
+        "artifacts": 12,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "artifacts"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:artifacts:float",
+      "input": {
+        "artifacts": 1.5,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "artifacts"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:artifacts:bool",
+      "input": {
+        "artifacts": true,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "artifacts"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:artifacts:str",
+      "input": {
+        "artifacts": "x",
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "artifacts"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:artifacts:list",
+      "input": {
+        "artifacts": [
+          "a"
+        ],
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "a",
+            "loc": [
+              "artifacts",
+              0
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:artifacts:dict",
+      "input": {
+        "artifacts": {
+          "k": 1
+        },
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "artifacts"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:artifacts",
+      "input": {
+        "artifacts": [
+          "Not valid!"
+        ],
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "Not valid!",
+            "loc": [
+              "artifacts",
+              0
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:usage:none",
+      "input": {
+        "outcome": "succeeded",
+        "usage": null
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": null,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:usage:int",
+      "input": {
+        "outcome": "succeeded",
+        "usage": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "usage"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:usage:float",
+      "input": {
+        "outcome": "succeeded",
+        "usage": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "usage"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:usage:bool",
+      "input": {
+        "outcome": "succeeded",
+        "usage": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "usage"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:usage:str",
+      "input": {
+        "outcome": "succeeded",
+        "usage": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "usage"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:usage:list",
+      "input": {
+        "outcome": "succeeded",
+        "usage": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "usage"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:usage:dict",
+      "input": {
+        "outcome": "succeeded",
+        "usage": {
+          "k": 1
+        }
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": null,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": {
+            "k": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "wrong:cost_usd:none",
+      "input": {
+        "cost_usd": null,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": null,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:cost_usd:int",
+      "input": {
+        "cost_usd": 12,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": 12.0,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:cost_usd:float",
+      "input": {
+        "cost_usd": 1.5,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": 1.5,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:cost_usd:bool",
+      "input": {
+        "cost_usd": true,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "ok": {
+          "artifacts": [],
+          "attempt_id": null,
+          "cost_usd": 1.0,
+          "outcome": "succeeded",
+          "summary": "",
+          "usage": null
+        }
+      }
+    },
+    {
+      "id": "wrong:cost_usd:str",
+      "input": {
+        "cost_usd": "x",
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "cost_usd"
+            ],
+            "msg": "Input should be a valid number, unable to parse string as a number",
+            "type": "float_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:cost_usd:list",
+      "input": {
+        "cost_usd": [
+          "a"
+        ],
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "cost_usd"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:cost_usd:dict",
+      "input": {
+        "cost_usd": {
+          "k": 1
+        },
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "cost_usd"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:cost_usd",
+      "input": {
+        "cost_usd": -1,
+        "outcome": "succeeded"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0.0
+            },
+            "input": -1,
+            "loc": [
+              "cost_usd"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "outcome": "succeeded",
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "ResultReport"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of ResultReport",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "ResultReport"
+}

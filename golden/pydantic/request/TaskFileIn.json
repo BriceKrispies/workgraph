@@ -1,0 +1,554 @@
+{
+  "base": {
+    "path": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "anchor": null,
+          "note": "",
+          "path": "example"
+        }
+      }
+    },
+    {
+      "id": "missing:path",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "path"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:none",
+      "input": {
+        "path": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:int",
+      "input": {
+        "path": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:float",
+      "input": {
+        "path": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:bool",
+      "input": {
+        "path": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:str",
+      "input": {
+        "path": "x"
+      },
+      "output": {
+        "ok": {
+          "anchor": null,
+          "note": "",
+          "path": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:path:list",
+      "input": {
+        "path": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:dict",
+      "input": {
+        "path": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:path",
+      "input": {
+        "path": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "anchor": null,
+          "note": "",
+          "path": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "min_length:path",
+      "input": {
+        "path": ""
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "path"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:anchor:none",
+      "input": {
+        "anchor": null,
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "anchor": null,
+          "note": "",
+          "path": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:anchor:int",
+      "input": {
+        "anchor": 12,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "anchor"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:anchor:float",
+      "input": {
+        "anchor": 1.5,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "anchor"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:anchor:bool",
+      "input": {
+        "anchor": true,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "anchor"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:anchor:str",
+      "input": {
+        "anchor": "x",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "anchor": "x",
+          "note": "",
+          "path": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:anchor:list",
+      "input": {
+        "anchor": [
+          "a"
+        ],
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "anchor"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:anchor:dict",
+      "input": {
+        "anchor": {
+          "k": 1
+        },
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "anchor"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:anchor",
+      "input": {
+        "anchor": "Not valid!",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "anchor": "Not valid!",
+          "note": "",
+          "path": "example"
+        }
+      }
+    },
+    {
+      "id": "max_length:anchor",
+      "input": {
+        "anchor": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "max_length": 300
+            },
+            "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "loc": [
+              "anchor"
+            ],
+            "msg": "String should have at most 300 characters",
+            "type": "string_too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:none",
+      "input": {
+        "note": null,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:int",
+      "input": {
+        "note": 12,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:float",
+      "input": {
+        "note": 1.5,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:bool",
+      "input": {
+        "note": true,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:str",
+      "input": {
+        "note": "x",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "anchor": null,
+          "note": "x",
+          "path": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:note:list",
+      "input": {
+        "note": [
+          "a"
+        ],
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:dict",
+      "input": {
+        "note": {
+          "k": 1
+        },
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:note",
+      "input": {
+        "note": "Not valid!",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "anchor": null,
+          "note": "Not valid!",
+          "path": "example"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "path": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "TaskFileIn"
+}

@@ -1,0 +1,582 @@
+{
+  "base": {
+    "value": 1.0
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "value": 1.0
+      },
+      "output": {
+        "ok": {
+          "source": "human",
+          "unit": "points",
+          "value": 1.0
+        }
+      }
+    },
+    {
+      "id": "missing:value",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "value"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:value:none",
+      "input": {
+        "value": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "value"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:value:int",
+      "input": {
+        "value": 12
+      },
+      "output": {
+        "ok": {
+          "source": "human",
+          "unit": "points",
+          "value": 12.0
+        }
+      }
+    },
+    {
+      "id": "wrong:value:float",
+      "input": {
+        "value": 1.5
+      },
+      "output": {
+        "ok": {
+          "source": "human",
+          "unit": "points",
+          "value": 1.5
+        }
+      }
+    },
+    {
+      "id": "wrong:value:bool",
+      "input": {
+        "value": true
+      },
+      "output": {
+        "ok": {
+          "source": "human",
+          "unit": "points",
+          "value": 1.0
+        }
+      }
+    },
+    {
+      "id": "wrong:value:str",
+      "input": {
+        "value": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "value"
+            ],
+            "msg": "Input should be a valid number, unable to parse string as a number",
+            "type": "float_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:value:list",
+      "input": {
+        "value": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "value"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:value:dict",
+      "input": {
+        "value": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "value"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:value",
+      "input": {
+        "value": -1
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0.0
+            },
+            "input": -1,
+            "loc": [
+              "value"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:unit:none",
+      "input": {
+        "unit": null,
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'points', 'hours' or 'size'"
+            },
+            "input": null,
+            "loc": [
+              "unit"
+            ],
+            "msg": "Input should be 'points', 'hours' or 'size'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:unit:int",
+      "input": {
+        "unit": 12,
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'points', 'hours' or 'size'"
+            },
+            "input": 12,
+            "loc": [
+              "unit"
+            ],
+            "msg": "Input should be 'points', 'hours' or 'size'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:unit:float",
+      "input": {
+        "unit": 1.5,
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'points', 'hours' or 'size'"
+            },
+            "input": 1.5,
+            "loc": [
+              "unit"
+            ],
+            "msg": "Input should be 'points', 'hours' or 'size'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:unit:bool",
+      "input": {
+        "unit": true,
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'points', 'hours' or 'size'"
+            },
+            "input": true,
+            "loc": [
+              "unit"
+            ],
+            "msg": "Input should be 'points', 'hours' or 'size'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:unit:str",
+      "input": {
+        "unit": "x",
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'points', 'hours' or 'size'"
+            },
+            "input": "x",
+            "loc": [
+              "unit"
+            ],
+            "msg": "Input should be 'points', 'hours' or 'size'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:unit:list",
+      "input": {
+        "unit": [
+          "a"
+        ],
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'points', 'hours' or 'size'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "unit"
+            ],
+            "msg": "Input should be 'points', 'hours' or 'size'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:unit:dict",
+      "input": {
+        "unit": {
+          "k": 1
+        },
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'points', 'hours' or 'size'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "unit"
+            ],
+            "msg": "Input should be 'points', 'hours' or 'size'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:unit",
+      "input": {
+        "unit": "Not valid!",
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'points', 'hours' or 'size'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "unit"
+            ],
+            "msg": "Input should be 'points', 'hours' or 'size'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:none",
+      "input": {
+        "source": null,
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'historical' or 'model'"
+            },
+            "input": null,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'historical' or 'model'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:int",
+      "input": {
+        "source": 12,
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'historical' or 'model'"
+            },
+            "input": 12,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'historical' or 'model'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:float",
+      "input": {
+        "source": 1.5,
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'historical' or 'model'"
+            },
+            "input": 1.5,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'historical' or 'model'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:bool",
+      "input": {
+        "source": true,
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'historical' or 'model'"
+            },
+            "input": true,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'historical' or 'model'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:str",
+      "input": {
+        "source": "x",
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'historical' or 'model'"
+            },
+            "input": "x",
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'historical' or 'model'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:list",
+      "input": {
+        "source": [
+          "a"
+        ],
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'historical' or 'model'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'historical' or 'model'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:dict",
+      "input": {
+        "source": {
+          "k": 1
+        },
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'historical' or 'model'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'historical' or 'model'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:source",
+      "input": {
+        "source": "Not valid!",
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'historical' or 'model'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'historical' or 'model'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1,
+        "value": 1.0
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "EffortEstimate"
+}

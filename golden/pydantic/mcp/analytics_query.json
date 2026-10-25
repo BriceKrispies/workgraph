@@ -1,0 +1,1566 @@
+{
+  "base": {
+    "metric": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "metric": "example"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:metric",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "metric"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metric:none",
+      "input": {
+        "metric": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "metric"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metric:int",
+      "input": {
+        "metric": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "metric"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metric:float",
+      "input": {
+        "metric": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "metric"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metric:bool",
+      "input": {
+        "metric": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "metric"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metric:str",
+      "input": {
+        "metric": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "x",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:metric:list",
+      "input": {
+        "metric": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "metric"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metric:dict",
+      "input": {
+        "metric": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "metric"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:metric",
+      "input": {
+        "metric": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "Not valid!",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:group_by:none",
+      "input": {
+        "group_by": null,
+        "metric": "example"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:group_by:int",
+      "input": {
+        "group_by": 12,
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "group_by"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:group_by:float",
+      "input": {
+        "group_by": 1.5,
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "group_by"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:group_by:bool",
+      "input": {
+        "group_by": true,
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "group_by"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:group_by:str",
+      "input": {
+        "group_by": "x",
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "group_by"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:group_by:list",
+      "input": {
+        "group_by": [
+          "a"
+        ],
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'period', 'project', 'repository', 'category', 'priority', 'status', 'provider', 'model', 'agent', 'kind', 'check_name', 'module', 'file_class' or 'relation_type'"
+            },
+            "input": "a",
+            "loc": [
+              "group_by",
+              0
+            ],
+            "msg": "Input should be 'period', 'project', 'repository', 'category', 'priority', 'status', 'provider', 'model', 'agent', 'kind', 'check_name', 'module', 'file_class' or 'relation_type'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:group_by:dict",
+      "input": {
+        "group_by": {
+          "k": 1
+        },
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "group_by"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:group_by",
+      "input": {
+        "group_by": [
+          "Not valid!"
+        ],
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'period', 'project', 'repository', 'category', 'priority', 'status', 'provider', 'model', 'agent', 'kind', 'check_name', 'module', 'file_class' or 'relation_type'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "group_by",
+              0
+            ],
+            "msg": "Input should be 'period', 'project', 'repository', 'category', 'priority', 'status', 'provider', 'model', 'agent', 'kind', 'check_name', 'module', 'file_class' or 'relation_type'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:none",
+      "input": {
+        "metric": "example",
+        "period": null
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'day', 'week', 'month', 'quarter' or 'year'"
+            },
+            "input": null,
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'day', 'week', 'month', 'quarter' or 'year'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:int",
+      "input": {
+        "metric": "example",
+        "period": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'day', 'week', 'month', 'quarter' or 'year'"
+            },
+            "input": 12,
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'day', 'week', 'month', 'quarter' or 'year'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:float",
+      "input": {
+        "metric": "example",
+        "period": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'day', 'week', 'month', 'quarter' or 'year'"
+            },
+            "input": 1.5,
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'day', 'week', 'month', 'quarter' or 'year'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:bool",
+      "input": {
+        "metric": "example",
+        "period": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'day', 'week', 'month', 'quarter' or 'year'"
+            },
+            "input": true,
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'day', 'week', 'month', 'quarter' or 'year'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:str",
+      "input": {
+        "metric": "example",
+        "period": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'day', 'week', 'month', 'quarter' or 'year'"
+            },
+            "input": "x",
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'day', 'week', 'month', 'quarter' or 'year'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:list",
+      "input": {
+        "metric": "example",
+        "period": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'day', 'week', 'month', 'quarter' or 'year'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'day', 'week', 'month', 'quarter' or 'year'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:dict",
+      "input": {
+        "metric": "example",
+        "period": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'day', 'week', 'month', 'quarter' or 'year'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'day', 'week', 'month', 'quarter' or 'year'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:period",
+      "input": {
+        "metric": "example",
+        "period": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'day', 'week', 'month', 'quarter' or 'year'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'day', 'week', 'month', 'quarter' or 'year'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:none",
+      "input": {
+        "metric": "example",
+        "project": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:int",
+      "input": {
+        "metric": "example",
+        "project": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:float",
+      "input": {
+        "metric": "example",
+        "project": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:bool",
+      "input": {
+        "metric": "example",
+        "project": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:str",
+      "input": {
+        "metric": "example",
+        "project": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": "x",
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:list",
+      "input": {
+        "metric": "example",
+        "project": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:dict",
+      "input": {
+        "metric": "example",
+        "project": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:project",
+      "input": {
+        "metric": "example",
+        "project": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": "Not valid!",
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:none",
+      "input": {
+        "metric": "example",
+        "repository": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:int",
+      "input": {
+        "metric": "example",
+        "repository": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:float",
+      "input": {
+        "metric": "example",
+        "repository": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:bool",
+      "input": {
+        "metric": "example",
+        "repository": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:str",
+      "input": {
+        "metric": "example",
+        "repository": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:list",
+      "input": {
+        "metric": "example",
+        "repository": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:dict",
+      "input": {
+        "metric": "example",
+        "repository": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:repository",
+      "input": {
+        "metric": "example",
+        "repository": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:category:none",
+      "input": {
+        "category": null,
+        "metric": "example"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:category:int",
+      "input": {
+        "category": 12,
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:float",
+      "input": {
+        "category": 1.5,
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:bool",
+      "input": {
+        "category": true,
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:str",
+      "input": {
+        "category": "x",
+        "metric": "example"
+      },
+      "output": {
+        "ok": {
+          "category": "x",
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:category:list",
+      "input": {
+        "category": [
+          "a"
+        ],
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:dict",
+      "input": {
+        "category": {
+          "k": 1
+        },
+        "metric": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:category",
+      "input": {
+        "category": "Not valid!",
+        "metric": "example"
+      },
+      "output": {
+        "ok": {
+          "category": "Not valid!",
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:provider:none",
+      "input": {
+        "metric": "example",
+        "provider": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:provider:int",
+      "input": {
+        "metric": "example",
+        "provider": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:float",
+      "input": {
+        "metric": "example",
+        "provider": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:bool",
+      "input": {
+        "metric": "example",
+        "provider": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:str",
+      "input": {
+        "metric": "example",
+        "provider": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": "x",
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:provider:list",
+      "input": {
+        "metric": "example",
+        "provider": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:dict",
+      "input": {
+        "metric": "example",
+        "provider": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:provider",
+      "input": {
+        "metric": "example",
+        "provider": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": "Not valid!",
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:model:none",
+      "input": {
+        "metric": "example",
+        "model": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:model:int",
+      "input": {
+        "metric": "example",
+        "model": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:float",
+      "input": {
+        "metric": "example",
+        "model": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:bool",
+      "input": {
+        "metric": "example",
+        "model": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:str",
+      "input": {
+        "metric": "example",
+        "model": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": "x",
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:model:list",
+      "input": {
+        "metric": "example",
+        "model": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:dict",
+      "input": {
+        "metric": "example",
+        "model": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:model",
+      "input": {
+        "metric": "example",
+        "model": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": "Not valid!",
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "metric": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "metric": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "metric": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "metric": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "metric": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "metric": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "metric": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "metric": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "metric": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "category": null,
+          "group_by": null,
+          "metric": "example",
+          "model": null,
+          "period": "week",
+          "project": null,
+          "provider": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "analytics_queryArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of analytics_queryArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "analytics_query"
+}

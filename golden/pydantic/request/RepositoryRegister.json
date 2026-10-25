@@ -1,0 +1,1082 @@
+{
+  "base": {
+    "path": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": null,
+          "path": "example",
+          "projects": [],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "missing:path",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "path"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:none",
+      "input": {
+        "path": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:int",
+      "input": {
+        "path": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:float",
+      "input": {
+        "path": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:bool",
+      "input": {
+        "path": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:str",
+      "input": {
+        "path": "x"
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": null,
+          "path": "x",
+          "projects": [],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "wrong:path:list",
+      "input": {
+        "path": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:dict",
+      "input": {
+        "path": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:path",
+      "input": {
+        "path": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": null,
+          "path": "Not valid!",
+          "projects": [],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "min_length:path",
+      "input": {
+        "path": ""
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "path"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:none",
+      "input": {
+        "name": null,
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": null,
+          "path": "example",
+          "projects": [],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "wrong:name:int",
+      "input": {
+        "name": 12,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:float",
+      "input": {
+        "name": 1.5,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:bool",
+      "input": {
+        "name": true,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:str",
+      "input": {
+        "name": "x",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": "x",
+          "path": "example",
+          "projects": [],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "wrong:name:list",
+      "input": {
+        "name": [
+          "a"
+        ],
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:dict",
+      "input": {
+        "name": {
+          "k": 1
+        },
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:name",
+      "input": {
+        "name": "Not valid!",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": "Not valid!",
+          "path": "example",
+          "projects": [],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "max_length:name",
+      "input": {
+        "name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "max_length": 200
+            },
+            "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "loc": [
+              "name"
+            ],
+            "msg": "String should have at most 200 characters",
+            "type": "string_too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:none",
+      "input": {
+        "description": null,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:int",
+      "input": {
+        "description": 12,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:float",
+      "input": {
+        "description": 1.5,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:bool",
+      "input": {
+        "description": true,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:str",
+      "input": {
+        "description": "x",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "x",
+          "name": null,
+          "path": "example",
+          "projects": [],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "wrong:description:list",
+      "input": {
+        "description": [
+          "a"
+        ],
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:dict",
+      "input": {
+        "description": {
+          "k": 1
+        },
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:description",
+      "input": {
+        "description": "Not valid!",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "Not valid!",
+          "name": null,
+          "path": "example",
+          "projects": [],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "wrong:access_mode:none",
+      "input": {
+        "access_mode": null,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'read_only' or 'read_write'"
+            },
+            "input": null,
+            "loc": [
+              "access_mode"
+            ],
+            "msg": "Input should be 'read_only' or 'read_write'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:access_mode:int",
+      "input": {
+        "access_mode": 12,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'read_only' or 'read_write'"
+            },
+            "input": 12,
+            "loc": [
+              "access_mode"
+            ],
+            "msg": "Input should be 'read_only' or 'read_write'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:access_mode:float",
+      "input": {
+        "access_mode": 1.5,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'read_only' or 'read_write'"
+            },
+            "input": 1.5,
+            "loc": [
+              "access_mode"
+            ],
+            "msg": "Input should be 'read_only' or 'read_write'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:access_mode:bool",
+      "input": {
+        "access_mode": true,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'read_only' or 'read_write'"
+            },
+            "input": true,
+            "loc": [
+              "access_mode"
+            ],
+            "msg": "Input should be 'read_only' or 'read_write'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:access_mode:str",
+      "input": {
+        "access_mode": "x",
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'read_only' or 'read_write'"
+            },
+            "input": "x",
+            "loc": [
+              "access_mode"
+            ],
+            "msg": "Input should be 'read_only' or 'read_write'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:access_mode:list",
+      "input": {
+        "access_mode": [
+          "a"
+        ],
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'read_only' or 'read_write'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "access_mode"
+            ],
+            "msg": "Input should be 'read_only' or 'read_write'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:access_mode:dict",
+      "input": {
+        "access_mode": {
+          "k": 1
+        },
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'read_only' or 'read_write'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "access_mode"
+            ],
+            "msg": "Input should be 'read_only' or 'read_write'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:access_mode",
+      "input": {
+        "access_mode": "Not valid!",
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'read_only' or 'read_write'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "access_mode"
+            ],
+            "msg": "Input should be 'read_only' or 'read_write'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tracked_branches:none",
+      "input": {
+        "path": "example",
+        "tracked_branches": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "tracked_branches"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tracked_branches:int",
+      "input": {
+        "path": "example",
+        "tracked_branches": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "tracked_branches"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tracked_branches:float",
+      "input": {
+        "path": "example",
+        "tracked_branches": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "tracked_branches"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tracked_branches:bool",
+      "input": {
+        "path": "example",
+        "tracked_branches": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "tracked_branches"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tracked_branches:str",
+      "input": {
+        "path": "example",
+        "tracked_branches": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "tracked_branches"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tracked_branches:list",
+      "input": {
+        "path": "example",
+        "tracked_branches": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": null,
+          "path": "example",
+          "projects": [],
+          "tracked_branches": [
+            "a"
+          ]
+        }
+      }
+    },
+    {
+      "id": "wrong:tracked_branches:dict",
+      "input": {
+        "path": "example",
+        "tracked_branches": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "tracked_branches"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:tracked_branches",
+      "input": {
+        "path": "example",
+        "tracked_branches": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": null,
+          "path": "example",
+          "projects": [],
+          "tracked_branches": [
+            "Not valid!"
+          ]
+        }
+      }
+    },
+    {
+      "id": "wrong:projects:none",
+      "input": {
+        "path": "example",
+        "projects": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:int",
+      "input": {
+        "path": "example",
+        "projects": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:float",
+      "input": {
+        "path": "example",
+        "projects": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:bool",
+      "input": {
+        "path": "example",
+        "projects": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:str",
+      "input": {
+        "path": "example",
+        "projects": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:list",
+      "input": {
+        "path": "example",
+        "projects": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": null,
+          "path": "example",
+          "projects": [
+            "a"
+          ],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "wrong:projects:dict",
+      "input": {
+        "path": "example",
+        "projects": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:projects",
+      "input": {
+        "path": "example",
+        "projects": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "ok": {
+          "access_mode": "read_write",
+          "description": "",
+          "name": null,
+          "path": "example",
+          "projects": [
+            "Not valid!"
+          ],
+          "tracked_branches": []
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "path": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "RepositoryRegister"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of RepositoryRegister",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "RepositoryRegister"
+}

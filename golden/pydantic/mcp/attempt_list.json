@@ -1,0 +1,965 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "task": null
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:statuses:none",
+      "input": {
+        "statuses": null
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:statuses:int",
+      "input": {
+        "statuses": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:float",
+      "input": {
+        "statuses": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:bool",
+      "input": {
+        "statuses": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:str",
+      "input": {
+        "statuses": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:list",
+      "input": {
+        "statuses": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": [
+            "a"
+          ],
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:statuses:dict",
+      "input": {
+        "statuses": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:statuses",
+      "input": {
+        "statuses": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": [
+            "Not valid!"
+          ],
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:provider:none",
+      "input": {
+        "provider": null
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:provider:int",
+      "input": {
+        "provider": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:float",
+      "input": {
+        "provider": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:bool",
+      "input": {
+        "provider": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:str",
+      "input": {
+        "provider": "x"
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": "x",
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:provider:list",
+      "input": {
+        "provider": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:dict",
+      "input": {
+        "provider": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:provider",
+      "input": {
+        "provider": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": "Not valid!",
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:limit:none",
+      "input": {
+        "limit": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:int",
+      "input": {
+        "limit": 12
+      },
+      "output": {
+        "ok": {
+          "limit": 12,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:limit:float",
+      "input": {
+        "limit": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:bool",
+      "input": {
+        "limit": true
+      },
+      "output": {
+        "ok": {
+          "limit": 1,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:limit:str",
+      "input": {
+        "limit": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:list",
+      "input": {
+        "limit": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:dict",
+      "input": {
+        "limit": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:limit",
+      "input": {
+        "limit": 0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1
+            },
+            "input": 0,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:limit",
+      "input": {
+        "limit": 201
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 200
+            },
+            "input": 201,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be less than or equal to 200",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:none",
+      "input": {
+        "offset": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:int",
+      "input": {
+        "offset": 12
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 12,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:offset:float",
+      "input": {
+        "offset": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:bool",
+      "input": {
+        "offset": true
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 1,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:offset:str",
+      "input": {
+        "offset": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:list",
+      "input": {
+        "offset": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:dict",
+      "input": {
+        "offset": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:offset",
+      "input": {
+        "offset": -1
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0
+            },
+            "input": -1,
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "limit": 50,
+          "offset": 0,
+          "provider": null,
+          "statuses": null,
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "attempt_listArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of attempt_listArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "attempt_list"
+}

@@ -1,0 +1,677 @@
+{
+  "base": {
+    "attempt": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "attempt": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt": "example",
+          "error": null,
+          "status": "succeeded",
+          "summary": null
+        }
+      }
+    },
+    {
+      "id": "missing:attempt",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "attempt"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt:none",
+      "input": {
+        "attempt": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt:int",
+      "input": {
+        "attempt": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt:float",
+      "input": {
+        "attempt": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt:bool",
+      "input": {
+        "attempt": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt:str",
+      "input": {
+        "attempt": "x"
+      },
+      "output": {
+        "ok": {
+          "attempt": "x",
+          "error": null,
+          "status": "succeeded",
+          "summary": null
+        }
+      }
+    },
+    {
+      "id": "wrong:attempt:list",
+      "input": {
+        "attempt": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt:dict",
+      "input": {
+        "attempt": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:attempt",
+      "input": {
+        "attempt": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "attempt": "Not valid!",
+          "error": null,
+          "status": "succeeded",
+          "summary": null
+        }
+      }
+    },
+    {
+      "id": "wrong:status:none",
+      "input": {
+        "attempt": "example",
+        "status": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:int",
+      "input": {
+        "attempt": "example",
+        "status": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:float",
+      "input": {
+        "attempt": "example",
+        "status": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:bool",
+      "input": {
+        "attempt": "example",
+        "status": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:str",
+      "input": {
+        "attempt": "example",
+        "status": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "pattern": "^(succeeded|failed)$"
+            },
+            "input": "x",
+            "loc": [
+              "status"
+            ],
+            "msg": "String should match pattern '^(succeeded|failed)$'",
+            "type": "string_pattern_mismatch"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:list",
+      "input": {
+        "attempt": "example",
+        "status": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:dict",
+      "input": {
+        "attempt": "example",
+        "status": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:status",
+      "input": {
+        "attempt": "example",
+        "status": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "pattern": "^(succeeded|failed)$"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "status"
+            ],
+            "msg": "String should match pattern '^(succeeded|failed)$'",
+            "type": "string_pattern_mismatch"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:none",
+      "input": {
+        "attempt": "example",
+        "summary": null
+      },
+      "output": {
+        "ok": {
+          "attempt": "example",
+          "error": null,
+          "status": "succeeded",
+          "summary": null
+        }
+      }
+    },
+    {
+      "id": "wrong:summary:int",
+      "input": {
+        "attempt": "example",
+        "summary": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:float",
+      "input": {
+        "attempt": "example",
+        "summary": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:bool",
+      "input": {
+        "attempt": "example",
+        "summary": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:str",
+      "input": {
+        "attempt": "example",
+        "summary": "x"
+      },
+      "output": {
+        "ok": {
+          "attempt": "example",
+          "error": null,
+          "status": "succeeded",
+          "summary": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:summary:list",
+      "input": {
+        "attempt": "example",
+        "summary": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:summary:dict",
+      "input": {
+        "attempt": "example",
+        "summary": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "summary"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:summary",
+      "input": {
+        "attempt": "example",
+        "summary": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "attempt": "example",
+          "error": null,
+          "status": "succeeded",
+          "summary": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "wrong:error:none",
+      "input": {
+        "attempt": "example",
+        "error": null
+      },
+      "output": {
+        "ok": {
+          "attempt": "example",
+          "error": null,
+          "status": "succeeded",
+          "summary": null
+        }
+      }
+    },
+    {
+      "id": "wrong:error:int",
+      "input": {
+        "attempt": "example",
+        "error": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "error"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:error:float",
+      "input": {
+        "attempt": "example",
+        "error": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "error"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:error:bool",
+      "input": {
+        "attempt": "example",
+        "error": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "error"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:error:str",
+      "input": {
+        "attempt": "example",
+        "error": "x"
+      },
+      "output": {
+        "ok": {
+          "attempt": "example",
+          "error": "x",
+          "status": "succeeded",
+          "summary": null
+        }
+      }
+    },
+    {
+      "id": "wrong:error:list",
+      "input": {
+        "attempt": "example",
+        "error": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "error"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:error:dict",
+      "input": {
+        "attempt": "example",
+        "error": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "error"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:error",
+      "input": {
+        "attempt": "example",
+        "error": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "attempt": "example",
+          "error": "Not valid!",
+          "status": "succeeded",
+          "summary": null
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "attempt": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "attempt": "example",
+          "error": null,
+          "status": "succeeded",
+          "summary": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "attempt_submitArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of attempt_submitArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "attempt_submit"
+}

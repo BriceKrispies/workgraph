@@ -1,0 +1,203 @@
+{
+  "base": {
+    "attempt_id": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "attempt_id": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "example"
+        }
+      }
+    },
+    {
+      "id": "missing:attempt_id",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:none",
+      "input": {
+        "attempt_id": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:int",
+      "input": {
+        "attempt_id": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:float",
+      "input": {
+        "attempt_id": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:bool",
+      "input": {
+        "attempt_id": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:str",
+      "input": {
+        "attempt_id": "x"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:attempt_id:list",
+      "input": {
+        "attempt_id": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:dict",
+      "input": {
+        "attempt_id": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:attempt_id",
+      "input": {
+        "attempt_id": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "attempt_id": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "example"
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "attempt_getArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of attempt_getArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "attempt_get"
+}

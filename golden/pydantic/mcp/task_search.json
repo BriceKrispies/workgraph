@@ -1,0 +1,745 @@
+{
+  "base": {
+    "query": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "query": "example"
+      },
+      "output": {
+        "ok": {
+          "limit": 20,
+          "mode": "hybrid",
+          "query": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:query",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "query"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:query:none",
+      "input": {
+        "query": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "query"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:query:int",
+      "input": {
+        "query": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "query"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:query:float",
+      "input": {
+        "query": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "query"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:query:bool",
+      "input": {
+        "query": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "query"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:query:str",
+      "input": {
+        "query": "x"
+      },
+      "output": {
+        "ok": {
+          "limit": 20,
+          "mode": "hybrid",
+          "query": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:query:list",
+      "input": {
+        "query": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "query"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:query:dict",
+      "input": {
+        "query": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "query"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:query",
+      "input": {
+        "query": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "limit": 20,
+          "mode": "hybrid",
+          "query": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "min_length:query",
+      "input": {
+        "query": ""
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "query"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:mode:none",
+      "input": {
+        "mode": null,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'hybrid', 'lexical' or 'semantic'"
+            },
+            "input": null,
+            "loc": [
+              "mode"
+            ],
+            "msg": "Input should be 'hybrid', 'lexical' or 'semantic'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:mode:int",
+      "input": {
+        "mode": 12,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'hybrid', 'lexical' or 'semantic'"
+            },
+            "input": 12,
+            "loc": [
+              "mode"
+            ],
+            "msg": "Input should be 'hybrid', 'lexical' or 'semantic'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:mode:float",
+      "input": {
+        "mode": 1.5,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'hybrid', 'lexical' or 'semantic'"
+            },
+            "input": 1.5,
+            "loc": [
+              "mode"
+            ],
+            "msg": "Input should be 'hybrid', 'lexical' or 'semantic'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:mode:bool",
+      "input": {
+        "mode": true,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'hybrid', 'lexical' or 'semantic'"
+            },
+            "input": true,
+            "loc": [
+              "mode"
+            ],
+            "msg": "Input should be 'hybrid', 'lexical' or 'semantic'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:mode:str",
+      "input": {
+        "mode": "x",
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'hybrid', 'lexical' or 'semantic'"
+            },
+            "input": "x",
+            "loc": [
+              "mode"
+            ],
+            "msg": "Input should be 'hybrid', 'lexical' or 'semantic'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:mode:list",
+      "input": {
+        "mode": [
+          "a"
+        ],
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'hybrid', 'lexical' or 'semantic'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "mode"
+            ],
+            "msg": "Input should be 'hybrid', 'lexical' or 'semantic'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:mode:dict",
+      "input": {
+        "mode": {
+          "k": 1
+        },
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'hybrid', 'lexical' or 'semantic'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "mode"
+            ],
+            "msg": "Input should be 'hybrid', 'lexical' or 'semantic'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:mode",
+      "input": {
+        "mode": "Not valid!",
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'hybrid', 'lexical' or 'semantic'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "mode"
+            ],
+            "msg": "Input should be 'hybrid', 'lexical' or 'semantic'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:none",
+      "input": {
+        "limit": null,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:int",
+      "input": {
+        "limit": 12,
+        "query": "example"
+      },
+      "output": {
+        "ok": {
+          "limit": 12,
+          "mode": "hybrid",
+          "query": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:limit:float",
+      "input": {
+        "limit": 1.5,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:bool",
+      "input": {
+        "limit": true,
+        "query": "example"
+      },
+      "output": {
+        "ok": {
+          "limit": 1,
+          "mode": "hybrid",
+          "query": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:limit:str",
+      "input": {
+        "limit": "x",
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:list",
+      "input": {
+        "limit": [
+          "a"
+        ],
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:dict",
+      "input": {
+        "limit": {
+          "k": 1
+        },
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:limit",
+      "input": {
+        "limit": 0,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1
+            },
+            "input": 0,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:limit",
+      "input": {
+        "limit": 201,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 200
+            },
+            "input": 201,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be less than or equal to 200",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "query": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "limit": 20,
+          "mode": "hybrid",
+          "query": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "query": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "query": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "query": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "query": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "limit": 20,
+          "mode": "hybrid",
+          "query": "example",
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "query": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "query": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "query": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "limit": 20,
+          "mode": "hybrid",
+          "query": "example",
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "query": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "limit": 20,
+          "mode": "hybrid",
+          "query": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "task_searchArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of task_searchArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_search"
+}

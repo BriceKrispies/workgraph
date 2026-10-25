@@ -1,0 +1,750 @@
+{
+  "base": {
+    "target": "example",
+    "task": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "target": "example",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "example",
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:task",
+      "input": {
+        "target": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "target": "example"
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "target": "example",
+        "task": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "target": "example",
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "target": "example",
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "target": "example",
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "target": "example",
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "example",
+          "task": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "target": "example",
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "target": "example",
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "target": "example",
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "example",
+          "task": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:target",
+      "input": {
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "task": "example"
+            },
+            "loc": [
+              "target"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:none",
+      "input": {
+        "target": null,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:int",
+      "input": {
+        "target": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:float",
+      "input": {
+        "target": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:bool",
+      "input": {
+        "target": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:str",
+      "input": {
+        "target": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "x",
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:target:list",
+      "input": {
+        "target": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:dict",
+      "input": {
+        "target": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:target",
+      "input": {
+        "target": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "Not valid!",
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:relation_type:none",
+      "input": {
+        "relation_type": null,
+        "target": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": null,
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:int",
+      "input": {
+        "relation_type": 12,
+        "target": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": 12,
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:float",
+      "input": {
+        "relation_type": 1.5,
+        "target": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": 1.5,
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:bool",
+      "input": {
+        "relation_type": true,
+        "target": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": true,
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:str",
+      "input": {
+        "relation_type": "x",
+        "target": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": "x",
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:list",
+      "input": {
+        "relation_type": [
+          "a"
+        ],
+        "target": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:dict",
+      "input": {
+        "relation_type": {
+          "k": 1
+        },
+        "target": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:relation_type",
+      "input": {
+        "relation_type": "Not valid!",
+        "target": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "target": "example",
+        "task": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "example",
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "target": "example",
+        "task": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "target": "example",
+        "task": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "target": "example",
+        "task": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "target": "example",
+        "task": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "example",
+          "task": "example",
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "target": "example",
+        "task": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "target": "example",
+        "task": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "target": "example",
+        "task": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "example",
+          "task": "example",
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "target": "example",
+        "task": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "example",
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "task_add_relationArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of task_add_relationArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_add_relation"
+}

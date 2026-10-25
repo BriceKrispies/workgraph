@@ -1,0 +1,3408 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:statuses:none",
+      "input": {
+        "statuses": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:statuses:int",
+      "input": {
+        "statuses": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:float",
+      "input": {
+        "statuses": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:bool",
+      "input": {
+        "statuses": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:str",
+      "input": {
+        "statuses": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:list",
+      "input": {
+        "statuses": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": "a",
+            "loc": [
+              "statuses",
+              0
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:statuses:dict",
+      "input": {
+        "statuses": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "statuses"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:statuses",
+      "input": {
+        "statuses": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "statuses",
+              0
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:none",
+      "input": {
+        "priorities": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:priorities:int",
+      "input": {
+        "priorities": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:float",
+      "input": {
+        "priorities": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:bool",
+      "input": {
+        "priorities": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:str",
+      "input": {
+        "priorities": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:list",
+      "input": {
+        "priorities": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "a",
+            "loc": [
+              "priorities",
+              0
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priorities:dict",
+      "input": {
+        "priorities": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "priorities"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:priorities",
+      "input": {
+        "priorities": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "priorities",
+              0
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:none",
+      "input": {
+        "project": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:int",
+      "input": {
+        "project": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:float",
+      "input": {
+        "project": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:bool",
+      "input": {
+        "project": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:str",
+      "input": {
+        "project": "x"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": "x",
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:list",
+      "input": {
+        "project": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:dict",
+      "input": {
+        "project": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:project",
+      "input": {
+        "project": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": "Not valid!",
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:none",
+      "input": {
+        "repository": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:int",
+      "input": {
+        "repository": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:float",
+      "input": {
+        "repository": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:bool",
+      "input": {
+        "repository": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:str",
+      "input": {
+        "repository": "x"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": "x",
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:list",
+      "input": {
+        "repository": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:dict",
+      "input": {
+        "repository": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:repository",
+      "input": {
+        "repository": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": "Not valid!",
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:none",
+      "input": {
+        "tags": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:int",
+      "input": {
+        "tags": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:float",
+      "input": {
+        "tags": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:bool",
+      "input": {
+        "tags": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:str",
+      "input": {
+        "tags": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:list",
+      "input": {
+        "tags": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": [
+            "a"
+          ],
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:dict",
+      "input": {
+        "tags": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:tags",
+      "input": {
+        "tags": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": [
+            "Not valid!"
+          ],
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:file:none",
+      "input": {
+        "file": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:file:int",
+      "input": {
+        "file": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:file:float",
+      "input": {
+        "file": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:file:bool",
+      "input": {
+        "file": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:file:str",
+      "input": {
+        "file": "x"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": "x",
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:file:list",
+      "input": {
+        "file": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:file:dict",
+      "input": {
+        "file": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "file"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:file",
+      "input": {
+        "file": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": "Not valid!",
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:category:none",
+      "input": {
+        "category": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:category:int",
+      "input": {
+        "category": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:float",
+      "input": {
+        "category": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:bool",
+      "input": {
+        "category": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:str",
+      "input": {
+        "category": "x"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": "x",
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:category:list",
+      "input": {
+        "category": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:category:dict",
+      "input": {
+        "category": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "category"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:category",
+      "input": {
+        "category": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": "Not valid!",
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:assignee:none",
+      "input": {
+        "assignee": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:assignee:int",
+      "input": {
+        "assignee": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:float",
+      "input": {
+        "assignee": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:bool",
+      "input": {
+        "assignee": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:str",
+      "input": {
+        "assignee": "x"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": "x",
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:assignee:list",
+      "input": {
+        "assignee": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:dict",
+      "input": {
+        "assignee": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:assignee",
+      "input": {
+        "assignee": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": "Not valid!",
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:none",
+      "input": {
+        "parent": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:int",
+      "input": {
+        "parent": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:float",
+      "input": {
+        "parent": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:bool",
+      "input": {
+        "parent": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:str",
+      "input": {
+        "parent": "x"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": "x",
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:list",
+      "input": {
+        "parent": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:dict",
+      "input": {
+        "parent": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:parent",
+      "input": {
+        "parent": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": "Not valid!",
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:root_only:none",
+      "input": {
+        "root_only": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "root_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:root_only:int",
+      "input": {
+        "root_only": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "root_only"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:root_only:float",
+      "input": {
+        "root_only": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "root_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:root_only:bool",
+      "input": {
+        "root_only": true
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": true,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:root_only:str",
+      "input": {
+        "root_only": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "root_only"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:root_only:list",
+      "input": {
+        "root_only": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "root_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:root_only:dict",
+      "input": {
+        "root_only": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "root_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:text:none",
+      "input": {
+        "text": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:text:int",
+      "input": {
+        "text": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:text:float",
+      "input": {
+        "text": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:text:bool",
+      "input": {
+        "text": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:text:str",
+      "input": {
+        "text": "x"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:text:list",
+      "input": {
+        "text": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:text:dict",
+      "input": {
+        "text": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:text",
+      "input": {
+        "text": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "wrong:created_after:none",
+      "input": {
+        "created_after": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:created_after:int",
+      "input": {
+        "created_after": 12
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": "1970-01-01T00:00:12Z",
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:created_after:float",
+      "input": {
+        "created_after": 1.5
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": "1970-01-01T00:00:01.500000Z",
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:created_after:bool",
+      "input": {
+        "created_after": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "created_after"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:created_after:str",
+      "input": {
+        "created_after": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "input is too short"
+            },
+            "input": "x",
+            "loc": [
+              "created_after"
+            ],
+            "msg": "Input should be a valid datetime or date, input is too short",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:created_after:list",
+      "input": {
+        "created_after": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "created_after"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:created_after:dict",
+      "input": {
+        "created_after": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "created_after"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:created_after",
+      "input": {
+        "created_after": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid character in year"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "created_after"
+            ],
+            "msg": "Input should be a valid datetime or date, invalid character in year",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:created_before:none",
+      "input": {
+        "created_before": null
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:created_before:int",
+      "input": {
+        "created_before": 12
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": "1970-01-01T00:00:12Z",
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:created_before:float",
+      "input": {
+        "created_before": 1.5
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": "1970-01-01T00:00:01.500000Z",
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:created_before:bool",
+      "input": {
+        "created_before": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "created_before"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:created_before:str",
+      "input": {
+        "created_before": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "input is too short"
+            },
+            "input": "x",
+            "loc": [
+              "created_before"
+            ],
+            "msg": "Input should be a valid datetime or date, input is too short",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:created_before:list",
+      "input": {
+        "created_before": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "created_before"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:created_before:dict",
+      "input": {
+        "created_before": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "created_before"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:created_before",
+      "input": {
+        "created_before": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid character in year"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "created_before"
+            ],
+            "msg": "Input should be a valid datetime or date, invalid character in year",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:include_archived:none",
+      "input": {
+        "include_archived": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "include_archived"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:include_archived:int",
+      "input": {
+        "include_archived": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "include_archived"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:include_archived:float",
+      "input": {
+        "include_archived": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "include_archived"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:include_archived:bool",
+      "input": {
+        "include_archived": true
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": true,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:include_archived:str",
+      "input": {
+        "include_archived": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "include_archived"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:include_archived:list",
+      "input": {
+        "include_archived": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "include_archived"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:include_archived:dict",
+      "input": {
+        "include_archived": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "include_archived"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:archived_only:none",
+      "input": {
+        "archived_only": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "archived_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:archived_only:int",
+      "input": {
+        "archived_only": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "archived_only"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:archived_only:float",
+      "input": {
+        "archived_only": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "archived_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:archived_only:bool",
+      "input": {
+        "archived_only": true
+      },
+      "output": {
+        "ok": {
+          "archived_only": true,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:archived_only:str",
+      "input": {
+        "archived_only": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "archived_only"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:archived_only:list",
+      "input": {
+        "archived_only": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "archived_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:archived_only:dict",
+      "input": {
+        "archived_only": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "archived_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:none",
+      "input": {
+        "sort": null
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": null,
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:int",
+      "input": {
+        "sort": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": 12,
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:float",
+      "input": {
+        "sort": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": 1.5,
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:bool",
+      "input": {
+        "sort": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": true,
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:str",
+      "input": {
+        "sort": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": "x",
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:list",
+      "input": {
+        "sort": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:sort:dict",
+      "input": {
+        "sort": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:sort",
+      "input": {
+        "sort": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "sort"
+            ],
+            "msg": "Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:none",
+      "input": {
+        "descending": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:int",
+      "input": {
+        "descending": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:float",
+      "input": {
+        "descending": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:bool",
+      "input": {
+        "descending": true
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:descending:str",
+      "input": {
+        "descending": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:list",
+      "input": {
+        "descending": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:descending:dict",
+      "input": {
+        "descending": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "descending"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:none",
+      "input": {
+        "limit": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:int",
+      "input": {
+        "limit": 12
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 12,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:limit:float",
+      "input": {
+        "limit": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:bool",
+      "input": {
+        "limit": true
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 1,
+          "offset": 0,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:limit:str",
+      "input": {
+        "limit": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:list",
+      "input": {
+        "limit": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:limit:dict",
+      "input": {
+        "limit": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:limit",
+      "input": {
+        "limit": 0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1
+            },
+            "input": 0,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:limit",
+      "input": {
+        "limit": 501
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 500
+            },
+            "input": 501,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be less than or equal to 500",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:none",
+      "input": {
+        "offset": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:int",
+      "input": {
+        "offset": 12
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 12,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:offset:float",
+      "input": {
+        "offset": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:bool",
+      "input": {
+        "offset": true
+      },
+      "output": {
+        "ok": {
+          "archived_only": false,
+          "assignee": null,
+          "category": null,
+          "created_after": null,
+          "created_before": null,
+          "descending": true,
+          "file": null,
+          "include_archived": false,
+          "limit": 50,
+          "offset": 1,
+          "parent": null,
+          "priorities": null,
+          "project": null,
+          "repository": null,
+          "root_only": false,
+          "sort": "created_at",
+          "statuses": null,
+          "tags": null,
+          "text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:offset:str",
+      "input": {
+        "offset": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:list",
+      "input": {
+        "offset": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:offset:dict",
+      "input": {
+        "offset": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:offset",
+      "input": {
+        "offset": -1
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0
+            },
+            "input": -1,
+            "loc": [
+              "offset"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFilter"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of TaskFilter",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "TaskFilter"
+}

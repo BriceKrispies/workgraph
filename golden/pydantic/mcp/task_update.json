@@ -1,0 +1,2362 @@
+{
+  "base": {
+    "task": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:task",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "task"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "task": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "x",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "Not valid!",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:none",
+      "input": {
+        "expected_version": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:int",
+      "input": {
+        "expected_version": 12,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": 12,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:float",
+      "input": {
+        "expected_version": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:bool",
+      "input": {
+        "expected_version": true,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": 1,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:str",
+      "input": {
+        "expected_version": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:list",
+      "input": {
+        "expected_version": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:dict",
+      "input": {
+        "expected_version": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:none",
+      "input": {
+        "task": "example",
+        "title": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:title:int",
+      "input": {
+        "task": "example",
+        "title": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:float",
+      "input": {
+        "task": "example",
+        "title": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:bool",
+      "input": {
+        "task": "example",
+        "title": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:str",
+      "input": {
+        "task": "example",
+        "title": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:title:list",
+      "input": {
+        "task": "example",
+        "title": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:dict",
+      "input": {
+        "task": "example",
+        "title": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:title",
+      "input": {
+        "task": "example",
+        "title": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:description:none",
+      "input": {
+        "description": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:description:int",
+      "input": {
+        "description": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:float",
+      "input": {
+        "description": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:bool",
+      "input": {
+        "description": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:str",
+      "input": {
+        "description": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": "x",
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:description:list",
+      "input": {
+        "description": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:dict",
+      "input": {
+        "description": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:description",
+      "input": {
+        "description": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": "Not valid!",
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:status:none",
+      "input": {
+        "status": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:status:int",
+      "input": {
+        "status": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked' or 'cancelled'"
+            },
+            "input": 12,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked' or 'cancelled'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:float",
+      "input": {
+        "status": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked' or 'cancelled'"
+            },
+            "input": 1.5,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked' or 'cancelled'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:bool",
+      "input": {
+        "status": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked' or 'cancelled'"
+            },
+            "input": true,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked' or 'cancelled'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:str",
+      "input": {
+        "status": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked' or 'cancelled'"
+            },
+            "input": "x",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked' or 'cancelled'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:list",
+      "input": {
+        "status": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked' or 'cancelled'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked' or 'cancelled'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:dict",
+      "input": {
+        "status": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked' or 'cancelled'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked' or 'cancelled'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:status",
+      "input": {
+        "status": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked' or 'cancelled'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked' or 'cancelled'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:none",
+      "input": {
+        "priority": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:priority:int",
+      "input": {
+        "priority": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": 12,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:float",
+      "input": {
+        "priority": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": 1.5,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:bool",
+      "input": {
+        "priority": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": true,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:str",
+      "input": {
+        "priority": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "x",
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:list",
+      "input": {
+        "priority": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:dict",
+      "input": {
+        "priority": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:priority",
+      "input": {
+        "priority": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:none",
+      "input": {
+        "add_tags": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:add_tags:int",
+      "input": {
+        "add_tags": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:float",
+      "input": {
+        "add_tags": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:bool",
+      "input": {
+        "add_tags": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:str",
+      "input": {
+        "add_tags": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:list",
+      "input": {
+        "add_tags": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": [
+            "a"
+          ],
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:add_tags:dict",
+      "input": {
+        "add_tags": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:add_tags",
+      "input": {
+        "add_tags": [
+          "Not valid!"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": [
+            "Not valid!"
+          ],
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:remove_tags:none",
+      "input": {
+        "remove_tags": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:remove_tags:int",
+      "input": {
+        "remove_tags": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:remove_tags:float",
+      "input": {
+        "remove_tags": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:remove_tags:bool",
+      "input": {
+        "remove_tags": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:remove_tags:str",
+      "input": {
+        "remove_tags": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:remove_tags:list",
+      "input": {
+        "remove_tags": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": [
+            "a"
+          ],
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:remove_tags:dict",
+      "input": {
+        "remove_tags": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:remove_tags",
+      "input": {
+        "remove_tags": [
+          "Not valid!"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": [
+            "Not valid!"
+          ],
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:none",
+      "input": {
+        "acceptance_criteria": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:int",
+      "input": {
+        "acceptance_criteria": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:float",
+      "input": {
+        "acceptance_criteria": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:bool",
+      "input": {
+        "acceptance_criteria": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:str",
+      "input": {
+        "acceptance_criteria": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:list",
+      "input": {
+        "acceptance_criteria": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [
+            "a"
+          ],
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:dict",
+      "input": {
+        "acceptance_criteria": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:acceptance_criteria",
+      "input": {
+        "acceptance_criteria": [
+          "Not valid!"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [
+            "Not valid!"
+          ],
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:files:none",
+      "input": {
+        "files": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:files:int",
+      "input": {
+        "files": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:float",
+      "input": {
+        "files": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:bool",
+      "input": {
+        "files": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:str",
+      "input": {
+        "files": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:list",
+      "input": {
+        "files": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "a",
+            "loc": [
+              "files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:dict",
+      "input": {
+        "files": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:files",
+      "input": {
+        "files": [
+          "Not valid!"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:none",
+      "input": {
+        "add_files": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:add_files:int",
+      "input": {
+        "add_files": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:float",
+      "input": {
+        "add_files": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:bool",
+      "input": {
+        "add_files": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:str",
+      "input": {
+        "add_files": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:list",
+      "input": {
+        "add_files": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "a",
+            "loc": [
+              "add_files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:dict",
+      "input": {
+        "add_files": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:add_files",
+      "input": {
+        "add_files": [
+          "Not valid!"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "add_files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:none",
+      "input": {
+        "reason": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:reason:int",
+      "input": {
+        "reason": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:float",
+      "input": {
+        "reason": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:bool",
+      "input": {
+        "reason": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:str",
+      "input": {
+        "reason": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": "x",
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:reason:list",
+      "input": {
+        "reason": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:dict",
+      "input": {
+        "reason": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:reason",
+      "input": {
+        "reason": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": "Not valid!",
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "task": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "task": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "task": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "task": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "task": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "task": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "task": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "task": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "task": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": null,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "task_updateArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of task_updateArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_update"
+}

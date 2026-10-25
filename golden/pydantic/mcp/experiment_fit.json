@@ -1,0 +1,1009 @@
+{
+  "base": {
+    "model": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "model": "example"
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:model",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "model"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:none",
+      "input": {
+        "model": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:int",
+      "input": {
+        "model": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:float",
+      "input": {
+        "model": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:bool",
+      "input": {
+        "model": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:str",
+      "input": {
+        "model": "x"
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "x",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:model:list",
+      "input": {
+        "model": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:dict",
+      "input": {
+        "model": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:model",
+      "input": {
+        "model": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "Not valid!",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repo_penalty:none",
+      "input": {
+        "model": "example",
+        "repo_penalty": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "repo_penalty"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repo_penalty:int",
+      "input": {
+        "model": "example",
+        "repo_penalty": 12
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 12.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repo_penalty:float",
+      "input": {
+        "model": "example",
+        "repo_penalty": 1.5
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.5,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repo_penalty:bool",
+      "input": {
+        "model": "example",
+        "repo_penalty": true
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repo_penalty:str",
+      "input": {
+        "model": "example",
+        "repo_penalty": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "repo_penalty"
+            ],
+            "msg": "Input should be a valid number, unable to parse string as a number",
+            "type": "float_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repo_penalty:list",
+      "input": {
+        "model": "example",
+        "repo_penalty": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "repo_penalty"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repo_penalty:dict",
+      "input": {
+        "model": "example",
+        "repo_penalty": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "repo_penalty"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:repo_penalty",
+      "input": {
+        "model": "example",
+        "repo_penalty": -1
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0.0
+            },
+            "input": -1,
+            "loc": [
+              "repo_penalty"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:feature_penalty:none",
+      "input": {
+        "feature_penalty": null,
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "feature_penalty"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:feature_penalty:int",
+      "input": {
+        "feature_penalty": 12,
+        "model": "example"
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 12.0,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:feature_penalty:float",
+      "input": {
+        "feature_penalty": 1.5,
+        "model": "example"
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 1.5,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:feature_penalty:bool",
+      "input": {
+        "feature_penalty": true,
+        "model": "example"
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 1.0,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:feature_penalty:str",
+      "input": {
+        "feature_penalty": "x",
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "feature_penalty"
+            ],
+            "msg": "Input should be a valid number, unable to parse string as a number",
+            "type": "float_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:feature_penalty:list",
+      "input": {
+        "feature_penalty": [
+          "a"
+        ],
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "feature_penalty"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:feature_penalty:dict",
+      "input": {
+        "feature_penalty": {
+          "k": 1
+        },
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "feature_penalty"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:feature_penalty",
+      "input": {
+        "feature_penalty": -1,
+        "model": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0.0
+            },
+            "input": -1,
+            "loc": [
+              "feature_penalty"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:samples:none",
+      "input": {
+        "model": "example",
+        "samples": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "samples"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:samples:int",
+      "input": {
+        "model": "example",
+        "samples": 12
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 12,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:samples:float",
+      "input": {
+        "model": "example",
+        "samples": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "samples"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:samples:bool",
+      "input": {
+        "model": "example",
+        "samples": true
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 1,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:samples:str",
+      "input": {
+        "model": "example",
+        "samples": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "samples"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:samples:list",
+      "input": {
+        "model": "example",
+        "samples": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "samples"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:samples:dict",
+      "input": {
+        "model": "example",
+        "samples": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "samples"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:samples",
+      "input": {
+        "model": "example",
+        "samples": -1
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0
+            },
+            "input": -1,
+            "loc": [
+              "samples"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:samples",
+      "input": {
+        "model": "example",
+        "samples": 5001
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 5000
+            },
+            "input": 5001,
+            "loc": [
+              "samples"
+            ],
+            "msg": "Input should be less than or equal to 5000",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:seed:none",
+      "input": {
+        "model": "example",
+        "seed": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "seed"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:seed:int",
+      "input": {
+        "model": "example",
+        "seed": 12
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 12,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:seed:float",
+      "input": {
+        "model": "example",
+        "seed": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "seed"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:seed:bool",
+      "input": {
+        "model": "example",
+        "seed": true
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 1,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:seed:str",
+      "input": {
+        "model": "example",
+        "seed": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "seed"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:seed:list",
+      "input": {
+        "model": "example",
+        "seed": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "seed"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:seed:dict",
+      "input": {
+        "model": "example",
+        "seed": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "seed"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "model": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "model": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "model": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "model": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "model": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "model": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "model": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "model": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "model": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 0,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "experiment_fitArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of experiment_fitArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "experiment_fit"
+}

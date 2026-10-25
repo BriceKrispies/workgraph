@@ -1,0 +1,1009 @@
+{
+  "base": {
+    "cause": "too_big",
+    "source": "human",
+    "trial": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": null,
+          "source": "human",
+          "trial": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:trial",
+      "input": {
+        "cause": "too_big",
+        "source": "human"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "cause": "too_big",
+              "source": "human"
+            },
+            "loc": [
+              "trial"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:trial:none",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "trial"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:trial:int",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "trial"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:trial:float",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "trial"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:trial:bool",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "trial"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:trial:str",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "x"
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": null,
+          "source": "human",
+          "trial": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:trial:list",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "trial"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:trial:dict",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "trial"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:trial",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": null,
+          "source": "human",
+          "trial": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:cause",
+      "input": {
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "source": "human",
+              "trial": "example"
+            },
+            "loc": [
+              "cause"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:cause:none",
+      "input": {
+        "cause": null,
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'"
+            },
+            "input": null,
+            "loc": [
+              "cause"
+            ],
+            "msg": "Input should be 'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:cause:int",
+      "input": {
+        "cause": 12,
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'"
+            },
+            "input": 12,
+            "loc": [
+              "cause"
+            ],
+            "msg": "Input should be 'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:cause:float",
+      "input": {
+        "cause": 1.5,
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'"
+            },
+            "input": 1.5,
+            "loc": [
+              "cause"
+            ],
+            "msg": "Input should be 'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:cause:bool",
+      "input": {
+        "cause": true,
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'"
+            },
+            "input": true,
+            "loc": [
+              "cause"
+            ],
+            "msg": "Input should be 'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:cause:str",
+      "input": {
+        "cause": "x",
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'"
+            },
+            "input": "x",
+            "loc": [
+              "cause"
+            ],
+            "msg": "Input should be 'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:cause:list",
+      "input": {
+        "cause": [
+          "a"
+        ],
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "cause"
+            ],
+            "msg": "Input should be 'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:cause:dict",
+      "input": {
+        "cause": {
+          "k": 1
+        },
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "cause"
+            ],
+            "msg": "Input should be 'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:cause",
+      "input": {
+        "cause": "Not valid!",
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "cause"
+            ],
+            "msg": "Input should be 'too_big', 'missing_context', 'ambiguous_spec', 'coupling', 'gaming', 'gate_gap', 'harness', 'budget', 'wrong_model' or 'other'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing:source",
+      "input": {
+        "cause": "too_big",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "cause": "too_big",
+              "trial": "example"
+            },
+            "loc": [
+              "source"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:none",
+      "input": {
+        "cause": "too_big",
+        "source": null,
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'agent' or 'mechanical'"
+            },
+            "input": null,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'agent' or 'mechanical'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:int",
+      "input": {
+        "cause": "too_big",
+        "source": 12,
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'agent' or 'mechanical'"
+            },
+            "input": 12,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'agent' or 'mechanical'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:float",
+      "input": {
+        "cause": "too_big",
+        "source": 1.5,
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'agent' or 'mechanical'"
+            },
+            "input": 1.5,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'agent' or 'mechanical'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:bool",
+      "input": {
+        "cause": "too_big",
+        "source": true,
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'agent' or 'mechanical'"
+            },
+            "input": true,
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'agent' or 'mechanical'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:str",
+      "input": {
+        "cause": "too_big",
+        "source": "x",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'agent' or 'mechanical'"
+            },
+            "input": "x",
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'agent' or 'mechanical'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:list",
+      "input": {
+        "cause": "too_big",
+        "source": [
+          "a"
+        ],
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'agent' or 'mechanical'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'agent' or 'mechanical'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:source:dict",
+      "input": {
+        "cause": "too_big",
+        "source": {
+          "k": 1
+        },
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'agent' or 'mechanical'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'agent' or 'mechanical'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:source",
+      "input": {
+        "cause": "too_big",
+        "source": "Not valid!",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'human', 'agent' or 'mechanical'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "source"
+            ],
+            "msg": "Input should be 'human', 'agent' or 'mechanical'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:notes:none",
+      "input": {
+        "cause": "too_big",
+        "notes": null,
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": null,
+          "source": "human",
+          "trial": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:notes:int",
+      "input": {
+        "cause": "too_big",
+        "notes": 12,
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "notes"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:notes:float",
+      "input": {
+        "cause": "too_big",
+        "notes": 1.5,
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "notes"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:notes:bool",
+      "input": {
+        "cause": "too_big",
+        "notes": true,
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "notes"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:notes:str",
+      "input": {
+        "cause": "too_big",
+        "notes": "x",
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": "x",
+          "source": "human",
+          "trial": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:notes:list",
+      "input": {
+        "cause": "too_big",
+        "notes": [
+          "a"
+        ],
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "notes"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:notes:dict",
+      "input": {
+        "cause": "too_big",
+        "notes": {
+          "k": 1
+        },
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "notes"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:notes",
+      "input": {
+        "cause": "too_big",
+        "notes": "Not valid!",
+        "source": "human",
+        "trial": "example"
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": "Not valid!",
+          "source": "human",
+          "trial": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": null,
+          "source": "human",
+          "trial": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": null,
+          "source": "human",
+          "trial": "example",
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": null,
+          "source": "human",
+          "trial": "example",
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "cause": "too_big",
+        "source": "human",
+        "trial": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "cause": "too_big",
+          "notes": null,
+          "source": "human",
+          "trial": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "trial_classifyArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of trial_classifyArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "trial_classify"
+}

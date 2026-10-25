@@ -1,0 +1,648 @@
+{
+  "base": {
+    "path": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "name": null,
+          "path": "example",
+          "read_only": false,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:path",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "path"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:none",
+      "input": {
+        "path": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:int",
+      "input": {
+        "path": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:float",
+      "input": {
+        "path": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:bool",
+      "input": {
+        "path": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:str",
+      "input": {
+        "path": "x"
+      },
+      "output": {
+        "ok": {
+          "name": null,
+          "path": "x",
+          "read_only": false,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:path:list",
+      "input": {
+        "path": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:path:dict",
+      "input": {
+        "path": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "path"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:path",
+      "input": {
+        "path": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "name": null,
+          "path": "Not valid!",
+          "read_only": false,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:name:none",
+      "input": {
+        "name": null,
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "name": null,
+          "path": "example",
+          "read_only": false,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:name:int",
+      "input": {
+        "name": 12,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:float",
+      "input": {
+        "name": 1.5,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:bool",
+      "input": {
+        "name": true,
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:str",
+      "input": {
+        "name": "x",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "name": "x",
+          "path": "example",
+          "read_only": false,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:name:list",
+      "input": {
+        "name": [
+          "a"
+        ],
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:dict",
+      "input": {
+        "name": {
+          "k": 1
+        },
+        "path": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:name",
+      "input": {
+        "name": "Not valid!",
+        "path": "example"
+      },
+      "output": {
+        "ok": {
+          "name": "Not valid!",
+          "path": "example",
+          "read_only": false,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:read_only:none",
+      "input": {
+        "path": "example",
+        "read_only": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "read_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:read_only:int",
+      "input": {
+        "path": "example",
+        "read_only": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "read_only"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:read_only:float",
+      "input": {
+        "path": "example",
+        "read_only": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "read_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:read_only:bool",
+      "input": {
+        "path": "example",
+        "read_only": true
+      },
+      "output": {
+        "ok": {
+          "name": null,
+          "path": "example",
+          "read_only": true,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:read_only:str",
+      "input": {
+        "path": "example",
+        "read_only": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "read_only"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:read_only:list",
+      "input": {
+        "path": "example",
+        "read_only": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "read_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:read_only:dict",
+      "input": {
+        "path": "example",
+        "read_only": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "read_only"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "path": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "name": null,
+          "path": "example",
+          "read_only": false,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "path": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "path": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "path": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "path": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "name": null,
+          "path": "example",
+          "read_only": false,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "path": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "path": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "path": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "name": null,
+          "path": "example",
+          "read_only": false,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "path": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "name": null,
+          "path": "example",
+          "read_only": false,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "repository_registerArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of repository_registerArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "repository_register"
+}

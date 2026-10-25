@@ -1,0 +1,1659 @@
+{
+  "cases": [
+    {
+      "group": "string",
+      "id": "string-quote",
+      "input": {
+        "t": "str",
+        "v": "say \"hi\""
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"say \\\"hi\\\"\"\n"
+        },
+        "O06": {
+          "output": "\"say \\\"hi\\\"\""
+        },
+        "O10": {
+          "output": "\"say \\\"hi\\\"\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-backslash",
+      "input": {
+        "t": "str",
+        "v": "a\\b\\\\c"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"a\\\\b\\\\\\\\c\"\n"
+        },
+        "O06": {
+          "output": "\"a\\\\b\\\\\\\\c\""
+        },
+        "O10": {
+          "output": "\"a\\\\b\\\\\\\\c\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-controls-short",
+      "input": {
+        "t": "str",
+        "v": "\b\f\n\r\t"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"\\b\\f\\n\\r\\t\"\n"
+        },
+        "O06": {
+          "output": "\"\\b\\f\\n\\r\\t\""
+        },
+        "O10": {
+          "output": "\"\\b\\f\\n\\r\\t\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-controls-nul-unit",
+      "input": {
+        "t": "str",
+        "v": "\u0000\u0001\u0007\u000b\u001e\u001f"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"\\u0000\\u0001\\u0007\\u000b\\u001e\\u001f\"\n"
+        },
+        "O06": {
+          "output": "\"\\u0000\\u0001\\u0007\\u000b\\u001e\\u001f\""
+        },
+        "O10": {
+          "output": "\"\\u0000\\u0001\\u0007\\u000b\\u001e\\u001f\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-del",
+      "input": {
+        "t": "str",
+        "v": "\u007f"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"\\u007f\"\n"
+        },
+        "O06": {
+          "output": "\"\u007f\""
+        },
+        "O10": {
+          "output": "\"\\u007f\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-slash",
+      "input": {
+        "t": "str",
+        "v": "a/b</script>"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"a/b</script>\"\n"
+        },
+        "O06": {
+          "output": "\"a/b</script>\""
+        },
+        "O10": {
+          "output": "\"a/b</script>\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-latin",
+      "input": {
+        "t": "str",
+        "v": "caf\u00e9 na\u00efve"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"caf\\u00e9 na\\u00efve\"\n"
+        },
+        "O06": {
+          "output": "\"caf\u00e9 na\u00efve\""
+        },
+        "O10": {
+          "output": "\"caf\\u00e9 na\\u00efve\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-cjk",
+      "input": {
+        "t": "str",
+        "v": "\u65e5\u672c\u8a9e"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"\\u65e5\\u672c\\u8a9e\"\n"
+        },
+        "O06": {
+          "output": "\"\u65e5\u672c\u8a9e\""
+        },
+        "O10": {
+          "output": "\"\\u65e5\\u672c\\u8a9e\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-emoji-surrogate-pair",
+      "input": {
+        "t": "str",
+        "v": "a\ud83d\ude00b"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"a\\ud83d\\ude00b\"\n"
+        },
+        "O06": {
+          "output": "\"a\ud83d\ude00b\""
+        },
+        "O10": {
+          "output": "\"a\\ud83d\\ude00b\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-line-separators",
+      "input": {
+        "t": "str",
+        "v": "\u2028\u2029"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"\\u2028\\u2029\"\n"
+        },
+        "O06": {
+          "output": "\"\u2028\u2029\""
+        },
+        "O10": {
+          "output": "\"\\u2028\\u2029\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-bom",
+      "input": {
+        "t": "str",
+        "v": "\ufeffx"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"\\ufeffx\"\n"
+        },
+        "O06": {
+          "output": "\"\ufeffx\""
+        },
+        "O10": {
+          "output": "\"\\ufeffx\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-max-bmp",
+      "input": {
+        "t": "str",
+        "v": "\uffff"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"\\uffff\"\n"
+        },
+        "O06": {
+          "output": "\"\uffff\""
+        },
+        "O10": {
+          "output": "\"\\uffff\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-combining",
+      "input": {
+        "t": "str",
+        "v": "e\u0301"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"e\\u0301\"\n"
+        },
+        "O06": {
+          "output": "\"e\u0301\""
+        },
+        "O10": {
+          "output": "\"e\\u0301\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-lone-surrogate",
+      "input": {
+        "t": "str",
+        "v": "\ud800"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"\\ud800\"\n"
+        },
+        "O06": {
+          "error": "UnicodeEncodeError"
+        },
+        "O10": {
+          "output": "\"\\ud800\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-empty",
+      "input": {
+        "t": "str",
+        "v": ""
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"\"\n"
+        },
+        "O06": {
+          "output": "\"\""
+        },
+        "O10": {
+          "output": "\"\""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-edge-spaces",
+      "input": {
+        "t": "str",
+        "v": "  x  "
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"  x  \"\n"
+        },
+        "O06": {
+          "output": "\"  x  \""
+        },
+        "O10": {
+          "output": "\"  x  \""
+        }
+      }
+    },
+    {
+      "group": "string",
+      "id": "string-json-inside",
+      "input": {
+        "t": "str",
+        "v": "{\"a\": [1, 2.5, null]}"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"{\\\"a\\\": [1, 2.5, null]}\"\n"
+        },
+        "O06": {
+          "output": "\"{\\\"a\\\": [1, 2.5, null]}\""
+        },
+        "O10": {
+          "output": "\"{\\\"a\\\": [1, 2.5, null]}\""
+        }
+      }
+    },
+    {
+      "group": "dict",
+      "id": "string-keys-sorted",
+      "input": {
+        "t": "dict",
+        "v": [
+          [
+            "b",
+            {
+              "t": "str",
+              "v": "1"
+            }
+          ],
+          [
+            "a",
+            {
+              "t": "str",
+              "v": "\n"
+            }
+          ],
+          [
+            "\u00c9",
+            {
+              "t": "str",
+              "v": "x"
+            }
+          ],
+          [
+            "z",
+            {
+              "t": "int",
+              "v": 0
+            }
+          ],
+          [
+            "\u00e4",
+            {
+              "t": "int",
+              "v": 2
+            }
+          ]
+        ]
+      },
+      "outputs": {
+        "O01": {
+          "output": "{\n  \"b\": \"1\",\n  \"a\": \"\\n\",\n  \"\\u00c9\": \"x\",\n  \"z\": 0,\n  \"\\u00e4\": 2\n}\n"
+        },
+        "O06": {
+          "output": "{\"b\":\"1\",\"a\":\"\\n\",\"\u00c9\":\"x\",\"z\":0,\"\u00e4\":2}"
+        },
+        "O10": {
+          "output": "{\"a\":\"\\n\",\"b\":\"1\",\"z\":0,\"\\u00c9\":\"x\",\"\\u00e4\":2}"
+        }
+      }
+    },
+    {
+      "group": "dict",
+      "id": "dict-empty",
+      "input": {
+        "t": "dict",
+        "v": []
+      },
+      "outputs": {
+        "O01": {
+          "output": "{}\n"
+        },
+        "O06": {
+          "output": "{}"
+        },
+        "O10": {
+          "output": "{}"
+        }
+      }
+    },
+    {
+      "group": "list",
+      "id": "list-empty",
+      "input": {
+        "t": "list",
+        "v": []
+      },
+      "outputs": {
+        "O01": {
+          "output": "[]\n"
+        },
+        "O06": {
+          "output": "[]"
+        },
+        "O10": {
+          "output": "[]"
+        }
+      }
+    },
+    {
+      "group": "list",
+      "id": "list-mixed",
+      "input": {
+        "t": "list",
+        "v": [
+          {
+            "t": "int",
+            "v": 1
+          },
+          {
+            "t": "str",
+            "v": "two"
+          },
+          {
+            "t": "null"
+          },
+          {
+            "t": "float",
+            "v": "3.5"
+          },
+          {
+            "t": "list",
+            "v": []
+          },
+          {
+            "t": "dict",
+            "v": []
+          }
+        ]
+      },
+      "outputs": {
+        "O01": {
+          "output": "[\n  1,\n  \"two\",\n  null,\n  3.5,\n  [],\n  {}\n]\n"
+        },
+        "O06": {
+          "output": "[1,\"two\",null,3.5,[],{}]"
+        },
+        "O10": {
+          "output": "[1,\"two\",null,3.5,[],{}]"
+        }
+      }
+    },
+    {
+      "group": "scalar",
+      "id": "null",
+      "input": {
+        "t": "null"
+      },
+      "outputs": {
+        "O01": {
+          "output": "null\n"
+        },
+        "O06": {
+          "output": "null"
+        },
+        "O10": {
+          "output": null
+        }
+      }
+    },
+    {
+      "group": "scalar",
+      "id": "bool-true",
+      "input": {
+        "t": "bool",
+        "v": true
+      },
+      "outputs": {
+        "O01": {
+          "output": "true\n"
+        },
+        "O06": {
+          "output": "true"
+        },
+        "O10": {
+          "output": "true"
+        }
+      }
+    },
+    {
+      "group": "scalar",
+      "id": "bool-false",
+      "input": {
+        "t": "bool",
+        "v": false
+      },
+      "outputs": {
+        "O01": {
+          "output": "false\n"
+        },
+        "O06": {
+          "output": "false"
+        },
+        "O10": {
+          "output": "false"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-00-0.0",
+      "input": {
+        "t": "float",
+        "v": "0.0"
+      },
+      "outputs": {
+        "O01": {
+          "output": "0.0\n"
+        },
+        "O06": {
+          "output": "0.0"
+        },
+        "O10": {
+          "output": "0.0"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-01--0.0",
+      "input": {
+        "t": "float",
+        "v": "-0.0"
+      },
+      "outputs": {
+        "O01": {
+          "output": "-0.0\n"
+        },
+        "O06": {
+          "output": "-0.0"
+        },
+        "O10": {
+          "output": "-0.0"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-02-1.0",
+      "input": {
+        "t": "float",
+        "v": "1.0"
+      },
+      "outputs": {
+        "O01": {
+          "output": "1.0\n"
+        },
+        "O06": {
+          "output": "1.0"
+        },
+        "O10": {
+          "output": "1.0"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-03-2.5",
+      "input": {
+        "t": "float",
+        "v": "2.5"
+      },
+      "outputs": {
+        "O01": {
+          "output": "2.5\n"
+        },
+        "O06": {
+          "output": "2.5"
+        },
+        "O10": {
+          "output": "2.5"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-04-0.1",
+      "input": {
+        "t": "float",
+        "v": "0.1"
+      },
+      "outputs": {
+        "O01": {
+          "output": "0.1\n"
+        },
+        "O06": {
+          "output": "0.1"
+        },
+        "O10": {
+          "output": "0.1"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-05-3.141592653589793",
+      "input": {
+        "t": "float",
+        "v": "3.141592653589793"
+      },
+      "outputs": {
+        "O01": {
+          "output": "3.141592653589793\n"
+        },
+        "O06": {
+          "output": "3.141592653589793"
+        },
+        "O10": {
+          "output": "3.141592653589793"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-06-0.0001",
+      "input": {
+        "t": "float",
+        "v": "0.0001"
+      },
+      "outputs": {
+        "O01": {
+          "output": "0.0001\n"
+        },
+        "O06": {
+          "output": "0.0001"
+        },
+        "O10": {
+          "output": "0.0001"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-07-1e-05",
+      "input": {
+        "t": "float",
+        "v": "1e-05"
+      },
+      "outputs": {
+        "O01": {
+          "output": "1e-05\n"
+        },
+        "O06": {
+          "output": "1e-05"
+        },
+        "O10": {
+          "output": "1e-05"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-08-5e-324",
+      "input": {
+        "t": "float",
+        "v": "5e-324"
+      },
+      "outputs": {
+        "O01": {
+          "output": "5e-324\n"
+        },
+        "O06": {
+          "output": "5e-324"
+        },
+        "O10": {
+          "output": "5e-324"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-09-1e+16",
+      "input": {
+        "t": "float",
+        "v": "1e+16"
+      },
+      "outputs": {
+        "O01": {
+          "output": "1e+16\n"
+        },
+        "O06": {
+          "output": "1e+16"
+        },
+        "O10": {
+          "output": "1e+16"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-10-1000000000000000.0",
+      "input": {
+        "t": "float",
+        "v": "1000000000000000.0"
+      },
+      "outputs": {
+        "O01": {
+          "output": "1000000000000000.0\n"
+        },
+        "O06": {
+          "output": "1000000000000000.0"
+        },
+        "O10": {
+          "output": "1000000000000000.0"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-11-9999999999999998.0",
+      "input": {
+        "t": "float",
+        "v": "9999999999999998.0"
+      },
+      "outputs": {
+        "O01": {
+          "output": "9999999999999998.0\n"
+        },
+        "O06": {
+          "output": "9999999999999998.0"
+        },
+        "O10": {
+          "output": "9999999999999998.0"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-12-123456789.123",
+      "input": {
+        "t": "float",
+        "v": "123456789.123"
+      },
+      "outputs": {
+        "O01": {
+          "output": "123456789.123\n"
+        },
+        "O06": {
+          "output": "123456789.123"
+        },
+        "O10": {
+          "output": "123456789.123"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-13-1.5e+300",
+      "input": {
+        "t": "float",
+        "v": "1.5e+300"
+      },
+      "outputs": {
+        "O01": {
+          "output": "1.5e+300\n"
+        },
+        "O06": {
+          "output": "1.5e+300"
+        },
+        "O10": {
+          "output": "1.5e+300"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-14-1.7976931348623157e+308",
+      "input": {
+        "t": "float",
+        "v": "1.7976931348623157e+308"
+      },
+      "outputs": {
+        "O01": {
+          "output": "1.7976931348623157e+308\n"
+        },
+        "O06": {
+          "output": "1.7976931348623157e+308"
+        },
+        "O10": {
+          "output": "1.7976931348623157e+308"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-15-nan",
+      "input": {
+        "t": "float",
+        "v": "nan"
+      },
+      "outputs": {
+        "O01": {
+          "output": "NaN\n"
+        },
+        "O06": {
+          "error": "ValueError"
+        },
+        "O10": {
+          "output": "NaN"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-16-inf",
+      "input": {
+        "t": "float",
+        "v": "inf"
+      },
+      "outputs": {
+        "O01": {
+          "output": "Infinity\n"
+        },
+        "O06": {
+          "error": "ValueError"
+        },
+        "O10": {
+          "output": "Infinity"
+        }
+      }
+    },
+    {
+      "group": "float",
+      "id": "float-17--inf",
+      "input": {
+        "t": "float",
+        "v": "-inf"
+      },
+      "outputs": {
+        "O01": {
+          "output": "-Infinity\n"
+        },
+        "O06": {
+          "error": "ValueError"
+        },
+        "O10": {
+          "output": "-Infinity"
+        }
+      }
+    },
+    {
+      "group": "int",
+      "id": "int-zero",
+      "input": {
+        "t": "int",
+        "v": 0
+      },
+      "outputs": {
+        "O01": {
+          "output": "0\n"
+        },
+        "O06": {
+          "output": "0"
+        },
+        "O10": {
+          "output": "0"
+        }
+      }
+    },
+    {
+      "group": "int",
+      "id": "int-negative",
+      "input": {
+        "t": "int",
+        "v": -1
+      },
+      "outputs": {
+        "O01": {
+          "output": "-1\n"
+        },
+        "O06": {
+          "output": "-1"
+        },
+        "O10": {
+          "output": "-1"
+        }
+      }
+    },
+    {
+      "group": "int",
+      "id": "int-2pow64-plus5",
+      "input": {
+        "t": "int",
+        "v": 18446744073709551621
+      },
+      "outputs": {
+        "O01": {
+          "output": "18446744073709551621\n"
+        },
+        "O06": {
+          "output": "18446744073709551621"
+        },
+        "O10": {
+          "output": "18446744073709551621"
+        }
+      }
+    },
+    {
+      "group": "int",
+      "id": "int-10pow30",
+      "input": {
+        "t": "int",
+        "v": 1000000000000000000000000000000
+      },
+      "outputs": {
+        "O01": {
+          "output": "1000000000000000000000000000000\n"
+        },
+        "O06": {
+          "output": "1000000000000000000000000000000"
+        },
+        "O10": {
+          "output": "1000000000000000000000000000000"
+        }
+      }
+    },
+    {
+      "group": "nested",
+      "id": "nested-default-str",
+      "input": {
+        "t": "dict",
+        "v": [
+          [
+            "when",
+            {
+              "t": "datetime",
+              "v": "2026-10-25T13:56:00+00:00"
+            }
+          ],
+          [
+            "naive",
+            {
+              "t": "datetime",
+              "v": "2026-10-25T13:56:00"
+            }
+          ],
+          [
+            "day",
+            {
+              "t": "date",
+              "v": "2026-10-25"
+            }
+          ],
+          [
+            "amount",
+            {
+              "t": "decimal",
+              "v": "1.10"
+            }
+          ],
+          [
+            "id",
+            {
+              "t": "uuid",
+              "v": "0f8fad5b-d9cb-469f-a165-8c0d8b6a6f31"
+            }
+          ],
+          [
+            "raw",
+            {
+              "t": "bytes",
+              "v": "00616200"
+            }
+          ],
+          [
+            "items",
+            {
+              "t": "tuple",
+              "v": [
+                {
+                  "t": "int",
+                  "v": 1
+                },
+                {
+                  "t": "int",
+                  "v": 2
+                }
+              ]
+            }
+          ],
+          [
+            "deep",
+            {
+              "t": "dict",
+              "v": [
+                [
+                  "list",
+                  {
+                    "t": "list",
+                    "v": [
+                      {
+                        "t": "datetime",
+                        "v": "2026-10-25T15:00:00+02:00"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "outputs": {
+        "O01": {
+          "output": "{\n  \"when\": \"2026-10-25T13:56:00+00:00\",\n  \"naive\": \"2026-10-25T13:56:00\",\n  \"day\": \"2026-10-25\",\n  \"amount\": \"1.10\",\n  \"id\": \"0f8fad5b-d9cb-469f-a165-8c0d8b6a6f31\",\n  \"raw\": \"b'\\\\x00ab\\\\x00'\",\n  \"items\": [\n    1,\n    2\n  ],\n  \"deep\": {\n    \"list\": [\n      \"2026-10-25T15:00:00+02:00\"\n    ]\n  }\n}\n"
+        },
+        "O06": {
+          "error": "TypeError"
+        },
+        "O10": {
+          "output": "{\"amount\":\"1.10\",\"day\":\"2026-10-25\",\"deep\":{\"list\":[\"2026-10-25 15:00:00+02:00\"]},\"id\":\"0f8fad5b-d9cb-469f-a165-8c0d8b6a6f31\",\"items\":[1,2],\"naive\":\"2026-10-25 13:56:00\",\"raw\":\"b'\\\\x00ab\\\\x00'\",\"when\":\"2026-10-25 13:56:00+00:00\"}"
+        }
+      }
+    },
+    {
+      "group": "nested",
+      "id": "nested-default-str-decimal-list",
+      "input": {
+        "t": "list",
+        "v": [
+          {
+            "t": "decimal",
+            "v": "0.30"
+          },
+          {
+            "t": "decimal",
+            "v": "-2E+3"
+          },
+          {
+            "t": "uuid",
+            "v": "00000000-0000-4000-8000-000000000000"
+          }
+        ]
+      },
+      "outputs": {
+        "O01": {
+          "output": "[\n  \"0.30\",\n  \"-2E+3\",\n  \"00000000-0000-4000-8000-000000000000\"\n]\n"
+        },
+        "O06": {
+          "error": "TypeError"
+        },
+        "O10": {
+          "output": "[\"0.30\",\"-2E+3\",\"00000000-0000-4000-8000-000000000000\"]"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-00",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T13:56:00+00:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2026-10-25T13:56:00+00:00\"\n"
+        },
+        "O06": {
+          "output": "\"2026-10-25T13:56:00+00:00\""
+        },
+        "O10": {
+          "output": "\"2026-10-25 13:56:00+00:00\""
+        },
+        "isoformat": {
+          "output": "2026-10-25T13:56:00+00:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-01",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T13:56:00Z"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2026-10-25T13:56:00+00:00\"\n"
+        },
+        "O06": {
+          "output": "\"2026-10-25T13:56:00+00:00\""
+        },
+        "O10": {
+          "output": "\"2026-10-25 13:56:00+00:00\""
+        },
+        "isoformat": {
+          "output": "2026-10-25T13:56:00+00:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-02",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T13:56:00.123456+00:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2026-10-25T13:56:00.123456+00:00\"\n"
+        },
+        "O06": {
+          "output": "\"2026-10-25T13:56:00.123456+00:00\""
+        },
+        "O10": {
+          "output": "\"2026-10-25 13:56:00.123456+00:00\""
+        },
+        "isoformat": {
+          "output": "2026-10-25T13:56:00.123456+00:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-03",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T13:56:00.100000+00:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2026-10-25T13:56:00.100000+00:00\"\n"
+        },
+        "O06": {
+          "output": "\"2026-10-25T13:56:00.100000+00:00\""
+        },
+        "O10": {
+          "output": "\"2026-10-25 13:56:00.100000+00:00\""
+        },
+        "isoformat": {
+          "output": "2026-10-25T13:56:00.100000+00:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-04",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T13:56:00.000001+00:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2026-10-25T13:56:00.000001+00:00\"\n"
+        },
+        "O06": {
+          "output": "\"2026-10-25T13:56:00.000001+00:00\""
+        },
+        "O10": {
+          "output": "\"2026-10-25 13:56:00.000001+00:00\""
+        },
+        "isoformat": {
+          "output": "2026-10-25T13:56:00.000001+00:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-05",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T15:00:00+02:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2026-10-25T15:00:00+02:00\"\n"
+        },
+        "O06": {
+          "output": "\"2026-10-25T15:00:00+02:00\""
+        },
+        "O10": {
+          "output": "\"2026-10-25 15:00:00+02:00\""
+        },
+        "isoformat": {
+          "output": "2026-10-25T15:00:00+02:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-06",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T08:26:00-05:30"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2026-10-25T08:26:00-05:30\"\n"
+        },
+        "O06": {
+          "output": "\"2026-10-25T08:26:00-05:30\""
+        },
+        "O10": {
+          "output": "\"2026-10-25 08:26:00-05:30\""
+        },
+        "isoformat": {
+          "output": "2026-10-25T08:26:00-05:30"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-07",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T13:56:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2026-10-25T13:56:00\"\n"
+        },
+        "O06": {
+          "output": "\"2026-10-25T13:56:00\""
+        },
+        "O10": {
+          "output": "\"2026-10-25 13:56:00\""
+        },
+        "isoformat": {
+          "output": "2026-10-25T13:56:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-08",
+      "input": {
+        "t": "datetime",
+        "v": "2026-02-28T23:59:59.999999+00:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2026-02-28T23:59:59.999999+00:00\"\n"
+        },
+        "O06": {
+          "output": "\"2026-02-28T23:59:59.999999+00:00\""
+        },
+        "O10": {
+          "output": "\"2026-02-28 23:59:59.999999+00:00\""
+        },
+        "isoformat": {
+          "output": "2026-02-28T23:59:59.999999+00:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-09",
+      "input": {
+        "t": "datetime",
+        "v": "2024-02-29T00:00:00+00:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"2024-02-29T00:00:00+00:00\"\n"
+        },
+        "O06": {
+          "output": "\"2024-02-29T00:00:00+00:00\""
+        },
+        "O10": {
+          "output": "\"2024-02-29 00:00:00+00:00\""
+        },
+        "isoformat": {
+          "output": "2024-02-29T00:00:00+00:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-10",
+      "input": {
+        "t": "datetime",
+        "v": "0001-01-01T00:00:00+00:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"0001-01-01T00:00:00+00:00\"\n"
+        },
+        "O06": {
+          "output": "\"0001-01-01T00:00:00+00:00\""
+        },
+        "O10": {
+          "output": "\"0001-01-01 00:00:00+00:00\""
+        },
+        "isoformat": {
+          "output": "0001-01-01T00:00:00+00:00"
+        }
+      }
+    },
+    {
+      "group": "datetime",
+      "id": "datetime-11",
+      "input": {
+        "t": "datetime",
+        "v": "9999-12-31T23:59:59.999999+00:00"
+      },
+      "outputs": {
+        "O01": {
+          "output": "\"9999-12-31T23:59:59.999999+00:00\"\n"
+        },
+        "O06": {
+          "output": "\"9999-12-31T23:59:59.999999+00:00\""
+        },
+        "O10": {
+          "output": "\"9999-12-31 23:59:59.999999+00:00\""
+        },
+        "isoformat": {
+          "output": "9999-12-31T23:59:59.999999+00:00"
+        }
+      }
+    },
+    {
+      "group": "when",
+      "id": "when-00",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T13:56:00+00:00"
+      },
+      "outputs": {
+        "when": {
+          "output": "2026-10-25 13:56"
+        }
+      }
+    },
+    {
+      "group": "when",
+      "id": "when-01",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T13:56:59.999999+00:00"
+      },
+      "outputs": {
+        "when": {
+          "output": "2026-10-25 13:56"
+        }
+      }
+    },
+    {
+      "group": "when",
+      "id": "when-02",
+      "input": {
+        "t": "datetime",
+        "v": "2026-10-25T15:00:00+02:00"
+      },
+      "outputs": {
+        "when": {
+          "output": "2026-10-25 15:00"
+        }
+      }
+    },
+    {
+      "group": "when",
+      "id": "when-03",
+      "input": {
+        "t": "datetime",
+        "v": "2026-01-01T00:00:00"
+      },
+      "outputs": {
+        "when": {
+          "output": "2026-01-01 00:00"
+        }
+      }
+    },
+    {
+      "group": "when",
+      "id": "when-04",
+      "input": {
+        "t": "datetime",
+        "v": "2024-02-29T09:05:00+00:00"
+      },
+      "outputs": {
+        "when": {
+          "output": "2024-02-29 09:05"
+        }
+      }
+    },
+    {
+      "group": "when",
+      "id": "when-05",
+      "input": {
+        "t": "datetime",
+        "v": "2026-12-31T23:59:30-05:30"
+      },
+      "outputs": {
+        "when": {
+          "output": "2026-12-31 23:59"
+        }
+      }
+    },
+    {
+      "group": "when",
+      "id": "when-none",
+      "input": {
+        "t": "null"
+      },
+      "outputs": {
+        "when": {
+          "output": ""
+        }
+      }
+    },
+    {
+      "group": "model",
+      "id": "model-sample-aware-utc",
+      "input": {
+        "name": "Sample",
+        "t": "model",
+        "v": [
+          [
+            "zeta",
+            {
+              "t": "str",
+              "v": "last-declared-first-field"
+            }
+          ],
+          [
+            "created_at",
+            {
+              "t": "datetime",
+              "v": "2026-10-25T13:56:00+00:00"
+            }
+          ],
+          [
+            "alpha",
+            {
+              "t": "int",
+              "v": 1
+            }
+          ],
+          [
+            "ratio",
+            {
+              "t": "float",
+              "v": "0.5"
+            }
+          ],
+          [
+            "note",
+            {
+              "t": "null"
+            }
+          ],
+          [
+            "updated_at",
+            {
+              "t": "datetime",
+              "v": "2026-10-25T13:56:00.123456+00:00"
+            }
+          ],
+          [
+            "tags",
+            {
+              "t": "list",
+              "v": [
+                {
+                  "t": "str",
+                  "v": "a"
+                },
+                {
+                  "t": "str",
+                  "v": "\u00e9"
+                }
+              ]
+            }
+          ],
+          [
+            "inner",
+            {
+              "name": "Inner",
+              "t": "model",
+              "v": [
+                [
+                  "kind",
+                  {
+                    "t": "str",
+                    "v": "k"
+                  }
+                ],
+                [
+                  "at",
+                  {
+                    "t": "datetime",
+                    "v": "2026-10-25T15:00:00+02:00"
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "outputs": {
+        "O01": {
+          "output": "{\n  \"zeta\": \"last-declared-first-field\",\n  \"created_at\": \"2026-10-25T13:56:00Z\",\n  \"alpha\": 1,\n  \"ratio\": 0.5,\n  \"note\": null,\n  \"updated_at\": \"2026-10-25T13:56:00.123456Z\",\n  \"tags\": [\n    \"a\",\n    \"\\u00e9\"\n  ],\n  \"inner\": {\n    \"kind\": \"k\",\n    \"at\": \"2026-10-25T15:00:00+02:00\"\n  }\n}\n"
+        },
+        "O06": {
+          "output": "{\"zeta\":\"last-declared-first-field\",\"created_at\":\"2026-10-25T13:56:00Z\",\"alpha\":1,\"ratio\":0.5,\"note\":null,\"updated_at\":\"2026-10-25T13:56:00.123456Z\",\"tags\":[\"a\",\"\u00e9\"],\"inner\":{\"kind\":\"k\",\"at\":\"2026-10-25T15:00:00+02:00\"}}"
+        },
+        "O10": {
+          "output": "\"zeta='last-declared-first-field' created_at=datetime.datetime(2026, 10, 25, 13, 56, tzinfo=datetime.timezone.utc) alpha=1 ratio=0.5 note=None updated_at=datetime.datetime(2026, 10, 25, 13, 56, 0, 123456, tzinfo=datetime.timezone.utc) tags=['a', '\\u00e9'] inner=Inner(kind='k', at=datetime.datetime(2026, 10, 25, 15, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))))\""
+        }
+      }
+    },
+    {
+      "group": "model",
+      "id": "model-sample-naive-and-nan",
+      "input": {
+        "name": "Sample",
+        "t": "model",
+        "v": [
+          [
+            "zeta",
+            {
+              "t": "str",
+              "v": ""
+            }
+          ],
+          [
+            "created_at",
+            {
+              "t": "datetime",
+              "v": "2026-10-25T13:56:00"
+            }
+          ],
+          [
+            "alpha",
+            {
+              "t": "int",
+              "v": -7
+            }
+          ],
+          [
+            "ratio",
+            {
+              "t": "float",
+              "v": "nan"
+            }
+          ],
+          [
+            "note",
+            {
+              "t": "str",
+              "v": "n\"ote"
+            }
+          ],
+          [
+            "updated_at",
+            {
+              "t": "datetime",
+              "v": "2026-10-25T13:56:00.100000+00:00"
+            }
+          ],
+          [
+            "tags",
+            {
+              "t": "list",
+              "v": []
+            }
+          ],
+          [
+            "inner",
+            {
+              "name": "Inner",
+              "t": "model",
+              "v": [
+                [
+                  "kind",
+                  {
+                    "t": "str",
+                    "v": ""
+                  }
+                ],
+                [
+                  "at",
+                  {
+                    "t": "datetime",
+                    "v": "0001-01-01T00:00:00+00:00"
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "outputs": {
+        "O01": {
+          "output": "{\n  \"zeta\": \"\",\n  \"created_at\": \"2026-10-25T13:56:00\",\n  \"alpha\": -7,\n  \"ratio\": NaN,\n  \"note\": \"n\\\"ote\",\n  \"updated_at\": \"2026-10-25T13:56:00.100000Z\",\n  \"tags\": [],\n  \"inner\": {\n    \"kind\": \"\",\n    \"at\": \"0001-01-01T00:00:00Z\"\n  }\n}\n"
+        },
+        "O06": {
+          "error": "ValueError"
+        },
+        "O10": {
+          "output": "\"zeta='' created_at=datetime.datetime(2026, 10, 25, 13, 56) alpha=-7 ratio=nan note='n\\\"ote' updated_at=datetime.datetime(2026, 10, 25, 13, 56, 0, 100000, tzinfo=datetime.timezone.utc) tags=[] inner=Inner(kind='', at=datetime.datetime(1, 1, 1, 0, 0, tzinfo=datetime.timezone.utc))\""
+        }
+      }
+    },
+    {
+      "group": "model",
+      "id": "model-inner-only",
+      "input": {
+        "name": "Inner",
+        "t": "model",
+        "v": [
+          [
+            "kind",
+            {
+              "t": "str",
+              "v": "x\ty"
+            }
+          ],
+          [
+            "at",
+            {
+              "t": "datetime",
+              "v": "2026-02-28T23:59:59.999999+00:00"
+            }
+          ]
+        ]
+      },
+      "outputs": {
+        "O01": {
+          "output": "{\n  \"kind\": \"x\\ty\",\n  \"at\": \"2026-02-28T23:59:59.999999Z\"\n}\n"
+        },
+        "O06": {
+          "output": "{\"kind\":\"x\\ty\",\"at\":\"2026-02-28T23:59:59.999999Z\"}"
+        },
+        "O10": {
+          "output": "\"kind='x\\\\ty' at=datetime.datetime(2026, 2, 28, 23, 59, 59, 999999, tzinfo=datetime.timezone.utc)\""
+        }
+      }
+    }
+  ],
+  "dialects": {
+    "O01": "CLI --json: json.dumps(to_jsonable(v), indent=2, default=str) + newline",
+    "O06": "HTTP: starlette JSONResponse(to_jsonable(v)).body (compact, ensure_ascii=False, allow_nan=False)",
+    "O10": "DB JSON column: json.dumps(v, sort_keys=True, separators=(',', ':'), default=str)",
+    "isoformat": "datetime.isoformat()",
+    "when": "cli.common.when(v): strftime('%Y-%m-%d %H:%M') or ''"
+  },
+  "task": "GV-12",
+  "vector": "jsonfmt"
+}

@@ -1,0 +1,343 @@
+{
+ "cases": [
+  {
+   "context": {},
+   "id": "no-placeholders",
+   "limit": null,
+   "output": "plain text",
+   "template": "plain text"
+  },
+  {
+   "context": {
+    "task": {
+     "key": "WG-1"
+    }
+   },
+   "id": "empty-template",
+   "limit": null,
+   "output": "",
+   "template": ""
+  },
+  {
+   "context": {
+    "task": {
+     "key": "WG-12",
+     "title": "Crash on save"
+    }
+   },
+   "id": "notify-title",
+   "limit": null,
+   "output": "New bug WG-12: Crash on save",
+   "template": "New bug {{task.key}}: {{task.title}}"
+  },
+  {
+   "context": {
+    "input": {
+     "scheduled_for": "2026-10-25T00:00:00+00:00"
+    }
+   },
+   "id": "scheduled-tick",
+   "limit": null,
+   "output": "tick 2026-10-25T00:00:00+00:00",
+   "template": "tick {{input.scheduled_for}}"
+  },
+  {
+   "context": {
+    "task": {
+     "key": "WG-7"
+    }
+   },
+   "id": "inner-spaces",
+   "limit": null,
+   "output": "WG-7",
+   "template": "{{   task.key   }}"
+  },
+  {
+   "context": {
+    "task": {}
+   },
+   "id": "missing-path",
+   "limit": null,
+   "output": "[]",
+   "template": "[{{task.nope}}]"
+  },
+  {
+   "context": {
+    "task": {
+     "assignee": null
+    }
+   },
+   "id": "null-value",
+   "limit": null,
+   "output": "[]",
+   "template": "[{{task.assignee}}]"
+  },
+  {
+   "context": {
+    "n": 0
+   },
+   "id": "zero-value",
+   "limit": null,
+   "output": "0",
+   "template": "{{n}}"
+  },
+  {
+   "context": {
+    "flag": false
+   },
+   "id": "false-value",
+   "limit": null,
+   "output": "False",
+   "template": "{{flag}}"
+  },
+  {
+   "context": {
+    "flag": true
+   },
+   "id": "true-value",
+   "limit": null,
+   "output": "True",
+   "template": "{{flag}}"
+  },
+  {
+   "context": {
+    "x": 1.5
+   },
+   "id": "float-value",
+   "limit": null,
+   "output": "1.5",
+   "template": "{{x}}"
+  },
+  {
+   "context": {
+    "x": 2.0
+   },
+   "id": "float-integral",
+   "limit": null,
+   "output": "2.0",
+   "template": "{{x}}"
+  },
+  {
+   "context": {
+    "task": {
+     "tags": [
+      "a",
+      "b"
+     ]
+    }
+   },
+   "id": "list-value",
+   "limit": null,
+   "output": "['a', 'b']",
+   "template": "{{task.tags}}"
+  },
+  {
+   "context": {
+    "task": {
+     "k": 1
+    }
+   },
+   "id": "dict-value",
+   "limit": null,
+   "output": "{'k': 1}",
+   "template": "{{task}}"
+  },
+  {
+   "context": {
+    "task": {
+     "key": "WG-1"
+    }
+   },
+   "id": "path-through-scalar",
+   "limit": null,
+   "output": "",
+   "template": "{{task.key.more}}"
+  },
+  {
+   "context": {
+    "task": {
+     "tags": [
+      "a"
+     ]
+    }
+   },
+   "id": "path-through-list-index",
+   "limit": null,
+   "output": "",
+   "template": "{{task.tags.0}}"
+  },
+  {
+   "context": {
+    "task": {
+     "parent": null
+    }
+   },
+   "id": "path-through-null",
+   "limit": null,
+   "output": "",
+   "template": "{{task.parent.key}}"
+  },
+  {
+   "context": {
+    "Task": {
+     "key": "x"
+    },
+    "task": {
+     "key": "y"
+    }
+   },
+   "id": "uppercase-not-placeholder",
+   "limit": null,
+   "output": "{{Task.key}}",
+   "template": "{{Task.key}}"
+  },
+  {
+   "context": {
+    "task": {
+     "key": "WG-1"
+    }
+   },
+   "id": "single-braces-literal",
+   "limit": null,
+   "output": "{task.key}",
+   "template": "{task.key}"
+  },
+  {
+   "context": {
+    "1x": "y"
+   },
+   "id": "leading-digit-literal",
+   "limit": null,
+   "output": "{{1x}}",
+   "template": "{{1x}}"
+  },
+  {
+   "context": {
+    "task": {
+     "key2": "ok"
+    }
+   },
+   "id": "digits-in-path",
+   "limit": null,
+   "output": "ok",
+   "template": "{{task.key2}}"
+  },
+  {
+   "context": {
+    "task": {
+     "title": "café 日本 🚀"
+    }
+   },
+   "id": "unicode-value",
+   "limit": null,
+   "output": "café 日本 🚀",
+   "template": "{{task.title}}"
+  },
+  {
+   "context": {
+    "task": {
+     "key": "WG-9",
+     "title": "{{task.key}}"
+    }
+   },
+   "id": "value-not-reexpanded",
+   "limit": null,
+   "output": "{{task.key}}",
+   "template": "{{task.title}}"
+  },
+  {
+   "context": {
+    "task": {
+     "title": "__import__('os')"
+    }
+   },
+   "id": "value-is-code-text",
+   "limit": null,
+   "output": "__import__('os')",
+   "template": "{{task.title}}"
+  },
+  {
+   "context": {
+    "a": "1",
+    "b": "2"
+   },
+   "id": "adjacent-placeholders",
+   "limit": null,
+   "output": "12",
+   "template": "{{a}}{{b}}"
+  },
+  {
+   "context": {
+    "t": "a\nb"
+   },
+   "id": "newline-value",
+   "limit": null,
+   "output": "a\nb",
+   "template": "{{t}}"
+  },
+  {
+   "context": {
+    "t": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   },
+   "id": "default-limit-truncates",
+   "limit": null,
+   "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "template": "{{t}}"
+  },
+  {
+   "context": {
+    "t": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   },
+   "id": "explicit-limit-100",
+   "limit": 100,
+   "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "template": "{{t}}"
+  },
+  {
+   "context": {
+    "t": "short"
+   },
+   "id": "explicit-limit-300-short",
+   "limit": 300,
+   "output": "short",
+   "template": "{{t}}"
+  },
+  {
+   "context": {
+    "t": "abc"
+   },
+   "id": "limit-zero",
+   "limit": 0,
+   "output": "",
+   "template": "{{t}}"
+  },
+  {
+   "context": {
+    "t": "ok"
+   },
+   "id": "limit-applies-to-values-only",
+   "limit": 10,
+   "output": "okxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "template": "{{t}}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  {
+   "context": {
+    "t": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   },
+   "id": "name-and-title-limit-300",
+   "limit": 300,
+   "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "template": "{{t}}"
+  },
+  {
+   "context": {
+    "t": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   },
+   "id": "description-limit-5000",
+   "limit": 5000,
+   "output": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "template": "{{t}}"
+  }
+ ],
+ "description": "render(template, context, limit) with the default limit of 500 unless a limit is given; placeholders are {{path}} with lowercase dotted paths."
+}

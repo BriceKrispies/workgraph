@@ -1,0 +1,622 @@
+{
+ "cases": [
+  {
+   "expression": "*/15 9-17 * * 1-5",
+   "id": "weekday-office-hours",
+   "matches": [
+    {
+     "moment": "2026-10-19T09:00:00+00:00",
+     "result": true
+    },
+    {
+     "moment": "2026-10-24T09:00:00+00:00",
+     "result": false
+    },
+    {
+     "moment": "2026-10-19T09:07:00+00:00",
+     "result": false
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-10-19T09:00:00+00:00",
+     "reference": "2026-10-19T08:59:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-20T09:00:00+00:00",
+     "reference": "2026-10-19T17:45:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-26T09:00:00+00:00",
+     "reference": "2026-10-23T17:50:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-26T09:00:00+00:00",
+     "reference": "2026-10-24T12:00:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-19T09:00:00+00:00",
+     "reference": "2026-10-19T08:59:30.123456+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "* * * * *",
+   "id": "every-minute",
+   "matches": [
+    {
+     "moment": "2026-10-25T10:00:00+00:00",
+     "result": true
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-10-25T10:01:00+00:00",
+     "reference": "2026-10-25T10:00:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-25T10:01:00+00:00",
+     "reference": "2026-10-25T10:00:59.999999+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "*/5 * * * *",
+   "id": "every-five-strict-after",
+   "matches": [
+    {
+     "moment": "2026-10-25T10:05:00+00:00",
+     "result": true
+    },
+    {
+     "moment": "2026-10-25T10:06:00+00:00",
+     "result": false
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-10-25T10:05:00+00:00",
+     "reference": "2026-10-25T10:02:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-25T10:10:00+00:00",
+     "reference": "2026-10-25T10:05:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0,30 * * * *",
+   "id": "list-of-minutes",
+   "matches": [
+    {
+     "moment": "2026-10-25T10:30:00+00:00",
+     "result": true
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-10-25T11:00:00+00:00",
+     "reference": "2026-10-25T10:30:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-25T10:30:00+00:00",
+     "reference": "2026-10-25T10:29:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0-30/10 * * * *",
+   "id": "range-with-step",
+   "matches": [
+    {
+     "moment": "2026-10-25T10:20:00+00:00",
+     "result": true
+    },
+    {
+     "moment": "2026-10-25T10:25:00+00:00",
+     "result": false
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-10-25T10:10:00+00:00",
+     "reference": "2026-10-25T10:00:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-25T11:00:00+00:00",
+     "reference": "2026-10-25T10:31:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "5/10 * * * *",
+   "id": "single-value-step-quirk",
+   "matches": [
+    {
+     "moment": "2026-10-25T10:15:00+00:00",
+     "result": false
+    },
+    {
+     "moment": "2026-10-25T10:05:00+00:00",
+     "result": true
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-10-25T10:05:00+00:00",
+     "reference": "2026-10-25T10:00:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-25T11:05:00+00:00",
+     "reference": "2026-10-25T10:05:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0 0 * * 0",
+   "id": "sunday-midnight",
+   "matches": [
+    {
+     "moment": "2026-11-01T00:00:00+00:00",
+     "result": true
+    },
+    {
+     "moment": "2026-10-25T00:00:00+00:00",
+     "result": true
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-11-01T00:00:00+00:00",
+     "reference": "2026-10-25T00:00:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-25T00:00:00+00:00",
+     "reference": "2026-10-24T23:59:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0 12 13 * 5",
+   "id": "day-or-weekday-classic",
+   "matches": [
+    {
+     "moment": "2026-10-30T12:00:00+00:00",
+     "result": true
+    },
+    {
+     "moment": "2026-10-13T12:00:00+00:00",
+     "result": true
+    },
+    {
+     "moment": "2026-10-14T12:00:00+00:00",
+     "result": false
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-10-30T12:00:00+00:00",
+     "reference": "2026-10-25T10:00:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-30T12:00:00+00:00",
+     "reference": "2026-10-29T12:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0 12 13 * *",
+   "id": "day-of-month-only",
+   "matches": [
+    {
+     "moment": "2026-11-13T12:00:00+00:00",
+     "result": true
+    },
+    {
+     "moment": "2026-10-13T12:00:00+00:00",
+     "result": true
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-11-13T12:00:00+00:00",
+     "reference": "2026-10-25T10:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0 0 1 * *",
+   "id": "month-boundary",
+   "matches": [
+    {
+     "moment": "2026-11-01T00:00:00+00:00",
+     "result": true
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-11-01T00:00:00+00:00",
+     "reference": "2026-10-31T23:59:59.5+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-12-01T00:00:00+00:00",
+     "reference": "2026-11-01T00:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0 0 1 1 *",
+   "id": "year-boundary",
+   "matches": [
+    {
+     "moment": "2027-01-01T00:00:00+00:00",
+     "result": true
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2027-01-01T00:00:00+00:00",
+     "reference": "2026-12-31T12:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "59 23 31 12 *",
+   "id": "last-minute-of-year",
+   "matches": [
+    {
+     "moment": "2026-12-31T23:59:00+00:00",
+     "result": true
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-12-31T23:59:00+00:00",
+     "reference": "2026-10-25T10:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0 0 29 2 *",
+   "id": "leap-day-within-cap",
+   "matches": [
+    {
+     "moment": "2028-02-29T00:00:00+00:00",
+     "result": true
+    },
+    {
+     "moment": "2028-03-01T00:00:00+00:00",
+     "result": false
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2028-02-29T00:00:00+00:00",
+     "reference": "2027-03-01T00:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0 0 29 2 *",
+   "id": "leap-day-beyond-cap",
+   "matches": [],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": "cron expression '0 0 29 2 *' never fires",
+     "next_after": null,
+     "reference": "2026-10-25T00:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0 0 31 2 *",
+   "id": "never-february-31",
+   "matches": [],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": "cron expression '0 0 31 2 *' never fires",
+     "next_after": null,
+     "reference": "2026-10-25T00:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "0 0 31 4,6 *",
+   "id": "never-april-june-31",
+   "matches": [],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": "cron expression '0 0 31 4,6 *' never fires",
+     "next_after": null,
+     "reference": "2026-10-25T00:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "  0   5 * * *  ",
+   "id": "whitespace-tolerant",
+   "matches": [
+    {
+     "moment": "2026-10-25T05:00:00+00:00",
+     "result": true
+    }
+   ],
+   "parse": {
+    "error": null,
+    "ok": true
+   },
+   "references": [
+    {
+     "error": null,
+     "next_after": "2026-10-25T05:00:00+00:00",
+     "reference": "2026-10-25T00:00:00+00:00"
+    },
+    {
+     "error": null,
+     "next_after": "2026-10-26T05:00:00+00:00",
+     "reference": "2026-10-25T05:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "expression": "*/0 * * * *",
+   "id": "step-zero-is-invalid",
+   "matches": [],
+   "parse": {
+    "error": "invalid cron step '0'",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "61 * * * *",
+   "id": "minute-out-of-range",
+   "matches": [],
+   "parse": {
+    "error": "cron value '61' outside 0-59",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "* 24 * * *",
+   "id": "hour-out-of-range",
+   "matches": [],
+   "parse": {
+    "error": "cron value '24' outside 0-23",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "* * 0 * *",
+   "id": "day-zero-invalid",
+   "matches": [],
+   "parse": {
+    "error": "cron value '0' outside 1-31",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "* * * 13 *",
+   "id": "month-thirteen-invalid",
+   "matches": [],
+   "parse": {
+    "error": "cron value '13' outside 1-12",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "0 0 * * 7",
+   "id": "weekday-seven-invalid",
+   "matches": [],
+   "parse": {
+    "error": "cron value '7' outside 0-6",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "* * * * 8",
+   "id": "weekday-eight-invalid",
+   "matches": [],
+   "parse": {
+    "error": "cron value '8' outside 0-6",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "* * * *",
+   "id": "four-fields",
+   "matches": [],
+   "parse": {
+    "error": "cron expressions need 5 fields: minute hour day month weekday",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "* * * * * *",
+   "id": "six-fields",
+   "matches": [],
+   "parse": {
+    "error": "cron expressions need 5 fields: minute hour day month weekday",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "a * * * *",
+   "id": "non-numeric-field",
+   "matches": [],
+   "parse": {
+    "error": "invalid cron field 'a'",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "5-3 * * * *",
+   "id": "reversed-range",
+   "matches": [],
+   "parse": {
+    "error": "cron value '5-3' outside 0-59",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "1- * * * *",
+   "id": "dangling-range",
+   "matches": [],
+   "parse": {
+    "error": "invalid cron range '1-'",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "*/-1 * * * *",
+   "id": "negative-step",
+   "matches": [],
+   "parse": {
+    "error": "invalid cron step '-1'",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "*/x * * * *",
+   "id": "non-numeric-step",
+   "matches": [],
+   "parse": {
+    "error": "invalid cron step 'x'",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "1,,2 * * * *",
+   "id": "empty-list-item",
+   "matches": [],
+   "parse": {
+    "error": "invalid cron field ''",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "+5 * * * *",
+   "id": "signed-value",
+   "matches": [],
+   "parse": {
+    "error": "invalid cron field '+5'",
+    "ok": false
+   },
+   "references": []
+  },
+  {
+   "expression": "*-5 * * * *",
+   "id": "star-with-range-suffix",
+   "matches": [],
+   "parse": {
+    "error": "invalid cron range '*-5'",
+    "ok": false
+   },
+   "references": []
+  }
+ ],
+ "description": "Cron.next_after and Cron.matches for 5-field UTC expressions; fixed reference times; errors are the Python ValidationFailed messages."
+}

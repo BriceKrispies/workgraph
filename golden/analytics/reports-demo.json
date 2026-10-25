@@ -1,0 +1,1951 @@
+{
+ "database": "demo",
+ "reports": {
+  "agent_time_bottlenecks": {
+   "by_task": [],
+   "classes": [],
+   "concurrency": {
+    "median_at_slowest_calls": null,
+    "peak_during_window": 0,
+    "scope": "stopped subagent runs in every workspace on this machine"
+   },
+   "notes": [
+    "Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting)."
+   ],
+   "slowest_calls": [],
+   "totals": {
+    "accounted_seconds": 0,
+    "model_seconds": 0,
+    "model_share": null,
+    "polling_seconds": 0,
+    "polling_share": null,
+    "runs": 0,
+    "span_seconds": 0,
+    "tool_seconds": 0,
+    "waiting_seconds": 0,
+    "waiting_share": null
+   },
+   "window": {
+    "since": null,
+    "until": null
+   }
+  },
+  "compare": {
+   "cumulative_churn": {
+    "metric": {
+     "caveats": [
+      "Lines changed do not measure difficulty or necessity."
+     ],
+     "definition": "Lines added + removed across a task's distinct linked non-merge commits (confidence >= 0.5; cherry-picked or rewritten duplicates counted once).",
+     "dimensions": [
+      "agent",
+      "category",
+      "period",
+      "priority",
+      "project",
+      "repository",
+      "status"
+     ],
+     "family": "code",
+     "id": "cumulative_churn",
+     "statistic": "distribution",
+     "time_column": "created_at",
+     "title": "Cumulative churn",
+     "unit": "lines"
+    },
+    "notes": [
+     "Metrics describe observed associations; differences between groups do not establish causation."
+    ],
+    "period_a": [
+     "2026-01-05T09:00:00+00:00",
+     "2026-07-04T09:00:00+00:00"
+    ],
+    "period_b": [
+     "2026-07-04T09:00:00+00:00",
+     "2027-02-09T09:00:00+00:00"
+    ],
+    "rows": [
+     {
+      "a": 13.0,
+      "b": null,
+      "delta": null,
+      "n_a": 6,
+      "n_b": 0,
+      "relative_change": null
+     }
+    ],
+    "statistic": "median"
+   },
+   "execution_duration": {
+    "metric": {
+     "caveats": [],
+     "definition": "Measured wall-clock duration of finished top-level attempts.",
+     "dimensions": [
+      "agent",
+      "category",
+      "model",
+      "period",
+      "priority",
+      "project",
+      "provider",
+      "status"
+     ],
+     "family": "execution",
+     "id": "execution_duration",
+     "statistic": "distribution",
+     "time_column": "finished_at",
+     "title": "Active execution time",
+     "unit": "ms"
+    },
+    "notes": [
+     "Metrics describe observed associations; differences between groups do not establish causation."
+    ],
+    "period_a": [
+     "2026-01-05T09:00:00+00:00",
+     "2026-07-04T09:00:00+00:00"
+    ],
+    "period_b": [
+     "2026-07-04T09:00:00+00:00",
+     "2027-02-09T09:00:00+00:00"
+    ],
+    "rows": [
+     {
+      "a": 0.0,
+      "b": 0.0,
+      "delta": 0.0,
+      "n_a": 3,
+      "n_b": 5,
+      "relative_change": null
+     }
+    ],
+    "statistic": "median"
+   },
+   "tasks_created_by_category": {
+    "metric": {
+     "caveats": [],
+     "definition": "Number of tasks created in the period.",
+     "dimensions": [
+      "agent",
+      "category",
+      "period",
+      "priority",
+      "project",
+      "repository",
+      "status"
+     ],
+     "family": "throughput",
+     "id": "tasks_created",
+     "statistic": "count",
+     "time_column": "created_at",
+     "title": "Tasks created",
+     "unit": "tasks"
+    },
+    "notes": [
+     "Metrics describe observed associations; differences between groups do not establish causation."
+    ],
+    "period_a": [
+     "2026-01-05T09:00:00+00:00",
+     "2026-07-04T09:00:00+00:00"
+    ],
+    "period_b": [
+     "2026-07-04T09:00:00+00:00",
+     "2027-02-09T09:00:00+00:00"
+    ],
+    "rows": [
+     {
+      "a": 2,
+      "b": null,
+      "category": "bug_fix",
+      "delta": null,
+      "n_a": 2,
+      "n_b": 0,
+      "relative_change": null
+     },
+     {
+      "a": 1,
+      "b": null,
+      "category": "documentation",
+      "delta": null,
+      "n_a": 1,
+      "n_b": 0,
+      "relative_change": null
+     },
+     {
+      "a": 1,
+      "b": null,
+      "category": "maintenance",
+      "delta": null,
+      "n_a": 1,
+      "n_b": 0,
+      "relative_change": null
+     },
+     {
+      "a": 1,
+      "b": null,
+      "category": "other",
+      "delta": null,
+      "n_a": 1,
+      "n_b": 0,
+      "relative_change": null
+     },
+     {
+      "a": 1,
+      "b": null,
+      "category": "performance",
+      "delta": null,
+      "n_a": 1,
+      "n_b": 0,
+      "relative_change": null
+     },
+     {
+      "a": 1,
+      "b": null,
+      "category": "refactor",
+      "delta": null,
+      "n_a": 1,
+      "n_b": 0,
+      "relative_change": null
+     },
+     {
+      "a": 2,
+      "b": null,
+      "category": "testing",
+      "delta": null,
+      "n_a": 2,
+      "n_b": 0,
+      "relative_change": null
+     }
+    ],
+    "statistic": "value"
+   }
+  },
+  "coupling": {
+   "default": {
+    "commonly_changed_pairs": [
+     {
+      "co_changes": 1,
+      "pair": [
+       "shared-sdk",
+       "auth-service"
+      ]
+     },
+     {
+      "co_changes": 1,
+      "pair": [
+       "auth-service",
+       "web-client"
+      ]
+     }
+    ],
+    "coupling_candidates": [],
+    "declared_only": [
+     {
+      "relationship": "declared_only",
+      "source_name": "shared-sdk",
+      "target_name": "web-client"
+     }
+    ],
+    "edges": [
+     {
+      "co_changes": 1,
+      "declared": false,
+      "evidence": [
+       {
+        "commits": {
+         "auth-service": [
+          "0e58c1369984865a94ccd67fb1f5266157c97af2"
+         ],
+         "shared-sdk": [
+          "7361ded2210018bb965b396ed4116cf6fcc00c55"
+         ]
+        },
+        "task_id": "task:DEMO-4",
+        "task_key": "DEMO-4"
+       }
+      ],
+      "jaccard": 0.25,
+      "relationship": "observed",
+      "source": "repository:shared-sdk",
+      "source_name": "shared-sdk",
+      "target": "repository:auth-service",
+      "target_name": "auth-service"
+     },
+     {
+      "co_changes": 1,
+      "declared": false,
+      "evidence": [
+       {
+        "commits": {
+         "auth-service": [
+          "37a25131859bf6806cbdda0326f01e9b5cf5887f"
+         ],
+         "web-client": [
+          "f49a6a745aed3598137ee41502559c551ce83bf4"
+         ]
+        },
+        "task_id": "task:DEMO-7",
+        "task_key": "DEMO-7"
+       }
+      ],
+      "jaccard": 0.2,
+      "relationship": "observed",
+      "source": "repository:auth-service",
+      "source_name": "auth-service",
+      "target": "repository:web-client",
+      "target_name": "web-client"
+     }
+    ],
+    "matrix": {
+     "auth-service": {
+      "auth-service": 3,
+      "shared-sdk": 1,
+      "web-client": 1
+     },
+     "shared-sdk": {
+      "auth-service": 1,
+      "shared-sdk": 2,
+      "web-client": 0
+     },
+     "web-client": {
+      "auth-service": 1,
+      "shared-sdk": 0,
+      "web-client": 3
+     }
+    },
+    "modules_with_cross_repo_impact": [
+     {
+      "cross_repo_tasks": 2,
+      "module": "auth-service:auth",
+      "tasks": [
+       "DEMO-4",
+       "DEMO-7"
+      ]
+     },
+     {
+      "cross_repo_tasks": 1,
+      "module": "shared-sdk:src",
+      "tasks": [
+       "DEMO-4"
+      ]
+     },
+     {
+      "cross_repo_tasks": 1,
+      "module": "web-client:app",
+      "tasks": [
+       "DEMO-7"
+      ]
+     }
+    ],
+    "notes": [
+     "Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.",
+     "Coordination durations compare medians of different task populations and do not imply causation."
+    ],
+    "repositories": [
+     {
+      "id": "repository:auth-service",
+      "name": "auth-service",
+      "tasks_touching": 3
+     },
+     {
+      "id": "repository:shared-sdk",
+      "name": "shared-sdk",
+      "tasks_touching": 2
+     },
+     {
+      "id": "repository:web-client",
+      "name": "web-client",
+      "tasks_touching": 3
+     }
+    ],
+    "summary": {
+     "average_repositories_per_task": 1.333,
+     "cross_repository_tasks": 2,
+     "integration_checks": 0,
+     "integration_failure_rate": null,
+     "median_elapsed_ms_cross_repo": null,
+     "median_elapsed_ms_single_repo": null,
+     "tasks_with_code": 6
+    }
+   },
+   "min_support_2": {
+    "commonly_changed_pairs": [],
+    "coupling_candidates": [],
+    "declared_only": [
+     {
+      "relationship": "declared_only",
+      "source_name": "shared-sdk",
+      "target_name": "web-client"
+     }
+    ],
+    "edges": [],
+    "matrix": {
+     "auth-service": {
+      "auth-service": 3,
+      "shared-sdk": 1,
+      "web-client": 1
+     },
+     "shared-sdk": {
+      "auth-service": 1,
+      "shared-sdk": 2,
+      "web-client": 0
+     },
+     "web-client": {
+      "auth-service": 1,
+      "shared-sdk": 0,
+      "web-client": 3
+     }
+    },
+    "modules_with_cross_repo_impact": [
+     {
+      "cross_repo_tasks": 2,
+      "module": "auth-service:auth",
+      "tasks": [
+       "DEMO-4",
+       "DEMO-7"
+      ]
+     },
+     {
+      "cross_repo_tasks": 1,
+      "module": "shared-sdk:src",
+      "tasks": [
+       "DEMO-4"
+      ]
+     },
+     {
+      "cross_repo_tasks": 1,
+      "module": "web-client:app",
+      "tasks": [
+       "DEMO-7"
+      ]
+     }
+    ],
+    "notes": [
+     "Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.",
+     "Coordination durations compare medians of different task populations and do not imply causation."
+    ],
+    "repositories": [
+     {
+      "id": "repository:auth-service",
+      "name": "auth-service",
+      "tasks_touching": 3
+     },
+     {
+      "id": "repository:shared-sdk",
+      "name": "shared-sdk",
+      "tasks_touching": 2
+     },
+     {
+      "id": "repository:web-client",
+      "name": "web-client",
+      "tasks_touching": 3
+     }
+    ],
+    "summary": {
+     "average_repositories_per_task": 1.333,
+     "cross_repository_tasks": 2,
+     "integration_checks": 0,
+     "integration_failure_rate": null,
+     "median_elapsed_ms_cross_repo": null,
+     "median_elapsed_ms_single_repo": null,
+     "tasks_with_code": 6
+    }
+   }
+  },
+  "estimate": {
+   "by_task": {
+    "comparable_tasks": [],
+    "message": "only 0 comparable accepted task(s) found; at least 3 are required",
+    "min_sample": 3,
+    "status": "insufficient_data"
+   },
+   "by_title": {
+    "comparable_tasks": [],
+    "message": "only 0 comparable accepted task(s) found; at least 3 are required",
+    "min_sample": 3,
+    "status": "insufficient_data"
+   }
+  },
+  "failures": {
+   "findings": [
+    {
+     "evidence": {
+      "commits": [
+       "078264bea0db0b36c69187f645abd11af4cd268a"
+      ],
+      "fixes": [
+       "DEMO-9"
+      ],
+      "original": "DEMO-1"
+     },
+     "fingerprint": "a3e6110f74533f9968e4c32d660aa3e6",
+     "kind": "regression_follow_up",
+     "metric_value": 1,
+     "sample_size": 1,
+     "severity": "info",
+     "title": "DEMO-1 was followed by 1 fix task(s)"
+    }
+   ],
+   "generated_at": "2027-02-09T09:00:00+00:00",
+   "note": "Findings are computed deterministically from recorded tasks, attempts, checks and commits."
+  },
+  "overview": {
+   "day": {
+    "accepted_by_period": [],
+    "agent_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 6,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted",
+      "sum": 0
+     },
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 1,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted-buggy",
+      "sum": 0
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 6,
+      "provider": "scripted",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 1,
+      "provider": "scripted-buggy",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 0,
+      "provider": "scripted-fail",
+      "value": 0.0
+     }
+    ],
+    "by_category": [
+     {
+      "category": "bug_fix",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "category": "documentation",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "maintenance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "other",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "performance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "refactor",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "testing",
+      "n": 2,
+      "value": 2
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 22,
+      "mean": 13.5,
+      "median": 13.0,
+      "min": 6,
+      "n": 6,
+      "p75": 19.75,
+      "p90": 21.5,
+      "p95": 21.75,
+      "sum": 81
+     }
+    ],
+    "completed_by_period": [],
+    "created_by_period": [
+     {
+      "n": 1,
+      "period": "2026-01-21",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-01-25",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-01-28",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-01",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-04",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-08",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-11",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-15",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-21",
+      "value": 1
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "n": 8,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "sum": 0
+     }
+    ],
+    "final_change": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 0,
+      "n": 0,
+      "numerator": 0,
+      "value": null
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "app",
+      "n": 3,
+      "value": 18
+     },
+     {
+      "module": "auth",
+      "n": 3,
+      "value": 30
+     },
+     {
+      "module": "src",
+      "n": 2,
+      "value": 33
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 1,
+      "status": "backlog",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "status": "blocked",
+      "value": 1
+     },
+     {
+      "n": 7,
+      "status": "ready",
+      "value": 7
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 496800000,
+      "mean": 496800000.0,
+      "median": 496800000.0,
+      "min": 496800000,
+      "n": 8,
+      "p75": 496800000.0,
+      "p90": 496800000.0,
+      "p95": 496800000.0,
+      "sum": 3974400000
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 3,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 33
+     },
+     {
+      "n": 3,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 30
+     },
+     {
+      "n": 3,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 18
+     }
+    ],
+    "rework": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "verification_pass_rate": []
+   },
+   "month": {
+    "accepted_by_period": [],
+    "agent_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 6,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted",
+      "sum": 0
+     },
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 1,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted-buggy",
+      "sum": 0
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 6,
+      "provider": "scripted",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 1,
+      "provider": "scripted-buggy",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 0,
+      "provider": "scripted-fail",
+      "value": 0.0
+     }
+    ],
+    "by_category": [
+     {
+      "category": "bug_fix",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "category": "documentation",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "maintenance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "other",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "performance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "refactor",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "testing",
+      "n": 2,
+      "value": 2
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 22,
+      "mean": 13.5,
+      "median": 13.0,
+      "min": 6,
+      "n": 6,
+      "p75": 19.75,
+      "p90": 21.5,
+      "p95": 21.75,
+      "sum": 81
+     }
+    ],
+    "completed_by_period": [],
+    "created_by_period": [
+     {
+      "n": 3,
+      "period": "2026-01-01",
+      "value": 3
+     },
+     {
+      "n": 6,
+      "period": "2026-02-01",
+      "value": 6
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "n": 8,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "sum": 0
+     }
+    ],
+    "final_change": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 0,
+      "n": 0,
+      "numerator": 0,
+      "value": null
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "app",
+      "n": 3,
+      "value": 18
+     },
+     {
+      "module": "auth",
+      "n": 3,
+      "value": 30
+     },
+     {
+      "module": "src",
+      "n": 2,
+      "value": 33
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 1,
+      "status": "backlog",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "status": "blocked",
+      "value": 1
+     },
+     {
+      "n": 7,
+      "status": "ready",
+      "value": 7
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 496800000,
+      "mean": 496800000.0,
+      "median": 496800000.0,
+      "min": 496800000,
+      "n": 8,
+      "p75": 496800000.0,
+      "p90": 496800000.0,
+      "p95": 496800000.0,
+      "sum": 3974400000
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 3,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 33
+     },
+     {
+      "n": 3,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 30
+     },
+     {
+      "n": 3,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 18
+     }
+    ],
+    "rework": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "verification_pass_rate": []
+   },
+   "quarter": {
+    "accepted_by_period": [],
+    "agent_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 6,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted",
+      "sum": 0
+     },
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 1,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted-buggy",
+      "sum": 0
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 6,
+      "provider": "scripted",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 1,
+      "provider": "scripted-buggy",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 0,
+      "provider": "scripted-fail",
+      "value": 0.0
+     }
+    ],
+    "by_category": [
+     {
+      "category": "bug_fix",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "category": "documentation",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "maintenance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "other",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "performance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "refactor",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "testing",
+      "n": 2,
+      "value": 2
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 22,
+      "mean": 13.5,
+      "median": 13.0,
+      "min": 6,
+      "n": 6,
+      "p75": 19.75,
+      "p90": 21.5,
+      "p95": 21.75,
+      "sum": 81
+     }
+    ],
+    "completed_by_period": [],
+    "created_by_period": [
+     {
+      "n": 9,
+      "period": "2026-01-01",
+      "value": 9
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "n": 8,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "sum": 0
+     }
+    ],
+    "final_change": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 0,
+      "n": 0,
+      "numerator": 0,
+      "value": null
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "app",
+      "n": 3,
+      "value": 18
+     },
+     {
+      "module": "auth",
+      "n": 3,
+      "value": 30
+     },
+     {
+      "module": "src",
+      "n": 2,
+      "value": 33
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 1,
+      "status": "backlog",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "status": "blocked",
+      "value": 1
+     },
+     {
+      "n": 7,
+      "status": "ready",
+      "value": 7
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 496800000,
+      "mean": 496800000.0,
+      "median": 496800000.0,
+      "min": 496800000,
+      "n": 8,
+      "p75": 496800000.0,
+      "p90": 496800000.0,
+      "p95": 496800000.0,
+      "sum": 3974400000
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 3,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 33
+     },
+     {
+      "n": 3,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 30
+     },
+     {
+      "n": 3,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 18
+     }
+    ],
+    "rework": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "verification_pass_rate": []
+   },
+   "week": {
+    "accepted_by_period": [],
+    "agent_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 6,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted",
+      "sum": 0
+     },
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 1,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted-buggy",
+      "sum": 0
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 6,
+      "provider": "scripted",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 1,
+      "provider": "scripted-buggy",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 0,
+      "provider": "scripted-fail",
+      "value": 0.0
+     }
+    ],
+    "by_category": [
+     {
+      "category": "bug_fix",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "category": "documentation",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "maintenance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "other",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "performance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "refactor",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "testing",
+      "n": 2,
+      "value": 2
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 22,
+      "mean": 13.5,
+      "median": 13.0,
+      "min": 6,
+      "n": 6,
+      "p75": 19.75,
+      "p90": 21.5,
+      "p95": 21.75,
+      "sum": 81
+     }
+    ],
+    "completed_by_period": [],
+    "created_by_period": [
+     {
+      "n": 2,
+      "period": "2026-01-19",
+      "value": 2
+     },
+     {
+      "n": 2,
+      "period": "2026-01-26",
+      "value": 2
+     },
+     {
+      "n": 2,
+      "period": "2026-02-02",
+      "value": 2
+     },
+     {
+      "n": 2,
+      "period": "2026-02-09",
+      "value": 2
+     },
+     {
+      "n": 1,
+      "period": "2026-02-16",
+      "value": 1
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "n": 8,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "sum": 0
+     }
+    ],
+    "final_change": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 0,
+      "n": 0,
+      "numerator": 0,
+      "value": null
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "app",
+      "n": 3,
+      "value": 18
+     },
+     {
+      "module": "auth",
+      "n": 3,
+      "value": 30
+     },
+     {
+      "module": "src",
+      "n": 2,
+      "value": 33
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 1,
+      "status": "backlog",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "status": "blocked",
+      "value": 1
+     },
+     {
+      "n": 7,
+      "status": "ready",
+      "value": 7
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 496800000,
+      "mean": 496800000.0,
+      "median": 496800000.0,
+      "min": 496800000,
+      "n": 8,
+      "p75": 496800000.0,
+      "p90": 496800000.0,
+      "p95": 496800000.0,
+      "sum": 3974400000
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 3,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 33
+     },
+     {
+      "n": 3,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 30
+     },
+     {
+      "n": 3,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 18
+     }
+    ],
+    "rework": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "verification_pass_rate": []
+   },
+   "year": {
+    "accepted_by_period": [],
+    "agent_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 6,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted",
+      "sum": 0
+     },
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "model": null,
+      "n": 1,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "provider": "scripted-buggy",
+      "sum": 0
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 6,
+      "provider": "scripted",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 1,
+      "provider": "scripted-buggy",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 0,
+      "provider": "scripted-fail",
+      "value": 0.0
+     }
+    ],
+    "by_category": [
+     {
+      "category": "bug_fix",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "category": "documentation",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "maintenance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "other",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "performance",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "refactor",
+      "n": 1,
+      "value": 1
+     },
+     {
+      "category": "testing",
+      "n": 2,
+      "value": 2
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 22,
+      "mean": 13.5,
+      "median": 13.0,
+      "min": 6,
+      "n": 6,
+      "p75": 19.75,
+      "p90": 21.5,
+      "p95": 21.75,
+      "sum": 81
+     }
+    ],
+    "completed_by_period": [],
+    "created_by_period": [
+     {
+      "n": 9,
+      "period": "2026-01-01",
+      "value": 9
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 0,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0,
+      "n": 8,
+      "p75": 0.0,
+      "p90": 0.0,
+      "p95": 0.0,
+      "sum": 0
+     }
+    ],
+    "final_change": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 0,
+      "n": 0,
+      "numerator": 0,
+      "value": null
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "app",
+      "n": 3,
+      "value": 18
+     },
+     {
+      "module": "auth",
+      "n": 3,
+      "value": 30
+     },
+     {
+      "module": "src",
+      "n": 2,
+      "value": 33
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 1,
+      "status": "backlog",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "status": "blocked",
+      "value": 1
+     },
+     {
+      "n": 7,
+      "status": "ready",
+      "value": 7
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 496800000,
+      "mean": 496800000.0,
+      "median": 496800000.0,
+      "min": 496800000,
+      "n": 8,
+      "p75": 496800000.0,
+      "p90": 496800000.0,
+      "p95": 496800000.0,
+      "sum": 3974400000
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 3,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 33
+     },
+     {
+      "n": 3,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 30
+     },
+     {
+      "n": 3,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 18
+     }
+    ],
+    "rework": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    ],
+    "verification_pass_rate": []
+   }
+  },
+  "retrospective": {
+   "content": "# Retrospective: 2026-01-04 to 2027-02-09\n\n_All numbers are measured from Workgraph records; see the evidence references in brackets._\n\n## Work completed\n\n- Tasks created: **9**, completion reported: **0**, accepted: **0**.\n- Median time from creation to acceptance: **n/a** (n=0).\n\n## Category breakdown\n\n- no accepted tasks in period\n\n## Bottlenecks\n\n- Currently blocked tasks: 1.\n\n## Rework\n\n- Median rework ratio (churn / final change): None (n=0).\n\n## Agent effectiveness\n\n- scripted / None: 6/6 attempts succeeded (100%)\n- scripted-buggy / None: 1/1 attempts succeeded (100%)\n- scripted-fail / None: 0/1 attempts succeeded (0%)\n\n## Cross-repository coordination\n\n- Cross-repository tasks: 2 of 6 with code; average repositories per task 1.333.\n- shared-sdk + auth-service changed together in 1 task(s).\n- auth-service + web-client changed together in 1 task(s).\n\n## Quality\n\n- Verification pass rate: 0/0 runs passed.\n\n## Significant changes\n\n- none recorded\n\n## Potential improvement opportunities\n\n- No significant failure patterns detected.\n\n## Narrative (model-generated interpretation)\n\n_Written by heuristic/heuristic-v1 from the measured facts above._\n\n0 tasks accepted\n\n- - Tasks created: **9**, completion reported: **0**, accepted: **0**.\n- - Median time from creation to acceptance: **n/a** (n=0).\n- \n",
+   "facts": {
+    "agents": [
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 6,
+      "provider": "scripted",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 1,
+      "provider": "scripted-buggy",
+      "value": 1.0
+     },
+     {
+      "denominator": 1,
+      "model": null,
+      "n": 1,
+      "numerator": 0,
+      "provider": "scripted-fail",
+      "value": 0.0
+     }
+    ],
+    "categories": {},
+    "code": {
+     "cumulative_churn": {
+      "max": 22,
+      "mean": 13.5,
+      "median": 13.0,
+      "min": 6,
+      "n": 6,
+      "p75": 19.75,
+      "p90": 21.5,
+      "p95": 21.75,
+      "sum": 81
+     },
+     "final_change": {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     },
+     "rework_ratio": {
+      "max": null,
+      "mean": null,
+      "median": null,
+      "min": null,
+      "n": 0,
+      "p75": null,
+      "p90": null,
+      "p95": null,
+      "sum": null
+     }
+    },
+    "coordination": {
+     "average_repositories_per_task": 1.333,
+     "cross_repository_tasks": 2,
+     "integration_checks": 0,
+     "integration_failure_rate": null,
+     "median_elapsed_ms_cross_repo": null,
+     "median_elapsed_ms_single_repo": null,
+     "tasks_with_code": 6
+    },
+    "coupled_pairs": [
+     {
+      "co_changes": 1,
+      "pair": [
+       "shared-sdk",
+       "auth-service"
+      ]
+     },
+     {
+      "co_changes": 1,
+      "pair": [
+       "auth-service",
+       "web-client"
+      ]
+     }
+    ],
+    "elapsed_ms": {
+     "max": null,
+     "mean": null,
+     "median": null,
+     "min": null,
+     "n": 0,
+     "p75": null,
+     "p90": null,
+     "p95": null,
+     "sum": null
+    },
+    "findings": [
+     {
+      "evidence": {
+       "commits": [
+        "078264bea0db0b36c69187f645abd11af4cd268a"
+       ],
+       "fixes": [
+        "DEMO-9"
+       ],
+       "original": "DEMO-1"
+      },
+      "kind": "regression_follow_up",
+      "title": "DEMO-1 was followed by 1 fix task(s)"
+     }
+    ],
+    "period": {
+     "project": null,
+     "repository": null,
+     "since": "2026-01-04T09:00:00+00:00",
+     "until": "2027-02-09T09:00:00+00:00"
+    },
+    "significant_changes": [],
+    "tasks": {
+     "accepted": 0,
+     "blocked_now": 1,
+     "completed": 0,
+     "created": 9
+    },
+    "top_failing_checks": [],
+    "verification": {
+     "denominator": 0,
+     "n": 0,
+     "numerator": 0,
+     "value": null
+    }
+   },
+   "id": "<unlabelled-uuid>",
+   "narrative_source": "model:heuristic/heuristic-v1",
+   "title": "Retrospective 2026-01-04 - 2027-02-09"
+  },
+  "subagents_month": {
+   "by_period": [],
+   "by_size": [],
+   "model": null,
+   "notes": [
+    "A task's outcome is its current status: accepted, rejected (a non-accepted acceptance decision), failed or cancelled; anything else is pending"
+   ],
+   "period": "month",
+   "totals": [],
+   "unlinked_runs": 0,
+   "window": {
+    "since": null,
+    "until": null
+   }
+  },
+  "subagents_week": {
+   "by_period": [],
+   "by_size": [],
+   "model": null,
+   "notes": [
+    "A task's outcome is its current status: accepted, rejected (a non-accepted acceptance decision), failed or cancelled; anything else is pending"
+   ],
+   "period": "week",
+   "totals": [],
+   "unlinked_runs": 0,
+   "window": {
+    "since": null,
+    "until": null
+   }
+  },
+  "task_history": []
+ }
+}

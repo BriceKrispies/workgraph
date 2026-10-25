@@ -1,0 +1,3010 @@
+{
+ "database": "gen",
+ "reports": {
+  "agent_time_bottlenecks": {
+   "by_task": [],
+   "classes": [],
+   "concurrency": {
+    "median_at_slowest_calls": null,
+    "peak_during_window": 0,
+    "scope": "stopped subagent runs in every workspace on this machine"
+   },
+   "notes": [
+    "Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting)."
+   ],
+   "slowest_calls": [],
+   "totals": {
+    "accounted_seconds": 0,
+    "model_seconds": 0,
+    "model_share": null,
+    "polling_seconds": 0,
+    "polling_share": null,
+    "runs": 0,
+    "span_seconds": 0,
+    "tool_seconds": 0,
+    "waiting_seconds": 0,
+    "waiting_share": null
+   },
+   "window": {
+    "since": null,
+    "until": null
+   }
+  },
+  "compare": {
+   "cumulative_churn": {
+    "metric": {
+     "caveats": [
+      "Lines changed do not measure difficulty or necessity."
+     ],
+     "definition": "Lines added + removed across a task's distinct linked non-merge commits (confidence >= 0.5; cherry-picked or rewritten duplicates counted once).",
+     "dimensions": [
+      "agent",
+      "category",
+      "period",
+      "priority",
+      "project",
+      "repository",
+      "status"
+     ],
+     "family": "code",
+     "id": "cumulative_churn",
+     "statistic": "distribution",
+     "time_column": "created_at",
+     "title": "Cumulative churn",
+     "unit": "lines"
+    },
+    "notes": [
+     "Metrics describe observed associations; differences between groups do not establish causation."
+    ],
+    "period_a": [
+     "2026-01-05T09:00:00+00:00",
+     "2026-07-04T09:00:00+00:00"
+    ],
+    "period_b": [
+     "2026-07-04T09:00:00+00:00",
+     "2027-02-09T09:00:00+00:00"
+    ],
+    "rows": [
+     {
+      "a": 32.5,
+      "b": null,
+      "delta": null,
+      "n_a": 14,
+      "n_b": 0,
+      "relative_change": null
+     }
+    ],
+    "statistic": "median"
+   },
+   "execution_duration": {
+    "metric": {
+     "caveats": [],
+     "definition": "Measured wall-clock duration of finished top-level attempts.",
+     "dimensions": [
+      "agent",
+      "category",
+      "model",
+      "period",
+      "priority",
+      "project",
+      "provider",
+      "status"
+     ],
+     "family": "execution",
+     "id": "execution_duration",
+     "statistic": "distribution",
+     "time_column": "finished_at",
+     "title": "Active execution time",
+     "unit": "ms"
+    },
+    "notes": [
+     "Metrics describe observed associations; differences between groups do not establish causation."
+    ],
+    "period_a": [
+     "2026-01-05T09:00:00+00:00",
+     "2026-07-04T09:00:00+00:00"
+    ],
+    "period_b": [
+     "2026-07-04T09:00:00+00:00",
+     "2027-02-09T09:00:00+00:00"
+    ],
+    "rows": [
+     {
+      "a": 516924.0,
+      "b": null,
+      "delta": null,
+      "n_a": 36,
+      "n_b": 0,
+      "relative_change": null
+     }
+    ],
+    "statistic": "median"
+   },
+   "tasks_created_by_category": {
+    "metric": {
+     "caveats": [],
+     "definition": "Number of tasks created in the period.",
+     "dimensions": [
+      "agent",
+      "category",
+      "period",
+      "priority",
+      "project",
+      "repository",
+      "status"
+     ],
+     "family": "throughput",
+     "id": "tasks_created",
+     "statistic": "count",
+     "time_column": "created_at",
+     "title": "Tasks created",
+     "unit": "tasks"
+    },
+    "notes": [
+     "Metrics describe observed associations; differences between groups do not establish causation."
+    ],
+    "period_a": [
+     "2026-01-05T09:00:00+00:00",
+     "2026-07-04T09:00:00+00:00"
+    ],
+    "period_b": [
+     "2026-07-04T09:00:00+00:00",
+     "2027-02-09T09:00:00+00:00"
+    ],
+    "rows": [
+     {
+      "a": 16,
+      "b": null,
+      "category": null,
+      "delta": null,
+      "n_a": 16,
+      "n_b": 0,
+      "relative_change": null
+     }
+    ],
+    "statistic": "value"
+   }
+  },
+  "coupling": {
+   "default": {
+    "commonly_changed_pairs": [
+     {
+      "co_changes": 1,
+      "pair": [
+       "web-client",
+       "auth-service"
+      ]
+     }
+    ],
+    "coupling_candidates": [],
+    "declared_only": [],
+    "edges": [
+     {
+      "co_changes": 1,
+      "declared": false,
+      "evidence": [
+       {
+        "commits": {
+         "auth-service": [
+          "27b6c6d6b28a0973c25393cb2ceee1ee10d8c6ee",
+          "eaffe270481beb515b4050e6300081ffe8f7ba08"
+         ],
+         "web-client": [
+          "ee4411e0b86804ff6745d6260e609afbfb63b7a1",
+          "a17b7991e8a20488535cc344a48442353877f3ea"
+         ]
+        },
+        "task_id": "task:WG-16",
+        "task_key": "WG-16"
+       }
+      ],
+      "jaccard": 0.0909,
+      "relationship": "observed",
+      "source": "repository:web-client",
+      "source_name": "web-client",
+      "target": "repository:auth-service",
+      "target_name": "auth-service"
+     }
+    ],
+    "matrix": {
+     "auth-service": {
+      "auth-service": 6,
+      "shared-sdk": 0,
+      "web-client": 1
+     },
+     "shared-sdk": {
+      "auth-service": 0,
+      "shared-sdk": 3,
+      "web-client": 0
+     },
+     "web-client": {
+      "auth-service": 1,
+      "shared-sdk": 0,
+      "web-client": 6
+     }
+    },
+    "modules_with_cross_repo_impact": [
+     {
+      "cross_repo_tasks": 1,
+      "module": "web-client:src/web-client",
+      "tasks": [
+       "WG-16"
+      ]
+     },
+     {
+      "cross_repo_tasks": 1,
+      "module": "auth-service:src/auth-service",
+      "tasks": [
+       "WG-16"
+      ]
+     }
+    ],
+    "notes": [
+     "Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.",
+     "Coordination durations compare medians of different task populations and do not imply causation."
+    ],
+    "repositories": [
+     {
+      "id": "repository:auth-service",
+      "name": "auth-service",
+      "tasks_touching": 6
+     },
+     {
+      "id": "repository:shared-sdk",
+      "name": "shared-sdk",
+      "tasks_touching": 3
+     },
+     {
+      "id": "repository:web-client",
+      "name": "web-client",
+      "tasks_touching": 6
+     }
+    ],
+    "summary": {
+     "average_repositories_per_task": 1.071,
+     "cross_repository_tasks": 1,
+     "integration_checks": 0,
+     "integration_failure_rate": null,
+     "median_elapsed_ms_cross_repo": 9633600000,
+     "median_elapsed_ms_single_repo": 5670000000.0,
+     "tasks_with_code": 14
+    }
+   },
+   "min_support_2": {
+    "commonly_changed_pairs": [],
+    "coupling_candidates": [],
+    "declared_only": [],
+    "edges": [],
+    "matrix": {
+     "auth-service": {
+      "auth-service": 6,
+      "shared-sdk": 0,
+      "web-client": 1
+     },
+     "shared-sdk": {
+      "auth-service": 0,
+      "shared-sdk": 3,
+      "web-client": 0
+     },
+     "web-client": {
+      "auth-service": 1,
+      "shared-sdk": 0,
+      "web-client": 6
+     }
+    },
+    "modules_with_cross_repo_impact": [
+     {
+      "cross_repo_tasks": 1,
+      "module": "web-client:src/web-client",
+      "tasks": [
+       "WG-16"
+      ]
+     },
+     {
+      "cross_repo_tasks": 1,
+      "module": "auth-service:src/auth-service",
+      "tasks": [
+       "WG-16"
+      ]
+     }
+    ],
+    "notes": [
+     "Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.",
+     "Coordination durations compare medians of different task populations and do not imply causation."
+    ],
+    "repositories": [
+     {
+      "id": "repository:auth-service",
+      "name": "auth-service",
+      "tasks_touching": 6
+     },
+     {
+      "id": "repository:shared-sdk",
+      "name": "shared-sdk",
+      "tasks_touching": 3
+     },
+     {
+      "id": "repository:web-client",
+      "name": "web-client",
+      "tasks_touching": 6
+     }
+    ],
+    "summary": {
+     "average_repositories_per_task": 1.071,
+     "cross_repository_tasks": 1,
+     "integration_checks": 0,
+     "integration_failure_rate": null,
+     "median_elapsed_ms_cross_repo": 9633600000,
+     "median_elapsed_ms_single_repo": 5670000000.0,
+     "tasks_with_code": 14
+    }
+   }
+  },
+  "estimate": {
+   "by_task": {
+    "comparable_tasks": [
+     {
+      "key": "WG-8",
+      "reasons": [
+       "lexical text similarity 0.25",
+       "repository overlap 0.50"
+      ],
+      "score": 0.2,
+      "task_id": "task:WG-8",
+      "title": "Generated task 1-7 about billing"
+     },
+     {
+      "key": "WG-3",
+      "reasons": [
+       "lexical text similarity 0.11",
+       "repository overlap 0.50",
+       "touches the same modules"
+      ],
+      "score": 0.169,
+      "task_id": "task:WG-3",
+      "title": "Generated task 1-2 about docs"
+     }
+    ],
+    "message": "only 2 comparable accepted task(s) found; at least 3 are required",
+    "min_sample": 3,
+    "status": "insufficient_data"
+   },
+   "by_title": {
+    "comparable_tasks": [
+     {
+      "key": "WG-8",
+      "reasons": [
+       "lexical text similarity 0.50"
+      ],
+      "score": 0.2,
+      "task_id": "task:WG-8",
+      "title": "Generated task 1-7 about billing"
+     }
+    ],
+    "message": "only 1 comparable accepted task(s) found; at least 3 are required",
+    "min_sample": 3,
+    "status": "insufficient_data"
+   }
+  },
+  "failures": {
+   "findings": [
+    {
+     "evidence": {
+      "attempts": [
+       "attempt:task:WG-2#3",
+       "attempt:task:WG-3#1",
+       "attempt:task:WG-5#1",
+       "attempt:task:WG-8#2",
+       "attempt:task:WG-9#3",
+       "attempt:task:WG-14#3",
+       "attempt:task:WG-15#2",
+       "attempt:task:WG-8#1",
+       "attempt:task:WG-12#1",
+       "attempt:task:WG-16#2",
+       "attempt:task:WG-14#1"
+      ],
+      "tasks": [
+       "WG-12",
+       "WG-14",
+       "WG-15",
+       "WG-16",
+       "WG-2",
+       "WG-3",
+       "WG-5",
+       "WG-8",
+       "WG-9"
+      ]
+     },
+     "fingerprint": "9ac40e4258cf2f956e569fc1bb53b73c",
+     "kind": "failure_category",
+     "metric_value": 11,
+     "sample_size": 11,
+     "severity": "info",
+     "title": "11 attempts failed with 'golden'"
+    },
+    {
+     "evidence": {
+      "attempts": [
+       "attempt:task:WG-16#1",
+       "attempt:task:WG-16#2",
+       "attempt:task:WG-16#3"
+      ],
+      "tasks": [
+       "WG-16"
+      ]
+     },
+     "fingerprint": "cd4a1e4207fec689e147d35403d0316c",
+     "kind": "retry_loop",
+     "metric_value": 3,
+     "sample_size": 3,
+     "severity": "warning",
+     "title": "WG-16 needed 3 attempts"
+    },
+    {
+     "evidence": {
+      "attempts": [
+       "attempt:task:WG-2#1",
+       "attempt:task:WG-2#2",
+       "attempt:task:WG-2#3"
+      ],
+      "tasks": [
+       "WG-2"
+      ]
+     },
+     "fingerprint": "983649727418e984e5833f07a4ecee69",
+     "kind": "retry_loop",
+     "metric_value": 3,
+     "sample_size": 3,
+     "severity": "warning",
+     "title": "WG-2 needed 3 attempts"
+    },
+    {
+     "evidence": {
+      "attempts": [
+       "attempt:task:WG-4#1",
+       "attempt:task:WG-4#2",
+       "attempt:task:WG-4#3"
+      ],
+      "tasks": [
+       "WG-4"
+      ]
+     },
+     "fingerprint": "1e33410de9211b395fefec2b96e77937",
+     "kind": "retry_loop",
+     "metric_value": 3,
+     "sample_size": 3,
+     "severity": "warning",
+     "title": "WG-4 needed 3 attempts"
+    },
+    {
+     "evidence": {
+      "attempts": [
+       "attempt:task:WG-9#1",
+       "attempt:task:WG-9#2",
+       "attempt:task:WG-9#3"
+      ],
+      "tasks": [
+       "WG-9"
+      ]
+     },
+     "fingerprint": "955d830434202287021f6f1257ca9bff",
+     "kind": "retry_loop",
+     "metric_value": 3,
+     "sample_size": 3,
+     "severity": "warning",
+     "title": "WG-9 needed 3 attempts"
+    },
+    {
+     "evidence": {
+      "attempts": [
+       "attempt:task:WG-11#1",
+       "attempt:task:WG-11#2",
+       "attempt:task:WG-11#3"
+      ],
+      "tasks": [
+       "WG-11"
+      ]
+     },
+     "fingerprint": "8ac106d891c64cf23961360787f3acab",
+     "kind": "retry_loop",
+     "metric_value": 3,
+     "sample_size": 3,
+     "severity": "warning",
+     "title": "WG-11 needed 3 attempts"
+    },
+    {
+     "evidence": {
+      "attempts": [
+       "attempt:task:WG-14#1",
+       "attempt:task:WG-14#2",
+       "attempt:task:WG-14#3"
+      ],
+      "tasks": [
+       "WG-14"
+      ]
+     },
+     "fingerprint": "9b7d202fd17e4e35206fe1d60dad144d",
+     "kind": "retry_loop",
+     "metric_value": 3,
+     "sample_size": 3,
+     "severity": "warning",
+     "title": "WG-14 needed 3 attempts"
+    },
+    {
+     "evidence": {
+      "attempts": [
+       "attempt:task:WG-7#1",
+       "attempt:task:WG-7#2",
+       "attempt:task:WG-7#3"
+      ],
+      "tasks": [
+       "WG-7"
+      ]
+     },
+     "fingerprint": "3fe6f1faaa8e1d713499a944fc50d4a8",
+     "kind": "retry_loop",
+     "metric_value": 3,
+     "sample_size": 3,
+     "severity": "warning",
+     "title": "WG-7 needed 3 attempts"
+    },
+    {
+     "evidence": {
+      "tasks": [
+       "WG-4",
+       "WG-6",
+       "WG-13",
+       "WG-14",
+       "WG-16"
+      ]
+     },
+     "fingerprint": "0fed3403778c5e387bee62f9090b468f",
+     "kind": "high_rework",
+     "metric_value": 21,
+     "sample_size": 5,
+     "severity": "info",
+     "title": "auth-service:src/auth-service edited 21 times across 5 task(s)"
+    },
+    {
+     "evidence": {
+      "tasks": [
+       "WG-1",
+       "WG-3",
+       "WG-11",
+       "WG-12",
+       "WG-16"
+      ]
+     },
+     "fingerprint": "4318bc31ad9c4fdf8b96c48c26a98514",
+     "kind": "high_rework",
+     "metric_value": 15,
+     "sample_size": 5,
+     "severity": "info",
+     "title": "web-client:src/web-client edited 15 times across 5 task(s)"
+    },
+    {
+     "evidence": {
+      "tasks": [
+       "WG-2",
+       "WG-9",
+       "WG-10"
+      ]
+     },
+     "fingerprint": "d275e8d069ad00c868472060b8de37b6",
+     "kind": "high_rework",
+     "metric_value": 10,
+     "sample_size": 3,
+     "severity": "info",
+     "title": "shared-sdk:src/shared-sdk edited 10 times across 3 task(s)"
+    },
+    {
+     "evidence": {
+      "commits": [
+       "12675e3096ecf54a227a356a037d455cf6ac7575"
+      ],
+      "fixes": [
+       "WG-4"
+      ],
+      "original": "WG-1"
+     },
+     "fingerprint": "dcc90924985de68e8e04862ac8c8636e",
+     "kind": "regression_follow_up",
+     "metric_value": 1,
+     "sample_size": 1,
+     "severity": "info",
+     "title": "WG-1 was followed by 1 fix task(s)"
+    },
+    {
+     "evidence": {
+      "commits": [
+       "0e29214f4da8bc06bb2195e8c3208e7e1abcafe1",
+       "b425b947969e6e464ce58652e2da58c2c37e6edf"
+      ],
+      "fixes": [
+       "WG-14"
+      ],
+      "original": "WG-6"
+     },
+     "fingerprint": "9ecfd454168bb93ae5d6db01e48e1fe6",
+     "kind": "regression_follow_up",
+     "metric_value": 1,
+     "sample_size": 1,
+     "severity": "info",
+     "title": "WG-6 was followed by 1 fix task(s)"
+    }
+   ],
+   "generated_at": "2026-11-17T09:00:00+00:00",
+   "note": "Findings are computed deterministically from recorded tasks, attempts, checks and commits."
+  },
+  "overview": {
+   "day": {
+    "accepted_by_period": [
+     {
+      "n": 1,
+      "period": "2026-03-23",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-04",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-18",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-26",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-06-07",
+      "value": 1
+     }
+    ],
+    "agent_duration": [
+     {
+      "max": 572274,
+      "mean": 483286.0,
+      "median": 550136.0,
+      "min": 327448,
+      "model": null,
+      "n": 3,
+      "p75": 561205.0,
+      "p90": 567846.4,
+      "p95": 570060.2,
+      "provider": "alpha",
+      "sum": 1449858
+     },
+     {
+      "max": 598759,
+      "mean": 598759.0,
+      "median": 598759.0,
+      "min": 598759,
+      "model": "m1",
+      "n": 1,
+      "p75": 598759.0,
+      "p90": 598759.0,
+      "p95": 598759.0,
+      "provider": "beta",
+      "sum": 598759
+     },
+     {
+      "max": 805281,
+      "mean": 601516.5,
+      "median": 601516.5,
+      "min": 397752,
+      "model": "m2",
+      "n": 2,
+      "p75": 703398.75,
+      "p90": 764528.1,
+      "p95": 784904.55,
+      "provider": "beta",
+      "sum": 1203033
+     },
+     {
+      "max": 898371,
+      "mean": 589696.0,
+      "median": 589696.0,
+      "min": 281021,
+      "model": null,
+      "n": 2,
+      "p75": 744033.5,
+      "p90": 836636.0,
+      "p95": 867503.5,
+      "provider": "beta",
+      "sum": 1179392
+     },
+     {
+      "max": 658509,
+      "mean": 606518.5,
+      "median": 606518.5,
+      "min": 554528,
+      "model": "m1",
+      "n": 2,
+      "p75": 632513.75,
+      "p90": 648110.9,
+      "p95": 653309.95,
+      "provider": "gamma",
+      "sum": 1213037
+     },
+     {
+      "max": 130419,
+      "mean": 130419.0,
+      "median": 130419.0,
+      "min": 130419,
+      "model": "m2",
+      "n": 1,
+      "p75": 130419.0,
+      "p90": 130419.0,
+      "p95": 130419.0,
+      "provider": "gamma",
+      "sum": 130419
+     },
+     {
+      "max": 517135,
+      "mean": 517135.0,
+      "median": 517135.0,
+      "min": 517135,
+      "model": null,
+      "n": 1,
+      "p75": 517135.0,
+      "p90": 517135.0,
+      "p95": 517135.0,
+      "provider": "gamma",
+      "sum": 517135
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 3,
+      "model": "m1",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 3,
+      "provider": "alpha",
+      "value": 0.75
+     },
+     {
+      "denominator": 6,
+      "model": "m1",
+      "n": 6,
+      "numerator": 1,
+      "provider": "beta",
+      "value": 0.166667
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.666667
+     },
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": "m1",
+      "n": 4,
+      "numerator": 2,
+      "provider": "gamma",
+      "value": 0.5
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.25
+     }
+    ],
+    "by_category": [
+     {
+      "category": null,
+      "n": 16,
+      "value": 16
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 96,
+      "mean": 34.5,
+      "median": 32.5,
+      "min": 1,
+      "n": 14,
+      "p75": 41.5,
+      "p90": 62.7,
+      "p95": 76.5,
+      "sum": 483
+     }
+    ],
+    "completed_by_period": [
+     {
+      "n": 1,
+      "period": "2026-03-22",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-03",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-17",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-25",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-06-06",
+      "value": 1
+     }
+    ],
+    "created_by_period": [
+     {
+      "n": 1,
+      "period": "2026-01-17",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-01-19",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-01-21",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-01-23",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-01-25",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-01-27",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-01-29",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-01-31",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-02",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-04",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-06",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-08",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-10",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-12",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-14",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-02-16",
+      "value": 1
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 898371,
+      "mean": 495931.277778,
+      "median": 516924.0,
+      "min": 4563,
+      "n": 36,
+      "p75": 659072.25,
+      "p90": 823742.5,
+      "p95": 858658.25,
+      "sum": 17853526
+     }
+    ],
+    "final_change": [
+     {
+      "max": 58,
+      "mean": 29.666667,
+      "median": 30.0,
+      "min": 1,
+      "n": 3,
+      "p75": 44.0,
+      "p90": 52.4,
+      "p95": 55.2,
+      "sum": 89
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 5,
+      "n": 5,
+      "numerator": 0,
+      "value": 0.0
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "src",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "module": "src/auth-service",
+      "n": 17,
+      "value": 238
+     },
+     {
+      "module": "src/shared-sdk",
+      "n": 9,
+      "value": 90
+     },
+     {
+      "module": "src/web-client",
+      "n": 14,
+      "value": 153
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 11,
+      "status": "ready",
+      "value": 11
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 59206,
+      "mean": 28401.444444,
+      "median": 28332.0,
+      "min": 1361,
+      "n": 36,
+      "p75": 42116.75,
+      "p90": 50479.0,
+      "p95": 53638.0,
+      "sum": 1022452
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 4,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 90
+     },
+     {
+      "n": 7,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 154
+     },
+     {
+      "n": 12,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 239
+     }
+    ],
+    "rework": [
+     {
+      "max": 1.655172,
+      "mean": 1.218391,
+      "median": 1.0,
+      "min": 1.0,
+      "n": 3,
+      "p75": 1.327586,
+      "p90": 1.524138,
+      "p95": 1.589655,
+      "sum": 3.655172
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": 9633600000,
+      "mean": 7041600000.0,
+      "median": 6868800000.0,
+      "min": 5313600000,
+      "n": 5,
+      "p75": 7365600000.0,
+      "p90": 8726400000.0,
+      "p95": 9180000000.0,
+      "sum": 35208000000
+     }
+    ],
+    "verification_pass_rate": []
+   },
+   "month": {
+    "accepted_by_period": [
+     {
+      "n": 1,
+      "period": "2026-03-01",
+      "value": 1
+     },
+     {
+      "n": 3,
+      "period": "2026-04-01",
+      "value": 3
+     },
+     {
+      "n": 1,
+      "period": "2026-06-01",
+      "value": 1
+     }
+    ],
+    "agent_duration": [
+     {
+      "max": 572274,
+      "mean": 483286.0,
+      "median": 550136.0,
+      "min": 327448,
+      "model": null,
+      "n": 3,
+      "p75": 561205.0,
+      "p90": 567846.4,
+      "p95": 570060.2,
+      "provider": "alpha",
+      "sum": 1449858
+     },
+     {
+      "max": 598759,
+      "mean": 598759.0,
+      "median": 598759.0,
+      "min": 598759,
+      "model": "m1",
+      "n": 1,
+      "p75": 598759.0,
+      "p90": 598759.0,
+      "p95": 598759.0,
+      "provider": "beta",
+      "sum": 598759
+     },
+     {
+      "max": 805281,
+      "mean": 601516.5,
+      "median": 601516.5,
+      "min": 397752,
+      "model": "m2",
+      "n": 2,
+      "p75": 703398.75,
+      "p90": 764528.1,
+      "p95": 784904.55,
+      "provider": "beta",
+      "sum": 1203033
+     },
+     {
+      "max": 898371,
+      "mean": 589696.0,
+      "median": 589696.0,
+      "min": 281021,
+      "model": null,
+      "n": 2,
+      "p75": 744033.5,
+      "p90": 836636.0,
+      "p95": 867503.5,
+      "provider": "beta",
+      "sum": 1179392
+     },
+     {
+      "max": 658509,
+      "mean": 606518.5,
+      "median": 606518.5,
+      "min": 554528,
+      "model": "m1",
+      "n": 2,
+      "p75": 632513.75,
+      "p90": 648110.9,
+      "p95": 653309.95,
+      "provider": "gamma",
+      "sum": 1213037
+     },
+     {
+      "max": 130419,
+      "mean": 130419.0,
+      "median": 130419.0,
+      "min": 130419,
+      "model": "m2",
+      "n": 1,
+      "p75": 130419.0,
+      "p90": 130419.0,
+      "p95": 130419.0,
+      "provider": "gamma",
+      "sum": 130419
+     },
+     {
+      "max": 517135,
+      "mean": 517135.0,
+      "median": 517135.0,
+      "min": 517135,
+      "model": null,
+      "n": 1,
+      "p75": 517135.0,
+      "p90": 517135.0,
+      "p95": 517135.0,
+      "provider": "gamma",
+      "sum": 517135
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 3,
+      "model": "m1",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 3,
+      "provider": "alpha",
+      "value": 0.75
+     },
+     {
+      "denominator": 6,
+      "model": "m1",
+      "n": 6,
+      "numerator": 1,
+      "provider": "beta",
+      "value": 0.166667
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.666667
+     },
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": "m1",
+      "n": 4,
+      "numerator": 2,
+      "provider": "gamma",
+      "value": 0.5
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.25
+     }
+    ],
+    "by_category": [
+     {
+      "category": null,
+      "n": 16,
+      "value": 16
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 96,
+      "mean": 34.5,
+      "median": 32.5,
+      "min": 1,
+      "n": 14,
+      "p75": 41.5,
+      "p90": 62.7,
+      "p95": 76.5,
+      "sum": 483
+     }
+    ],
+    "completed_by_period": [
+     {
+      "n": 1,
+      "period": "2026-03-01",
+      "value": 1
+     },
+     {
+      "n": 3,
+      "period": "2026-04-01",
+      "value": 3
+     },
+     {
+      "n": 1,
+      "period": "2026-06-01",
+      "value": 1
+     }
+    ],
+    "created_by_period": [
+     {
+      "n": 8,
+      "period": "2026-01-01",
+      "value": 8
+     },
+     {
+      "n": 8,
+      "period": "2026-02-01",
+      "value": 8
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 898371,
+      "mean": 495931.277778,
+      "median": 516924.0,
+      "min": 4563,
+      "n": 36,
+      "p75": 659072.25,
+      "p90": 823742.5,
+      "p95": 858658.25,
+      "sum": 17853526
+     }
+    ],
+    "final_change": [
+     {
+      "max": 58,
+      "mean": 29.666667,
+      "median": 30.0,
+      "min": 1,
+      "n": 3,
+      "p75": 44.0,
+      "p90": 52.4,
+      "p95": 55.2,
+      "sum": 89
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 5,
+      "n": 5,
+      "numerator": 0,
+      "value": 0.0
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "src",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "module": "src/auth-service",
+      "n": 17,
+      "value": 238
+     },
+     {
+      "module": "src/shared-sdk",
+      "n": 9,
+      "value": 90
+     },
+     {
+      "module": "src/web-client",
+      "n": 14,
+      "value": 153
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 11,
+      "status": "ready",
+      "value": 11
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 59206,
+      "mean": 28401.444444,
+      "median": 28332.0,
+      "min": 1361,
+      "n": 36,
+      "p75": 42116.75,
+      "p90": 50479.0,
+      "p95": 53638.0,
+      "sum": 1022452
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 4,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 90
+     },
+     {
+      "n": 7,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 154
+     },
+     {
+      "n": 12,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 239
+     }
+    ],
+    "rework": [
+     {
+      "max": 1.655172,
+      "mean": 1.218391,
+      "median": 1.0,
+      "min": 1.0,
+      "n": 3,
+      "p75": 1.327586,
+      "p90": 1.524138,
+      "p95": 1.589655,
+      "sum": 3.655172
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": 9633600000,
+      "mean": 7041600000.0,
+      "median": 6868800000.0,
+      "min": 5313600000,
+      "n": 5,
+      "p75": 7365600000.0,
+      "p90": 8726400000.0,
+      "p95": 9180000000.0,
+      "sum": 35208000000
+     }
+    ],
+    "verification_pass_rate": []
+   },
+   "quarter": {
+    "accepted_by_period": [
+     {
+      "n": 1,
+      "period": "2026-01-01",
+      "value": 1
+     },
+     {
+      "n": 4,
+      "period": "2026-04-01",
+      "value": 4
+     }
+    ],
+    "agent_duration": [
+     {
+      "max": 572274,
+      "mean": 483286.0,
+      "median": 550136.0,
+      "min": 327448,
+      "model": null,
+      "n": 3,
+      "p75": 561205.0,
+      "p90": 567846.4,
+      "p95": 570060.2,
+      "provider": "alpha",
+      "sum": 1449858
+     },
+     {
+      "max": 598759,
+      "mean": 598759.0,
+      "median": 598759.0,
+      "min": 598759,
+      "model": "m1",
+      "n": 1,
+      "p75": 598759.0,
+      "p90": 598759.0,
+      "p95": 598759.0,
+      "provider": "beta",
+      "sum": 598759
+     },
+     {
+      "max": 805281,
+      "mean": 601516.5,
+      "median": 601516.5,
+      "min": 397752,
+      "model": "m2",
+      "n": 2,
+      "p75": 703398.75,
+      "p90": 764528.1,
+      "p95": 784904.55,
+      "provider": "beta",
+      "sum": 1203033
+     },
+     {
+      "max": 898371,
+      "mean": 589696.0,
+      "median": 589696.0,
+      "min": 281021,
+      "model": null,
+      "n": 2,
+      "p75": 744033.5,
+      "p90": 836636.0,
+      "p95": 867503.5,
+      "provider": "beta",
+      "sum": 1179392
+     },
+     {
+      "max": 658509,
+      "mean": 606518.5,
+      "median": 606518.5,
+      "min": 554528,
+      "model": "m1",
+      "n": 2,
+      "p75": 632513.75,
+      "p90": 648110.9,
+      "p95": 653309.95,
+      "provider": "gamma",
+      "sum": 1213037
+     },
+     {
+      "max": 130419,
+      "mean": 130419.0,
+      "median": 130419.0,
+      "min": 130419,
+      "model": "m2",
+      "n": 1,
+      "p75": 130419.0,
+      "p90": 130419.0,
+      "p95": 130419.0,
+      "provider": "gamma",
+      "sum": 130419
+     },
+     {
+      "max": 517135,
+      "mean": 517135.0,
+      "median": 517135.0,
+      "min": 517135,
+      "model": null,
+      "n": 1,
+      "p75": 517135.0,
+      "p90": 517135.0,
+      "p95": 517135.0,
+      "provider": "gamma",
+      "sum": 517135
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 3,
+      "model": "m1",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 3,
+      "provider": "alpha",
+      "value": 0.75
+     },
+     {
+      "denominator": 6,
+      "model": "m1",
+      "n": 6,
+      "numerator": 1,
+      "provider": "beta",
+      "value": 0.166667
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.666667
+     },
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": "m1",
+      "n": 4,
+      "numerator": 2,
+      "provider": "gamma",
+      "value": 0.5
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.25
+     }
+    ],
+    "by_category": [
+     {
+      "category": null,
+      "n": 16,
+      "value": 16
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 96,
+      "mean": 34.5,
+      "median": 32.5,
+      "min": 1,
+      "n": 14,
+      "p75": 41.5,
+      "p90": 62.7,
+      "p95": 76.5,
+      "sum": 483
+     }
+    ],
+    "completed_by_period": [
+     {
+      "n": 1,
+      "period": "2026-01-01",
+      "value": 1
+     },
+     {
+      "n": 4,
+      "period": "2026-04-01",
+      "value": 4
+     }
+    ],
+    "created_by_period": [
+     {
+      "n": 16,
+      "period": "2026-01-01",
+      "value": 16
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 898371,
+      "mean": 495931.277778,
+      "median": 516924.0,
+      "min": 4563,
+      "n": 36,
+      "p75": 659072.25,
+      "p90": 823742.5,
+      "p95": 858658.25,
+      "sum": 17853526
+     }
+    ],
+    "final_change": [
+     {
+      "max": 58,
+      "mean": 29.666667,
+      "median": 30.0,
+      "min": 1,
+      "n": 3,
+      "p75": 44.0,
+      "p90": 52.4,
+      "p95": 55.2,
+      "sum": 89
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 5,
+      "n": 5,
+      "numerator": 0,
+      "value": 0.0
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "src",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "module": "src/auth-service",
+      "n": 17,
+      "value": 238
+     },
+     {
+      "module": "src/shared-sdk",
+      "n": 9,
+      "value": 90
+     },
+     {
+      "module": "src/web-client",
+      "n": 14,
+      "value": 153
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 11,
+      "status": "ready",
+      "value": 11
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 59206,
+      "mean": 28401.444444,
+      "median": 28332.0,
+      "min": 1361,
+      "n": 36,
+      "p75": 42116.75,
+      "p90": 50479.0,
+      "p95": 53638.0,
+      "sum": 1022452
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 4,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 90
+     },
+     {
+      "n": 7,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 154
+     },
+     {
+      "n": 12,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 239
+     }
+    ],
+    "rework": [
+     {
+      "max": 1.655172,
+      "mean": 1.218391,
+      "median": 1.0,
+      "min": 1.0,
+      "n": 3,
+      "p75": 1.327586,
+      "p90": 1.524138,
+      "p95": 1.589655,
+      "sum": 3.655172
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": 9633600000,
+      "mean": 7041600000.0,
+      "median": 6868800000.0,
+      "min": 5313600000,
+      "n": 5,
+      "p75": 7365600000.0,
+      "p90": 8726400000.0,
+      "p95": 9180000000.0,
+      "sum": 35208000000
+     }
+    ],
+    "verification_pass_rate": []
+   },
+   "week": {
+    "accepted_by_period": [
+     {
+      "n": 1,
+      "period": "2026-03-23",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-03-30",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-13",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-20",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-06-01",
+      "value": 1
+     }
+    ],
+    "agent_duration": [
+     {
+      "max": 572274,
+      "mean": 483286.0,
+      "median": 550136.0,
+      "min": 327448,
+      "model": null,
+      "n": 3,
+      "p75": 561205.0,
+      "p90": 567846.4,
+      "p95": 570060.2,
+      "provider": "alpha",
+      "sum": 1449858
+     },
+     {
+      "max": 598759,
+      "mean": 598759.0,
+      "median": 598759.0,
+      "min": 598759,
+      "model": "m1",
+      "n": 1,
+      "p75": 598759.0,
+      "p90": 598759.0,
+      "p95": 598759.0,
+      "provider": "beta",
+      "sum": 598759
+     },
+     {
+      "max": 805281,
+      "mean": 601516.5,
+      "median": 601516.5,
+      "min": 397752,
+      "model": "m2",
+      "n": 2,
+      "p75": 703398.75,
+      "p90": 764528.1,
+      "p95": 784904.55,
+      "provider": "beta",
+      "sum": 1203033
+     },
+     {
+      "max": 898371,
+      "mean": 589696.0,
+      "median": 589696.0,
+      "min": 281021,
+      "model": null,
+      "n": 2,
+      "p75": 744033.5,
+      "p90": 836636.0,
+      "p95": 867503.5,
+      "provider": "beta",
+      "sum": 1179392
+     },
+     {
+      "max": 658509,
+      "mean": 606518.5,
+      "median": 606518.5,
+      "min": 554528,
+      "model": "m1",
+      "n": 2,
+      "p75": 632513.75,
+      "p90": 648110.9,
+      "p95": 653309.95,
+      "provider": "gamma",
+      "sum": 1213037
+     },
+     {
+      "max": 130419,
+      "mean": 130419.0,
+      "median": 130419.0,
+      "min": 130419,
+      "model": "m2",
+      "n": 1,
+      "p75": 130419.0,
+      "p90": 130419.0,
+      "p95": 130419.0,
+      "provider": "gamma",
+      "sum": 130419
+     },
+     {
+      "max": 517135,
+      "mean": 517135.0,
+      "median": 517135.0,
+      "min": 517135,
+      "model": null,
+      "n": 1,
+      "p75": 517135.0,
+      "p90": 517135.0,
+      "p95": 517135.0,
+      "provider": "gamma",
+      "sum": 517135
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 3,
+      "model": "m1",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 3,
+      "provider": "alpha",
+      "value": 0.75
+     },
+     {
+      "denominator": 6,
+      "model": "m1",
+      "n": 6,
+      "numerator": 1,
+      "provider": "beta",
+      "value": 0.166667
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.666667
+     },
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": "m1",
+      "n": 4,
+      "numerator": 2,
+      "provider": "gamma",
+      "value": 0.5
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.25
+     }
+    ],
+    "by_category": [
+     {
+      "category": null,
+      "n": 16,
+      "value": 16
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 96,
+      "mean": 34.5,
+      "median": 32.5,
+      "min": 1,
+      "n": 14,
+      "p75": 41.5,
+      "p90": 62.7,
+      "p95": 76.5,
+      "sum": 483
+     }
+    ],
+    "completed_by_period": [
+     {
+      "n": 1,
+      "period": "2026-03-16",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-03-30",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-13",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-04-20",
+      "value": 1
+     },
+     {
+      "n": 1,
+      "period": "2026-06-01",
+      "value": 1
+     }
+    ],
+    "created_by_period": [
+     {
+      "n": 1,
+      "period": "2026-01-12",
+      "value": 1
+     },
+     {
+      "n": 4,
+      "period": "2026-01-19",
+      "value": 4
+     },
+     {
+      "n": 3,
+      "period": "2026-01-26",
+      "value": 3
+     },
+     {
+      "n": 4,
+      "period": "2026-02-02",
+      "value": 4
+     },
+     {
+      "n": 3,
+      "period": "2026-02-09",
+      "value": 3
+     },
+     {
+      "n": 1,
+      "period": "2026-02-16",
+      "value": 1
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 898371,
+      "mean": 495931.277778,
+      "median": 516924.0,
+      "min": 4563,
+      "n": 36,
+      "p75": 659072.25,
+      "p90": 823742.5,
+      "p95": 858658.25,
+      "sum": 17853526
+     }
+    ],
+    "final_change": [
+     {
+      "max": 58,
+      "mean": 29.666667,
+      "median": 30.0,
+      "min": 1,
+      "n": 3,
+      "p75": 44.0,
+      "p90": 52.4,
+      "p95": 55.2,
+      "sum": 89
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 5,
+      "n": 5,
+      "numerator": 0,
+      "value": 0.0
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "src",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "module": "src/auth-service",
+      "n": 17,
+      "value": 238
+     },
+     {
+      "module": "src/shared-sdk",
+      "n": 9,
+      "value": 90
+     },
+     {
+      "module": "src/web-client",
+      "n": 14,
+      "value": 153
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 11,
+      "status": "ready",
+      "value": 11
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 59206,
+      "mean": 28401.444444,
+      "median": 28332.0,
+      "min": 1361,
+      "n": 36,
+      "p75": 42116.75,
+      "p90": 50479.0,
+      "p95": 53638.0,
+      "sum": 1022452
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 4,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 90
+     },
+     {
+      "n": 7,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 154
+     },
+     {
+      "n": 12,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 239
+     }
+    ],
+    "rework": [
+     {
+      "max": 1.655172,
+      "mean": 1.218391,
+      "median": 1.0,
+      "min": 1.0,
+      "n": 3,
+      "p75": 1.327586,
+      "p90": 1.524138,
+      "p95": 1.589655,
+      "sum": 3.655172
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": 9633600000,
+      "mean": 7041600000.0,
+      "median": 6868800000.0,
+      "min": 5313600000,
+      "n": 5,
+      "p75": 7365600000.0,
+      "p90": 8726400000.0,
+      "p95": 9180000000.0,
+      "sum": 35208000000
+     }
+    ],
+    "verification_pass_rate": []
+   },
+   "year": {
+    "accepted_by_period": [
+     {
+      "n": 5,
+      "period": "2026-01-01",
+      "value": 5
+     }
+    ],
+    "agent_duration": [
+     {
+      "max": 572274,
+      "mean": 483286.0,
+      "median": 550136.0,
+      "min": 327448,
+      "model": null,
+      "n": 3,
+      "p75": 561205.0,
+      "p90": 567846.4,
+      "p95": 570060.2,
+      "provider": "alpha",
+      "sum": 1449858
+     },
+     {
+      "max": 598759,
+      "mean": 598759.0,
+      "median": 598759.0,
+      "min": 598759,
+      "model": "m1",
+      "n": 1,
+      "p75": 598759.0,
+      "p90": 598759.0,
+      "p95": 598759.0,
+      "provider": "beta",
+      "sum": 598759
+     },
+     {
+      "max": 805281,
+      "mean": 601516.5,
+      "median": 601516.5,
+      "min": 397752,
+      "model": "m2",
+      "n": 2,
+      "p75": 703398.75,
+      "p90": 764528.1,
+      "p95": 784904.55,
+      "provider": "beta",
+      "sum": 1203033
+     },
+     {
+      "max": 898371,
+      "mean": 589696.0,
+      "median": 589696.0,
+      "min": 281021,
+      "model": null,
+      "n": 2,
+      "p75": 744033.5,
+      "p90": 836636.0,
+      "p95": 867503.5,
+      "provider": "beta",
+      "sum": 1179392
+     },
+     {
+      "max": 658509,
+      "mean": 606518.5,
+      "median": 606518.5,
+      "min": 554528,
+      "model": "m1",
+      "n": 2,
+      "p75": 632513.75,
+      "p90": 648110.9,
+      "p95": 653309.95,
+      "provider": "gamma",
+      "sum": 1213037
+     },
+     {
+      "max": 130419,
+      "mean": 130419.0,
+      "median": 130419.0,
+      "min": 130419,
+      "model": "m2",
+      "n": 1,
+      "p75": 130419.0,
+      "p90": 130419.0,
+      "p95": 130419.0,
+      "provider": "gamma",
+      "sum": 130419
+     },
+     {
+      "max": 517135,
+      "mean": 517135.0,
+      "median": 517135.0,
+      "min": 517135,
+      "model": null,
+      "n": 1,
+      "p75": 517135.0,
+      "p90": 517135.0,
+      "p95": 517135.0,
+      "provider": "gamma",
+      "sum": 517135
+     }
+    ],
+    "agents": [
+     {
+      "denominator": 3,
+      "model": "m1",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 3,
+      "provider": "alpha",
+      "value": 0.75
+     },
+     {
+      "denominator": 6,
+      "model": "m1",
+      "n": 6,
+      "numerator": 1,
+      "provider": "beta",
+      "value": 0.166667
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.666667
+     },
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": "m1",
+      "n": 4,
+      "numerator": 2,
+      "provider": "gamma",
+      "value": 0.5
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.25
+     }
+    ],
+    "by_category": [
+     {
+      "category": null,
+      "n": 16,
+      "value": 16
+     }
+    ],
+    "check_failures_by_period": [],
+    "churn": [
+     {
+      "max": 96,
+      "mean": 34.5,
+      "median": 32.5,
+      "min": 1,
+      "n": 14,
+      "p75": 41.5,
+      "p90": 62.7,
+      "p95": 76.5,
+      "sum": 483
+     }
+    ],
+    "completed_by_period": [
+     {
+      "n": 5,
+      "period": "2026-01-01",
+      "value": 5
+     }
+    ],
+    "created_by_period": [
+     {
+      "n": 16,
+      "period": "2026-01-01",
+      "value": 16
+     }
+    ],
+    "execution_duration": [
+     {
+      "max": 898371,
+      "mean": 495931.277778,
+      "median": 516924.0,
+      "min": 4563,
+      "n": 36,
+      "p75": 659072.25,
+      "p90": 823742.5,
+      "p95": 858658.25,
+      "sum": 17853526
+     }
+    ],
+    "final_change": [
+     {
+      "max": 58,
+      "mean": 29.666667,
+      "median": 30.0,
+      "min": 1,
+      "n": 3,
+      "p75": 44.0,
+      "p90": 52.4,
+      "p95": 55.2,
+      "sum": 89
+     }
+    ],
+    "first_pass_success": [
+     {
+      "denominator": 5,
+      "n": 5,
+      "numerator": 0,
+      "value": 0.0
+     }
+    ],
+    "module_hotspots": [
+     {
+      "module": "src",
+      "n": 2,
+      "value": 2
+     },
+     {
+      "module": "src/auth-service",
+      "n": 17,
+      "value": 238
+     },
+     {
+      "module": "src/shared-sdk",
+      "n": 9,
+      "value": 90
+     },
+     {
+      "module": "src/web-client",
+      "n": 14,
+      "value": 153
+     }
+    ],
+    "open_by_status": [
+     {
+      "n": 11,
+      "status": "ready",
+      "value": 11
+     }
+    ],
+    "queue_wait": [
+     {
+      "max": 59206,
+      "mean": 28401.444444,
+      "median": 28332.0,
+      "min": 1361,
+      "n": 36,
+      "p75": 42116.75,
+      "p90": 50479.0,
+      "p95": 53638.0,
+      "sum": 1022452
+     }
+    ],
+    "repository_volume": [
+     {
+      "n": 4,
+      "repository": "repository:shared-sdk",
+      "repository_label": "shared-sdk",
+      "value": 90
+     },
+     {
+      "n": 7,
+      "repository": "repository:web-client",
+      "repository_label": "web-client",
+      "value": 154
+     },
+     {
+      "n": 12,
+      "repository": "repository:auth-service",
+      "repository_label": "auth-service",
+      "value": 239
+     }
+    ],
+    "rework": [
+     {
+      "max": 1.655172,
+      "mean": 1.218391,
+      "median": 1.0,
+      "min": 1.0,
+      "n": 3,
+      "p75": 1.327586,
+      "p90": 1.524138,
+      "p95": 1.589655,
+      "sum": 3.655172
+     }
+    ],
+    "task_elapsed": [
+     {
+      "max": 9633600000,
+      "mean": 7041600000.0,
+      "median": 6868800000.0,
+      "min": 5313600000,
+      "n": 5,
+      "p75": 7365600000.0,
+      "p90": 8726400000.0,
+      "p95": 9180000000.0,
+      "sum": 35208000000
+     }
+    ],
+    "verification_pass_rate": []
+   }
+  },
+  "retrospective": {
+   "content": "# Retrospective: 2026-01-04 to 2027-02-09\n\n_All numbers are measured from Workgraph records; see the evidence references in brackets._\n\n## Work completed\n\n- Tasks created: **16**, completion reported: **5**, accepted: **5**.\n- Median time from creation to acceptance: **1908.0h** (n=5).\n\n## Category breakdown\n\n- unclassified: 5\n\n## Bottlenecks\n\n- Currently blocked tasks: 0.\n\n## Rework\n\n- Median rework ratio (churn / final change): 1.0 (n=3).\n- WG-16 needed 3 attempts [WG-16]\n- WG-2 needed 3 attempts [WG-2]\n- WG-4 needed 3 attempts [WG-4]\n- WG-9 needed 3 attempts [WG-9]\n- WG-11 needed 3 attempts [WG-11]\n- WG-14 needed 3 attempts [WG-14]\n- WG-7 needed 3 attempts [WG-7]\n- auth-service:src/auth-service edited 21 times across 5 task(s) [WG-4, WG-6, WG-13, WG-14, WG-16]\n- web-client:src/web-client edited 15 times across 5 task(s) [WG-1, WG-3, WG-11, WG-12, WG-16]\n- shared-sdk:src/shared-sdk edited 10 times across 3 task(s) [WG-2, WG-9, WG-10]\n\n## Agent effectiveness\n\n- alpha / m1: 0/3 attempts succeeded (0%)\n- alpha / m2: 0/3 attempts succeeded (0%)\n- alpha / None: 3/4 attempts succeeded (75%)\n- beta / m1: 1/6 attempts succeeded (17%)\n- beta / m2: 2/3 attempts succeeded (67%)\n- beta / None: 2/6 attempts succeeded (33%)\n- gamma / m1: 2/4 attempts succeeded (50%)\n- gamma / m2: 1/3 attempts succeeded (33%)\n- gamma / None: 1/4 attempts succeeded (25%)\n\n## Cross-repository coordination\n\n- Cross-repository tasks: 1 of 14 with code; average repositories per task 1.071.\n- web-client + auth-service changed together in 1 task(s).\n\n## Quality\n\n- Verification pass rate: 0/0 runs passed.\n\n## Significant changes\n\n- [WG-16] Generated task 1-15 about billing (58 final lines)\n- [WG-3] Generated task 1-2 about docs (30 final lines)\n- [WG-5] Generated task 1-4 about docs (1 final lines)\n- [WG-8] Generated task 1-7 about billing (0 final lines)\n- [WG-7] Generated task 1-6 about docs (0 final lines)\n\n## Potential improvement opportunities\n\n- Investigate: WG-16 needed 3 attempts\n- Investigate: WG-2 needed 3 attempts\n- Investigate: WG-4 needed 3 attempts\n- Investigate: WG-9 needed 3 attempts\n- Investigate: WG-11 needed 3 attempts\n\n## Narrative (model-generated interpretation)\n\n_Written by heuristic/heuristic-v1 from the measured facts above._\n\n5 tasks accepted\n\n- - Tasks created: **16**, completion reported: **5**, accepted: **5**.\n- - Median time from creation to acceptance: **1908.0h** (n=5).\n- \n",
+   "facts": {
+    "agents": [
+     {
+      "denominator": 3,
+      "model": "m1",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 0,
+      "provider": "alpha",
+      "value": 0.0
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 3,
+      "provider": "alpha",
+      "value": 0.75
+     },
+     {
+      "denominator": 6,
+      "model": "m1",
+      "n": 6,
+      "numerator": 1,
+      "provider": "beta",
+      "value": 0.166667
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.666667
+     },
+     {
+      "denominator": 6,
+      "model": null,
+      "n": 6,
+      "numerator": 2,
+      "provider": "beta",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": "m1",
+      "n": 4,
+      "numerator": 2,
+      "provider": "gamma",
+      "value": 0.5
+     },
+     {
+      "denominator": 3,
+      "model": "m2",
+      "n": 3,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.333333
+     },
+     {
+      "denominator": 4,
+      "model": null,
+      "n": 4,
+      "numerator": 1,
+      "provider": "gamma",
+      "value": 0.25
+     }
+    ],
+    "categories": {
+     "unclassified": 5
+    },
+    "code": {
+     "cumulative_churn": {
+      "max": 96,
+      "mean": 34.5,
+      "median": 32.5,
+      "min": 1,
+      "n": 14,
+      "p75": 41.5,
+      "p90": 62.7,
+      "p95": 76.5,
+      "sum": 483
+     },
+     "final_change": {
+      "max": 58,
+      "mean": 29.666667,
+      "median": 30.0,
+      "min": 1,
+      "n": 3,
+      "p75": 44.0,
+      "p90": 52.4,
+      "p95": 55.2,
+      "sum": 89
+     },
+     "rework_ratio": {
+      "max": 1.655172,
+      "mean": 1.218391,
+      "median": 1.0,
+      "min": 1.0,
+      "n": 3,
+      "p75": 1.327586,
+      "p90": 1.524138,
+      "p95": 1.589655,
+      "sum": 3.655172
+     }
+    },
+    "coordination": {
+     "average_repositories_per_task": 1.071,
+     "cross_repository_tasks": 1,
+     "integration_checks": 0,
+     "integration_failure_rate": null,
+     "median_elapsed_ms_cross_repo": 9633600000,
+     "median_elapsed_ms_single_repo": 5670000000.0,
+     "tasks_with_code": 14
+    },
+    "coupled_pairs": [
+     {
+      "co_changes": 1,
+      "pair": [
+       "web-client",
+       "auth-service"
+      ]
+     }
+    ],
+    "elapsed_ms": {
+     "max": 9633600000,
+     "mean": 7041600000.0,
+     "median": 6868800000.0,
+     "min": 5313600000,
+     "n": 5,
+     "p75": 7365600000.0,
+     "p90": 8726400000.0,
+     "p95": 9180000000.0,
+     "sum": 35208000000
+    },
+    "findings": [
+     {
+      "evidence": {
+       "attempts": [
+        "attempt:task:WG-2#3",
+        "attempt:task:WG-3#1",
+        "attempt:task:WG-5#1",
+        "attempt:task:WG-8#2",
+        "attempt:task:WG-9#3",
+        "attempt:task:WG-14#3",
+        "attempt:task:WG-15#2",
+        "attempt:task:WG-8#1",
+        "attempt:task:WG-12#1",
+        "attempt:task:WG-16#2",
+        "attempt:task:WG-14#1"
+       ],
+       "tasks": [
+        "WG-12",
+        "WG-14",
+        "WG-15",
+        "WG-16",
+        "WG-2",
+        "WG-3",
+        "WG-5",
+        "WG-8",
+        "WG-9"
+       ]
+      },
+      "kind": "failure_category",
+      "title": "11 attempts failed with 'golden'"
+     },
+     {
+      "evidence": {
+       "attempts": [
+        "attempt:task:WG-16#1",
+        "attempt:task:WG-16#2",
+        "attempt:task:WG-16#3"
+       ],
+       "tasks": [
+        "WG-16"
+       ]
+      },
+      "kind": "retry_loop",
+      "title": "WG-16 needed 3 attempts"
+     },
+     {
+      "evidence": {
+       "attempts": [
+        "attempt:task:WG-2#1",
+        "attempt:task:WG-2#2",
+        "attempt:task:WG-2#3"
+       ],
+       "tasks": [
+        "WG-2"
+       ]
+      },
+      "kind": "retry_loop",
+      "title": "WG-2 needed 3 attempts"
+     },
+     {
+      "evidence": {
+       "attempts": [
+        "attempt:task:WG-4#1",
+        "attempt:task:WG-4#2",
+        "attempt:task:WG-4#3"
+       ],
+       "tasks": [
+        "WG-4"
+       ]
+      },
+      "kind": "retry_loop",
+      "title": "WG-4 needed 3 attempts"
+     },
+     {
+      "evidence": {
+       "attempts": [
+        "attempt:task:WG-9#1",
+        "attempt:task:WG-9#2",
+        "attempt:task:WG-9#3"
+       ],
+       "tasks": [
+        "WG-9"
+       ]
+      },
+      "kind": "retry_loop",
+      "title": "WG-9 needed 3 attempts"
+     },
+     {
+      "evidence": {
+       "attempts": [
+        "attempt:task:WG-11#1",
+        "attempt:task:WG-11#2",
+        "attempt:task:WG-11#3"
+       ],
+       "tasks": [
+        "WG-11"
+       ]
+      },
+      "kind": "retry_loop",
+      "title": "WG-11 needed 3 attempts"
+     },
+     {
+      "evidence": {
+       "attempts": [
+        "attempt:task:WG-14#1",
+        "attempt:task:WG-14#2",
+        "attempt:task:WG-14#3"
+       ],
+       "tasks": [
+        "WG-14"
+       ]
+      },
+      "kind": "retry_loop",
+      "title": "WG-14 needed 3 attempts"
+     },
+     {
+      "evidence": {
+       "attempts": [
+        "attempt:task:WG-7#1",
+        "attempt:task:WG-7#2",
+        "attempt:task:WG-7#3"
+       ],
+       "tasks": [
+        "WG-7"
+       ]
+      },
+      "kind": "retry_loop",
+      "title": "WG-7 needed 3 attempts"
+     },
+     {
+      "evidence": {
+       "tasks": [
+        "WG-4",
+        "WG-6",
+        "WG-13",
+        "WG-14",
+        "WG-16"
+       ]
+      },
+      "kind": "high_rework",
+      "title": "auth-service:src/auth-service edited 21 times across 5 task(s)"
+     },
+     {
+      "evidence": {
+       "tasks": [
+        "WG-1",
+        "WG-3",
+        "WG-11",
+        "WG-12",
+        "WG-16"
+       ]
+      },
+      "kind": "high_rework",
+      "title": "web-client:src/web-client edited 15 times across 5 task(s)"
+     }
+    ],
+    "period": {
+     "project": null,
+     "repository": null,
+     "since": "2026-01-04T09:00:00+00:00",
+     "until": "2027-02-09T09:00:00+00:00"
+    },
+    "significant_changes": [
+     {
+      "final_lines": 58,
+      "task": "WG-16",
+      "title": "Generated task 1-15 about billing"
+     },
+     {
+      "final_lines": 30,
+      "task": "WG-3",
+      "title": "Generated task 1-2 about docs"
+     },
+     {
+      "final_lines": 1,
+      "task": "WG-5",
+      "title": "Generated task 1-4 about docs"
+     },
+     {
+      "final_lines": 0,
+      "task": "WG-8",
+      "title": "Generated task 1-7 about billing"
+     },
+     {
+      "final_lines": 0,
+      "task": "WG-7",
+      "title": "Generated task 1-6 about docs"
+     }
+    ],
+    "tasks": {
+     "accepted": 5,
+     "blocked_now": 0,
+     "completed": 5,
+     "created": 16
+    },
+    "top_failing_checks": [],
+    "verification": {
+     "denominator": 0,
+     "n": 0,
+     "numerator": 0,
+     "value": null
+    }
+   },
+   "id": "<unlabelled-uuid>",
+   "narrative_source": "model:heuristic/heuristic-v1",
+   "title": "Retrospective 2026-01-04 - 2027-02-09"
+  },
+  "subagents_month": {
+   "by_period": [],
+   "by_size": [],
+   "model": null,
+   "notes": [
+    "A task's outcome is its current status: accepted, rejected (a non-accepted acceptance decision), failed or cancelled; anything else is pending"
+   ],
+   "period": "month",
+   "totals": [],
+   "unlinked_runs": 0,
+   "window": {
+    "since": null,
+    "until": null
+   }
+  },
+  "subagents_week": {
+   "by_period": [],
+   "by_size": [],
+   "model": null,
+   "notes": [
+    "A task's outcome is its current status: accepted, rejected (a non-accepted acceptance decision), failed or cancelled; anything else is pending"
+   ],
+   "period": "week",
+   "totals": [],
+   "unlinked_runs": 0,
+   "window": {
+    "since": null,
+    "until": null
+   }
+  },
+  "task_history": [
+   {
+    "accepted_at": "2026-06-07T15:00:00",
+    "attempts": 3,
+    "category": null,
+    "churn_deletions": 46,
+    "churn_insertions": 50,
+    "commits": 4,
+    "elapsed_ms": 9633600000,
+    "execution_ms": 1402135,
+    "files_touched": 5,
+    "final_deletions": 27,
+    "final_insertions": 31,
+    "key": "WG-16",
+    "queue_wait_ms": 67094,
+    "reopen_count": 0,
+    "repositories_touched": 2,
+    "retries": 0,
+    "status": "accepted",
+    "title": "Generated task 1-15 about billing"
+   },
+   {
+    "accepted_at": "2026-04-26T09:00:00",
+    "attempts": 2,
+    "category": null,
+    "churn_deletions": 0,
+    "churn_insertions": 0,
+    "commits": 0,
+    "elapsed_ms": 7365600000,
+    "execution_ms": 770809,
+    "files_touched": 0,
+    "final_deletions": null,
+    "final_insertions": null,
+    "key": "WG-8",
+    "queue_wait_ms": 85180,
+    "reopen_count": 0,
+    "repositories_touched": 0,
+    "retries": 0,
+    "status": "accepted",
+    "title": "Generated task 1-7 about billing"
+   },
+   {
+    "accepted_at": "2026-04-18T15:00:00",
+    "attempts": 3,
+    "category": null,
+    "churn_deletions": 0,
+    "churn_insertions": 0,
+    "commits": 0,
+    "elapsed_ms": 6868800000,
+    "execution_ms": 1610789,
+    "files_touched": 0,
+    "final_deletions": null,
+    "final_insertions": null,
+    "key": "WG-7",
+    "queue_wait_ms": 117569,
+    "reopen_count": 0,
+    "repositories_touched": 0,
+    "retries": 0,
+    "status": "accepted",
+    "title": "Generated task 1-6 about docs"
+   },
+   {
+    "accepted_at": "2026-04-04T21:00:00",
+    "attempts": 1,
+    "category": null,
+    "churn_deletions": 0,
+    "churn_insertions": 1,
+    "commits": 1,
+    "elapsed_ms": 6026400000,
+    "execution_ms": 842204,
+    "files_touched": 1,
+    "final_deletions": 0,
+    "final_insertions": 1,
+    "key": "WG-5",
+    "queue_wait_ms": 59206,
+    "reopen_count": 0,
+    "repositories_touched": 1,
+    "retries": 0,
+    "status": "accepted",
+    "title": "Generated task 1-4 about docs"
+   },
+   {
+    "accepted_at": "2026-03-23T15:00:00",
+    "attempts": 1,
+    "category": null,
+    "churn_deletions": 6,
+    "churn_insertions": 24,
+    "commits": 1,
+    "elapsed_ms": 5313600000,
+    "execution_ms": 752489,
+    "files_touched": 3,
+    "final_deletions": 6,
+    "final_insertions": 24,
+    "key": "WG-3",
+    "queue_wait_ms": 41744,
+    "reopen_count": 0,
+    "repositories_touched": 1,
+    "retries": 0,
+    "status": "accepted",
+    "title": "Generated task 1-2 about docs"
+   }
+  ]
+ }
+}

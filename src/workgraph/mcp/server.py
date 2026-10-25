@@ -562,17 +562,23 @@ def build_server(
     @tool(
         "task_promote_ready",
         "Move backlog tasks whose dependencies are all accepted to ready, in one step. Skips tasks with "
-        "children and tasks tagged parked. Optional tags and project narrow the candidates; dry_run lists "
-        "the keys that would move without changing anything.",
+        "children and tasks tagged parked. A scope is required: give tags or project, or all=true for every "
+        "backlog task in the workspace (all cannot be combined with tags or project). dry_run lists the keys "
+        "that would move, and per-project counts, without changing anything.",
     )
     def task_promote_ready(
         tags: list[str] | None = None,
         project: str | None = None,
+        all: bool = False,
         dry_run: bool = False,
         workspace: Workspace = None,
     ) -> dict[str, Any]:
-        promoted = app.tasks.promote_ready(ctx(), workspace, tags=tags, project=project, dry_run=dry_run)
-        return {"promoted": promoted, "dry_run": dry_run}
+        if all and (project or tags):
+            raise ValidationFailed("all=true cannot be combined with tags or project")
+        if not (all or project or tags):
+            raise ValidationFailed("give tags, project, or all=true to choose the tasks to promote")
+        report = app.tasks.promote_ready_report(ctx(), workspace, tags=tags, project=project, dry_run=dry_run)
+        return {**report, "dry_run": dry_run}
 
     @tool(
         "task_import_breakdown",

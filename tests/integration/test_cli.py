@@ -290,14 +290,51 @@ def test_console_script_help():
     assert proc.returncode == 0 and "task" in proc.stdout and "analytics" in proc.stdout
 
 
+def test_promote_ready_cli_refuses_without_a_scope(run):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    run("task", "create", "Plain")  # AC-1
+    for args in ([], ["--all", "--project", "core"], ["--all", "--tag", "sprint"]):
+        refused = run("task", "promote-ready", *args, expect=2)
+        assert refused["error"]["code"] == "validation_failed"
+    assert run("task", "show", "AC-1")["status"] == "backlog"
+
+
+def test_promote_ready_cli_counts_per_project(run):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    run("project", "create", "core")
+    run("project", "create", "ops")
+    run("task", "create", "Both", "--project", "core", "--project", "ops")  # AC-1
+    run("task", "create", "Core", "--project", "core")  # AC-2
+    run("task", "create", "Unfiled")  # AC-3
+    assert run("task", "promote-ready", "--project", "core", "--dry-run") == {
+        "promoted": ["AC-1", "AC-2"],
+        "by_project": {"core": 2, "ops": 1},
+        "dry_run": True,
+    }
+    assert run("task", "show", "AC-1")["status"] == "backlog"
+    assert run("task", "promote-ready", "--all") == {
+        "promoted": ["AC-1", "AC-2", "AC-3"],
+        "by_project": {"(none)": 1, "core": 2, "ops": 1},
+        "dry_run": False,
+    }
+
+
 def test_promote_ready_cli_and_accept_promote_dependents(run):
     run("init", "--workspace", "acme", "--prefix", "AC")
     run("task", "create", "Base", "--ready")  # AC-1
     run("task", "create", "Follow", "--depends-on", "AC-1")  # AC-2
     run("task", "create", "Plain")  # AC-3
-    assert run("task", "promote-ready", "--dry-run") == {"promoted": ["AC-3"], "dry_run": True}
+    assert run("task", "promote-ready", "--all", "--dry-run") == {
+        "promoted": ["AC-3"],
+        "by_project": {"(none)": 1},
+        "dry_run": True,
+    }
     assert run("task", "show", "AC-3")["status"] == "backlog"
-    assert run("task", "promote-ready") == {"promoted": ["AC-3"], "dry_run": False}
+    assert run("task", "promote-ready", "--all") == {
+        "promoted": ["AC-3"],
+        "by_project": {"(none)": 1},
+        "dry_run": False,
+    }
     assert run("task", "show", "AC-3")["status"] == "ready"
     run("task", "claim", "AC-1")
     run("task", "complete", "AC-1", "-m", "done")

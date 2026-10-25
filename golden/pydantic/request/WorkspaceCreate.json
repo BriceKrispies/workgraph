@@ -1,0 +1,830 @@
+{
+  "base": {
+    "name": "example",
+    "slug": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "ok": {
+          "description": "",
+          "key_prefix": "WG",
+          "name": "example",
+          "slug": "example"
+        }
+      }
+    },
+    {
+      "id": "missing:slug",
+      "input": {
+        "name": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "name": "example"
+            },
+            "loc": [
+              "slug"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:none",
+      "input": {
+        "name": "example",
+        "slug": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:int",
+      "input": {
+        "name": "example",
+        "slug": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:float",
+      "input": {
+        "name": "example",
+        "slug": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:bool",
+      "input": {
+        "name": "example",
+        "slug": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:str",
+      "input": {
+        "name": "example",
+        "slug": "x"
+      },
+      "output": {
+        "ok": {
+          "description": "",
+          "key_prefix": "WG",
+          "name": "example",
+          "slug": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:slug:list",
+      "input": {
+        "name": "example",
+        "slug": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:slug:dict",
+      "input": {
+        "name": "example",
+        "slug": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "slug"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:slug",
+      "input": {
+        "name": "example",
+        "slug": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "slug must be lowercase letters, digits and dashes"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "slug"
+            ],
+            "msg": "Value error, slug must be lowercase letters, digits and dashes",
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing:name",
+      "input": {
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "slug": "example"
+            },
+            "loc": [
+              "name"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:none",
+      "input": {
+        "name": null,
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:int",
+      "input": {
+        "name": 12,
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:float",
+      "input": {
+        "name": 1.5,
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:bool",
+      "input": {
+        "name": true,
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:str",
+      "input": {
+        "name": "x",
+        "slug": "example"
+      },
+      "output": {
+        "ok": {
+          "description": "",
+          "key_prefix": "WG",
+          "name": "x",
+          "slug": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:name:list",
+      "input": {
+        "name": [
+          "a"
+        ],
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:name:dict",
+      "input": {
+        "name": {
+          "k": 1
+        },
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "name"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:name",
+      "input": {
+        "name": "Not valid!",
+        "slug": "example"
+      },
+      "output": {
+        "ok": {
+          "description": "",
+          "key_prefix": "WG",
+          "name": "Not valid!",
+          "slug": "example"
+        }
+      }
+    },
+    {
+      "id": "min_length:name",
+      "input": {
+        "name": "",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "name"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "max_length:name",
+      "input": {
+        "name": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "max_length": 200
+            },
+            "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "loc": [
+              "name"
+            ],
+            "msg": "String should have at most 200 characters",
+            "type": "string_too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:none",
+      "input": {
+        "description": null,
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:int",
+      "input": {
+        "description": 12,
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:float",
+      "input": {
+        "description": 1.5,
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:bool",
+      "input": {
+        "description": true,
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:str",
+      "input": {
+        "description": "x",
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "ok": {
+          "description": "x",
+          "key_prefix": "WG",
+          "name": "example",
+          "slug": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:description:list",
+      "input": {
+        "description": [
+          "a"
+        ],
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:dict",
+      "input": {
+        "description": {
+          "k": 1
+        },
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:description",
+      "input": {
+        "description": "Not valid!",
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "ok": {
+          "description": "Not valid!",
+          "key_prefix": "WG",
+          "name": "example",
+          "slug": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:key_prefix:none",
+      "input": {
+        "key_prefix": null,
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "key_prefix"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:key_prefix:int",
+      "input": {
+        "key_prefix": 12,
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "key_prefix"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:key_prefix:float",
+      "input": {
+        "key_prefix": 1.5,
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "key_prefix"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:key_prefix:bool",
+      "input": {
+        "key_prefix": true,
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "key_prefix"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:key_prefix:str",
+      "input": {
+        "key_prefix": "x",
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "ok": {
+          "description": "",
+          "key_prefix": "X",
+          "name": "example",
+          "slug": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:key_prefix:list",
+      "input": {
+        "key_prefix": [
+          "a"
+        ],
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "key_prefix"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:key_prefix:dict",
+      "input": {
+        "key_prefix": {
+          "k": 1
+        },
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "key_prefix"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:key_prefix",
+      "input": {
+        "key_prefix": "Not valid!",
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "key prefix must be alphanumeric and start with a letter"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "key_prefix"
+            ],
+            "msg": "Value error, key prefix must be alphanumeric and start with a letter",
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "min_length:key_prefix",
+      "input": {
+        "key_prefix": "",
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "key_prefix"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "max_length:key_prefix",
+      "input": {
+        "key_prefix": "xxxxxxxxxxx",
+        "name": "example",
+        "slug": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "max_length": 10
+            },
+            "input": "xxxxxxxxxxx",
+            "loc": [
+              "key_prefix"
+            ],
+            "msg": "String should have at most 10 characters",
+            "type": "string_too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "name": "example",
+        "slug": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "WorkspaceCreate"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of WorkspaceCreate",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "WorkspaceCreate"
+}

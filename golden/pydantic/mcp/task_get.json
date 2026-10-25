@@ -1,0 +1,349 @@
+{
+  "base": {
+    "task": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:task",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "task"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "task": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "task": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "task": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "task": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "task": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "task": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "task": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "task": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "task": "example",
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "task": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "task": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "task": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "task": "example",
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "task": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "task_getArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of task_getArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_get"
+}

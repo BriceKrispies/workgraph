@@ -1,0 +1,930 @@
+{
+  "base": {
+    "message": "example",
+    "task": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "message": "example",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:task",
+      "input": {
+        "message": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "message": "example"
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "message": "example",
+        "task": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "message": "example",
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "message": "example",
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "message": "example",
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "message": "example",
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": null,
+          "task": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "message": "example",
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "message": "example",
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "message": "example",
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": null,
+          "task": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:message",
+      "input": {
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "task": "example"
+            },
+            "loc": [
+              "message"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:message:none",
+      "input": {
+        "message": null,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "message"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:message:int",
+      "input": {
+        "message": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "message"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:message:float",
+      "input": {
+        "message": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "message"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:message:bool",
+      "input": {
+        "message": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "message"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:message:str",
+      "input": {
+        "message": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "x",
+          "percent": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:message:list",
+      "input": {
+        "message": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "message"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:message:dict",
+      "input": {
+        "message": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "message"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:message",
+      "input": {
+        "message": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "Not valid!",
+          "percent": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "min_length:message",
+      "input": {
+        "message": "",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "message"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:percent:none",
+      "input": {
+        "message": "example",
+        "percent": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:percent:int",
+      "input": {
+        "message": "example",
+        "percent": 12,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": 12.0,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:percent:float",
+      "input": {
+        "message": "example",
+        "percent": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": 1.5,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:percent:bool",
+      "input": {
+        "message": "example",
+        "percent": true,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": 1.0,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:percent:str",
+      "input": {
+        "message": "example",
+        "percent": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "percent"
+            ],
+            "msg": "Input should be a valid number, unable to parse string as a number",
+            "type": "float_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:percent:list",
+      "input": {
+        "message": "example",
+        "percent": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "percent"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:percent:dict",
+      "input": {
+        "message": "example",
+        "percent": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "percent"
+            ],
+            "msg": "Input should be a valid number",
+            "type": "float_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:percent",
+      "input": {
+        "message": "example",
+        "percent": -1,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 0.0
+            },
+            "input": -1,
+            "loc": [
+              "percent"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:percent",
+      "input": {
+        "message": "example",
+        "percent": 101,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 100.0
+            },
+            "input": 101,
+            "loc": [
+              "percent"
+            ],
+            "msg": "Input should be less than or equal to 100",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:none",
+      "input": {
+        "attempt_id": null,
+        "message": "example",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:attempt_id:int",
+      "input": {
+        "attempt_id": 12,
+        "message": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:float",
+      "input": {
+        "attempt_id": 1.5,
+        "message": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:bool",
+      "input": {
+        "attempt_id": true,
+        "message": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:str",
+      "input": {
+        "attempt_id": "x",
+        "message": "example",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "x",
+          "message": "example",
+          "percent": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:attempt_id:list",
+      "input": {
+        "attempt_id": [
+          "a"
+        ],
+        "message": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:dict",
+      "input": {
+        "attempt_id": {
+          "k": 1
+        },
+        "message": "example",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:attempt_id",
+      "input": {
+        "attempt_id": "Not valid!",
+        "message": "example",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "Not valid!",
+          "message": "example",
+          "percent": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "message": "example",
+        "task": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "message": "example",
+        "task": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "message": "example",
+        "task": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "message": "example",
+        "task": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "message": "example",
+        "task": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": null,
+          "task": "example",
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "message": "example",
+        "task": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "message": "example",
+        "task": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "message": "example",
+        "task": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": null,
+          "task": "example",
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "message": "example",
+        "task": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "message": "example",
+          "percent": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "task_report_progressArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of task_report_progressArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_report_progress"
+}

@@ -1,0 +1,535 @@
+{
+  "base": {
+    "report": "catalog"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "report": "catalog"
+      },
+      "output": {
+        "ok": {
+          "report": "catalog",
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:report",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "report"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:report:none",
+      "input": {
+        "report": null
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'"
+            },
+            "input": null,
+            "loc": [
+              "report"
+            ],
+            "msg": "Input should be 'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:report:int",
+      "input": {
+        "report": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'"
+            },
+            "input": 12,
+            "loc": [
+              "report"
+            ],
+            "msg": "Input should be 'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:report:float",
+      "input": {
+        "report": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'"
+            },
+            "input": 1.5,
+            "loc": [
+              "report"
+            ],
+            "msg": "Input should be 'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:report:bool",
+      "input": {
+        "report": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'"
+            },
+            "input": true,
+            "loc": [
+              "report"
+            ],
+            "msg": "Input should be 'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:report:str",
+      "input": {
+        "report": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'"
+            },
+            "input": "x",
+            "loc": [
+              "report"
+            ],
+            "msg": "Input should be 'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:report:list",
+      "input": {
+        "report": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "report"
+            ],
+            "msg": "Input should be 'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:report:dict",
+      "input": {
+        "report": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "report"
+            ],
+            "msg": "Input should be 'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:report",
+      "input": {
+        "report": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "report"
+            ],
+            "msg": "Input should be 'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "report": "catalog",
+        "task": null
+      },
+      "output": {
+        "ok": {
+          "report": "catalog",
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "report": "catalog",
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "report": "catalog",
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "report": "catalog",
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "report": "catalog",
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "report": "catalog",
+          "task": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "report": "catalog",
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "report": "catalog",
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "report": "catalog",
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "report": "catalog",
+          "task": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "report": "catalog",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "report": "catalog",
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "report": "catalog",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "report": "catalog",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "report": "catalog",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "report": "catalog",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "report": "catalog",
+          "task": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "report": "catalog",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "report": "catalog",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "report": "catalog",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "report": "catalog",
+          "task": null,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "report": "catalog",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "report": "catalog",
+          "task": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "analytics_reportArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of analytics_reportArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "analytics_report"
+}

@@ -1,0 +1,397 @@
+{
+  "base": {
+    "target": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "target": "example"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "example"
+        }
+      }
+    },
+    {
+      "id": "missing:target",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "target"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:none",
+      "input": {
+        "target": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:int",
+      "input": {
+        "target": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:float",
+      "input": {
+        "target": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:bool",
+      "input": {
+        "target": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:str",
+      "input": {
+        "target": "x"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:target:list",
+      "input": {
+        "target": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:target:dict",
+      "input": {
+        "target": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "target"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:target",
+      "input": {
+        "target": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "relation_type": "relates_to",
+          "target": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "wrong:relation_type:none",
+      "input": {
+        "relation_type": null,
+        "target": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": null,
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:int",
+      "input": {
+        "relation_type": 12,
+        "target": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": 12,
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:float",
+      "input": {
+        "relation_type": 1.5,
+        "target": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": 1.5,
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:bool",
+      "input": {
+        "relation_type": true,
+        "target": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": true,
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:str",
+      "input": {
+        "relation_type": "x",
+        "target": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": "x",
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:list",
+      "input": {
+        "relation_type": [
+          "a"
+        ],
+        "target": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:relation_type:dict",
+      "input": {
+        "relation_type": {
+          "k": 1
+        },
+        "target": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:relation_type",
+      "input": {
+        "relation_type": "Not valid!",
+        "target": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "relation_type"
+            ],
+            "msg": "Input should be 'relates_to', 'duplicates', 'follows_up', 'regression_of' or 'similar_to'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "target": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "RelationCreate"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of RelationCreate",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "RelationCreate"
+}

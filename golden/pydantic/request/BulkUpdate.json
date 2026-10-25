@@ -1,0 +1,1557 @@
+{
+  "base": {
+    "tasks": [
+      "example"
+    ],
+    "update": {}
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "tasks": [
+          "example"
+        ],
+        "update": {}
+      },
+      "output": {
+        "ok": {
+          "tasks": [
+            "example"
+          ],
+          "update": {
+            "acceptance_criteria": null,
+            "add_files": null,
+            "add_tags": null,
+            "assigned_agent": null,
+            "assignee": null,
+            "auto_execute": null,
+            "clear_parent": false,
+            "description": null,
+            "due_at": null,
+            "estimated_effort": null,
+            "expected_version": null,
+            "files": null,
+            "metadata": null,
+            "parent": null,
+            "priority": null,
+            "projects": null,
+            "reason": null,
+            "remove_tags": null,
+            "scheduled_at": null,
+            "status": null,
+            "tags": null,
+            "title": null
+          }
+        }
+      }
+    },
+    {
+      "id": "missing:tasks",
+      "input": {
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "update": {}
+            },
+            "loc": [
+              "tasks"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tasks:none",
+      "input": {
+        "tasks": null,
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "tasks"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tasks:int",
+      "input": {
+        "tasks": 12,
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "tasks"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tasks:float",
+      "input": {
+        "tasks": 1.5,
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "tasks"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tasks:bool",
+      "input": {
+        "tasks": true,
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "tasks"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tasks:str",
+      "input": {
+        "tasks": "x",
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "tasks"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tasks:list",
+      "input": {
+        "tasks": [
+          "a"
+        ],
+        "update": {}
+      },
+      "output": {
+        "ok": {
+          "tasks": [
+            "a"
+          ],
+          "update": {
+            "acceptance_criteria": null,
+            "add_files": null,
+            "add_tags": null,
+            "assigned_agent": null,
+            "assignee": null,
+            "auto_execute": null,
+            "clear_parent": false,
+            "description": null,
+            "due_at": null,
+            "estimated_effort": null,
+            "expected_version": null,
+            "files": null,
+            "metadata": null,
+            "parent": null,
+            "priority": null,
+            "projects": null,
+            "reason": null,
+            "remove_tags": null,
+            "scheduled_at": null,
+            "status": null,
+            "tags": null,
+            "title": null
+          }
+        }
+      }
+    },
+    {
+      "id": "wrong:tasks:dict",
+      "input": {
+        "tasks": {
+          "k": 1
+        },
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "tasks"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:tasks",
+      "input": {
+        "tasks": [
+          "Not valid!"
+        ],
+        "update": {}
+      },
+      "output": {
+        "ok": {
+          "tasks": [
+            "Not valid!"
+          ],
+          "update": {
+            "acceptance_criteria": null,
+            "add_files": null,
+            "add_tags": null,
+            "assigned_agent": null,
+            "assignee": null,
+            "auto_execute": null,
+            "clear_parent": false,
+            "description": null,
+            "due_at": null,
+            "estimated_effort": null,
+            "expected_version": null,
+            "files": null,
+            "metadata": null,
+            "parent": null,
+            "priority": null,
+            "projects": null,
+            "reason": null,
+            "remove_tags": null,
+            "scheduled_at": null,
+            "status": null,
+            "tags": null,
+            "title": null
+          }
+        }
+      }
+    },
+    {
+      "id": "min_length:tasks",
+      "input": {
+        "tasks": [],
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "actual_length": 0,
+              "field_type": "List",
+              "min_length": 1
+            },
+            "input": [],
+            "loc": [
+              "tasks"
+            ],
+            "msg": "List should have at least 1 item after validation, not 0",
+            "type": "too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "max_length:tasks",
+      "input": {
+        "tasks": [
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a"
+        ],
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "actual_length": 501,
+              "field_type": "List",
+              "max_length": 500
+            },
+            "input": [
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a"
+            ],
+            "loc": [
+              "tasks"
+            ],
+            "msg": "List should have at most 500 items after validation, not 501",
+            "type": "too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing:update",
+      "input": {
+        "tasks": [
+          "example"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "tasks": [
+                "example"
+              ]
+            },
+            "loc": [
+              "update"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:update:none",
+      "input": {
+        "tasks": [
+          "example"
+        ],
+        "update": null
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskUpdate"
+            },
+            "input": null,
+            "loc": [
+              "update"
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskUpdate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:update:int",
+      "input": {
+        "tasks": [
+          "example"
+        ],
+        "update": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskUpdate"
+            },
+            "input": 12,
+            "loc": [
+              "update"
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskUpdate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:update:float",
+      "input": {
+        "tasks": [
+          "example"
+        ],
+        "update": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskUpdate"
+            },
+            "input": 1.5,
+            "loc": [
+              "update"
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskUpdate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:update:bool",
+      "input": {
+        "tasks": [
+          "example"
+        ],
+        "update": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskUpdate"
+            },
+            "input": true,
+            "loc": [
+              "update"
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskUpdate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:update:str",
+      "input": {
+        "tasks": [
+          "example"
+        ],
+        "update": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskUpdate"
+            },
+            "input": "x",
+            "loc": [
+              "update"
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskUpdate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:update:list",
+      "input": {
+        "tasks": [
+          "example"
+        ],
+        "update": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskUpdate"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "update"
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskUpdate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:update:dict",
+      "input": {
+        "tasks": [
+          "example"
+        ],
+        "update": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "update",
+              "k"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "tasks": [
+          "example"
+        ],
+        "unknown_key": 1,
+        "update": {}
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "BulkUpdate"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of BulkUpdate",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "BulkUpdate"
+}

@@ -1,0 +1,638 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 15,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:since:none",
+      "input": {
+        "since": null
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 15,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:since:int",
+      "input": {
+        "since": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:since:float",
+      "input": {
+        "since": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:since:bool",
+      "input": {
+        "since": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:since:str",
+      "input": {
+        "since": "x"
+      },
+      "output": {
+        "ok": {
+          "since": "x",
+          "top": 15,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:since:list",
+      "input": {
+        "since": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:since:dict",
+      "input": {
+        "since": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:since",
+      "input": {
+        "since": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "since": "Not valid!",
+          "top": 15,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:until:none",
+      "input": {
+        "until": null
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 15,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:until:int",
+      "input": {
+        "until": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:until:float",
+      "input": {
+        "until": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:until:bool",
+      "input": {
+        "until": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:until:str",
+      "input": {
+        "until": "x"
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 15,
+          "until": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:until:list",
+      "input": {
+        "until": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:until:dict",
+      "input": {
+        "until": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:until",
+      "input": {
+        "until": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 15,
+          "until": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:top:none",
+      "input": {
+        "top": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "top"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:top:int",
+      "input": {
+        "top": 12
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 12,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:top:float",
+      "input": {
+        "top": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "top"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:top:bool",
+      "input": {
+        "top": true
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 1,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:top:str",
+      "input": {
+        "top": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "top"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:top:list",
+      "input": {
+        "top": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "top"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:top:dict",
+      "input": {
+        "top": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "top"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:top",
+      "input": {
+        "top": 0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1
+            },
+            "input": 0,
+            "loc": [
+              "top"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:top",
+      "input": {
+        "top": 101
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 100
+            },
+            "input": 101,
+            "loc": [
+              "top"
+            ],
+            "msg": "Input should be less than or equal to 100",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 15,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 15,
+          "until": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 15,
+          "until": null,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "since": null,
+          "top": 15,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "analytics_bottlenecksArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of analytics_bottlenecksArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "analytics_bottlenecks"
+}

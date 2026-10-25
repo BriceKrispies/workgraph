@@ -1,0 +1,800 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:period:none",
+      "input": {
+        "period": null
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'week' or 'month'"
+            },
+            "input": null,
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'week' or 'month'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:int",
+      "input": {
+        "period": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'week' or 'month'"
+            },
+            "input": 12,
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'week' or 'month'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:float",
+      "input": {
+        "period": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'week' or 'month'"
+            },
+            "input": 1.5,
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'week' or 'month'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:bool",
+      "input": {
+        "period": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'week' or 'month'"
+            },
+            "input": true,
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'week' or 'month'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:str",
+      "input": {
+        "period": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'week' or 'month'"
+            },
+            "input": "x",
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'week' or 'month'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:list",
+      "input": {
+        "period": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'week' or 'month'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'week' or 'month'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:period:dict",
+      "input": {
+        "period": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'week' or 'month'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'week' or 'month'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:period",
+      "input": {
+        "period": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'week' or 'month'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "period"
+            ],
+            "msg": "Input should be 'week' or 'month'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:since:none",
+      "input": {
+        "since": null
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:since:int",
+      "input": {
+        "since": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:since:float",
+      "input": {
+        "since": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:since:bool",
+      "input": {
+        "since": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:since:str",
+      "input": {
+        "since": "x"
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": "x",
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:since:list",
+      "input": {
+        "since": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:since:dict",
+      "input": {
+        "since": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "since"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:since",
+      "input": {
+        "since": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": "Not valid!",
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:until:none",
+      "input": {
+        "until": null
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:until:int",
+      "input": {
+        "until": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:until:float",
+      "input": {
+        "until": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:until:bool",
+      "input": {
+        "until": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:until:str",
+      "input": {
+        "until": "x"
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:until:list",
+      "input": {
+        "until": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:until:dict",
+      "input": {
+        "until": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "until"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:until",
+      "input": {
+        "until": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:model:none",
+      "input": {
+        "model": null
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:model:int",
+      "input": {
+        "model": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:float",
+      "input": {
+        "model": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:bool",
+      "input": {
+        "model": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:str",
+      "input": {
+        "model": "x"
+      },
+      "output": {
+        "ok": {
+          "model": "x",
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:model:list",
+      "input": {
+        "model": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:dict",
+      "input": {
+        "model": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:model",
+      "input": {
+        "model": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "model": "Not valid!",
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "model": null,
+          "period": "week",
+          "since": null,
+          "until": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "analytics_subagentsArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of analytics_subagentsArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "analytics_subagents"
+}

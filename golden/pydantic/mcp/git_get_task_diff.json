@@ -1,0 +1,702 @@
+{
+  "base": {
+    "task": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:task",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "task"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "task": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": null,
+          "task": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": null,
+          "task": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:none",
+      "input": {
+        "repository": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:int",
+      "input": {
+        "repository": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:float",
+      "input": {
+        "repository": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:bool",
+      "input": {
+        "repository": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:str",
+      "input": {
+        "repository": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": "x",
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:list",
+      "input": {
+        "repository": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:dict",
+      "input": {
+        "repository": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:repository",
+      "input": {
+        "repository": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": "Not valid!",
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:max_bytes:none",
+      "input": {
+        "max_bytes": null,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:max_bytes:int",
+      "input": {
+        "max_bytes": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1000
+            },
+            "input": 12,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be greater than or equal to 1000",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:max_bytes:float",
+      "input": {
+        "max_bytes": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:max_bytes:bool",
+      "input": {
+        "max_bytes": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1000
+            },
+            "input": true,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be greater than or equal to 1000",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:max_bytes:str",
+      "input": {
+        "max_bytes": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:max_bytes:list",
+      "input": {
+        "max_bytes": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:max_bytes:dict",
+      "input": {
+        "max_bytes": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:max_bytes",
+      "input": {
+        "max_bytes": 999,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1000
+            },
+            "input": 999,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be greater than or equal to 1000",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:max_bytes",
+      "input": {
+        "max_bytes": 2000001,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 2000000
+            },
+            "input": 2000001,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be less than or equal to 2000000",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "task": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "task": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "task": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "task": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "task": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": null,
+          "task": "example",
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "task": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "task": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "task": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": null,
+          "task": "example",
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "task": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "max_bytes": 200000,
+          "repository": null,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "git_get_task_diffArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of git_get_task_diffArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "git_get_task_diff"
+}

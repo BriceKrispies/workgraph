@@ -1,0 +1,475 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {
+          "agent": null,
+          "expected_version": null,
+          "lease_minutes": 120
+        }
+      }
+    },
+    {
+      "id": "wrong:agent:none",
+      "input": {
+        "agent": null
+      },
+      "output": {
+        "ok": {
+          "agent": null,
+          "expected_version": null,
+          "lease_minutes": 120
+        }
+      }
+    },
+    {
+      "id": "wrong:agent:int",
+      "input": {
+        "agent": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:agent:float",
+      "input": {
+        "agent": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:agent:bool",
+      "input": {
+        "agent": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:agent:str",
+      "input": {
+        "agent": "x"
+      },
+      "output": {
+        "ok": {
+          "agent": "x",
+          "expected_version": null,
+          "lease_minutes": 120
+        }
+      }
+    },
+    {
+      "id": "wrong:agent:list",
+      "input": {
+        "agent": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:agent:dict",
+      "input": {
+        "agent": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:agent",
+      "input": {
+        "agent": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "agent": "Not valid!",
+          "expected_version": null,
+          "lease_minutes": 120
+        }
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:none",
+      "input": {
+        "lease_minutes": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:int",
+      "input": {
+        "lease_minutes": 12
+      },
+      "output": {
+        "ok": {
+          "agent": null,
+          "expected_version": null,
+          "lease_minutes": 12
+        }
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:float",
+      "input": {
+        "lease_minutes": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:bool",
+      "input": {
+        "lease_minutes": true
+      },
+      "output": {
+        "ok": {
+          "agent": null,
+          "expected_version": null,
+          "lease_minutes": 1
+        }
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:str",
+      "input": {
+        "lease_minutes": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:list",
+      "input": {
+        "lease_minutes": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:dict",
+      "input": {
+        "lease_minutes": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:lease_minutes",
+      "input": {
+        "lease_minutes": 0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1
+            },
+            "input": 0,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:lease_minutes",
+      "input": {
+        "lease_minutes": 10081
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 10080
+            },
+            "input": 10081,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be less than or equal to 10080",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:none",
+      "input": {
+        "expected_version": null
+      },
+      "output": {
+        "ok": {
+          "agent": null,
+          "expected_version": null,
+          "lease_minutes": 120
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:int",
+      "input": {
+        "expected_version": 12
+      },
+      "output": {
+        "ok": {
+          "agent": null,
+          "expected_version": 12,
+          "lease_minutes": 120
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:float",
+      "input": {
+        "expected_version": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:bool",
+      "input": {
+        "expected_version": true
+      },
+      "output": {
+        "ok": {
+          "agent": null,
+          "expected_version": 1,
+          "lease_minutes": 120
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:str",
+      "input": {
+        "expected_version": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:list",
+      "input": {
+        "expected_version": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:dict",
+      "input": {
+        "expected_version": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "ClaimRequest"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of ClaimRequest",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "ClaimRequest"
+}

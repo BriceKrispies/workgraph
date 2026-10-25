@@ -1,0 +1,3597 @@
+{
+  "base": {
+    "title": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:key:none",
+      "input": {
+        "key": null,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:key:int",
+      "input": {
+        "key": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "key"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:key:float",
+      "input": {
+        "key": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "key"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:key:bool",
+      "input": {
+        "key": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "key"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:key:str",
+      "input": {
+        "key": "x",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": "x",
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:key:list",
+      "input": {
+        "key": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "key"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:key:dict",
+      "input": {
+        "key": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "key"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:key",
+      "input": {
+        "key": "Not valid!",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": "Not valid!",
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "missing:title",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "title"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:none",
+      "input": {
+        "title": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:int",
+      "input": {
+        "title": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:float",
+      "input": {
+        "title": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:bool",
+      "input": {
+        "title": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:str",
+      "input": {
+        "title": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:title:list",
+      "input": {
+        "title": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:dict",
+      "input": {
+        "title": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:title",
+      "input": {
+        "title": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "min_length:title",
+      "input": {
+        "title": ""
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "title"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "max_length:title",
+      "input": {
+        "title": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "max_length": 500
+            },
+            "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "loc": [
+              "title"
+            ],
+            "msg": "String should have at most 500 characters",
+            "type": "string_too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:none",
+      "input": {
+        "description": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:int",
+      "input": {
+        "description": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:float",
+      "input": {
+        "description": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:bool",
+      "input": {
+        "description": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:str",
+      "input": {
+        "description": "x",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "x",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:description:list",
+      "input": {
+        "description": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:dict",
+      "input": {
+        "description": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:description",
+      "input": {
+        "description": "Not valid!",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "Not valid!",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:none",
+      "input": {
+        "acceptance_criteria": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:int",
+      "input": {
+        "acceptance_criteria": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:float",
+      "input": {
+        "acceptance_criteria": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:bool",
+      "input": {
+        "acceptance_criteria": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:str",
+      "input": {
+        "acceptance_criteria": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:list",
+      "input": {
+        "acceptance_criteria": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [
+            "a"
+          ],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:dict",
+      "input": {
+        "acceptance_criteria": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:acceptance_criteria",
+      "input": {
+        "acceptance_criteria": [
+          "Not valid!"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [
+            "Not valid!"
+          ],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:status:none",
+      "input": {
+        "status": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog' or 'ready'"
+            },
+            "input": null,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog' or 'ready'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:int",
+      "input": {
+        "status": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog' or 'ready'"
+            },
+            "input": 12,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog' or 'ready'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:float",
+      "input": {
+        "status": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog' or 'ready'"
+            },
+            "input": 1.5,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog' or 'ready'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:bool",
+      "input": {
+        "status": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog' or 'ready'"
+            },
+            "input": true,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog' or 'ready'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:str",
+      "input": {
+        "status": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog' or 'ready'"
+            },
+            "input": "x",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog' or 'ready'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:list",
+      "input": {
+        "status": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog' or 'ready'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog' or 'ready'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:dict",
+      "input": {
+        "status": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog' or 'ready'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog' or 'ready'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:status",
+      "input": {
+        "status": "Not valid!",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog' or 'ready'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog' or 'ready'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:none",
+      "input": {
+        "priority": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": null,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:int",
+      "input": {
+        "priority": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": 12,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:float",
+      "input": {
+        "priority": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": 1.5,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:bool",
+      "input": {
+        "priority": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": true,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:str",
+      "input": {
+        "priority": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "x",
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:list",
+      "input": {
+        "priority": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:dict",
+      "input": {
+        "priority": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:priority",
+      "input": {
+        "priority": "Not valid!",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:none",
+      "input": {
+        "tags": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:int",
+      "input": {
+        "tags": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:float",
+      "input": {
+        "tags": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:bool",
+      "input": {
+        "tags": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:str",
+      "input": {
+        "tags": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:list",
+      "input": {
+        "tags": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [
+            "a"
+          ],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:dict",
+      "input": {
+        "tags": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:tags",
+      "input": {
+        "tags": [
+          "Not valid!"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid tag 'Not valid!'"
+            },
+            "input": [
+              "Not valid!"
+            ],
+            "loc": [
+              "tags"
+            ],
+            "msg": "Value error, invalid tag 'Not valid!'",
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:none",
+      "input": {
+        "files": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:int",
+      "input": {
+        "files": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:float",
+      "input": {
+        "files": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:bool",
+      "input": {
+        "files": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:str",
+      "input": {
+        "files": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:list",
+      "input": {
+        "files": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "a",
+            "loc": [
+              "files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:dict",
+      "input": {
+        "files": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:files",
+      "input": {
+        "files": [
+          "Not valid!"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:none",
+      "input": {
+        "projects": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:int",
+      "input": {
+        "projects": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:float",
+      "input": {
+        "projects": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:bool",
+      "input": {
+        "projects": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:str",
+      "input": {
+        "projects": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:list",
+      "input": {
+        "projects": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [
+            "a"
+          ],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:projects:dict",
+      "input": {
+        "projects": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:projects",
+      "input": {
+        "projects": [
+          "Not valid!"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [
+            "Not valid!"
+          ],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:repositories:none",
+      "input": {
+        "repositories": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "repositories"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repositories:int",
+      "input": {
+        "repositories": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "repositories"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repositories:float",
+      "input": {
+        "repositories": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "repositories"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repositories:bool",
+      "input": {
+        "repositories": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "repositories"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repositories:str",
+      "input": {
+        "repositories": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "repositories"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repositories:list",
+      "input": {
+        "repositories": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [
+            "a"
+          ],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:repositories:dict",
+      "input": {
+        "repositories": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "repositories"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:repositories",
+      "input": {
+        "repositories": [
+          "Not valid!"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [
+            "Not valid!"
+          ],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:none",
+      "input": {
+        "parent": null,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:int",
+      "input": {
+        "parent": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:float",
+      "input": {
+        "parent": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:bool",
+      "input": {
+        "parent": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:str",
+      "input": {
+        "parent": "x",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": "x",
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:list",
+      "input": {
+        "parent": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:dict",
+      "input": {
+        "parent": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:parent",
+      "input": {
+        "parent": "Not valid!",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": "Not valid!",
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:depends_on:none",
+      "input": {
+        "depends_on": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "depends_on"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:depends_on:int",
+      "input": {
+        "depends_on": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "depends_on"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:depends_on:float",
+      "input": {
+        "depends_on": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "depends_on"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:depends_on:bool",
+      "input": {
+        "depends_on": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "depends_on"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:depends_on:str",
+      "input": {
+        "depends_on": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "depends_on"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:depends_on:list",
+      "input": {
+        "depends_on": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [
+            "a"
+          ],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:depends_on:dict",
+      "input": {
+        "depends_on": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "depends_on"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:depends_on",
+      "input": {
+        "depends_on": [
+          "Not valid!"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [
+            "Not valid!"
+          ],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:assignee:none",
+      "input": {
+        "assignee": null,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:assignee:int",
+      "input": {
+        "assignee": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:float",
+      "input": {
+        "assignee": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:bool",
+      "input": {
+        "assignee": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:str",
+      "input": {
+        "assignee": "x",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": "x",
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:assignee:list",
+      "input": {
+        "assignee": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:dict",
+      "input": {
+        "assignee": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:assignee",
+      "input": {
+        "assignee": "Not valid!",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": "Not valid!",
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:none",
+      "input": {
+        "assigned_agent": null,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:int",
+      "input": {
+        "assigned_agent": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:float",
+      "input": {
+        "assigned_agent": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:bool",
+      "input": {
+        "assigned_agent": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:str",
+      "input": {
+        "assigned_agent": "x",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": "x",
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:list",
+      "input": {
+        "assigned_agent": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:dict",
+      "input": {
+        "assigned_agent": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:assigned_agent",
+      "input": {
+        "assigned_agent": "Not valid!",
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": "Not valid!",
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:auto_execute:none",
+      "input": {
+        "auto_execute": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:auto_execute:int",
+      "input": {
+        "auto_execute": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:auto_execute:float",
+      "input": {
+        "auto_execute": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:auto_execute:bool",
+      "input": {
+        "auto_execute": true,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": true,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:auto_execute:str",
+      "input": {
+        "auto_execute": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:auto_execute:list",
+      "input": {
+        "auto_execute": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:auto_execute:dict",
+      "input": {
+        "auto_execute": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:due_at:none",
+      "input": {
+        "due_at": null,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:due_at:int",
+      "input": {
+        "due_at": 12,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": "1970-01-01T00:00:12Z",
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:due_at:float",
+      "input": {
+        "due_at": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": "1970-01-01T00:00:01.500000Z",
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:due_at:bool",
+      "input": {
+        "due_at": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:due_at:str",
+      "input": {
+        "due_at": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "input is too short"
+            },
+            "input": "x",
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime or date, input is too short",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:due_at:list",
+      "input": {
+        "due_at": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:due_at:dict",
+      "input": {
+        "due_at": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:due_at",
+      "input": {
+        "due_at": "Not valid!",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid character in year"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime or date, invalid character in year",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:none",
+      "input": {
+        "scheduled_at": null,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:int",
+      "input": {
+        "scheduled_at": 12,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": "1970-01-01T00:00:12Z",
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:float",
+      "input": {
+        "scheduled_at": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": "1970-01-01T00:00:01.500000Z",
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:bool",
+      "input": {
+        "scheduled_at": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:str",
+      "input": {
+        "scheduled_at": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "input is too short"
+            },
+            "input": "x",
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime or date, input is too short",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:list",
+      "input": {
+        "scheduled_at": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:dict",
+      "input": {
+        "scheduled_at": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:scheduled_at",
+      "input": {
+        "scheduled_at": "Not valid!",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid character in year"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime or date, invalid character in year",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:none",
+      "input": {
+        "estimated_effort": null,
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {},
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:int",
+      "input": {
+        "estimated_effort": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": 12,
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:float",
+      "input": {
+        "estimated_effort": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": 1.5,
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:bool",
+      "input": {
+        "estimated_effort": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": true,
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:str",
+      "input": {
+        "estimated_effort": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": "x",
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:list",
+      "input": {
+        "estimated_effort": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:dict",
+      "input": {
+        "estimated_effort": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "estimated_effort",
+              "value"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          },
+          {
+            "input": 1,
+            "loc": [
+              "estimated_effort",
+              "k"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:none",
+      "input": {
+        "metadata": null,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:int",
+      "input": {
+        "metadata": 12,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:float",
+      "input": {
+        "metadata": 1.5,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:bool",
+      "input": {
+        "metadata": true,
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:str",
+      "input": {
+        "metadata": "x",
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:list",
+      "input": {
+        "metadata": [
+          "a"
+        ],
+        "title": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:dict",
+      "input": {
+        "metadata": {
+          "k": 1
+        },
+        "title": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": false,
+          "depends_on": [],
+          "description": "",
+          "due_at": null,
+          "estimated_effort": null,
+          "files": [],
+          "key": null,
+          "metadata": {
+            "k": 1
+          },
+          "parent": null,
+          "priority": "medium",
+          "projects": [],
+          "repositories": [],
+          "scheduled_at": null,
+          "status": "backlog",
+          "tags": [],
+          "title": "example"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "title": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskCreate"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of TaskCreate",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "TaskCreate"
+}

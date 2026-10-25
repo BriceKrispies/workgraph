@@ -1,0 +1,1397 @@
+{
+  "base": {
+    "task": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "missing:task",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "task"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "task": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "wrong:provider:none",
+      "input": {
+        "provider": null,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:int",
+      "input": {
+        "provider": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:float",
+      "input": {
+        "provider": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:bool",
+      "input": {
+        "provider": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:str",
+      "input": {
+        "provider": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "x",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:provider:list",
+      "input": {
+        "provider": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:provider:dict",
+      "input": {
+        "provider": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "provider"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:provider",
+      "input": {
+        "provider": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "Not valid!",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "max_length:provider",
+      "input": {
+        "provider": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "max_length": 100
+            },
+            "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "loc": [
+              "provider"
+            ],
+            "msg": "String should have at most 100 characters",
+            "type": "string_too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:adapter:none",
+      "input": {
+        "adapter": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:adapter:int",
+      "input": {
+        "adapter": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "adapter"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:adapter:float",
+      "input": {
+        "adapter": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "adapter"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:adapter:bool",
+      "input": {
+        "adapter": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "adapter"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:adapter:str",
+      "input": {
+        "adapter": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": "x",
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:adapter:list",
+      "input": {
+        "adapter": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "adapter"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:adapter:dict",
+      "input": {
+        "adapter": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "adapter"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:adapter",
+      "input": {
+        "adapter": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": "Not valid!",
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:agent_id:none",
+      "input": {
+        "agent_id": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:agent_id:int",
+      "input": {
+        "agent_id": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "agent_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:agent_id:float",
+      "input": {
+        "agent_id": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "agent_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:agent_id:bool",
+      "input": {
+        "agent_id": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "agent_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:agent_id:str",
+      "input": {
+        "agent_id": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": "x",
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:agent_id:list",
+      "input": {
+        "agent_id": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "agent_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:agent_id:dict",
+      "input": {
+        "agent_id": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "agent_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:agent_id",
+      "input": {
+        "agent_id": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": "Not valid!",
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:model:none",
+      "input": {
+        "model": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:model:int",
+      "input": {
+        "model": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:float",
+      "input": {
+        "model": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:bool",
+      "input": {
+        "model": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:str",
+      "input": {
+        "model": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": "x",
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:model:list",
+      "input": {
+        "model": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:model:dict",
+      "input": {
+        "model": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "model"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:model",
+      "input": {
+        "model": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": "Not valid!",
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:session_id:none",
+      "input": {
+        "session_id": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:session_id:int",
+      "input": {
+        "session_id": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "session_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:session_id:float",
+      "input": {
+        "session_id": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "session_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:session_id:bool",
+      "input": {
+        "session_id": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "session_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:session_id:str",
+      "input": {
+        "session_id": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": "x",
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:session_id:list",
+      "input": {
+        "session_id": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "session_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:session_id:dict",
+      "input": {
+        "session_id": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "session_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:session_id",
+      "input": {
+        "session_id": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": "Not valid!",
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:parent_attempt:none",
+      "input": {
+        "parent_attempt": null,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": null,
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:parent_attempt:int",
+      "input": {
+        "parent_attempt": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "parent_attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent_attempt:float",
+      "input": {
+        "parent_attempt": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "parent_attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent_attempt:bool",
+      "input": {
+        "parent_attempt": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "parent_attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent_attempt:str",
+      "input": {
+        "parent_attempt": "x",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": "x",
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:parent_attempt:list",
+      "input": {
+        "parent_attempt": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "parent_attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent_attempt:dict",
+      "input": {
+        "parent_attempt": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "parent_attempt"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:parent_attempt",
+      "input": {
+        "parent_attempt": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "adapter": null,
+          "agent_id": null,
+          "model": null,
+          "parent_attempt": "Not valid!",
+          "provider": "external",
+          "session_id": null,
+          "status": "running",
+          "task": "example"
+        }
+      }
+    },
+    {
+      "id": "wrong:status:none",
+      "input": {
+        "status": null,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'queued' or 'running'"
+            },
+            "input": null,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'queued' or 'running'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:int",
+      "input": {
+        "status": 12,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'queued' or 'running'"
+            },
+            "input": 12,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'queued' or 'running'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:float",
+      "input": {
+        "status": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'queued' or 'running'"
+            },
+            "input": 1.5,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'queued' or 'running'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:bool",
+      "input": {
+        "status": true,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'queued' or 'running'"
+            },
+            "input": true,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'queued' or 'running'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:str",
+      "input": {
+        "status": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'queued' or 'running'"
+            },
+            "input": "x",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'queued' or 'running'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:list",
+      "input": {
+        "status": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'queued' or 'running'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'queued' or 'running'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:dict",
+      "input": {
+        "status": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'queued' or 'running'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'queued' or 'running'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:status",
+      "input": {
+        "status": "Not valid!",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'queued' or 'running'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'queued' or 'running'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "task": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "AttemptCreate"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of AttemptCreate",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "AttemptCreate"
+}

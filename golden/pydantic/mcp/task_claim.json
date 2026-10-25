@@ -1,0 +1,531 @@
+{
+  "base": {
+    "task": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "lease_minutes": 120,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:task",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "task"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:none",
+      "input": {
+        "task": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:float",
+      "input": {
+        "task": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:bool",
+      "input": {
+        "task": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:str",
+      "input": {
+        "task": "x"
+      },
+      "output": {
+        "ok": {
+          "lease_minutes": 120,
+          "task": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:task:list",
+      "input": {
+        "task": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:dict",
+      "input": {
+        "task": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:task",
+      "input": {
+        "task": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "lease_minutes": 120,
+          "task": "Not valid!",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:none",
+      "input": {
+        "lease_minutes": null,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:int",
+      "input": {
+        "lease_minutes": 12,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "lease_minutes": 12,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:float",
+      "input": {
+        "lease_minutes": 1.5,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:bool",
+      "input": {
+        "lease_minutes": true,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "lease_minutes": 1,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:str",
+      "input": {
+        "lease_minutes": "x",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:list",
+      "input": {
+        "lease_minutes": [
+          "a"
+        ],
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:lease_minutes:dict",
+      "input": {
+        "lease_minutes": {
+          "k": 1
+        },
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:lease_minutes",
+      "input": {
+        "lease_minutes": 0,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1
+            },
+            "input": 0,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:lease_minutes",
+      "input": {
+        "lease_minutes": 10081,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 10080
+            },
+            "input": 10081,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be less than or equal to 10080",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "task": "example",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "lease_minutes": 120,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "task": "example",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "task": "example",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "task": "example",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "task": "example",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "lease_minutes": 120,
+          "task": "example",
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "task": "example",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "task": "example",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:workspace",
+      "input": {
+        "task": "example",
+        "workspace": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "lease_minutes": 120,
+          "task": "example",
+          "workspace": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "task": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "lease_minutes": 120,
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "task_claimArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of task_claimArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_claim"
+}

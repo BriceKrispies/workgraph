@@ -1,0 +1,380 @@
+{
+  "base": {
+    "attempt_id": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "attempt_id": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "example",
+          "events": 50
+        }
+      }
+    },
+    {
+      "id": "missing:attempt_id",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:none",
+      "input": {
+        "attempt_id": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:int",
+      "input": {
+        "attempt_id": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:float",
+      "input": {
+        "attempt_id": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:bool",
+      "input": {
+        "attempt_id": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:str",
+      "input": {
+        "attempt_id": "x"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "x",
+          "events": 50
+        }
+      }
+    },
+    {
+      "id": "wrong:attempt_id:list",
+      "input": {
+        "attempt_id": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:attempt_id:dict",
+      "input": {
+        "attempt_id": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "attempt_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:attempt_id",
+      "input": {
+        "attempt_id": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "Not valid!",
+          "events": 50
+        }
+      }
+    },
+    {
+      "id": "wrong:events:none",
+      "input": {
+        "attempt_id": "example",
+        "events": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "events"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:events:int",
+      "input": {
+        "attempt_id": "example",
+        "events": 12
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "example",
+          "events": 12
+        }
+      }
+    },
+    {
+      "id": "wrong:events:float",
+      "input": {
+        "attempt_id": "example",
+        "events": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "events"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:events:bool",
+      "input": {
+        "attempt_id": "example",
+        "events": true
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "example",
+          "events": 1
+        }
+      }
+    },
+    {
+      "id": "wrong:events:str",
+      "input": {
+        "attempt_id": "example",
+        "events": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "events"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:events:list",
+      "input": {
+        "attempt_id": "example",
+        "events": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "events"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:events:dict",
+      "input": {
+        "attempt_id": "example",
+        "events": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "events"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ge:events",
+      "input": {
+        "attempt_id": "example",
+        "events": 0
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "ge": 1
+            },
+            "input": 0,
+            "loc": [
+              "events"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "type": "greater_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "le:events",
+      "input": {
+        "attempt_id": "example",
+        "events": 501
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 500
+            },
+            "input": 501,
+            "loc": [
+              "events"
+            ],
+            "msg": "Input should be less than or equal to 500",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "attempt_id": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {
+          "attempt_id": "example",
+          "events": 50
+        }
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "run_getArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of run_getArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "run_get"
+}

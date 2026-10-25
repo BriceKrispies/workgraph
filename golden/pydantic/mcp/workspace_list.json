@@ -1,0 +1,40 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {}
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "ok": {}
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "workspace_listArguments"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of workspace_listArguments",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "workspace_list"
+}

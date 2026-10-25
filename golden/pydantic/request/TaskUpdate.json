@@ -1,0 +1,4178 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:none",
+      "input": {
+        "expected_version": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:int",
+      "input": {
+        "expected_version": 12
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 12,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:float",
+      "input": {
+        "expected_version": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, got a number with a fractional part",
+            "type": "int_from_float"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:bool",
+      "input": {
+        "expected_version": true
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 1,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:expected_version:str",
+      "input": {
+        "expected_version": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:list",
+      "input": {
+        "expected_version": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:expected_version:dict",
+      "input": {
+        "expected_version": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer",
+            "type": "int_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:none",
+      "input": {
+        "title": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:title:int",
+      "input": {
+        "title": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:float",
+      "input": {
+        "title": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:bool",
+      "input": {
+        "title": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:str",
+      "input": {
+        "title": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:title:list",
+      "input": {
+        "title": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:title:dict",
+      "input": {
+        "title": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "title"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:title",
+      "input": {
+        "title": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "min_length:title",
+      "input": {
+        "title": ""
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "title"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "max_length:title",
+      "input": {
+        "title": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "max_length": 500
+            },
+            "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "loc": [
+              "title"
+            ],
+            "msg": "String should have at most 500 characters",
+            "type": "string_too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:none",
+      "input": {
+        "description": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:description:int",
+      "input": {
+        "description": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:float",
+      "input": {
+        "description": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:bool",
+      "input": {
+        "description": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:str",
+      "input": {
+        "description": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": "x",
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:description:list",
+      "input": {
+        "description": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:description:dict",
+      "input": {
+        "description": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "description"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:description",
+      "input": {
+        "description": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": "Not valid!",
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:none",
+      "input": {
+        "acceptance_criteria": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:int",
+      "input": {
+        "acceptance_criteria": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:float",
+      "input": {
+        "acceptance_criteria": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:bool",
+      "input": {
+        "acceptance_criteria": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:str",
+      "input": {
+        "acceptance_criteria": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:list",
+      "input": {
+        "acceptance_criteria": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [
+            "a"
+          ],
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:acceptance_criteria:dict",
+      "input": {
+        "acceptance_criteria": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "acceptance_criteria"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:acceptance_criteria",
+      "input": {
+        "acceptance_criteria": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": [
+            "Not valid!"
+          ],
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:status:none",
+      "input": {
+        "status": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:status:int",
+      "input": {
+        "status": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": 12,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:float",
+      "input": {
+        "status": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": 1.5,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:bool",
+      "input": {
+        "status": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": true,
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:str",
+      "input": {
+        "status": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": "x",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:list",
+      "input": {
+        "status": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:status:dict",
+      "input": {
+        "status": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:status",
+      "input": {
+        "status": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "status"
+            ],
+            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:none",
+      "input": {
+        "priority": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:priority:int",
+      "input": {
+        "priority": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": 12,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:float",
+      "input": {
+        "priority": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": 1.5,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:bool",
+      "input": {
+        "priority": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": true,
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:str",
+      "input": {
+        "priority": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "x",
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:list",
+      "input": {
+        "priority": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:priority:dict",
+      "input": {
+        "priority": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:priority",
+      "input": {
+        "priority": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'critical', 'high', 'medium' or 'low'"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "priority"
+            ],
+            "msg": "Input should be 'critical', 'high', 'medium' or 'low'",
+            "type": "enum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:none",
+      "input": {
+        "tags": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:int",
+      "input": {
+        "tags": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:float",
+      "input": {
+        "tags": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:bool",
+      "input": {
+        "tags": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:str",
+      "input": {
+        "tags": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:tags:list",
+      "input": {
+        "tags": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": [
+            "a"
+          ],
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:tags:dict",
+      "input": {
+        "tags": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:tags",
+      "input": {
+        "tags": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid tag 'Not valid!'"
+            },
+            "input": [
+              "Not valid!"
+            ],
+            "loc": [
+              "tags"
+            ],
+            "msg": "Value error, invalid tag 'Not valid!'",
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:none",
+      "input": {
+        "add_tags": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:add_tags:int",
+      "input": {
+        "add_tags": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:float",
+      "input": {
+        "add_tags": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:bool",
+      "input": {
+        "add_tags": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:str",
+      "input": {
+        "add_tags": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_tags:list",
+      "input": {
+        "add_tags": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": [
+            "a"
+          ],
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:add_tags:dict",
+      "input": {
+        "add_tags": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:add_tags",
+      "input": {
+        "add_tags": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid tag 'Not valid!'"
+            },
+            "input": [
+              "Not valid!"
+            ],
+            "loc": [
+              "add_tags"
+            ],
+            "msg": "Value error, invalid tag 'Not valid!'",
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:remove_tags:none",
+      "input": {
+        "remove_tags": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:remove_tags:int",
+      "input": {
+        "remove_tags": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:remove_tags:float",
+      "input": {
+        "remove_tags": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:remove_tags:bool",
+      "input": {
+        "remove_tags": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:remove_tags:str",
+      "input": {
+        "remove_tags": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:remove_tags:list",
+      "input": {
+        "remove_tags": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": [
+            "a"
+          ],
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:remove_tags:dict",
+      "input": {
+        "remove_tags": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:remove_tags",
+      "input": {
+        "remove_tags": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid tag 'Not valid!'"
+            },
+            "input": [
+              "Not valid!"
+            ],
+            "loc": [
+              "remove_tags"
+            ],
+            "msg": "Value error, invalid tag 'Not valid!'",
+            "type": "value_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:none",
+      "input": {
+        "files": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:files:int",
+      "input": {
+        "files": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:float",
+      "input": {
+        "files": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:bool",
+      "input": {
+        "files": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:str",
+      "input": {
+        "files": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:list",
+      "input": {
+        "files": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "a",
+            "loc": [
+              "files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:files:dict",
+      "input": {
+        "files": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:files",
+      "input": {
+        "files": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:none",
+      "input": {
+        "add_files": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:add_files:int",
+      "input": {
+        "add_files": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:float",
+      "input": {
+        "add_files": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:bool",
+      "input": {
+        "add_files": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:str",
+      "input": {
+        "add_files": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:list",
+      "input": {
+        "add_files": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "a",
+            "loc": [
+              "add_files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:add_files:dict",
+      "input": {
+        "add_files": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "add_files"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:add_files",
+      "input": {
+        "add_files": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskFileIn"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "add_files",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of TaskFileIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:none",
+      "input": {
+        "projects": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:projects:int",
+      "input": {
+        "projects": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:float",
+      "input": {
+        "projects": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:bool",
+      "input": {
+        "projects": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:str",
+      "input": {
+        "projects": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:projects:list",
+      "input": {
+        "projects": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": [
+            "a"
+          ],
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:projects:dict",
+      "input": {
+        "projects": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "projects"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:projects",
+      "input": {
+        "projects": [
+          "Not valid!"
+        ]
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": [
+            "Not valid!"
+          ],
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:none",
+      "input": {
+        "parent": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:int",
+      "input": {
+        "parent": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:float",
+      "input": {
+        "parent": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:bool",
+      "input": {
+        "parent": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:str",
+      "input": {
+        "parent": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": "x",
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:parent:list",
+      "input": {
+        "parent": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:parent:dict",
+      "input": {
+        "parent": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "parent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:parent",
+      "input": {
+        "parent": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": "Not valid!",
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:clear_parent:none",
+      "input": {
+        "clear_parent": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "clear_parent"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:clear_parent:int",
+      "input": {
+        "clear_parent": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "clear_parent"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:clear_parent:float",
+      "input": {
+        "clear_parent": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "clear_parent"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:clear_parent:bool",
+      "input": {
+        "clear_parent": true
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": true,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:clear_parent:str",
+      "input": {
+        "clear_parent": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "clear_parent"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:clear_parent:list",
+      "input": {
+        "clear_parent": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "clear_parent"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:clear_parent:dict",
+      "input": {
+        "clear_parent": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "clear_parent"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:none",
+      "input": {
+        "assignee": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:assignee:int",
+      "input": {
+        "assignee": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:float",
+      "input": {
+        "assignee": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:bool",
+      "input": {
+        "assignee": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:str",
+      "input": {
+        "assignee": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": "x",
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:assignee:list",
+      "input": {
+        "assignee": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assignee:dict",
+      "input": {
+        "assignee": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "assignee"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:assignee",
+      "input": {
+        "assignee": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": "Not valid!",
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:none",
+      "input": {
+        "assigned_agent": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:int",
+      "input": {
+        "assigned_agent": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:float",
+      "input": {
+        "assigned_agent": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:bool",
+      "input": {
+        "assigned_agent": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:str",
+      "input": {
+        "assigned_agent": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": "x",
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:list",
+      "input": {
+        "assigned_agent": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:assigned_agent:dict",
+      "input": {
+        "assigned_agent": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "assigned_agent"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:assigned_agent",
+      "input": {
+        "assigned_agent": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": "Not valid!",
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:auto_execute:none",
+      "input": {
+        "auto_execute": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:auto_execute:int",
+      "input": {
+        "auto_execute": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:auto_execute:float",
+      "input": {
+        "auto_execute": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:auto_execute:bool",
+      "input": {
+        "auto_execute": true
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": true,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:auto_execute:str",
+      "input": {
+        "auto_execute": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:auto_execute:list",
+      "input": {
+        "auto_execute": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:auto_execute:dict",
+      "input": {
+        "auto_execute": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "auto_execute"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:due_at:none",
+      "input": {
+        "due_at": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:due_at:int",
+      "input": {
+        "due_at": 12
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": "1970-01-01T00:00:12Z",
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:due_at:float",
+      "input": {
+        "due_at": 1.5
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": "1970-01-01T00:00:01.500000Z",
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:due_at:bool",
+      "input": {
+        "due_at": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:due_at:str",
+      "input": {
+        "due_at": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "input is too short"
+            },
+            "input": "x",
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime or date, input is too short",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:due_at:list",
+      "input": {
+        "due_at": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:due_at:dict",
+      "input": {
+        "due_at": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:due_at",
+      "input": {
+        "due_at": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid character in year"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "due_at"
+            ],
+            "msg": "Input should be a valid datetime or date, invalid character in year",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:none",
+      "input": {
+        "scheduled_at": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:int",
+      "input": {
+        "scheduled_at": 12
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": "1970-01-01T00:00:12Z",
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:float",
+      "input": {
+        "scheduled_at": 1.5
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": "1970-01-01T00:00:01.500000Z",
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:bool",
+      "input": {
+        "scheduled_at": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:str",
+      "input": {
+        "scheduled_at": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "input is too short"
+            },
+            "input": "x",
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime or date, input is too short",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:list",
+      "input": {
+        "scheduled_at": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:scheduled_at:dict",
+      "input": {
+        "scheduled_at": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime",
+            "type": "datetime_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:scheduled_at",
+      "input": {
+        "scheduled_at": "Not valid!"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "error": "invalid character in year"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "scheduled_at"
+            ],
+            "msg": "Input should be a valid datetime or date, invalid character in year",
+            "type": "datetime_from_date_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:none",
+      "input": {
+        "estimated_effort": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:int",
+      "input": {
+        "estimated_effort": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": 12,
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:float",
+      "input": {
+        "estimated_effort": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": 1.5,
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:bool",
+      "input": {
+        "estimated_effort": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": true,
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:str",
+      "input": {
+        "estimated_effort": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": "x",
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:list",
+      "input": {
+        "estimated_effort": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "EffortEstimate"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "estimated_effort"
+            ],
+            "msg": "Input should be a valid dictionary or instance of EffortEstimate",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:estimated_effort:dict",
+      "input": {
+        "estimated_effort": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "estimated_effort",
+              "value"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          },
+          {
+            "input": 1,
+            "loc": [
+              "estimated_effort",
+              "k"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:none",
+      "input": {
+        "metadata": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:metadata:int",
+      "input": {
+        "metadata": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:float",
+      "input": {
+        "metadata": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:bool",
+      "input": {
+        "metadata": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:str",
+      "input": {
+        "metadata": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:list",
+      "input": {
+        "metadata": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "metadata"
+            ],
+            "msg": "Input should be a valid dictionary",
+            "type": "dict_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:metadata:dict",
+      "input": {
+        "metadata": {
+          "k": 1
+        }
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": {
+            "k": 1
+          },
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:reason:none",
+      "input": {
+        "reason": null
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:reason:int",
+      "input": {
+        "reason": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:float",
+      "input": {
+        "reason": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:bool",
+      "input": {
+        "reason": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:str",
+      "input": {
+        "reason": "x"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": "x",
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "wrong:reason:list",
+      "input": {
+        "reason": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:dict",
+      "input": {
+        "reason": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:reason",
+      "input": {
+        "reason": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": null,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": "Not valid!",
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "TaskUpdate"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of TaskUpdate",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "TaskUpdate"
+}

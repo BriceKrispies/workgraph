@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, NoReturn, ParamSpec, TypeVar
 
 import typer
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from rich.console import Console
 from rich.table import Table
 
@@ -149,8 +149,21 @@ def fail(message: str, code: int = 1, details: dict[str, Any] | None = None) -> 
     raise typer.Exit(code)
 
 
+def _from_pydantic(exc: ValidationError) -> ValidationFailed:
+    """Report a pydantic model rejecting CLI input as a ``validation_failed`` error."""
+    errors = exc.errors(include_url=False)
+    summary = "; ".join(
+        f"{'.'.join(str(part) for part in err['loc']) or 'input'}: {err['msg']}" for err in errors
+    )
+    return ValidationFailed(f"invalid input: {summary}", details={"errors": errors})
+
+
 def handle_errors[**P, R](fn: Callable[P, R]) -> Callable[P, R]:
-    """Translate domain exceptions into consistent output and exit codes."""
+    """Translate domain exceptions into consistent output and exit codes.
+
+    Pydantic ``ValidationError`` raised while a command builds a filter or request model is
+    mapped to ``ValidationFailed`` so every command reports it the same way (exit code 2).
+    """
 
     @wraps(fn)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -158,7 +171,8 @@ def handle_errors[**P, R](fn: Callable[P, R]) -> Callable[P, R]:
             return fn(*args, **kwargs)
         except typer.Exit:
             raise
-        except WorkgraphError as exc:
+        except (WorkgraphError, ValidationError) as caught:
+            exc = _from_pydantic(caught) if isinstance(caught, ValidationError) else caught
             code = next((c for cls, c in EXIT_CODES if isinstance(exc, cls)), 1)
             if STATE.json:
                 sys.stdout.write(json.dumps({"error": exc.to_dict()}, default=str) + "\n")

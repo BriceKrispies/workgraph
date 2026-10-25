@@ -11,10 +11,12 @@
       },
       {
         "document_toml": "schema_version = \"two\"\n\n[server]\nhost = \"127.0.0.1\"\nport = 8765\nallow_non_loopback = false\nlan = true\nlan_networks = []\n\n[llm]\nauto_classify = true\nauto_embed = true\n\n[llm.providers.ollama]\ntype = \"ollama\"\nbase_url = \"http://127.0.0.1:11434\"\ntimeout_seconds = 120.0\nmax_retries = 2\nbackoff_seconds = 1.0\n\n[llm.providers.heuristic]\ntype = \"heuristic\"\n\n[llm.classification]\nprovider = \"ollama\"\nmodel = \"qwen2.5:7b-instruct\"\n\n[llm.embeddings]\nprovider = \"ollama\"\nmodel = \"nomic-embed-text\"\n\n[llm.summarization]\nprovider = \"ollama\"\nmodel = \"qwen2.5:7b-instruct\"\n\n[agents.claude_code]\ntype = \"claude_code\"\nexecutable = \"claude\"\npermission_mode = \"acceptEdits\"\nallowed_tools = []\ntimeout_seconds = 3600.0\nextra_args = []\n\n[execution]\nenabled = false\ndefault_agent = \"claude_code\"\nmax_concurrent_runs = 2\nmax_attempts_per_task = 3\nauto_schedule = false\nisolation = \"worktree\"\nallow_push = false\nallow_merge = false\n\n[jobs]\nworker_concurrency = 4\ngpu_concurrency = 1\nper_agent_concurrency = 2\nper_repository_concurrency = 1\nverify_concurrency = 1\nlease_seconds = 60\ndefault_max_attempts = 5\n\n[stacks]\nauto_accept = true\n\n[verification]\nauto_accept = true\n\n[retention]\ntelemetry_payload_days = 30\nrun_log_days = 90\n\n[claude]\ncapture_tool_payloads = false\nmax_payload_chars = 4000\n\n[automation]\nmax_depth = 3\n\n[trackers]\n",
+        "errors": [],
         "input": "two",
+        "kind": "invalid_toml",
         "label": "invalid",
-        "outcome": "exception",
-        "type": "ValueError"
+        "outcome": "error",
+        "problems": 1
       }
     ],
     "contract_allowed": null,

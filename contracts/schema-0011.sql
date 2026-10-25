@@ -1,4 +1,4 @@
--- sqlite_master of a database migrated to head 0010.
+-- sqlite_master of a database migrated to head 0011.
 -- Automatic indexes have no SQL text and are listed as comments.
 
 CREATE INDEX ix_agent_attempts_session_id ON agent_attempts (session_id);
@@ -160,6 +160,12 @@ CREATE INDEX ix_task_change_surfaces_task_id ON task_change_surfaces (task_id);
 CREATE INDEX ix_task_comments_attempt_id ON task_comments (attempt_id);
 
 CREATE INDEX ix_task_comments_task_id ON task_comments (task_id);
+
+CREATE INDEX ix_task_decisions_status ON task_decisions (status);
+
+CREATE INDEX ix_task_decisions_task_id ON task_decisions (task_id);
+
+CREATE INDEX ix_task_decisions_workspace_id ON task_decisions (workspace_id);
 
 CREATE INDEX ix_task_dependencies_depends_on_id ON task_dependencies (depends_on_id);
 
@@ -366,6 +372,8 @@ CREATE INDEX ix_verification_runs_workspace_id ON verification_runs (workspace_i
 -- automatic index sqlite_autoindex_task_change_surfaces_2 on task_change_surfaces
 
 -- automatic index sqlite_autoindex_task_comments_1 on task_comments
+
+-- automatic index sqlite_autoindex_task_decisions_1 on task_decisions
 
 -- automatic index sqlite_autoindex_task_dependencies_1 on task_dependencies
 
@@ -1300,6 +1308,27 @@ CREATE TABLE task_comments (
 	created_at VARCHAR(32) NOT NULL,
 	CONSTRAINT fk_task_comments_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,
 	CONSTRAINT pk_task_comments PRIMARY KEY (id)
+);
+
+CREATE TABLE task_decisions (
+	id VARCHAR NOT NULL,
+	workspace_id VARCHAR NOT NULL,
+	task_id VARCHAR NOT NULL,
+	question TEXT NOT NULL,
+	options TEXT NOT NULL,
+	status VARCHAR(16) NOT NULL,
+	chosen_option_id VARCHAR(64),
+	other_text TEXT,
+	note TEXT,
+	decided_by VARCHAR(200),
+	decided_at VARCHAR(32),
+	created_by VARCHAR(200) NOT NULL,
+	created_at VARCHAR(32) NOT NULL,
+	updated_at VARCHAR(32) NOT NULL,
+	version INTEGER NOT NULL,
+	CONSTRAINT fk_task_decisions_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,
+	CONSTRAINT fk_task_decisions_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,
+	CONSTRAINT pk_task_decisions PRIMARY KEY (id)
 );
 
 CREATE TABLE task_dependencies (

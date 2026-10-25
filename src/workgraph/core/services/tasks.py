@@ -718,9 +718,30 @@ class TaskService(Service):
     ) -> list[str]:
         """Move every backlog task whose dependencies are all accepted to ready, in one transaction.
 
+        Returns the keys only; see ``promote_ready_report`` for per-project counts.
+        """
+        return self.promote_ready_report(ctx, workspace, tags=tags, project=project, dry_run=dry_run)[
+            "promoted"
+        ]
+
+    def promote_ready_report(
+        self,
+        ctx: RequestContext,
+        workspace: str | None,
+        *,
+        tags: list[str] | None = None,
+        project: str | None = None,
+        dry_run: bool = False,
+    ) -> dict[str, Any]:
+        """Promote like ``promote_ready`` and report what moved, with a count per project.
+
         Skipped: tasks with children (a parent is rolled up, not claimed), tasks tagged ``parked``, and
-        archived tasks. ``tags`` and ``project`` narrow the candidates. ``dry_run`` returns the keys
-        that would move and writes nothing.
+        archived tasks. ``tags`` and ``project`` narrow the candidates; with neither, every dependency-free
+        backlog task in the workspace is a candidate, so user-facing entry points should require a scope.
+        ``dry_run`` reports what would move and writes nothing.
+
+        Returns ``{"promoted": [keys], "by_project": {slug: count}}``. A task in several projects counts
+        once under each; a task in no project counts under ``"(none)"``.
         """
         require(ctx, Permission.TASK_WRITE)
         with self.db.session(write=not dry_run) as session:
@@ -732,7 +753,28 @@ class TaskService(Service):
                 for task in promotable:
                     self._transition(session, ctx, task, TaskStatus.READY, reason="dependencies accepted")
                     index_task(session, task.id)
-            return [task.key for task in promotable]
+            return {
+                "promoted": [task.key for task in promotable],
+                "by_project": self._promoted_by_project(session, [task.id for task in promotable]),
+            }
+
+    @staticmethod
+    def _promoted_by_project(session: Session, task_ids: list[str]) -> dict[str, int]:
+        """Count tasks per project slug; tasks without a project count under ``"(none)"``."""
+        if not task_ids:
+            return {}
+        slugs: dict[str, list[str]] = defaultdict(list)
+        for task_id, slug in session.execute(
+            select(TaskProject.task_id, Project.slug)
+            .join(Project, Project.id == TaskProject.project_id)
+            .where(TaskProject.task_id.in_(task_ids))
+        ):
+            slugs[task_id].append(slug)
+        counts: dict[str, int] = defaultdict(int)
+        for task_id in task_ids:
+            for slug in slugs.get(task_id) or ["(none)"]:
+                counts[slug] += 1
+        return dict(sorted(counts.items()))
 
     def promote_dependents(self, ctx: RequestContext, workspace: str | None, ref: str) -> list[str]:
         """Move the backlog dependents of ``ref`` whose dependencies are now all accepted to ready.

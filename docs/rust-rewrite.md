@@ -15,10 +15,10 @@ work is ordered by dependency.
 
 ## 0. Summary
 
-* **What must not change.** 186 CLI commands under 31 top-level names, 8 exit codes, the `--json`
-  and human output; 66 MCP tools, 2 resources and 5 resource templates with their exact JSON
-  Schemas; 124 HTTP operations over 109 paths, 73 component schemas and 7 routes outside the OpenAPI
-  document (SPA, pairing, `/mcp/`, Swagger); a 72-table SQLite schema at Alembic revision `0010`, with
+* **What must not change.** 192 CLI commands under 32 top-level names, 8 exit codes, the `--json`
+  and human output; 69 MCP tools, 2 resources and 5 resource templates with their exact JSON
+  Schemas; 130 HTTP operations over 114 paths, 81 component schemas and 7 routes outside the OpenAPI
+  document (SPA, pairing, `/mcp/`, Swagger); a 73-table SQLite schema at Alembic revision `0011`, with
   existing databases opening unchanged; 38 configuration keys and 3 named-table families in TOML
   files; the environment variables Workgraph reads (E01-E13) and sets for children (E20-E24); the
   hook, agent, git and verification protocols. The inventory gives each of them an id.
@@ -48,8 +48,9 @@ work is ordered by dependency.
   canonical database dump after every step; the existing Python interface tests run against the Rust
   binary through a harness switch; and database round trips in both directions plus migration from
   every revision. Parity means zero differences outside a reviewed allowlist (section 3.1).
-* **Cut-over.** Both implementations share one database during the rewrite, so the schema is frozen
-  at `0010` until Python is retired. The Rust binary is installed beside the Python one as
+* **Cut-over.** Both implementations share one database during the rewrite, so a schema change
+  lands in both in one stack: the Alembic revision and its Rust port (D9; `0011`, structured task
+  decisions, is the first). The Rust binary is installed beside the Python one as
   `workgraph-rs`, then replaces `~/.local/bin/workgraph.exe` at the same path, so the MCP
   registration and the Claude Code hooks keep working. Rollback is reinstalling the Python tool.
   Python is deleted once the corpus has zero unexplained differences and the user ends the soak.
@@ -89,9 +90,9 @@ Non-goals:
 
 | Ids | Contract |
 | --- | --- |
-| C001-C185 | CLI leaf commands, arguments and options |
-| M01-M66 | MCP tools, plus the resource table |
-| H001-H124, X1-X7 | HTTP operations and routes outside OpenAPI |
+| C001-C192 | CLI leaf commands, arguments and options |
+| M01-M69 | MCP tools, plus the resource table |
+| H001-H130, X1-X7 | HTTP operations and routes outside OpenAPI |
 | sections 13.4, 11 | database tables, indexes, triggers, migration chain |
 | section 13.5 | configuration keys and typed sub-tables |
 | E01-E24 | environment variables |
@@ -200,7 +201,7 @@ binary then reads, so every interface test is also a Python-writes, Rust-reads t
 
 **L5, data compatibility.**
 
-* Fixture databases at every revision `0001` to `0010`, populated by Python (CF-05). The Rust
+* Fixture databases at every revision `0001` to `0011`, populated by Python (CF-05). The Rust
   binary migrates each to head; the canonical dump and `sqlite_master` must equal Python's result
   for the same file.
 * Python writes, Rust reads: the full corpus run with Python, then every read command and resource
@@ -266,7 +267,7 @@ needs a browser and is covered by its Python test only on machines that have one
 
 noether's pure-core-v2 folds a log of records into an in-memory world value per tenant and steps it.
 Workgraph cannot do that without changing contracts: its state of record is a relational SQLite
-database that the Python version must keep reading and writing during the rewrite, with 72 tables,
+database that the Python version must keep reading and writing during the rewrite, with 73 tables,
 an append-only event log that does not contain every field, and data (commits, telemetry) that is
 far larger than any one command needs. So the unit of purity here is **one decision over one slice**.
 
@@ -456,12 +457,13 @@ banned_calls = ["OffsetDateTime::now_utc", "SystemTime::now", "Instant::now", "U
   connection per thread, no pool.
 * **Migrations.** The runner reads and writes Alembic's `alembic_version` table with the same
   revision ids, so either implementation can open a database the other migrated. Revisions `0001` to
-  `0010` are ported as SQL whose resulting `sqlite_master` text equals the snapshot byte for byte
+  `0011` are ported as SQL whose resulting `sqlite_master` text equals the snapshot byte for byte
   (CF-05 records it per revision), and `0009`'s data migration is ported as code. Downgrades are not
   ported: no command performs one.
 * **Row codecs.** Timestamps as O11, JSON columns as O10 (sorted keys, compact), booleans as SQLite
   integers, enums as their string values.
-* **Schema freeze.** No migration `0011` is added while both implementations are in use (D9).
+* **Schema changes.** A migration added while both implementations are in use is ported to `wg-store`
+  in the same stack, with its `schema-NNNN.sql` snapshot and fixture database (D9).
 
 ### 4.8 HTTP server
 
@@ -564,9 +566,8 @@ and DV3 records the missing cache file.
 
 ### 5.1 Coexistence rules
 
-* **One database.** Both binaries open the same `%LOCALAPPDATA%\workgraph` home. The schema stays at
-  `0010` until Python is retired (D9). If a schema change cannot wait, it is implemented in both
-  versions in one stack.
+* **One database.** Both binaries open the same `%LOCALAPPDATA%\workgraph` home. A schema change is
+  implemented in both versions in one stack (D9); `0011` (`task_decisions`) is the first.
 * **Shared queue.** Job rows, payloads, idempotency keys, resource keys and leases have the same
   shapes in both, so a Python worker and a Rust worker can drain one queue (VF-04). Hook spool
   records are readable by both.
@@ -667,7 +668,7 @@ contract snapshots stay as the reference the Rust tests compare against.
 | D6 | The OpenAPI document, the MCP descriptors and the CLI tree are served or checked from the Python snapshots, not regenerated from Rust types |
 | D7 | Parity is measured by a Rust differential runner over a language-neutral scenario corpus, plus golden vectors, plus the Python interface tests in Rust mode |
 | D8 | Normalised comparison with consistent placeholders; timestamps compared by rank |
-| D9 | Schema frozen at `0010` while both implementations are in use; Alembic's version table kept |
+| D9 | Schema changes while both implementations are in use land in both in one stack (user decision 2026-10-25, first: `0011` task decisions); Alembic's version table kept |
 | D10 | Same install path for the switch; rollback by reinstalling the Python tool |
 | D11 | The Python service-level tests are replaced by scenarios and golden vectors, not translated line by line into Rust tests |
 | D12 | Analytics computed in pure Rust instead of DuckDB |
@@ -686,8 +687,8 @@ contract snapshots stay as the reference the Rust tests compare against.
    interface stage (9.8), or allow them with a paired Rust task each time? Recommendation: allow, paired, with the drift
    test as the guard. Also: should a defect found during the rewrite be fixed in both, or reproduced
    in Rust and fixed later?
-4. **Q4 Schema freeze.** Confirm no migration `0011` until Python is retired, or both-implementation
-   migrations when one cannot wait.
+4. **Q4 Schema freeze.** Decided 2026-10-25: no freeze; a migration is implemented in both versions
+   in one stack (D9).
 5. **Q5 arch-lint.** Confirm copying it (D4) rather than extracting a crate shared with noether now.
 6. **Q6 Swagger UI.** Keep `/api/docs` byte-identical, including its CDN script tags?
    Recommendation: keep.
@@ -770,9 +771,9 @@ that prints nothing yet. Deps: none.
 
 **CF-01 Contract snapshots and drift test**
 Touches: `tools/contracts/dump.py` (extracts the CLI tree, MCP tools/resources, OpenAPI, `sqlite_master`
-at head, config JSON Schema), `contracts/{cli,mcp,openapi,config-schema}.json`, `contracts/schema-0010.sql`,
+at head, config JSON Schema), `contracts/{cli,mcp,openapi,config-schema}.json`, `contracts/schema-0011.sql`,
 `tests/unit/test_contract_snapshots.py`.
-Accept: counts equal the inventory (186, 66, 2+5, 124/109/73, 72 tables, 207 indexes); the test
+Accept: counts equal the inventory (192, 69, 2+5, 130/114/81, 73 tables, 211 indexes); the test
 passes on `main` and fails when an option is renamed (shown in the task report with a scratch edit
 that is not committed); dump output is deterministic. Deps: none.
 
@@ -825,7 +826,7 @@ module comment; world roots, dependency allowlist and banned calls read from
 `docs/rust-rewrite-contracts.md` from `contracts/`; output equals the committed section. Deps: CF-01.
 
 **CF-03 MCP transcripts**: `tools/contracts/record_mcp.py`, `contracts/mcp/*.jsonl` (section 3.3, stdio
-and Streamable HTTP). Accept: one success and one error per tool M01-M66, the listings, `initialize`,
+and Streamable HTTP). Accept: one success and one error per tool M01-M69, the listings, `initialize`,
 unknown tool, invalid arguments. Deps: CF-01.
 
 **CF-04 HTTP extras**: `tools/contracts/record_http.py`, `contracts/http/*` (section 3.3). Accept:
@@ -833,7 +834,7 @@ X1-X7 recorded in each relevant state; 401, 404 (API and SPA), 405, 421, 422 bod
 SSE sample with a domain event and a queue snapshot. Deps: CF-01.
 
 **CF-05 Schema per revision and fixture databases**: `contracts/schema-0001.sql` to
-`schema-0010.sql`, `golden/db/rev-000N.db` (populated with the demo seed at `0010`, and at each
+`schema-0011.sql`, `golden/db/rev-000N.db` (populated with the demo seed at `0011`, and at each
 earlier revision with rows in every table that exists there), `tools/contracts/dbdump.py` (canonical
 dump: section 3.1 item 4). Deps: CF-01.
 
@@ -1050,7 +1051,7 @@ Python tests did).
 | Id | Crate: scope | Deps | Tier |
 | --- | --- | --- | --- |
 | SH-02 | `wg-store` migrations: runner on `alembic_version`, revision `0001` DDL | SH-01, CF-05 | mid |
-| SH-03 | `wg-store` migrations `0002`-`0010` incl. the `0009` data migration; each CF-05 fixture migrates to a dump and `sqlite_master` equal to Python's | SH-02 | haiku |
+| SH-03 | `wg-store` migrations `0002`-`0011` incl. the `0009` data migration; each CF-05 fixture migrates to a dump and `sqlite_master` equal to Python's | SH-02 | haiku |
 | SH-04 | `wg-store`: tasks, files, tags, links, comments, dependencies, relations, FTS maintenance | SH-01, LIB-04 | haiku |
 | SH-05 | `wg-store`: workspaces, projects, repositories, checkouts, remotes, refs, dependencies | SH-01, LIB-04 | haiku |
 | SH-06 | `wg-store`: attempts, manifests, worktrees, leases, change sets, artifacts | SH-01, LIB-10 | haiku |
@@ -1172,7 +1173,7 @@ The user adopted the recommended answers to the open questions:
 1. `--help` and usage errors keep the same content; clap's layout is acceptable (help text is not parsed by tools).
 2. Human output is UTF-8 everywhere, including when piped on Windows.
 3. Python contracts are frozen during the rewrite. Defect fixes are allowed, each with a paired Rust task, so both versions change together.
-4. The schema is frozen (no migration `0011`) while both versions share a database.
+4. Schema changes are planned in both implementations and land in one stack, not frozen: `0011` (task decisions) is the first (D9).
 5. `arch-lint` is copied into this repository, not shared with noether.
 6. `/api/docs` is served byte-identical, CDN links included.
 7. The one-line Vite output-directory change is acceptable at retirement.

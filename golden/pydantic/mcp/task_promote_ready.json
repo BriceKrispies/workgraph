@@ -6,6 +6,7 @@
       "input": {},
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": null,
           "tags": null,
@@ -20,6 +21,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": null,
           "tags": null,
@@ -108,6 +110,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": null,
           "tags": [
@@ -148,6 +151,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": null,
           "tags": [
@@ -164,6 +168,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": null,
           "tags": null,
@@ -232,6 +237,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": "x",
           "tags": null,
@@ -290,11 +296,143 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": "Not valid!",
           "tags": null,
           "workspace": null
         }
+      }
+    },
+    {
+      "id": "wrong:all:none",
+      "input": {
+        "all": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "all"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:all:int",
+      "input": {
+        "all": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "all"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:all:float",
+      "input": {
+        "all": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "all"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:all:bool",
+      "input": {
+        "all": true
+      },
+      "output": {
+        "ok": {
+          "all": true,
+          "dry_run": false,
+          "project": null,
+          "tags": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:all:str",
+      "input": {
+        "all": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "all"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:all:list",
+      "input": {
+        "all": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "all"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:all:dict",
+      "input": {
+        "all": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "all"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
       }
     },
     {
@@ -358,6 +496,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": true,
           "project": null,
           "tags": null,
@@ -434,6 +573,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": null,
           "tags": null,
@@ -502,6 +642,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": null,
           "tags": null,
@@ -560,6 +701,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": null,
           "tags": null,
@@ -574,6 +716,7 @@
       },
       "output": {
         "ok": {
+          "all": false,
           "dry_run": false,
           "project": null,
           "tags": null,

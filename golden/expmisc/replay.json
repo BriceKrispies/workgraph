@@ -24,6 +24,7 @@
           "poetry.lock",
           "package-lock.json",
           "pnpm-lock.yaml",
+          "bun.lock",
           "**/generated/**",
           "**/tests/**/*.rs",
           "**/tests/**/*.rho",
@@ -66,6 +67,11 @@
           {
             "match": false,
             "path": "test_x.py",
+            "pattern": "bun.lock"
+          },
+          {
+            "match": false,
+            "path": "test_x.py",
             "pattern": "**/generated/**"
           },
           {
@@ -141,6 +147,11 @@
           {
             "match": false,
             "path": "a/b/test_x.py",
+            "pattern": "bun.lock"
+          },
+          {
+            "match": false,
+            "path": "a/b/test_x.py",
             "pattern": "**/generated/**"
           },
           {
@@ -216,6 +227,11 @@
           {
             "match": false,
             "path": "tests/a/b.py",
+            "pattern": "bun.lock"
+          },
+          {
+            "match": false,
+            "path": "tests/a/b.py",
             "pattern": "**/generated/**"
           },
           {
@@ -291,6 +307,11 @@
           {
             "match": false,
             "path": "src/tests/x.rs",
+            "pattern": "bun.lock"
+          },
+          {
+            "match": false,
+            "path": "src/tests/x.rs",
             "pattern": "**/generated/**"
           },
           {
@@ -366,6 +387,11 @@
           {
             "match": false,
             "path": "x/tests/y.rho",
+            "pattern": "bun.lock"
+          },
+          {
+            "match": false,
+            "path": "x/tests/y.rho",
             "pattern": "**/generated/**"
           },
           {
@@ -437,6 +463,11 @@
             "match": false,
             "path": "pkg/foo_tests.rs",
             "pattern": "pnpm-lock.yaml"
+          },
+          {
+            "match": false,
+            "path": "pkg/foo_tests.rs",
+            "pattern": "bun.lock"
           },
           {
             "match": false,
@@ -512,6 +543,11 @@
             "match": false,
             "path": "Cargo.lock",
             "pattern": "pnpm-lock.yaml"
+          },
+          {
+            "match": false,
+            "path": "Cargo.lock",
+            "pattern": "bun.lock"
           },
           {
             "match": false,
@@ -587,6 +623,11 @@
             "match": false,
             "path": "sub/Cargo.lock",
             "pattern": "pnpm-lock.yaml"
+          },
+          {
+            "match": false,
+            "path": "sub/Cargo.lock",
+            "pattern": "bun.lock"
           },
           {
             "match": false,
@@ -662,6 +703,11 @@
             "match": false,
             "path": "a/generated/x.rs",
             "pattern": "pnpm-lock.yaml"
+          },
+          {
+            "match": false,
+            "path": "a/generated/x.rs",
+            "pattern": "bun.lock"
           },
           {
             "match": true,
@@ -737,6 +783,11 @@
             "match": false,
             "path": "a/b/generated/c.py",
             "pattern": "pnpm-lock.yaml"
+          },
+          {
+            "match": false,
+            "path": "a/b/generated/c.py",
+            "pattern": "bun.lock"
           },
           {
             "match": true,
@@ -812,6 +863,11 @@
             "match": false,
             "path": "x.py",
             "pattern": "pnpm-lock.yaml"
+          },
+          {
+            "match": false,
+            "path": "x.py",
+            "pattern": "bun.lock"
           },
           {
             "match": false,
@@ -887,6 +943,11 @@
             "match": false,
             "path": "src/lib.rs",
             "pattern": "pnpm-lock.yaml"
+          },
+          {
+            "match": false,
+            "path": "src/lib.rs",
+            "pattern": "bun.lock"
           },
           {
             "match": false,
@@ -956,6 +1017,7 @@
           "poetry.lock",
           "package-lock.json",
           "pnpm-lock.yaml",
+          "bun.lock",
           "**/generated/**"
         ],
         "source_suffixes": [
@@ -1022,6 +1084,7 @@
           "poetry.lock",
           "package-lock.json",
           "pnpm-lock.yaml",
+          "bun.lock",
           "**/generated/**"
         ],
         "source_suffixes": [
@@ -1088,6 +1151,7 @@
           "poetry.lock",
           "package-lock.json",
           "pnpm-lock.yaml",
+          "bun.lock",
           "**/generated/**"
         ],
         "source_suffixes": [
@@ -1158,6 +1222,7 @@
           "poetry.lock",
           "package-lock.json",
           "pnpm-lock.yaml",
+          "bun.lock",
           "**/generated/**"
         ],
         "source_suffixes": [],

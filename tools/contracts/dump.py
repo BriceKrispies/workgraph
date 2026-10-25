@@ -10,7 +10,7 @@ Writes five files under ``contracts/``:
                          ``workgraph.mcp.server.build_server``.
 * ``openapi.json``       the FastAPI OpenAPI document of ``workgraph.api.app.create_app``.
 * ``config-schema.json`` the JSON Schema of ``workgraph.config.settings.GlobalConfig``.
-* ``schema-0010.sql``    ``sqlite_master`` of a database migrated to head ``0010``.
+* ``schema-0011.sql``    ``sqlite_master`` of a database migrated to head ``0011``.
 
 Usage::
 
@@ -37,7 +37,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACTS_DIR = ROOT / "contracts"
 
-SNAPSHOT_NAMES = ("cli.json", "mcp.json", "openapi.json", "config-schema.json", "schema-0010.sql")
+SNAPSHOT_NAMES = ("cli.json", "mcp.json", "openapi.json", "config-schema.json", "schema-0011.sql")
 
 
 def _json_bytes(data: Any) -> bytes:
@@ -194,7 +194,7 @@ def _schema_snapshot(database_file: Path) -> bytes:
     finally:
         conn.close()
     lines = [
-        "-- sqlite_master of a database migrated to head 0010.",
+        "-- sqlite_master of a database migrated to head 0011.",
         "-- Automatic indexes have no SQL text and are listed as comments.",
         "",
     ]
@@ -294,7 +294,7 @@ def build_snapshots() -> dict[str, bytes]:
             "mcp.json": _json_bytes(mcp),
             "openapi.json": _json_bytes(openapi),
             "config-schema.json": _json_bytes(_config_snapshot()),
-            "schema-0010.sql": schema_sql,
+            "schema-0011.sql": schema_sql,
         }
 
 

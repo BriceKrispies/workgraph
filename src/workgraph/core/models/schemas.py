@@ -490,6 +490,73 @@ class CommentOut(Schema):
     created_at: datetime
 
 
+DecisionStatus = Literal["open", "decided", "withdrawn"]
+
+
+class DecisionOptionIn(InputSchema):
+    """One option on offer. ``id`` is a short slug unique within the decision; omitted, it is "a", "b", ..."""
+
+    id: str | None = Field(default=None, min_length=1, max_length=64, pattern=r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+    label: str = Field(min_length=1, max_length=500)
+    detail: str = Field(default="", max_length=5000)
+    recommended: bool = False
+
+
+class DecisionRequest(InputSchema):
+    question: str = Field(min_length=1, max_length=5000)
+    options: list[DecisionOptionIn] = Field(default_factory=list, max_length=26)
+
+
+class DecisionChoose(InputSchema):
+    """Exactly one of ``option_id`` and ``other_text``."""
+
+    option_id: str | None = None
+    other_text: str | None = Field(default=None, max_length=20_000)
+    note: str | None = Field(default=None, max_length=20_000)
+
+
+class DecisionWithdraw(InputSchema):
+    reason: str | None = Field(default=None, max_length=2000)
+
+
+class DecisionOptionOut(Schema):
+    id: str
+    label: str
+    detail: str = ""
+    recommended: bool = False
+
+
+class DecisionOut(Schema):
+    id: str
+    task_id: str
+    task_key: str
+    question: str
+    options: list[DecisionOptionOut]
+    status: str
+    chosen_option_id: str | None
+    other_text: str | None
+    note: str | None
+    decided_by: str | None
+    decided_at: datetime | None
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+    version: int
+
+
+class DecisionTaskOut(Schema):
+    key: str
+    title: str
+    status: str
+    priority: str
+    tags: list[str]
+    description: str
+
+
+class DecisionWithTaskOut(DecisionOut):
+    task: DecisionTaskOut
+
+
 class TaskRollup(Schema):
     total_descendants: int
     by_status: dict[str, int]

@@ -59,6 +59,7 @@ def _register_optional_groups() -> None:
         automation,
         claude,
         data,
+        decisions,
         demo,
         experiments,
         gitcmd,
@@ -74,6 +75,7 @@ def _register_optional_groups() -> None:
     app.add_typer(agents.agent_app, name="agent")
     app.add_typer(agents.run_app, name="run")
     app.add_typer(agents.verify_app, name="verify")
+    app.add_typer(decisions.decision_app, name="decision")
     app.add_typer(jobs.worker_app, name="worker")
     app.add_typer(jobs.job_app, name="job")
     app.add_typer(gitcmd.git_app, name="git")

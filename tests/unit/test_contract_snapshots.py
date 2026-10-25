@@ -19,18 +19,18 @@ ROOT = Path(__file__).resolve().parents[2]
 CONTRACTS_DIR = ROOT / "contracts"
 DUMP_PATH = ROOT / "tools" / "contracts" / "dump.py"
 
-# Counts measured at 5aecab8 and recorded in docs/rust-rewrite-contracts.md (Counts table).
-CLI_LEAF_COMMANDS = 186
-CLI_TOP_LEVEL_NAMES = 31
-MCP_TOOLS = 66
+# Counts measured at eb7a133 and recorded in docs/rust-rewrite-contracts.md (Counts table).
+CLI_LEAF_COMMANDS = 192
+CLI_TOP_LEVEL_NAMES = 32
+MCP_TOOLS = 69
 MCP_STATIC_RESOURCES = 2
 MCP_RESOURCE_TEMPLATES = 5
-OPENAPI_OPERATIONS = 124
-OPENAPI_PATHS = 109
-OPENAPI_SCHEMAS = 73
-DB_TABLES = 72
-DB_INDEXES = 207
-DB_AUTOMATIC_INDEXES = 103
+OPENAPI_OPERATIONS = 130
+OPENAPI_PATHS = 114
+OPENAPI_SCHEMAS = 81
+DB_TABLES = 73
+DB_INDEXES = 211
+DB_AUTOMATIC_INDEXES = 104
 DB_TRIGGERS = 2
 
 
@@ -64,7 +64,7 @@ def test_snapshot_files_exist(dump: ModuleType) -> None:
 
 
 @pytest.mark.parametrize(
-    "name", ["cli.json", "mcp.json", "openapi.json", "config-schema.json", "schema-0010.sql"]
+    "name", ["cli.json", "mcp.json", "openapi.json", "config-schema.json", "schema-0011.sql"]
 )
 def test_committed_snapshot_matches_python_code(built: dict[str, bytes], name: str) -> None:
     assert built[name] == _committed(name), (
@@ -105,7 +105,7 @@ def test_openapi_inventory_counts(built: dict[str, bytes]) -> None:
 
 
 def test_database_inventory_counts(built: dict[str, bytes]) -> None:
-    text = built["schema-0010.sql"].decode("utf-8")
+    text = built["schema-0011.sql"].decode("utf-8")
     tables = len(re.findall(r"^CREATE (?:VIRTUAL )?TABLE ", text, re.MULTILINE))
     indexes = len(re.findall(r"^(?:CREATE (?:UNIQUE )?INDEX |-- automatic index )", text, re.MULTILINE))
     automatic = len(re.findall(r"^-- automatic index ", text, re.MULTILINE))

@@ -36,6 +36,7 @@ from workgraph.core.models.schemas import (
     AttemptCreate,
     ClaimRequest,
     CommentCreate,
+    DecisionOptionIn,
     ProgressReport,
     RelationCreate,
     RepositoryRegister,
@@ -562,17 +563,23 @@ def build_server(
     @tool(
         "task_promote_ready",
         "Move backlog tasks whose dependencies are all accepted to ready, in one step. Skips tasks with "
-        "children and tasks tagged parked. Optional tags and project narrow the candidates; dry_run lists "
-        "the keys that would move without changing anything.",
+        "children and tasks tagged parked. A scope is required: give tags or project, or all=true for every "
+        "backlog task in the workspace (all cannot be combined with tags or project). dry_run lists the keys "
+        "that would move, and per-project counts, without changing anything.",
     )
     def task_promote_ready(
         tags: list[str] | None = None,
         project: str | None = None,
+        all: bool = False,
         dry_run: bool = False,
         workspace: Workspace = None,
     ) -> dict[str, Any]:
-        promoted = app.tasks.promote_ready(ctx(), workspace, tags=tags, project=project, dry_run=dry_run)
-        return {"promoted": promoted, "dry_run": dry_run}
+        if all and (project or tags):
+            raise ValidationFailed("all=true cannot be combined with tags or project")
+        if not (all or project or tags):
+            raise ValidationFailed("give tags, project, or all=true to choose the tasks to promote")
+        report = app.tasks.promote_ready_report(ctx(), workspace, tags=tags, project=project, dry_run=dry_run)
+        return {**report, "dry_run": dry_run}
 
     @tool(
         "task_import_breakdown",
@@ -639,6 +646,39 @@ def build_server(
         task: TaskRef, body: Annotated[str, Field(min_length=1)], workspace: Workspace = None
     ) -> dict[str, Any]:
         return _dump(app.tasks.add_comment(ctx(), workspace, task, CommentCreate(body=body)))
+
+    @tool(
+        "task_request_decision",
+        "Ask the user a question this task is waiting on, with the options on offer (none means a free-text "
+        "answer). Tags the task needs-decision; the user answers in the web UI, and task_decisions returns "
+        "the answer. Mark the option you recommend. Agents cannot answer decisions.",
+    )
+    def task_request_decision(
+        task: TaskRef,
+        question: Annotated[str, Field(min_length=1, max_length=5000)],
+        options: list[DecisionOptionIn] | None = None,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return _dump(app.decisions.request(ctx(), workspace, task, question, options or []))
+
+    @tool(
+        "decision_list",
+        "List decisions with their task, newest answers first when decided; open ones by task priority.",
+    )
+    def decision_list(
+        status: Literal["open", "decided", "withdrawn", "all"] = "open",
+        limit: Limit = 50,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return {"decisions": _dump(app.decisions.list(ctx(), workspace, status, limit))}
+
+    @tool(
+        "task_decisions",
+        "Decisions on a task: the question, its options and, once the user has answered, the chosen option "
+        "or free-text answer and note.",
+    )
+    def task_decisions(task: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
+        return {"decisions": _dump(app.decisions.for_task(ctx(), workspace, task))}
 
     @tool("task_get_history", "Immutable event history of a task and its attempts.")
     def task_get_history(

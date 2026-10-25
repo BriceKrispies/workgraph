@@ -896,6 +896,53 @@
       }
     },
     {
+      "description": "List decisions with their task, newest answers first when decided; open ones by task priority.",
+      "input_schema": {
+        "properties": {
+          "limit": {
+            "default": 50,
+            "description": "Maximum items to return",
+            "maximum": 200,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "status": {
+            "default": "open",
+            "enum": [
+              "open",
+              "decided",
+              "withdrawn",
+              "all"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "decision_listArguments",
+        "type": "object"
+      },
+      "name": "decision_list",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "decision_listDictOutput",
+        "type": "object"
+      }
+    },
+    {
       "description": "Fit the success predictor for one model over all graded trials of every experiment, bootstrap it, and store the fit with its data cutoff and trial ids (requires experiment:write).",
       "input_schema": {
         "properties": {
@@ -2455,6 +2502,42 @@
       }
     },
     {
+      "description": "Decisions on a task: the question, its options and, once the user has answered, the chosen option or free-text answer and note.",
+      "input_schema": {
+        "properties": {
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "task_decisionsArguments",
+        "type": "object"
+      },
+      "name": "task_decisions",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_decisionsDictOutput",
+        "type": "object"
+      }
+    },
+    {
       "description": "Get full task details: description, criteria, files, comments, dependencies, rollup.",
       "input_schema": {
         "properties": {
@@ -3061,9 +3144,14 @@
       }
     },
     {
-      "description": "Move backlog tasks whose dependencies are all accepted to ready, in one step. Skips tasks with children and tasks tagged parked. Optional tags and project narrow the candidates; dry_run lists the keys that would move without changing anything.",
+      "description": "Move backlog tasks whose dependencies are all accepted to ready, in one step. Skips tasks with children and tasks tagged parked. A scope is required: give tags or project, or all=true for every backlog task in the workspace (all cannot be combined with tags or project). dry_run lists the keys that would move, and per-project counts, without changing anything.",
       "input_schema": {
         "properties": {
+          "all": {
+            "default": false,
+            "title": "All",
+            "type": "boolean"
+          },
           "dry_run": {
             "default": false,
             "title": "Dry Run",
@@ -3361,6 +3449,109 @@
       "output_schema": {
         "additionalProperties": true,
         "title": "task_report_resultDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Ask the user a question this task is waiting on, with the options on offer (none means a free-text answer). Tags the task needs-decision; the user answers in the web UI, and task_decisions returns the answer. Mark the option you recommend. Agents cannot answer decisions.",
+      "input_schema": {
+        "$defs": {
+          "DecisionOptionIn": {
+            "additionalProperties": false,
+            "description": "One option on offer. ``id`` is a short slug unique within the decision; omitted, it is \"a\", \"b\", ...",
+            "properties": {
+              "detail": {
+                "default": "",
+                "maxLength": 5000,
+                "title": "Detail",
+                "type": "string"
+              },
+              "id": {
+                "anyOf": [
+                  {
+                    "maxLength": 64,
+                    "minLength": 1,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Id"
+              },
+              "label": {
+                "maxLength": 500,
+                "minLength": 1,
+                "title": "Label",
+                "type": "string"
+              },
+              "recommended": {
+                "default": false,
+                "title": "Recommended",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "label"
+            ],
+            "title": "DecisionOptionIn",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "options": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/DecisionOptionIn"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Options"
+          },
+          "question": {
+            "maxLength": 5000,
+            "minLength": 1,
+            "title": "Question",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "question"
+        ],
+        "title": "task_request_decisionArguments",
+        "type": "object"
+      },
+      "name": "task_request_decision",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_request_decisionDictOutput",
         "type": "object"
       }
     },

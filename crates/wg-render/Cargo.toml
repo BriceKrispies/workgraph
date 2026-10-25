@@ -1,0 +1,11 @@
+[package]
+name = "wg-render"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "rich-compatible tables, key-value blocks and colour rules"
+
+[lints]
+workspace = true

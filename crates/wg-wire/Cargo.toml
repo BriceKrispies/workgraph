@@ -1,0 +1,11 @@
+[package]
+name = "wg-wire"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "DTOs, error envelope, MCP descriptors, OpenAPI document"
+
+[lints]
+workspace = true

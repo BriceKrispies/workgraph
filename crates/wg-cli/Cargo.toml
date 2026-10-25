@@ -1,0 +1,21 @@
+[package]
+name = "wg-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "the workgraph binary: clap command tree and handlers"
+
+[[bin]]
+name = "workgraph"
+path = "src/main.rs"
+
+# Own lint table: the console UTF-8 setup on Windows calls the Windows API, so this crate
+# cannot inherit the workspace `unsafe_code = "forbid"`. Keep the clippy rules in step with the root.
+[lints.rust]
+unsafe_code = "allow"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"

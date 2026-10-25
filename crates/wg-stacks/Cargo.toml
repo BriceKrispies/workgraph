@@ -1,0 +1,11 @@
+[package]
+name = "wg-stacks"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "stack membership, integration queue, verification, landing"
+
+[lints]
+workspace = true

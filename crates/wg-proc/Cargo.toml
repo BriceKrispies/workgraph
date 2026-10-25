@@ -1,0 +1,17 @@
+[package]
+name = "wg-proc"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "process spawning, bounded capture, tree termination"
+
+# Own lint table: this crate needs FFI for Job Objects and process groups, so it cannot
+# inherit the workspace `unsafe_code = "forbid"`. Keep the clippy rules in step with the root.
+[lints.rust]
+unsafe_code = "allow"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"

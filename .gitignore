@@ -36,3 +36,6 @@ Thumbs.db
 
 # Claude Code agent worktrees
 .claude/worktrees/
+
+# Rust build output
+/target

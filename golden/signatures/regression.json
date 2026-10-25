@@ -1,0 +1,694 @@
+{
+  "cases": [
+    {
+      "base": {},
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "status": "passed"
+        }
+      ],
+      "expected": {},
+      "id": "passed-never-failing",
+      "source": "tests/unit/test_regression.py::test_a_passed_check_is_never_failing",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": null,
+      "base_is_none": true,
+      "checks": [
+        {
+          "name": "lint",
+          "required": false,
+          "signatures": [
+            "test:x"
+          ]
+        }
+      ],
+      "expected": {},
+      "id": "optional-failing",
+      "source": "tests/unit/test_regression.py::test_an_optional_failing_check_is_not_failing",
+      "specs": [
+        {
+          "baseline": "absolute",
+          "name": "lint"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "signatures": [
+            "test:a",
+            "test:b"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a",
+            "test:b"
+          ]
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:a",
+          "test:b"
+        ]
+      },
+      "id": "absolute-failure",
+      "source": "tests/unit/test_regression.py::test_an_absolute_failure_is_failing_whatever_the_base_says",
+      "specs": [
+        {
+          "baseline": "absolute",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "signatures": [
+            "test:a"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a"
+          ]
+        }
+      ],
+      "expected": {},
+      "id": "known-failure-tolerated",
+      "source": "tests/unit/test_regression.py::test_a_regression_failure_already_on_the_base_is_tolerated",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "signatures": [
+            "test:a_device_run",
+            "test:spec02_055::a_device_run"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:spec02::spec02_055::a_device_run",
+            "test:fresh"
+          ]
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:fresh"
+        ]
+      },
+      "id": "moved-test-tolerated",
+      "source": "tests/unit/test_regression.py::test_a_known_failure_whose_test_moved_to_another_binary_is_tolerated",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "signatures": [
+            "test:a"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:c",
+            "test:a",
+            "test:b"
+          ]
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:c",
+          "test:b"
+        ]
+      },
+      "id": "only-new-in-order",
+      "source": "tests/unit/test_regression.py::test_only_the_new_signatures_of_a_regression_failure_are_reported_in_order",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {},
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a"
+          ]
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:a"
+        ]
+      },
+      "id": "no-outcome-failing",
+      "source": "tests/unit/test_regression.py::test_a_regression_failure_is_failing_when_the_base_has_no_outcome",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": null,
+      "base_is_none": true,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a"
+          ]
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:a"
+        ]
+      },
+      "id": "no-outcome-none-base",
+      "source": "tests/unit/test_regression.py::test_a_regression_failure_is_failing_when_the_base_has_no_outcome",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "status": "passed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a"
+          ]
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:a"
+        ]
+      },
+      "id": "base-passed-failing",
+      "source": "tests/unit/test_regression.py::test_a_regression_failure_is_failing_when_the_base_passed",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "signatures": [
+            "timeout",
+            "test:a"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "timeout",
+            "test:a"
+          ]
+        }
+      ],
+      "expected": {
+        "suite": [
+          "timeout",
+          "test:a"
+        ]
+      },
+      "id": "timeout-failing",
+      "source": "tests/unit/test_regression.py::test_a_timeout_is_failing_even_when_the_base_fails_the_same_way",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "signatures": [],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": []
+        }
+      ],
+      "expected": {
+        "suite": []
+      },
+      "id": "unparseable-failing",
+      "source": "tests/unit/test_regression.py::test_an_unparseable_failure_is_failing_even_when_the_base_fails",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "integration": {
+          "signatures": [
+            "test:b"
+          ],
+          "status": "failed"
+        },
+        "unit": {
+          "signatures": [
+            "test:a"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "unit",
+          "signatures": [
+            "test:a"
+          ]
+        },
+        {
+          "name": "integration",
+          "signatures": [
+            "test:b"
+          ]
+        },
+        {
+          "name": "types",
+          "signatures": [
+            "error:x"
+          ]
+        }
+      ],
+      "expected": {
+        "integration": [
+          "test:b"
+        ],
+        "types": [
+          "error:x"
+        ]
+      },
+      "id": "judged-by-own-mode",
+      "source": "tests/unit/test_regression.py::test_checks_are_judged_by_their_own_mode",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "unit"
+        },
+        {
+          "baseline": "absolute",
+          "name": "integration"
+        },
+        {
+          "baseline": "absolute",
+          "name": "types"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "signatures": [
+            "test:a"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a"
+          ]
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:a"
+        ]
+      },
+      "id": "missing-spec-absolute",
+      "source": "tests/unit/test_regression.py::test_a_check_missing_from_the_specs_is_judged_absolutely",
+      "specs": []
+    },
+    {
+      "base": {
+        "suite": {
+          "run_id": "older",
+          "status": "error"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "status": "error"
+        }
+      ],
+      "expected": {
+        "suite": []
+      },
+      "id": "errored-absolute",
+      "source": "tests/unit/test_regression.py::test_an_errored_check_is_failing_in_absolute_mode_whatever_the_base_says",
+      "specs": [
+        {
+          "baseline": "absolute",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "signatures": [
+            "test:a"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a"
+          ],
+          "status": "error"
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:a"
+        ]
+      },
+      "id": "errored-never-tolerated",
+      "source": "tests/unit/test_regression.py::test_an_errored_check_is_never_tolerated_in_regression_mode",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": null,
+      "base_is_none": true,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a"
+          ],
+          "status": "error"
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:a"
+        ]
+      },
+      "id": "errored-never-tolerated-no-base",
+      "source": "tests/unit/test_regression.py::test_an_errored_check_is_never_tolerated_in_regression_mode",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": null,
+      "base_is_none": true,
+      "checks": [
+        {
+          "name": "lint",
+          "required": false,
+          "status": "error"
+        }
+      ],
+      "expected": {},
+      "id": "errored-optional",
+      "source": "tests/unit/test_regression.py::test_an_errored_optional_check_is_not_failing",
+      "specs": [
+        {
+          "baseline": "absolute",
+          "name": "lint"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "run_id": "older",
+          "signatures": [
+            "test:a"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a"
+          ]
+        }
+      ],
+      "expected": {},
+      "id": "run-id-ignored",
+      "source": "tests/unit/test_regression.py::test_outcome_run_id_does_not_affect_the_judgement",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "suite": {
+          "signatures": [
+            "test:deep",
+            "test:z",
+            "binary:rho",
+            "error:boom"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "suite",
+          "signatures": [
+            "test:a::b::c::deep",
+            "test:c::deep",
+            "test:x::y",
+            "test:only_here",
+            "binary:rho",
+            "build:rho-lexer",
+            "error:boom"
+          ]
+        }
+      ],
+      "expected": {
+        "suite": [
+          "test:x::y",
+          "test:only_here",
+          "build:rho-lexer"
+        ]
+      },
+      "id": "gen-leaf-shapes",
+      "source": "generated: base leaf matches across module depth",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "suite"
+        }
+      ]
+    },
+    {
+      "base": {
+        "e2e": {
+          "signatures": [
+            "timeout"
+          ],
+          "status": "failed"
+        },
+        "lint": {
+          "signatures": [],
+          "status": "failed"
+        },
+        "stack": {
+          "status": "failed"
+        },
+        "types": {
+          "status": "passed"
+        },
+        "unit": {
+          "signatures": [
+            "test:a"
+          ],
+          "status": "failed"
+        }
+      },
+      "base_is_none": false,
+      "checks": [
+        {
+          "name": "unit",
+          "signatures": [
+            "test:a",
+            "test:new"
+          ]
+        },
+        {
+          "name": "e2e",
+          "signatures": [
+            "timeout"
+          ]
+        },
+        {
+          "name": "types",
+          "signatures": [
+            "error:t"
+          ]
+        },
+        {
+          "name": "lint",
+          "status": "passed"
+        },
+        {
+          "name": "stack",
+          "status": "error"
+        },
+        {
+          "name": "docs",
+          "required": false,
+          "signatures": [
+            "test:d"
+          ]
+        }
+      ],
+      "expected": {
+        "e2e": [
+          "timeout"
+        ],
+        "stack": [],
+        "types": [
+          "error:t"
+        ],
+        "unit": [
+          "test:new"
+        ]
+      },
+      "id": "gen-mixed-run",
+      "source": "generated: several checks, each in a different mode and status",
+      "specs": [
+        {
+          "baseline": "regression",
+          "name": "unit"
+        },
+        {
+          "baseline": "regression",
+          "name": "e2e"
+        },
+        {
+          "baseline": "regression",
+          "name": "types"
+        },
+        {
+          "baseline": "regression",
+          "name": "lint"
+        },
+        {
+          "baseline": "regression",
+          "name": "stack"
+        },
+        {
+          "baseline": "absolute",
+          "name": "docs"
+        }
+      ]
+    },
+    {
+      "base": null,
+      "base_is_none": true,
+      "checks": [],
+      "expected": {},
+      "id": "gen-empty-run",
+      "source": "generated: run with no checks",
+      "specs": []
+    }
+  ]
+}

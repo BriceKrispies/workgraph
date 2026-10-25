@@ -1,0 +1,703 @@
+{
+  "cases": [
+    {
+      "expected": {
+        "auto": [
+          "test:rho_lexer::scan::strings::unterminated",
+          "test:one_version::sorted_once",
+          "binary:courtyard_gpu",
+          "build:rho-lowering"
+        ],
+        "cargo": [
+          "test:rho_lexer::scan::strings::unterminated",
+          "test:one_version::sorted_once",
+          "binary:courtyard_gpu",
+          "build:rho-lowering"
+        ],
+        "generic": [
+          "error:test failed, to rerun pass `-p rho-lexer --lib`",
+          "error:test failed, to rerun pass `--test one_version`",
+          "error:test failed, to rerun pass `--test courtyard_gpu`",
+          "error:could not compile `rho-lowering` (lib test) due to 3 previous errors"
+        ],
+        "pytest": []
+      },
+      "id": "test-cargo-binaries-crash-build",
+      "lines": [
+        "",
+        "   Compiling rho-lexer v0.3.0 (C:\\dev\\rho\\crates\\lexer)",
+        "     Running unittests src/lib.rs (target\\debug\\deps\\rho_lexer-0a1b2c3d4e5f6789.exe)",
+        "",
+        "running 4 tests",
+        "test scan::numbers ... ok",
+        "test scan::strings::unterminated ... FAILED",
+        "test scan::idents ... ignored",
+        "test scan::spans ... ok",
+        "",
+        "failures:",
+        "",
+        "---- scan::strings::unterminated stdout ----",
+        "thread 'scan::strings::unterminated' panicked at src/scan.rs:88:9:",
+        "assertion failed",
+        "",
+        "failures:",
+        "    scan::strings::unterminated",
+        "",
+        "test result: FAILED. 2 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "",
+        "error: test failed, to rerun pass `-p rho-lexer --lib`",
+        "",
+        "     Running tests/one_version.rs (target/debug/deps/one_version-0123456789abcdef)",
+        "",
+        "running 2 tests",
+        "test sorted_once ... FAILED",
+        "test merged ... ok",
+        "",
+        "test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "",
+        "error: test failed, to rerun pass `--test one_version`",
+        "",
+        "     Running tests/courtyard_gpu.rs (target/debug/deps/courtyard_gpu-fedcba9876543210)",
+        "",
+        "running 1 test",
+        "test upload::small ... ok",
+        "error: test failed, to rerun pass `--test courtyard_gpu`",
+        "",
+        "error: could not compile `rho-lowering` (lib test) due to 3 previous errors"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_failures_across_binaries_crash_and_build_error"
+    },
+    {
+      "expected": {
+        "auto": [],
+        "cargo": [],
+        "generic": [],
+        "pytest": []
+      },
+      "id": "test-cargo-ok-ignored-bench",
+      "lines": [
+        "     Running unittests src/lib.rs (target/debug/deps/rho_lexer-0a1b2c3d4e5f6789)",
+        "test scan::numbers ... ok",
+        "test scan::idents ... ignored",
+        "test bench_scan ... bench:  1,234 ns/iter (+/- 5)",
+        "test result: ok. 1 passed; 0 failed; 1 ignored"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_ok_and_ignored_lines_produce_nothing"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:one_version::sorted_once"
+        ],
+        "cargo": [
+          "test:one_version::sorted_once"
+        ],
+        "generic": [
+          "error:test failed, to rerun pass `--test one_version`"
+        ],
+        "pytest": []
+      },
+      "id": "test-cargo-crash-suppressed-by-test-failure",
+      "lines": [
+        "     Running tests/one_version.rs (target/debug/deps/one_version-0123456789abcdef)",
+        "test sorted_once ... FAILED",
+        "error: test failed, to rerun pass `--test one_version`"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_binary_crash_is_not_reported_when_tests_failed"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:rho_lowering::lower::calls",
+          "binary:courtyard_gpu"
+        ],
+        "cargo": [
+          "test:rho_lowering::lower::calls",
+          "binary:courtyard_gpu"
+        ],
+        "generic": [
+          "error:test failed, to rerun pass `-p rho-lowering --lib`",
+          "error:2 targets failed:"
+        ],
+        "pytest": []
+      },
+      "id": "test-cargo-no-fail-fast-summary",
+      "lines": [
+        "",
+        "     Running unittests src/lib.rs (target\\debug\\deps\\rho_lowering-0a1b2c3d4e5f6789.exe)",
+        "",
+        "running 1 test",
+        "test lower::calls ... FAILED",
+        "",
+        "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "",
+        "error: test failed, to rerun pass `-p rho-lowering --lib`",
+        "",
+        "     Running tests/courtyard_gpu.rs (target/debug/deps/courtyard_gpu-fedcba9876543210)",
+        "",
+        "running 1 test",
+        "test upload::small ... ok",
+        "error: 2 targets failed:",
+        "    `-p rho-lowering --lib`",
+        "    `-p rho --test courtyard_gpu`"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_no_fail_fast_summary_adds_binary_for_crashed_target"
+    },
+    {
+      "expected": {
+        "auto": [
+          "binary:rho_gpu",
+          "binary:rho_lowering",
+          "binary:demo_app"
+        ],
+        "cargo": [
+          "binary:rho_gpu",
+          "binary:rho_lowering",
+          "binary:demo_app"
+        ],
+        "generic": [
+          "error:1 target failed:"
+        ],
+        "pytest": []
+      },
+      "id": "test-cargo-summary-singular-targets",
+      "lines": [
+        "     Running unittests src/main.rs (target/debug/deps/rho_gpu-0123456789abcdef)",
+        "test ok_case ... ok",
+        "error: 1 target failed:",
+        "    `-p rho-gpu --bin rho-gpu`",
+        "    `-p rho-lowering --doc`",
+        "    `-p rho-gpu --example demo-app`"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_summary_singular_form_and_target_names"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:rho::a::b"
+        ],
+        "cargo": [
+          "test:rho::a::b"
+        ],
+        "generic": [
+          "error:1 target failed:"
+        ],
+        "pytest": []
+      },
+      "id": "test-cargo-summary-skips-reported",
+      "lines": [
+        "     Running unittests src/lib.rs (target/debug/deps/rho-0123456789abcdef)",
+        "test a::b ... FAILED",
+        "error: 1 target failed:",
+        "    `-p rho --lib`"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_summary_skips_targets_already_reported_with_test_signatures"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:rho_lexer::src/lib.rs - scan (line 12)"
+        ],
+        "cargo": [
+          "test:rho_lexer::src/lib.rs - scan (line 12)"
+        ],
+        "generic": [],
+        "pytest": []
+      },
+      "id": "test-cargo-name-with-spaces",
+      "lines": [
+        "   Doc-tests rho_lexer",
+        "test src/lib.rs - scan (line 12) ... FAILED"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_test_name_with_spaces_is_kept_whole"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:a::x::one",
+          "test:a::x::two",
+          "build:b"
+        ],
+        "cargo": [
+          "test:a::x::one",
+          "test:a::x::two",
+          "build:b"
+        ],
+        "generic": [
+          "error:could not compile `b` due to 1 previous error"
+        ],
+        "pytest": []
+      },
+      "id": "test-cargo-dedup-first-appearance",
+      "lines": [
+        "     Running unittests src/lib.rs (target/debug/deps/a-0123456789abcdef)",
+        "test x::one ... FAILED",
+        "test x::two ... FAILED",
+        "test x::one ... FAILED",
+        "error: could not compile `b` due to 1 previous error",
+        "error: could not compile `b` due to 1 previous error"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_signatures_are_deduplicated_in_first_appearance_order"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:t::n0",
+          "test:t::n1",
+          "test:t::n2",
+          "test:t::n3",
+          "test:t::n4",
+          "test:t::n5",
+          "test:t::n6",
+          "test:t::n7",
+          "test:t::n8",
+          "test:t::n9",
+          "test:t::n10",
+          "test:t::n11"
+        ],
+        "cargo": [
+          "test:t::n0",
+          "test:t::n1",
+          "test:t::n2",
+          "test:t::n3",
+          "test:t::n4",
+          "test:t::n5",
+          "test:t::n6",
+          "test:t::n7",
+          "test:t::n8",
+          "test:t::n9",
+          "test:t::n10",
+          "test:t::n11"
+        ],
+        "generic": [],
+        "pytest": []
+      },
+      "id": "test-cargo-no-cap",
+      "lines": [
+        "test t::n0 ... FAILED",
+        "test t::n1 ... FAILED",
+        "test t::n2 ... FAILED",
+        "test t::n3 ... FAILED",
+        "test t::n4 ... FAILED",
+        "test t::n5 ... FAILED",
+        "test t::n6 ... FAILED",
+        "test t::n7 ... FAILED",
+        "test t::n8 ... FAILED",
+        "test t::n9 ... FAILED",
+        "test t::n10 ... FAILED",
+        "test t::n11 ... FAILED"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_has_no_signature_cap"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:tests/test_api.py::test_login"
+        ],
+        "cargo": [],
+        "generic": [
+          "error:tests/test_api.py::test_login - assert 1 == 2"
+        ],
+        "pytest": [
+          "test:tests/test_api.py::test_login"
+        ]
+      },
+      "id": "test-pytest-line",
+      "lines": [
+        "FAILED tests/test_api.py::test_login - assert 1 == 2"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_auto_falls_back_to_pytest_then_generic"
+    },
+    {
+      "expected": {
+        "auto": [
+          "error:disk full"
+        ],
+        "cargo": [],
+        "generic": [
+          "error:disk full"
+        ],
+        "pytest": []
+      },
+      "id": "test-generic-lines",
+      "lines": [
+        "something went wrong",
+        "Error: disk full"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_auto_falls_back_to_pytest_then_generic"
+    },
+    {
+      "expected": {
+        "auto": [
+          "error:disk full"
+        ],
+        "cargo": [],
+        "generic": [
+          "error:disk full"
+        ],
+        "pytest": []
+      },
+      "id": "test-cargo-parser-no-generic",
+      "lines": [
+        "Error: disk full"
+      ],
+      "source": "tests/unit/test_failure_signatures.py::test_cargo_parser_does_not_fall_back_to_generic"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:alpha::a::one",
+          "binary:beta",
+          "test:gamma::g::y",
+          "test:gamma::g::z",
+          "test:eps::e::fail",
+          "build:rho-broken"
+        ],
+        "cargo": [
+          "test:alpha::a::one",
+          "binary:beta",
+          "test:gamma::g::y",
+          "test:gamma::g::z",
+          "test:eps::e::fail",
+          "build:rho-broken"
+        ],
+        "generic": [
+          "error:test failed, to rerun pass `--test beta`",
+          "error:could not compile `rho-broken` due to 1 previous error"
+        ],
+        "pytest": []
+      },
+      "id": "gen-cargo-five-binaries",
+      "lines": [
+        "     Running unittests src/lib.rs (target\\debug\\deps\\alpha-0123456789abcdef.exe)",
+        "",
+        "running 2 tests",
+        "test a::one ... FAILED",
+        "test a::two ... ok",
+        "",
+        "     Running unittests src/lib.rs (target/debug/deps/beta-fedcba9876543210)",
+        "",
+        "running 1 tests",
+        "test b::ok ... ok",
+        "error: test failed, to rerun pass `--test beta`",
+        "",
+        "     Running unittests src/lib.rs (target\\debug\\deps\\gamma-00ff00ff00ff00ff.exe)",
+        "",
+        "running 3 tests",
+        "test g::x ... ignored",
+        "test g::y ... FAILED",
+        "test g::z ... FAILED",
+        "",
+        "     Running unittests src/lib.rs (target/debug/deps/delta-1111222233334444)",
+        "",
+        "running 1 tests",
+        "test d::only ... ok",
+        "",
+        "     Running unittests src/lib.rs (target/debug/deps/eps-abcdefabcdefabcd)",
+        "",
+        "running 1 tests",
+        "test e::fail ... FAILED",
+        "",
+        "error: could not compile `rho-broken` due to 1 previous error"
+      ],
+      "source": "generated: five binaries, mixed path styles, one crash, one build failure"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:rho_core::src/lib.rs - parse (line 4)",
+          "binary:rho_cli"
+        ],
+        "cargo": [
+          "test:rho_core::src/lib.rs - parse (line 4)",
+          "binary:rho_cli"
+        ],
+        "generic": [
+          "error:test failed, to rerun pass `--test rho_cli`"
+        ],
+        "pytest": []
+      },
+      "id": "gen-cargo-doc-tests",
+      "lines": [
+        "     Running unittests src/lib.rs (target/debug/deps/rho_core-aaaaaaaaaaaaaaaa)",
+        "",
+        "running 1 tests",
+        "test ok_one ... ok",
+        "",
+        "   Doc-tests rho_core",
+        "",
+        "running 1 tests",
+        "test src/lib.rs - parse (line 4) ... FAILED",
+        "",
+        "     Running unittests src/lib.rs (target/debug/deps/rho_cli-bbbbbbbbbbbbbbbb)",
+        "",
+        "running 1 tests",
+        "test cli::run ... ok",
+        "error: test failed, to rerun pass `--test rho_cli`",
+        ""
+      ],
+      "source": "generated: doc-tests block with failing example and a binary-level crash"
+    },
+    {
+      "expected": {
+        "auto": [
+          "binary:rho_lib",
+          "binary:rho",
+          "binary:demo_app",
+          "binary:speed",
+          "binary:rho_doc"
+        ],
+        "cargo": [
+          "binary:rho_lib",
+          "binary:rho",
+          "binary:demo_app",
+          "binary:speed",
+          "binary:rho_doc"
+        ],
+        "generic": [
+          "error:6 targets failed:"
+        ],
+        "pytest": []
+      },
+      "id": "gen-cargo-summary-targets",
+      "lines": [
+        "     Running unittests src/lib.rs (target/debug/deps/rho_lib-0123456789abcdef)",
+        "test ok ... ok",
+        "error: 6 targets failed:",
+        "    `-p rho-lib --lib`",
+        "    `-p rho-cli --bin rho`",
+        "    `-p rho-cli --example demo_app`",
+        "    `-p rho-bench --bench speed`",
+        "    `-p rho-doc --doc`",
+        "    `-p rho-weird`"
+      ],
+      "source": "generated: N-targets summary with lib, bin, example, bench, doc and an unparseable target"
+    },
+    {
+      "expected": {
+        "auto": [
+          "build:rho-lexer",
+          "build:rho-parser"
+        ],
+        "cargo": [
+          "build:rho-lexer",
+          "build:rho-parser"
+        ],
+        "generic": [
+          "error:could not compile `rho-lexer` (lib) due to 2 previous errors",
+          "error:could not compile `rho-parser` (lib test) due to 1 previous error"
+        ],
+        "pytest": []
+      },
+      "id": "gen-cargo-build-failures",
+      "lines": [
+        "error: could not compile `rho-lexer` (lib) due to 2 previous errors",
+        "error: could not compile `rho-parser` (lib test) due to 1 previous error",
+        "error: could not compile `rho-lexer` (lib) due to 2 previous errors",
+        "warning: unused variable `x`"
+      ],
+      "source": "generated: several crates that do not compile, each reported twice"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:uni::名前::テスト"
+        ],
+        "cargo": [
+          "test:uni::名前::テスト"
+        ],
+        "generic": [],
+        "pytest": []
+      },
+      "id": "gen-cargo-unicode-and-quotes",
+      "lines": [
+        "     Running unittests src/lib.rs (target/debug/deps/uni-cccccccccccccccc)",
+        "",
+        "running 2 tests",
+        "test 名前::テスト ... FAILED",
+        "test ok_é ... ok",
+        ""
+      ],
+      "source": "generated: non-ASCII test names and a crash-free run"
+    },
+    {
+      "expected": {
+        "auto": [
+          "test:tests/test_api.py::test_login",
+          "test:tests/test_db.py::TestDb::test_setup",
+          "test:tests/test_api.py::test_logout"
+        ],
+        "cargo": [],
+        "generic": [
+          "error:tests/test_api.py::test_login - assert 1 == 2",
+          "error:tests/test_db.py::TestDb::test_setup - RuntimeError: no db",
+          "error:tests/test_api.py::test_logout - indented line",
+          "error:tests/test_api.py::test_login - duplicate line",
+          "error:line with FAILED inside"
+        ],
+        "pytest": [
+          "test:tests/test_api.py::test_login",
+          "test:tests/test_db.py::TestDb::test_setup",
+          "test:tests/test_api.py::test_logout"
+        ]
+      },
+      "id": "gen-pytest-mixed",
+      "lines": [
+        "============================= test session starts =============================",
+        "collected 9 items",
+        "tests/test_api.py F.....E..",
+        "=========================== short test summary info ===========================",
+        "FAILED tests/test_api.py::test_login - assert 1 == 2",
+        "ERROR tests/test_db.py::TestDb::test_setup - RuntimeError: no db",
+        "   FAILED tests/test_api.py::test_logout - indented line",
+        "FAILED tests/test_api.py::test_login - duplicate line",
+        "not a failure line with FAILED inside"
+      ],
+      "source": "generated: pytest short summary with FAILED and ERROR lines and indentation"
+    },
+    {
+      "expected": {
+        "auto": [],
+        "cargo": [],
+        "generic": [],
+        "pytest": []
+      },
+      "id": "gen-pytest-none",
+      "lines": [
+        "collected 3 items",
+        "3 passed in 0.12s"
+      ],
+      "source": "generated: pytest run that passed"
+    },
+    {
+      "expected": {
+        "auto": [
+          "error:earlier 8",
+          "error:earlier 9",
+          "error:last block 0",
+          "error:last block 1",
+          "error:last block 2"
+        ],
+        "cargo": [],
+        "generic": [
+          "error:earlier 8",
+          "error:earlier 9",
+          "error:last block 0",
+          "error:last block 1",
+          "error:last block 2"
+        ],
+        "pytest": []
+      },
+      "id": "gen-generic-window-cap-truncate",
+      "lines": [
+        "Error: early line outside the window",
+        "Error: earlier 0",
+        "Error: earlier 1",
+        "Error: earlier 2",
+        "Error: earlier 3",
+        "Error: earlier 4",
+        "Error: earlier 5",
+        "Error: earlier 6",
+        "Error: earlier 7",
+        "Error: earlier 8",
+        "Error: earlier 9",
+        "noise 0",
+        "noise 1",
+        "noise 2",
+        "noise 3",
+        "noise 4",
+        "noise 5",
+        "noise 6",
+        "noise 7",
+        "noise 8",
+        "noise 9",
+        "noise 10",
+        "noise 11",
+        "noise 12",
+        "noise 13",
+        "noise 14",
+        "noise 15",
+        "noise 16",
+        "noise 17",
+        "noise 18",
+        "noise 19",
+        "noise 20",
+        "noise 21",
+        "noise 22",
+        "noise 23",
+        "noise 24",
+        "noise 25",
+        "noise 26",
+        "noise 27",
+        "noise 28",
+        "noise 29",
+        "noise 30",
+        "noise 31",
+        "noise 32",
+        "noise 33",
+        "noise 34",
+        "noise 35",
+        "noise 36",
+        "noise 37",
+        "noise 38",
+        "noise 39",
+        "FAILURE: last block 0",
+        "FAILURE: last block 1",
+        "FAILURE: last block 2",
+        "FAILURE: last block 3",
+        "FAILURE: last block 4",
+        "FAILURE: last block 5",
+        "FAILURE: last block 6",
+        "Failed: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      ],
+      "source": "generated: generic matches before the last 50 lines are ignored, cap of five, 120-char truncation"
+    },
+    {
+      "expected": {
+        "auto": [
+          "error:upper case",
+          "error:with status",
+          "error:colon no space",
+          "error:colon-tab",
+          "error:padded value"
+        ],
+        "cargo": [],
+        "generic": [
+          "error:upper case",
+          "error:with status",
+          "error:colon no space",
+          "error:colon-tab",
+          "error:padded value"
+        ],
+        "pytest": []
+      },
+      "id": "gen-generic-patterns",
+      "lines": [
+        "ERROR: upper case",
+        "the build failed with status",
+        "failure:colon no space",
+        "errors are not matched",
+        "a failed\tcolon-tab",
+        "Error:   padded value   "
+      ],
+      "source": "generated: error, failed, failure in several positions and cases"
+    },
+    {
+      "expected": {
+        "auto": [],
+        "cargo": [],
+        "generic": [],
+        "pytest": []
+      },
+      "id": "gen-empty",
+      "lines": [],
+      "source": "generated: empty log"
+    }
+  ],
+  "parsers": [
+    "auto",
+    "cargo",
+    "pytest",
+    "generic"
+  ]
+}

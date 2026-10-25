@@ -14,20 +14,20 @@ can be counted.
 
 The tables are a reading aid. The machine-checked form of each contract is the snapshot that task
 CF-01 checks in under `contracts/` (`cli.json`, `mcp.json`, `openapi.json`, `schema-0001.sql` to
-`schema-0010.sql`, `config-schema.json`), together with a test in the Python suite that fails when
+`schema-0011.sql`, `config-schema.json`), together with a test in the Python suite that fails when
 the code and the snapshot disagree. Task CF-02 regenerates this file from those snapshots.
 
-## Counts (measured at 5aecab8)
+## Counts (measured at eb7a133)
 
 | Contract | Count |
 | --- | --- |
-| CLI leaf commands | 186, under 31 top-level names (`task` 24, `experiment` 16, `analytics` 13, `automation` 12, `git` 12, `claude` 11, `stack` 10, `attempt` 9, `classify` 9, `repo` 9, `run` 8, `job` 7, `project` 7, `workspace` 6, `config` 5, `verify` 5, `tracker` 3, `worker` 3, `agent` 2, `demo` 2, `events` 2, `export` 2, and `backup`, `doctor`, `import`, `init`, `mcp`, `restore`, `search`, `serve`, `ui` with one each) |
+| CLI leaf commands | 192, under 32 top-level names (`task` 24, `experiment` 16, `analytics` 13, `automation` 12, `git` 12, `claude` 11, `stack` 10, `attempt` 9, `classify` 9, `repo` 9, `run` 8, `job` 7, `project` 7, `workspace` 6, `config` 5, `decision` 5, `verify` 5, `tracker` 3, `worker` 3, `agent` 2, `demo` 2, `events` 2, `export` 2, `ui` 2, and `backup`, `doctor`, `import`, `init`, `mcp`, `restore`, `search`, `serve` with one each) |
 | CLI exit codes | 8 (0 to 7) plus 130 on interrupt and Click's 2 for usage errors |
-| MCP tools | 66 |
+| MCP tools | 69 |
 | MCP resources | 2 static, 5 templates |
-| HTTP operations in OpenAPI | 124 over 109 paths, 73 component schemas |
+| HTTP operations in OpenAPI | 130 over 114 paths, 81 component schemas |
 | HTTP routes outside OpenAPI | 7 (X1 to X7) |
-| Database | 72 tables (65 ordinary, `alembic_version`, `task_fts` and its 5 FTS5 shadow tables), 207 indexes (104 named), 2 triggers, migration head `0010`, 10 revisions |
+| Database | 73 tables (66 ordinary, `alembic_version`, `task_fts` and its 5 FTS5 shadow tables), 211 indexes (107 named), 2 triggers, migration head `0011`, 11 revisions |
 | Configuration keys | 38 leaf keys and 3 named-table families (`llm.providers.<name>`, `agents.<name>`, `trackers.<name>`) with 6 typed shapes; 41 rows in section 13.5 |
 | Environment variables | 13 entries read (E01-E13, some naming a group of variables), 5 entries set for children (E20-E24, including the `WORKGRAPH_REPO_<NAME>_PATH` family) |
 | Domain enums | 23 |
@@ -220,6 +220,7 @@ Actors: `human:<user>`, `agent:<name>`, `system:<component>` (`system:tracker-sy
 | `0008` | `0007` | `external_items`, `task_links` |
 | `0009` | `0008` | data migration: `tasks.external_refs` entries to `task_links` rows, then drop the column |
 | `0010` | `0009` | `task_files` |
+| `0011` | `0010` | `task_decisions` |
 
 The version table is Alembic's `alembic_version(version_num)`. Every process start upgrades the
 database to head (`Workgraph.__init__`), `init` creates it, `doctor` reports the revision, `restore`
@@ -248,7 +249,7 @@ The sections below are generated from the snapshots.
 
 ### 13.1 CLI
 
-Extracted from the Typer application (`workgraph.cli.main:app`): **186 leaf commands** under 31 top-level names. Notation: `ARG` required argument, `[ARG]` optional, `ARG...` variadic; option types are Click type names, `{a,b}` a choice, `*` repeatable, `=x` default, `env X` the environment variable it reads. Every command also accepts the global `--json` (removed from argv wherever it appears, before parsing) and `--help`.
+Extracted from the Typer application (`workgraph.cli.main:app`): **192 leaf commands** under 32 top-level names. Notation: `ARG` required argument, `[ARG]` optional, `ARG...` variadic; option types are Click type names, `{a,b}` a choice, `*` repeatable, `=x` default, `env X` the environment variable it reads. Every command also accepts the global `--json` (removed from argv wherever it appears, before parsing) and `--help`.
 
 Root options: `--home` path env WORKGRAPH_HOME; `--workspace/-w` text env WORKGRAPH_WORKSPACE; `--version`. `--version` prints `workgraph <version>` and exits 0. With no arguments the root help is printed (Typer `no_args_is_help`).
 
@@ -414,13 +415,13 @@ Fast path: `workgraph claude hook ...` is dispatched before the CLI parser is bu
 | C156 | `workgraph task link-repo` | REF; REPOSITORY; `--access` str; `--remove/--no-remove`; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Associate a repository with a task. |
 | C157 | `workgraph task list` | `--status/-s` {backlog,ready,blocked,claimed,running,awaiting_verification,awaiting_review,accepted,failed,cancelled} *; `--priority/-P` {critical,high,medium,low} *; `--project/-p` str; `--repo/-r` str; `--tag/-t` str *; `--file` str; `--category` str; `--assignee` str; `--parent` str; `--roots`; `--search/-q` str; `--archived`; `--sort` str =created_at; `--asc`; `--limit` int =50; `--offset` int =0; `--workspace/-w` str env WORKGRAPH_WORKSPACE | List tasks with filters, sorting and pagination. |
 | C158 | `workgraph task progress` | REF; MESSAGE; `--percent` float; `--attempt` str; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Report progress on a task. |
-| C159 | `workgraph task promote-ready` | `--tag/-t` str *; `--project/-p` str; `--dry-run`; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Move backlog tasks whose dependencies are all accepted to ready (skips parents and parked tasks). |
+| C159 | `workgraph task promote-ready` | `--tag/-t` str *; `--project/-p` str; `--all`; `--dry-run`; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Move backlog tasks whose dependencies are all accepted to ready (skips parents and parked tasks). |
 | C160 | `workgraph task ready` | `--project/-p` str; `--repo/-r` str; `--agent` str; `--limit` int =20; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Ready tasks whose dependencies are accepted, highest priority first. |
 | C161 | `workgraph task reject` | REF; `--reason/-m` str required; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Reject completed work and send it back to ready. |
 | C162 | `workgraph task relate` | REF; TARGET; `--type` {relates_to,duplicates,follows_up,regression_of,similar_to}; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Relate two tasks (relates_to, duplicates, follows_up, regression_of, similar_to). |
 | C163 | `workgraph task release` | REF; `--reason` str; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Release a claim. |
 | C164 | `workgraph task result` | REF; OUTCOME; `--summary/-m` str =; `--attempt` str; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Report an attempt result. |
-| C165 | `workgraph task show` | REF; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Show task details, comments, rollup and blockers. |
+| C165 | `workgraph task show` | REFS...; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Show task details, comments, rollup and blockers for one or more tasks. |
 | C166 | `workgraph task triage-apply` | PATH; `--dry-run`; `--source` str; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Apply a file of triage verdicts (resolved, obsolete, open, needs-decision, needs-run, unclear). |
 | C167 | `workgraph task update` | REF; `--title` str; `--description/-d` str; `--status/-s` {backlog,ready,blocked,claimed,running,awaiting_verification,awaiting_review,accepted,failed,cancelled}; `--priority/-P` {critical,high,medium,low}; `--add-tag` str *; `--remove-tag` str *; `--file` str *; `--add-file` str *; `--clear-files`; `--parent` str; `--clear-parent/--no-clear-parent`; `--assignee` str; `--agent` str; `--auto-execute/--no-auto-execute`; `--metadata` str; `--expected-version` int; `--reason` str; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Update task fields and/or status (validated transitions). |
 | C168 | `workgraph tracker list` | - | Configured tracker connections. |
@@ -442,10 +443,16 @@ Fast path: `workgraph claude hook ...` is dispatched before the CLI parser is bu
 | C184 | `workgraph workspace show` | [REF] | Show a workspace summary. |
 | C185 | `workgraph workspace use` | REF | Set the default workspace. |
 | C186 | `workgraph task import-breakdown` | PATH; `--section` str required; `--parent` str required; `--tag/-t` str *; `--project/-p` str; `--repo/-r` str; `--dry-run`; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Create or update the tasks of a markdown breakdown section (re-runs are idempotent). |
+| C187 | `workgraph decision choose` | DECISION_ID; `--option/-o` str; `--other` str; `--note` str; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Answer a decision (or change its answer). |
+| C188 | `workgraph decision list` | `--status` str =open; `--limit` int =50; `--workspace/-w` str env WORKGRAPH_WORKSPACE | List decisions (open ones by task priority). |
+| C189 | `workgraph decision request` | TASK; `--question/-q` str required; `--option/-o` str *; `--recommend` int; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Ask a question the task waits on; tags the task needs-decision. |
+| C190 | `workgraph decision show` | DECISION_ID; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Show a decision with its options. |
+| C191 | `workgraph decision withdraw` | DECISION_ID; `--reason` str; `--workspace/-w` str env WORKGRAPH_WORKSPACE | Withdraw an open decision that no longer needs an answer. |
+| C192 | `workgraph ui open` | [PAGE]; `--url` str; `--no-start`; `--print`; `--timeout` float =20.0 | Open a page of the web UI in the default browser, starting `workgraph serve` if needed. |
 
 ### 13.2 MCP server
 
-Server name `workgraph`, title `Workgraph`, version = package version, instructions text as in `src/workgraph/mcp/server.py` `INSTRUCTIONS`. **66 tools**, all registered with structured output (an object output schema), **2 static resources** and **5 resource templates**; no prompts. Parameters marked `!` are required. Errors are tool errors whose text is `{"error": {code, message, details}}`. The exact input and output JSON Schemas (descriptions, bounds such as `limit` 1..200, and titles such as `task_createArguments`) are part of the contract and are snapshotted by task CF-03. Transports: stdio (`workgraph mcp`), Streamable HTTP (`/mcp/` under `serve`, or `workgraph mcp --transport http`).
+Server name `workgraph`, title `Workgraph`, version = package version, instructions text as in `src/workgraph/mcp/server.py` `INSTRUCTIONS`. **69 tools**, all registered with structured output (an object output schema), **2 static resources** and **5 resource templates**; no prompts. Parameters marked `!` are required. Errors are tool errors whose text is `{"error": {code, message, details}}`. The exact input and output JSON Schemas (descriptions, bounds such as `limit` 1..200, and titles such as `task_createArguments`) are part of the contract and are snapshotted by task CF-03. Transports: stdio (`workgraph mcp`), Streamable HTTP (`/mcp/` under `serve`, or `workgraph mcp --transport http`).
 
 | # | Tool | Parameters | Description |
 | --- | --- | --- | --- |
@@ -484,7 +491,7 @@ Server name `workgraph`, title `Workgraph`, version = package version, instructi
 | M33 | `task_release` | !task: string, reason: string\|null, workspace: string\|null | Release a claimed task back to ready. |
 | M34 | `task_complete` | !task: string, summary: string, attempt_id: string\|null, workspace: string\|null | Report completion. The task moves to awaiting verification/review, never to accepted. |
 | M35 | `task_get_ready` | project: string\|null, repository: string\|null, limit: integer, workspace: string\|null | Ready, unclaimed tasks whose dependencies are all accepted, highest priority first. |
-| M36 | `task_promote_ready` | tags: list[string]\|null, project: string\|null, dry_run: boolean, workspace: string\|null | Move backlog tasks whose dependencies are all accepted to ready, in one step. Skips tasks with children and tasks tagged parked. Optional tags and project narrow the candidates; dry_run lists the keys that would move without changing anything. |
+| M36 | `task_promote_ready` | tags: list[string]\|null, project: string\|null, dry_run: boolean, workspace: string\|null, all: boolean | Move backlog tasks whose dependencies are all accepted to ready, in one step. Skips tasks with children and tasks tagged parked. A scope is required: give tags or project, or all=true for every backlog task in the workspace (all cannot be combined with tags or project). dry_run lists the keys that would move, and per-project counts, without changing anything. |
 | M37 | `task_add_dependency` | !task: string, !depends_on: string, workspace: string\|null | Make TASK depend on DEPENDS_ON (cycles are rejected). |
 | M38 | `task_remove_dependency` | !task: string, !depends_on: string, workspace: string\|null | Remove a dependency. |
 | M39 | `task_add_relation` | !task: string, !target: string, relation_type: RelationType, workspace: string\|null | Relate two tasks (relates_to, duplicates, follows_up, regression_of, similar_to). |
@@ -515,6 +522,9 @@ Server name `workgraph`, title `Workgraph`, version = package version, instructi
 | M64 | `automation_list` | workspace: string\|null | List automation rules and their recent runs. |
 | M65 | `automation_trigger` | !rule: string, task: string\|null, workspace: string\|null | Trigger a manual automation rule (rules are authored by humans). |
 | M66 | `task_import_breakdown` | dry_run: boolean, !markdown: string, !parent: string, project: string\|null, repository: string\|null, !section: string, !source: string, tags: list[string]\|null, workspace: string\|null | Create or update the tasks of one section of a markdown breakdown document, given as text. Bold headers (**V1. Title**) are tasks; a ranged header followed by a table makes one task per row; 'Depends on:' / 'Deps:' lists link tasks. SOURCE names the document (stored with each task so a re-run updates instead of duplicating). dry_run reports the plan and changes nothing. |
+| M67 | `decision_list` | limit: integer, status: {open,decided,withdrawn,all}, workspace: string\|null | List decisions with their task, newest answers first when decided; open ones by task priority. |
+| M68 | `task_decisions` | !task: string, workspace: string\|null | Decisions on a task: the question, its options and, once the user has answered, the chosen option or free-text answer and note. |
+| M69 | `task_request_decision` | options: list[DecisionOptionIn]\|null, !question: string, !task: string, workspace: string\|null | Ask the user a question this task is waiting on, with the options on offer (none means a free-text answer). Tags the task needs-decision; the user answers in the web UI, and task_decisions returns the answer. Mark the option you recommend. Agents cannot answer decisions. |
 
 Resources:
 
@@ -530,7 +540,7 @@ Resources:
 
 ### 13.3 HTTP API and web serving
 
-From the FastAPI application (`create_app`); OpenAPI 3 document at `/api/openapi.json` (title `Workgraph`, version = package version): **109 paths, 124 operations**, 73 component schemas. The OpenAPI document is itself served, and is snapshotted as JSON by task CF-04. Body and response columns name the schema; `!` marks a required query parameter. Every operation can also answer 401, 403, 404, 409, 421, 422 or 503 with the error envelope.
+From the FastAPI application (`create_app`); OpenAPI 3 document at `/api/openapi.json` (title `Workgraph`, version = package version): **114 paths, 130 operations**, 81 component schemas. The OpenAPI document is itself served, and is snapshotted as JSON by task CF-04. Body and response columns name the schema; `!` marks a required query parameter. Every operation can also answer 401, 403, 404, 409, 421, 422 or 503 with the error envelope.
 
 | # | Method | Path | OK status | Query | Body | Response | Summary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -658,6 +668,12 @@ From the FastAPI application (`create_app`); OpenAPI 3 document at `/api/openapi
 | H122 | GET | `/api/v1/ws/{ws}/scheduler` | 200 | - | - | any | Scheduler |
 | H123 | GET | `/api/v1/ws/{ws}/events` | 200 | after_seq,entity_type,entity_id,prefix,limit,descending | - | any | Events |
 | H124 | GET | `/api/v1/ws/{ws}/events/stream` | 200 | after_seq,max_events | - | any | Event Stream |
+| H125 | GET | `/api/v1/ws/{ws}/decisions` | 200 | status,limit | - | object | List Decisions |
+| H126 | GET | `/api/v1/ws/{ws}/decisions/{decision_id}` | 200 | - | - | DecisionWithTaskOut | Get Decision |
+| H127 | POST | `/api/v1/ws/{ws}/decisions/{decision_id}/choose` | 200 | - | DecisionChoose | DecisionOut | Choose Decision |
+| H128 | POST | `/api/v1/ws/{ws}/decisions/{decision_id}/withdraw` | 200 | - | DecisionWithdraw\|null | DecisionOut | Withdraw Decision |
+| H129 | GET | `/api/v1/ws/{ws}/tasks/{ref}/decisions` | 200 | - | - | object | Task Decisions |
+| H130 | POST | `/api/v1/ws/{ws}/tasks/{ref}/decisions` | 201 | - | DecisionRequest | DecisionOut | Request Decision |
 
 Routes outside the OpenAPI document:
 
@@ -673,7 +689,7 @@ Routes outside the OpenAPI document:
 
 ### 13.4 Database
 
-SQLite file `<data>/workgraph.db`, WAL, `busy_timeout=15000`, `foreign_keys=ON`, `synchronous=NORMAL`, write transactions `BEGIN IMMEDIATE`. After migrating to head `0010`: **72 tables** (including `alembic_version` and the FTS5 table `task_fts` with its 5 shadow tables), **207 indexes** (103 of them automatic), **2 triggers**. The full `sqlite_master` text is the contract and is snapshotted by task CF-05; a database the Rust binary creates or migrates must give the same `sqlite_master` rows.
+SQLite file `<data>/workgraph.db`, WAL, `busy_timeout=15000`, `foreign_keys=ON`, `synchronous=NORMAL`, write transactions `BEGIN IMMEDIATE`. After migrating to head `0011`: **73 tables** (including `alembic_version` and the FTS5 table `task_fts` with its 5 shadow tables), **211 indexes** (104 of them automatic), **2 triggers**. The full `sqlite_master` text is the contract and is snapshotted by task CF-05; a database the Rust binary creates or migrates must give the same `sqlite_master` rows.
 
 | Table | Columns | Named indexes |
 | --- | --- | --- |
@@ -728,6 +744,7 @@ SQLite file `<data>/workgraph.db`, WAL, `busy_timeout=15000`, `foreign_keys=ON`,
 | `task_acceptances` | id, task_id, attempt_id, verification_run_id, decision, mode, reason, actor, manifest_id, created_at | 1 |
 | `task_change_surfaces` | id, task_id, repository_id, attempt_id, base_sha, final_sha, files_changed, insertions, deletions, renames, binary_files, functions_affected, types_affected, detail, computed_at, updated_at | 1 |
 | `task_comments` | id, task_id, attempt_id, author, kind, body, data, created_at | 2 |
+| `task_decisions` | id, workspace_id, task_id, question, options, status, chosen_option_id, other_text, note, decided_by, decided_at, created_by, created_at, updated_at, version | 3 |
 | `task_dependencies` | id, task_id, depends_on_id, created_by, created_at | 2 |
 | `task_embeddings` | id, task_id, provider, model, dimensions, vector, input_hash, created_at | 1 |
 | `task_files` | task_id, position, path, anchor, note | 1 |

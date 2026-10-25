@@ -15,10 +15,10 @@ work is ordered by dependency.
 
 ## 0. Summary
 
-* **What must not change.** 186 CLI commands under 31 top-level names, 8 exit codes, the `--json`
-  and human output; 66 MCP tools, 2 resources and 5 resource templates with their exact JSON
-  Schemas; 124 HTTP operations over 109 paths, 73 component schemas and 7 routes outside the OpenAPI
-  document (SPA, pairing, `/mcp/`, Swagger); a 72-table SQLite schema at Alembic revision `0010`, with
+* **What must not change.** 192 CLI commands under 32 top-level names, 8 exit codes, the `--json`
+  and human output; 69 MCP tools, 2 resources and 5 resource templates with their exact JSON
+  Schemas; 130 HTTP operations over 114 paths, 81 component schemas and 7 routes outside the OpenAPI
+  document (SPA, pairing, `/mcp/`, Swagger); a 73-table SQLite schema at Alembic revision `0011`, with
   existing databases opening unchanged; 38 configuration keys and 3 named-table families in TOML
   files; the environment variables Workgraph reads (E01-E13) and sets for children (E20-E24); the
   hook, agent, git and verification protocols. The inventory gives each of them an id.
@@ -90,9 +90,9 @@ Non-goals:
 
 | Ids | Contract |
 | --- | --- |
-| C001-C185 | CLI leaf commands, arguments and options |
-| M01-M66 | MCP tools, plus the resource table |
-| H001-H124, X1-X7 | HTTP operations and routes outside OpenAPI |
+| C001-C192 | CLI leaf commands, arguments and options |
+| M01-M69 | MCP tools, plus the resource table |
+| H001-H130, X1-X7 | HTTP operations and routes outside OpenAPI |
 | sections 13.4, 11 | database tables, indexes, triggers, migration chain |
 | section 13.5 | configuration keys and typed sub-tables |
 | E01-E24 | environment variables |
@@ -771,9 +771,9 @@ that prints nothing yet. Deps: none.
 
 **CF-01 Contract snapshots and drift test**
 Touches: `tools/contracts/dump.py` (extracts the CLI tree, MCP tools/resources, OpenAPI, `sqlite_master`
-at head, config JSON Schema), `contracts/{cli,mcp,openapi,config-schema}.json`, `contracts/schema-0010.sql`,
+at head, config JSON Schema), `contracts/{cli,mcp,openapi,config-schema}.json`, `contracts/schema-0011.sql`,
 `tests/unit/test_contract_snapshots.py`.
-Accept: counts equal the inventory (186, 66, 2+5, 124/109/73, 72 tables, 207 indexes); the test
+Accept: counts equal the inventory (192, 69, 2+5, 130/114/81, 73 tables, 211 indexes); the test
 passes on `main` and fails when an option is renamed (shown in the task report with a scratch edit
 that is not committed); dump output is deterministic. Deps: none.
 
@@ -826,7 +826,7 @@ module comment; world roots, dependency allowlist and banned calls read from
 `docs/rust-rewrite-contracts.md` from `contracts/`; output equals the committed section. Deps: CF-01.
 
 **CF-03 MCP transcripts**: `tools/contracts/record_mcp.py`, `contracts/mcp/*.jsonl` (section 3.3, stdio
-and Streamable HTTP). Accept: one success and one error per tool M01-M66, the listings, `initialize`,
+and Streamable HTTP). Accept: one success and one error per tool M01-M69, the listings, `initialize`,
 unknown tool, invalid arguments. Deps: CF-01.
 
 **CF-04 HTTP extras**: `tools/contracts/record_http.py`, `contracts/http/*` (section 3.3). Accept:
@@ -1173,7 +1173,7 @@ The user adopted the recommended answers to the open questions:
 1. `--help` and usage errors keep the same content; clap's layout is acceptable (help text is not parsed by tools).
 2. Human output is UTF-8 everywhere, including when piped on Windows.
 3. Python contracts are frozen during the rewrite. Defect fixes are allowed, each with a paired Rust task, so both versions change together.
-4. The schema is frozen (no migration `0011`) while both versions share a database.
+4. Schema changes are planned in both implementations and land in one stack, not frozen: `0011` (task decisions) is the first (D9).
 5. `arch-lint` is copied into this repository, not shared with noether.
 6. `/api/docs` is served byte-identical, CDN links included.
 7. The one-line Vite output-directory change is acceptable at retirement.

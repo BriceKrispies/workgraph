@@ -36,7 +36,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CONTRACTS_DIR = ROOT / "contracts"
 GOLDEN_DB_DIR = ROOT / "golden" / "db"
 
-REVISIONS = ("0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008", "0009", "0010")
+REVISIONS = ("0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008", "0009", "0010", "0011")
 HEAD = REVISIONS[-1]
 ROWS_PER_TABLE = 2
 

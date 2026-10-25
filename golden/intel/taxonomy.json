@@ -1,0 +1,688 @@
+{
+  "prompt_version": "classify-v1",
+  "prompts": [
+    {
+      "criteria": [
+        "docs test the tab\there",
+        "add",
+        "-neg exception enable ui exception",
+        "CVE-2026-1234 -neg",
+        "api-gateway csrf handler",
+        "pytest migration plan e2e.",
+        "duckdb sdk flow css",
+        "tutorial OR old fix!",
+        "module auth \\back database queue",
+        "bug test deploy",
+        "dark naïve",
+        "unit test",
+        "cache new\nline *star*",
+        "tutorial wrong css",
+        "bug once button password",
+        "update version library decouple",
+        "vulnerab cache dot.sep",
+        "oauth documentation adr performance coverage",
+        "incorrect monolith queue"
+      ],
+      "description": "page auth-service frontend web-client pipeline css",
+      "id": "prompt-000",
+      "input_hash": "d43905fa40ac6140da889930dc7e304370a53f69356e4d1bf94a52c779252fa0",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: 日本語 fix! restructure chore once\nDescription:\npage auth-service frontend web-client pipeline css\nAcceptance criteria:\n- docs test the tab\there\n- add\n- -neg exception enable ui exception\n- CVE-2026-1234 -neg\n- api-gateway csrf handler\n- pytest migration plan e2e.\n- duckdb sdk flow css\n- tutorial OR old fix!\n- module auth \\back database queue\n- bug test deploy\n- dark naïve\n- unit test\n- cache new\nline *star*\n- tutorial wrong css\n- bug once button password\n- update version library decouple\n- vulnerab cache dot.sep\n- oauth documentation adr performance coverage\n- incorrect monolith queue\nExisting tags: *star*, new\nline, new\n</task>",
+      "tags": [
+        "*star*",
+        "new\nline",
+        "new"
+      ],
+      "title": "日本語 fix! restructure chore once"
+    },
+    {
+      "criteria": [],
+      "description": "- {brace} deploy readme typo\n- spike dark error tab\there 日本語 guide xss web client docker unit test README component\nfix! rename\n* regression",
+      "id": "prompt-001",
+      "input_hash": "63c362461b1b8bc2ccf51008a43f752995fc0da8d407b1fc9b56a20e82b5dea0",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: typo unit test under_score api-gateway\nDescription:\n- {brace} deploy readme typo\n- spike dark error tab\there 日本語 guide xss web client docker unit test README component\nfix! rename\n* regression\nExisting tags: frontend, support\n</task>",
+      "tags": [
+        "frontend",
+        "support"
+      ],
+      "title": "typo unit test under_score api-gateway"
+    },
+    {
+      "criteria": [
+        "optimiz security",
+        "payment performance broken faster unit test",
+        "flaky clean up",
+        "research",
+        "a'b",
+        "queue NOT ui throughput feasibility",
+        "permission NEAR( page decouple migration plan",
+        "token prototype",
+        "xss tests",
+        "mode x:y",
+        "architecture architecture",
+        "metrics"
+      ],
+      "description": "1. tests xss architecture service split\n  - fails pipeline bug under_score enable crash database",
+      "id": "prompt-002",
+      "input_hash": "359c23919d2fbd13ed4c034fcb6b12edcd9e9537e59a3be34fa7e322f7c171d6",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: slow once ci wrong auth-service issue\nDescription:\n1. tests xss architecture service split\n  - fails pipeline bug under_score enable crash database\nAcceptance criteria:\n- optimiz security\n- payment performance broken faster unit test\n- flaky clean up\n- research\n- a'b\n- queue NOT ui throughput feasibility\n- permission NEAR( page decouple migration plan\n- token prototype\n- xss tests\n- mode x:y\n- architecture architecture\n- metrics\nExisting tags: prototype\n</task>",
+      "tags": [
+        "prototype"
+      ],
+      "title": "slow once ci wrong auth-service issue"
+    },
+    {
+      "criteria": [
+        "then boundary report doc",
+        "research auth service split 日本語 refactor",
+        "dependency encrypt",
+        "throughput system design dependencies handler support",
+        "typo",
+        "throughput regression dark implement after"
+      ],
+      "description": "* tab\there config dependencies incorrect csrf frontend database payment session investigate",
+      "id": "prompt-003",
+      "input_hash": "af46375ac731da37405aafea612e9b38f9b1753cf6ba9a390c9f0c0bb318a47f",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: incorrect comment xss e2e\nDescription:\n* tab\there config dependencies incorrect csrf frontend database payment session investigate\nAcceptance criteria:\n- then boundary report doc\n- research auth service split 日本語 refactor\n- dependency encrypt\n- throughput system design dependencies handler support\n- typo\n- throughput regression dark implement after\n</task>",
+      "tags": [],
+      "title": "incorrect comment xss e2e"
+    },
+    {
+      "criteria": [
+        "server bump *star*",
+        "after system design coverage dependencies",
+        "e2e. update *star* dependency service split",
+        "terraform readme documentation",
+        "once docs report",
+        "frontend fails test button handler",
+        "İstanbul github actions",
+        "CVE-2026-1234 tests *star* latency exception",
+        "analytics login tab\there prototype browser",
+        "browser tab\there",
+        "terraform update version e2e. the",
+        "housekeeping vulnerab upgrade reorganize",
+        "CVE-2026-1234",
+        "user build system",
+        "refactor *star*",
+        "css handler sdk",
+        "broken",
+        "package with refactor",
+        "sdk frontend NEAR(",
+        "docs endpoint refactor cleanup ßtraße",
+        "broken web client refactor a"
+      ],
+      "description": "  - dot.sep etl query tests handler\n* typo button emoji🙂 new service split infrastructure architecture x:y api prototype",
+      "id": "prompt-004",
+      "input_hash": "f506ccfbe633dabd7c14df83b00a31446d43a7b884ee6a2836fd3e34dfb93c06",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: and encrypt\nDescription:\n  - dot.sep etl query tests handler\n* typo button emoji🙂 new service split infrastructure architecture x:y api prototype\nAcceptance criteria:\n- server bump *star*\n- after system design coverage dependencies\n- e2e. update *star* dependency service split\n- terraform readme documentation\n- once docs report\n- frontend fails test button handler\n- İstanbul github actions\n- CVE-2026-1234 tests *star* latency exception\n- analytics login tab\there prototype browser\n- browser tab\there\n- terraform update version e2e. the\n- housekeeping vulnerab upgrade reorganize\n- CVE-2026-1234\n- user build system\n- refactor *star*\n- css handler sdk\n- broken\n- package with refactor\n- sdk frontend NEAR(\n- docs endpoint refactor cleanup ßtraße\n</task>",
+      "tags": [],
+      "title": "and encrypt"
+    },
+    {
+      "criteria": [
+        "restructure",
+        "auth ^caret explore login",
+        "flaky api-gateway latency spike doc",
+        "config with readme feature enable",
+        "semi;colon CVE-2026-1234 config"
+      ],
+      "description": "web-client\n2) auth build system implement new\nline wrong frontend spike evaluate adr build system\nBug: service split duckdb old ^caret boundary token with design deprecat\nbump encrypt README password semi;colon naïve NEAR( research api mode\ninfrastructure migration plan extract explore chore a/b report css browser 日本語 performance",
+      "id": "prompt-005",
+      "input_hash": "39569a04fa46d2e12283f125d148c310904246b9b8a0c2531792586ce9ca9444",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: semi;colon coverage throughput crash service split\nDescription:\nweb-client\n2) auth build system implement new\nline wrong frontend spike evaluate adr build system\nBug: service split duckdb old ^caret boundary token with design deprecat\nbump encrypt README password semi;colon naïve NEAR( research api mode\ninfrastructure migration plan extract explore chore a/b report css browser 日本語 performance\nAcceptance criteria:\n- restructure\n- auth ^caret explore login\n- flaky api-gateway latency spike doc\n- config with readme feature enable\n- semi;colon CVE-2026-1234 config\nExisting tags: naïve\n</task>",
+      "tags": [
+        "naïve"
+      ],
+      "title": "semi;colon coverage throughput crash service split"
+    },
+    {
+      "criteria": [],
+      "description": "",
+      "id": "prompt-006",
+      "input_hash": "1f660bc76b2bcfac12143567e9bead3841add84400642aa8648c18ac404a1954",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: etl implement\nExisting tags: and, evaluate\n</task>",
+      "tags": [
+        "and",
+        "evaluate"
+      ],
+      "title": "etl implement"
+    },
+    {
+      "criteria": [
+        "query reorganize dot.sep dark typo",
+        "investigate *star*",
+        "docker checkout secret under_score",
+        "browser",
+        "(ci) button cache payment",
+        "simplify",
+        "tests introduce integration test refactor Bug:",
+        "kube-proxy fix! warehouse database emoji🙂",
+        "dependency new library library",
+        "bump memory react metrics"
+      ],
+      "description": "security oauth client library slow evaluate\n- queue frontend tutorial throughput docker endpoint session flow build system AND csrf login\n1. a'b monolith NEAR( memory endpoint dependency Bug: NEAR( tests *star* boundary\nfix tab\there docker oauth speed up deploy",
+      "id": "prompt-007",
+      "input_hash": "7b35edc9e105020855da59f9095dfd5eeadcd45fbd605bce68f4b17c4983b3c3",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: compare\nDescription:\nsecurity oauth client library slow evaluate\n- queue frontend tutorial throughput docker endpoint session flow build system AND csrf login\n1. a'b monolith NEAR( memory endpoint dependency Bug: NEAR( tests *star* boundary\nfix tab\there docker oauth speed up deploy\nAcceptance criteria:\n- query reorganize dot.sep dark typo\n- investigate *star*\n- docker checkout secret under_score\n- browser\n- (ci) button cache payment\n- simplify\n- tests introduce integration test refactor Bug:\n- kube-proxy fix! warehouse database emoji🙂\n- dependency new library library\n- bump memory react metrics\nExisting tags: tutorial, fix\n</task>",
+      "tags": [
+        "tutorial",
+        "fix"
+      ],
+      "title": "compare"
+    },
+    {
+      "criteria": [
+        "cve fails",
+        "comment",
+        "incorrect fix! feasibility 日本語"
+      ],
+      "description": "session extract user docker",
+      "id": "prompt-008",
+      "input_hash": "77a8ca7c3f423a70d99db8c81e9b3d10920f948accba46bd6c149897f7caad6d",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: a'b secret permission ^caret user extract\nDescription:\nsession extract user docker\nAcceptance criteria:\n- cve fails\n- comment\n- incorrect fix! feasibility 日本語\nExisting tags: user\n</task>",
+      "tags": [
+        "user"
+      ],
+      "title": "a'b secret permission ^caret user extract"
+    },
+    {
+      "criteria": [
+        "token feasibility",
+        "build system a'b documentation user",
+        "react architecture after auth",
+        "cleanup semi;colon emoji🙂",
+        "flaky investigate",
+        "database throughput ßtraße",
+        "performance coverage",
+        "analytics cache naïve token prototype",
+        "retry guide client library infrastructure",
+        "allow csrf",
+        "optimiz retry",
+        "a'b README",
+        "\\back encrypt",
+        "docker",
+        "under_score {brace} web client",
+        "handler compare",
+        "design",
+        "doc"
+      ],
+      "description": "  - CVE-2026-1234 exception user",
+      "id": "prompt-009",
+      "input_hash": "bf7e4b90503ffc36be1ea471b223183e89a84de1bf1799bb2e5175ca667db9c3",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: spike -neg build system queue database tests\nDescription:\n  - CVE-2026-1234 exception user\nAcceptance criteria:\n- token feasibility\n- build system a'b documentation user\n- react architecture after auth\n- cleanup semi;colon emoji🙂\n- flaky investigate\n- database throughput ßtraße\n- performance coverage\n- analytics cache naïve token prototype\n- retry guide client library infrastructure\n- allow csrf\n- optimiz retry\n- a'b README\n- \\back encrypt\n- docker\n- under_score {brace} web client\n- handler compare\n- design\n- doc\nExisting tags: README, x:y, database\n</task>",
+      "tags": [
+        "README",
+        "x:y",
+        "database"
+      ],
+      "title": "spike -neg build system queue database tests"
+    },
+    {
+      "criteria": [
+        "analytics",
+        "typo faster",
+        "server compare simplify page",
+        "a'b and regression",
+        "analytics",
+        "cve",
+        "bump mode security update version api-gateway",
+        "under_score backend fix NOT",
+        "cleanup",
+        "test",
+        "throughput rename",
+        "cleanup handler warehouse",
+        "browser update version flaky tab\there simplify",
+        "OR chore mode user infrastructure",
+        "fix İstanbul csrf"
+      ],
+      "description": "2) feasibility infrastructure feature feature tab\there update version",
+      "id": "prompt-010",
+      "input_hash": "2545f912515e05b8966674d03e1fef80de422368d079b0564fad7ffe4db9a838",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: clean up\nDescription:\n2) feasibility infrastructure feature feature tab\there update version\nAcceptance criteria:\n- analytics\n- typo faster\n- server compare simplify page\n- a'b and regression\n- analytics\n- cve\n- bump mode security update version api-gateway\n- under_score backend fix NOT\n- cleanup\n- test\n- throughput rename\n- cleanup handler warehouse\n- browser update version flaky tab\there simplify\n- OR chore mode user infrastructure\n- fix İstanbul csrf\nExisting tags: rename, performance, enable\n</task>",
+      "tags": [
+        "rename",
+        "performance",
+        "enable"
+      ],
+      "title": "clean up"
+    },
+    {
+      "criteria": [
+        "(ci) infrastructure frontend with",
+        "new github actions secret slow",
+        "adr Bug:",
+        "server old speed up",
+        "handler chore update version deprecat allow",
+        "backend -neg",
+        "then migration plan sdk web client",
+        "boundary bump broken",
+        "support pipeline",
+        "a'b",
+        "new\nline docs",
+        "^caret bump pytest",
+        "under_score auth-service doc performance",
+        "checkout monolith deploy enable",
+        "ßtraße",
+        "a",
+        "add housekeeping",
+        "oauth NEAR( prototype"
+      ],
+      "description": "* naïve\n1. rename e2e\nci simplify Ünïcode e2e",
+      "id": "prompt-011",
+      "input_hash": "e8469bcf3f96596c2327255ccd22f78e16c473181c46418cd35663677b93162c",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: compare security password\nDescription:\n* naïve\n1. rename e2e\nci simplify Ünïcode e2e\nAcceptance criteria:\n- (ci) infrastructure frontend with\n- new github actions secret slow\n- adr Bug:\n- server old speed up\n- handler chore update version deprecat allow\n- backend -neg\n- then migration plan sdk web client\n- boundary bump broken\n- support pipeline\n- a'b\n- new\nline docs\n- ^caret bump pytest\n- under_score auth-service doc performance\n- checkout monolith deploy enable\n- ßtraße\n- a\n- add housekeeping\n- oauth NEAR( prototype\nExisting tags: feature, warehouse, xss\n</task>",
+      "tags": [
+        "feature",
+        "warehouse",
+        "xss"
+      ],
+      "title": "compare security password"
+    },
+    {
+      "criteria": [
+        "issue flow",
+        "kube-proxy restructure coverage docker"
+      ],
+      "description": "1. duckdb e2e css semi;colon allow explore\n- package endpoint query old css oauth adr\nrestructure implement user update upgrade refactor token chore e2e throughput",
+      "id": "prompt-012",
+      "input_hash": "8a56317ccf35f139df9102f2d409c8fcc2b1cf3665bd40f5b0dfda676424d6fb",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: introduce secret readme adr frontend latency\nDescription:\n1. duckdb e2e css semi;colon allow explore\n- package endpoint query old css oauth adr\nrestructure implement user update upgrade refactor token chore e2e throughput\nAcceptance criteria:\n- issue flow\n- kube-proxy restructure coverage docker\n</task>",
+      "tags": [],
+      "title": "introduce secret readme adr frontend latency"
+    },
+    {
+      "criteria": [
+        "issue service split allow auth refactor",
+        "refactor vulnerab",
+        "web-client",
+        "with dot.sep coverage component",
+        "report old a/b user",
+        "library decouple"
+      ],
+      "description": "2) incorrect fails fails\n1. slow research auth NEAR( client library once\n- css 日本語 *star* a'b feasibility metrics\n2) e2e etl support handler web client kube-proxy metrics speed up Bug:\n2) crash pytest issue oauth docker cleanup ßtraße introduce",
+      "id": "prompt-013",
+      "input_hash": "10eadb08c610061548c4f024bbd154015f661a453e6d32c3d99baf66345b2f45",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: *star* module client library comment server system design\nDescription:\n2) incorrect fails fails\n1. slow research auth NEAR( client library once\n- css 日本語 *star* a'b feasibility metrics\n2) e2e etl support handler web client kube-proxy metrics speed up Bug:\n2) crash pytest issue oauth docker cleanup ßtraße introduce\nAcceptance criteria:\n- issue service split allow auth refactor\n- refactor vulnerab\n- web-client\n- with dot.sep coverage component\n- report old a/b user\n- library decouple\nExisting tags: the\n</task>",
+      "tags": [
+        "the"
+      ],
+      "title": "*star* module client library comment server system design"
+    },
+    {
+      "criteria": [
+        "analytics emoji🙂",
+        "architecture housekeeping migration plan",
+        "analytics",
+        "integration test",
+        "feasibility new\nline support tutorial",
+        "fails",
+        "fails update component",
+        "query",
+        "architecture infrastructure",
+        "session boundary pytest fix",
+        "日本語",
+        "secret report report vulnerab \"quoted\"",
+        "fails",
+        "chore api-gateway (ci) tab\there throughput",
+        "github actions explore a ci",
+        "kube-proxy",
+        "the typo Bug:",
+        "login guide ^caret after",
+        "(ci) and web-client",
+        "semi;colon",
+        "new api module Bug: tutorial"
+      ],
+      "description": "  - the permission flow duckdb rename server feasibility rename vulnerab web client react",
+      "id": "prompt-014",
+      "input_hash": "52d25cf036c3d9dc40eb024c8b8038c6e954b88c73c0aa8c4ddfcd3ffaa5700d",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: ui system design\nDescription:\n  - the permission flow duckdb rename server feasibility rename vulnerab web client react\nAcceptance criteria:\n- analytics emoji🙂\n- architecture housekeeping migration plan\n- analytics\n- integration test\n- feasibility new\nline support tutorial\n- fails\n- fails update component\n- query\n- architecture infrastructure\n- session boundary pytest fix\n- 日本語\n- secret report report vulnerab \"quoted\"\n- fails\n- chore api-gateway (ci) tab\there throughput\n- github actions explore a ci\n- kube-proxy\n- the typo Bug:\n- login guide ^caret after\n- (ci) and web-client\n- semi;colon\nExisting tags: unit test, react, old\n</task>",
+      "tags": [
+        "unit test",
+        "react",
+        "old"
+      ],
+      "title": "ui system design"
+    },
+    {
+      "criteria": [
+        "faster test emoji🙂 a naïve",
+        "secret build system library Bug: explore",
+        "ci react dependency",
+        "slow",
+        "kube-proxy css ßtraße (ci) slow"
+      ],
+      "description": "warehouse database a under_score api-gateway tab\there Ünïcode cleanup implement css\n- queue rename\ndecouple cleanup auth-service introduce and dark Bug: support password e2e\nthen react password semi;colon allow spike NEAR(",
+      "id": "prompt-015",
+      "input_hash": "9928b318e5156993617836fc2c1b6e00de3f5f9d9d192982997a2a6be298cfe1",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: api queue\nDescription:\nwarehouse database a under_score api-gateway tab\there Ünïcode cleanup implement css\n- queue rename\ndecouple cleanup auth-service introduce and dark Bug: support password e2e\nthen react password semi;colon allow spike NEAR(\nAcceptance criteria:\n- faster test emoji🙂 a naïve\n- secret build system library Bug: explore\n- ci react dependency\n- slow\n- kube-proxy css ßtraße (ci) slow\nExisting tags: tutorial, a/b\n</task>",
+      "tags": [
+        "tutorial",
+        "a/b"
+      ],
+      "title": "api queue"
+    },
+    {
+      "criteria": [
+        "secret",
+        "the",
+        "with",
+        "bump",
+        "config token",
+        "日本語 page typo",
+        "restructure oauth fix",
+        "flow integration test refactor metrics package",
+        "NOT bug",
+        "injection adr adr spike",
+        "semi;colon unit test auth",
+        "kube-proxy web-client regression",
+        "issue system design incorrect",
+        "permission update version csrf investigate",
+        "support typo test",
+        "regression",
+        "semi;colon (ci)"
+      ],
+      "description": "- dark dependency\n  - integration test AND reorganize docker github actions database fails component \\back memory\n2) deprecat implement test after xss support payment module\n- auth a oauth page login kube-proxy metrics Ünïcode csrf Ünïcode retry",
+      "id": "prompt-016",
+      "input_hash": "c8571ff546834e3135c543168c9b86b3b234fdeebc1b56a79b21e76d960dd921",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: a'b e2e e2e\nDescription:\n- dark dependency\n  - integration test AND reorganize docker github actions database fails component \\back memory\n2) deprecat implement test after xss support payment module\n- auth a oauth page login kube-proxy metrics Ünïcode csrf Ünïcode retry\nAcceptance criteria:\n- secret\n- the\n- with\n- bump\n- config token\n- 日本語 page typo\n- restructure oauth fix\n- flow integration test refactor metrics package\n- NOT bug\n- injection adr adr spike\n- semi;colon unit test auth\n- kube-proxy web-client regression\n- issue system design incorrect\n- permission update version csrf investigate\n- support typo test\n- regression\n- semi;colon (ci)\n</task>",
+      "tags": [],
+      "title": "a'b e2e e2e"
+    },
+    {
+      "criteria": [],
+      "description": "İstanbul monolith İstanbul ßtraße token etl performance infrastructure mode memory",
+      "id": "prompt-017",
+      "input_hash": "3154d6226da7718db7248ee81bc68c65c8e8c9237c7c7952492b398a5e56dcd1",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: test simplify secret auth the ui\nDescription:\nİstanbul monolith İstanbul ßtraße token etl performance infrastructure mode memory\nExisting tags: adr\n</task>",
+      "tags": [
+        "adr"
+      ],
+      "title": "test simplify secret auth the ui"
+    },
+    {
+      "criteria": [
+        "client library slow",
+        "documentation e2e. ui enable library",
+        "rename explore handler",
+        "api",
+        "optimiz \"quoted\" {brace} checkout",
+        "e2e docs the rename rename"
+      ],
+      "description": "- introduce feature broken integration test ui\n* design frontend guide feasibility token naïve unit test exception README [bracket] refactor auth\n* module CVE-2026-1234 queue explore guide xss new\nline module fails service split update\n  - incorrect frontend boundary adr doc api-gateway performance simplify implement introduce\nduckdb ^caret",
+      "id": "prompt-018",
+      "input_hash": "0b68f82961a949effad6ac8ba76c2a2a2075a3e463750882dff2a2098e499fe4",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: semi;colon page security button\nDescription:\n- introduce feature broken integration test ui\n* design frontend guide feasibility token naïve unit test exception README [bracket] refactor auth\n* module CVE-2026-1234 queue explore guide xss new\nline module fails service split update\n  - incorrect frontend boundary adr doc api-gateway performance simplify implement introduce\nduckdb ^caret\nAcceptance criteria:\n- client library slow\n- documentation e2e. ui enable library\n- rename explore handler\n- api\n- optimiz \"quoted\" {brace} checkout\n- e2e docs the rename rename\nExisting tags: secret, fails\n</task>",
+      "tags": [
+        "secret",
+        "fails"
+      ],
+      "title": "semi;colon page security button"
+    },
+    {
+      "criteria": [
+        "session",
+        "github actions investigate NEAR( backend and"
+      ],
+      "description": "",
+      "id": "prompt-019",
+      "input_hash": "429696f84cd0af1d2c2ec848faf76ef2e9d524cba490c716bf1c892179881685",
+      "prompt": "Categories:\n- bug_fix: Correcting behaviour that is wrong or broken.\n- feature: New user- or developer-facing capability.\n- refactor: Restructuring code without changing behaviour.\n- maintenance: Dependency upgrades, chores, deprecations, housekeeping.\n- infrastructure: CI/CD, build, deployment, environments, tooling.\n- performance: Speed, latency, memory or throughput improvements.\n- security: Vulnerabilities, authn/authz, secrets, hardening.\n- testing: Adding or fixing tests, coverage, flakiness.\n- documentation: Docs, READMEs, guides, comments.\n- research: Investigation, spikes, evaluations, prototypes.\n- architecture: System design, boundaries, large structural decisions.\n- other: Does not fit any category above.\nComplexity levels: trivial, small, medium, large, very_large\n\nTask to classify:\n<task>\nTitle: web-client \\back typo\nAcceptance criteria:\n- session\n- github actions investigate NEAR( backend and\n</task>",
+      "tags": [],
+      "title": "web-client \\back typo"
+    }
+  ],
+  "taxonomy_version": "2026.1",
+  "validations": [
+    {
+      "id": "validate-000",
+      "payload": {
+        "affected_systems": [
+          "  x"
+        ],
+        "category": "bug_fix",
+        "complexity": "small",
+        "confidence": 0.5,
+        "domain": "backend",
+        "subtype": "bug_fix:backend",
+        "tags": [
+          "  a  ",
+          "",
+          "a",
+          " b"
+        ]
+      },
+      "valid": true,
+      "value": {
+        "affected_systems": [
+          "x"
+        ],
+        "category": "bug_fix",
+        "complexity": "small",
+        "confidence": 0.5,
+        "domain": "backend",
+        "rationale": "",
+        "subtype": "bug_fix:backend",
+        "tags": [
+          "a",
+          "b"
+        ]
+      }
+    },
+    {
+      "id": "validate-001",
+      "payload": {
+        "category": "other",
+        "complexity": "trivial",
+        "confidence": 0,
+        "domain": "general",
+        "subtype": "other"
+      },
+      "valid": true,
+      "value": {
+        "affected_systems": [],
+        "category": "other",
+        "complexity": "trivial",
+        "confidence": 0.0,
+        "domain": "general",
+        "rationale": "",
+        "subtype": "other",
+        "tags": []
+      }
+    },
+    {
+      "errors": [
+        "literal_error:category"
+      ],
+      "id": "validate-002",
+      "payload": {
+        "category": "nope",
+        "complexity": "small",
+        "confidence": 0.1,
+        "domain": "x",
+        "subtype": "x"
+      },
+      "valid": false
+    },
+    {
+      "errors": [
+        "literal_error:complexity"
+      ],
+      "id": "validate-003",
+      "payload": {
+        "category": "feature",
+        "complexity": "huge",
+        "confidence": 0.1,
+        "domain": "x",
+        "subtype": "x"
+      },
+      "valid": false
+    },
+    {
+      "errors": [
+        "less_than_equal:confidence"
+      ],
+      "id": "validate-004",
+      "payload": {
+        "category": "feature",
+        "complexity": "small",
+        "confidence": 1.5,
+        "domain": "x",
+        "subtype": "x"
+      },
+      "valid": false
+    },
+    {
+      "errors": [
+        "greater_than_equal:confidence"
+      ],
+      "id": "validate-005",
+      "payload": {
+        "category": "feature",
+        "complexity": "small",
+        "confidence": -0.1,
+        "domain": "x",
+        "subtype": "x"
+      },
+      "valid": false
+    },
+    {
+      "errors": [
+        "extra_forbidden:extra"
+      ],
+      "id": "validate-006",
+      "payload": {
+        "category": "feature",
+        "complexity": "small",
+        "confidence": 0.3,
+        "domain": "x",
+        "extra": 1,
+        "subtype": "x"
+      },
+      "valid": false
+    },
+    {
+      "errors": [
+        "string_too_long:subtype"
+      ],
+      "id": "validate-007",
+      "payload": {
+        "category": "feature",
+        "complexity": "small",
+        "confidence": 0.3,
+        "domain": "x",
+        "subtype": "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+      },
+      "valid": false
+    },
+    {
+      "errors": [
+        "too_long:tags"
+      ],
+      "id": "validate-008",
+      "payload": {
+        "category": "feature",
+        "complexity": "small",
+        "confidence": 0.3,
+        "domain": "x",
+        "subtype": "x",
+        "tags": [
+          "t0",
+          "t1",
+          "t2",
+          "t3",
+          "t4",
+          "t5",
+          "t6",
+          "t7",
+          "t8",
+          "t9",
+          "t10"
+        ]
+      },
+      "valid": false
+    },
+    {
+      "errors": [
+        "string_too_long:rationale"
+      ],
+      "id": "validate-009",
+      "payload": {
+        "category": "feature",
+        "complexity": "small",
+        "confidence": 0.3,
+        "domain": "x",
+        "rationale": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+        "subtype": "x"
+      },
+      "valid": false
+    },
+    {
+      "id": "validate-010",
+      "payload": {
+        "category": "feature",
+        "complexity": "small",
+        "confidence": true,
+        "domain": "x",
+        "subtype": "x"
+      },
+      "valid": true,
+      "value": {
+        "affected_systems": [],
+        "category": "feature",
+        "complexity": "small",
+        "confidence": 1.0,
+        "domain": "x",
+        "rationale": "",
+        "subtype": "x",
+        "tags": []
+      }
+    },
+    {
+      "id": "validate-011",
+      "payload": {
+        "category": "feature",
+        "complexity": "small",
+        "confidence": "0.3",
+        "domain": "x",
+        "subtype": "x"
+      },
+      "valid": true,
+      "value": {
+        "affected_systems": [],
+        "category": "feature",
+        "complexity": "small",
+        "confidence": 0.3,
+        "domain": "x",
+        "rationale": "",
+        "subtype": "x",
+        "tags": []
+      }
+    },
+    {
+      "errors": [
+        "missing:category",
+        "missing:subtype",
+        "missing:domain"
+      ],
+      "id": "validate-012",
+      "payload": {
+        "complexity": "small",
+        "confidence": 0.3
+      },
+      "valid": false
+    },
+    {
+      "errors": [
+        "less_than_equal:confidence"
+      ],
+      "id": "validate-013",
+      "payload": {
+        "category": "feature",
+        "complexity": "small",
+        "confidence": "NaN",
+        "domain": "x",
+        "subtype": "x"
+      },
+      "valid": false
+    }
+  ]
+}

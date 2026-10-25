@@ -38,7 +38,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `automation` | `list`, `create`, `update`, `show`, `enable`, `disable`, `trigger`, `preview`, `runs`, `notifications`, `catalog`, `process` |
 | `claude` | `install [--mcp]`, `uninstall`, `status`, `replay`, `bind`, `unbind`, `sessions`, `mcp-config`, `hook` |
 | `config` | `show`, `path`, `validate`, `migrate`, `set` |
-| `ui` | `screenshot [PAGE]`: capture a page of the running web UI to a PNG (see [below](#ui-screenshots)) |
+| `ui` | `open [PAGE]`: open a page of the web UI in the default browser, starting `workgraph serve` if nothing answers (see [below](#ui-open)); `screenshot [PAGE]`: capture a page of the running web UI to a PNG (see [below](#ui-screenshots)) |
 | `backup`, `restore` | consistent online backup zip; verified restore with safety copy and forward migration |
 | `export`, `import` | `export workspace FILE.jsonl`, `export analytics`; `import FILE.jsonl` |
 | `events` | `list`, `verify` |
@@ -100,6 +100,22 @@ uv run workgraph verify run WG-12 --tier fast
 ```
 
 All commands are single-line and work unchanged in PowerShell, bash, zsh and Nushell.
+
+## UI open
+
+`workgraph ui open [PAGE]` opens a page of the web UI in the default browser. `PAGE` is the UI path with its
+query string; leading slashes are ignored and no page means the home page (`/`). If no server answers on the
+configured host and port, the command starts `workgraph serve` as a detached background process (logging to
+`serve-detached.log` in the log directory), waits up to `--timeout` seconds (default 20) for it to answer, and
+then opens the page. Pass `--no-start` to fail instead of starting a server, `--print` to print the URL without
+opening a browser, and `--url` to target another base URL (a server given by `--url` is never started).
+
+```sh
+workgraph ui open
+workgraph ui open decisions
+workgraph ui open "tasks/WG-12" --no-start
+workgraph ui open graph --print --json   # {"url": "...", "started": false}
+```
 
 ## UI screenshots
 

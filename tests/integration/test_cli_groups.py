@@ -54,6 +54,9 @@ def test_all_command_groups(run, make_repo, tmp_path):
     run("project", "update", "p", "--description", "x")
     # agents and runs
     run("config", "set", "execution.enabled", "true")
+    # Keep acceptance manual so the explicit `task accept` below is the one that accepts WG-1;
+    # with auto-accept on, the full verify run accepts it and the second accept is an invalid transition.
+    run("config", "set", "verification.auto_accept", "false")
     run(
         "agent",
         "add-command",

@@ -1,0 +1,1648 @@
+{
+  "count": 131,
+  "events": {
+    "agent_session.bound": {
+      "data_keys": [
+        "cwd",
+        "session_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "agent_session.ended": {
+      "data_keys": [
+        "reason",
+        "tool_calls",
+        "tool_failures"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "agent_session"
+      ],
+      "optional_data_keys": []
+    },
+    "agent_session.internal_task_completed": {
+      "data_keys": [
+        "authoritative",
+        "external_task_id",
+        "mapped_task_id",
+        "subject"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "agent_session"
+      ],
+      "optional_data_keys": []
+    },
+    "agent_session.internal_task_created": {
+      "data_keys": [
+        "authoritative",
+        "external_task_id",
+        "mapped_task_id",
+        "subject"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "agent_session"
+      ],
+      "optional_data_keys": []
+    },
+    "agent_session.started": {
+      "data_keys": [
+        "binding",
+        "external_session_id",
+        "provider",
+        "source",
+        "task_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "agent_session"
+      ],
+      "optional_data_keys": []
+    },
+    "agent_session.subagent_started": {
+      "data_keys": [
+        "agent_id",
+        "agent_type",
+        "child_attempt_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "agent_session"
+      ],
+      "optional_data_keys": []
+    },
+    "agent_session.subagent_stopped": {
+      "data_keys": [
+        "agent_id",
+        "agent_type",
+        "child_attempt_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "agent_session"
+      ],
+      "optional_data_keys": []
+    },
+    "agent_session.{'subagent_started' if name == 'SubagentStart' else 'subagent_stopped'}": {
+      "data_keys": [
+        "agent_id",
+        "agent_type",
+        "child_attempt_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "agent_session"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.artifact": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.cancel_requested": {
+      "data_keys": [
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.cancelled": {
+      "data_keys": [
+        "duration_ms",
+        "error",
+        "exit_code",
+        "exit_reason",
+        "from",
+        "status",
+        "task_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.created": {
+      "data_keys": [
+        "adapter",
+        "model",
+        "number",
+        "parent_attempt_id",
+        "provider",
+        "rerun_of_attempt_id",
+        "retry_of_attempt_id",
+        "status",
+        "task_id",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.failed": {
+      "data_keys": [
+        "duration_ms",
+        "error",
+        "exit_code",
+        "exit_reason",
+        "from",
+        "status",
+        "task_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.log": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.message": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.outcome_captured": {
+      "data_keys": [
+        "commits",
+        "modified_repositories",
+        "outcome_manifest_id",
+        "read_only_violations"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.progress": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": [
+        "percent"
+      ]
+    },
+    "attempt.result": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": [
+        "status",
+        "summary",
+        "type"
+      ]
+    },
+    "attempt.session": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.status_changed": {
+      "data_keys": [
+        "from",
+        "task_id",
+        "to"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.subagent_bound": {
+      "data_keys": [
+        "agent_id",
+        "agent_type",
+        "model",
+        "task_id",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.succeeded": {
+      "data_keys": [
+        "duration_ms",
+        "error",
+        "exit_code",
+        "exit_reason",
+        "from",
+        "status",
+        "task_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.tool_result": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.tool_use": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.usage": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": [
+        "input_tokens",
+        "output_tokens"
+      ]
+    },
+    "attempt.workspace_prepared": {
+      "data_keys": [
+        "baseline_manifest_id",
+        "bases",
+        "change_set_id",
+        "isolation",
+        "repositories"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "attempt.{event.kind}": {
+      "data_keys": [
+        "message"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "attempt"
+      ],
+      "optional_data_keys": []
+    },
+    "automation.rule_created": {
+      "data_keys": [
+        "name",
+        "trigger"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "automation_rule"
+      ],
+      "optional_data_keys": []
+    },
+    "automation.rule_disabled": {
+      "data_keys": [],
+      "data_open": false,
+      "entity_types": [
+        "automation_rule"
+      ],
+      "optional_data_keys": []
+    },
+    "automation.rule_enabled": {
+      "data_keys": [],
+      "data_open": false,
+      "entity_types": [
+        "automation_rule"
+      ],
+      "optional_data_keys": []
+    },
+    "automation.rule_updated": {
+      "data_keys": [
+        "version"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "automation_rule"
+      ],
+      "optional_data_keys": []
+    },
+    "automation.run_completed": {
+      "data_keys": [
+        "actions",
+        "error",
+        "rule",
+        "status"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "automation_run"
+      ],
+      "optional_data_keys": []
+    },
+    "classification.completed": {
+      "data_keys": [
+        "category",
+        "classification_id",
+        "confidence",
+        "is_current",
+        "model",
+        "prompt_version",
+        "provider",
+        "taxonomy_version"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "classification.confirmed": {
+      "data_keys": [
+        "category",
+        "classification_id",
+        "previous"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "classification.disagreement": {
+      "data_keys": [
+        "current",
+        "new",
+        "replaced"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "classification.evaluated": {
+      "data_keys": [
+        "accuracy",
+        "evaluation_id",
+        "model",
+        "provider",
+        "sample_size"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "workspace"
+      ],
+      "optional_data_keys": []
+    },
+    "classification.failed": {
+      "data_keys": [
+        "classification_id",
+        "error",
+        "model",
+        "provider",
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "classification.promoted": {
+      "data_keys": [
+        "classification_id",
+        "previous_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "classification.superseded": {
+      "data_keys": [
+        "new_id",
+        "previous_id",
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "experiment.closed": {
+      "data_keys": [
+        "slug",
+        "trials"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment"
+      ],
+      "optional_data_keys": []
+    },
+    "experiment.created": {
+      "data_keys": [
+        "arms",
+        "slug"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment"
+      ],
+      "optional_data_keys": []
+    },
+    "experiment.frozen": {
+      "data_keys": [
+        "protocol",
+        "slug"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment"
+      ],
+      "optional_data_keys": []
+    },
+    "experiment.protocol_updated": {
+      "data_keys": [
+        "protocol",
+        "slug"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment"
+      ],
+      "optional_data_keys": []
+    },
+    "experiment_trial.added": {
+      "data_keys": [
+        "arm",
+        "band",
+        "experiment",
+        "phase",
+        "requested_model",
+        "seq",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment_trial"
+      ],
+      "optional_data_keys": []
+    },
+    "experiment_trial.classified": {
+      "data_keys": [
+        "experiment",
+        "failure_cause",
+        "failure_cause_source"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment_trial"
+      ],
+      "optional_data_keys": []
+    },
+    "experiment_trial.graded": {
+      "data_keys": [
+        "experiment",
+        "outcome",
+        "status"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment_trial"
+      ],
+      "optional_data_keys": []
+    },
+    "experiment_trial.invalidated": {
+      "data_keys": [
+        "experiment",
+        "failure_cause",
+        "failure_cause_source"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment_trial"
+      ],
+      "optional_data_keys": [
+        "actual_model",
+        "requested_model"
+      ]
+    },
+    "experiment_trial.linked": {
+      "data_keys": [
+        "actual_model",
+        "attempt_id",
+        "experiment",
+        "requested_model",
+        "subagent_run_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment_trial"
+      ],
+      "optional_data_keys": []
+    },
+    "experiment_trial.started": {
+      "data_keys": [
+        "base_ref",
+        "experiment",
+        "worktree_path"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "experiment_trial"
+      ],
+      "optional_data_keys": []
+    },
+    "git.commit_ingested": {
+      "data_keys": [
+        "deletions",
+        "insertions",
+        "repository_id",
+        "sha",
+        "subject",
+        "task_ids"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "commit"
+      ],
+      "optional_data_keys": []
+    },
+    "git.commits_attributed": {
+      "data_keys": [
+        "links_created"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "attempt",
+        "repository"
+      ],
+      "optional_data_keys": [
+        "repository_id"
+      ]
+    },
+    "git.sync_completed": {
+      "data_keys": [
+        "equivalences",
+        "head_refs",
+        "links_created",
+        "marked_unreachable",
+        "mode",
+        "new_commits",
+        "refs_changed",
+        "repository",
+        "repository_id",
+        "restored_reachable",
+        "shallow"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "notification.created": {
+      "data_keys": [
+        "level",
+        "title"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "notification"
+      ],
+      "optional_data_keys": []
+    },
+    "predictor.fitted": {
+      "data_keys": [
+        "converged",
+        "data_cutoff",
+        "model",
+        "n",
+        "repositories",
+        "samples"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "predictor_fit"
+      ],
+      "optional_data_keys": []
+    },
+    "project.created": {
+      "data_keys": [
+        "name",
+        "repository_ids",
+        "slug"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "project"
+      ],
+      "optional_data_keys": []
+    },
+    "project.repository_added": {
+      "data_keys": [
+        "repository_id",
+        "role"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "project"
+      ],
+      "optional_data_keys": []
+    },
+    "project.repository_removed": {
+      "data_keys": [
+        "repository_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "project"
+      ],
+      "optional_data_keys": []
+    },
+    "project.updated": {
+      "data_keys": [
+        "changes"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "project"
+      ],
+      "optional_data_keys": []
+    },
+    "report.generated": {
+      "data_keys": [
+        "kind",
+        "narrative_source"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "report"
+      ],
+      "optional_data_keys": []
+    },
+    "repository.changes_detected": {
+      "data_keys": [
+        "changed_refs",
+        "non_fast_forward",
+        "removed_refs"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "repository.checkout_added": {
+      "data_keys": [
+        "fingerprint",
+        "kind",
+        "matched_by",
+        "name",
+        "path",
+        "remotes"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "repository.checkout_discovered": {
+      "data_keys": [
+        "kind",
+        "path"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": [
+        "branch",
+        "detached",
+        "locked",
+        "reason",
+        "source"
+      ]
+    },
+    "repository.checkout_lost": {
+      "data_keys": [
+        "kind",
+        "path",
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "repository.checkout_removed": {
+      "data_keys": [
+        "path"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "repository.dependency_declared": {
+      "data_keys": [
+        "depends_on",
+        "depends_on_name"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "repository.health_changed": {
+      "data_keys": [
+        "detail",
+        "from",
+        "to"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "repository.registered": {
+      "data_keys": [
+        "fingerprint",
+        "kind",
+        "matched_by",
+        "name",
+        "path",
+        "remotes"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "repository.removed": {
+      "data_keys": [
+        "name",
+        "note"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "repository.updated": {
+      "data_keys": [
+        "changes"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "repository"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.bisect_probe": {
+      "data_keys": [
+        "failed_checks",
+        "passed",
+        "position",
+        "run_id",
+        "shas"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.created": {
+      "data_keys": [
+        "base_shas",
+        "integration_branch",
+        "parent_key",
+        "tasks"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.integration_conflict": {
+      "data_keys": [
+        "git_error",
+        "head",
+        "instruction",
+        "integration_tip",
+        "paths",
+        "repository",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.integration_merged": {
+      "data_keys": [
+        "already_integrated",
+        "branch",
+        "head",
+        "merge_commit",
+        "repository",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.integration_removed": {
+      "data_keys": [
+        "branch",
+        "repository"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.integration_skipped": {
+      "data_keys": [
+        "reason",
+        "repository",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.item_added": {
+      "data_keys": [
+        "parent_key",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.item_ejected": {
+      "data_keys": [
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": [
+        "failed_checks",
+        "manual",
+        "position",
+        "reason",
+        "signatures",
+        "verification_run_id"
+      ]
+    },
+    "stack.item_released": {
+      "data_keys": [
+        "parent_key",
+        "rebuild",
+        "state",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.item_removed": {
+      "data_keys": [
+        "parent_key",
+        "state",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.item_state_changed": {
+      "data_keys": [
+        "detail",
+        "from",
+        "merge_order",
+        "parent_key",
+        "task_key",
+        "to"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.land_requested": {
+      "data_keys": [
+        "base_shas",
+        "mode",
+        "new_base_shas",
+        "parent_key",
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.landed": {
+      "data_keys": [
+        "mode",
+        "parent_key",
+        "reason",
+        "released",
+        "run_id",
+        "tasks",
+        "tips"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.landing_refused": {
+      "data_keys": [
+        "error",
+        "mode",
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.parent_not_reviewable": {
+      "data_keys": [
+        "reason",
+        "status",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.parent_rejected": {
+      "data_keys": [
+        "reason",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.rebased": {
+      "data_keys": [
+        "base_shas",
+        "new_base_shas",
+        "parent_key",
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.rebuilt": {
+      "data_keys": [
+        "base_shas",
+        "conflicted",
+        "replayed",
+        "tips"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.status_changed": {
+      "data_keys": [
+        "from",
+        "reason",
+        "to"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.verification_errored": {
+      "data_keys": [
+        "checks",
+        "excerpt",
+        "reason",
+        "run_id",
+        "stage"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.verification_failed": {
+      "data_keys": [
+        "failed_checks",
+        "run_id",
+        "signatures",
+        "tips"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.verification_failed_on_base": {
+      "data_keys": [
+        "failed_checks",
+        "reason",
+        "run_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.verification_started": {
+      "data_keys": [
+        "checks",
+        "tips"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": []
+    },
+    "stack.verified": {
+      "data_keys": [
+        "reason",
+        "run_id",
+        "tasks",
+        "tips"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "stack"
+      ],
+      "optional_data_keys": [
+        "tolerated"
+      ]
+    },
+    "task.accepted": {
+      "data_keys": [
+        "manifest_id",
+        "mode",
+        "reason",
+        "verification_run_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.archived": {
+      "data_keys": [
+        "key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.became_ready": {
+      "data_keys": [
+        "key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.change_surface_computed": {
+      "data_keys": [
+        "deletions",
+        "insertions",
+        "repositories"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.claimed": {
+      "data_keys": [
+        "claimed_by",
+        "expires_at"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.comment_added": {
+      "data_keys": [
+        "comment_id",
+        "excerpt",
+        "kind"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.commit_linked": {
+      "data_keys": [
+        "commit_id",
+        "repository_id",
+        "sha",
+        "source"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.commit_unlinked": {
+      "data_keys": [
+        "removed",
+        "sha"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.completed": {
+      "data_keys": [
+        "next_status",
+        "summary",
+        "verification_configured"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.created": {
+      "data_keys": [
+        "acceptance_criteria",
+        "assignee",
+        "auto_execute",
+        "depends_on",
+        "description",
+        "key",
+        "parent_id",
+        "priority",
+        "project_ids",
+        "repository_ids",
+        "status",
+        "tags",
+        "title"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.decomposed": {
+      "data_keys": [
+        "children",
+        "model",
+        "provider",
+        "rationale"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.dependency_added": {
+      "data_keys": [
+        "depends_on",
+        "depends_on_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.dependency_removed": {
+      "data_keys": [
+        "depends_on",
+        "depends_on_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.escalated": {
+      "data_keys": [
+        "failed_attempts",
+        "limit",
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.progress_reported": {
+      "data_keys": [
+        "comment_id",
+        "excerpt",
+        "kind"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.rejected": {
+      "data_keys": [
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.relation_added": {
+      "data_keys": [
+        "relation_type",
+        "target",
+        "target_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.released": {
+      "data_keys": [
+        "previous_claimant",
+        "reason"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.reopened": {
+      "data_keys": [
+        "from",
+        "reason",
+        "to"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.repository_linked": {
+      "data_keys": [
+        "access",
+        "repository",
+        "repository_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.repository_unlinked": {
+      "data_keys": [
+        "repository",
+        "repository_id"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.result_reported": {
+      "data_keys": [
+        "comment_id",
+        "excerpt",
+        "kind"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.status_changed": {
+      "data_keys": [
+        "from",
+        "reason",
+        "to",
+        "version"
+      ],
+      "data_open": true,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": [
+        "attempt_id",
+        "run_id"
+      ]
+    },
+    "task.synced": {
+      "data_keys": [
+        "changed_fields",
+        "connection",
+        "created",
+        "external_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.unarchived": {
+      "data_keys": [
+        "key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.updated": {
+      "data_keys": [
+        "changes",
+        "key",
+        "material_change",
+        "reason",
+        "version"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "verification.completed": {
+      "data_keys": [
+        "failed_checks",
+        "optional_failures",
+        "required_passed",
+        "status",
+        "task_id",
+        "task_key"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "verification_run"
+      ],
+      "optional_data_keys": [
+        "stack"
+      ]
+    },
+    "verification.config_created": {
+      "data_keys": [
+        "checks",
+        "name",
+        "scope_id",
+        "scope_type"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "verification_config"
+      ],
+      "optional_data_keys": []
+    },
+    "verification.config_disabled": {
+      "data_keys": [],
+      "data_open": false,
+      "entity_types": [
+        "verification_config"
+      ],
+      "optional_data_keys": []
+    },
+    "verification.config_enabled": {
+      "data_keys": [],
+      "data_open": false,
+      "entity_types": [
+        "verification_config"
+      ],
+      "optional_data_keys": []
+    },
+    "verification.config_updated": {
+      "data_keys": [
+        "checks",
+        "name",
+        "scope_id",
+        "scope_type"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "verification_config"
+      ],
+      "optional_data_keys": []
+    },
+    "verification.started": {
+      "data_keys": [
+        "checks",
+        "manifest_id",
+        "task_id",
+        "task_key",
+        "tier"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "verification_run"
+      ],
+      "optional_data_keys": [
+        "stack"
+      ]
+    },
+    "workspace.archived": {
+      "data_keys": [],
+      "data_open": false,
+      "entity_types": [
+        "workspace"
+      ],
+      "optional_data_keys": []
+    },
+    "workspace.created": {
+      "data_keys": [
+        "key_prefix",
+        "name",
+        "slug"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "workspace"
+      ],
+      "optional_data_keys": []
+    },
+    "workspace.settings_changed": {
+      "data_keys": [
+        "after",
+        "before"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "workspace"
+      ],
+      "optional_data_keys": []
+    },
+    "worktree.created": {
+      "data_keys": [
+        "base_sha",
+        "path",
+        "repository"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "worktree"
+      ],
+      "optional_data_keys": [
+        "base",
+        "branch",
+        "purpose",
+        "stack_id"
+      ]
+    },
+    "worktree.recovered": {
+      "data_keys": [
+        "activated",
+        "orphaned",
+        "released",
+        "unknown_dirs"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "system"
+      ],
+      "optional_data_keys": []
+    },
+    "worktree.removed": {
+      "data_keys": [
+        "branch_kept",
+        "path"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "worktree"
+      ],
+      "optional_data_keys": []
+    }
+  },
+  "reserved_data_keys": {
+    "_automation": "present on any event emitted inside an automation run (depth and actor)"
+  }
+}

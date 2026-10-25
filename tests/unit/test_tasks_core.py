@@ -15,6 +15,7 @@ from workgraph.core.models.schemas import (
     BulkUpdate,
     ClaimRequest,
     CommentCreate,
+    ProjectCreate,
     RelationCreate,
     TaskCreate,
     TaskFilter,
@@ -281,6 +282,25 @@ def test_promote_ready_dry_run_changes_nothing(app, human, ws):
     assert after.version == before.version
     assert app.tasks.promote_ready(human, ws) == [b.key]
     assert app.tasks.get(human, ws, b.key).status == "ready"
+
+
+def test_promote_ready_report_counts_each_project(app, human, ws):
+    app.projects.create(human, ws, ProjectCreate(slug="core", name="Core"))
+    app.projects.create(human, ws, ProjectCreate(slug="ops", name="Ops"))
+    both = app.tasks.create(human, ws, TaskCreate(title="Both", projects=["core", "ops"]))
+    core_only = app.tasks.create(human, ws, TaskCreate(title="Core", projects=["core"]))
+    unfiled = app.tasks.create(human, ws, TaskCreate(title="Unfiled"))
+
+    report = app.tasks.promote_ready_report(human, ws, dry_run=True)
+
+    assert report["promoted"] == [both.key, core_only.key, unfiled.key]
+    assert report["by_project"] == {"(none)": 1, "core": 2, "ops": 1}
+    assert app.tasks.get(human, ws, both.key).status == "backlog"
+
+    report = app.tasks.promote_ready_report(human, ws, project="core")
+    assert report == {"promoted": [both.key, core_only.key], "by_project": {"core": 2, "ops": 1}}
+    assert app.tasks.get(human, ws, both.key).status == "ready"
+    assert app.tasks.get(human, ws, unfiled.key).status == "backlog"
 
 
 def test_accept_then_promote_dependents(app, human, ws):

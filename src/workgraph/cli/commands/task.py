@@ -23,6 +23,7 @@ from workgraph.cli.common import (
     workspace_option,
     ws,
 )
+from workgraph.core.errors import ValidationFailed
 from workgraph.core.models.enums import RelationType, TaskPriority, TaskStatus
 from workgraph.core.models.schemas import (
     BulkUpdate,
@@ -444,21 +445,38 @@ def task_accept(
 @handle_errors
 def task_promote_ready(
     tag: list[str] = typer.Option(None, "--tag", "-t", help="Only tasks with this tag (repeatable)"),
-    project: str | None = typer.Option(None, "--project", "-p"),
+    project: str | None = typer.Option(None, "--project", "-p", help="Only tasks in this project"),
+    all_tasks: bool = typer.Option(
+        False,
+        "--all",
+        help="Consider every backlog task in the workspace (required when no --project or --tag)",
+    ),
     dry_run: bool = typer.Option(False, "--dry-run", help="Report what would move; change nothing"),
     workspace: str | None = workspace_option(),
 ) -> None:
-    """Move backlog tasks whose dependencies are all accepted to ready (skips parents and parked tasks)."""
-    keys = STATE.app().tasks.promote_ready(
-        STATE.ctx(), ws(workspace), tags=_tag_values(tag), project=project, dry_run=dry_run
+    """Move backlog tasks whose dependencies are all accepted to ready (skips parents and parked tasks).
+
+    A scope is required: --project, --tag, or --all.
+    """
+    tags = _tag_values(tag)
+    if all_tasks and (project or tags):
+        raise ValidationFailed("--all cannot be combined with --project or --tag")
+    if not (all_tasks or project or tags):
+        raise ValidationFailed("give --project, --tag or --all to choose the tasks to promote")
+    report = STATE.app().tasks.promote_ready_report(
+        STATE.ctx(), ws(workspace), tags=tags, project=project, dry_run=dry_run
     )
-    emit(
-        {"promoted": keys, "dry_run": dry_run},
-        lambda r: console.print(
+    keys = report["promoted"]
+
+    def render(r: dict[str, Any]) -> None:
+        console.print(
             f"{'would promote' if dry_run else 'promoted'} {len(keys)}"
             + (f": {', '.join(keys)}" if keys else "")
-        ),
-    )
+        )
+        for slug, count in r["by_project"].items():
+            console.print(f"  {escape(slug)}: {count}")
+
+    emit({**report, "dry_run": dry_run}, render)
 
 
 @task_app.command("import-breakdown")

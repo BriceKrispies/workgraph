@@ -55,8 +55,10 @@ entries are kept.
 ## Promoting ready work
 
 `task promote-ready` finds the backlog tasks whose dependencies are all accepted and moves them to `ready`,
-without one `task show` per task. `--tag` (repeatable) and `--project` narrow the candidates; `--dry-run` prints
-the keys that would move and changes nothing. A task with no dependencies counts as having them all accepted.
+without one `task show` per task. A scope is required: `--tag` (repeatable), `--project`, or `--all` for every
+backlog task in the workspace (`--all` cannot be combined with the others). The result lists the keys that moved and
+a count per project; `--dry-run` reports the same and changes nothing. A task with no dependencies counts as having
+them all accepted.
 Tasks with children are skipped (they are rolled up, not claimed), as are tasks tagged `parked` and archived
 tasks. Dependencies count as accepted under the same rule as `task ready` (including a sibling already
 integration-ready in an active stack).
@@ -137,6 +139,7 @@ uv run workgraph task update WG-12 --add-file src/auth/session.rs --expected-ver
 uv run workgraph task list --file src/auth/token.rs
 uv run workgraph task depend WG-13 WG-12
 uv run workgraph task promote-ready --tag sprint-42 --dry-run
+uv run workgraph task promote-ready --all --dry-run
 uv run workgraph task accept WG-12 --manual --reason "reviewed" --promote-dependents
 uv run workgraph task bulk-update WG-1 WG-2 WG-3 --add-tag sprint-42
 uv run workgraph git sync --full

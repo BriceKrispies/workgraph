@@ -1,0 +1,4710 @@
+{
+  "cases": [
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "dev_panel": true,
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [
+        {
+          "branch": "ABC-123-retry-budget",
+          "id": "#42",
+          "name": "ABC-123 Add retry budget",
+          "repositoryName": "acme/svc-billing",
+          "status": "MERGED",
+          "url": "https://github.com/acme/svc-billing/pull/42"
+        },
+        {
+          "branch": "ABC-123-retry-config",
+          "id": "#43",
+          "name": "ABC-123 Retry budget config",
+          "repositoryName": "acme/svc-api",
+          "status": "OPEN",
+          "url": "https://github.com/acme/svc-api/pull/43"
+        }
+      ],
+      "expected": {
+        "assignee": "Brice Lehew",
+        "blocked_by_keys": [
+          "ABC-118",
+          "ABC-122"
+        ],
+        "description": "Calls to the billing API fail intermittently. Bounded retries are the fix.\n\n- Cap attempts at 3\n- Back off exponentially\n\nLine one\nOwner: @Priya Rao see https://acme.atlassian.net/wiki/spaces/ENG/pages/1",
+        "external_id": "10001",
+        "issue_type": "Story",
+        "key": "ABC-123",
+        "labels": [
+          "billing",
+          "retries"
+        ],
+        "parent_key": "ABC-100",
+        "priority": "high",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc-api/pull/43",
+            "number": 43,
+            "provider": "github",
+            "repo_full_name": "acme/svc-api",
+            "repo_normalized_url": "github.com/acme/svc-api",
+            "sources": [
+              "dev_panel"
+            ],
+            "title": "ABC-123 Retry budget config",
+            "url": "https://github.com/acme/svc-api/pull/43"
+          },
+          {
+            "normalized_url": "github.com/acme/svc-billing/pull/42",
+            "number": 42,
+            "provider": "github",
+            "repo_full_name": "acme/svc-billing",
+            "repo_normalized_url": "github.com/acme/svc-billing",
+            "sources": [
+              "custom_field",
+              "dev_panel"
+            ],
+            "title": "ABC-123 Add retry budget",
+            "url": "https://github.com/acme/svc-billing/pull/42"
+          },
+          {
+            "normalized_url": "github.com/acme/svc-web/pull/7",
+            "number": 7,
+            "provider": "github",
+            "repo_full_name": "Acme/Svc-Web",
+            "repo_normalized_url": "github.com/acme/svc-web",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/Acme/Svc-Web/pull/7"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "assignee": {
+              "accountId": "557058:abc",
+              "displayName": "Brice Lehew"
+            },
+            "customfield_10042": {
+              "content": [
+                {
+                  "content": [
+                    {
+                      "text": "PR: ",
+                      "type": "text"
+                    },
+                    {
+                      "attrs": {
+                        "url": "https://github.com/acme/svc-billing/pull/42/files"
+                      },
+                      "type": "inlineCard"
+                    },
+                    {
+                      "text": " and ",
+                      "type": "text"
+                    },
+                    {
+                      "marks": [
+                        {
+                          "attrs": {
+                            "href": "https://github.com/Acme/Svc-Web/pull/7"
+                          },
+                          "type": "link"
+                        }
+                      ],
+                      "text": "svc-web",
+                      "type": "text"
+                    },
+                    {
+                      "text": ". Issue tracker: https://github.com/acme/svc-billing/issues/9",
+                      "type": "text"
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "doc",
+              "version": 1
+            },
+            "description": {
+              "content": [
+                {
+                  "content": [
+                    {
+                      "text": "Calls to the billing API fail intermittently. ",
+                      "type": "text"
+                    },
+                    {
+                      "marks": [
+                        {
+                          "type": "strong"
+                        }
+                      ],
+                      "text": "Bounded retries",
+                      "type": "text"
+                    },
+                    {
+                      "text": " are the fix.",
+                      "type": "text"
+                    }
+                  ],
+                  "type": "paragraph"
+                },
+                {
+                  "content": [
+                    {
+                      "content": [
+                        {
+                          "content": [
+                            {
+                              "text": "Cap attempts at 3",
+                              "type": "text"
+                            }
+                          ],
+                          "type": "paragraph"
+                        }
+                      ],
+                      "type": "listItem"
+                    },
+                    {
+                      "content": [
+                        {
+                          "content": [
+                            {
+                              "text": "Back off exponentially",
+                              "type": "text"
+                            }
+                          ],
+                          "type": "paragraph"
+                        }
+                      ],
+                      "type": "listItem"
+                    }
+                  ],
+                  "type": "bulletList"
+                },
+                {
+                  "content": [
+                    {
+                      "text": "Line one",
+                      "type": "text"
+                    },
+                    {
+                      "type": "hardBreak"
+                    },
+                    {
+                      "text": "Owner: ",
+                      "type": "text"
+                    },
+                    {
+                      "attrs": {
+                        "id": "5b10a2844c20165700ede21g",
+                        "text": "@Priya Rao"
+                      },
+                      "type": "mention"
+                    },
+                    {
+                      "text": " see ",
+                      "type": "text"
+                    },
+                    {
+                      "attrs": {
+                        "url": "https://acme.atlassian.net/wiki/spaces/ENG/pages/1"
+                      },
+                      "type": "inlineCard"
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "doc",
+              "version": 1
+            },
+            "issuelinks": [
+              {
+                "id": "20001",
+                "inwardIssue": {
+                  "fields": {
+                    "summary": "Billing client timeouts"
+                  },
+                  "id": "10122",
+                  "key": "ABC-122"
+                },
+                "type": {
+                  "inward": "is blocked by",
+                  "name": "Blocks",
+                  "outward": "blocks"
+                }
+              },
+              {
+                "id": "20002",
+                "inwardIssue": {
+                  "fields": {
+                    "summary": "Gateway quotas"
+                  },
+                  "id": "10118",
+                  "key": "ABC-118"
+                },
+                "type": {
+                  "inward": "is blocked by",
+                  "name": "Blocks",
+                  "outward": "blocks"
+                }
+              },
+              {
+                "id": "20003",
+                "inwardIssue": {
+                  "fields": {
+                    "summary": "Gateway quotas"
+                  },
+                  "id": "10118",
+                  "key": "ABC-118"
+                },
+                "type": {
+                  "inward": "is blocked by",
+                  "name": "Blocks",
+                  "outward": "blocks"
+                }
+              },
+              {
+                "id": "20004",
+                "outwardIssue": {
+                  "fields": {
+                    "summary": "Retry dashboard"
+                  },
+                  "id": "10124",
+                  "key": "ABC-124"
+                },
+                "type": {
+                  "inward": "is blocked by",
+                  "name": "Blocks",
+                  "outward": "blocks"
+                }
+              },
+              {
+                "id": "20005",
+                "inwardIssue": {
+                  "fields": {
+                    "summary": "Unrelated"
+                  },
+                  "id": "10130",
+                  "key": "ABC-130"
+                },
+                "type": {
+                  "inward": "relates to",
+                  "name": "Relates",
+                  "outward": "relates to"
+                }
+              }
+            ],
+            "issuetype": {
+              "name": "Story"
+            },
+            "labels": [
+              "billing",
+              "retries"
+            ],
+            "parent": {
+              "fields": {
+                "issuetype": {
+                  "name": "Epic"
+                },
+                "summary": "Billing resilience"
+              },
+              "id": "10000",
+              "key": "ABC-100"
+            },
+            "priority": {
+              "id": "2",
+              "name": "High"
+            },
+            "project": {
+              "key": "ABC",
+              "name": "Billing"
+            },
+            "resolution": null,
+            "status": {
+              "name": "In Progress",
+              "statusCategory": {
+                "key": "indeterminate",
+                "name": "In Progress"
+              }
+            },
+            "summary": "Add retry budget to the billing client",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "10001",
+          "key": "ABC-123",
+          "self": "https://acme.atlassian.net/rest/api/3/issue/10001"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "indeterminate",
+        "status_name": "In Progress",
+        "title": "Add retry budget to the billing client",
+        "url": "https://acme.atlassian.net/browse/ABC-123"
+      },
+      "issue": {
+        "fields": {
+          "assignee": {
+            "accountId": "557058:abc",
+            "displayName": "Brice Lehew"
+          },
+          "customfield_10042": {
+            "content": [
+              {
+                "content": [
+                  {
+                    "text": "PR: ",
+                    "type": "text"
+                  },
+                  {
+                    "attrs": {
+                      "url": "https://github.com/acme/svc-billing/pull/42/files"
+                    },
+                    "type": "inlineCard"
+                  },
+                  {
+                    "text": " and ",
+                    "type": "text"
+                  },
+                  {
+                    "marks": [
+                      {
+                        "attrs": {
+                          "href": "https://github.com/Acme/Svc-Web/pull/7"
+                        },
+                        "type": "link"
+                      }
+                    ],
+                    "text": "svc-web",
+                    "type": "text"
+                  },
+                  {
+                    "text": ". Issue tracker: https://github.com/acme/svc-billing/issues/9",
+                    "type": "text"
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "doc",
+            "version": 1
+          },
+          "description": {
+            "content": [
+              {
+                "content": [
+                  {
+                    "text": "Calls to the billing API fail intermittently. ",
+                    "type": "text"
+                  },
+                  {
+                    "marks": [
+                      {
+                        "type": "strong"
+                      }
+                    ],
+                    "text": "Bounded retries",
+                    "type": "text"
+                  },
+                  {
+                    "text": " are the fix.",
+                    "type": "text"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "content": [
+                  {
+                    "content": [
+                      {
+                        "content": [
+                          {
+                            "text": "Cap attempts at 3",
+                            "type": "text"
+                          }
+                        ],
+                        "type": "paragraph"
+                      }
+                    ],
+                    "type": "listItem"
+                  },
+                  {
+                    "content": [
+                      {
+                        "content": [
+                          {
+                            "text": "Back off exponentially",
+                            "type": "text"
+                          }
+                        ],
+                        "type": "paragraph"
+                      }
+                    ],
+                    "type": "listItem"
+                  }
+                ],
+                "type": "bulletList"
+              },
+              {
+                "content": [
+                  {
+                    "text": "Line one",
+                    "type": "text"
+                  },
+                  {
+                    "type": "hardBreak"
+                  },
+                  {
+                    "text": "Owner: ",
+                    "type": "text"
+                  },
+                  {
+                    "attrs": {
+                      "id": "5b10a2844c20165700ede21g",
+                      "text": "@Priya Rao"
+                    },
+                    "type": "mention"
+                  },
+                  {
+                    "text": " see ",
+                    "type": "text"
+                  },
+                  {
+                    "attrs": {
+                      "url": "https://acme.atlassian.net/wiki/spaces/ENG/pages/1"
+                    },
+                    "type": "inlineCard"
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "doc",
+            "version": 1
+          },
+          "issuelinks": [
+            {
+              "id": "20001",
+              "inwardIssue": {
+                "fields": {
+                  "summary": "Billing client timeouts"
+                },
+                "id": "10122",
+                "key": "ABC-122"
+              },
+              "type": {
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks"
+              }
+            },
+            {
+              "id": "20002",
+              "inwardIssue": {
+                "fields": {
+                  "summary": "Gateway quotas"
+                },
+                "id": "10118",
+                "key": "ABC-118"
+              },
+              "type": {
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks"
+              }
+            },
+            {
+              "id": "20003",
+              "inwardIssue": {
+                "fields": {
+                  "summary": "Gateway quotas"
+                },
+                "id": "10118",
+                "key": "ABC-118"
+              },
+              "type": {
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks"
+              }
+            },
+            {
+              "id": "20004",
+              "outwardIssue": {
+                "fields": {
+                  "summary": "Retry dashboard"
+                },
+                "id": "10124",
+                "key": "ABC-124"
+              },
+              "type": {
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks"
+              }
+            },
+            {
+              "id": "20005",
+              "inwardIssue": {
+                "fields": {
+                  "summary": "Unrelated"
+                },
+                "id": "10130",
+                "key": "ABC-130"
+              },
+              "type": {
+                "inward": "relates to",
+                "name": "Relates",
+                "outward": "relates to"
+              }
+            }
+          ],
+          "issuetype": {
+            "name": "Story"
+          },
+          "labels": [
+            "billing",
+            "retries"
+          ],
+          "parent": {
+            "fields": {
+              "issuetype": {
+                "name": "Epic"
+              },
+              "summary": "Billing resilience"
+            },
+            "id": "10000",
+            "key": "ABC-100"
+          },
+          "priority": {
+            "id": "2",
+            "name": "High"
+          },
+          "project": {
+            "key": "ABC",
+            "name": "Billing"
+          },
+          "resolution": null,
+          "status": {
+            "name": "In Progress",
+            "statusCategory": {
+              "key": "indeterminate",
+              "name": "In Progress"
+            }
+          },
+          "summary": "Add retry budget to the billing client",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "10001",
+        "key": "ABC-123",
+        "self": "https://acme.atlassian.net/rest/api/3/issue/10001"
+      },
+      "name": "cloud-story-dev-panel"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "dev_panel": false,
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [
+        {
+          "branch": "ABC-123-retry-budget",
+          "id": "#42",
+          "name": "ABC-123 Add retry budget",
+          "repositoryName": "acme/svc-billing",
+          "status": "MERGED",
+          "url": "https://github.com/acme/svc-billing/pull/42"
+        },
+        {
+          "branch": "ABC-123-retry-config",
+          "id": "#43",
+          "name": "ABC-123 Retry budget config",
+          "repositoryName": "acme/svc-api",
+          "status": "OPEN",
+          "url": "https://github.com/acme/svc-api/pull/43"
+        }
+      ],
+      "expected": {
+        "assignee": "Brice Lehew",
+        "blocked_by_keys": [
+          "ABC-118",
+          "ABC-122"
+        ],
+        "description": "Calls to the billing API fail intermittently. Bounded retries are the fix.\n\n- Cap attempts at 3\n- Back off exponentially\n\nLine one\nOwner: @Priya Rao see https://acme.atlassian.net/wiki/spaces/ENG/pages/1",
+        "external_id": "10001",
+        "issue_type": "Story",
+        "key": "ABC-123",
+        "labels": [
+          "billing",
+          "retries"
+        ],
+        "parent_key": "ABC-100",
+        "priority": "high",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc-billing/pull/42",
+            "number": 42,
+            "provider": "github",
+            "repo_full_name": "acme/svc-billing",
+            "repo_normalized_url": "github.com/acme/svc-billing",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc-billing/pull/42"
+          },
+          {
+            "normalized_url": "github.com/acme/svc-web/pull/7",
+            "number": 7,
+            "provider": "github",
+            "repo_full_name": "Acme/Svc-Web",
+            "repo_normalized_url": "github.com/acme/svc-web",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/Acme/Svc-Web/pull/7"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "assignee": {
+              "accountId": "557058:abc",
+              "displayName": "Brice Lehew"
+            },
+            "customfield_10042": {
+              "content": [
+                {
+                  "content": [
+                    {
+                      "text": "PR: ",
+                      "type": "text"
+                    },
+                    {
+                      "attrs": {
+                        "url": "https://github.com/acme/svc-billing/pull/42/files"
+                      },
+                      "type": "inlineCard"
+                    },
+                    {
+                      "text": " and ",
+                      "type": "text"
+                    },
+                    {
+                      "marks": [
+                        {
+                          "attrs": {
+                            "href": "https://github.com/Acme/Svc-Web/pull/7"
+                          },
+                          "type": "link"
+                        }
+                      ],
+                      "text": "svc-web",
+                      "type": "text"
+                    },
+                    {
+                      "text": ". Issue tracker: https://github.com/acme/svc-billing/issues/9",
+                      "type": "text"
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "doc",
+              "version": 1
+            },
+            "description": {
+              "content": [
+                {
+                  "content": [
+                    {
+                      "text": "Calls to the billing API fail intermittently. ",
+                      "type": "text"
+                    },
+                    {
+                      "marks": [
+                        {
+                          "type": "strong"
+                        }
+                      ],
+                      "text": "Bounded retries",
+                      "type": "text"
+                    },
+                    {
+                      "text": " are the fix.",
+                      "type": "text"
+                    }
+                  ],
+                  "type": "paragraph"
+                },
+                {
+                  "content": [
+                    {
+                      "content": [
+                        {
+                          "content": [
+                            {
+                              "text": "Cap attempts at 3",
+                              "type": "text"
+                            }
+                          ],
+                          "type": "paragraph"
+                        }
+                      ],
+                      "type": "listItem"
+                    },
+                    {
+                      "content": [
+                        {
+                          "content": [
+                            {
+                              "text": "Back off exponentially",
+                              "type": "text"
+                            }
+                          ],
+                          "type": "paragraph"
+                        }
+                      ],
+                      "type": "listItem"
+                    }
+                  ],
+                  "type": "bulletList"
+                },
+                {
+                  "content": [
+                    {
+                      "text": "Line one",
+                      "type": "text"
+                    },
+                    {
+                      "type": "hardBreak"
+                    },
+                    {
+                      "text": "Owner: ",
+                      "type": "text"
+                    },
+                    {
+                      "attrs": {
+                        "id": "5b10a2844c20165700ede21g",
+                        "text": "@Priya Rao"
+                      },
+                      "type": "mention"
+                    },
+                    {
+                      "text": " see ",
+                      "type": "text"
+                    },
+                    {
+                      "attrs": {
+                        "url": "https://acme.atlassian.net/wiki/spaces/ENG/pages/1"
+                      },
+                      "type": "inlineCard"
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "doc",
+              "version": 1
+            },
+            "issuelinks": [
+              {
+                "id": "20001",
+                "inwardIssue": {
+                  "fields": {
+                    "summary": "Billing client timeouts"
+                  },
+                  "id": "10122",
+                  "key": "ABC-122"
+                },
+                "type": {
+                  "inward": "is blocked by",
+                  "name": "Blocks",
+                  "outward": "blocks"
+                }
+              },
+              {
+                "id": "20002",
+                "inwardIssue": {
+                  "fields": {
+                    "summary": "Gateway quotas"
+                  },
+                  "id": "10118",
+                  "key": "ABC-118"
+                },
+                "type": {
+                  "inward": "is blocked by",
+                  "name": "Blocks",
+                  "outward": "blocks"
+                }
+              },
+              {
+                "id": "20003",
+                "inwardIssue": {
+                  "fields": {
+                    "summary": "Gateway quotas"
+                  },
+                  "id": "10118",
+                  "key": "ABC-118"
+                },
+                "type": {
+                  "inward": "is blocked by",
+                  "name": "Blocks",
+                  "outward": "blocks"
+                }
+              },
+              {
+                "id": "20004",
+                "outwardIssue": {
+                  "fields": {
+                    "summary": "Retry dashboard"
+                  },
+                  "id": "10124",
+                  "key": "ABC-124"
+                },
+                "type": {
+                  "inward": "is blocked by",
+                  "name": "Blocks",
+                  "outward": "blocks"
+                }
+              },
+              {
+                "id": "20005",
+                "inwardIssue": {
+                  "fields": {
+                    "summary": "Unrelated"
+                  },
+                  "id": "10130",
+                  "key": "ABC-130"
+                },
+                "type": {
+                  "inward": "relates to",
+                  "name": "Relates",
+                  "outward": "relates to"
+                }
+              }
+            ],
+            "issuetype": {
+              "name": "Story"
+            },
+            "labels": [
+              "billing",
+              "retries"
+            ],
+            "parent": {
+              "fields": {
+                "issuetype": {
+                  "name": "Epic"
+                },
+                "summary": "Billing resilience"
+              },
+              "id": "10000",
+              "key": "ABC-100"
+            },
+            "priority": {
+              "id": "2",
+              "name": "High"
+            },
+            "project": {
+              "key": "ABC",
+              "name": "Billing"
+            },
+            "resolution": null,
+            "status": {
+              "name": "In Progress",
+              "statusCategory": {
+                "key": "indeterminate",
+                "name": "In Progress"
+              }
+            },
+            "summary": "Add retry budget to the billing client",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "10001",
+          "key": "ABC-123",
+          "self": "https://acme.atlassian.net/rest/api/3/issue/10001"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "indeterminate",
+        "status_name": "In Progress",
+        "title": "Add retry budget to the billing client",
+        "url": "https://acme.atlassian.net/browse/ABC-123"
+      },
+      "issue": {
+        "fields": {
+          "assignee": {
+            "accountId": "557058:abc",
+            "displayName": "Brice Lehew"
+          },
+          "customfield_10042": {
+            "content": [
+              {
+                "content": [
+                  {
+                    "text": "PR: ",
+                    "type": "text"
+                  },
+                  {
+                    "attrs": {
+                      "url": "https://github.com/acme/svc-billing/pull/42/files"
+                    },
+                    "type": "inlineCard"
+                  },
+                  {
+                    "text": " and ",
+                    "type": "text"
+                  },
+                  {
+                    "marks": [
+                      {
+                        "attrs": {
+                          "href": "https://github.com/Acme/Svc-Web/pull/7"
+                        },
+                        "type": "link"
+                      }
+                    ],
+                    "text": "svc-web",
+                    "type": "text"
+                  },
+                  {
+                    "text": ". Issue tracker: https://github.com/acme/svc-billing/issues/9",
+                    "type": "text"
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "doc",
+            "version": 1
+          },
+          "description": {
+            "content": [
+              {
+                "content": [
+                  {
+                    "text": "Calls to the billing API fail intermittently. ",
+                    "type": "text"
+                  },
+                  {
+                    "marks": [
+                      {
+                        "type": "strong"
+                      }
+                    ],
+                    "text": "Bounded retries",
+                    "type": "text"
+                  },
+                  {
+                    "text": " are the fix.",
+                    "type": "text"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "content": [
+                  {
+                    "content": [
+                      {
+                        "content": [
+                          {
+                            "text": "Cap attempts at 3",
+                            "type": "text"
+                          }
+                        ],
+                        "type": "paragraph"
+                      }
+                    ],
+                    "type": "listItem"
+                  },
+                  {
+                    "content": [
+                      {
+                        "content": [
+                          {
+                            "text": "Back off exponentially",
+                            "type": "text"
+                          }
+                        ],
+                        "type": "paragraph"
+                      }
+                    ],
+                    "type": "listItem"
+                  }
+                ],
+                "type": "bulletList"
+              },
+              {
+                "content": [
+                  {
+                    "text": "Line one",
+                    "type": "text"
+                  },
+                  {
+                    "type": "hardBreak"
+                  },
+                  {
+                    "text": "Owner: ",
+                    "type": "text"
+                  },
+                  {
+                    "attrs": {
+                      "id": "5b10a2844c20165700ede21g",
+                      "text": "@Priya Rao"
+                    },
+                    "type": "mention"
+                  },
+                  {
+                    "text": " see ",
+                    "type": "text"
+                  },
+                  {
+                    "attrs": {
+                      "url": "https://acme.atlassian.net/wiki/spaces/ENG/pages/1"
+                    },
+                    "type": "inlineCard"
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "doc",
+            "version": 1
+          },
+          "issuelinks": [
+            {
+              "id": "20001",
+              "inwardIssue": {
+                "fields": {
+                  "summary": "Billing client timeouts"
+                },
+                "id": "10122",
+                "key": "ABC-122"
+              },
+              "type": {
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks"
+              }
+            },
+            {
+              "id": "20002",
+              "inwardIssue": {
+                "fields": {
+                  "summary": "Gateway quotas"
+                },
+                "id": "10118",
+                "key": "ABC-118"
+              },
+              "type": {
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks"
+              }
+            },
+            {
+              "id": "20003",
+              "inwardIssue": {
+                "fields": {
+                  "summary": "Gateway quotas"
+                },
+                "id": "10118",
+                "key": "ABC-118"
+              },
+              "type": {
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks"
+              }
+            },
+            {
+              "id": "20004",
+              "outwardIssue": {
+                "fields": {
+                  "summary": "Retry dashboard"
+                },
+                "id": "10124",
+                "key": "ABC-124"
+              },
+              "type": {
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks"
+              }
+            },
+            {
+              "id": "20005",
+              "inwardIssue": {
+                "fields": {
+                  "summary": "Unrelated"
+                },
+                "id": "10130",
+                "key": "ABC-130"
+              },
+              "type": {
+                "inward": "relates to",
+                "name": "Relates",
+                "outward": "relates to"
+              }
+            }
+          ],
+          "issuetype": {
+            "name": "Story"
+          },
+          "labels": [
+            "billing",
+            "retries"
+          ],
+          "parent": {
+            "fields": {
+              "issuetype": {
+                "name": "Epic"
+              },
+              "summary": "Billing resilience"
+            },
+            "id": "10000",
+            "key": "ABC-100"
+          },
+          "priority": {
+            "id": "2",
+            "name": "High"
+          },
+          "project": {
+            "key": "ABC",
+            "name": "Billing"
+          },
+          "resolution": null,
+          "status": {
+            "name": "In Progress",
+            "statusCategory": {
+              "key": "indeterminate",
+              "name": "In Progress"
+            }
+          },
+          "summary": "Add retry budget to the billing client",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "10001",
+        "key": "ABC-123",
+        "self": "https://acme.atlassian.net/rest/api/3/issue/10001"
+      },
+      "name": "cloud-story-no-dev-panel"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "10150",
+        "issue_type": "Task",
+        "key": "ABC-150",
+        "labels": [],
+        "parent_key": null,
+        "priority": "low",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "assignee": null,
+            "customfield_10042": null,
+            "description": null,
+            "issuelinks": [],
+            "issuetype": {
+              "name": "Task"
+            },
+            "labels": [],
+            "parent": null,
+            "priority": {
+              "id": "5",
+              "name": "Lowest"
+            },
+            "project": {
+              "key": "ABC",
+              "name": "Billing"
+            },
+            "resolution": {
+              "id": "10001",
+              "name": "Won't Do"
+            },
+            "status": {
+              "name": "Done",
+              "statusCategory": {
+                "key": "done",
+                "name": "Done"
+              }
+            },
+            "summary": "Legacy invoice export",
+            "updated": "2026-10-17T16:40:00.000+0000"
+          },
+          "id": "10150",
+          "key": "ABC-150",
+          "self": "https://acme.atlassian.net/rest/api/3/issue/10150"
+        },
+        "remote_updated_at": "2026-10-17T16:40:00+00:00",
+        "resolution": "Won't Do",
+        "status_category": "done",
+        "status_name": "Done",
+        "title": "Legacy invoice export",
+        "url": "https://acme.atlassian.net/browse/ABC-150"
+      },
+      "issue": {
+        "fields": {
+          "assignee": null,
+          "customfield_10042": null,
+          "description": null,
+          "issuelinks": [],
+          "issuetype": {
+            "name": "Task"
+          },
+          "labels": [],
+          "parent": null,
+          "priority": {
+            "id": "5",
+            "name": "Lowest"
+          },
+          "project": {
+            "key": "ABC",
+            "name": "Billing"
+          },
+          "resolution": {
+            "id": "10001",
+            "name": "Won't Do"
+          },
+          "status": {
+            "name": "Done",
+            "statusCategory": {
+              "key": "done",
+              "name": "Done"
+            }
+          },
+          "summary": "Legacy invoice export",
+          "updated": "2026-10-17T16:40:00.000+0000"
+        },
+        "id": "10150",
+        "key": "ABC-150",
+        "self": "https://acme.atlassian.net/rest/api/3/issue/10150"
+      },
+      "name": "done-wont-do"
+    },
+    {
+      "config": {
+        "base_url": "https://jira.corp.example/",
+        "dev_panel": false,
+        "pr_fields": [
+          "customfield_11000"
+        ],
+        "projects": [
+          "OPS"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [
+          "OPS-3"
+        ],
+        "description": "h2. Goal\n\nRotate the *signing key* without downtime.\n\n* step one\n* step two",
+        "external_id": "20417",
+        "issue_type": "Task",
+        "key": "OPS-7",
+        "labels": [
+          "security"
+        ],
+        "parent_key": null,
+        "priority": "high",
+        "project_key": "OPS",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc-auth/pull/10",
+            "number": 10,
+            "provider": "github",
+            "repo_full_name": "acme/svc-auth",
+            "repo_normalized_url": "github.com/acme/svc-auth",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc-auth/pull/10"
+          },
+          {
+            "normalized_url": "github.com/acme/svc-auth/pull/9",
+            "number": 9,
+            "provider": "github",
+            "repo_full_name": "acme/svc-auth",
+            "repo_normalized_url": "github.com/acme/svc-auth",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc-auth/pull/9"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "assignee": null,
+            "customfield_11000": [
+              "https://github.com/acme/svc-auth/pull/9",
+              "https://github.com/acme/svc-auth/pull/10"
+            ],
+            "description": "h2. Goal\n\nRotate the *signing key* without downtime.\n\n* step one\n* step two",
+            "issuelinks": [
+              {
+                "id": "30001",
+                "inwardIssue": {
+                  "fields": {
+                    "summary": "Vault upgrade"
+                  },
+                  "id": "20401",
+                  "key": "OPS-3"
+                },
+                "type": {
+                  "inward": "is blocked by",
+                  "name": "Blocks",
+                  "outward": "blocks"
+                }
+              }
+            ],
+            "issuetype": {
+              "name": "Task"
+            },
+            "labels": [
+              "security"
+            ],
+            "parent": null,
+            "priority": {
+              "id": "3",
+              "name": "Major"
+            },
+            "project": {
+              "key": "OPS",
+              "name": "Operations"
+            },
+            "resolution": null,
+            "status": {
+              "name": "To Do",
+              "statusCategory": {
+                "key": "new",
+                "name": "To Do"
+              }
+            },
+            "summary": "Rotate the auth signing key",
+            "updated": "2026-10-16T08:00:00.000+0000"
+          },
+          "id": "20417",
+          "key": "OPS-7",
+          "self": "https://jira.corp.example/rest/api/2/issue/20417"
+        },
+        "remote_updated_at": "2026-10-16T08:00:00+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "To Do",
+        "title": "Rotate the auth signing key",
+        "url": "https://jira.corp.example/browse/OPS-7"
+      },
+      "issue": {
+        "fields": {
+          "assignee": null,
+          "customfield_11000": [
+            "https://github.com/acme/svc-auth/pull/9",
+            "https://github.com/acme/svc-auth/pull/10"
+          ],
+          "description": "h2. Goal\n\nRotate the *signing key* without downtime.\n\n* step one\n* step two",
+          "issuelinks": [
+            {
+              "id": "30001",
+              "inwardIssue": {
+                "fields": {
+                  "summary": "Vault upgrade"
+                },
+                "id": "20401",
+                "key": "OPS-3"
+              },
+              "type": {
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks"
+              }
+            }
+          ],
+          "issuetype": {
+            "name": "Task"
+          },
+          "labels": [
+            "security"
+          ],
+          "parent": null,
+          "priority": {
+            "id": "3",
+            "name": "Major"
+          },
+          "project": {
+            "key": "OPS",
+            "name": "Operations"
+          },
+          "resolution": null,
+          "status": {
+            "name": "To Do",
+            "statusCategory": {
+              "key": "new",
+              "name": "To Do"
+            }
+          },
+          "summary": "Rotate the auth signing key",
+          "updated": "2026-10-16T08:00:00.000+0000"
+        },
+        "id": "20417",
+        "key": "OPS-7",
+        "self": "https://jira.corp.example/rest/api/2/issue/20417"
+      },
+      "name": "datacenter-issue"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "critical",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Highest"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Highest"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Highest'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "critical",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Blocker"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Blocker"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Blocker'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "critical",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Critical"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Critical"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Critical'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "high",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "High"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "High"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'High'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "high",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Major"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Major"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Major'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Medium"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Medium"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Medium'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "low",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Low"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Low"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Low'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "low",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Lowest"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Lowest"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Lowest'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "low",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Minor"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Minor"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Minor'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "low",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Trivial"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Trivial"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Trivial'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "high",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "HIGH"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "HIGH"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'HIGH'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "low",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "  minor "
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "  minor "
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'  minor '"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": {
+              "name": "Showstopper"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": {
+            "name": "Showstopper"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-'Showstopper'"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "priority": null,
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "priority": null,
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-None"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "priority-field-missing"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "status": {
+              "name": "Whatever",
+              "statusCategory": {
+                "key": "new"
+              }
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "Whatever",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "status": {
+            "name": "Whatever",
+            "statusCategory": {
+              "key": "new"
+            }
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "status-category-new"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "status": {
+              "name": "Whatever",
+              "statusCategory": {
+                "key": "indeterminate"
+              }
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "indeterminate",
+        "status_name": "Whatever",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "status": {
+            "name": "Whatever",
+            "statusCategory": {
+              "key": "indeterminate"
+            }
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "status-category-indeterminate"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "status": {
+              "name": "Whatever",
+              "statusCategory": {
+                "key": "done"
+              }
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "done",
+        "status_name": "Whatever",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "status": {
+            "name": "Whatever",
+            "statusCategory": {
+              "key": "done"
+            }
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "status-category-done"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "status": {
+              "name": "Whatever",
+              "statusCategory": {
+                "key": "DONE"
+              }
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "done",
+        "status_name": "Whatever",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "status": {
+            "name": "Whatever",
+            "statusCategory": {
+              "key": "DONE"
+            }
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "status-category-DONE"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "status": {
+              "name": "Mystery",
+              "statusCategory": {
+                "key": "undefined"
+              }
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "Mystery",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "status": {
+            "name": "Mystery",
+            "statusCategory": {
+              "key": "undefined"
+            }
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "unknown-status-0"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "status": {
+              "name": "Mystery",
+              "statusCategory": {}
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "Mystery",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "status": {
+            "name": "Mystery",
+            "statusCategory": {}
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "unknown-status-1"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "status": {
+              "name": "Mystery"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "Mystery",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "status": {
+            "name": "Mystery"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "unknown-status-2"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "missing-optional-fields"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "assignee": {
+              "accountId": "x",
+              "displayName": ""
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "assignee": {
+            "accountId": "x",
+            "displayName": ""
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "assignee-empty-display-name"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "project-key-from-issue-key"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net/",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "base-url-trailing-slash"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [
+          "ABC-2",
+          "ABC-9"
+        ],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "issuelinks": [
+              {
+                "inwardIssue": {
+                  "key": "ABC-9"
+                },
+                "type": {
+                  "name": "Blocks"
+                }
+              },
+              {
+                "inwardIssue": {
+                  "key": "ABC-2"
+                },
+                "type": {
+                  "name": "Blocks"
+                }
+              },
+              {
+                "inwardIssue": {
+                  "key": "ABC-9"
+                },
+                "type": {
+                  "name": "Blocks"
+                }
+              },
+              {
+                "outwardIssue": {
+                  "key": "ABC-5"
+                },
+                "type": {
+                  "name": "Blocks"
+                }
+              },
+              {
+                "inwardIssue": {
+                  "key": "ABC-7"
+                },
+                "type": {
+                  "name": "Duplicate"
+                }
+              }
+            ],
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "issuelinks": [
+            {
+              "inwardIssue": {
+                "key": "ABC-9"
+              },
+              "type": {
+                "name": "Blocks"
+              }
+            },
+            {
+              "inwardIssue": {
+                "key": "ABC-2"
+              },
+              "type": {
+                "name": "Blocks"
+              }
+            },
+            {
+              "inwardIssue": {
+                "key": "ABC-9"
+              },
+              "type": {
+                "name": "Blocks"
+              }
+            },
+            {
+              "outwardIssue": {
+                "key": "ABC-5"
+              },
+              "type": {
+                "name": "Blocks"
+              }
+            },
+            {
+              "inwardIssue": {
+                "key": "ABC-7"
+              },
+              "type": {
+                "name": "Duplicate"
+              }
+            }
+          ],
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "blocked-by-sorted-dedup"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "parent": null,
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "parent": null,
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "parent-null"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T11:15:02.500+0200"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.500000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T11:15:02.500+0200"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "timestamp-offset-converted"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "error": {
+        "message": "Jira issue has no fields.updated timestamp",
+        "type": "ValueError"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "timestamp-missing-error"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02Z"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02Z"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "timestamp-z-suffix"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "timestamp-no-fraction-offset"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "customfield_10042": null,
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": null,
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-no-pr-0"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "customfield_10042": "",
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": "",
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-no-pr-1"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "customfield_10042": "no links here",
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": "no links here",
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-no-pr-2"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "customfield_10042": {
+              "content": [],
+              "type": "doc",
+              "version": 1
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": {
+            "content": [],
+            "type": "doc",
+            "version": 1
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-no-pr-3"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "customfield_10042": [
+              "https://github.com/acme/svc-billing/issues/9"
+            ],
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": [
+            "https://github.com/acme/svc-billing/issues/9"
+          ],
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-no-pr-4"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc-api/pull/5",
+            "number": 5,
+            "provider": "github",
+            "repo_full_name": "acme/svc-api",
+            "repo_normalized_url": "github.com/acme/svc-api",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc-api/pull/5"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "customfield_10042": "https://github.com/acme/svc-api/pull/5",
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": "https://github.com/acme/svc-api/pull/5",
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-shape-0"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc-api/pull/5",
+            "number": 5,
+            "provider": "github",
+            "repo_full_name": "acme/svc-api",
+            "repo_normalized_url": "github.com/acme/svc-api",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc-api/pull/5"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "customfield_10042": [
+              "https://github.com/acme/svc-api/pull/5 and more text"
+            ],
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": [
+            "https://github.com/acme/svc-api/pull/5 and more text"
+          ],
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-shape-1"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc-api/pull/5",
+            "number": 5,
+            "provider": "github",
+            "repo_full_name": "acme/svc-api",
+            "repo_normalized_url": "github.com/acme/svc-api",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc-api/pull/5"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "customfield_10042": {
+              "url": "https://github.com/acme/svc-api/pull/5",
+              "value": "ignored"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": {
+            "url": "https://github.com/acme/svc-api/pull/5",
+            "value": "ignored"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-shape-2"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc-api/pull/5",
+            "number": 5,
+            "provider": "github",
+            "repo_full_name": "acme/svc-api",
+            "repo_normalized_url": "github.com/acme/svc-api",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc-api/pull/5"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "customfield_10042": {
+              "content": [
+                {
+                  "attrs": {
+                    "url": "https://github.com/acme/svc-api/pull/5"
+                  },
+                  "type": "inlineCard"
+                }
+              ],
+              "type": "doc"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": {
+            "content": [
+              {
+                "attrs": {
+                  "url": "https://github.com/acme/svc-api/pull/5"
+                },
+                "type": "inlineCard"
+              }
+            ],
+            "type": "doc"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-shape-3"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc-api/pull/5",
+            "number": 5,
+            "provider": "github",
+            "repo_full_name": "acme/svc-api",
+            "repo_normalized_url": "github.com/acme/svc-api",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc-api/pull/5"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "customfield_10042": {
+              "content": [
+                {
+                  "content": [
+                    {
+                      "marks": [
+                        {
+                          "attrs": {
+                            "href": "https://github.com/acme/svc-api/pull/5"
+                          },
+                          "type": "link"
+                        }
+                      ],
+                      "text": "svc-api",
+                      "type": "text"
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "doc"
+            },
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": {
+            "content": [
+              {
+                "content": [
+                  {
+                    "marks": [
+                      {
+                        "attrs": {
+                          "href": "https://github.com/acme/svc-api/pull/5"
+                        },
+                        "type": "link"
+                      }
+                    ],
+                    "text": "svc-api",
+                    "type": "text"
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "doc"
+          },
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "custom-field-shape-4"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc-api/pull/5",
+            "number": 5,
+            "provider": "github",
+            "repo_full_name": "acme/svc-api",
+            "repo_normalized_url": "github.com/acme/svc-api",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc-api/pull/5"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "customfield_10042": "See https://github.com/acme/svc-api/pull/5.",
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": "See https://github.com/acme/svc-api/pull/5.",
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "trailing-punctuation"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042",
+          "customfield_10043"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/a/pull/1",
+            "number": 1,
+            "provider": "github",
+            "repo_full_name": "acme/a",
+            "repo_normalized_url": "github.com/acme/a",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/a/pull/1"
+          },
+          {
+            "normalized_url": "github.com/acme/b/pull/2",
+            "number": 2,
+            "provider": "github",
+            "repo_full_name": "acme/b",
+            "repo_normalized_url": "github.com/acme/b",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/b/pull/2"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "customfield_10042": "https://github.com/acme/a/pull/1",
+            "customfield_10043": [
+              "https://github.com/acme/b/pull/2"
+            ],
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": "https://github.com/acme/a/pull/1",
+          "customfield_10043": [
+            "https://github.com/acme/b/pull/2"
+          ],
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "several-pr-fields"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc/pull/3",
+            "number": 3,
+            "provider": "github",
+            "repo_full_name": "acme/svc",
+            "repo_normalized_url": "github.com/acme/svc",
+            "sources": [
+              "custom_field"
+            ],
+            "title": "",
+            "url": "https://github.com/acme/svc/pull/3"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "customfield_10042": [
+              "https://github.com/acme/svc/pull/3",
+              "https://github.com/acme/svc/pull/3/files"
+            ],
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": [
+            "https://github.com/acme/svc/pull/3",
+            "https://github.com/acme/svc/pull/3/files"
+          ],
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "same-pr-twice-in-custom-field"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [
+        {
+          "name": "Dev title",
+          "status": "OPEN",
+          "url": "https://github.com/acme/svc/pull/3"
+        }
+      ],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/acme/svc/pull/3",
+            "number": 3,
+            "provider": "github",
+            "repo_full_name": "acme/svc",
+            "repo_normalized_url": "github.com/acme/svc",
+            "sources": [
+              "custom_field",
+              "dev_panel"
+            ],
+            "title": "Dev title",
+            "url": "https://github.com/acme/svc/pull/3"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "customfield_10042": "https://github.com/acme/svc/pull/3",
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "customfield_10042": "https://github.com/acme/svc/pull/3",
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "dev-panel-title-kept"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "dev_panel": true,
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [
+        {
+          "name": "x",
+          "url": ""
+        },
+        {
+          "name": "y",
+          "url": "https://github.com/acme/svc/issues/3"
+        }
+      ],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "dev-panel-non-pr-skipped"
+    },
+    {
+      "config": {
+        "base_url": "https://acme.atlassian.net",
+        "pr_fields": [
+          "customfield_10042"
+        ],
+        "projects": [
+          "ABC"
+        ],
+        "token_env": "WORKGRAPH_JIRA_TOKEN",
+        "workspace": "work"
+      },
+      "dev_pull_requests": [
+        {
+          "name": "",
+          "status": "OPEN",
+          "url": "https://github.com/zeta/svc/pull/1"
+        },
+        {
+          "name": "",
+          "status": "OPEN",
+          "url": "https://github.com/alpha/svc/pull/2"
+        }
+      ],
+      "expected": {
+        "assignee": null,
+        "blocked_by_keys": [],
+        "description": "",
+        "external_id": "1",
+        "issue_type": "",
+        "key": "ABC-1",
+        "labels": [],
+        "parent_key": null,
+        "priority": "medium",
+        "project_key": "ABC",
+        "pull_requests": [
+          {
+            "normalized_url": "github.com/alpha/svc/pull/2",
+            "number": 2,
+            "provider": "github",
+            "repo_full_name": "alpha/svc",
+            "repo_normalized_url": "github.com/alpha/svc",
+            "sources": [
+              "dev_panel"
+            ],
+            "title": "",
+            "url": "https://github.com/alpha/svc/pull/2"
+          },
+          {
+            "normalized_url": "github.com/zeta/svc/pull/1",
+            "number": 1,
+            "provider": "github",
+            "repo_full_name": "zeta/svc",
+            "repo_normalized_url": "github.com/zeta/svc",
+            "sources": [
+              "dev_panel"
+            ],
+            "title": "",
+            "url": "https://github.com/zeta/svc/pull/1"
+          }
+        ],
+        "raw": {
+          "fields": {
+            "project": {
+              "key": "ABC"
+            },
+            "summary": "Minimal issue",
+            "updated": "2026-10-18T09:15:02.123+0000"
+          },
+          "id": "1",
+          "key": "ABC-1"
+        },
+        "remote_updated_at": "2026-10-18T09:15:02.123000+00:00",
+        "resolution": null,
+        "status_category": "new",
+        "status_name": "",
+        "title": "Minimal issue",
+        "url": "https://acme.atlassian.net/browse/ABC-1"
+      },
+      "issue": {
+        "fields": {
+          "project": {
+            "key": "ABC"
+          },
+          "summary": "Minimal issue",
+          "updated": "2026-10-18T09:15:02.123+0000"
+        },
+        "id": "1",
+        "key": "ABC-1"
+      },
+      "name": "pull-requests-sorted"
+    }
+  ]
+}

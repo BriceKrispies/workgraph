@@ -1,0 +1,296 @@
+{
+  "cases": [
+    {
+      "expected": "Goal\n\n- one\n- two\n\nx = 1\n\ndocs🎉",
+      "input": {
+        "content": [
+          {
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "text": "Goal",
+                "type": "text"
+              }
+            ],
+            "type": "heading"
+          },
+          {
+            "content": [
+              {
+                "content": [
+                  {
+                    "content": [
+                      {
+                        "text": "one",
+                        "type": "text"
+                      }
+                    ],
+                    "type": "paragraph"
+                  }
+                ],
+                "type": "listItem"
+              },
+              {
+                "content": [
+                  {
+                    "content": [
+                      {
+                        "text": "two",
+                        "type": "text"
+                      }
+                    ],
+                    "type": "paragraph"
+                  }
+                ],
+                "type": "listItem"
+              }
+            ],
+            "type": "orderedList"
+          },
+          {
+            "content": [
+              {
+                "text": "x = 1",
+                "type": "text"
+              }
+            ],
+            "type": "codeBlock"
+          },
+          {
+            "content": [
+              {
+                "marks": [
+                  {
+                    "attrs": {
+                      "href": "https://x.test/d"
+                    },
+                    "type": "link"
+                  }
+                ],
+                "text": "docs",
+                "type": "text"
+              },
+              {
+                "attrs": {
+                  "shortName": ":tada:",
+                  "text": "🎉"
+                },
+                "type": "emoji"
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "content": [],
+            "type": "paragraph"
+          }
+        ],
+        "type": "doc"
+      },
+      "name": "common-nodes"
+    },
+    {
+      "expected": "",
+      "input": null,
+      "name": "non-dict-none"
+    },
+    {
+      "expected": "",
+      "input": "plain",
+      "name": "non-dict-string"
+    },
+    {
+      "expected": "Calls to the billing API fail intermittently. Bounded retries are the fix.\n\n- Cap attempts at 3\n- Back off exponentially\n\nLine one\nOwner: @Priya Rao see https://acme.atlassian.net/wiki/spaces/ENG/pages/1",
+      "input": {
+        "content": [
+          {
+            "content": [
+              {
+                "text": "Calls to the billing API fail intermittently. ",
+                "type": "text"
+              },
+              {
+                "marks": [
+                  {
+                    "type": "strong"
+                  }
+                ],
+                "text": "Bounded retries",
+                "type": "text"
+              },
+              {
+                "text": " are the fix.",
+                "type": "text"
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "content": [
+              {
+                "content": [
+                  {
+                    "content": [
+                      {
+                        "text": "Cap attempts at 3",
+                        "type": "text"
+                      }
+                    ],
+                    "type": "paragraph"
+                  }
+                ],
+                "type": "listItem"
+              },
+              {
+                "content": [
+                  {
+                    "content": [
+                      {
+                        "text": "Back off exponentially",
+                        "type": "text"
+                      }
+                    ],
+                    "type": "paragraph"
+                  }
+                ],
+                "type": "listItem"
+              }
+            ],
+            "type": "bulletList"
+          },
+          {
+            "content": [
+              {
+                "text": "Line one",
+                "type": "text"
+              },
+              {
+                "type": "hardBreak"
+              },
+              {
+                "text": "Owner: ",
+                "type": "text"
+              },
+              {
+                "attrs": {
+                  "id": "5b10a2844c20165700ede21g",
+                  "text": "@Priya Rao"
+                },
+                "type": "mention"
+              },
+              {
+                "text": " see ",
+                "type": "text"
+              },
+              {
+                "attrs": {
+                  "url": "https://acme.atlassian.net/wiki/spaces/ENG/pages/1"
+                },
+                "type": "inlineCard"
+              }
+            ],
+            "type": "paragraph"
+          }
+        ],
+        "type": "doc",
+        "version": 1
+      },
+      "name": "cloud-story-description"
+    },
+    {
+      "expected": "Line one\nOwner: @Priya RaoDONE",
+      "input": {
+        "content": [
+          {
+            "content": [
+              {
+                "text": "Line one",
+                "type": "text"
+              },
+              {
+                "type": "hardBreak"
+              },
+              {
+                "text": "Owner: ",
+                "type": "text"
+              },
+              {
+                "attrs": {
+                  "id": "u1",
+                  "text": "@Priya Rao"
+                },
+                "type": "mention"
+              },
+              {
+                "attrs": {
+                  "text": "DONE"
+                },
+                "type": "status"
+              }
+            ],
+            "type": "paragraph"
+          }
+        ],
+        "type": "doc"
+      },
+      "name": "hard-break-and-mention-and-card"
+    },
+    {
+      "expected": "- outer\n- inner",
+      "input": {
+        "content": [
+          {
+            "content": [
+              {
+                "content": [
+                  {
+                    "content": [
+                      {
+                        "text": "outer",
+                        "type": "text"
+                      }
+                    ],
+                    "type": "paragraph"
+                  },
+                  {
+                    "content": [
+                      {
+                        "content": [
+                          {
+                            "content": [
+                              {
+                                "text": "inner",
+                                "type": "text"
+                              }
+                            ],
+                            "type": "paragraph"
+                          }
+                        ],
+                        "type": "listItem"
+                      }
+                    ],
+                    "type": "bulletList"
+                  }
+                ],
+                "type": "listItem"
+              }
+            ],
+            "type": "bulletList"
+          }
+        ],
+        "type": "doc"
+      },
+      "name": "nested-bullet-list"
+    },
+    {
+      "expected": "",
+      "input": {
+        "content": [],
+        "type": "doc"
+      },
+      "name": "empty-doc"
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "cases": [
+    {
+      "expected": {
+        "normalized_url": "github.com/org/repo/pull/42",
+        "number": 42,
+        "provider": "github",
+        "repo_full_name": "org/repo",
+        "repo_normalized_url": "github.com/org/repo",
+        "sources": [],
+        "title": "",
+        "url": "https://github.com/org/repo/pull/42"
+      },
+      "url": "https://github.com/org/repo/pull/42"
+    },
+    {
+      "expected": {
+        "normalized_url": "github.com/org/repo/pull/42",
+        "number": 42,
+        "provider": "github",
+        "repo_full_name": "org/repo",
+        "repo_normalized_url": "github.com/org/repo",
+        "sources": [],
+        "title": "",
+        "url": "https://github.com/org/repo/pull/42"
+      },
+      "url": "https://github.com/org/repo/pull/42/files"
+    },
+    {
+      "expected": {
+        "normalized_url": "github.com/org/repo/pull/42",
+        "number": 42,
+        "provider": "github",
+        "repo_full_name": "org/repo",
+        "repo_normalized_url": "github.com/org/repo",
+        "sources": [],
+        "title": "",
+        "url": "https://github.com/org/repo/pull/42"
+      },
+      "url": "https://github.com/org/repo/pull/42/commits"
+    },
+    {
+      "expected": {
+        "normalized_url": "github.com/org/repo/pull/42",
+        "number": 42,
+        "provider": "github",
+        "repo_full_name": "org/repo",
+        "repo_normalized_url": "github.com/org/repo",
+        "sources": [],
+        "title": "",
+        "url": "https://github.com/org/repo/pull/42"
+      },
+      "url": "https://github.com/org/repo/pull/42/?tab=checks#discussion_r1"
+    },
+    {
+      "expected": {
+        "normalized_url": "github.com/org/repo/pull/42",
+        "number": 42,
+        "provider": "github",
+        "repo_full_name": "Org/Repo",
+        "repo_normalized_url": "github.com/org/repo",
+        "sources": [],
+        "title": "",
+        "url": "https://github.com/Org/Repo/pull/42"
+      },
+      "url": "http://www.GitHub.com/Org/Repo/pull/42"
+    },
+    {
+      "expected": {
+        "normalized_url": "github.example.com/team/svc/pull/7",
+        "number": 7,
+        "provider": "github",
+        "repo_full_name": "Team/Svc",
+        "repo_normalized_url": "github.example.com/team/svc",
+        "sources": [],
+        "title": "",
+        "url": "https://github.example.com/Team/Svc/pull/7"
+      },
+      "url": "https://github.example.com/Team/Svc/pull/7"
+    },
+    {
+      "expected": null,
+      "url": "https://github.com/org/repo/issues/42"
+    },
+    {
+      "expected": null,
+      "url": "https://github.com/org/repo"
+    },
+    {
+      "expected": null,
+      "url": "https://github.com/org/repo/"
+    },
+    {
+      "expected": null,
+      "url": "https://github.com/org/repo/pull/"
+    },
+    {
+      "expected": null,
+      "url": "https://github.com/org/repo/pull/abc"
+    },
+    {
+      "expected": null,
+      "url": "https://github.com/org/repo/pull/0"
+    },
+    {
+      "expected": null,
+      "url": "https://github.com/org/repo/pull/42/reviews"
+    },
+    {
+      "expected": null,
+      "url": "https://gist.github.com/user/abc123"
+    },
+    {
+      "expected": null,
+      "url": "https://github.com/org/repo/pulls"
+    },
+    {
+      "expected": null,
+      "url": "github.com/org/repo/pull/42"
+    },
+    {
+      "expected": null,
+      "url": "ftp://github.com/org/repo/pull/42"
+    },
+    {
+      "expected": null,
+      "url": "not a url"
+    },
+    {
+      "expected": null,
+      "url": ""
+    }
+  ]
+}

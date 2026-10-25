@@ -5,10 +5,11 @@
 //! and temporary directory, resolves placeholders, writes a step log, and has
 //! the three modes `diff`, `record` and `check` with a per-file report.
 //! MCP and HTTP steps and database assertions are recognised and skipped until
-//! their drivers exist; the full normaliser is a later task and plugs in through
-//! [`compare::Normaliser`].
+//! their drivers exist. The section 3.4 normaliser lives in [`normalise`] and
+//! plugs in through [`compare::Normaliser`].
 
 pub mod compare;
 pub mod modes;
+pub mod normalise;
 pub mod runner;
 pub mod scenario;

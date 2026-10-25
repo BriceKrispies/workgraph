@@ -2,10 +2,9 @@
 
 use std::path::PathBuf;
 use std::process::ExitCode;
-use wg_conformance::compare::{
-    FileReport, RootsNormaliser, parse_divergences, report_json, report_text, tally,
-};
+use wg_conformance::compare::{FileReport, parse_divergences, report_json, report_text, tally};
 use wg_conformance::modes::{check, diff, load_scenarios, record};
+use wg_conformance::normalise::FullNormaliser;
 use wg_conformance::runner::Implementation;
 
 const USAGE: &str = "usage: wg-conformance <validate|diff|record|check> [options]
@@ -78,7 +77,7 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
         Ok(t) => parse_divergences(&t)?,
         Err(_) => Vec::new(),
     };
-    let norm = RootsNormaliser;
+    let norm = FullNormaliser::default();
     let out = o.out.as_deref();
     Ok(match o.mode.as_str() {
         "validate" => loaded

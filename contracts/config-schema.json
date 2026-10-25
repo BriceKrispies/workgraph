@@ -1,0 +1,755 @@
+{
+  "$defs": {
+    "AutomationConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "max_depth": {
+          "default": 3,
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Max Depth",
+          "type": "integer"
+        }
+      },
+      "title": "AutomationConfig",
+      "type": "object"
+    },
+    "ClaudeCodeAgentConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_tools": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Allowed Tools",
+          "type": "array"
+        },
+        "executable": {
+          "default": "claude",
+          "title": "Executable",
+          "type": "string"
+        },
+        "extra_args": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Extra Args",
+          "type": "array"
+        },
+        "max_budget_usd": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Budget Usd"
+        },
+        "max_turns": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Turns"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "permission_mode": {
+          "default": "acceptEdits",
+          "enum": [
+            "acceptEdits",
+            "auto",
+            "bypassPermissions",
+            "manual",
+            "dontAsk",
+            "plan"
+          ],
+          "title": "Permission Mode",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "default": 3600.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "type": {
+          "const": "claude_code",
+          "default": "claude_code",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "title": "ClaudeCodeAgentConfig",
+      "type": "object"
+    },
+    "ClaudeIntegrationConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "capture_tool_payloads": {
+          "default": false,
+          "title": "Capture Tool Payloads",
+          "type": "boolean"
+        },
+        "max_payload_chars": {
+          "default": 4000,
+          "minimum": 0,
+          "title": "Max Payload Chars",
+          "type": "integer"
+        }
+      },
+      "title": "ClaudeIntegrationConfig",
+      "type": "object"
+    },
+    "CommandAgentConfig": {
+      "additionalProperties": false,
+      "description": "A generic executable speaking the Workgraph JSON-lines agent protocol.",
+      "properties": {
+        "args": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Args",
+          "type": "array"
+        },
+        "env": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Env",
+          "type": "object"
+        },
+        "executable": {
+          "title": "Executable",
+          "type": "string"
+        },
+        "supports_progress": {
+          "default": true,
+          "title": "Supports Progress",
+          "type": "boolean"
+        },
+        "supports_resume": {
+          "default": false,
+          "title": "Supports Resume",
+          "type": "boolean"
+        },
+        "supports_usage": {
+          "default": false,
+          "title": "Supports Usage",
+          "type": "boolean"
+        },
+        "timeout_seconds": {
+          "default": 1800.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "type": {
+          "const": "command",
+          "default": "command",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "executable"
+      ],
+      "title": "CommandAgentConfig",
+      "type": "object"
+    },
+    "ExecutionConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_merge": {
+          "default": false,
+          "title": "Allow Merge",
+          "type": "boolean"
+        },
+        "allow_push": {
+          "default": false,
+          "title": "Allow Push",
+          "type": "boolean"
+        },
+        "auto_schedule": {
+          "default": false,
+          "title": "Auto Schedule",
+          "type": "boolean"
+        },
+        "default_agent": {
+          "default": "claude_code",
+          "title": "Default Agent",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "isolation": {
+          "default": "worktree",
+          "enum": [
+            "worktree",
+            "in_place"
+          ],
+          "title": "Isolation",
+          "type": "string"
+        },
+        "max_attempts_per_task": {
+          "default": 3,
+          "maximum": 20,
+          "minimum": 1,
+          "title": "Max Attempts Per Task",
+          "type": "integer"
+        },
+        "max_concurrent_runs": {
+          "default": 2,
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Max Concurrent Runs",
+          "type": "integer"
+        }
+      },
+      "title": "ExecutionConfig",
+      "type": "object"
+    },
+    "HeuristicProviderConfig": {
+      "additionalProperties": false,
+      "description": "Offline deterministic provider (keyword classifier + hashed embeddings).",
+      "properties": {
+        "type": {
+          "const": "heuristic",
+          "default": "heuristic",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "title": "HeuristicProviderConfig",
+      "type": "object"
+    },
+    "JiraTrackerConfig": {
+      "additionalProperties": false,
+      "description": "A read-only connection to a Jira site. Workgraph never writes to Jira.",
+      "properties": {
+        "base_url": {
+          "title": "Base Url",
+          "type": "string"
+        },
+        "cancelled_resolutions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Cancelled Resolutions",
+          "type": "array"
+        },
+        "dev_panel": {
+          "default": true,
+          "title": "Dev Panel",
+          "type": "boolean"
+        },
+        "email_env": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Email Env"
+        },
+        "flavour": {
+          "default": "cloud",
+          "enum": [
+            "cloud",
+            "data_center"
+          ],
+          "title": "Flavour",
+          "type": "string"
+        },
+        "full_sync_interval_seconds": {
+          "default": 86400,
+          "minimum": 300,
+          "title": "Full Sync Interval Seconds",
+          "type": "integer"
+        },
+        "missing_grace_seconds": {
+          "default": 86400,
+          "minimum": 0,
+          "title": "Missing Grace Seconds",
+          "type": "integer"
+        },
+        "overlap_seconds": {
+          "default": 120,
+          "minimum": 0,
+          "title": "Overlap Seconds",
+          "type": "integer"
+        },
+        "poll_interval_seconds": {
+          "default": 300,
+          "minimum": 30,
+          "title": "Poll Interval Seconds",
+          "type": "integer"
+        },
+        "pr_fields": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Pr Fields",
+          "type": "array"
+        },
+        "projects": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Projects",
+          "type": "array"
+        },
+        "timeout_seconds": {
+          "default": 30.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "token_env": {
+          "title": "Token Env",
+          "type": "string"
+        },
+        "type": {
+          "const": "jira",
+          "default": "jira",
+          "title": "Type",
+          "type": "string"
+        },
+        "workspace": {
+          "title": "Workspace",
+          "type": "string"
+        }
+      },
+      "required": [
+        "base_url",
+        "workspace",
+        "projects",
+        "token_env"
+      ],
+      "title": "JiraTrackerConfig",
+      "type": "object"
+    },
+    "JobLimitsConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "default_max_attempts": {
+          "default": 5,
+          "maximum": 50,
+          "minimum": 1,
+          "title": "Default Max Attempts",
+          "type": "integer"
+        },
+        "gpu_concurrency": {
+          "default": 1,
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Gpu Concurrency",
+          "type": "integer"
+        },
+        "lease_seconds": {
+          "default": 60,
+          "maximum": 3600,
+          "minimum": 5,
+          "title": "Lease Seconds",
+          "type": "integer"
+        },
+        "per_agent_concurrency": {
+          "default": 2,
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Per Agent Concurrency",
+          "type": "integer"
+        },
+        "per_repository_concurrency": {
+          "default": 1,
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Per Repository Concurrency",
+          "type": "integer"
+        },
+        "verify_concurrency": {
+          "default": 1,
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Verify Concurrency",
+          "type": "integer"
+        },
+        "worker_concurrency": {
+          "default": 4,
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Worker Concurrency",
+          "type": "integer"
+        }
+      },
+      "title": "JobLimitsConfig",
+      "type": "object"
+    },
+    "LLMConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "auto_classify": {
+          "default": true,
+          "title": "Auto Classify",
+          "type": "boolean"
+        },
+        "auto_embed": {
+          "default": true,
+          "title": "Auto Embed",
+          "type": "boolean"
+        },
+        "classification": {
+          "$ref": "#/$defs/ModelSelection"
+        },
+        "embeddings": {
+          "$ref": "#/$defs/ModelSelection"
+        },
+        "providers": {
+          "additionalProperties": {
+            "discriminator": {
+              "mapping": {
+                "heuristic": "#/$defs/HeuristicProviderConfig",
+                "ollama": "#/$defs/OllamaProviderConfig",
+                "openai_compatible": "#/$defs/OpenAICompatibleProviderConfig"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/OllamaProviderConfig"
+              },
+              {
+                "$ref": "#/$defs/HeuristicProviderConfig"
+              },
+              {
+                "$ref": "#/$defs/OpenAICompatibleProviderConfig"
+              }
+            ]
+          },
+          "title": "Providers",
+          "type": "object"
+        },
+        "summarization": {
+          "$ref": "#/$defs/ModelSelection"
+        }
+      },
+      "title": "LLMConfig",
+      "type": "object"
+    },
+    "ModelSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "model"
+      ],
+      "title": "ModelSelection",
+      "type": "object"
+    },
+    "OllamaProviderConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "api_key_env": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key Env"
+        },
+        "backoff_seconds": {
+          "default": 1.0,
+          "minimum": 0,
+          "title": "Backoff Seconds",
+          "type": "number"
+        },
+        "base_url": {
+          "default": "http://127.0.0.1:11434",
+          "title": "Base Url",
+          "type": "string"
+        },
+        "max_retries": {
+          "default": 2,
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Max Retries",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "default": 120.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "type": {
+          "const": "ollama",
+          "default": "ollama",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "title": "OllamaProviderConfig",
+      "type": "object"
+    },
+    "OpenAICompatibleProviderConfig": {
+      "additionalProperties": false,
+      "description": "Any server implementing the OpenAI chat/embeddings HTTP API (llama.cpp, vLLM, LM Studio).",
+      "properties": {
+        "api_key_env": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key Env"
+        },
+        "backoff_seconds": {
+          "default": 1.0,
+          "minimum": 0,
+          "title": "Backoff Seconds",
+          "type": "number"
+        },
+        "base_url": {
+          "title": "Base Url",
+          "type": "string"
+        },
+        "max_retries": {
+          "default": 2,
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Max Retries",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "default": 120.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "type": {
+          "const": "openai_compatible",
+          "default": "openai_compatible",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "base_url"
+      ],
+      "title": "OpenAICompatibleProviderConfig",
+      "type": "object"
+    },
+    "RetentionConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "run_log_days": {
+          "default": 90,
+          "minimum": 1,
+          "title": "Run Log Days",
+          "type": "integer"
+        },
+        "telemetry_payload_days": {
+          "default": 30,
+          "minimum": 1,
+          "title": "Telemetry Payload Days",
+          "type": "integer"
+        }
+      },
+      "title": "RetentionConfig",
+      "type": "object"
+    },
+    "ServerConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_non_loopback": {
+          "default": false,
+          "title": "Allow Non Loopback",
+          "type": "boolean"
+        },
+        "host": {
+          "default": "127.0.0.1",
+          "title": "Host",
+          "type": "string"
+        },
+        "lan": {
+          "default": true,
+          "title": "Lan",
+          "type": "boolean"
+        },
+        "lan_address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lan Address"
+        },
+        "lan_networks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Lan Networks",
+          "type": "array"
+        },
+        "port": {
+          "default": 8765,
+          "maximum": 65535,
+          "minimum": 1,
+          "title": "Port",
+          "type": "integer"
+        }
+      },
+      "title": "ServerConfig",
+      "type": "object"
+    },
+    "StacksConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "auto_accept": {
+          "default": true,
+          "title": "Auto Accept",
+          "type": "boolean"
+        }
+      },
+      "title": "StacksConfig",
+      "type": "object"
+    },
+    "VerificationConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "auto_accept": {
+          "default": true,
+          "title": "Auto Accept",
+          "type": "boolean"
+        }
+      },
+      "title": "VerificationConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agents": {
+      "additionalProperties": {
+        "discriminator": {
+          "mapping": {
+            "claude_code": "#/$defs/ClaudeCodeAgentConfig",
+            "command": "#/$defs/CommandAgentConfig"
+          },
+          "propertyName": "type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/ClaudeCodeAgentConfig"
+          },
+          {
+            "$ref": "#/$defs/CommandAgentConfig"
+          }
+        ]
+      },
+      "title": "Agents",
+      "type": "object"
+    },
+    "automation": {
+      "$ref": "#/$defs/AutomationConfig"
+    },
+    "claude": {
+      "$ref": "#/$defs/ClaudeIntegrationConfig"
+    },
+    "default_workspace": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Default Workspace"
+    },
+    "execution": {
+      "$ref": "#/$defs/ExecutionConfig"
+    },
+    "jobs": {
+      "$ref": "#/$defs/JobLimitsConfig"
+    },
+    "llm": {
+      "$ref": "#/$defs/LLMConfig"
+    },
+    "retention": {
+      "$ref": "#/$defs/RetentionConfig"
+    },
+    "schema_version": {
+      "default": 2,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "server": {
+      "$ref": "#/$defs/ServerConfig"
+    },
+    "stacks": {
+      "$ref": "#/$defs/StacksConfig"
+    },
+    "trackers": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JiraTrackerConfig"
+      },
+      "title": "Trackers",
+      "type": "object"
+    },
+    "verification": {
+      "$ref": "#/$defs/VerificationConfig"
+    }
+  },
+  "title": "GlobalConfig",
+  "type": "object"
+}

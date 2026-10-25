@@ -1,0 +1,3762 @@
+{
+  "resource_templates": [
+    {
+      "description": "A supported analytics metric grouped by week",
+      "mime_type": "application/json",
+      "name": "res_metric",
+      "uri_template": "workgraph://workspaces/{workspace}/analytics/{metric}"
+    },
+    {
+      "description": "Project summary",
+      "mime_type": "application/json",
+      "name": "res_project",
+      "uri_template": "workgraph://workspaces/{workspace}/projects/{project}"
+    },
+    {
+      "description": "Workspace summary",
+      "mime_type": "application/json",
+      "name": "res_workspace",
+      "uri_template": "workgraph://workspaces/{workspace}/summary"
+    },
+    {
+      "description": "Task details",
+      "mime_type": "application/json",
+      "name": "res_task",
+      "uri_template": "workgraph://workspaces/{workspace}/tasks/{task}"
+    },
+    {
+      "description": "Task execution history (events and attempts)",
+      "mime_type": "application/json",
+      "name": "res_history",
+      "uri_template": "workgraph://workspaces/{workspace}/tasks/{task}/history"
+    }
+  ],
+  "resources": [
+    {
+      "description": "Definitions of every supported metric",
+      "mime_type": "application/json",
+      "name": "res_catalog",
+      "uri": "workgraph://analytics/catalog"
+    },
+    {
+      "description": "All workspaces",
+      "mime_type": "application/json",
+      "name": "res_workspaces",
+      "uri": "workgraph://workspaces"
+    }
+  ],
+  "tools": [
+    {
+      "description": "Where subagent wall time went: the measured share by tool class (or per model, task or agent description), with model time, waiting on background work and polling loops.",
+      "input_schema": {
+        "properties": {
+          "by": {
+            "default": "class",
+            "enum": [
+              "class",
+              "model",
+              "task",
+              "description"
+            ],
+            "title": "By",
+            "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model"
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Inclusive start, ISO date or datetime (UTC)",
+            "title": "Since"
+          },
+          "until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Exclusive end, ISO date or datetime (UTC)",
+            "title": "Until"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "analytics_agent_timeArguments",
+        "type": "object"
+      },
+      "name": "analytics_agent_time",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "analytics_agent_timeDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "What slows subagents down: time by class, the slowest calls with the number of subagent runs active at the time (machine saturation), and agent wall time per task.",
+      "input_schema": {
+        "properties": {
+          "since": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Inclusive start, ISO date or datetime (UTC)",
+            "title": "Since"
+          },
+          "top": {
+            "default": 15,
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Top",
+            "type": "integer"
+          },
+          "until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Exclusive end, ISO date or datetime (UTC)",
+            "title": "Until"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "analytics_bottlenecksArguments",
+        "type": "object"
+      },
+      "name": "analytics_bottlenecks",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "analytics_bottlenecksDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Run a predefined metric with structured grouping/filters (see analytics_report for the catalog).",
+      "input_schema": {
+        "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Category"
+          },
+          "group_by": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "period",
+                    "project",
+                    "repository",
+                    "category",
+                    "priority",
+                    "status",
+                    "provider",
+                    "model",
+                    "agent",
+                    "kind",
+                    "check_name",
+                    "module",
+                    "file_class",
+                    "relation_type"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Group By"
+          },
+          "metric": {
+            "description": "Metric id, e.g. tasks_accepted, execution_duration, cumulative_churn",
+            "title": "Metric",
+            "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model"
+          },
+          "period": {
+            "default": "week",
+            "enum": [
+              "day",
+              "week",
+              "month",
+              "quarter",
+              "year"
+            ],
+            "title": "Period",
+            "type": "string"
+          },
+          "project": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Project"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Provider"
+          },
+          "repository": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repository"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "metric"
+        ],
+        "title": "analytics_queryArguments",
+        "type": "object"
+      },
+      "name": "analytics_query",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "analytics_queryDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Named analytical reports: catalog, overview, coupling, failures, estimate or history.",
+      "input_schema": {
+        "properties": {
+          "report": {
+            "enum": [
+              "catalog",
+              "overview",
+              "coupling",
+              "failures",
+              "estimate",
+              "history"
+            ],
+            "title": "Report",
+            "type": "string"
+          },
+          "task": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Task"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "report"
+        ],
+        "title": "analytics_reportArguments",
+        "type": "object"
+      },
+      "name": "analytics_report",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "analytics_reportDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Subagent runs over time by period and model, with the acceptance outcomes and size bands of their linked tasks.",
+      "input_schema": {
+        "properties": {
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model"
+          },
+          "period": {
+            "default": "week",
+            "enum": [
+              "week",
+              "month"
+            ],
+            "title": "Period",
+            "type": "string"
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Inclusive start, ISO date or datetime (UTC)",
+            "title": "Since"
+          },
+          "until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Exclusive end, ISO date or datetime (UTC)",
+            "title": "Until"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "analytics_subagentsArguments",
+        "type": "object"
+      },
+      "name": "analytics_subagents",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "analytics_subagentsDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Register an attempt for work you are doing on a claimed task.",
+      "input_schema": {
+        "properties": {
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model"
+          },
+          "parent_attempt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parent Attempt"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Session Id"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "attempt_createArguments",
+        "type": "object"
+      },
+      "name": "attempt_create",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "attempt_createDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Get an attempt with telemetry, manifests and provenance.",
+      "input_schema": {
+        "properties": {
+          "attempt_id": {
+            "title": "Attempt Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "attempt_id"
+        ],
+        "title": "attempt_getArguments",
+        "type": "object"
+      },
+      "name": "attempt_get",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "attempt_getDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "List attempts in a workspace (filter by task, status or provider).",
+      "input_schema": {
+        "properties": {
+          "limit": {
+            "default": 50,
+            "description": "Maximum items to return",
+            "maximum": 200,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Pagination offset (use next_offset from the previous page)",
+            "minimum": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Provider"
+          },
+          "statuses": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Statuses"
+          },
+          "task": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Task"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "attempt_listArguments",
+        "type": "object"
+      },
+      "name": "attempt_list",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "attempt_listDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Claim a ready task (or continue your claim), record an attempt and prepare its managed git worktrees (stack base included). Returns the checkouts to work in. Requires task:claim and attempt:write.",
+      "input_schema": {
+        "properties": {
+          "adapter": {
+            "default": "claude_code_subagent",
+            "title": "Adapter",
+            "type": "string"
+          },
+          "isolation": {
+            "anyOf": [
+              {
+                "pattern": "^(worktree|in_place)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Isolation"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "attempt_startArguments",
+        "type": "object"
+      },
+      "name": "attempt_start",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "attempt_startDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Conclude an external managed attempt after committing your work in the checkouts from attempt_start: captures the commits, runs the fast checks or verification and moves the task to review. Requires task:claim, attempt:write and verify:run.",
+      "input_schema": {
+        "properties": {
+          "attempt": {
+            "description": "Attempt UUID",
+            "title": "Attempt",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error"
+          },
+          "status": {
+            "default": "succeeded",
+            "pattern": "^(succeeded|failed)$",
+            "title": "Status",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Summary"
+          }
+        },
+        "required": [
+          "attempt"
+        ],
+        "title": "attempt_submitArguments",
+        "type": "object"
+      },
+      "name": "attempt_submit",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "attempt_submitDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "List automation rules and their recent runs.",
+      "input_schema": {
+        "properties": {
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "automation_listArguments",
+        "type": "object"
+      },
+      "name": "automation_list",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "automation_listDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Trigger a manual automation rule (rules are authored by humans).",
+      "input_schema": {
+        "properties": {
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "task": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Task"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "rule"
+        ],
+        "title": "automation_triggerArguments",
+        "type": "object"
+      },
+      "name": "automation_trigger",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "automation_triggerDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Current classification and full history for a task (model results are inferences).",
+      "input_schema": {
+        "properties": {
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "classification_getArguments",
+        "type": "object"
+      },
+      "name": "classification_get",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "classification_getDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Queue a background classification job for a task.",
+      "input_schema": {
+        "properties": {
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "classification_requestArguments",
+        "type": "object"
+      },
+      "name": "classification_request",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "classification_requestDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Fit the success predictor for one model over all graded trials of every experiment, bootstrap it, and store the fit with its data cutoff and trial ids (requires experiment:write).",
+      "input_schema": {
+        "properties": {
+          "feature_penalty": {
+            "default": 0.01,
+            "description": "L2 penalty on each size feature",
+            "minimum": 0,
+            "title": "Feature Penalty",
+            "type": "number"
+          },
+          "model": {
+            "description": "Model id the trials ran with, e.g. claude-haiku-5-5",
+            "title": "Model",
+            "type": "string"
+          },
+          "repo_penalty": {
+            "default": 1.0,
+            "description": "L2 penalty on each repository intercept",
+            "minimum": 0,
+            "title": "Repo Penalty",
+            "type": "number"
+          },
+          "samples": {
+            "default": 200,
+            "description": "Bootstrap refits stored for intervals",
+            "maximum": 5000,
+            "minimum": 0,
+            "title": "Samples",
+            "type": "integer"
+          },
+          "seed": {
+            "default": 0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "title": "experiment_fitArguments",
+        "type": "object"
+      },
+      "name": "experiment_fit",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "experiment_fitDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Get an experiment by slug or id: its protocol (arms with pinned models, bands, budget) and its trials in order, with models requested and actually run, outcomes and failure causes.",
+      "input_schema": {
+        "properties": {
+          "experiment": {
+            "description": "Experiment slug or UUID",
+            "title": "Experiment",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "experiment"
+        ],
+        "title": "experiment_getArguments",
+        "type": "object"
+      },
+      "name": "experiment_get",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "experiment_getDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "List experiments in a workspace, optionally only those in one status (draft, running, closed).",
+      "input_schema": {
+        "properties": {
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "experiment_listArguments",
+        "type": "object"
+      },
+      "name": "experiment_list",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "experiment_listDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Plan the next trial of an experiment: returns the pending trial if one is planned or running, otherwise creates the next trial from the protocol, or reports done with the reason (requires experiment:write).",
+      "input_schema": {
+        "properties": {
+          "experiment": {
+            "description": "Experiment slug or UUID",
+            "title": "Experiment",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "experiment"
+        ],
+        "title": "experiment_nextArguments",
+        "type": "object"
+      },
+      "name": "experiment_next",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "experiment_nextDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Predict P(success) for a model with an interval, labelled as an inference and naming its fit. Give either task (reads metadata contract.predicted) or repository, src_lines, src_files and packages. The fit is the latest one for the model unless fit is given.",
+      "input_schema": {
+        "properties": {
+          "fit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Predictor fit id; default the latest for the model",
+            "title": "Fit"
+          },
+          "model": {
+            "description": "Model id to predict for",
+            "title": "Model",
+            "type": "string"
+          },
+          "packages": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Packages touched",
+            "title": "Packages"
+          },
+          "repository": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Repository name or id (task form: ignored)",
+            "title": "Repository"
+          },
+          "src_files": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Predicted source files touched",
+            "title": "Src Files"
+          },
+          "src_lines": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Predicted non-test source lines",
+            "title": "Src Lines"
+          },
+          "task": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Task key or UUID with metadata contract.predicted",
+            "title": "Task"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "title": "experiment_predictArguments",
+        "type": "object"
+      },
+      "name": "experiment_predict",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "experiment_predictDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Summarise an experiment per arm: pass rates by band with Wilson intervals, the size fit with bootstrap intervals, token usage by outcome, failure causes and invalid trials.",
+      "input_schema": {
+        "properties": {
+          "experiment": {
+            "description": "Experiment slug or UUID",
+            "title": "Experiment",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "experiment"
+        ],
+        "title": "experiment_reportArguments",
+        "type": "object"
+      },
+      "name": "experiment_report",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "experiment_reportDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Commits linked to a task with provenance, cumulative churn and final change surface.",
+      "input_schema": {
+        "properties": {
+          "min_confidence": {
+            "default": 0.5,
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Min Confidence",
+            "type": "number"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "git_get_changesArguments",
+        "type": "object"
+      },
+      "name": "git_get_changes",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "git_get_changesDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Full diff for a task, read live from Git (truncated to max_bytes).",
+      "input_schema": {
+        "properties": {
+          "max_bytes": {
+            "default": 200000,
+            "maximum": 2000000,
+            "minimum": 1000,
+            "title": "Max Bytes",
+            "type": "integer"
+          },
+          "repository": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repository"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "git_get_task_diffArguments",
+        "type": "object"
+      },
+      "name": "git_get_task_diff",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "git_get_task_diffDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Get a project summary: repositories, task counts and recent tasks.",
+      "input_schema": {
+        "properties": {
+          "project": {
+            "description": "Project slug or id",
+            "title": "Project",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "title": "project_getArguments",
+        "type": "object"
+      },
+      "name": "project_get",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "project_getDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "List projects in a workspace.",
+      "input_schema": {
+        "properties": {
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "project_listArguments",
+        "type": "object"
+      },
+      "name": "project_list",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "project_listDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Get a repository registration: checkouts, remotes, health, branches.",
+      "input_schema": {
+        "properties": {
+          "repository": {
+            "description": "Repository name or id",
+            "title": "Repository",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "repository"
+        ],
+        "title": "repository_getArguments",
+        "type": "object"
+      },
+      "name": "repository_get",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "repository_getDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "List registered repositories (optionally only those in a project).",
+      "input_schema": {
+        "properties": {
+          "project": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Project"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "repository_listArguments",
+        "type": "object"
+      },
+      "name": "repository_list",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "repository_listDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Register a local Git repository path (requires repo:register permission).",
+      "input_schema": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Name"
+          },
+          "path": {
+            "description": "Absolute path to a Git working tree",
+            "title": "Path",
+            "type": "string"
+          },
+          "read_only": {
+            "default": false,
+            "title": "Read Only",
+            "type": "boolean"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "repository_registerArguments",
+        "type": "object"
+      },
+      "name": "repository_register",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "repository_registerDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Working-tree status of a repository's primary checkout (branch, staged, unstaged).",
+      "input_schema": {
+        "properties": {
+          "repository": {
+            "title": "Repository",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "repository"
+        ],
+        "title": "repository_statusArguments",
+        "type": "object"
+      },
+      "name": "repository_status",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "repository_statusDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Cancel a queued or running agent run.",
+      "input_schema": {
+        "properties": {
+          "attempt_id": {
+            "title": "Attempt Id",
+            "type": "string"
+          },
+          "reason": {
+            "default": "cancelled via MCP",
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "attempt_id"
+        ],
+        "title": "run_cancelArguments",
+        "type": "object"
+      },
+      "name": "run_cancel",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "run_cancelDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Get a run: attempt state, job status and recent progress events.",
+      "input_schema": {
+        "properties": {
+          "attempt_id": {
+            "title": "Attempt Id",
+            "type": "string"
+          },
+          "events": {
+            "default": 50,
+            "maximum": 500,
+            "minimum": 1,
+            "title": "Events",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attempt_id"
+        ],
+        "title": "run_getArguments",
+        "type": "object"
+      },
+      "name": "run_get",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "run_getDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Start a Workgraph-managed agent run (requires run:start and execution enabled).",
+      "input_schema": {
+        "properties": {
+          "agent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Agent"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "run_startArguments",
+        "type": "object"
+      },
+      "name": "run_start",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "run_startDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Add a child task of the parent to its active stack (requires stack:write).",
+      "input_schema": {
+        "properties": {
+          "parent": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Parent",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "parent",
+          "task"
+        ],
+        "title": "stack_add_itemArguments",
+        "type": "object"
+      },
+      "name": "stack_add_item",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "stack_add_itemDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Stack a parent task's children on a fresh integration branch cut from each repository's default branch (requires stack:write).",
+      "input_schema": {
+        "properties": {
+          "parent": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Parent",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "parent"
+        ],
+        "title": "stack_createArguments",
+        "type": "object"
+      },
+      "name": "stack_create",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "stack_createDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Get a parent task's most recent stack: repositories with base SHAs and integration branches, and each child's stack state.",
+      "input_schema": {
+        "properties": {
+          "parent": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Parent",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "parent"
+        ],
+        "title": "stack_getArguments",
+        "type": "object"
+      },
+      "name": "stack_get",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "stack_getDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "A parent task's most recent stack in order: merges, conflicts, verification runs, bisect probes, ejections, rebuilds and landing.",
+      "input_schema": {
+        "properties": {
+          "parent": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Parent",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "parent"
+        ],
+        "title": "stack_historyArguments",
+        "type": "object"
+      },
+      "name": "stack_history",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "stack_historyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Queue merging the stack's ready children onto each repository's integration branch (requires stack:write).",
+      "input_schema": {
+        "properties": {
+          "parent": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Parent",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "parent"
+        ],
+        "title": "stack_integrateArguments",
+        "type": "object"
+      },
+      "name": "stack_integrate",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "stack_integrateDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "List stacks in a workspace (active stacks unless include_inactive is set).",
+      "input_schema": {
+        "properties": {
+          "include_inactive": {
+            "default": false,
+            "title": "Include Inactive",
+            "type": "boolean"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "stack_listArguments",
+        "type": "object"
+      },
+      "name": "stack_list",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "stack_listDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Remove a pending, ready, conflicting or ejected child from the active stack (requires stack:write).",
+      "input_schema": {
+        "properties": {
+          "parent": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Parent",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "parent",
+          "task"
+        ],
+        "title": "stack_remove_itemArguments",
+        "type": "object"
+      },
+      "name": "stack_remove_item",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "stack_remove_itemDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Queue full verification of the stack's integration tip; a failure bisects and ejects the culprit (requires stack:write).",
+      "input_schema": {
+        "properties": {
+          "parent": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Parent",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "parent"
+        ],
+        "title": "stack_verifyArguments",
+        "type": "object"
+      },
+      "name": "stack_verify",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "stack_verifyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Add a comment to a task.",
+      "input_schema": {
+        "properties": {
+          "body": {
+            "minLength": 1,
+            "title": "Body",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "body"
+        ],
+        "title": "task_add_commentArguments",
+        "type": "object"
+      },
+      "name": "task_add_comment",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_add_commentDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Make TASK depend on DEPENDS_ON (cycles are rejected).",
+      "input_schema": {
+        "properties": {
+          "depends_on": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Depends On",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "depends_on"
+        ],
+        "title": "task_add_dependencyArguments",
+        "type": "object"
+      },
+      "name": "task_add_dependency",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_add_dependencyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Relate two tasks (relates_to, duplicates, follows_up, regression_of, similar_to).",
+      "input_schema": {
+        "$defs": {
+          "RelationType": {
+            "enum": [
+              "relates_to",
+              "duplicates",
+              "follows_up",
+              "regression_of",
+              "similar_to"
+            ],
+            "title": "RelationType",
+            "type": "string"
+          }
+        },
+        "properties": {
+          "relation_type": {
+            "$ref": "#/$defs/RelationType",
+            "default": "relates_to"
+          },
+          "target": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Target",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "target"
+        ],
+        "title": "task_add_relationArguments",
+        "type": "object"
+      },
+      "name": "task_add_relation",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_add_relationDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Claim a ready task for this agent (exclusive, with a lease).",
+      "input_schema": {
+        "properties": {
+          "lease_minutes": {
+            "default": 120,
+            "maximum": 10080,
+            "minimum": 1,
+            "title": "Lease Minutes",
+            "type": "integer"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "task_claimArguments",
+        "type": "object"
+      },
+      "name": "task_claim",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_claimDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Report completion. The task moves to awaiting verification/review, never to accepted.",
+      "input_schema": {
+        "properties": {
+          "attempt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Attempt Id"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "task_completeArguments",
+        "type": "object"
+      },
+      "name": "task_complete",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_completeDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Triage a task for delegation: verdict not_delegable (needs a decision, no checkable oracle, or a report or register item), incomplete (metadata contract missing fields), split (predicted success below target) or leaf. Reports the missing fields, the reasons and the predicted success, an inference from the latest fit for the model.",
+      "input_schema": {
+        "properties": {
+          "model": {
+            "description": "Model id the predictor was fitted for",
+            "title": "Model",
+            "type": "string"
+          },
+          "target": {
+            "default": 0.8,
+            "description": "Predicted success needed for a leaf",
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Target",
+            "type": "number"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "model"
+        ],
+        "title": "task_contract_checkArguments",
+        "type": "object"
+      },
+      "name": "task_contract_check",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_contract_checkDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Create a task. Repositories/projects/dependencies may be given by name or key.",
+      "input_schema": {
+        "$defs": {
+          "TaskFileIn": {
+            "additionalProperties": false,
+            "description": "A file a task expects to change: ``path``, optionally narrowed to an ``anchor`` (symbol or heading).",
+            "properties": {
+              "anchor": {
+                "anyOf": [
+                  {
+                    "maxLength": 300,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Anchor"
+              },
+              "note": {
+                "default": "",
+                "maxLength": 2000,
+                "title": "Note",
+                "type": "string"
+              },
+              "path": {
+                "maxLength": 1000,
+                "minLength": 1,
+                "title": "Path",
+                "type": "string"
+              }
+            },
+            "required": [
+              "path"
+            ],
+            "title": "TaskFileIn",
+            "type": "object"
+          },
+          "TaskPriority": {
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "TaskPriority",
+            "type": "string"
+          }
+        },
+        "properties": {
+          "acceptance_criteria": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Acceptance Criteria"
+          },
+          "depends_on": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Depends On"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "files": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/TaskFileIn"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Files"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parent"
+          },
+          "priority": {
+            "$ref": "#/$defs/TaskPriority",
+            "default": "medium"
+          },
+          "projects": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Projects"
+          },
+          "ready": {
+            "default": false,
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "repositories": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repositories"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tags"
+          },
+          "title": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "task_createArguments",
+        "type": "object"
+      },
+      "name": "task_create",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_createDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Get full task details: description, criteria, files, comments, dependencies, rollup.",
+      "input_schema": {
+        "properties": {
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "task_getArguments",
+        "type": "object"
+      },
+      "name": "task_get",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_getDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Attempts made on a task (including failed and nested attempts).",
+      "input_schema": {
+        "properties": {
+          "limit": {
+            "default": 50,
+            "description": "Maximum items to return",
+            "maximum": 200,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Pagination offset (use next_offset from the previous page)",
+            "minimum": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "task_get_attemptsArguments",
+        "type": "object"
+      },
+      "name": "task_get_attempts",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_get_attemptsDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Immutable event history of a task and its attempts.",
+      "input_schema": {
+        "properties": {
+          "limit": {
+            "default": 500,
+            "maximum": 2000,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "task_get_historyArguments",
+        "type": "object"
+      },
+      "name": "task_get_history",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_get_historyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Ready, unclaimed tasks whose dependencies are all accepted, highest priority first.",
+      "input_schema": {
+        "properties": {
+          "limit": {
+            "default": 20,
+            "description": "Maximum items to return",
+            "maximum": 200,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "project": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Project"
+          },
+          "repository": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repository"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "task_get_readyArguments",
+        "type": "object"
+      },
+      "name": "task_get_ready",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_get_readyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Explicitly link a commit (SHA or ref) to a task with confidence 1.0.",
+      "input_schema": {
+        "properties": {
+          "note": {
+            "default": "",
+            "title": "Note",
+            "type": "string"
+          },
+          "repository": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repository"
+          },
+          "sha": {
+            "maxLength": 64,
+            "minLength": 4,
+            "title": "Sha",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "sha"
+        ],
+        "title": "task_link_commitArguments",
+        "type": "object"
+      },
+      "name": "task_link_commit",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_link_commitDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Associate a repository with a task.",
+      "input_schema": {
+        "properties": {
+          "read_only": {
+            "default": false,
+            "title": "Read Only",
+            "type": "boolean"
+          },
+          "repository": {
+            "title": "Repository",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "repository"
+        ],
+        "title": "task_link_repositoryArguments",
+        "type": "object"
+      },
+      "name": "task_link_repository",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_link_repositoryDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "List tasks with filters, sorting and pagination.",
+      "input_schema": {
+        "$defs": {
+          "TaskPriority": {
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "TaskPriority",
+            "type": "string"
+          },
+          "TaskStatus": {
+            "enum": [
+              "backlog",
+              "ready",
+              "blocked",
+              "claimed",
+              "running",
+              "awaiting_verification",
+              "awaiting_review",
+              "accepted",
+              "failed",
+              "cancelled"
+            ],
+            "title": "TaskStatus",
+            "type": "string"
+          }
+        },
+        "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Category"
+          },
+          "descending": {
+            "default": true,
+            "title": "Descending",
+            "type": "boolean"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Only tasks that list this path in their files",
+            "title": "File"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Maximum items to return",
+            "maximum": 200,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Pagination offset (use next_offset from the previous page)",
+            "minimum": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Parent"
+          },
+          "priorities": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/TaskPriority"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Priorities"
+          },
+          "project": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Project"
+          },
+          "repository": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Repository"
+          },
+          "sort": {
+            "default": "created_at",
+            "enum": [
+              "created_at",
+              "updated_at",
+              "priority",
+              "key",
+              "title",
+              "status",
+              "due_at"
+            ],
+            "title": "Sort",
+            "type": "string"
+          },
+          "statuses": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/TaskStatus"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Statuses"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tags"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Text"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "task_listArguments",
+        "type": "object"
+      },
+      "name": "task_list",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_listDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Move backlog tasks whose dependencies are all accepted to ready, in one step. Skips tasks with children and tasks tagged parked. Optional tags and project narrow the candidates; dry_run lists the keys that would move without changing anything.",
+      "input_schema": {
+        "properties": {
+          "dry_run": {
+            "default": false,
+            "title": "Dry Run",
+            "type": "boolean"
+          },
+          "project": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Project"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tags"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "task_promote_readyArguments",
+        "type": "object"
+      },
+      "name": "task_promote_ready",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_promote_readyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Release a claimed task back to ready.",
+      "input_schema": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reason"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "task_releaseArguments",
+        "type": "object"
+      },
+      "name": "task_release",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_releaseDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Remove a dependency.",
+      "input_schema": {
+        "properties": {
+          "depends_on": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Depends On",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "depends_on"
+        ],
+        "title": "task_remove_dependencyArguments",
+        "type": "object"
+      },
+      "name": "task_remove_dependency",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_remove_dependencyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Report progress (message and optional percent) on a task or attempt.",
+      "input_schema": {
+        "properties": {
+          "attempt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Attempt Id"
+          },
+          "message": {
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "percent": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Percent"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "message"
+        ],
+        "title": "task_report_progressArguments",
+        "type": "object"
+      },
+      "name": "task_report_progress",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_report_progressDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Report an attempt outcome. Include usage only if your runtime measured it.",
+      "input_schema": {
+        "properties": {
+          "attempt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Attempt Id"
+          },
+          "input_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Input Tokens"
+          },
+          "outcome": {
+            "enum": [
+              "succeeded",
+              "failed"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "output_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Output Tokens"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task",
+          "outcome"
+        ],
+        "title": "task_report_resultArguments",
+        "type": "object"
+      },
+      "name": "task_report_result",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_report_resultDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Search tasks by text (full-text, plus semantic when embeddings exist).",
+      "input_schema": {
+        "properties": {
+          "limit": {
+            "default": 20,
+            "description": "Maximum items to return",
+            "maximum": 200,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "mode": {
+            "default": "hybrid",
+            "enum": [
+              "hybrid",
+              "lexical",
+              "semantic"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "query": {
+            "minLength": 1,
+            "title": "Query",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "task_searchArguments",
+        "type": "object"
+      },
+      "name": "task_search",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_searchDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Update task fields or status. Pass expected_version for optimistic concurrency.",
+      "input_schema": {
+        "$defs": {
+          "TaskFileIn": {
+            "additionalProperties": false,
+            "description": "A file a task expects to change: ``path``, optionally narrowed to an ``anchor`` (symbol or heading).",
+            "properties": {
+              "anchor": {
+                "anyOf": [
+                  {
+                    "maxLength": 300,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Anchor"
+              },
+              "note": {
+                "default": "",
+                "maxLength": 2000,
+                "title": "Note",
+                "type": "string"
+              },
+              "path": {
+                "maxLength": 1000,
+                "minLength": 1,
+                "title": "Path",
+                "type": "string"
+              }
+            },
+            "required": [
+              "path"
+            ],
+            "title": "TaskFileIn",
+            "type": "object"
+          },
+          "TaskPriority": {
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "TaskPriority",
+            "type": "string"
+          }
+        },
+        "properties": {
+          "acceptance_criteria": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Acceptance Criteria"
+          },
+          "add_files": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/TaskFileIn"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Appends files",
+            "title": "Add Files"
+          },
+          "add_tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Add Tags"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Expected Version"
+          },
+          "files": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/TaskFileIn"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Replaces the task's files; [] clears them",
+            "title": "Files"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/TaskPriority"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reason"
+          },
+          "remove_tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Remove Tags"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "backlog",
+                  "ready",
+                  "blocked",
+                  "cancelled"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "task"
+        ],
+        "title": "task_updateArguments",
+        "type": "object"
+      },
+      "name": "task_update",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_updateDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Record the failure cause of a failed or invalid experiment trial and its source (requires experiment:write).",
+      "input_schema": {
+        "$defs": {
+          "FailureCause": {
+            "enum": [
+              "too_big",
+              "missing_context",
+              "ambiguous_spec",
+              "coupling",
+              "gaming",
+              "gate_gap",
+              "harness",
+              "budget",
+              "wrong_model",
+              "other"
+            ],
+            "title": "FailureCause",
+            "type": "string"
+          },
+          "FailureCauseSource": {
+            "enum": [
+              "human",
+              "agent",
+              "mechanical"
+            ],
+            "title": "FailureCauseSource",
+            "type": "string"
+          }
+        },
+        "properties": {
+          "cause": {
+            "$ref": "#/$defs/FailureCause"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "source": {
+            "$ref": "#/$defs/FailureCauseSource"
+          },
+          "trial": {
+            "description": "Experiment trial UUID",
+            "title": "Trial",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "trial",
+          "cause",
+          "source"
+        ],
+        "title": "trial_classifyArguments",
+        "type": "object"
+      },
+      "name": "trial_classify",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "trial_classifyDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Grade a started experiment trial: measure its clone against the base, run the oracle and gates, and record the outcome. A failure with flags (tests modified, stubs) is classed as gaming (requires experiment:write).",
+      "input_schema": {
+        "properties": {
+          "timeout": {
+            "default": 3600.0,
+            "description": "Seconds allowed per command",
+            "exclusiveMinimum": 0,
+            "title": "Timeout",
+            "type": "number"
+          },
+          "trial": {
+            "description": "Experiment trial UUID",
+            "title": "Trial",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "trial"
+        ],
+        "title": "trial_gradeArguments",
+        "type": "object"
+      },
+      "name": "trial_grade",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "trial_gradeDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Start a planned experiment trial: clone the task's replay base into a fresh single-branch clone (no remote), run the protocol's setup, and return the worktree, branch, base sha and the brief to give the subagent (requires experiment:write).",
+      "input_schema": {
+        "properties": {
+          "trial": {
+            "description": "Experiment trial UUID",
+            "title": "Trial",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "trial"
+        ],
+        "title": "trial_startArguments",
+        "type": "object"
+      },
+      "name": "trial_start",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "trial_startDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Get a workspace with task counts, queue status and running attempts.",
+      "input_schema": {
+        "properties": {
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "title": "workspace_getArguments",
+        "type": "object"
+      },
+      "name": "workspace_get",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "workspace_getDictOutput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "List workspaces.",
+      "input_schema": {
+        "properties": {},
+        "title": "workspace_listArguments",
+        "type": "object"
+      },
+      "name": "workspace_list",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "workspace_listDictOutput",
+        "type": "object"
+      }
+    }
+  ]
+}

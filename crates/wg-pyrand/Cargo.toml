@@ -9,3 +9,7 @@ description = "CPython-compatible Mersenne Twister"
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["float_roundtrip"] }

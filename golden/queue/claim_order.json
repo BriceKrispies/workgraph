@@ -1,0 +1,142 @@
+{
+  "cases": [
+    {
+      "name": "limits_and_order",
+      "steps": [
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "repo-r1-1",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "gpu-1",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "agent-alice-1",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "tracker-c1-1",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "stack-s1-r1-1",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "verify-r2-1",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "verify-r2-2",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "unlimited-1",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 20.0,
+          "got": null,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "got": "gpu-2",
+          "op": "claim_peek"
+        },
+        {
+          "label": "gpu-1",
+          "op": "complete",
+          "result": {
+            "ok": null
+          }
+        },
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "gpu-2",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "label": "repo-r1-1",
+          "op": "complete",
+          "result": {
+            "ok": null
+          }
+        },
+        {
+          "at": 20.0,
+          "attempt": 1,
+          "got": "verify-r1-1",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 600.0,
+          "attempt": 1,
+          "got": "future",
+          "lease_expires_at": 660.0,
+          "op": "claim",
+          "worker": "w2"
+        },
+        {
+          "at": 600.0,
+          "attempt": 1,
+          "got": "report-1",
+          "lease_expires_at": 660.0,
+          "op": "claim",
+          "worker": "w2"
+        },
+        {
+          "at": 600.0,
+          "got": null,
+          "op": "claim",
+          "worker": "w2"
+        },
+        {
+          "at": 600.0,
+          "got": null,
+          "op": "claim",
+          "worker": "w2"
+        }
+      ]
+    }
+  ],
+  "group": "claim_order"
+}

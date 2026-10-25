@@ -1,0 +1,236 @@
+{
+  "cases": [
+    {
+      "name": "expiry_boundary_and_redelivery",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "lease-job",
+          "lease_expires_at": 5.0,
+          "op": "claim",
+          "worker": "crashed"
+        },
+        {
+          "at": 5,
+          "ids": [],
+          "op": "recover"
+        },
+        {
+          "at": 6,
+          "ids": [
+            "lease-job"
+          ],
+          "op": "recover"
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": "lease_expired",
+            "finished_at": null,
+            "label": "lease-job",
+            "last_error": "lease expired (worker crashed stopped heartbeating)",
+            "max_attempts": 3,
+            "resource_keys": [],
+            "run_at": 8.0,
+            "status": "queued"
+          }
+        },
+        {
+          "op": "heartbeat",
+          "result": {
+            "error": "ConflictError"
+          },
+          "worker": "crashed"
+        },
+        {
+          "at": 6.0,
+          "got": null,
+          "op": "claim",
+          "worker": "w2"
+        },
+        {
+          "op": "runs",
+          "runs": [
+            {
+              "attempt_number": 1,
+              "error": "lease expired (worker crashed stopped heartbeating)",
+              "finished_at": 6.0,
+              "status": "failed",
+              "worker": "crashed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "heartbeat_extends_lease",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "heartbeat-job",
+          "lease_expires_at": 5.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 4,
+          "op": "heartbeat",
+          "result": {
+            "ok": false
+          }
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": null,
+            "label": "heartbeat-job",
+            "last_error": null,
+            "max_attempts": 3,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "running"
+          }
+        },
+        {
+          "at": 13,
+          "ids": [],
+          "op": "recover"
+        },
+        {
+          "at": 15,
+          "ids": [
+            "heartbeat-job"
+          ],
+          "op": "recover"
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": "lease_expired",
+            "finished_at": null,
+            "label": "heartbeat-job",
+            "last_error": "lease expired (worker w1 stopped heartbeating)",
+            "max_attempts": 3,
+            "resource_keys": [],
+            "run_at": 17.0,
+            "status": "queued"
+          }
+        }
+      ]
+    },
+    {
+      "name": "expiry_on_last_attempt_is_dead",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "last-attempt",
+          "lease_expires_at": 5.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "at": 10,
+          "ids": [
+            "last-attempt"
+          ],
+          "op": "recover"
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": "lease_expired",
+            "finished_at": 10.0,
+            "label": "last-attempt",
+            "last_error": "lease expired (worker w1 stopped heartbeating)",
+            "max_attempts": 1,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "dead"
+          }
+        },
+        {
+          "op": "runs",
+          "runs": [
+            {
+              "attempt_number": 1,
+              "error": "lease expired (worker w1 stopped heartbeating)",
+              "finished_at": 10.0,
+              "status": "dead",
+              "worker": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ownership_checks",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "owned-job",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "op": "heartbeat",
+          "result": {
+            "error": "ConflictError"
+          },
+          "worker": "w2"
+        },
+        {
+          "op": "complete",
+          "result": {
+            "error": "ConflictError"
+          },
+          "worker": "w2"
+        },
+        {
+          "job": "unknown",
+          "op": "heartbeat",
+          "result": {
+            "error": "ConflictError"
+          },
+          "worker": "w1"
+        },
+        {
+          "job": "unknown",
+          "op": "get",
+          "result": {
+            "error": "NotFoundError"
+          }
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": null,
+            "label": "owned-job",
+            "last_error": null,
+            "max_attempts": 5,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "running"
+          }
+        }
+      ]
+    }
+  ],
+  "group": "leases"
+}

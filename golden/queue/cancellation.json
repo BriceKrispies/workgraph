@@ -1,0 +1,220 @@
+{
+  "cases": [
+    {
+      "name": "queued_cancel_is_never_claimed",
+      "steps": [
+        {
+          "op": "cancel",
+          "row": {
+            "attempts": 0,
+            "cancel_requested": true,
+            "error_kind": null,
+            "finished_at": 0.0,
+            "label": "queued-cancel",
+            "last_error": null,
+            "max_attempts": 5,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "cancelled"
+          },
+          "status": "cancelled"
+        },
+        {
+          "at": 0.0,
+          "got": null,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "got": null,
+          "op": "claim_peek"
+        }
+      ]
+    },
+    {
+      "name": "running_cancel_is_advisory_until_worker_reports",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "running-complete",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "op": "cancel",
+          "status": "running"
+        },
+        {
+          "op": "heartbeat",
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "op": "complete",
+          "result": {
+            "ok": null
+          }
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": true,
+            "error_kind": null,
+            "finished_at": 0.0,
+            "label": "running-complete",
+            "last_error": null,
+            "max_attempts": 5,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "succeeded"
+          }
+        },
+        {
+          "op": "runs",
+          "runs": [
+            {
+              "attempt_number": 1,
+              "error": null,
+              "finished_at": 0.0,
+              "status": "succeeded",
+              "worker": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "mark_cancelled_records_reason",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "operator-stop",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "op": "mark_cancelled",
+          "wrong_worker": {
+            "error": "ConflictError"
+          }
+        },
+        {
+          "op": "mark_cancelled",
+          "result": {
+            "ok": null
+          }
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": 0.0,
+            "label": "operator-stop",
+            "last_error": "stopped by operator",
+            "max_attempts": 5,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "cancelled"
+          }
+        },
+        {
+          "op": "runs",
+          "runs": [
+            {
+              "attempt_number": 1,
+              "error": "stopped by operator",
+              "finished_at": 0.0,
+              "status": "cancelled",
+              "worker": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cancel_requested_expiry_is_cancelled",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "cancel-then-expire",
+          "lease_expires_at": 5.0,
+          "op": "claim",
+          "worker": "w1"
+        },
+        {
+          "op": "cancel",
+          "status": "running"
+        },
+        {
+          "ids": [
+            "cancel-then-expire"
+          ],
+          "op": "recover"
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": true,
+            "error_kind": "lease_expired",
+            "finished_at": 10.0,
+            "label": "cancel-then-expire",
+            "last_error": "lease expired (worker w1 stopped heartbeating)",
+            "max_attempts": 5,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "cancelled"
+          }
+        }
+      ]
+    },
+    {
+      "name": "cancel_terminal_and_unknown",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "already-done",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "cancel_succeeded",
+          "status": "succeeded"
+        },
+        {
+          "op": "cancel_unknown",
+          "result": {
+            "error": "NotFoundError"
+          }
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": 0.0,
+            "label": "already-done",
+            "last_error": null,
+            "max_attempts": 5,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "succeeded"
+          }
+        }
+      ]
+    }
+  ],
+  "group": "cancellation"
+}

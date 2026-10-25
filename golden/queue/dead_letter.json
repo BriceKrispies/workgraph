@@ -1,0 +1,243 @@
+{
+  "cases": [
+    {
+      "name": "retry_exhaustion_then_manual_retry",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "two-tries",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "fail",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": null,
+            "label": "two-tries",
+            "last_error": "first failure",
+            "max_attempts": 2,
+            "resource_keys": [],
+            "run_at": 10.0,
+            "status": "queued"
+          },
+          "status": "queued"
+        },
+        {
+          "at": 10.0,
+          "attempt": 2,
+          "got": "two-tries",
+          "lease_expires_at": 70.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "fail",
+          "row": {
+            "attempts": 2,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": 10.0,
+            "label": "two-tries",
+            "last_error": "second failure",
+            "max_attempts": 2,
+            "resource_keys": [],
+            "run_at": 10.0,
+            "status": "dead"
+          },
+          "status": "dead"
+        },
+        {
+          "op": "runs",
+          "runs": [
+            {
+              "attempt_number": 1,
+              "error": "first failure",
+              "finished_at": 0.0,
+              "status": "failed",
+              "worker": "w"
+            },
+            {
+              "attempt_number": 2,
+              "error": "second failure",
+              "finished_at": 10.0,
+              "status": "dead",
+              "worker": "w"
+            }
+          ]
+        },
+        {
+          "op": "retry_dead",
+          "result": {
+            "ok": null
+          }
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 2,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": null,
+            "label": "two-tries",
+            "last_error": "second failure",
+            "max_attempts": 4,
+            "resource_keys": [],
+            "run_at": 20.0,
+            "status": "queued"
+          }
+        },
+        {
+          "note": "queued job",
+          "op": "retry_dead",
+          "result": {
+            "error": "ConflictError"
+          }
+        },
+        {
+          "at": 20.0,
+          "attempt": 3,
+          "got": "two-tries",
+          "lease_expires_at": 80.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "stats",
+          "stats": {
+            "running": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "non_retryable_goes_dead",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "non-retryable",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "fail",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": "validation",
+            "finished_at": 0.0,
+            "label": "non-retryable",
+            "last_error": "bad input",
+            "max_attempts": 5,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "dead"
+          },
+          "status": "dead"
+        },
+        {
+          "at": 0.0,
+          "got": null,
+          "op": "claim",
+          "worker": "w"
+        }
+      ]
+    },
+    {
+      "name": "error_text_truncation",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "long-error",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "fail",
+          "status": "queued"
+        },
+        {
+          "last_error": 20000,
+          "op": "lengths",
+          "run_error": 5000
+        }
+      ]
+    },
+    {
+      "name": "cancel_requested_failure_is_cancelled",
+      "steps": [
+        {
+          "at": 0.0,
+          "attempt": 1,
+          "got": "cancel-during-run",
+          "lease_expires_at": 60.0,
+          "op": "claim",
+          "worker": "w"
+        },
+        {
+          "op": "cancel",
+          "status": "running"
+        },
+        {
+          "op": "fail",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": true,
+            "error_kind": null,
+            "finished_at": 0.0,
+            "label": "cancel-during-run",
+            "last_error": "boom",
+            "max_attempts": 5,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "cancelled"
+          },
+          "status": "cancelled"
+        },
+        {
+          "op": "runs",
+          "runs": [
+            {
+              "attempt_number": 1,
+              "error": "boom",
+              "finished_at": 0.0,
+              "status": "cancelled",
+              "worker": "w"
+            }
+          ]
+        },
+        {
+          "note": "cancelled job",
+          "op": "retry_dead",
+          "result": {
+            "ok": null
+          }
+        },
+        {
+          "op": "row",
+          "row": {
+            "attempts": 1,
+            "cancel_requested": false,
+            "error_kind": null,
+            "finished_at": null,
+            "label": "cancel-during-run",
+            "last_error": "boom",
+            "max_attempts": 6,
+            "resource_keys": [],
+            "run_at": 0.0,
+            "status": "queued"
+          }
+        }
+      ]
+    }
+  ],
+  "group": "dead_letter"
+}

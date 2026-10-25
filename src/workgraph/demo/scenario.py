@@ -172,6 +172,17 @@ def _free_port() -> int:
         return int(s.getsockname()[1])
 
 
+def _accept_once(app: Workgraph, human: RequestContext, key: str) -> None:
+    """Accept a verified task unless verification already accepted it.
+
+    Verification auto-accepts an unstacked task whose required checks passed, so an explicit accept
+    is only needed while the task is still waiting. Either way the task must end up accepted.
+    """
+    if app.tasks.get(human, "demo", key).status != "accepted":
+        app.verification.accept(human, "demo", key)
+    expect(app.tasks.get(human, "demo", key).status == "accepted", f"{key} accepted")
+
+
 def _drain(app: Workgraph, timeout: float = 300) -> None:
     from workgraph.jobs.worker import Worker
 
@@ -220,6 +231,9 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:
             config.llm.summarization = ModelSelection(provider="heuristic", model="heuristic-v1")
             config.execution.enabled = True
             config.execution.default_agent = "scripted"
+            # The walkthrough accepts sdk and auth by hand (steps 13 and 17); with auto-accept on,
+            # the drain would accept them first and those explicit accepts would be invalid transitions.
+            config.verification.auto_accept = False
             agent = str(Path(scripted_agent.__file__))
             config.agents["scripted"] = CommandAgentConfig(
                 executable=sys.executable,
@@ -436,7 +450,7 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:
         say(report.step(12, "Generate real Git commits", lambda: {"commits": detail["commits"]}))
 
         def s12b() -> dict[str, Any]:
-            app.verification.accept(human, "demo", state["sdk"])
+            _accept_once(app, human, state["sdk"])
             _drain(app)
             run = app.runs.start(human, "demo", state["auth"], agent="scripted-buggy")
             state["auth_attempt_1"] = run.id
@@ -488,7 +502,7 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:
                 out.status == "succeeded" and out.retry_of_attempt_id == state["auth_attempt_1"],
                 f"retry {out.status}",
             )
-            app.verification.accept(human, "demo", state["auth"])
+            _accept_once(app, human, state["auth"])
             _drain(app)
             web = app.runs.start(human, "demo", state["web"], agent="scripted")
             _drain(app)
@@ -498,8 +512,11 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:
         say(report.step(17, "Retry the failed attempt", s17))
 
         def s18() -> dict[str, Any]:
-            acceptance = app.verification.accept(human, "demo", state["web"])
-            expect(acceptance.mode == "automated", "automated acceptance")
+            _accept_once(app, human, state["web"])
+            expect(
+                any(a.mode == "automated" for a in app.verification.acceptances(human, "demo", state["web"])),
+                "automated acceptance",
+            )
             parent = app.tasks.detail(human, "demo", state["parent"])
             expect(parent.rollup is not None and parent.rollup.accepted == 3, "all children accepted")
             app.tasks.update(human, "demo", state["parent"], TaskUpdate(status="ready"))

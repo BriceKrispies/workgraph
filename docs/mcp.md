@@ -30,7 +30,7 @@ dimensions and typed filters.
 `workspace_list`, `workspace_get`, `project_list`, `project_get`, `repository_list`,
 `repository_get`, `repository_register`, `repository_status`, `task_create`, `task_get`,
 `task_search`, `task_list`, `task_update`, `task_claim`, `task_release`, `task_complete`,
-`task_get_ready`, `task_promote_ready`, `task_add_dependency`, `task_remove_dependency`, `task_add_relation`,
+`task_get_ready`, `task_promote_ready`, `task_import_breakdown`, `task_add_dependency`, `task_remove_dependency`, `task_add_relation`,
 `task_add_comment`, `task_get_history`, `task_get_attempts`, `task_link_repository`,
 `task_link_commit`, `task_report_progress`, `task_report_result`, `attempt_create`, `attempt_start`, `attempt_submit`, `attempt_get`,
 `attempt_list`, `run_start`, `run_get`, `run_cancel`, `git_get_changes`, `git_get_task_diff`,

@@ -1,5 +1,5 @@
 {
-  "count": 131,
+  "count": 129,
   "events": {
     "agent_session.bound": {
       "data_keys": [
@@ -77,18 +77,6 @@
       "optional_data_keys": []
     },
     "agent_session.subagent_stopped": {
-      "data_keys": [
-        "agent_id",
-        "agent_type",
-        "child_attempt_id"
-      ],
-      "data_open": false,
-      "entity_types": [
-        "agent_session"
-      ],
-      "optional_data_keys": []
-    },
-    "agent_session.{'subagent_started' if name == 'SubagentStart' else 'subagent_stopped'}": {
       "data_keys": [
         "agent_id",
         "agent_type",
@@ -324,16 +312,6 @@
         "repositories"
       ],
       "data_open": false,
-      "entity_types": [
-        "attempt"
-      ],
-      "optional_data_keys": []
-    },
-    "attempt.{event.kind}": {
-      "data_keys": [
-        "message"
-      ],
-      "data_open": true,
       "entity_types": [
         "attempt"
       ],

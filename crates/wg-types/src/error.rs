@@ -78,9 +78,13 @@ impl WgError {
 
     /// Adds one detail entry, keeping insertion order.
     #[must_use]
-    pub fn with_detail(mut self, key: impl Into<String>, value: Value) -> Self {
-        self.details.insert(key.into(), value);
-        self
+    pub fn with_detail(self, key: impl Into<String>, value: Value) -> Self {
+        let details = self
+            .details
+            .into_iter()
+            .chain(core::iter::once((key.into(), value)))
+            .collect();
+        Self { details, ..self }
     }
 
     pub fn exit_code(&self) -> u8 {

@@ -56,18 +56,19 @@ pub fn read_permissions() -> BTreeSet<Permission> {
 /// Agents may track and report work, but not start execution, accept their own work, change
 /// trusted configuration or author automation policy.
 pub fn default_agent_permissions() -> BTreeSet<Permission> {
-    let mut set = read_permissions();
-    set.extend([
-        Permission::TaskWrite,
-        Permission::TaskClaim,
-        Permission::TaskComplete,
-        Permission::AttemptWrite,
-        Permission::GitLink,
-        Permission::ClassifyRequest,
-        Permission::AutomationTrigger,
-        Permission::TelemetryIngest,
-    ]);
-    set
+    read_permissions()
+        .into_iter()
+        .chain([
+            Permission::TaskWrite,
+            Permission::TaskClaim,
+            Permission::TaskComplete,
+            Permission::AttemptWrite,
+            Permission::GitLink,
+            Permission::ClassifyRequest,
+            Permission::AutomationTrigger,
+            Permission::TelemetryIngest,
+        ])
+        .collect()
 }
 
 /// Humans hold every permission.

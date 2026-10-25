@@ -7,8 +7,6 @@
 //! * [`Timestamp::format_db`]: database column form (contract O11): always six fraction digits.
 //! * [`Timestamp::format_display`]: `when()` for human output (contract O03).
 
-use core::fmt::Write as _;
-
 use time::{Date, Month, OffsetDateTime, PrimitiveDateTime, Time, UtcOffset};
 
 use crate::{ErrorCode, WgError};
@@ -116,26 +114,17 @@ impl Timestamp {
 
     /// Pydantic JSON form: `YYYY-MM-DDTHH:MM:SS[.ffffff]Z`.
     pub fn format_z(self) -> String {
-        let mut out = self.iso_body();
-        self.push_fraction_if_nonzero(&mut out);
-        out.push('Z');
-        out
+        format!("{}{}Z", self.iso_body(), self.fraction_if_nonzero())
     }
 
     /// Python `isoformat()` of a UTC datetime: `YYYY-MM-DDTHH:MM:SS[.ffffff]+00:00`.
     pub fn format_isoformat(self) -> String {
-        let mut out = self.iso_body();
-        self.push_fraction_if_nonzero(&mut out);
-        out.push_str("+00:00");
-        out
+        format!("{}{}+00:00", self.iso_body(), self.fraction_if_nonzero())
     }
 
     /// Database form (O11): `YYYY-MM-DDTHH:MM:SS.ffffff+00:00`, always six fraction digits.
     pub fn format_db(self) -> String {
-        let mut out = self.iso_body();
-        let _ = write!(out, ".{:06}", self.0.nanosecond() / 1_000);
-        out.push_str("+00:00");
-        out
+        format!("{}.{:06}+00:00", self.iso_body(), self.microseconds())
     }
 
     /// The `when()` form for human output: `YYYY-MM-DD HH:MM`.
@@ -162,10 +151,15 @@ impl Timestamp {
         )
     }
 
-    fn push_fraction_if_nonzero(self, out: &mut String) {
-        let micros = self.0.nanosecond() / 1_000;
-        if micros != 0 {
-            let _ = write!(out, ".{micros:06}");
+    fn microseconds(self) -> u32 {
+        self.0.nanosecond() / 1_000
+    }
+
+    /// `.ffffff` when the microsecond part is non-zero, otherwise nothing.
+    fn fraction_if_nonzero(self) -> String {
+        match self.microseconds() {
+            0 => String::new(),
+            micros => format!(".{micros:06}"),
         }
     }
 }

@@ -4,6 +4,7 @@ import { OverviewPage } from "./pages/Overview";
 import { TasksPage } from "./pages/Tasks";
 import { TaskDetailPage } from "./pages/TaskDetail";
 import { GraphPage } from "./pages/Graph";
+import { DecisionsPage } from "./pages/Decisions";
 import { RepositoriesPage, RepositoryDetailPage } from "./pages/Repositories";
 import { ExecutionPage } from "./pages/Execution";
 import { StackDetailPage, StacksPage } from "./pages/Stacks";
@@ -20,6 +21,7 @@ export function App() {
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/tasks/:ref" element={<TaskDetailPage />} />
         <Route path="/graph" element={<GraphPage />} />
+        <Route path="/decisions" element={<DecisionsPage />} />
         <Route path="/repositories" element={<RepositoriesPage />} />
         <Route path="/repositories/:ref" element={<RepositoryDetailPage />} />
         <Route path="/stacks" element={<StacksPage />} />

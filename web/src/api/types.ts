@@ -511,3 +511,46 @@ export interface Bottlenecks {
   by_task: TaskWallTime[];
   notes: string[];
 }
+
+export interface DecisionOption {
+  id: string;
+  label: string;
+  detail: string;
+  recommended: boolean;
+}
+
+export type DecisionStatus = "open" | "decided" | "withdrawn";
+
+/** A question a task is waiting on a person to answer. */
+export interface DecisionOut {
+  id: string;
+  task_id: string;
+  task_key: string;
+  question: string;
+  options: DecisionOption[];
+  status: DecisionStatus;
+  chosen_option_id: string | null;
+  other_text: string | null;
+  note: string | null;
+  decided_by: string | null;
+  decided_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  version: number;
+}
+
+export interface DecisionListItem extends DecisionOut {
+  task: {
+    key: string;
+    title: string;
+    status: TaskStatus;
+    priority: Priority;
+    tags: string[];
+    description: string;
+  };
+}
+
+export interface DecisionList {
+  items: DecisionListItem[];
+}

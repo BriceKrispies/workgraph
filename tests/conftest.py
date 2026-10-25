@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.helpers import impl_mode, rust_binary
 from workgraph.app import Workgraph
 from workgraph.config.paths import AppPaths
 from workgraph.core.context import RequestContext
@@ -67,6 +68,19 @@ class GitRepo:
 
     def head(self) -> str:
         return self.git("rev-parse", "HEAD")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _implementation_switch() -> None:
+    # Fail the session early on a bad WORKGRAPH_IMPL or a missing WORKGRAPH_RUST_BIN.
+    if impl_mode() == "rust":
+        rust_binary()
+
+
+@pytest.fixture
+def impl() -> str:
+    """The implementation under test: ``python`` or ``rust`` (see ``tests/helpers.py``)."""
+    return impl_mode()
 
 
 @pytest.fixture

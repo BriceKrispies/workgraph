@@ -2646,6 +2646,267 @@
       "params": []
     },
     {
+      "command": "workgraph decision choose",
+      "params": [
+        {
+          "default": null,
+          "kind": "argument",
+          "name": "decision_id",
+          "nargs": 1,
+          "required": true,
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--option",
+            "-o"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--other"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--note"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_WORKSPACE",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--workspace",
+            "-w"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        }
+      ]
+    },
+    {
+      "command": "workgraph decision list",
+      "params": [
+        {
+          "choices": null,
+          "default": "open",
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--status"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": 50,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--limit"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "int"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_WORKSPACE",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--workspace",
+            "-w"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        }
+      ]
+    },
+    {
+      "command": "workgraph decision request",
+      "params": [
+        {
+          "default": null,
+          "kind": "argument",
+          "name": "task",
+          "nargs": 1,
+          "required": true,
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--question",
+            "-q"
+          ],
+          "required": true,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": true,
+          "opts": [
+            "--option",
+            "-o"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--recommend"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "int"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_WORKSPACE",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--workspace",
+            "-w"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        }
+      ]
+    },
+    {
+      "command": "workgraph decision show",
+      "params": [
+        {
+          "default": null,
+          "kind": "argument",
+          "name": "decision_id",
+          "nargs": 1,
+          "required": true,
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_WORKSPACE",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--workspace",
+            "-w"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        }
+      ]
+    },
+    {
+      "command": "workgraph decision withdraw",
+      "params": [
+        {
+          "default": null,
+          "kind": "argument",
+          "name": "decision_id",
+          "nargs": 1,
+          "required": true,
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--reason"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_WORKSPACE",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--workspace",
+            "-w"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        }
+      ]
+    },
+    {
       "command": "workgraph demo e2e",
       "params": [
         {
@@ -7769,6 +8030,20 @@
           "kind": "option",
           "multiple": false,
           "opts": [
+            "--all"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "boolean"
+        },
+        {
+          "choices": null,
+          "default": false,
+          "envvar": null,
+          "is_flag": true,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
             "--dry-run"
           ],
           "required": false,
@@ -8082,8 +8357,8 @@
         {
           "default": null,
           "kind": "argument",
-          "name": "ref",
-          "nargs": 1,
+          "name": "refs",
+          "nargs": -1,
           "required": true,
           "type": "str"
         },
@@ -8504,6 +8779,75 @@
           "required": false,
           "secondary_opts": [],
           "type": "boolean"
+        }
+      ]
+    },
+    {
+      "command": "workgraph ui open",
+      "params": [
+        {
+          "default": "",
+          "kind": "argument",
+          "name": "page",
+          "nargs": 1,
+          "required": false,
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--url"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": false,
+          "envvar": null,
+          "is_flag": true,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--no-start"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "boolean"
+        },
+        {
+          "choices": null,
+          "default": false,
+          "envvar": null,
+          "is_flag": true,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--print"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "boolean"
+        },
+        {
+          "choices": null,
+          "default": 20.0,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--timeout"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "float"
         }
       ]
     },
@@ -9115,7 +9459,7 @@
       ]
     }
   ],
-  "leaf_count": 186,
+  "leaf_count": 192,
   "root_options": [
     {
       "choices": null,
@@ -9156,6 +9500,7 @@
     "classify",
     "claude",
     "config",
+    "decision",
     "demo",
     "doctor",
     "events",

@@ -3,7 +3,7 @@
 Inputs:
 
 * ``contracts/cli.json``, ``contracts/mcp.json``, ``contracts/openapi.json``,
-  ``contracts/config-schema.json`` and ``contracts/schema-0010.sql`` (the CF-01 snapshots);
+  ``contracts/config-schema.json`` and ``contracts/schema-0011.sql`` (the CF-01 snapshots);
 * the first line of each CLI command's docstring under ``src/workgraph/cli`` (read only). Help text is
   not part of the snapshot by design (section 11, decision 1), so the Summary column of 13.1 comes
   from the source the help is written in.
@@ -372,7 +372,7 @@ def _db_rows(sql_text: str) -> list[str]:
             triggers += 1
     automatic = len(re.findall(r"^-- automatic index ", sql_text, re.MULTILINE))
     if not tables:
-        raise RenderError("no tables found in schema-0010.sql")
+        raise RenderError("no tables found in schema-0011.sql")
     rows = []
     for name in sorted(tables):
         rows.append(f"| `{name}` | {columns[name]} | {indexes.get(name, 0)} |")
@@ -464,7 +464,7 @@ def render(doc_text: str) -> str:
     mcp = json.loads((CONTRACTS_DIR / "mcp.json").read_text(encoding="utf-8"))
     openapi = json.loads((CONTRACTS_DIR / "openapi.json").read_text(encoding="utf-8"))
     config = json.loads((CONTRACTS_DIR / "config-schema.json").read_text(encoding="utf-8"))
-    sql_text = (CONTRACTS_DIR / "schema-0010.sql").read_text(encoding="utf-8")
+    sql_text = (CONTRACTS_DIR / "schema-0011.sql").read_text(encoding="utf-8")
 
     section = _committed_section(doc_text)
     reg = _registry(section)

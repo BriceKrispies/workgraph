@@ -9,3 +9,6 @@ description = "the three JSON dialects and timestamp formats"
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+serde_json = { version = "1", features = ["arbitrary_precision"] }

@@ -1,0 +1,828 @@
+{
+  "cases": [
+    {
+      "facts": "{\"summary\": \"Week done\", \"highlights\": [\"a\", \"b\"], \"opportunities\": [\"c\"]}",
+      "id": "narrative-000",
+      "result": {
+        "observations": [
+          "a",
+          "b"
+        ],
+        "opportunities": [
+          "c"
+        ],
+        "summary": "Week done"
+      }
+    },
+    {
+      "facts": "{}",
+      "id": "narrative-001",
+      "result": {
+        "observations": [],
+        "opportunities": [],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"highlights\": [\"0\", \"1\", \"2\", \"3\", \"4\", \"5\", \"6\", \"7\", \"8\", \"9\", \"10\", \"11\"]}",
+      "id": "narrative-002",
+      "result": {
+        "observations": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "opportunities": [],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"\", \"opportunities\": [\"x\", \"x\", \"x\", \"x\", \"x\", \"x\", \"x\"]}",
+      "id": "narrative-003",
+      "result": {
+        "observations": [],
+        "opportunities": [
+          "x",
+          "x",
+          "x",
+          "x",
+          "x"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": null, \"opportunities\": null}",
+      "id": "narrative-004",
+      "result": {
+        "observations": [],
+        "opportunities": [],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"highlights\": [1, 2.5, true, null, {\"k\": \"v\"}]}",
+      "id": "narrative-005",
+      "result": {
+        "observations": [
+          "1",
+          "2.5",
+          "True",
+          "None",
+          "{'k': 'v'}"
+        ],
+        "opportunities": [],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "not json",
+      "id": "narrative-006",
+      "raised": {
+        "error": "InvalidModelOutputError",
+        "message": "facts block is not valid JSON"
+      }
+    },
+    {
+      "facts": "",
+      "id": "narrative-007",
+      "raised": {
+        "error": "InvalidModelOutputError",
+        "message": "facts block is not valid JSON"
+      }
+    },
+    {
+      "facts": "[1, 2]",
+      "id": "narrative-008",
+      "raised": {
+        "error": "AttributeError",
+        "message": "'list' object has no attribute 'get'"
+      }
+    },
+    {
+      "facts": "\"just a string\"",
+      "id": "narrative-009",
+      "raised": {
+        "error": "AttributeError",
+        "message": "'str' object has no attribute 'get'"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"pipeline library issue user\", \"highlights\": [\"tab\\there docker\", \"monolith README tutorial kubernetes\", \"reorganize faster ci\"], \"opportunities\": [\"e2e\", \"secret spike\", \"test system design\", \"Ünïcode sdk\", \"explore optimiz\"]}",
+      "id": "narrative-010",
+      "result": {
+        "observations": [
+          "tab\there docker",
+          "monolith README tutorial kubernetes",
+          "reorganize faster ci"
+        ],
+        "opportunities": [
+          "e2e",
+          "secret spike",
+          "test system design",
+          "Ünïcode sdk",
+          "explore optimiz"
+        ],
+        "summary": "pipeline library issue user"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"allow semi;colon once backend then coverage\", \"highlights\": [\"İstanbul\"], \"opportunities\": [\"latency encrypt\", \"user compare api\", \"library CVE-2026-1234 refactor README\", \"add\", \"speed up ui docs\", \"research NEAR(\"]}",
+      "id": "narrative-011",
+      "result": {
+        "observations": [
+          "İstanbul"
+        ],
+        "opportunities": [
+          "latency encrypt",
+          "user compare api",
+          "library CVE-2026-1234 refactor README",
+          "add",
+          "speed up ui docs"
+        ],
+        "summary": "allow semi;colon once backend then coverage"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"e2e react\", \"highlights\": [\"deprecat readme rename monolith\", \"-neg flow fix! extract then\", \"new ui CVE-2026-1234 backend warehouse\", \"latency dark secret\"], \"opportunities\": [\"secret cve research retry\", \"database wrong component analytics\", \"exception handler vulnerab\", \"\\\\back github actions\", \"once issue\", \"pytest naïve\", \"\\\\back latency\"]}",
+      "id": "narrative-012",
+      "result": {
+        "observations": [
+          "deprecat readme rename monolith",
+          "-neg flow fix! extract then",
+          "new ui CVE-2026-1234 backend warehouse",
+          "latency dark secret"
+        ],
+        "opportunities": [
+          "secret cve research retry",
+          "database wrong component analytics",
+          "exception handler vulnerab",
+          "\\back github actions",
+          "once issue"
+        ],
+        "summary": "e2e react"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"config tab\\there page\", \"highlights\": [\"deploy emoji🙂 csrf a/b metrics\", \"NEAR(\", \"error then analytics\", \"housekeeping encrypt chore vulnerab\", \"allow monolith\", \"service under_score duckdb enable\", \"handler new\\nline\", \"mode\", \"error performance readme unit test\", \"tab\\there\"], \"opportunities\": [\"chore flaky\", \"dependencies\", \"prototype housekeeping\"]}",
+      "id": "narrative-013",
+      "result": {
+        "observations": [
+          "deploy emoji🙂 csrf a/b metrics",
+          "NEAR(",
+          "error then analytics",
+          "housekeeping encrypt chore vulnerab",
+          "allow monolith",
+          "service under_score duckdb enable",
+          "handler new\nline",
+          "mode"
+        ],
+        "opportunities": [
+          "chore flaky",
+          "dependencies",
+          "prototype housekeeping"
+        ],
+        "summary": "config tab\there page"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"pytest research semi;colon\", \"highlights\": [\"\\\"quoted\\\" service bug reorganize\", \"tests\", \"faster security dot.sep cleanup\", \"flaky\", \"prototype\", \"ui throughput\", \"dot.sep\", \"spike docs new\", \"architecture once old\"], \"opportunities\": [\"broken vulnerab documentation token\", \"add migration plan\", \"service split\", \"dependencies query update api\", \"faster endpoint\", \"wrong dependency\", \"bug guide\"]}",
+      "id": "narrative-014",
+      "result": {
+        "observations": [
+          "\"quoted\" service bug reorganize",
+          "tests",
+          "faster security dot.sep cleanup",
+          "flaky",
+          "prototype",
+          "ui throughput",
+          "dot.sep",
+          "spike docs new"
+        ],
+        "opportunities": [
+          "broken vulnerab documentation token",
+          "add migration plan",
+          "service split",
+          "dependencies query update api",
+          "faster endpoint"
+        ],
+        "summary": "pytest research semi;colon"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"coverage browser\", \"highlights\": [\"comment tab\\there\", \"reorganize xss latency\", \"faster csrf e2e. endpoint\", \"metrics encrypt feature the handler\", \"dark handler permission\", \"kubernetes client library reorganize \\\\back then\", \"NEAR( emoji🙂 unit test introduce\", \"allow integration test support coverage\"], \"opportunities\": [\"日本語 under_score button\", \"login boundary module service split\", \"dot.sep analytics adr\"]}",
+      "id": "narrative-015",
+      "result": {
+        "observations": [
+          "comment tab\there",
+          "reorganize xss latency",
+          "faster csrf e2e. endpoint",
+          "metrics encrypt feature the handler",
+          "dark handler permission",
+          "kubernetes client library reorganize \\back then",
+          "NEAR( emoji🙂 unit test introduce",
+          "allow integration test support coverage"
+        ],
+        "opportunities": [
+          "日本語 under_score button",
+          "login boundary module service split",
+          "dot.sep analytics adr"
+        ],
+        "summary": "coverage browser"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"migration plan docs comment\", \"highlights\": [\"client library\", \"test deprecat dot.sep auth investigate\", \"the\"], \"opportunities\": [\"page\", \"incorrect warehouse docker\", \"evaluate\", \"kubernetes latency incorrect faster\", \"boundary\", \"library etl İstanbul component\"]}",
+      "id": "narrative-016",
+      "result": {
+        "observations": [
+          "client library",
+          "test deprecat dot.sep auth investigate",
+          "the"
+        ],
+        "opportunities": [
+          "page",
+          "incorrect warehouse docker",
+          "evaluate",
+          "kubernetes latency incorrect faster",
+          "boundary"
+        ],
+        "summary": "migration plan docs comment"
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [\"boundary faster regression\", \"encrypt client library\", \"web-client spike\", \"then service browser AND NOT\", \"introduce\", \"regression CVE-2026-1234 architecture\", \"xss etl NEAR( deprecat coverage\"]}",
+      "id": "narrative-017",
+      "result": {
+        "observations": [
+          "boundary faster regression",
+          "encrypt client library",
+          "web-client spike",
+          "then service browser AND NOT",
+          "introduce",
+          "regression CVE-2026-1234 architecture",
+          "xss etl NEAR( deprecat coverage"
+        ],
+        "opportunities": [],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"then typo session mode bump\", \"highlights\": [\"kubernetes issue duckdb Bug: reorganize\", \"upgrade\", \"AND e2e. issue\", \"encrypt OR\", \"button\", \"css\"]}",
+      "id": "narrative-018",
+      "result": {
+        "observations": [
+          "kubernetes issue duckdb Bug: reorganize",
+          "upgrade",
+          "AND e2e. issue",
+          "encrypt OR",
+          "button",
+          "css"
+        ],
+        "opportunities": [],
+        "summary": "then typo session mode bump"
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [\"csrf AND web-client\", \"documentation reorganize boundary ^caret monolith\", \"old 日本語 a'b\", \"ßtraße bug new implement e2e\", \"integration test metrics database\", \"tab\\there typo\", \"handler password latency old auth\", \"İstanbul [bracket] reorganize auth-service\", \"[bracket]\", \"doc client library guide backend\"], \"opportunities\": [\"NOT\", \"warehouse\"]}",
+      "id": "narrative-019",
+      "result": {
+        "observations": [
+          "csrf AND web-client",
+          "documentation reorganize boundary ^caret monolith",
+          "old 日本語 a'b",
+          "ßtraße bug new implement e2e",
+          "integration test metrics database",
+          "tab\there typo",
+          "handler password latency old auth",
+          "İstanbul [bracket] reorganize auth-service"
+        ],
+        "opportunities": [
+          "NOT",
+          "warehouse"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [\"Ünïcode secret architecture deploy\", \"kubernetes comment throughput x:y add\", \"web client NEAR( build system enable\", \"deploy\"]}",
+      "id": "narrative-020",
+      "result": {
+        "observations": [
+          "Ünïcode secret architecture deploy",
+          "kubernetes comment throughput x:y add",
+          "web client NEAR( build system enable",
+          "deploy"
+        ],
+        "opportunities": [],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"{brace} integration test\", \"highlights\": [\"fix OR new\\nline\", \"retry react dependency memory\", \"pipeline the\", \"introduce password csrf\", \"slow backend\"], \"opportunities\": []}",
+      "id": "narrative-021",
+      "result": {
+        "observations": [
+          "fix OR new\nline",
+          "retry react dependency memory",
+          "pipeline the",
+          "introduce password csrf",
+          "slow backend"
+        ],
+        "opportunities": [],
+        "summary": "{brace} integration test"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"NOT secret user tutorial\", \"highlights\": []}",
+      "id": "narrative-022",
+      "result": {
+        "observations": [],
+        "opportunities": [],
+        "summary": "NOT secret user tutorial"
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [\"browser service emoji🙂\", \"fails build system after payment\", \"x:y backend cache query simplify\", \"web client package queue\", \"queue report NEAR( flaky\", \"exception restructure\", \"service research api tab\\there client library\", \"Ünïcode component a design\"], \"opportunities\": [\"pipeline incorrect server support\", \"CVE-2026-1234 ^caret comment migration plan\", \"adr \\\"quoted\\\" module fix\", \"terraform api handler performance\"]}",
+      "id": "narrative-023",
+      "result": {
+        "observations": [
+          "browser service emoji🙂",
+          "fails build system after payment",
+          "x:y backend cache query simplify",
+          "web client package queue",
+          "queue report NEAR( flaky",
+          "exception restructure",
+          "service research api tab\there client library",
+          "Ünïcode component a design"
+        ],
+        "opportunities": [
+          "pipeline incorrect server support",
+          "CVE-2026-1234 ^caret comment migration plan",
+          "adr \"quoted\" module fix",
+          "terraform api handler performance"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"github actions analytics dependency fix\", \"highlights\": [], \"opportunities\": [\"ci\", \"İstanbul\", \"exception refactor warehouse ßtraße\", \"mode once bug\", \"AND upgrade vulnerab\", \"日本語 terraform\", \"latency\"]}",
+      "id": "narrative-024",
+      "result": {
+        "observations": [],
+        "opportunities": [
+          "ci",
+          "İstanbul",
+          "exception refactor warehouse ßtraße",
+          "mode once bug",
+          "AND upgrade vulnerab"
+        ],
+        "summary": "github actions analytics dependency fix"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"flaky monolith button Bug: retry backend\", \"highlights\": [\"analytics\", \"OR AND service split xss once\", \"auth-service performance\", \"add etl refactor\"], \"opportunities\": [\"rename sdk readme frontend\", \"fails\", \"README build system user vulnerab\", \"library checkout\"]}",
+      "id": "narrative-025",
+      "result": {
+        "observations": [
+          "analytics",
+          "OR AND service split xss once",
+          "auth-service performance",
+          "add etl refactor"
+        ],
+        "opportunities": [
+          "rename sdk readme frontend",
+          "fails",
+          "README build system user vulnerab",
+          "library checkout"
+        ],
+        "summary": "flaky monolith button Bug: retry backend"
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [\"architecture\", \"^caret broken fix dot.sep feasibility\", \"dependencies payment chore new report\", \"feasibility checkout\", \"injection introduce simplify\", \"explore simplify emoji🙂 enable error\", \"checkout\", \"spike feasibility\", \"checkout speed up mode test\"], \"opportunities\": [\"kubernetes\", \"e2e\"]}",
+      "id": "narrative-026",
+      "result": {
+        "observations": [
+          "architecture",
+          "^caret broken fix dot.sep feasibility",
+          "dependencies payment chore new report",
+          "feasibility checkout",
+          "injection introduce simplify",
+          "explore simplify emoji🙂 enable error",
+          "checkout",
+          "spike feasibility"
+        ],
+        "opportunities": [
+          "kubernetes",
+          "e2e"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"page deprecat analytics library design\", \"highlights\": [\"then comment github actions dark\", \"integration test AND \\\\back boundary migration plan\"], \"opportunities\": [\"database e2e page new\\nline\", \"bug csrf\", \"metrics with\", \"support service latency\", \"extract chore new\\nline\"]}",
+      "id": "narrative-027",
+      "result": {
+        "observations": [
+          "then comment github actions dark",
+          "integration test AND \\back boundary migration plan"
+        ],
+        "opportunities": [
+          "database e2e page new\nline",
+          "bug csrf",
+          "metrics with",
+          "support service latency",
+          "extract chore new\nline"
+        ],
+        "summary": "page deprecat analytics library design"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"OR\", \"highlights\": [], \"opportunities\": []}",
+      "id": "narrative-028",
+      "result": {
+        "observations": [],
+        "opportunities": [],
+        "summary": "OR"
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [\"secret explore\", \"rename client library rename ^caret monolith\"], \"opportunities\": [\"ci x:y dependency handler\", \"error\", \"issue\"]}",
+      "id": "narrative-029",
+      "result": {
+        "observations": [
+          "secret explore",
+          "rename client library rename ^caret monolith"
+        ],
+        "opportunities": [
+          "ci x:y dependency handler",
+          "error",
+          "issue"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [\"error cve [bracket]\", \"and monolith\", \"design payment semi;colon react compare\"], \"opportunities\": [\"incorrect user infrastructure csrf\", \"after password secret deprecat\", \"rename kube-proxy\", \"login\", \"security latency database tests\", \"broken\"]}",
+      "id": "narrative-030",
+      "result": {
+        "observations": [
+          "error cve [bracket]",
+          "and monolith",
+          "design payment semi;colon react compare"
+        ],
+        "opportunities": [
+          "incorrect user infrastructure csrf",
+          "after password secret deprecat",
+          "rename kube-proxy",
+          "login",
+          "security latency database tests"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"\", \"highlights\": [\"comment with enable\", \"throughput\", \"Bug: session password\", \"faster compare reorganize README queue\", \"ci\", \"github actions typo error architecture token\"], \"opportunities\": [\"sdk monolith\", \"semi;colon service split kubernetes update\", \"github actions once sdk\", \"etl adr doc introduce\"]}",
+      "id": "narrative-031",
+      "result": {
+        "observations": [
+          "comment with enable",
+          "throughput",
+          "Bug: session password",
+          "faster compare reorganize README queue",
+          "ci",
+          "github actions typo error architecture token"
+        ],
+        "opportunities": [
+          "sdk monolith",
+          "semi;colon service split kubernetes update",
+          "github actions once sdk",
+          "etl adr doc introduce"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"\", \"highlights\": [\"update version extract\", \"test enable naïve enable\", \"react\", \"backend ßtraße css \\\"quoted\\\"\", \"tutorial api-gateway emoji🙂 database add\", \"reorganize a flaky permission\"], \"opportunities\": [\"xss\", \"payment update version\"]}",
+      "id": "narrative-032",
+      "result": {
+        "observations": [
+          "update version extract",
+          "test enable naïve enable",
+          "react",
+          "backend ßtraße css \"quoted\"",
+          "tutorial api-gateway emoji🙂 database add",
+          "reorganize a flaky permission"
+        ],
+        "opportunities": [
+          "xss",
+          "payment update version"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"kubernetes the README terraform design\", \"highlights\": [\"unit test terraform e2e.\", \"Bug: feasibility csrf user\", \"flaky web-client prototype memory feature\", \"monolith\", \"explore\", \"browser\"], \"opportunities\": [\"old OR refactor\", \"password tests\", \"slow rename\", \"duckdb\", \"Ünïcode button\"]}",
+      "id": "narrative-033",
+      "result": {
+        "observations": [
+          "unit test terraform e2e.",
+          "Bug: feasibility csrf user",
+          "flaky web-client prototype memory feature",
+          "monolith",
+          "explore",
+          "browser"
+        ],
+        "opportunities": [
+          "old OR refactor",
+          "password tests",
+          "slow rename",
+          "duckdb",
+          "Ünïcode button"
+        ],
+        "summary": "kubernetes the README terraform design"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"CVE-2026-1234 documentation backend new\\nline\", \"highlights\": [\"spike tab\\there allow secret\", \"bug *star*\", \"error deprecat browser refactor adr\", \"Bug: e2e. handler\", \"e2e OR css issue AND\", \"module server infrastructure\", \"update encrypt\", \"encrypt explore ui old\"], \"opportunities\": [\"frontend metrics encrypt coverage\", \"after etl\", \"housekeeping guide NEAR( the\"]}",
+      "id": "narrative-034",
+      "result": {
+        "observations": [
+          "spike tab\there allow secret",
+          "bug *star*",
+          "error deprecat browser refactor adr",
+          "Bug: e2e. handler",
+          "e2e OR css issue AND",
+          "module server infrastructure",
+          "update encrypt",
+          "encrypt explore ui old"
+        ],
+        "opportunities": [
+          "frontend metrics encrypt coverage",
+          "after etl",
+          "housekeeping guide NEAR( the"
+        ],
+        "summary": "CVE-2026-1234 documentation backend new\nline"
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [\"oauth cve after\", \"investigate warehouse cve design a'b\", \"OR kube-proxy faster performance\", \"e2e. latency allow web-client\"], \"opportunities\": [\"evaluate integration test update\", \"client library NOT İstanbul ci\"]}",
+      "id": "narrative-035",
+      "result": {
+        "observations": [
+          "oauth cve after",
+          "investigate warehouse cve design a'b",
+          "OR kube-proxy faster performance",
+          "e2e. latency allow web-client"
+        ],
+        "opportunities": [
+          "evaluate integration test update",
+          "client library NOT İstanbul ci"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"docs\", \"highlights\": [\"optimiz İstanbul comment\", \"duckdb handler system design browser vulnerab\", \"web client handler module\", \"new speed up\", \"password prototype dependency\", \"\\\\back auth api\"], \"opportunities\": []}",
+      "id": "narrative-036",
+      "result": {
+        "observations": [
+          "optimiz İstanbul comment",
+          "duckdb handler system design browser vulnerab",
+          "web client handler module",
+          "new speed up",
+          "password prototype dependency",
+          "\\back auth api"
+        ],
+        "opportunities": [],
+        "summary": "docs"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"reorganize Bug: boundary old typo secret\", \"highlights\": [\"tutorial service config \\\\back then\", \"browser\", \"a'b\"], \"opportunities\": [\"emoji🙂\", \"css encrypt fix!\"]}",
+      "id": "narrative-037",
+      "result": {
+        "observations": [
+          "tutorial service config \\back then",
+          "browser",
+          "a'b"
+        ],
+        "opportunities": [
+          "emoji🙂",
+          "css encrypt fix!"
+        ],
+        "summary": "reorganize Bug: boundary old typo secret"
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [\"analytics queue x:y chore restructure\", \"fix!\", \"client library memory\", \"the handler build system css\", \"browser and decouple\", \"chore auth typo cve\", \"latency\"], \"opportunities\": [\"flow\", \"enable doc endpoint\", \"update compare crash\", \"kube-proxy speed up memory\", \"service\", \"after exception NOT browser\"]}",
+      "id": "narrative-038",
+      "result": {
+        "observations": [
+          "analytics queue x:y chore restructure",
+          "fix!",
+          "client library memory",
+          "the handler build system css",
+          "browser and decouple",
+          "chore auth typo cve",
+          "latency"
+        ],
+        "opportunities": [
+          "flow",
+          "enable doc endpoint",
+          "update compare crash",
+          "kube-proxy speed up memory",
+          "service"
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": null, \"highlights\": [], \"opportunities\": [\"enable server sdk coverage\", \"exception monolith\", \"^caret\", \"sdk\", \"a dependencies NEAR(\"]}",
+      "id": "narrative-039",
+      "result": {
+        "observations": [],
+        "opportunities": [
+          "enable server sdk coverage",
+          "exception monolith",
+          "^caret",
+          "sdk",
+          "a dependencies NEAR("
+        ],
+        "summary": "Engineering activity summary."
+      }
+    },
+    {
+      "facts": "{\"summary\": \"readme [bracket] once permission a/b analytics\", \"highlights\": [\"speed up update version vulnerab\", \"mode retry docker enable kubernetes\", \"api-gateway\", \"with\", \"then xss frontend pipeline auth-service\"]}",
+      "id": "narrative-040",
+      "result": {
+        "observations": [
+          "speed up update version vulnerab",
+          "mode retry docker enable kubernetes",
+          "api-gateway",
+          "with",
+          "then xss frontend pipeline auth-service"
+        ],
+        "opportunities": [],
+        "summary": "readme [bracket] once permission a/b analytics"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"İstanbul cleanup housekeeping\", \"highlights\": [\"error\", \"then README\", \"throughput\", \"update latency a/b server dot.sep\", \"housekeeping *star* library readme\"], \"opportunities\": [\"(ci)\", \"database kube-proxy\", \"x:y cache injection page\", \"deploy\", \"upgrade a'b broken\", \"csrf\"]}",
+      "id": "narrative-041",
+      "result": {
+        "observations": [
+          "error",
+          "then README",
+          "throughput",
+          "update latency a/b server dot.sep",
+          "housekeeping *star* library readme"
+        ],
+        "opportunities": [
+          "(ci)",
+          "database kube-proxy",
+          "x:y cache injection page",
+          "deploy",
+          "upgrade a'b broken"
+        ],
+        "summary": "İstanbul cleanup housekeeping"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"{brace} decouple NOT\", \"highlights\": [\"decouple api secret token\", \"rename\"], \"opportunities\": []}",
+      "id": "narrative-042",
+      "result": {
+        "observations": [
+          "decouple api secret token",
+          "rename"
+        ],
+        "opportunities": [],
+        "summary": "{brace} decouple NOT"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"kube-proxy AND browser handler\", \"highlights\": [\"auth-service chore investigate chore add\", \"crash\", \"introduce a'b cve compare\", \"\\\"quoted\\\" coverage\", \"dot.sep boundary under_score and optimiz\", \"under_score extract\", \"NOT evaluate\"], \"opportunities\": [\"new faster\"]}",
+      "id": "narrative-043",
+      "result": {
+        "observations": [
+          "auth-service chore investigate chore add",
+          "crash",
+          "introduce a'b cve compare",
+          "\"quoted\" coverage",
+          "dot.sep boundary under_score and optimiz",
+          "under_score extract",
+          "NOT evaluate"
+        ],
+        "opportunities": [
+          "new faster"
+        ],
+        "summary": "kube-proxy AND browser handler"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"implement once faster deprecat\", \"highlights\": [\"build system\", \"speed up comment\", \"(ci)\", \"and feasibility speed up warehouse sdk\", \"fix incorrect\", \"new\\nline\", \"*star* sdk web-client cleanup update\", \"CVE-2026-1234 {brace} tests\"], \"opportunities\": [\"performance extract -neg\", \"flow e2e. Bug: permission\", \"flow dark\", \"service split chore error broken\", \"payment csrf\", \"emoji🙂 and test\", \"dependency css\"]}",
+      "id": "narrative-044",
+      "result": {
+        "observations": [
+          "build system",
+          "speed up comment",
+          "(ci)",
+          "and feasibility speed up warehouse sdk",
+          "fix incorrect",
+          "new\nline",
+          "*star* sdk web-client cleanup update",
+          "CVE-2026-1234 {brace} tests"
+        ],
+        "opportunities": [
+          "performance extract -neg",
+          "flow e2e. Bug: permission",
+          "flow dark",
+          "service split chore error broken",
+          "payment csrf"
+        ],
+        "summary": "implement once faster deprecat"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"architecture\", \"highlights\": [\"implement\", \"tutorial\", \"ui OR restructure simplify\", \"upgrade error introduce 日本語\", \"handler user crash memory docs\", \"unit test flow dependency report\", \"restructure incorrect\", \"(ci) issue emoji🙂 csrf then\", \"incorrect warehouse xss build system\"], \"opportunities\": [\"unit test readme tests ßtraße\", \"permission restructure etl Ünïcode\", \"then fix! vulnerab query\"]}",
+      "id": "narrative-045",
+      "result": {
+        "observations": [
+          "implement",
+          "tutorial",
+          "ui OR restructure simplify",
+          "upgrade error introduce 日本語",
+          "handler user crash memory docs",
+          "unit test flow dependency report",
+          "restructure incorrect",
+          "(ci) issue emoji🙂 csrf then"
+        ],
+        "opportunities": [
+          "unit test readme tests ßtraße",
+          "permission restructure etl Ünïcode",
+          "then fix! vulnerab query"
+        ],
+        "summary": "architecture"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"update version ci page slow database\", \"highlights\": [], \"opportunities\": [\"a auth-service issue dependencies\", \"new\\nline \\\"quoted\\\" investigate migration plan\", \"ßtraße e2e\", \"throughput broken\", \"faster explore cve\", \"faster css\", \"research fix api-gateway docker\"]}",
+      "id": "narrative-046",
+      "result": {
+        "observations": [],
+        "opportunities": [
+          "a auth-service issue dependencies",
+          "new\nline \"quoted\" investigate migration plan",
+          "ßtraße e2e",
+          "throughput broken",
+          "faster explore cve"
+        ],
+        "summary": "update version ci page slow database"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"throughput adr (ci) documentation under_score\", \"highlights\": [\"Ünïcode introduce library pytest naïve\", \"simplify docs refactor\"], \"opportunities\": []}",
+      "id": "narrative-047",
+      "result": {
+        "observations": [
+          "Ünïcode introduce library pytest naïve",
+          "simplify docs refactor"
+        ],
+        "opportunities": [],
+        "summary": "throughput adr (ci) documentation under_score"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"design a/b\", \"highlights\": [\"service split\", \"tab\\there checkout exception error\", \"*star* component investigate\", \"frontend\", \"button decouple research [bracket]\", \"oauth\", \"semi;colon\"]}",
+      "id": "narrative-048",
+      "result": {
+        "observations": [
+          "service split",
+          "tab\there checkout exception error",
+          "*star* component investigate",
+          "frontend",
+          "button decouple research [bracket]",
+          "oauth",
+          "semi;colon"
+        ],
+        "opportunities": [],
+        "summary": "design a/b"
+      }
+    },
+    {
+      "facts": "{\"summary\": \"package new introduce\", \"highlights\": [], \"opportunities\": []}",
+      "id": "narrative-049",
+      "result": {
+        "observations": [],
+        "opportunities": [],
+        "summary": "package new introduce"
+      }
+    }
+  ]
+}

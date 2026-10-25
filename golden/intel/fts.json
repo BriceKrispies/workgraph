@@ -1,0 +1,652 @@
+{
+  "cases": [
+    {
+      "all": "\"token\" \"refresh\"*",
+      "id": "fts-000",
+      "match_any": "\"token\" OR \"refresh\"*",
+      "match_any_no_prefix": "\"token\" OR \"refresh\"",
+      "prefix_false": "\"token\" \"refresh\"",
+      "query": "token refresh"
+    },
+    {
+      "all": "\"Login\" \"token\" \"refresh\" \"fails\"*",
+      "id": "fts-001",
+      "match_any": "\"Login\" OR \"token\" OR \"refresh\" OR \"fails\"*",
+      "match_any_no_prefix": "\"Login\" OR \"token\" OR \"refresh\" OR \"fails\"",
+      "prefix_false": "\"Login\" \"token\" \"refresh\" \"fails\"",
+      "query": "Login token refresh fails"
+    },
+    {
+      "all": null,
+      "id": "fts-002",
+      "match_any": null,
+      "match_any_no_prefix": null,
+      "prefix_false": null,
+      "query": ""
+    },
+    {
+      "all": null,
+      "id": "fts-003",
+      "match_any": null,
+      "match_any_no_prefix": null,
+      "prefix_false": null,
+      "query": "   "
+    },
+    {
+      "all": null,
+      "id": "fts-004",
+      "match_any": null,
+      "match_any_no_prefix": null,
+      "prefix_false": null,
+      "query": "!!!"
+    },
+    {
+      "all": "\"quoted\" \"phrase\"*",
+      "id": "fts-005",
+      "match_any": "\"quoted\" OR \"phrase\"*",
+      "match_any_no_prefix": "\"quoted\" OR \"phrase\"",
+      "prefix_false": "\"quoted\" \"phrase\"",
+      "query": "\"quoted phrase\""
+    },
+    {
+      "all": "\"NEAR\" \"a\" \"b\" \"2\"*",
+      "id": "fts-006",
+      "match_any": "\"NEAR\" OR \"a\" OR \"b\" OR \"2\"*",
+      "match_any_no_prefix": "\"NEAR\" OR \"a\" OR \"b\" OR \"2\"",
+      "prefix_false": "\"NEAR\" \"a\" \"b\" \"2\"",
+      "query": "NEAR(a b, 2)"
+    },
+    {
+      "all": "\"a\" \"OR\" \"b\" \"AND\" \"NOT\" \"c\"*",
+      "id": "fts-007",
+      "match_any": "\"a\" OR \"OR\" OR \"b\" OR \"AND\" OR \"NOT\" OR \"c\"*",
+      "match_any_no_prefix": "\"a\" OR \"OR\" OR \"b\" OR \"AND\" OR \"NOT\" OR \"c\"",
+      "prefix_false": "\"a\" \"OR\" \"b\" \"AND\" \"NOT\" \"c\"",
+      "query": "a OR b AND NOT c"
+    },
+    {
+      "all": "\"prefix\"*",
+      "id": "fts-008",
+      "match_any": "\"prefix\"*",
+      "match_any_no_prefix": "\"prefix\"",
+      "prefix_false": "\"prefix\"",
+      "query": "prefix*"
+    },
+    {
+      "all": "\"col\" \"value\"*",
+      "id": "fts-009",
+      "match_any": "\"col\" OR \"value\"*",
+      "match_any_no_prefix": "\"col\" OR \"value\"",
+      "prefix_false": "\"col\" \"value\"",
+      "query": "col:value"
+    },
+    {
+      "all": "\"excluded\"*",
+      "id": "fts-010",
+      "match_any": "\"excluded\"*",
+      "match_any_no_prefix": "\"excluded\"",
+      "prefix_false": "\"excluded\"",
+      "query": "-excluded"
+    },
+    {
+      "all": "\"start\"*",
+      "id": "fts-011",
+      "match_any": "\"start\"*",
+      "match_any_no_prefix": "\"start\"",
+      "prefix_false": "\"start\"",
+      "query": "^start"
+    },
+    {
+      "all": "\"ünïcode\" \"日本語\"*",
+      "id": "fts-012",
+      "match_any": "\"ünïcode\" OR \"日本語\"*",
+      "match_any_no_prefix": "\"ünïcode\" OR \"日本語\"",
+      "prefix_false": "\"ünïcode\" \"日本語\"",
+      "query": "ünïcode 日本語"
+    },
+    {
+      "all": "\"emoji\" \"test\"*",
+      "id": "fts-013",
+      "match_any": "\"emoji\" OR \"test\"*",
+      "match_any_no_prefix": "\"emoji\" OR \"test\"",
+      "prefix_false": "\"emoji\" \"test\"",
+      "query": "emoji🙂 test"
+    },
+    {
+      "all": "\"tab\" \"split\" \"newline\"*",
+      "id": "fts-014",
+      "match_any": "\"tab\" OR \"split\" OR \"newline\"*",
+      "match_any_no_prefix": "\"tab\" OR \"split\" OR \"newline\"",
+      "prefix_false": "\"tab\" \"split\" \"newline\"",
+      "query": "tab\tsplit\nnewline"
+    },
+    {
+      "all": "\"a\" \"b\" \"c\" \"d\"*",
+      "id": "fts-015",
+      "match_any": "\"a\" OR \"b\" OR \"c\" OR \"d\"*",
+      "match_any_no_prefix": "\"a\" OR \"b\" OR \"c\" OR \"d\"",
+      "prefix_false": "\"a\" \"b\" \"c\" \"d\"",
+      "query": "a'b \"c\" `d`"
+    },
+    {
+      "all": "\"nul\"*",
+      "id": "fts-016",
+      "match_any": "\"nul\"*",
+      "match_any_no_prefix": "\"nul\"",
+      "prefix_false": "\"nul\"",
+      "query": "\u0000nul\u0000"
+    },
+    {
+      "all": "\"under_score\" \"dot\" \"sep\"*",
+      "id": "fts-017",
+      "match_any": "\"under_score\" OR \"dot\" OR \"sep\"*",
+      "match_any_no_prefix": "\"under_score\" OR \"dot\" OR \"sep\"",
+      "prefix_false": "\"under_score\" \"dot\" \"sep\"",
+      "query": "under_score dot.sep"
+    },
+    {
+      "all": "\"api\" \"gateway\" \"CVE\" \"2026\" \"1234\"*",
+      "id": "fts-018",
+      "match_any": "\"api\" OR \"gateway\" OR \"CVE\" OR \"2026\" OR \"1234\"*",
+      "match_any_no_prefix": "\"api\" OR \"gateway\" OR \"CVE\" OR \"2026\" OR \"1234\"",
+      "prefix_false": "\"api\" \"gateway\" \"CVE\" \"2026\" \"1234\"",
+      "query": "api-gateway CVE-2026-1234"
+    },
+    {
+      "all": "\"tok0\" \"tok1\" \"tok2\" \"tok3\" \"tok4\" \"tok5\" \"tok6\" \"tok7\" \"tok8\" \"tok9\" \"tok10\" \"tok11\" \"tok12\" \"tok13\" \"tok14\" \"tok15\" \"tok16\" \"tok17\" \"tok18\" \"tok19\" \"tok20\" \"tok21\" \"tok22\" \"tok23\" \"tok24\" \"tok25\" \"tok26\" \"tok27\" \"tok28\" \"tok29\" \"tok30\" \"tok31\" \"tok32\" \"tok33\" \"tok34\" \"tok35\" \"tok36\" \"tok37\" \"tok38\" \"tok39\" \"tok40\" \"tok41\" \"tok42\" \"tok43\" \"tok44\"*",
+      "id": "fts-019",
+      "match_any": "\"tok0\" OR \"tok1\" OR \"tok2\" OR \"tok3\" OR \"tok4\" OR \"tok5\" OR \"tok6\" OR \"tok7\" OR \"tok8\" OR \"tok9\" OR \"tok10\" OR \"tok11\" OR \"tok12\" OR \"tok13\" OR \"tok14\" OR \"tok15\" OR \"tok16\" OR \"tok17\" OR \"tok18\" OR \"tok19\" OR \"tok20\" OR \"tok21\" OR \"tok22\" OR \"tok23\" OR \"tok24\" OR \"tok25\" OR \"tok26\" OR \"tok27\" OR \"tok28\" OR \"tok29\" OR \"tok30\" OR \"tok31\" OR \"tok32\" OR \"tok33\" OR \"tok34\" OR \"tok35\" OR \"tok36\" OR \"tok37\" OR \"tok38\" OR \"tok39\"",
+      "match_any_no_prefix": "\"tok0\" OR \"tok1\" OR \"tok2\" OR \"tok3\" OR \"tok4\" OR \"tok5\" OR \"tok6\" OR \"tok7\" OR \"tok8\" OR \"tok9\" OR \"tok10\" OR \"tok11\" OR \"tok12\" OR \"tok13\" OR \"tok14\" OR \"tok15\" OR \"tok16\" OR \"tok17\" OR \"tok18\" OR \"tok19\" OR \"tok20\" OR \"tok21\" OR \"tok22\" OR \"tok23\" OR \"tok24\" OR \"tok25\" OR \"tok26\" OR \"tok27\" OR \"tok28\" OR \"tok29\" OR \"tok30\" OR \"tok31\" OR \"tok32\" OR \"tok33\" OR \"tok34\" OR \"tok35\" OR \"tok36\" OR \"tok37\" OR \"tok38\" OR \"tok39\"",
+      "prefix_false": "\"tok0\" \"tok1\" \"tok2\" \"tok3\" \"tok4\" \"tok5\" \"tok6\" \"tok7\" \"tok8\" \"tok9\" \"tok10\" \"tok11\" \"tok12\" \"tok13\" \"tok14\" \"tok15\" \"tok16\" \"tok17\" \"tok18\" \"tok19\" \"tok20\" \"tok21\" \"tok22\" \"tok23\" \"tok24\" \"tok25\" \"tok26\" \"tok27\" \"tok28\" \"tok29\" \"tok30\" \"tok31\" \"tok32\" \"tok33\" \"tok34\" \"tok35\" \"tok36\" \"tok37\" \"tok38\" \"tok39\" \"tok40\" \"tok41\" \"tok42\" \"tok43\" \"tok44\"",
+      "query": "tok0 tok1 tok2 tok3 tok4 tok5 tok6 tok7 tok8 tok9 tok10 tok11 tok12 tok13 tok14 tok15 tok16 tok17 tok18 tok19 tok20 tok21 tok22 tok23 tok24 tok25 tok26 tok27 tok28 tok29 tok30 tok31 tok32 tok33 tok34 tok35 tok36 tok37 tok38 tok39 tok40 tok41 tok42 tok43 tok44"
+    },
+    {
+      "all": "\"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"unique\"*",
+      "id": "fts-020",
+      "match_any": "\"dup\"",
+      "match_any_no_prefix": "\"dup\"",
+      "prefix_false": "\"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"dup\" \"unique\"",
+      "query": "dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup dup unique"
+    },
+    {
+      "all": "\"OR\" \"c\" \"AND\" \"c\"*",
+      "id": "fts-021",
+      "match_any": "\"OR\" OR \"c\" OR \"AND\" OR \"c\"*",
+      "match_any_no_prefix": "\"OR\" OR \"c\" OR \"AND\"",
+      "prefix_false": "\"OR\" \"c\" \"AND\" \"c\"",
+      "query": "🙂OR]^))c*)AND-;}\\}c!"
+    },
+    {
+      "all": "\"c\"*",
+      "id": "fts-022",
+      "match_any": "\"c\"*",
+      "match_any_no_prefix": "\"c\"",
+      "prefix_false": "\"c\"",
+      "query": "c\"!,,🙂"
+    },
+    {
+      "all": "\"AND\"*",
+      "id": "fts-023",
+      "match_any": "\"AND\"*",
+      "match_any_no_prefix": "\"AND\"",
+      "prefix_false": "\"AND\"",
+      "query": "AND\t??:"
+    },
+    {
+      "all": "\"日\" \"NEAR\" \"NEAR\" \"OR\" \"OR\" \"c\" \"a\" \"c\"*",
+      "id": "fts-024",
+      "match_any": "\"日\" OR \"NEAR\" OR \"OR\" OR \"c\" OR \"a\" OR \"c\"*",
+      "match_any_no_prefix": "\"日\" OR \"NEAR\" OR \"OR\" OR \"c\" OR \"a\"",
+      "prefix_false": "\"日\" \"NEAR\" \"NEAR\" \"OR\" \"OR\" \"c\" \"a\" \"c\"",
+      "query": ")🙂};日}*🙂NEAR!NEAR🙂(OR\\🙂OR!c)(:a[*^;*c\\"
+    },
+    {
+      "all": "\"é\"*",
+      "id": "fts-025",
+      "match_any": "\"é\"*",
+      "match_any_no_prefix": "\"é\"",
+      "prefix_false": "\"é\"",
+      "query": "*:é"
+    },
+    {
+      "all": "\"日OR\"*",
+      "id": "fts-026",
+      "match_any": "\"日OR\"*",
+      "match_any_no_prefix": "\"日OR\"",
+      "prefix_false": "\"日OR\"",
+      "query": ".日OR"
+    },
+    {
+      "all": "\"é\"*",
+      "id": "fts-027",
+      "match_any": "\"é\"*",
+      "match_any_no_prefix": "\"é\"",
+      "prefix_false": "\"é\"",
+      "query": "!!é"
+    },
+    {
+      "all": "\"NEAR\" \"c\" \"OR\" \"b\" \"日AND\" \"c\"*",
+      "id": "fts-028",
+      "match_any": "\"NEAR\" OR \"c\" OR \"OR\" OR \"b\" OR \"日AND\" OR \"c\"*",
+      "match_any_no_prefix": "\"NEAR\" OR \"c\" OR \"OR\" OR \"b\" OR \"日AND\"",
+      "prefix_false": "\"NEAR\" \"c\" \"OR\" \"b\" \"日AND\" \"c\"",
+      "query": "NEAR\"!;?*,''[^'\"c'OR-b?日AND]c["
+    },
+    {
+      "all": "\"aé\" \"日\" \"OR\" \"a\" \"b\"*",
+      "id": "fts-029",
+      "match_any": "\"aé\" OR \"日\" OR \"OR\" OR \"a\" OR \"b\"*",
+      "match_any_no_prefix": "\"aé\" OR \"日\" OR \"OR\" OR \"a\" OR \"b\"",
+      "prefix_false": "\"aé\" \"日\" \"OR\" \"a\" \"b\"",
+      "query": "'**\\]aé\t日{OR{a!b,- \\ \\"
+    },
+    {
+      "all": "\"日b\" \"aba\" \"a\" \"OR日OR\"*",
+      "id": "fts-030",
+      "match_any": "\"日b\" OR \"aba\" OR \"a\" OR \"OR日OR\"*",
+      "match_any_no_prefix": "\"日b\" OR \"aba\" OR \"a\" OR \"OR日OR\"",
+      "prefix_false": "\"日b\" \"aba\" \"a\" \"OR日OR\"",
+      "query": "日b]aba?a.:\"],-\\:?!OR日OR{?"
+    },
+    {
+      "all": "\"b\" \"NEARNEAR日\" \"c\" \"AND\"*",
+      "id": "fts-031",
+      "match_any": "\"b\" OR \"NEARNEAR日\" OR \"c\" OR \"AND\"*",
+      "match_any_no_prefix": "\"b\" OR \"NEARNEAR日\" OR \"c\" OR \"AND\"",
+      "prefix_false": "\"b\" \"NEARNEAR日\" \"c\" \"AND\"",
+      "query": "([\\\":\\b^!NEARNEAR日[-]c-;AND🙂]"
+    },
+    {
+      "all": "\"b\" \"c\" \"a\" \"AND\" \"a\" \"AND\"*",
+      "id": "fts-032",
+      "match_any": "\"b\" OR \"c\" OR \"a\" OR \"AND\" OR \"AND\"*",
+      "match_any_no_prefix": "\"b\" OR \"c\" OR \"a\" OR \"AND\"",
+      "prefix_false": "\"b\" \"c\" \"a\" \"AND\" \"a\" \"AND\"",
+      "query": "\t[*🙂]b](,*c;\"*a)AND'a*AND("
+    },
+    {
+      "all": "\"c\" \"NEAR\" \"c\"*",
+      "id": "fts-033",
+      "match_any": "\"c\" OR \"NEAR\" OR \"c\"*",
+      "match_any_no_prefix": "\"c\" OR \"NEAR\"",
+      "prefix_false": "\"c\" \"NEAR\" \"c\"",
+      "query": "c.-NEAR🙂\\(c!"
+    },
+    {
+      "all": "\"OROR\"*",
+      "id": "fts-034",
+      "match_any": "\"OROR\"*",
+      "match_any_no_prefix": "\"OROR\"",
+      "prefix_false": "\"OROR\"",
+      "query": "..^\\'!\"[OROR"
+    },
+    {
+      "all": "\"c\" \"日\" \"日c\" \"a\"*",
+      "id": "fts-035",
+      "match_any": "\"c\" OR \"日\" OR \"日c\" OR \"a\"*",
+      "match_any_no_prefix": "\"c\" OR \"日\" OR \"日c\" OR \"a\"",
+      "prefix_false": "\"c\" \"日\" \"日c\" \"a\"",
+      "query": "^c,!!-]🙂日{*\"'\"[:[?日c,\"\":a"
+    },
+    {
+      "all": "\"écc\" \"NEARNEAROR日日\" \"AND\" \"日\"*",
+      "id": "fts-036",
+      "match_any": "\"écc\" OR \"NEARNEAROR日日\" OR \"AND\" OR \"日\"*",
+      "match_any_no_prefix": "\"écc\" OR \"NEARNEAROR日日\" OR \"AND\" OR \"日\"",
+      "prefix_false": "\"écc\" \"NEARNEAROR日日\" \"AND\" \"日\"",
+      "query": "{}}{\t?écc! :.:(\t{🙂NEARNEAROR日日?AND!'日"
+    },
+    {
+      "all": "\"OR\" \"c\"*",
+      "id": "fts-037",
+      "match_any": "\"OR\" OR \"c\"*",
+      "match_any_no_prefix": "\"OR\" OR \"c\"",
+      "prefix_false": "\"OR\" \"c\"",
+      "query": "OR\tc\t\t"
+    },
+    {
+      "all": "\"NEAR\" \"日\"*",
+      "id": "fts-038",
+      "match_any": "\"NEAR\" OR \"日\"*",
+      "match_any_no_prefix": "\"NEAR\" OR \"日\"",
+      "prefix_false": "\"NEAR\" \"日\"",
+      "query": "]\t.;?\t\\\tNEAR^*!🙂]日'"
+    },
+    {
+      "all": "\"日\" \"NEAR\" \"OR\" \"é\" \"ORbca\"*",
+      "id": "fts-039",
+      "match_any": "\"日\" OR \"NEAR\" OR \"OR\" OR \"é\" OR \"ORbca\"*",
+      "match_any_no_prefix": "\"日\" OR \"NEAR\" OR \"OR\" OR \"é\" OR \"ORbca\"",
+      "prefix_false": "\"日\" \"NEAR\" \"OR\" \"é\" \"ORbca\"",
+      "query": "日[:(\")NEAR*OR(]-[\t:)(:é}'.ORbca"
+    },
+    {
+      "all": "\"a\"*",
+      "id": "fts-040",
+      "match_any": "\"a\"*",
+      "match_any_no_prefix": "\"a\"",
+      "prefix_false": "\"a\"",
+      "query": "a"
+    },
+    {
+      "all": "\"NEAR\"*",
+      "id": "fts-041",
+      "match_any": "\"NEAR\"*",
+      "match_any_no_prefix": "\"NEAR\"",
+      "prefix_false": "\"NEAR\"",
+      "query": "!,)NEAR?"
+    },
+    {
+      "all": "\"éa\" \"b\" \"béNEAR\" \"c\"*",
+      "id": "fts-042",
+      "match_any": "\"éa\" OR \"b\" OR \"béNEAR\" OR \"c\"*",
+      "match_any_no_prefix": "\"éa\" OR \"b\" OR \"béNEAR\" OR \"c\"",
+      "prefix_false": "\"éa\" \"b\" \"béNEAR\" \"c\"",
+      "query": "{éa;b:!!:),béNEAR?c^(\\🙂}{"
+    },
+    {
+      "all": "\"c\"*",
+      "id": "fts-043",
+      "match_any": "\"c\"*",
+      "match_any_no_prefix": "\"c\"",
+      "prefix_false": "\"c\"",
+      "query": "*^-{![,*!]^c,\t"
+    },
+    {
+      "all": "\"日c\"*",
+      "id": "fts-044",
+      "match_any": "\"日c\"*",
+      "match_any_no_prefix": "\"日c\"",
+      "prefix_false": "\"日c\"",
+      "query": "\"\".日c!!["
+    },
+    {
+      "all": "\"OR\" \"OR\" \"NEAR\"*",
+      "id": "fts-045",
+      "match_any": "\"OR\" OR \"NEAR\"*",
+      "match_any_no_prefix": "\"OR\" OR \"NEAR\"",
+      "prefix_false": "\"OR\" \"OR\" \"NEAR\"",
+      "query": "[,[)?.\"]]\t{'{\"\t^OR]OR:NEAR"
+    },
+    {
+      "all": "\"a\" \"ANDa\"*",
+      "id": "fts-046",
+      "match_any": "\"a\" OR \"ANDa\"*",
+      "match_any_no_prefix": "\"a\" OR \"ANDa\"",
+      "prefix_false": "\"a\" \"ANDa\"",
+      "query": "a\\\\,ANDa[]-"
+    },
+    {
+      "all": "\"c\"*",
+      "id": "fts-047",
+      "match_any": "\"c\"*",
+      "match_any_no_prefix": "\"c\"",
+      "prefix_false": "\"c\"",
+      "query": " 🙂-,,'.c):{: ;* '"
+    },
+    {
+      "all": "\"c\" \"b\" \"ANDAND\" \"日\" \"acAND\"*",
+      "id": "fts-048",
+      "match_any": "\"c\" OR \"b\" OR \"ANDAND\" OR \"日\" OR \"acAND\"*",
+      "match_any_no_prefix": "\"c\" OR \"b\" OR \"ANDAND\" OR \"日\" OR \"acAND\"",
+      "prefix_false": "\"c\" \"b\" \"ANDAND\" \"日\" \"acAND\"",
+      "query": " )^c:b?{].\\ANDAND 日?';acAND(}^,"
+    },
+    {
+      "all": "\"bé\" \"a\"*",
+      "id": "fts-049",
+      "match_any": "\"bé\" OR \"a\"*",
+      "match_any_no_prefix": "\"bé\" OR \"a\"",
+      "prefix_false": "\"bé\" \"a\"",
+      "query": "{,,.\\bé;]]\t*a'.}[^.^(!*\t"
+    },
+    {
+      "all": "\"NEAR日\" \"日\" \"日\"*",
+      "id": "fts-050",
+      "match_any": "\"NEAR日\" OR \"日\" OR \"日\"*",
+      "match_any_no_prefix": "\"NEAR日\" OR \"日\"",
+      "prefix_false": "\"NEAR日\" \"日\" \"日\"",
+      "query": "(\\-NEAR日':[(]日-日* \t} [?"
+    },
+    {
+      "all": "\"b\" \"cc\" \"b\" \"AND\" \"c\" \"a日\"*",
+      "id": "fts-051",
+      "match_any": "\"b\" OR \"cc\" OR \"AND\" OR \"c\" OR \"a日\"*",
+      "match_any_no_prefix": "\"b\" OR \"cc\" OR \"AND\" OR \"c\" OR \"a日\"",
+      "prefix_false": "\"b\" \"cc\" \"b\" \"AND\" \"c\" \"a日\"",
+      "query": "b!\"^cc🙂:\\b\"AND:,c}\\a日:\"}{"
+    },
+    {
+      "all": "\"a\" \"NEAR\" \"éc\" \"NEAROR\" \"日b\" \"é\"*",
+      "id": "fts-052",
+      "match_any": "\"a\" OR \"NEAR\" OR \"éc\" OR \"NEAROR\" OR \"日b\" OR \"é\"*",
+      "match_any_no_prefix": "\"a\" OR \"NEAR\" OR \"éc\" OR \"NEAROR\" OR \"日b\" OR \"é\"",
+      "prefix_false": "\"a\" \"NEAR\" \"éc\" \"NEAROR\" \"日b\" \"é\"",
+      "query": "\ta;[[NEAR\"éc]*\t-NEAROR]🙂日b^-é\\\"*]"
+    },
+    {
+      "all": "\"OR\"*",
+      "id": "fts-053",
+      "match_any": "\"OR\"*",
+      "match_any_no_prefix": "\"OR\"",
+      "prefix_false": "\"OR\"",
+      "query": ",\tOR"
+    },
+    {
+      "all": "\"OR\" \"a\" \"日\" \"a\" \"日\" \"NEAR\"*",
+      "id": "fts-054",
+      "match_any": "\"OR\" OR \"a\" OR \"日\" OR \"NEAR\"*",
+      "match_any_no_prefix": "\"OR\" OR \"a\" OR \"日\" OR \"NEAR\"",
+      "prefix_false": "\"OR\" \"a\" \"日\" \"a\" \"日\" \"NEAR\"",
+      "query": "\"\\)[[OR]a;}*,:\t日].{\t\\,a\"'日[NEAR"
+    },
+    {
+      "all": "\"b\"*",
+      "id": "fts-055",
+      "match_any": "\"b\"*",
+      "match_any_no_prefix": "\"b\"",
+      "prefix_false": "\"b\"",
+      "query": "b?"
+    },
+    {
+      "all": "\"OR\" \"é\" \"c\" \"NEAROR\"*",
+      "id": "fts-056",
+      "match_any": "\"OR\" OR \"é\" OR \"c\" OR \"NEAROR\"*",
+      "match_any_no_prefix": "\"OR\" OR \"é\" OR \"c\" OR \"NEAROR\"",
+      "prefix_false": "\"OR\" \"é\" \"c\" \"NEAROR\"",
+      "query": "🙂OR.é\"?c(():NEAROR"
+    },
+    {
+      "all": "\"NEAR\" \"é\" \"c\"*",
+      "id": "fts-057",
+      "match_any": "\"NEAR\" OR \"é\" OR \"c\"*",
+      "match_any_no_prefix": "\"NEAR\" OR \"é\" OR \"c\"",
+      "prefix_false": "\"NEAR\" \"é\" \"c\"",
+      "query": "[; [🙂?-\t)NEAR?]:-é.🙂[!]🙂-(c"
+    },
+    {
+      "all": "\"a\" \"a\" \"b\" \"AND\" \"a\"*",
+      "id": "fts-058",
+      "match_any": "\"a\" OR \"b\" OR \"AND\" OR \"a\"*",
+      "match_any_no_prefix": "\"a\" OR \"b\" OR \"AND\"",
+      "prefix_false": "\"a\" \"a\" \"b\" \"AND\" \"a\"",
+      "query": ",a*}),a*b[AND[;a{:"
+    },
+    {
+      "all": "\"b\" \"b\"*",
+      "id": "fts-059",
+      "match_any": "\"b\" OR \"b\"*",
+      "match_any_no_prefix": "\"b\"",
+      "prefix_false": "\"b\" \"b\"",
+      "query": ":b.^🙂-*);:(:b' "
+    },
+    {
+      "all": "\"日\" \"AND\" \"ab\" \"a\" \"c\"*",
+      "id": "fts-060",
+      "match_any": "\"日\" OR \"AND\" OR \"ab\" OR \"a\" OR \"c\"*",
+      "match_any_no_prefix": "\"日\" OR \"AND\" OR \"ab\" OR \"a\" OR \"c\"",
+      "prefix_false": "\"日\" \"AND\" \"ab\" \"a\" \"c\"",
+      "query": "日^!{,AND*ab:a!:\\:c-!'}(()^"
+    },
+    {
+      "all": "\"ORAND\" \"日\" \"日日\" \"AND\" \"a\" \"AND\" \"OR\"*",
+      "id": "fts-061",
+      "match_any": "\"ORAND\" OR \"日\" OR \"日日\" OR \"AND\" OR \"a\" OR \"OR\"*",
+      "match_any_no_prefix": "\"ORAND\" OR \"日\" OR \"日日\" OR \"AND\" OR \"a\" OR \"OR\"",
+      "prefix_false": "\"ORAND\" \"日\" \"日日\" \"AND\" \"a\" \"AND\" \"OR\"",
+      "query": "ORAND\t;};}日^日日.🙂AND::a*?-AND*{,)- OR"
+    },
+    {
+      "all": "\"AND\" \"b\" \"AND\" \"écOR\"*",
+      "id": "fts-062",
+      "match_any": "\"AND\" OR \"b\" OR \"écOR\"*",
+      "match_any_no_prefix": "\"AND\" OR \"b\" OR \"écOR\"",
+      "prefix_false": "\"AND\" \"b\" \"AND\" \"écOR\"",
+      "query": " ;]({AND:: \\)b ]:{]AND-écOR"
+    },
+    {
+      "all": null,
+      "id": "fts-063",
+      "match_any": null,
+      "match_any_no_prefix": null,
+      "prefix_false": null,
+      "query": "^]*(()}'{"
+    },
+    {
+      "all": "\"é\" \"é\" \"abacb\" \"日\" \"bc\"*",
+      "id": "fts-064",
+      "match_any": "\"é\" OR \"abacb\" OR \"日\" OR \"bc\"*",
+      "match_any_no_prefix": "\"é\" OR \"abacb\" OR \"日\" OR \"bc\"",
+      "prefix_false": "\"é\" \"é\" \"abacb\" \"日\" \"bc\"",
+      "query": "🙂é\t é}abacb})\t))\\^^,日\\-^bc"
+    },
+    {
+      "all": "\"ANDb\"*",
+      "id": "fts-065",
+      "match_any": "\"ANDb\"*",
+      "match_any_no_prefix": "\"ANDb\"",
+      "prefix_false": "\"ANDb\"",
+      "query": "[?)ANDb"
+    },
+    {
+      "all": null,
+      "id": "fts-066",
+      "match_any": null,
+      "match_any_no_prefix": null,
+      "prefix_false": null,
+      "query": ""
+    },
+    {
+      "all": "\"日\"*",
+      "id": "fts-067",
+      "match_any": "\"日\"*",
+      "match_any_no_prefix": "\"日\"",
+      "prefix_false": "\"日\"",
+      "query": "日^"
+    },
+    {
+      "all": "\"a\" \"c\" \"NEAR\" \"acc\"*",
+      "id": "fts-068",
+      "match_any": "\"a\" OR \"c\" OR \"NEAR\" OR \"acc\"*",
+      "match_any_no_prefix": "\"a\" OR \"c\" OR \"NEAR\" OR \"acc\"",
+      "prefix_false": "\"a\" \"c\" \"NEAR\" \"acc\"",
+      "query": "*🙂*',a{🙂,\\c*]^]NEAR!acc)'-!['"
+    },
+    {
+      "all": null,
+      "id": "fts-069",
+      "match_any": null,
+      "match_any_no_prefix": null,
+      "prefix_false": null,
+      "query": ""
+    },
+    {
+      "all": "\"b\" \"bb\" \"OR\" \"cNEAR\"*",
+      "id": "fts-070",
+      "match_any": "\"b\" OR \"bb\" OR \"OR\" OR \"cNEAR\"*",
+      "match_any_no_prefix": "\"b\" OR \"bb\" OR \"OR\" OR \"cNEAR\"",
+      "prefix_false": "\"b\" \"bb\" \"OR\" \"cNEAR\"",
+      "query": " b^;,.{-[(-{bb([OR?[cNEAR'"
+    },
+    {
+      "all": "\"NEAR\" \"bAND\"*",
+      "id": "fts-071",
+      "match_any": "\"NEAR\" OR \"bAND\"*",
+      "match_any_no_prefix": "\"NEAR\" OR \"bAND\"",
+      "prefix_false": "\"NEAR\" \"bAND\"",
+      "query": "-?']!NEAR{ )'*bAND\\!"
+    },
+    {
+      "all": null,
+      "id": "fts-072",
+      "match_any": null,
+      "match_any_no_prefix": null,
+      "prefix_false": null,
+      "query": "?"
+    },
+    {
+      "all": "\"日a\" \"AND\" \"a\" \"aOR\"*",
+      "id": "fts-073",
+      "match_any": "\"日a\" OR \"AND\" OR \"a\" OR \"aOR\"*",
+      "match_any_no_prefix": "\"日a\" OR \"AND\" OR \"a\" OR \"aOR\"",
+      "prefix_false": "\"日a\" \"AND\" \"a\" \"aOR\"",
+      "query": "}!.\"日a;!🙂\"AND-!}a\":aOR "
+    },
+    {
+      "all": "\"NEAR\" \"日\" \"日\" \"ORb\" \"b\" \"日aOR\"*",
+      "id": "fts-074",
+      "match_any": "\"NEAR\" OR \"日\" OR \"ORb\" OR \"b\" OR \"日aOR\"*",
+      "match_any_no_prefix": "\"NEAR\" OR \"日\" OR \"ORb\" OR \"b\" OR \"日aOR\"",
+      "prefix_false": "\"NEAR\" \"日\" \"日\" \"ORb\" \"b\" \"日aOR\"",
+      "query": "?NEAR:^{日\t日 ;,!ORb;]b--日aOR"
+    },
+    {
+      "all": "\"é\" \"c\" \"NEAR\" \"c\"*",
+      "id": "fts-075",
+      "match_any": "\"é\" OR \"c\" OR \"NEAR\" OR \"c\"*",
+      "match_any_no_prefix": "\"é\" OR \"c\" OR \"NEAR\"",
+      "prefix_false": "\"é\" \"c\" \"NEAR\" \"c\"",
+      "query": "*é)!c.NEAR)c"
+    },
+    {
+      "all": "\"AND\" \"NEARNEAR\"*",
+      "id": "fts-076",
+      "match_any": "\"AND\" OR \"NEARNEAR\"*",
+      "match_any_no_prefix": "\"AND\" OR \"NEARNEAR\"",
+      "prefix_false": "\"AND\" \"NEARNEAR\"",
+      "query": " AND?NEARNEAR🙂"
+    },
+    {
+      "all": "\"b\" \"NEAR\"*",
+      "id": "fts-077",
+      "match_any": "\"b\" OR \"NEAR\"*",
+      "match_any_no_prefix": "\"b\" OR \"NEAR\"",
+      "prefix_false": "\"b\" \"NEAR\"",
+      "query": "\\?}b-NEAR*["
+    },
+    {
+      "all": null,
+      "id": "fts-078",
+      "match_any": null,
+      "match_any_no_prefix": null,
+      "prefix_false": null,
+      "query": ""
+    },
+    {
+      "all": "\"é\"*",
+      "id": "fts-079",
+      "match_any": "\"é\"*",
+      "match_any_no_prefix": "\"é\"",
+      "prefix_false": "\"é\"",
+      "query": "[é"
+    },
+    {
+      "all": "\"aé\" \"é\" \"a\"*",
+      "id": "fts-080",
+      "match_any": "\"aé\" OR \"é\" OR \"a\"*",
+      "match_any_no_prefix": "\"aé\" OR \"é\" OR \"a\"",
+      "prefix_false": "\"aé\" \"é\" \"a\"",
+      "query": "^,?;.\"):?]aé{[ }.]é^a"
+    }
+  ]
+}

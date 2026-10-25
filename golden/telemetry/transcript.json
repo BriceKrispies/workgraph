@@ -1,0 +1,710 @@
+{
+  "cases": [
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": "2.1.289",
+        "description": null,
+        "ended_at": "2026-10-14T08:54:31.594Z",
+        "model": "claude-haiku-4-5-20251001",
+        "models": {
+          "claude-haiku-4-5-20251001": 2
+        },
+        "prompt_chars": 12,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:54:30.000Z",
+        "task_keys": [],
+        "time": {
+          "classes": {},
+          "model_seconds": 1.594,
+          "slowest": [],
+          "span_seconds": 1.594,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {
+          "Bash": 1,
+          "Read": 1
+        },
+        "trial_ids": [],
+        "turns": 2,
+        "usage": {
+          "cache_creation_input_tokens": 200,
+          "cache_read_input_tokens": 2000,
+          "input_tokens": 6,
+          "output_tokens": 375
+        }
+      },
+      "from": "test_transcript.py::test_split_message_lines_are_not_double_counted",
+      "id": "split_message_lines_not_double_counted",
+      "lines": [
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"Do the thing\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"text\", \"text\": \"a\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 3}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t1\", \"name\": \"Bash\", \"input\": {}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 3}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t2\", \"name\": \"Read\", \"input\": {}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 365}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_2\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"text\", \"text\": \"ok\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 10}}}"
+      ],
+      "sidecar": null,
+      "tool_calls": [
+        {
+          "input": {},
+          "name": "Bash",
+          "tool_use_id": "t1"
+        },
+        {
+          "input": {},
+          "name": "Read",
+          "tool_use_id": "t2"
+        }
+      ]
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": null,
+        "description": null,
+        "ended_at": "2026-10-14T08:54:31.594Z",
+        "model": "second",
+        "models": {
+          "second": 1
+        },
+        "prompt_chars": 0,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:54:31.594Z",
+        "task_keys": [],
+        "time": {
+          "classes": {},
+          "model_seconds": 0.0,
+          "slowest": [],
+          "span_seconds": 0.0,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {},
+        "trial_ids": [],
+        "turns": 1,
+        "usage": {
+          "cache_creation_input_tokens": 100,
+          "cache_read_input_tokens": 1000,
+          "input_tokens": 3,
+          "output_tokens": 7
+        }
+      },
+      "from": "test_transcript.py::test_equal_output_tokens_prefer_the_last_line",
+      "id": "equal_output_tokens_prefer_last_line",
+      "lines": [
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"first\", \"content\": [{\"type\": \"text\", \"text\": \"ok\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 7}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"second\", \"content\": [{\"type\": \"text\", \"text\": \"ok\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 7}}}"
+      ],
+      "sidecar": null,
+      "tool_calls": []
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": "2.1.289",
+        "description": null,
+        "ended_at": "2026-10-14T08:54:31.594Z",
+        "model": "claude-haiku-4-5-20251001",
+        "models": {
+          "claude-haiku-4-5-20251001": 1
+        },
+        "prompt_chars": 2,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:54:30.000Z",
+        "task_keys": [],
+        "time": {
+          "classes": {},
+          "model_seconds": 1.594,
+          "slowest": [],
+          "span_seconds": 1.594,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {},
+        "trial_ids": [],
+        "turns": 1,
+        "usage": {
+          "cache_creation_input_tokens": 100,
+          "cache_read_input_tokens": 1000,
+          "input_tokens": 3,
+          "output_tokens": 50
+        }
+      },
+      "from": "test_transcript.py::test_synthetic_messages_are_ignored",
+      "id": "synthetic_messages_ignored",
+      "lines": [
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"hi\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"text\", \"text\": \"ok\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 50}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_x\", \"model\": \"<synthetic>\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t9\", \"name\": \"Write\", \"input\": {}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 999}}}"
+      ],
+      "sidecar": null,
+      "tool_calls": []
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": "2.1.289",
+        "description": null,
+        "ended_at": "2026-10-14T08:54:31.594Z",
+        "model": "claude-haiku-4-5-20251001",
+        "models": {
+          "claude-haiku-4-5-20251001": 2
+        },
+        "prompt_chars": 2,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:54:30.000Z",
+        "task_keys": [],
+        "time": {
+          "classes": {},
+          "model_seconds": 1.594,
+          "slowest": [],
+          "span_seconds": 1.594,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 1,
+        "tool_uses": {
+          "Bash": 2,
+          "Edit": 1
+        },
+        "trial_ids": [],
+        "turns": 2,
+        "usage": {
+          "cache_creation_input_tokens": 200,
+          "cache_read_input_tokens": 2000,
+          "input_tokens": 6,
+          "output_tokens": 18
+        }
+      },
+      "from": "test_transcript.py::test_tool_uses_counted_once_per_id_and_errors_counted",
+      "id": "tool_uses_once_per_id_and_errors_counted",
+      "lines": [
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"go\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t1\", \"name\": \"Bash\", \"input\": {}}, {\"type\": \"tool_use\", \"id\": \"t2\", \"name\": \"Edit\", \"input\": {}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 5}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t1\", \"name\": \"Bash\", \"input\": {}}, {\"type\": \"tool_use\", \"id\": \"t2\", \"name\": \"Edit\", \"input\": {}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 9}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_2\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t3\", \"name\": \"Bash\", \"input\": {}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 9}}}",
+        "{\"type\": \"user\", \"message\": {\"role\": \"user\", \"content\": [{\"type\": \"tool_result\", \"tool_use_id\": \"t1\", \"is_error\": true, \"content\": \"boom\"}, {\"type\": \"tool_result\", \"tool_use_id\": \"t2\", \"is_error\": false, \"content\": \"fine\"}]}}"
+      ],
+      "sidecar": null,
+      "tool_calls": [
+        {
+          "input": {},
+          "name": "Bash",
+          "tool_use_id": "t1"
+        },
+        {
+          "input": {},
+          "name": "Edit",
+          "tool_use_id": "t2"
+        },
+        {
+          "input": {},
+          "name": "Bash",
+          "tool_use_id": "t3"
+        }
+      ]
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": "2.1.289",
+        "description": null,
+        "ended_at": "2026-10-14T08:54:31.594Z",
+        "model": "claude-haiku-4-5-20251001",
+        "models": {
+          "claude-haiku-4-5-20251001": 1
+        },
+        "prompt_chars": 89,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:54:30.000Z",
+        "task_keys": [
+          "WG-1118"
+        ],
+        "time": {
+          "classes": {},
+          "model_seconds": 1.594,
+          "slowest": [],
+          "span_seconds": 1.594,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {},
+        "trial_ids": [
+          "0b9f6c2e-1111-4a2b-9c3d-123456789abc"
+        ],
+        "turns": 1,
+        "usage": {
+          "cache_creation_input_tokens": 100,
+          "cache_read_input_tokens": 1000,
+          "input_tokens": 3,
+          "output_tokens": 1
+        }
+      },
+      "from": "test_transcript.py::test_markers_and_prompt_length_come_from_the_first_prompt",
+      "id": "markers_and_prompt_length_from_first_prompt",
+      "lines": [
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"Task-ID: WG-1118\\nTrial-ID: 0b9f6c2e-1111-4a2b-9c3d-123456789abc\\nAlso mention WG-9 inline.\"}}",
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"Task-ID: WG-7 in a later prompt\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"text\", \"text\": \"ok\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 1}}}"
+      ],
+      "sidecar": null,
+      "tool_calls": []
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": null,
+        "description": null,
+        "ended_at": null,
+        "model": null,
+        "models": {},
+        "prompt_chars": 13,
+        "requested_model": null,
+        "started_at": null,
+        "task_keys": [
+          "WG-2"
+        ],
+        "time": {
+          "classes": {},
+          "model_seconds": 0.0,
+          "slowest": [],
+          "span_seconds": 0.0,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {},
+        "trial_ids": [],
+        "turns": 0,
+        "usage": {
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "input_tokens": 0,
+          "output_tokens": 0
+        }
+      },
+      "from": "test_transcript.py::test_list_prompt_content_is_joined_text",
+      "id": "list_prompt_content_is_joined_text",
+      "lines": [
+        "{\"type\": \"user\", \"message\": {\"role\": \"user\", \"content\": [{\"type\": \"text\", \"text\": \"Task-ID: WG-2\"}, {\"type\": \"image\", \"source\": {}}]}}"
+      ],
+      "sidecar": null,
+      "tool_calls": []
+    },
+    {
+      "expected": {
+        "agent_type": "general-purpose",
+        "claude_version": "2.1.289",
+        "description": "Art r3: sky",
+        "ended_at": "2026-10-14T08:54:31.594Z",
+        "model": "claude-haiku-4-5-20251001",
+        "models": {
+          "claude-haiku-4-5-20251001": 1
+        },
+        "prompt_chars": 1,
+        "requested_model": "haiku",
+        "started_at": "2026-10-14T08:54:30.000Z",
+        "task_keys": [],
+        "time": {
+          "classes": {},
+          "model_seconds": 1.594,
+          "slowest": [],
+          "span_seconds": 1.594,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {},
+        "trial_ids": [],
+        "turns": 1,
+        "usage": {
+          "cache_creation_input_tokens": 100,
+          "cache_read_input_tokens": 1000,
+          "input_tokens": 3,
+          "output_tokens": 1
+        }
+      },
+      "from": "test_transcript.py::test_sidecar_is_read_when_present",
+      "id": "sidecar_read_when_present",
+      "lines": [
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"x\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"text\", \"text\": \"ok\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 1}}}"
+      ],
+      "sidecar": {
+        "agentType": "general-purpose",
+        "description": "Art r3: sky",
+        "model": "haiku"
+      },
+      "tool_calls": []
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": "2.1.289",
+        "description": null,
+        "ended_at": "2026-10-14T08:54:31.594Z",
+        "model": "claude-haiku-4-5-20251001",
+        "models": {
+          "claude-haiku-4-5-20251001": 1
+        },
+        "prompt_chars": 1,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:54:30.000Z",
+        "task_keys": [],
+        "time": {
+          "classes": {},
+          "model_seconds": 1.594,
+          "slowest": [],
+          "span_seconds": 1.594,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {},
+        "trial_ids": [],
+        "turns": 1,
+        "usage": {
+          "cache_creation_input_tokens": 100,
+          "cache_read_input_tokens": 1000,
+          "input_tokens": 3,
+          "output_tokens": 1
+        }
+      },
+      "from": "test_transcript.py::test_missing_sidecar_leaves_sidecar_fields_empty",
+      "id": "missing_sidecar_leaves_sidecar_fields_empty",
+      "lines": [
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"x\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"text\", \"text\": \"ok\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 1}}}"
+      ],
+      "sidecar": null,
+      "tool_calls": []
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": "2.1.289",
+        "description": null,
+        "ended_at": "2026-10-14T08:55:00.000Z",
+        "model": "claude-haiku-4-5-20251001",
+        "models": {
+          "claude-haiku-4-5-20251001": 1
+        },
+        "prompt_chars": 10,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:54:30.000Z",
+        "task_keys": [],
+        "time": {
+          "classes": {},
+          "model_seconds": 1.594,
+          "slowest": [],
+          "span_seconds": 1.594,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {},
+        "trial_ids": [],
+        "turns": 1,
+        "usage": {
+          "cache_creation_input_tokens": 100,
+          "cache_read_input_tokens": 1000,
+          "input_tokens": 3,
+          "output_tokens": 4
+        }
+      },
+      "from": "test_transcript.py::test_malformed_lines_are_skipped",
+      "id": "malformed_lines_skipped",
+      "lines": [
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"still here\"}}",
+        "{not json",
+        "[1, 2, 3]",
+        "",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"text\", \"text\": \"ok\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 4}}}",
+        "{\"type\": \"attachment\", \"timestamp\": \"2026-10-14T08:55:00.000Z\"}"
+      ],
+      "sidecar": null,
+      "tool_calls": []
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": "2.1.289",
+        "description": null,
+        "ended_at": "2026-10-14T08:54:31.594Z",
+        "model": "claude-haiku-4-5-20251001",
+        "models": {
+          "claude-haiku-4-5-20251001": 1
+        },
+        "prompt_chars": 13,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:54:30.000Z",
+        "task_keys": [
+          "WG-3"
+        ],
+        "time": {
+          "classes": {},
+          "model_seconds": 1.594,
+          "slowest": [],
+          "span_seconds": 1.594,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {
+          "Grep": 1
+        },
+        "trial_ids": [],
+        "turns": 1,
+        "usage": {
+          "cache_creation_input_tokens": 100,
+          "cache_read_input_tokens": 1000,
+          "input_tokens": 3,
+          "output_tokens": 2
+        }
+      },
+      "from": "test_transcript.py::test_telemetry_is_json_safe",
+      "id": "telemetry_json_safe_fields",
+      "lines": [
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"Task-ID: WG-3\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t1\", \"name\": \"Grep\", \"input\": {}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 2}}}"
+      ],
+      "sidecar": null,
+      "tool_calls": [
+        {
+          "input": {},
+          "name": "Grep",
+          "tool_use_id": "t1"
+        }
+      ]
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": "2.1.289",
+        "description": null,
+        "ended_at": "2026-10-14T08:54:31.594Z",
+        "model": "claude-haiku-4-5-20251001",
+        "models": {
+          "claude-haiku-4-5-20251001": 2
+        },
+        "prompt_chars": 2,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:54:30.000Z",
+        "task_keys": [],
+        "time": {
+          "classes": {},
+          "model_seconds": 1.594,
+          "slowest": [],
+          "span_seconds": 1.594,
+          "tool_seconds": 0,
+          "version": 1,
+          "waiting_seconds": 0.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {
+          "Bash": 1,
+          "Read": 1
+        },
+        "trial_ids": [],
+        "turns": 2,
+        "usage": {
+          "cache_creation_input_tokens": 200,
+          "cache_read_input_tokens": 2000,
+          "input_tokens": 6,
+          "output_tokens": 18
+        }
+      },
+      "from": "test_transcript.py::test_tool_calls_dedupe_repeated_blocks_and_return_inputs",
+      "id": "tool_calls_dedupe_and_inputs",
+      "lines": [
+        "{\"type\": \"user\", \"version\": \"2.1.289\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"go\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t1\", \"name\": \"Read\", \"input\": {\"file_path\": \"c:/dev/rho/pkg/mod.py\"}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 5}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t1\", \"name\": \"Read\", \"input\": {\"file_path\": \"c:/dev/rho/pkg/mod.py\"}}, {\"type\": \"tool_use\", \"id\": \"t2\", \"name\": \"Bash\", \"input\": {\"command\": \"git log\"}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 9}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_2\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"text\", \"text\": \"no tools here\"}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 9}}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.594Z\", \"message\": {\"id\": \"msg_3\", \"model\": \"<synthetic>\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t9\", \"name\": \"Edit\", \"input\": {}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 100, \"cache_read_input_tokens\": 1000, \"output_tokens\": 4}}}"
+      ],
+      "sidecar": null,
+      "tool_calls": [
+        {
+          "input": {
+            "file_path": "c:/dev/rho/pkg/mod.py"
+          },
+          "name": "Read",
+          "tool_use_id": "t1"
+        },
+        {
+          "input": {
+            "command": "git log"
+          },
+          "name": "Bash",
+          "tool_use_id": "t2"
+        }
+      ]
+    },
+    {
+      "expected": null,
+      "from": "test_transcript.py::test_missing_file_returns_none",
+      "id": "missing_file",
+      "lines": null,
+      "sidecar": null,
+      "tool_calls": []
+    },
+    {
+      "expected": null,
+      "from": "test_transcript.py::test_tool_calls_missing_file_is_empty",
+      "id": "missing_file_tool_calls_empty",
+      "lines": null,
+      "sidecar": null,
+      "tool_calls": []
+    },
+    {
+      "expected": {
+        "agent_type": null,
+        "claude_version": null,
+        "description": null,
+        "ended_at": "2026-10-14T08:10:25Z",
+        "model": "claude-haiku-5-5",
+        "models": {
+          "claude-haiku-5-5": 6
+        },
+        "prompt_chars": 11,
+        "requested_model": null,
+        "started_at": "2026-10-14T08:00:00Z",
+        "task_keys": [],
+        "time": {
+          "classes": {
+            "cargo test": {
+              "calls": 1,
+              "seconds": 60.0
+            },
+            "git": {
+              "calls": 1,
+              "seconds": 2.0
+            },
+            "polling loop": {
+              "calls": 1,
+              "seconds": 120.0
+            },
+            "search/read": {
+              "calls": 1,
+              "seconds": 1.0
+            }
+          },
+          "model_seconds": 22.0,
+          "slowest": [
+            {
+              "at": "2026-10-14T08:01:12+00:00",
+              "class": "polling loop",
+              "command": "until grep -q done out.txt; do sleep 5; done",
+              "seconds": 120.0,
+              "tool": "Bash"
+            },
+            {
+              "at": "2026-10-14T08:00:05+00:00",
+              "class": "cargo test",
+              "command": "cargo test -p workgraph",
+              "seconds": 60.0,
+              "tool": "Bash"
+            },
+            {
+              "at": "2026-10-14T08:10:20+00:00",
+              "class": "git",
+              "command": "git status --short",
+              "seconds": 2.0,
+              "tool": "Bash"
+            },
+            {
+              "at": "2026-10-14T08:01:08+00:00",
+              "class": "search/read",
+              "command": "src/lib.rs",
+              "seconds": 1.0,
+              "tool": "Read"
+            }
+          ],
+          "span_seconds": 625.0,
+          "tool_seconds": 183.0,
+          "version": 1,
+          "waiting_seconds": 420.0
+        },
+        "tool_errors": 0,
+        "tool_uses": {
+          "Bash": 3,
+          "Read": 1
+        },
+        "trial_ids": [],
+        "turns": 6,
+        "usage": {
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "input_tokens": 0,
+          "output_tokens": 0
+        }
+      },
+      "from": "test_transcript_timing.py::test_parse_transcript_stores_the_breakdown_in_telemetry",
+      "id": "timing_known_run_embedded",
+      "lines": [
+        "{\"type\": \"user\", \"timestamp\": \"2026-10-14T08:00:00Z\", \"message\": {\"role\": \"user\", \"content\": \"do the work\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:00:05Z\", \"message\": {\"id\": \"msg-5\", \"model\": \"claude-haiku-5-5\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t1\", \"name\": \"Bash\", \"input\": {\"command\": \"cargo test -p workgraph\"}}]}}",
+        "{\"type\": \"user\", \"timestamp\": \"2026-10-14T08:01:05Z\", \"message\": {\"role\": \"user\", \"content\": [{\"type\": \"tool_result\", \"tool_use_id\": \"t1\", \"content\": \"x\"}]}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:01:08Z\", \"message\": {\"id\": \"msg-68\", \"model\": \"claude-haiku-5-5\", \"content\": [{\"type\": \"tool_use\", \"id\": \"r1\", \"name\": \"Read\", \"input\": {\"file_path\": \"src/lib.rs\"}}]}}",
+        "{\"type\": \"user\", \"timestamp\": \"2026-10-14T08:01:09Z\", \"message\": {\"role\": \"user\", \"content\": [{\"type\": \"tool_result\", \"tool_use_id\": \"r1\", \"content\": \"x\"}]}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:01:12Z\", \"message\": {\"id\": \"msg-72\", \"model\": \"claude-haiku-5-5\", \"content\": [{\"type\": \"tool_use\", \"id\": \"p1\", \"name\": \"Bash\", \"input\": {\"command\": \"until grep -q done out.txt; do sleep 5; done\"}}]}}",
+        "{\"type\": \"user\", \"timestamp\": \"2026-10-14T08:03:12Z\", \"message\": {\"role\": \"user\", \"content\": [{\"type\": \"tool_result\", \"tool_use_id\": \"p1\", \"content\": \"x\"}]}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:03:15Z\", \"message\": {\"id\": \"msg-195\", \"model\": \"claude-haiku-5-5\", \"content\": [{\"type\": \"text\", \"text\": \"waiting for the build\"}]}}",
+        "{\"type\": \"user\", \"timestamp\": \"2026-10-14T08:10:15Z\", \"message\": {\"role\": \"user\", \"content\": \"<task-notification>done</task-notification>\"}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:10:20Z\", \"message\": {\"id\": \"msg-620\", \"model\": \"claude-haiku-5-5\", \"content\": [{\"type\": \"tool_use\", \"id\": \"g1\", \"name\": \"Bash\", \"input\": {\"command\": \"git status --short\"}}]}}",
+        "{\"type\": \"user\", \"timestamp\": \"2026-10-14T08:10:22Z\", \"message\": {\"role\": \"user\", \"content\": [{\"type\": \"tool_result\", \"tool_use_id\": \"g1\", \"content\": \"x\"}]}}",
+        "{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:10:25Z\", \"message\": {\"id\": \"msg-625\", \"model\": \"claude-haiku-5-5\", \"content\": [{\"type\": \"text\", \"text\": \"all done\"}]}}"
+      ],
+      "sidecar": null,
+      "tool_calls": [
+        {
+          "input": {
+            "command": "cargo test -p workgraph"
+          },
+          "name": "Bash",
+          "tool_use_id": "t1"
+        },
+        {
+          "input": {
+            "file_path": "src/lib.rs"
+          },
+          "name": "Read",
+          "tool_use_id": "r1"
+        },
+        {
+          "input": {
+            "command": "until grep -q done out.txt; do sleep 5; done"
+          },
+          "name": "Bash",
+          "tool_use_id": "p1"
+        },
+        {
+          "input": {
+            "command": "git status --short"
+          },
+          "name": "Bash",
+          "tool_use_id": "g1"
+        }
+      ]
+    }
+  ],
+  "file": "transcript.json",
+  "vector": "telemetry",
+  "version": 1
+}

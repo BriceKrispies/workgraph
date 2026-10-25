@@ -1,0 +1,1392 @@
+{
+  "file": "redaction.json",
+  "summarize_cases": [
+    {
+      "id": "summarize_dict",
+      "input": {
+        "input": {
+          "command": "ls"
+        },
+        "tool": "Bash"
+      },
+      "output": {
+        "input": {
+          "command": {
+            "length": 2,
+            "type": "str"
+          }
+        },
+        "tool": {
+          "length": 4,
+          "type": "str"
+        }
+      }
+    },
+    {
+      "id": "summarize_list",
+      "input": [
+        1,
+        2,
+        3
+      ],
+      "output": {
+        "length": 3,
+        "type": "list"
+      }
+    },
+    {
+      "id": "summarize_string",
+      "input": "hello",
+      "output": {
+        "length": 5,
+        "type": "str"
+      }
+    },
+    {
+      "id": "summarize_int",
+      "input": 42,
+      "output": {
+        "type": "int"
+      }
+    },
+    {
+      "id": "summarize_float",
+      "input": 1.5,
+      "output": {
+        "type": "float"
+      }
+    },
+    {
+      "id": "summarize_bool",
+      "input": true,
+      "output": {
+        "type": "bool"
+      }
+    },
+    {
+      "id": "summarize_none",
+      "input": null,
+      "output": {
+        "type": "NoneType"
+      }
+    },
+    {
+      "id": "summarize_wide_dict_first_50",
+      "input": {
+        "k0": 0,
+        "k1": 1,
+        "k10": 10,
+        "k11": 11,
+        "k12": 12,
+        "k13": 13,
+        "k14": 14,
+        "k15": 15,
+        "k16": 16,
+        "k17": 17,
+        "k18": 18,
+        "k19": 19,
+        "k2": 2,
+        "k20": 20,
+        "k21": 21,
+        "k22": 22,
+        "k23": 23,
+        "k24": 24,
+        "k25": 25,
+        "k26": 26,
+        "k27": 27,
+        "k28": 28,
+        "k29": 29,
+        "k3": 3,
+        "k30": 30,
+        "k31": 31,
+        "k32": 32,
+        "k33": 33,
+        "k34": 34,
+        "k35": 35,
+        "k36": 36,
+        "k37": 37,
+        "k38": 38,
+        "k39": 39,
+        "k4": 4,
+        "k40": 40,
+        "k41": 41,
+        "k42": 42,
+        "k43": 43,
+        "k44": 44,
+        "k45": 45,
+        "k46": 46,
+        "k47": 47,
+        "k48": 48,
+        "k49": 49,
+        "k5": 5,
+        "k50": 50,
+        "k51": 51,
+        "k52": 52,
+        "k53": 53,
+        "k54": 54,
+        "k55": 55,
+        "k56": 56,
+        "k57": 57,
+        "k58": 58,
+        "k59": 59,
+        "k6": 6,
+        "k7": 7,
+        "k8": 8,
+        "k9": 9
+      },
+      "output": {
+        "k0": {
+          "type": "int"
+        },
+        "k1": {
+          "type": "int"
+        },
+        "k10": {
+          "type": "int"
+        },
+        "k11": {
+          "type": "int"
+        },
+        "k12": {
+          "type": "int"
+        },
+        "k13": {
+          "type": "int"
+        },
+        "k14": {
+          "type": "int"
+        },
+        "k15": {
+          "type": "int"
+        },
+        "k16": {
+          "type": "int"
+        },
+        "k17": {
+          "type": "int"
+        },
+        "k18": {
+          "type": "int"
+        },
+        "k19": {
+          "type": "int"
+        },
+        "k2": {
+          "type": "int"
+        },
+        "k20": {
+          "type": "int"
+        },
+        "k21": {
+          "type": "int"
+        },
+        "k22": {
+          "type": "int"
+        },
+        "k23": {
+          "type": "int"
+        },
+        "k24": {
+          "type": "int"
+        },
+        "k25": {
+          "type": "int"
+        },
+        "k26": {
+          "type": "int"
+        },
+        "k27": {
+          "type": "int"
+        },
+        "k28": {
+          "type": "int"
+        },
+        "k29": {
+          "type": "int"
+        },
+        "k3": {
+          "type": "int"
+        },
+        "k30": {
+          "type": "int"
+        },
+        "k31": {
+          "type": "int"
+        },
+        "k32": {
+          "type": "int"
+        },
+        "k33": {
+          "type": "int"
+        },
+        "k34": {
+          "type": "int"
+        },
+        "k35": {
+          "type": "int"
+        },
+        "k36": {
+          "type": "int"
+        },
+        "k37": {
+          "type": "int"
+        },
+        "k38": {
+          "type": "int"
+        },
+        "k39": {
+          "type": "int"
+        },
+        "k4": {
+          "type": "int"
+        },
+        "k40": {
+          "type": "int"
+        },
+        "k41": {
+          "type": "int"
+        },
+        "k42": {
+          "type": "int"
+        },
+        "k43": {
+          "type": "int"
+        },
+        "k44": {
+          "type": "int"
+        },
+        "k45": {
+          "type": "int"
+        },
+        "k46": {
+          "type": "int"
+        },
+        "k47": {
+          "type": "int"
+        },
+        "k48": {
+          "type": "int"
+        },
+        "k49": {
+          "type": "int"
+        },
+        "k5": {
+          "type": "int"
+        },
+        "k6": {
+          "type": "int"
+        },
+        "k7": {
+          "type": "int"
+        },
+        "k8": {
+          "type": "int"
+        },
+        "k9": {
+          "type": "int"
+        }
+      }
+    }
+  ],
+  "text_cases": [
+    {
+      "id": "openai_style_key",
+      "input": "key is sk-aaaaaaaaaaaaaaaaaaaa ok",
+      "kind": "openai_key",
+      "max_chars": null,
+      "output": "key is [REDACTED] ok"
+    },
+    {
+      "id": "anthropic_style_key",
+      "input": "use sk-ant-bbbbbbbbbbbbbbbbbbbb",
+      "kind": "anthropic_key",
+      "max_chars": null,
+      "output": "use [REDACTED]"
+    },
+    {
+      "id": "openai_key_too_short",
+      "input": "sk-aaaaaaaaaaaaaaa",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "sk-aaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "github_ghp",
+      "input": "x ghp_cccccccccccccccccccccccccccccccccccc y",
+      "kind": "github_token",
+      "max_chars": null,
+      "output": "x [REDACTED] y"
+    },
+    {
+      "id": "github_gho",
+      "input": "x gho_cccccccccccccccccccccccccccccccccccc y",
+      "kind": "github_token",
+      "max_chars": null,
+      "output": "x [REDACTED] y"
+    },
+    {
+      "id": "github_ghu",
+      "input": "x ghu_cccccccccccccccccccccccccccccccccccc y",
+      "kind": "github_token",
+      "max_chars": null,
+      "output": "x [REDACTED] y"
+    },
+    {
+      "id": "github_ghs",
+      "input": "x ghs_cccccccccccccccccccccccccccccccccccc y",
+      "kind": "github_token",
+      "max_chars": null,
+      "output": "x [REDACTED] y"
+    },
+    {
+      "id": "github_ghr",
+      "input": "x ghr_cccccccccccccccccccccccccccccccccccc y",
+      "kind": "github_token",
+      "max_chars": null,
+      "output": "x [REDACTED] y"
+    },
+    {
+      "id": "github_token_too_short",
+      "input": "ghp_ccccccccccccccccccc",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "ghp_ccccccccccccccccccc"
+    },
+    {
+      "id": "github_fine_grained_pat",
+      "input": "github_pat_dddddddddddddddddddddddddddddd",
+      "kind": "github_pat",
+      "max_chars": null,
+      "output": "[REDACTED]"
+    },
+    {
+      "id": "aws_access_key_id",
+      "input": "id=AKIA0000000000000000",
+      "kind": "aws_access_key",
+      "max_chars": null,
+      "output": "id=[REDACTED]"
+    },
+    {
+      "id": "aws_key_one_char_short",
+      "input": "AKIA000000000000000",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "AKIA000000000000000"
+    },
+    {
+      "id": "slack_b",
+      "input": "token xoxb-111111111111",
+      "kind": "slack",
+      "max_chars": null,
+      "output": "token [REDACTED]"
+    },
+    {
+      "id": "slack_a",
+      "input": "token xoxa-111111111111",
+      "kind": "slack",
+      "max_chars": null,
+      "output": "token [REDACTED]"
+    },
+    {
+      "id": "slack_p",
+      "input": "token xoxp-111111111111",
+      "kind": "slack",
+      "max_chars": null,
+      "output": "token [REDACTED]"
+    },
+    {
+      "id": "slack_r",
+      "input": "token xoxr-111111111111",
+      "kind": "slack",
+      "max_chars": null,
+      "output": "token [REDACTED]"
+    },
+    {
+      "id": "slack_s",
+      "input": "token xoxs-111111111111",
+      "kind": "slack",
+      "max_chars": null,
+      "output": "token [REDACTED]"
+    },
+    {
+      "id": "slack_too_short",
+      "input": "xoxb-11111",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "xoxb-11111"
+    },
+    {
+      "id": "bearer_header",
+      "input": "curl -H 'Authorization: Bearer eeeeeeeeeeee'",
+      "kind": "bearer",
+      "max_chars": null,
+      "output": "curl -H 'Authorization: [REDACTED]'"
+    },
+    {
+      "id": "bearer_lowercase_tab",
+      "input": "bearer\teeeeeeeeeeee",
+      "kind": "bearer",
+      "max_chars": null,
+      "output": "[REDACTED]"
+    },
+    {
+      "id": "bearer_too_short",
+      "input": "Bearer eeeeeeeeeee",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "Bearer eeeeeeeeeee"
+    },
+    {
+      "id": "pem_private_key_block",
+      "input": "before\n-----BEGIN RSA PRIVATE KEY-----\nAAAAAAAAAAAAAAAAAAAA\n-----END RSA PRIVATE KEY-----\nafter",
+      "kind": "private_key",
+      "max_chars": null,
+      "output": "before\n[REDACTED]\nafter"
+    },
+    {
+      "id": "pem_public_key_untouched",
+      "input": "-----BEGIN PUBLIC KEY-----\nA\n-----END PUBLIC KEY-----",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "-----BEGIN PUBLIC KEY-----\nA\n-----END PUBLIC KEY-----"
+    },
+    {
+      "id": "assignment_password",
+      "input": "password=ffffffff rest",
+      "kind": "password_assignment",
+      "max_chars": null,
+      "output": "[REDACTED] rest"
+    },
+    {
+      "id": "assignment_passwd_colon",
+      "input": "PASSWD : ffffffff",
+      "kind": "password_assignment",
+      "max_chars": null,
+      "output": "[REDACTED]"
+    },
+    {
+      "id": "assignment_pwd",
+      "input": "pwd=ffffffff",
+      "kind": "password_assignment",
+      "max_chars": null,
+      "output": "[REDACTED]"
+    },
+    {
+      "id": "assignment_token",
+      "input": "TOKEN=ffffffff",
+      "kind": "password_assignment",
+      "max_chars": null,
+      "output": "[REDACTED]"
+    },
+    {
+      "id": "assignment_secret",
+      "input": "secret:ffffffff",
+      "kind": "password_assignment",
+      "max_chars": null,
+      "output": "[REDACTED]"
+    },
+    {
+      "id": "assignment_api_key_dash",
+      "input": "api-key = ffffffff",
+      "kind": "password_assignment",
+      "max_chars": null,
+      "output": "[REDACTED]"
+    },
+    {
+      "id": "assignment_api_key_underscore",
+      "input": "API_KEY=ffffffff",
+      "kind": "password_assignment",
+      "max_chars": null,
+      "output": "[REDACTED]"
+    },
+    {
+      "id": "keyword_without_value",
+      "input": "password is required",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "password is required"
+    },
+    {
+      "id": "keyword_without_separator",
+      "input": "token ffffffff",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "token ffffffff"
+    },
+    {
+      "id": "jwt_shaped",
+      "input": "jwt eyJgggggggggg.hhhhhhhhhh.iiiiiiiiii",
+      "kind": "jwt",
+      "max_chars": null,
+      "output": "jwt [REDACTED]"
+    },
+    {
+      "id": "jwt_second_segment_short",
+      "input": "eyJgggggggggg.hhhhhhhhh.",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "eyJgggggggggg.hhhhhhhhh."
+    },
+    {
+      "id": "plain_text_untouched",
+      "input": "hello world, nothing to see",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "hello world, nothing to see"
+    },
+    {
+      "id": "empty_string",
+      "input": "",
+      "kind": "negative",
+      "max_chars": null,
+      "output": ""
+    },
+    {
+      "id": "non_ascii_passthrough",
+      "input": "naïve café 漢字 🙂",
+      "kind": "negative",
+      "max_chars": null,
+      "output": "naïve café 漢字 🙂"
+    },
+    {
+      "id": "truncate_only",
+      "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "kind": "truncate",
+      "max_chars": 10,
+      "output": "xxxxxxxxxx... [truncated 90 chars]"
+    },
+    {
+      "id": "truncate_exact_length",
+      "input": "xxxxxxxxxx",
+      "kind": "truncate",
+      "max_chars": 10,
+      "output": "xxxxxxxxxx"
+    },
+    {
+      "id": "redact_then_truncate",
+      "input": "sk-aaaaaaaaaaaaaaaaaaaa",
+      "kind": "truncate",
+      "max_chars": 5,
+      "output": "[REDA... [truncated 5 chars]"
+    },
+    {
+      "id": "truncate_zero",
+      "input": "abc",
+      "kind": "truncate",
+      "max_chars": 0,
+      "output": "... [truncated 3 chars]"
+    }
+  ],
+  "value_cases": [
+    {
+      "id": "secret_keys_by_name",
+      "input": {
+        "API-KEY": "abc",
+        "Authorization": "Bearer eeeeeeeeeeee",
+        "Password": "abc",
+        "api_key": "abc",
+        "auth_header": "abc",
+        "author": "Ada",
+        "credential_blob": "abc",
+        "keyboard": "qwerty",
+        "monkey": "banana",
+        "name": "plain",
+        "passwd": "abc",
+        "private-key": "abc",
+        "secret": null,
+        "session-cookie": "abc",
+        "session_key": "abc",
+        "tokens": 3,
+        "x-token": "abc"
+      },
+      "kind": "keys",
+      "max_chars": 4000,
+      "output": {
+        "API-KEY": "[REDACTED]",
+        "Authorization": "[REDACTED]",
+        "Password": "[REDACTED]",
+        "api_key": "[REDACTED]",
+        "auth_header": "[REDACTED]",
+        "author": "[REDACTED]",
+        "credential_blob": "[REDACTED]",
+        "keyboard": "qwerty",
+        "monkey": "banana",
+        "name": "plain",
+        "passwd": "[REDACTED]",
+        "private-key": "[REDACTED]",
+        "secret": "[REDACTED]",
+        "session-cookie": "[REDACTED]",
+        "session_key": "[REDACTED]",
+        "tokens": "[REDACTED]",
+        "x-token": "[REDACTED]"
+      }
+    },
+    {
+      "id": "secret_value_inside_nested_string",
+      "input": {
+        "cmd": "curl -H 'Authorization: Bearer eeeeeeeeeeee'"
+      },
+      "kind": "nested",
+      "max_chars": 4000,
+      "output": {
+        "cmd": "curl -H 'Authorization: [REDACTED]'"
+      }
+    },
+    {
+      "id": "list_of_secret_strings",
+      "input": [
+        "ghp_cccccccccccccccccccccccccccccccccccc",
+        "ok",
+        "sk-aaaaaaaaaaaaaaaaaaaa"
+      ],
+      "kind": "lists",
+      "max_chars": 4000,
+      "output": [
+        "[REDACTED]",
+        "ok",
+        "[REDACTED]"
+      ]
+    },
+    {
+      "id": "scalars_pass_through",
+      "input": [
+        1,
+        2.5,
+        true,
+        false,
+        null,
+        -7
+      ],
+      "kind": "scalars",
+      "max_chars": 4000,
+      "output": [
+        1,
+        2.5,
+        true,
+        false,
+        null,
+        -7
+      ]
+    },
+    {
+      "id": "empty_containers",
+      "input": {
+        "a": [],
+        "b": {}
+      },
+      "kind": "scalars",
+      "max_chars": 4000,
+      "output": {
+        "a": [],
+        "b": {}
+      }
+    },
+    {
+      "id": "string_truncated_in_container",
+      "input": {
+        "out": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+      },
+      "kind": "truncate",
+      "max_chars": 20,
+      "output": {
+        "out": "yyyyyyyyyyyyyyyyyyyy... [truncated 30 chars]"
+      }
+    },
+    {
+      "id": "depth_limit_reached",
+      "input": {
+        "level": {
+          "level": {
+            "level": {
+              "level": {
+                "level": {
+                  "level": {
+                    "level": {
+                      "level": {
+                        "level": {
+                          "level": "leaf-aaa"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "kind": "depth",
+      "max_chars": 4000,
+      "output": {
+        "level": {
+          "level": {
+            "level": {
+              "level": {
+                "level": {
+                  "level": {
+                    "level": {
+                      "level": {
+                        "level": "[nested too deep]"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "wide_dict_capped_at_200_keys",
+      "input": {
+        "k0": "v0",
+        "k1": "v1",
+        "k10": "v10",
+        "k100": "v100",
+        "k101": "v101",
+        "k102": "v102",
+        "k103": "v103",
+        "k104": "v104",
+        "k105": "v105",
+        "k106": "v106",
+        "k107": "v107",
+        "k108": "v108",
+        "k109": "v109",
+        "k11": "v11",
+        "k110": "v110",
+        "k111": "v111",
+        "k112": "v112",
+        "k113": "v113",
+        "k114": "v114",
+        "k115": "v115",
+        "k116": "v116",
+        "k117": "v117",
+        "k118": "v118",
+        "k119": "v119",
+        "k12": "v12",
+        "k120": "v120",
+        "k121": "v121",
+        "k122": "v122",
+        "k123": "v123",
+        "k124": "v124",
+        "k125": "v125",
+        "k126": "v126",
+        "k127": "v127",
+        "k128": "v128",
+        "k129": "v129",
+        "k13": "v13",
+        "k130": "v130",
+        "k131": "v131",
+        "k132": "v132",
+        "k133": "v133",
+        "k134": "v134",
+        "k135": "v135",
+        "k136": "v136",
+        "k137": "v137",
+        "k138": "v138",
+        "k139": "v139",
+        "k14": "v14",
+        "k140": "v140",
+        "k141": "v141",
+        "k142": "v142",
+        "k143": "v143",
+        "k144": "v144",
+        "k145": "v145",
+        "k146": "v146",
+        "k147": "v147",
+        "k148": "v148",
+        "k149": "v149",
+        "k15": "v15",
+        "k150": "v150",
+        "k151": "v151",
+        "k152": "v152",
+        "k153": "v153",
+        "k154": "v154",
+        "k155": "v155",
+        "k156": "v156",
+        "k157": "v157",
+        "k158": "v158",
+        "k159": "v159",
+        "k16": "v16",
+        "k160": "v160",
+        "k161": "v161",
+        "k162": "v162",
+        "k163": "v163",
+        "k164": "v164",
+        "k165": "v165",
+        "k166": "v166",
+        "k167": "v167",
+        "k168": "v168",
+        "k169": "v169",
+        "k17": "v17",
+        "k170": "v170",
+        "k171": "v171",
+        "k172": "v172",
+        "k173": "v173",
+        "k174": "v174",
+        "k175": "v175",
+        "k176": "v176",
+        "k177": "v177",
+        "k178": "v178",
+        "k179": "v179",
+        "k18": "v18",
+        "k180": "v180",
+        "k181": "v181",
+        "k182": "v182",
+        "k183": "v183",
+        "k184": "v184",
+        "k185": "v185",
+        "k186": "v186",
+        "k187": "v187",
+        "k188": "v188",
+        "k189": "v189",
+        "k19": "v19",
+        "k190": "v190",
+        "k191": "v191",
+        "k192": "v192",
+        "k193": "v193",
+        "k194": "v194",
+        "k195": "v195",
+        "k196": "v196",
+        "k197": "v197",
+        "k198": "v198",
+        "k199": "v199",
+        "k2": "v2",
+        "k20": "v20",
+        "k200": "v200",
+        "k201": "v201",
+        "k202": "v202",
+        "k203": "v203",
+        "k204": "v204",
+        "k21": "v21",
+        "k22": "v22",
+        "k23": "v23",
+        "k24": "v24",
+        "k25": "v25",
+        "k26": "v26",
+        "k27": "v27",
+        "k28": "v28",
+        "k29": "v29",
+        "k3": "v3",
+        "k30": "v30",
+        "k31": "v31",
+        "k32": "v32",
+        "k33": "v33",
+        "k34": "v34",
+        "k35": "v35",
+        "k36": "v36",
+        "k37": "v37",
+        "k38": "v38",
+        "k39": "v39",
+        "k4": "v4",
+        "k40": "v40",
+        "k41": "v41",
+        "k42": "v42",
+        "k43": "v43",
+        "k44": "v44",
+        "k45": "v45",
+        "k46": "v46",
+        "k47": "v47",
+        "k48": "v48",
+        "k49": "v49",
+        "k5": "v5",
+        "k50": "v50",
+        "k51": "v51",
+        "k52": "v52",
+        "k53": "v53",
+        "k54": "v54",
+        "k55": "v55",
+        "k56": "v56",
+        "k57": "v57",
+        "k58": "v58",
+        "k59": "v59",
+        "k6": "v6",
+        "k60": "v60",
+        "k61": "v61",
+        "k62": "v62",
+        "k63": "v63",
+        "k64": "v64",
+        "k65": "v65",
+        "k66": "v66",
+        "k67": "v67",
+        "k68": "v68",
+        "k69": "v69",
+        "k7": "v7",
+        "k70": "v70",
+        "k71": "v71",
+        "k72": "v72",
+        "k73": "v73",
+        "k74": "v74",
+        "k75": "v75",
+        "k76": "v76",
+        "k77": "v77",
+        "k78": "v78",
+        "k79": "v79",
+        "k8": "v8",
+        "k80": "v80",
+        "k81": "v81",
+        "k82": "v82",
+        "k83": "v83",
+        "k84": "v84",
+        "k85": "v85",
+        "k86": "v86",
+        "k87": "v87",
+        "k88": "v88",
+        "k89": "v89",
+        "k9": "v9",
+        "k90": "v90",
+        "k91": "v91",
+        "k92": "v92",
+        "k93": "v93",
+        "k94": "v94",
+        "k95": "v95",
+        "k96": "v96",
+        "k97": "v97",
+        "k98": "v98",
+        "k99": "v99"
+      },
+      "kind": "bounds",
+      "max_chars": 4000,
+      "output": {
+        "...": "5 more keys",
+        "k0": "v0",
+        "k1": "v1",
+        "k10": "v10",
+        "k100": "v100",
+        "k101": "v101",
+        "k102": "v102",
+        "k103": "v103",
+        "k104": "v104",
+        "k105": "v105",
+        "k106": "v106",
+        "k107": "v107",
+        "k108": "v108",
+        "k109": "v109",
+        "k11": "v11",
+        "k110": "v110",
+        "k111": "v111",
+        "k112": "v112",
+        "k113": "v113",
+        "k114": "v114",
+        "k115": "v115",
+        "k116": "v116",
+        "k117": "v117",
+        "k118": "v118",
+        "k119": "v119",
+        "k12": "v12",
+        "k120": "v120",
+        "k121": "v121",
+        "k122": "v122",
+        "k123": "v123",
+        "k124": "v124",
+        "k125": "v125",
+        "k126": "v126",
+        "k127": "v127",
+        "k128": "v128",
+        "k129": "v129",
+        "k13": "v13",
+        "k130": "v130",
+        "k131": "v131",
+        "k132": "v132",
+        "k133": "v133",
+        "k134": "v134",
+        "k135": "v135",
+        "k136": "v136",
+        "k137": "v137",
+        "k138": "v138",
+        "k139": "v139",
+        "k14": "v14",
+        "k140": "v140",
+        "k141": "v141",
+        "k142": "v142",
+        "k143": "v143",
+        "k144": "v144",
+        "k145": "v145",
+        "k146": "v146",
+        "k147": "v147",
+        "k148": "v148",
+        "k149": "v149",
+        "k15": "v15",
+        "k150": "v150",
+        "k151": "v151",
+        "k152": "v152",
+        "k153": "v153",
+        "k154": "v154",
+        "k155": "v155",
+        "k156": "v156",
+        "k157": "v157",
+        "k158": "v158",
+        "k159": "v159",
+        "k16": "v16",
+        "k160": "v160",
+        "k161": "v161",
+        "k162": "v162",
+        "k163": "v163",
+        "k164": "v164",
+        "k165": "v165",
+        "k166": "v166",
+        "k167": "v167",
+        "k168": "v168",
+        "k169": "v169",
+        "k17": "v17",
+        "k170": "v170",
+        "k171": "v171",
+        "k172": "v172",
+        "k173": "v173",
+        "k174": "v174",
+        "k175": "v175",
+        "k176": "v176",
+        "k177": "v177",
+        "k178": "v178",
+        "k179": "v179",
+        "k18": "v18",
+        "k180": "v180",
+        "k181": "v181",
+        "k182": "v182",
+        "k183": "v183",
+        "k184": "v184",
+        "k185": "v185",
+        "k186": "v186",
+        "k187": "v187",
+        "k188": "v188",
+        "k189": "v189",
+        "k19": "v19",
+        "k190": "v190",
+        "k191": "v191",
+        "k192": "v192",
+        "k193": "v193",
+        "k194": "v194",
+        "k195": "v195",
+        "k196": "v196",
+        "k197": "v197",
+        "k198": "v198",
+        "k199": "v199",
+        "k2": "v2",
+        "k20": "v20",
+        "k21": "v21",
+        "k22": "v22",
+        "k23": "v23",
+        "k24": "v24",
+        "k25": "v25",
+        "k26": "v26",
+        "k27": "v27",
+        "k28": "v28",
+        "k29": "v29",
+        "k3": "v3",
+        "k30": "v30",
+        "k31": "v31",
+        "k32": "v32",
+        "k33": "v33",
+        "k34": "v34",
+        "k35": "v35",
+        "k36": "v36",
+        "k37": "v37",
+        "k38": "v38",
+        "k39": "v39",
+        "k4": "v4",
+        "k40": "v40",
+        "k41": "v41",
+        "k42": "v42",
+        "k43": "v43",
+        "k44": "v44",
+        "k45": "v45",
+        "k46": "v46",
+        "k47": "v47",
+        "k48": "v48",
+        "k49": "v49",
+        "k5": "v5",
+        "k50": "v50",
+        "k51": "v51",
+        "k52": "v52",
+        "k53": "v53",
+        "k54": "v54",
+        "k55": "v55",
+        "k56": "v56",
+        "k57": "v57",
+        "k58": "v58",
+        "k59": "v59",
+        "k6": "v6",
+        "k60": "v60",
+        "k61": "v61",
+        "k62": "v62",
+        "k63": "v63",
+        "k64": "v64",
+        "k65": "v65",
+        "k66": "v66",
+        "k67": "v67",
+        "k68": "v68",
+        "k69": "v69",
+        "k7": "v7",
+        "k70": "v70",
+        "k71": "v71",
+        "k72": "v72",
+        "k73": "v73",
+        "k74": "v74",
+        "k75": "v75",
+        "k76": "v76",
+        "k77": "v77",
+        "k78": "v78",
+        "k79": "v79",
+        "k8": "v8",
+        "k80": "v80",
+        "k81": "v81",
+        "k82": "v82",
+        "k83": "v83",
+        "k84": "v84",
+        "k85": "v85",
+        "k86": "v86",
+        "k87": "v87",
+        "k88": "v88",
+        "k89": "v89",
+        "k9": "v9",
+        "k90": "v90",
+        "k91": "v91",
+        "k92": "v92",
+        "k93": "v93",
+        "k94": "v94",
+        "k95": "v95",
+        "k96": "v96",
+        "k97": "v97",
+        "k98": "v98",
+        "k99": "v99"
+      }
+    },
+    {
+      "id": "long_list_capped_at_100_items",
+      "input": [
+        "item0",
+        "item1",
+        "item2",
+        "item3",
+        "item4",
+        "item5",
+        "item6",
+        "item7",
+        "item8",
+        "item9",
+        "item10",
+        "item11",
+        "item12",
+        "item13",
+        "item14",
+        "item15",
+        "item16",
+        "item17",
+        "item18",
+        "item19",
+        "item20",
+        "item21",
+        "item22",
+        "item23",
+        "item24",
+        "item25",
+        "item26",
+        "item27",
+        "item28",
+        "item29",
+        "item30",
+        "item31",
+        "item32",
+        "item33",
+        "item34",
+        "item35",
+        "item36",
+        "item37",
+        "item38",
+        "item39",
+        "item40",
+        "item41",
+        "item42",
+        "item43",
+        "item44",
+        "item45",
+        "item46",
+        "item47",
+        "item48",
+        "item49",
+        "item50",
+        "item51",
+        "item52",
+        "item53",
+        "item54",
+        "item55",
+        "item56",
+        "item57",
+        "item58",
+        "item59",
+        "item60",
+        "item61",
+        "item62",
+        "item63",
+        "item64",
+        "item65",
+        "item66",
+        "item67",
+        "item68",
+        "item69",
+        "item70",
+        "item71",
+        "item72",
+        "item73",
+        "item74",
+        "item75",
+        "item76",
+        "item77",
+        "item78",
+        "item79",
+        "item80",
+        "item81",
+        "item82",
+        "item83",
+        "item84",
+        "item85",
+        "item86",
+        "item87",
+        "item88",
+        "item89",
+        "item90",
+        "item91",
+        "item92",
+        "item93",
+        "item94",
+        "item95",
+        "item96",
+        "item97",
+        "item98",
+        "item99",
+        "item100",
+        "item101",
+        "item102"
+      ],
+      "kind": "bounds",
+      "max_chars": 4000,
+      "output": [
+        "item0",
+        "item1",
+        "item2",
+        "item3",
+        "item4",
+        "item5",
+        "item6",
+        "item7",
+        "item8",
+        "item9",
+        "item10",
+        "item11",
+        "item12",
+        "item13",
+        "item14",
+        "item15",
+        "item16",
+        "item17",
+        "item18",
+        "item19",
+        "item20",
+        "item21",
+        "item22",
+        "item23",
+        "item24",
+        "item25",
+        "item26",
+        "item27",
+        "item28",
+        "item29",
+        "item30",
+        "item31",
+        "item32",
+        "item33",
+        "item34",
+        "item35",
+        "item36",
+        "item37",
+        "item38",
+        "item39",
+        "item40",
+        "item41",
+        "item42",
+        "item43",
+        "item44",
+        "item45",
+        "item46",
+        "item47",
+        "item48",
+        "item49",
+        "item50",
+        "item51",
+        "item52",
+        "item53",
+        "item54",
+        "item55",
+        "item56",
+        "item57",
+        "item58",
+        "item59",
+        "item60",
+        "item61",
+        "item62",
+        "item63",
+        "item64",
+        "item65",
+        "item66",
+        "item67",
+        "item68",
+        "item69",
+        "item70",
+        "item71",
+        "item72",
+        "item73",
+        "item74",
+        "item75",
+        "item76",
+        "item77",
+        "item78",
+        "item79",
+        "item80",
+        "item81",
+        "item82",
+        "item83",
+        "item84",
+        "item85",
+        "item86",
+        "item87",
+        "item88",
+        "item89",
+        "item90",
+        "item91",
+        "item92",
+        "item93",
+        "item94",
+        "item95",
+        "item96",
+        "item97",
+        "item98",
+        "item99",
+        "... 3 more items"
+      ]
+    },
+    {
+      "id": "nested_secret_key_under_list",
+      "input": [
+        {
+          "token": "abc"
+        },
+        {
+          "fine": "x"
+        }
+      ],
+      "kind": "keys",
+      "max_chars": 4000,
+      "output": [
+        {
+          "token": "[REDACTED]"
+        },
+        {
+          "fine": "x"
+        }
+      ]
+    }
+  ],
+  "vector": "telemetry",
+  "version": 1
+}

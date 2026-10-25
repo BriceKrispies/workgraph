@@ -1,0 +1,555 @@
+{
+  "cases": [
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "f8b7158e1e7bcbfa49a42154e8fcb2d269f827418f885a76d771e7b12b5713b3",
+      "id": "tool_post_bash_secret_in_command",
+      "normalised_payload_event": "PostToolUse",
+      "record": {
+        "payload": {
+          "hook_event_name": "PostToolUse",
+          "session_id": "sess-1",
+          "tool_input": {
+            "command": "curl -H 'Authorization: Bearer eeeeeeeeeeee' https://example.invalid",
+            "description": "fetch"
+          },
+          "tool_name": "Bash"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "PostToolUse",
+        "session_id": "sess-1",
+        "tool_input": {
+          "summary": {
+            "command": {
+              "length": 68,
+              "type": "str"
+            },
+            "description": {
+              "length": 5,
+              "type": "str"
+            }
+          }
+        },
+        "tool_name": "Bash"
+      },
+      "schema_version": 1,
+      "tool_summary": {
+        "command_head": "curl"
+      }
+    },
+    {
+      "config": "capture_small",
+      "config_values": {
+        "capture_tool_payloads": true,
+        "max_payload_chars": 20
+      },
+      "dedupe_key": "2918933809ed86a5b2073e83f8f365e77523f351d52f63960fd93a8eb81be7b0",
+      "id": "capture_small_truncates_tool_input",
+      "normalised_payload_event": "PostToolUse",
+      "record": {
+        "payload": {
+          "hook_event_name": "PostToolUse",
+          "session_id": "sess-2",
+          "tool_input": {
+            "api_key": "sk-aaaaaaaaaaaaaaaaaaaa",
+            "file_path": "src/a.py",
+            "new_string": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+          },
+          "tool_name": "Edit",
+          "tool_response": {
+            "output": "done qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+          }
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "PostToolUse",
+        "session_id": "sess-2",
+        "tool_input": {
+          "api_key": "[REDACTED]",
+          "file_path": "src/a.py",
+          "new_string": "zzzzzzzzzzzzzzzzzzzz... [truncated 40 chars]"
+        },
+        "tool_name": "Edit",
+        "tool_response": {
+          "output": "done qqqqqqqqqqqqqqq... [truncated 35 chars]"
+        }
+      },
+      "schema_version": 1,
+      "tool_summary": {
+        "file_path": "src/a.py"
+      }
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "3e7c97da151922d4b499002004dd5c256d83e72aaad2105054f57d2b7eaeb4d9",
+      "id": "default_summarises_tool_payloads",
+      "normalised_payload_event": "PreToolUse",
+      "record": {
+        "payload": {
+          "hook_event_name": "PreToolUse",
+          "tool_input": {
+            "file_path": "src/lib.rs",
+            "offset": 3
+          },
+          "tool_name": "Read",
+          "tool_response": [
+            "a",
+            "b"
+          ]
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "PreToolUse",
+        "tool_input": {
+          "summary": {
+            "file_path": {
+              "length": 10,
+              "type": "str"
+            },
+            "offset": {
+              "type": "int"
+            }
+          }
+        },
+        "tool_name": "Read",
+        "tool_response": {
+          "summary": {
+            "length": 2,
+            "type": "list"
+          }
+        }
+      },
+      "schema_version": 1,
+      "tool_summary": {
+        "file_path": "src/lib.rs"
+      }
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "a287b541fdbddcf060b2ab6f5c76ee57f446e9f160f56aed7b98132eead7cb26",
+      "id": "prompt_length_only_by_default",
+      "normalised_payload_event": "UserPromptSubmit",
+      "record": {
+        "payload": {
+          "hook_event_name": "UserPromptSubmit",
+          "prompt": "Task-ID: WG-42 pppppppppppppppppppppppppppppp"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "UserPromptSubmit",
+        "prompt": {
+          "length": 45
+        }
+      },
+      "schema_version": 1,
+      "tool_summary": {}
+    },
+    {
+      "config": "capture_default_max",
+      "config_values": {
+        "capture_tool_payloads": true,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "a17c976a46ce6be94f8a492cb2782c5863e70e4b8d15155084dc6022341518b5",
+      "id": "prompt_captured_and_redacted",
+      "normalised_payload_event": "UserPromptSubmit",
+      "record": {
+        "payload": {
+          "hook_event_name": "UserPromptSubmit",
+          "prompt": "password=ffffffff and WG-7"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "UserPromptSubmit",
+        "prompt": "[REDACTED] and WG-7"
+      },
+      "schema_version": 1,
+      "tool_summary": {}
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "37c5d5d9935458fe3fbc00049d6c1948181a1659fd895424c9d2ba1a441f5f82",
+      "id": "last_message_and_error_redacted",
+      "normalised_payload_event": "Stop",
+      "record": {
+        "payload": {
+          "error": "ghp_cccccccccccccccccccccccccccccccccccc",
+          "hook_event_name": "Stop",
+          "last_assistant_message": "key sk-ant-bbbbbbbbbbbbbbbbbbbb done",
+          "task_description": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "error": "[REDACTED]",
+        "hook_event_name": "Stop",
+        "last_assistant_message": "key [REDACTED] done",
+        "task_description": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx... [truncated 500 chars]"
+      },
+      "schema_version": 1,
+      "tool_summary": {}
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "186e4a5d106727e73fccaf8ca9aa26295ec5c7c35520416aed44e25b65523771",
+      "id": "mcp_tool_summary_server_name",
+      "normalised_payload_event": "PostToolUse",
+      "record": {
+        "payload": {
+          "hook_event_name": "PostToolUse",
+          "tool_input": {
+            "task": "WG-1"
+          },
+          "tool_name": "mcp__workgraph__task_get"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "PostToolUse",
+        "tool_input": {
+          "summary": {
+            "task": {
+              "length": 4,
+              "type": "str"
+            }
+          }
+        },
+        "tool_name": "mcp__workgraph__task_get"
+      },
+      "schema_version": 1,
+      "tool_summary": {
+        "mcp_server": "workgraph"
+      }
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "b2c6d30d727c760a83e6e6a4cbc44d7c4d6d5ab4f2e18345c049c5796ded32d1",
+      "id": "bash_summary_head_word",
+      "normalised_payload_event": "PostToolUseFailure",
+      "record": {
+        "payload": {
+          "error": "exit 1",
+          "hook_event_name": "PostToolUseFailure",
+          "tool_input": {
+            "command": "  cargo   test -p x"
+          },
+          "tool_name": "Bash"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "error": "exit 1",
+        "hook_event_name": "PostToolUseFailure",
+        "tool_input": {
+          "summary": {
+            "command": {
+              "length": 19,
+              "type": "str"
+            }
+          }
+        },
+        "tool_name": "Bash"
+      },
+      "schema_version": 1,
+      "tool_summary": {
+        "command_head": "cargo"
+      }
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "c6dc242c1df622405183661dddedcd501238d632f807b75fde0d358d806e159b",
+      "id": "missing_hook_event_name_is_invalid_wrap",
+      "normalised_payload_event": "Invalid",
+      "record": {
+        "payload": {
+          "session_id": "sess-9",
+          "tool_name": "Bash"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "Invalid",
+        "original": {
+          "session_id": "sess-9",
+          "tool_name": "Bash"
+        }
+      },
+      "schema_version": 1,
+      "tool_summary": {}
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "16a37ede14ae8fc8ff9b71fa981b6105af9bbee205073ad74fa34ae0dadcbf05",
+      "id": "v2_payload_schema_version",
+      "normalised_payload_event": "SessionStart",
+      "record": {
+        "payload": {
+          "effort": "high",
+          "hook_event_name": "SessionStart",
+          "prompt_id": "p-1",
+          "source": "startup"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 2,
+          "source": "direct"
+        },
+        "effort": "high",
+        "hook_event_name": "SessionStart",
+        "prompt_id": "p-1",
+        "source": "startup"
+      },
+      "schema_version": 2,
+      "tool_summary": {}
+    },
+    {
+      "config": "capture_default_max",
+      "config_values": {
+        "capture_tool_payloads": true,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "66df0384fb9ec4df7e8dfec6cbcd1b21ae3389c76b991c6a30ac12af903226ca",
+      "id": "nested_secret_keys_in_tool_response",
+      "normalised_payload_event": "PostToolUse",
+      "record": {
+        "payload": {
+          "hook_event_name": "PostToolUse",
+          "tool_input": {
+            "content": {
+              "db": {
+                "Password": "abc",
+                "host": "localhost"
+              }
+            },
+            "file_path": "x.env"
+          },
+          "tool_name": "Write"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "PostToolUse",
+        "tool_input": {
+          "content": {
+            "db": {
+              "Password": "[REDACTED]",
+              "host": "localhost"
+            }
+          },
+          "file_path": "x.env"
+        },
+        "tool_name": "Write"
+      },
+      "schema_version": 1,
+      "tool_summary": {
+        "file_path": "x.env"
+      }
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "18d7d10516e81f1bbe3010d35adca355286124a6ac76413bc738df6c81cfa7b1",
+      "id": "extra_fields_are_tolerated",
+      "normalised_payload_event": "Notification",
+      "record": {
+        "payload": {
+          "future_field": {
+            "a": 1
+          },
+          "hook_event_name": "Notification",
+          "message": "hello"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "future_field": {
+          "a": 1
+        },
+        "hook_event_name": "Notification",
+        "message": "hello"
+      },
+      "schema_version": 1,
+      "tool_summary": {}
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "b4950ca7a87e8e2569b26ea98e0867d8b0f5b7ff3ceebbb828848c24015b4548",
+      "id": "dedupe_key_without_received_at",
+      "normalised_payload_event": "Stop",
+      "record": {
+        "payload": {
+          "hook_event_name": "Stop"
+        }
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "Stop"
+      },
+      "schema_version": 1,
+      "tool_summary": {}
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "8b5b992d017fe6eb43938ed7863c5dc5d544be0c1865b2f222823c59e16afaef",
+      "id": "payload_not_a_dict_is_invalid_wrap",
+      "normalised_payload_event": "Invalid",
+      "record": {
+        "payload": [
+          "not",
+          "a",
+          "dict"
+        ],
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "Invalid",
+        "original": [
+          "not",
+          "a",
+          "dict"
+        ]
+      },
+      "schema_version": 1,
+      "tool_summary": {}
+    }
+  ],
+  "file": "hook_payload.json",
+  "task_key_cases": [
+    {
+      "input": "Task-ID: WG-1118 and WG-9",
+      "matches": [
+        "WG-1118",
+        "WG-9"
+      ]
+    },
+    {
+      "input": "ABC123-7 and a-1 and WG-0",
+      "matches": [
+        "ABC123-7",
+        "WG-0"
+      ]
+    },
+    {
+      "input": "no keys here",
+      "matches": []
+    },
+    {
+      "input": "XWG-5 and WG-12345678901",
+      "matches": [
+        "XWG-5",
+        "WG-12345678901"
+      ]
+    },
+    {
+      "input": "trailing WG-3, comma and (NYN-44)",
+      "matches": [
+        "WG-3",
+        "NYN-44"
+      ]
+    }
+  ],
+  "vector": "telemetry",
+  "version": 1
+}

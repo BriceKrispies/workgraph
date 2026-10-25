@@ -241,6 +241,44 @@ def test_task_show_survives_cp1252_console(run, home):
     assert b"Unicode task" in proc.stdout
 
 
+def _piped_cli(home, *args: str) -> subprocess.CompletedProcess[bytes]:
+    # stdout is a pipe here, the case that crashed rich's legacy Windows path.
+    env = {key: value for key, value in os.environ.items() if key not in ("FORCE_COLOR", "COLUMNS")}
+    env.update({"WORKGRAPH_HOME": str(home), "PYTHONUTF8": "1", "NO_COLOR": "1"})
+    return subprocess.run(
+        [sys.executable, "-m", "workgraph", "-w", "default", *args],
+        env=env,
+        capture_output=True,
+        check=False,
+    )
+
+
+def test_piped_human_output_renders_as_plain_text(run, home):
+    run("init")
+    run("task", "create", "Piped task", "--ready", "--description", "body text")
+    show = _piped_cli(home, "task", "show", "WG-1")
+    assert show.returncode == 0, show.stderr.decode("utf-8", "replace")
+    assert b"Traceback" not in show.stderr
+    assert b"Piped task" in show.stdout
+    assert b"\x1b[" not in show.stdout
+    listing = _piped_cli(home, "task", "list")
+    assert listing.returncode == 0, listing.stderr.decode("utf-8", "replace")
+    assert b"WG-1" in listing.stdout and b"Piped task" in listing.stdout
+
+
+def test_cli_console_skips_legacy_windows_path_off_a_terminal():
+    import io
+
+    from workgraph.cli.common import CliConsole
+
+    stream = io.StringIO()
+    console = CliConsole(file=stream, highlight=False)
+    console.legacy_windows = True  # what rich reports on a Windows console without VT
+    assert console.legacy_windows is False
+    console.print("[bold]task[/bold] ok")
+    assert stream.getvalue() == "task ok\n"
+
+
 def test_console_script_help():
     proc = subprocess.run(
         [sys.executable, "-m", "workgraph", "--help"],

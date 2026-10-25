@@ -58,8 +58,35 @@ EXIT_CODES: list[tuple[type[WorkgraphError], int]] = [
     (ConfigError, 7),
 ]
 
-console = Console(highlight=False, soft_wrap=False)
-err_console = Console(stderr=True, highlight=False)
+
+class CliConsole(Console):
+    """A rich Console that uses rich's legacy Windows path only when writing to a terminal.
+
+    On a Windows console without virtual-terminal support, rich renders through the Win32
+    console API (``_win32_console``). That API rejects pipes and redirected files, so
+    ``workgraph task show WG-1 | grep x`` failed with ``OSError: [Errno 22]``. The flag is
+    therefore read at write time: pipes, files and other non-terminal streams take the plain
+    text path, while a real legacy console keeps the legacy renderer.
+    """
+
+    @property
+    def legacy_windows(self) -> bool:
+        return self._legacy_windows_flag and self._file_is_terminal()
+
+    @legacy_windows.setter
+    def legacy_windows(self, value: bool) -> None:
+        self._legacy_windows_flag = value
+
+    def _file_is_terminal(self) -> bool:
+        isatty = getattr(self.file, "isatty", None)
+        try:
+            return bool(isatty and isatty())
+        except (OSError, ValueError):
+            return False
+
+
+console = CliConsole(highlight=False, soft_wrap=False)
+err_console = CliConsole(stderr=True, highlight=False)
 
 
 @dataclass

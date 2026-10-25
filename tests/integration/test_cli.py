@@ -155,11 +155,52 @@ def test_task_list_limit_above_maximum_is_a_validation_error(run, home, monkeypa
     assert any(item["loc"] == ["limit"] for item in err["error"]["details"]["errors"])
 
     monkeypatch.setenv("WORKGRAPH_HOME", str(home))
-    result = CliRunner().invoke(cli, ["task", "list", "--limit", "2000"])
+    try:
+        result = CliRunner().invoke(cli, ["task", "list", "--limit", "2000"])
+    finally:
+        STATE.close()  # the app opened here would otherwise serve the next test's home
     assert result.exit_code == 2, result.output
     assert "validation_failed" in result.output
     assert "limit" in result.output
     assert "Traceback" not in result.output
+
+
+def test_cli_task_show_single_ref_shape(run):
+    run("init")
+    run("task", "create", "Solo")
+    shown = run("task", "show", "WG-1")
+    assert shown["key"] == "WG-1" and "items" not in shown
+
+
+def test_cli_task_show_several_refs(run, monkeypatch):
+    run("init")
+    run("task", "create", "First")
+    run("task", "create", "Second")
+    run("task", "comment", "WG-1", "first note")
+    run("task", "comment", "WG-2", "second note")
+    single = run("task", "show", "WG-1")
+
+    opened = []
+    original_app = STATE.app
+    monkeypatch.setattr(STATE, "app", lambda: opened.append(1) or original_app())
+    many = run("task", "show", "WG-2", "WG-1")
+
+    assert len(opened) == 1
+    assert set(many) == {"items", "errors"}
+    assert [item["key"] for item in many["items"]] == ["WG-2", "WG-1"]
+    assert many["items"][1] == single
+    assert [c["body"] for c in many["items"][1]["comments"]] == ["first note"]
+    assert [c["body"] for c in many["items"][0]["comments"]] == ["second note"]
+    assert many["errors"] == []
+
+
+def test_cli_task_show_unknown_ref_among_several(run):
+    run("init")
+    run("task", "create", "Known")
+    out = run("task", "show", "WG-404", "WG-1", expect=4)
+    assert [item["key"] for item in out["items"]] == ["WG-1"]
+    assert out["errors"][0]["ref"] == "WG-404"
+    assert out["errors"][0]["error"]["code"] == "not_found"
 
 
 def test_cli_backup_restore_export_import(run, tmp_path, home):

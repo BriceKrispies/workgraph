@@ -60,6 +60,7 @@ CONFIG_NAMES = {
     "go.sum",
     "tsconfig.json",
     "pnpm-lock.yaml",
+    "bun.lock",
     "uv.lock",
     ".dockerignore",
 }

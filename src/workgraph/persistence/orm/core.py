@@ -276,6 +276,32 @@ class TaskComment(Base):
     created_at: Mapped[datetime] = created_col()
 
 
+class TaskDecision(Base):
+    """A question a task is waiting on, with the options on offer and, once answered, the answer.
+
+    ``options`` is a list of ``{id, label, detail, recommended}``. An answer is either a
+    ``chosen_option_id`` or free ``other_text``; a decision with no options takes only free text.
+    """
+
+    __tablename__ = "task_decisions"
+
+    id: Mapped[str] = pk()
+    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id", ondelete="RESTRICT"), index=True)
+    task_id: Mapped[str] = mapped_column(ForeignKey("tasks.id", ondelete="CASCADE"), index=True)
+    question: Mapped[str] = mapped_column(Text)
+    options: Mapped[list[dict[str, Any]]] = mapped_column(default=list)
+    status: Mapped[str] = mapped_column(String(16), default="open", index=True)
+    chosen_option_id: Mapped[str | None] = mapped_column(String(64), default=None)
+    other_text: Mapped[str | None] = mapped_column(Text, default=None)
+    note: Mapped[str | None] = mapped_column(Text, default=None)
+    decided_by: Mapped[str | None] = mapped_column(String(200), default=None)
+    decided_at: Mapped[datetime | None] = mapped_column(default=None)
+    created_by: Mapped[str] = mapped_column(String(200))
+    created_at: Mapped[datetime] = created_col()
+    updated_at: Mapped[datetime] = updated_col()
+    version: Mapped[int] = mapped_column(Integer, default=1)
+
+
 class Artifact(Base):
     __tablename__ = "artifacts"
 

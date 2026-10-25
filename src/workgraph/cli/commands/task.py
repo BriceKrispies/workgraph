@@ -10,9 +10,11 @@ import typer
 from rich.markup import escape
 
 from workgraph.cli.common import (
+    EXIT_CODES,
     STATE,
     console,
     emit,
+    err_console,
     fail,
     handle_errors,
     kv,
@@ -23,7 +25,7 @@ from workgraph.cli.common import (
     workspace_option,
     ws,
 )
-from workgraph.core.errors import ValidationFailed
+from workgraph.core.errors import ValidationFailed, WorkgraphError
 from workgraph.core.models.enums import RelationType, TaskPriority, TaskStatus
 from workgraph.core.models.schemas import (
     BulkUpdate,
@@ -248,11 +250,48 @@ def task_ready(
     emit(items, lambda rows: table([_row(t) for t in rows], HEAD, title="ready"))
 
 
+def _exit_code(exc: WorkgraphError) -> int:
+    return next((code for cls, code in EXIT_CODES if isinstance(exc, cls)), 1)
+
+
 @task_app.command("show")
 @handle_errors
-def task_show(ref: str, workspace: str | None = workspace_option()) -> None:
-    """Show task details, comments, rollup and blockers."""
-    emit(STATE.app().tasks.detail(STATE.ctx(), ws(workspace), ref), _render_task)
+def task_show(
+    refs: list[str] = typer.Argument(..., help="One or more task refs"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Show task details, comments, rollup and blockers for one or more tasks.
+
+    With several refs, the other tasks are still shown when one is unknown; the
+    failures are reported and the command exits with the first failure's code.
+    """
+    if len(refs) == 1:
+        emit(STATE.app().tasks.detail(STATE.ctx(), ws(workspace), refs[0]), _render_task)
+        return
+    app = STATE.app()
+    ctx = STATE.ctx()
+    items: list[Any] = []
+    errors: list[tuple[str, WorkgraphError]] = []
+    for ref in refs:
+        try:
+            items.append(app.tasks.detail(ctx, ws(workspace), ref))
+        except WorkgraphError as exc:
+            errors.append((ref, exc))
+
+    def human(_: Any) -> None:
+        for index, task in enumerate(items):
+            if index:
+                console.print()
+            _render_task(task)
+        for ref, exc in errors:
+            err_console.print(f"[red]error[/red] ({exc.code}) {escape(ref)}: {escape(exc.message)}")
+
+    emit(
+        {"items": items, "errors": [{"ref": ref, "error": exc.to_dict()} for ref, exc in errors]},
+        human,
+    )
+    if errors:
+        raise typer.Exit(_exit_code(errors[0][1]))
 
 
 def _render_verdict(out: dict[str, Any]) -> None:

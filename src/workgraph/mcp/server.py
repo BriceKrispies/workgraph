@@ -36,6 +36,7 @@ from workgraph.core.models.schemas import (
     AttemptCreate,
     ClaimRequest,
     CommentCreate,
+    DecisionOptionIn,
     ProgressReport,
     RelationCreate,
     RepositoryRegister,
@@ -645,6 +646,39 @@ def build_server(
         task: TaskRef, body: Annotated[str, Field(min_length=1)], workspace: Workspace = None
     ) -> dict[str, Any]:
         return _dump(app.tasks.add_comment(ctx(), workspace, task, CommentCreate(body=body)))
+
+    @tool(
+        "task_request_decision",
+        "Ask the user a question this task is waiting on, with the options on offer (none means a free-text "
+        "answer). Tags the task needs-decision; the user answers in the web UI, and task_decisions returns "
+        "the answer. Mark the option you recommend. Agents cannot answer decisions.",
+    )
+    def task_request_decision(
+        task: TaskRef,
+        question: Annotated[str, Field(min_length=1, max_length=5000)],
+        options: list[DecisionOptionIn] | None = None,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return _dump(app.decisions.request(ctx(), workspace, task, question, options or []))
+
+    @tool(
+        "decision_list",
+        "List decisions with their task, newest answers first when decided; open ones by task priority.",
+    )
+    def decision_list(
+        status: Literal["open", "decided", "withdrawn", "all"] = "open",
+        limit: Limit = 50,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return {"decisions": _dump(app.decisions.list(ctx(), workspace, status, limit))}
+
+    @tool(
+        "task_decisions",
+        "Decisions on a task: the question, its options and, once the user has answered, the chosen option "
+        "or free-text answer and note.",
+    )
+    def task_decisions(task: TaskRef, workspace: Workspace = None) -> dict[str, Any]:
+        return {"decisions": _dump(app.decisions.for_task(ctx(), workspace, task))}
 
     @tool("task_get_history", "Immutable event history of a task and its attempts.")
     def task_get_history(

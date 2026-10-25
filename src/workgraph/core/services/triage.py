@@ -26,6 +26,7 @@ from workgraph.core.errors import (
 from workgraph.core.models.enums import RelationType, TaskPriority, TaskStatus
 from workgraph.core.models.schemas import (
     CommentCreate,
+    DecisionRequest,
     RelationCreate,
     TaskCreate,
     TaskOut,
@@ -185,9 +186,36 @@ def _shape_problem(entry: Any) -> str | None:
             )
             if bad is not None:
                 return f"rewrite {i} has a file that is not a path: {bad!r}"
+    if verdict == "needs-decision" and "decision" in entry:
+        problem = _decision_problem(entry["decision"])
+        if problem is not None:
+            return problem
     if verdict == "needs-run" and not _text(entry.get("command")):
         return "needs-run verdict needs a command"
     return None
+
+
+def _decision_problem(decision: Any) -> str | None:
+    """A needs-decision ``decision`` is prose, or an object ``{question, options}`` for a structured one."""
+    if decision is None or isinstance(decision, str):
+        return None
+    if not isinstance(decision, dict):
+        return "decision must be a string or an object with question and options"
+    if not _text(decision.get("question")):
+        return "decision is missing a question"
+    options = decision.get("options", [])
+    if not isinstance(options, list):
+        return "decision options must be a list"
+    try:
+        DecisionRequest(question=decision["question"], options=[_option_spec(o) for o in options])
+    except (ValueError, TypeError) as exc:
+        return f"decision options are not valid: {exc}"
+    return None
+
+
+def _option_spec(option: Any) -> Any:
+    """An option may be a bare label or an object with label, detail, recommended and an optional id."""
+    return {"label": option} if isinstance(option, str) else option
 
 
 def _is_file_spec(spec: str) -> bool:
@@ -275,8 +303,12 @@ def _apply_one(
 
     if verdict == "needs-decision":
         decision = entry.get("decision")
-        blocks = [f"Decision: {decision}"] if decision else []
+        question = decision["question"] if isinstance(decision, dict) else decision
+        blocks = [f"Decision: {question}"] if question else []
         _comment(tasks, ctx, ws_id, key, _body(source, "needs a decision", summary, evidence, blocks))
+        if isinstance(decision, dict):
+            options = [_option_spec(o) for o in decision.get("options", [])]
+            tasks.app.decisions.request(ctx, ws_id, key, decision["question"], options)
         _tag(tasks, ctx, ws_id, key, ["needs-decision", f"{TRIAGE_TAG_PREFIX}needs-decision"])
         return "commented", []
 

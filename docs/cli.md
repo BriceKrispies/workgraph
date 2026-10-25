@@ -21,7 +21,8 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `workspace` | `create`, `list`, `show`, `use`, `archive`, `set --allowed-root` |
 | `project` | `create`, `list`, `show`, `update` (`--name`, `--description`, `--status`), `add-repo`, `remove-repo`, `rename-term PROJECT --from OLD --to NEW [--keep TOKEN]... [--dry-run]` (renames a word, such as a language's name, across the project's live records: open tasks' title, description, acceptance criteria and file paths; every task's tags; the project's slug, name and description; its repositories' names and descriptions; and every string in the checks of verification configs scoped to them. Accepted, cancelled and archived tasks keep their text as records and take only the renamed tags. The word matches in three spellings (`rho`, `Rho`, `RHO`) when no letter precedes it and no letter of its case follows, so `rhombus` stays; `--keep` protects tokens that contain it but are not it. Each change is an ordinary event with reason `rename OLD to NEW` and queues no reclassification. A rewritten absolute path in a check that names nothing on disk is reported; checkout paths are not moved) |
 | `repo` | `register`, `list`, `show`, `refresh`, `status`, `update`, `remove`, `remove-checkout`, `depend` |
-| `task` | `create`, `list`, `ready`, `promote-ready [--tag T] [--project P] [--dry-run]` (moves every backlog task whose dependencies are all accepted to `ready` in one transaction and prints the promoted keys; skips tasks with children and tasks tagged `parked`), `show`, `contract-check TASK --model M [--target 0.8]` (triage: `not_delegable`, `incomplete`, `split` or `leaf`, with the missing contract fields, reasons and the predicted success, labelled an inference; `--json` for the verdict), `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` (`--project`, `--repo`, `--open`), `triage-apply FILE [--dry-run] [--source TEXT]` (applies a JSON array of triage verdicts; see [Triage verdicts](#triage-verdicts)), `import-breakdown FILE --section TEXT --parent KEY [--tag T]... [--project P] [--repo R] [--dry-run]` (creates or updates the tasks of one markdown section; see [Importing a breakdown](#importing-a-breakdown)) |
+| `task` | `create`, `list`, `ready`, `promote-ready [--tag T] [--project P] [--dry-run]` (moves every backlog task whose dependencies are all accepted to `ready` in one transaction and prints the promoted keys; skips tasks with children and tasks tagged `parked`), `show REF...` (one or more refs, see [Showing several tasks](#showing-several-tasks)), `contract-check TASK --model M [--target 0.8]` (triage: `not_delegable`, `incomplete`, `split` or `leaf`, with the missing contract fields, reasons and the predicted success, labelled an inference; `--json` for the verdict), `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` (`--project`, `--repo`, `--open`), `triage-apply FILE [--dry-run] [--source TEXT]` (applies a JSON array of triage verdicts; see [Triage verdicts](#triage-verdicts)), `import-breakdown FILE --section TEXT --parent KEY [--tag T]... [--project P] [--repo R] [--dry-run]` (creates or updates the tasks of one markdown section; see [Importing a breakdown](#importing-a-breakdown)) |
+| `decision` | `list [--status open\|decided\|withdrawn\|all]`, `show ID`, `request TASK --question Q [--option "label::detail"]... [--recommend N]` (options are lettered a, b, ... in order; `--recommend` is the 1-based position of the recommended one; no `--option` asks for free text; tags the task `needs-decision`), `choose ID (--option OPTION_ID \| --other TEXT) [--note TEXT]` (answers or changes the answer; the last open decision on a task clears `needs-decision` and `parked`), `withdraw ID [--reason TEXT]`. `ID` may be the 8-character prefix `list` prints. See [Decisions](api.md#decisions) |
 | `experiment` | `create SLUG --title T [--question Q] --protocol @file.json\|JSON`, `list [--status]`, `show EXP` (protocol summary and trials in order), `freeze EXP` (validates the protocol, freezes it and starts the experiment), `close EXP`, `trial add EXP TASK --arm A --phase P [--band N]` (a planned trial of a running experiment), `trial show TRIAL`, `trial start TRIAL` (clones the task's replay base into a fresh single-branch clone with no remote, runs the protocol's `setup`, prints the worktree, branch, base sha and brief), `trial grade TRIAL [--timeout S]` (runs the oracle and gates in the clone and records the outcome; a failure with flags is classed `gaming`), `trial classify TRIAL --cause C --source human\|agent\|mechanical [--notes N]`, `next EXP` (the pending trial, or a newly planned one from the protocol, or `done` with the reason), `report EXP` (per arm: bands with Wilson intervals, size fit with bootstrap intervals, usage, failure causes, invalid trials; `--json` for the data), `fit --model M [--repo-penalty X] [--feature-penalty X] [--samples N] [--seed S]` (fits the success predictor for one model over every graded trial with ex-ante features, stores the fit with its data cutoff and trial ids, and bootstraps it), `predict --model M (--task TASK \| --repo R --lines N --files F --packages P,Q) [--fit ID]` (probability of success with a 95% interval and the fit it came from; labelled an inference; `--packages` is a comma-separated list, may be empty) (see [Experiments](data-model.md#experiments)) ; `replay scan --repo R [--rev REV] [--limit N] [--min-lines N] [--max-lines N] [--include-excluded]` (commits that could become replay tasks, with size band and exclusion reasons), `replay create --repo R SHA... [--validate] [--oracle-template JSON-list] [--env K=V]... [--timeout S]` (one replay task per commit: `created`, `exists`, `skipped` or `rejected`) |
 | `stack` | `create PARENT`, `show PARENT` (repositories with base, integration branch and tip; children in merge order), `list [--all]`, `add PARENT TASK` and `remove PARENT TASK` (change the children of the active stack), `readmit PARENT TASK` (queue an ejected or pending child for integration again without re-running its fast gate, for an ejection caused outside the change), `eject PARENT TASK -m REASON` (eject a merged child the evidence already names as the failure and rebuild without it, skipping bisection), `history PARENT` (the stack's events in order, with their verification runs), `integrate PARENT` (queues merging the ready children onto each repository's integration branch), `verify PARENT` (queues full verification of the integration tip, bisecting and ejecting a failing child). Acceptance goes through `task`: `task accept PARENT` (or `--manual --reason`) lands a verified stack on the default branch, refused with `landing: deferred` when the default branch moved and the stack is rebuilt to verify again; `task accept CHILD` accepts one child alone and removes it from its stack; `task reject PARENT` leaves the stack as it is (see [Git](git.md#stack-landing)) |
 | `attempt` | `list`, `show`, `create`, `start TASK [--agent-name N] [--adapter A] [--model M] [--isolation worktree\|in_place]`, `submit ATTEMPT [--failed] [--summary TEXT] [--error TEXT]`, `abandon ATTEMPT [--reason TEXT]` (an external attempt whose agent stopped without submitting: marked abandoned, the task returns to ready and its worktrees are released), `finish`, `compare`, `manifests` |
@@ -38,7 +39,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `automation` | `list`, `create`, `update`, `show`, `enable`, `disable`, `trigger`, `preview`, `runs`, `notifications`, `catalog`, `process` |
 | `claude` | `install [--mcp]`, `uninstall`, `status`, `replay`, `bind`, `unbind`, `sessions`, `mcp-config`, `hook` |
 | `config` | `show`, `path`, `validate`, `migrate`, `set` |
-| `ui` | `screenshot [PAGE]`: capture a page of the running web UI to a PNG (see [below](#ui-screenshots)) |
+| `ui` | `open [PAGE]`: open a page of the web UI in the default browser, starting `workgraph serve` if nothing answers (see [below](#ui-open)); `screenshot [PAGE]`: capture a page of the running web UI to a PNG (see [below](#ui-screenshots)) |
 | `backup`, `restore` | consistent online backup zip; verified restore with safety copy and forward migration |
 | `export`, `import` | `export workspace FILE.jsonl`, `export analytics`; `import FILE.jsonl` |
 | `events` | `list`, `verify` |
@@ -115,7 +116,7 @@ uv run workgraph --json task import-breakdown docs/rust-rewrite.md --section "9.
 | --- | --- |
 | `resolved`, `obsolete` | comment, tag `triage:<verdict>`, move to `cancelled` (reason `triage: <verdict>`) |
 | `open` | one new task per rewrite (`follows_up` the original; priority, projects and repositories copied; tags = the original's minus `wg136` and `kind:*`, plus `triaged` and `scope:<size>` (what the change touches: one-file, one-crate, several-crates; legacy small/medium/large read as those)); each key in `duplicate_of` (open work an existing task already tracks) gets a `duplicates` relation from the original instead of a new task; then the original is commented, tagged `triage:superseded` and cancelled |
-| `needs-decision` | comment with the decision, tags `needs-decision` and `triage:needs-decision`; status unchanged |
+| `needs-decision` | comment with the decision, tags `needs-decision` and `triage:needs-decision`; status unchanged. `decision` is prose, or an object `{"question": "...", "options": [{"label": "...", "detail": "...", "recommended": true}]}` (an option may be a bare label string) that also opens a structured [decision](api.md#decisions) on the task |
 | `needs-run` | comment with the `command` that confirms it, tag `triage:needs-run`; status unchanged; `command` is required |
 | `unclear` | comment, tag `triage:unclear`; status unchanged |
 
@@ -127,12 +128,17 @@ uv run workgraph --json task import-breakdown docs/rust-rewrite.md --section "9.
 - Each service call commits on its own, so an element that fails part way through keeps the steps before the failure; it is reported as an error.
 - `TaskCreate` has no `category` field, so created tasks do not carry the original's category.
 
+## Showing several tasks
+
+`task show REF [REF ...]` accepts any number of refs. A single ref prints and returns exactly what it always did. With several refs, the tasks are shown in the order given, each opened through the same app session. With `--json` the output is `{"items": [...], "errors": [...]}`: each item is the same object a single `show` returns, and `errors` lists `{"ref", "error"}` for each ref that failed (`error` is the usual `{"code","message","details"}` object). An unknown ref does not stop the others: they are still printed, the failures are reported (on stderr in human output), and the command exits with the first failure's code (`4` for a not-found ref).
+
 ## Examples
 
 ```sh
 uv run workgraph task create "Fix crash" --description @notes.md -c "no crash on expiry" -P high --ready -r api -t bug
 uv run workgraph task list --status ready --priority high --repo api --search "token" --sort priority --asc
 uv run workgraph --json task show WG-12
+uv run workgraph --json task show WG-12 WG-13 WG-14
 uv run workgraph task update WG-12 --status blocked --reason "waiting for infra" --expected-version 4
 uv run workgraph task create "Add token expiry" --file src/auth/token.rs:refresh --file docs/auth.md
 uv run workgraph task update WG-12 --add-file src/auth/session.rs --expected-version 5
@@ -152,6 +158,22 @@ uv run workgraph verify run WG-12 --tier fast
 ```
 
 All commands are single-line and work unchanged in PowerShell, bash, zsh and Nushell.
+
+## UI open
+
+`workgraph ui open [PAGE]` opens a page of the web UI in the default browser. `PAGE` is the UI path with its
+query string; leading slashes are ignored and no page means the home page (`/`). If no server answers on the
+configured host and port, the command starts `workgraph serve` as a detached background process (logging to
+`serve-detached.log` in the log directory), waits up to `--timeout` seconds (default 20) for it to answer, and
+then opens the page. Pass `--no-start` to fail instead of starting a server, `--print` to print the URL without
+opening a browser, and `--url` to target another base URL (a server given by `--url` is never started).
+
+```sh
+workgraph ui open
+workgraph ui open decisions
+workgraph ui open "tasks/WG-12" --no-start
+workgraph ui open graph --print --json   # {"url": "...", "started": false}
+```
 
 ## UI screenshots
 

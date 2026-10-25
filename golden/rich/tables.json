@@ -1,0 +1,2794 @@
+{
+  "cases": [
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "table-1col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃\n┡━━━━━━━━━━━━━━━━━━━┩\n│ 0                 │\n│ WG-12             │\n│                   │\n│ trailing bracket] │\n└───────────────────┘\n"
+      },
+      "rows": [
+        [
+          0
+        ],
+        [
+          "WG-12"
+        ],
+        [
+          null
+        ],
+        [
+          "trailing bracket]"
+        ]
+      ],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "table-1col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "        Tasks        \n┏━━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃\n┡━━━━━━━━━━━━━━━━━━━┩\n│ 0                 │\n│ WG-12             │\n│                   │\n│ trailing bracket] │\n└───────────────────┘\n"
+      },
+      "rows": [
+        [
+          0
+        ],
+        [
+          "WG-12"
+        ],
+        [
+          null
+        ],
+        [
+          "trailing bracket]"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "table-1col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                                           ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ Implement the lifecycle transition table for attempts and tasks across all   │\n│ states                                                                       │\n│                                                                              │\n│ word word word word word word word word word word word word                  │\n│ tab     here                                                                 │\n└──────────────────────────────────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          ""
+        ],
+        [
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "tab\there"
+        ]
+      ],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "table-1col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                     Tasks                                      \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                                           ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ Implement the lifecycle transition table for attempts and tasks across all   │\n│ states                                                                       │\n│                                                                              │\n│ word word word word word word word word word word word word                  │\n│ tab     here                                                                 │\n└──────────────────────────────────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          ""
+        ],
+        [
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "tab\there"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "table-1col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃\n┡━━━━━━━━━━━━━━━━━━━┩\n│ 0                 │\n│ WG-12             │\n│                   │\n│ trailing bracket] │\n└───────────────────┘\n"
+      },
+      "rows": [
+        [
+          0
+        ],
+        [
+          "WG-12"
+        ],
+        [
+          null
+        ],
+        [
+          "trailing bracket]"
+        ]
+      ],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "table-1col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "        Tasks        \n┏━━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃\n┡━━━━━━━━━━━━━━━━━━━┩\n│ 0                 │\n│ WG-12             │\n│                   │\n│ trailing bracket] │\n└───────────────────┘\n"
+      },
+      "rows": [
+        [
+          0
+        ],
+        [
+          "WG-12"
+        ],
+        [
+          null
+        ],
+        [
+          "trailing bracket]"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "table-1col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃\n┡━━━━━━━━━━━━━━━━━━━┩\n│ 0                 │\n│ WG-12             │\n│                   │\n│ trailing bracket] │\n└───────────────────┘\n"
+      },
+      "rows": [
+        [
+          0
+        ],
+        [
+          "WG-12"
+        ],
+        [
+          null
+        ],
+        [
+          "trailing bracket]"
+        ]
+      ],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "table-1col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "        Tasks        \n┏━━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃\n┡━━━━━━━━━━━━━━━━━━━┩\n│ 0                 │\n│ WG-12             │\n│                   │\n│ trailing bracket] │\n└───────────────────┘\n"
+      },
+      "rows": [
+        [
+          0
+        ],
+        [
+          "WG-12"
+        ],
+        [
+          null
+        ],
+        [
+          "trailing bracket]"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "table-2col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃ title            ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩\n│ 1234567           │ not a tag        │\n│ Implement the     │ naïve café       │\n│ lifecycle         │                  │\n│ transition table  │                  │\n│ for attempts and  │                  │\n│ tasks across all  │                  │\n│ states            │                  │\n│                   │ xxxxxxxxxxxxxxxx │\n│                   │ xxxxxxxxxxxxxxxx │\n│                   │ xxxxxxxxxxxxxxxx │\n│                   │ xxxxxxxxxxxx     │\n│ word word word    │ 数据库迁移の確認 │\n│ word word word    │ と適用           │\n│ word word word    │                  │\n│ word word word    │                  │\n└───────────────────┴──────────────────┘\n"
+      },
+      "rows": [
+        [
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "table-2col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                 Tasks                  \n┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃ title            ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩\n│ 1234567           │ not a tag        │\n│ Implement the     │ naïve café       │\n│ lifecycle         │                  │\n│ transition table  │                  │\n│ for attempts and  │                  │\n│ tasks across all  │                  │\n│ states            │                  │\n│                   │ xxxxxxxxxxxxxxxx │\n│                   │ xxxxxxxxxxxxxxxx │\n│                   │ xxxxxxxxxxxxxxxx │\n│                   │ xxxxxxxxxxxx     │\n│ word word word    │ 数据库迁移の確認 │\n│ word word word    │ と適用           │\n│ word word word    │                  │\n│ word word word    │                  │\n└───────────────────┴──────────────────┘\n"
+      },
+      "rows": [
+        [
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "table-2col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ id                     ┃ title         ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ 数据库迁移の確認と適用 │ école         │\n│ 0                      │ literal       │\n│ WG-12                  │ 🚀 ship it 🚀 │\n│                        │ 1234567       │\n└────────────────────────┴───────────────┘\n"
+      },
+      "rows": [
+        [
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          null,
+          1234567
+        ]
+      ],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "table-2col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                  Tasks                   \n┏━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ id                     ┃ title         ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ 数据库迁移の確認と適用 │ école         │\n│ 0                      │ literal       │\n│ WG-12                  │ 🚀 ship it 🚀 │\n│                        │ 1234567       │\n└────────────────────────┴───────────────┘\n"
+      },
+      "rows": [
+        [
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          null,
+          1234567
+        ]
+      ],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "table-2col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                       ┃ title                                                     ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ 1234567                                                  │ not a tag                                                 │\n│ Implement the lifecycle transition table for attempts    │ naïve café                                                │\n│ and tasks across all states                              │                                                           │\n│                                                          │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │\n│                                                          │ xxx                                                       │\n│ word word word word word word word word word word word   │ 数据库迁移の確認と適用                                    │\n│ word                                                     │                                                           │\n└──────────────────────────────────────────────────────────┴───────────────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "table-2col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                         Tasks                                                          \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                       ┃ title                                                     ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ 1234567                                                  │ not a tag                                                 │\n│ Implement the lifecycle transition table for attempts    │ naïve café                                                │\n│ and tasks across all states                              │                                                           │\n│                                                          │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │\n│                                                          │ xxx                                                       │\n│ word word word word word word word word word word word   │ 数据库迁移の確認と適用                                    │\n│ word                                                     │                                                           │\n└──────────────────────────────────────────────────────────┴───────────────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "table-2col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                                                ┃ title                                                        ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ 1234567                                                                           │ not a tag                                                    │\n│ Implement the lifecycle transition table for attempts and tasks across all states │ naïve café                                                   │\n│                                                                                   │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │\n│ word word word word word word word word word word word word                       │ 数据库迁移の確認と適用                                       │\n└───────────────────────────────────────────────────────────────────────────────────┴──────────────────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "table-2col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                                       Tasks                                                                        \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                                                ┃ title                                                        ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ 1234567                                                                           │ not a tag                                                    │\n│ Implement the lifecycle transition table for attempts and tasks across all states │ naïve café                                                   │\n│                                                                                   │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │\n│ word word word word word word word word word word word word                       │ 数据库迁移の確認と適用                                       │\n└───────────────────────────────────────────────────────────────────────────────────┴──────────────────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "table-3col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ id         ┃ title      ┃ status     ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ xxxxxxxxxx │ trailing   │ Implement  │\n│ xxxxxxxxxx │ bracket]   │ the        │\n│ xxxxxxxxxx │            │ lifecycle  │\n│ xxxxxxxxxx │            │ transition │\n│ xxxxxxxxxx │            │ table for  │\n│ xxxxxxxxxx │            │ attempts   │\n│            │            │ and tasks  │\n│            │            │ across all │\n│            │            │ states     │\n│ 数据库迁移 │ école      │            │\n│ の確認と適 │            │            │\n│ 用         │            │            │\n│ 0          │ literal    │ word word  │\n│            │            │ word word  │\n│            │            │ word word  │\n│            │            │ word word  │\n│            │            │ word word  │\n│            │            │ word word  │\n│ WG-12      │ 🚀 ship it │ tab        │\n│            │ 🚀         │ here       │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "table-3col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                 Tasks                  \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ id         ┃ title      ┃ status     ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ xxxxxxxxxx │ trailing   │ Implement  │\n│ xxxxxxxxxx │ bracket]   │ the        │\n│ xxxxxxxxxx │            │ lifecycle  │\n│ xxxxxxxxxx │            │ transition │\n│ xxxxxxxxxx │            │ table for  │\n│ xxxxxxxxxx │            │ attempts   │\n│            │            │ and tasks  │\n│            │            │ across all │\n│            │            │ states     │\n│ 数据库迁移 │ école      │            │\n│ の確認と適 │            │            │\n│ 用         │            │            │\n│ 0          │ literal    │ word word  │\n│            │            │ word word  │\n│            │            │ word word  │\n│            │            │ word word  │\n│            │            │ word word  │\n│            │            │ word word  │\n│ WG-12      │ 🚀 ship it │ tab        │\n│            │ 🚀         │ here       │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "table-3col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓\n┃ id                         ┃ title                       ┃ status            ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩\n│ 🚀 ship it 🚀              │ tab     here                │ 0                 │\n│ 1234567                    │ not a tag                   │ WG-12             │\n│ Implement the lifecycle    │ naïve café                  │                   │\n│ transition table for       │                             │                   │\n│ attempts and tasks across  │                             │                   │\n│ all states                 │                             │                   │\n│                            │ xxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │\n│                            │ xxxxxxxxxxxxxxxxxxxxxxxxxxx │                   │\n│                            │ xxxxxx                      │                   │\n└────────────────────────────┴─────────────────────────────┴───────────────────┘\n"
+      },
+      "rows": [
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "table-3col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                     Tasks                                      \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓\n┃ id                         ┃ title                       ┃ status            ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩\n│ 🚀 ship it 🚀              │ tab     here                │ 0                 │\n│ 1234567                    │ not a tag                   │ WG-12             │\n│ Implement the lifecycle    │ naïve café                  │                   │\n│ transition table for       │                             │                   │\n│ attempts and tasks across  │                             │                   │\n│ all states                 │                             │                   │\n│                            │ xxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │\n│                            │ xxxxxxxxxxxxxxxxxxxxxxxxxxx │                   │\n│                            │ xxxxxx                      │                   │\n└────────────────────────────┴─────────────────────────────┴───────────────────┘\n"
+      },
+      "rows": [
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "table-3col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                             ┃ title             ┃ status                                          ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle transition table for    │\n│ xxxxxxxxxxxxxx                                 │                   │ attempts and tasks across all states            │\n│ 数据库迁移の確認と適用                         │ école             │                                                 │\n│ 0                                              │ literal           │ word word word word word word word word word    │\n│                                                │                   │ word word word                                  │\n│ WG-12                                          │ 🚀 ship it 🚀     │ tab     here                                    │\n└────────────────────────────────────────────────┴───────────────────┴─────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "table-3col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                         Tasks                                                          \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                             ┃ title             ┃ status                                          ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle transition table for    │\n│ xxxxxxxxxxxxxx                                 │                   │ attempts and tasks across all states            │\n│ 数据库迁移の確認と適用                         │ école             │                                                 │\n│ 0                                              │ literal           │ word word word word word word word word word    │\n│                                                │                   │ word word word                                  │\n│ WG-12                                          │ 🚀 ship it 🚀     │ tab     here                                    │\n└────────────────────────────────────────────────┴───────────────────┴─────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "table-3col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                           ┃ title             ┃ status                                                                            ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle transition table for attempts and tasks across all states │\n│ 数据库迁移の確認と適用                                       │ école             │                                                                                   │\n│ 0                                                            │ literal           │ word word word word word word word word word word word word                       │\n│ WG-12                                                        │ 🚀 ship it 🚀     │ tab     here                                                                      │\n└──────────────────────────────────────────────────────────────┴───────────────────┴───────────────────────────────────────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "table-3col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                                                 Tasks                                                                                  \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                           ┃ title             ┃ status                                                                            ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle transition table for attempts and tasks across all states │\n│ 数据库迁移の確認と適用                                       │ école             │                                                                                   │\n│ 0                                                            │ literal           │ word word word word word word word word word word word word                       │\n│ WG-12                                                        │ 🚀 ship it 🚀     │ tab     here                                                                      │\n└──────────────────────────────────────────────────────────────┴───────────────────┴───────────────────────────────────────────────────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "table-4col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┓\n┃ id      ┃ title   ┃ status  ┃ owner  ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━┩\n│ literal │ word    │ 数据库  │ école  │\n│         │ word    │ 迁移の  │        │\n│         │ word    │ 確認と  │        │\n│         │ word    │ 適用    │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│ 🚀 ship │ tab     │ 0       │ litera │\n│ it 🚀   │ here    │         │ l      │\n│ 1234567 │ not a   │ WG-12   │ 🚀     │\n│         │ tag     │         │ ship   │\n│         │         │         │ it 🚀  │\n│ Impleme │ naïve   │         │ 123456 │\n│ nt the  │ café    │         │ 7      │\n│ lifecyc │         │         │        │\n│ le      │         │         │        │\n│ transit │         │         │        │\n│ ion     │         │         │        │\n│ table   │         │         │        │\n│ for     │         │         │        │\n│ attempt │         │         │        │\n│ s and   │         │         │        │\n│ tasks   │         │         │        │\n│ across  │         │         │        │\n│ all     │         │         │        │\n│ states  │         │         │        │\n└─────────┴─────────┴─────────┴────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "table-4col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                 Tasks                  \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┓\n┃ id      ┃ title   ┃ status  ┃ owner  ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━┩\n│ literal │ word    │ 数据库  │ école  │\n│         │ word    │ 迁移の  │        │\n│         │ word    │ 確認と  │        │\n│         │ word    │ 適用    │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│         │ word    │         │        │\n│ 🚀 ship │ tab     │ 0       │ litera │\n│ it 🚀   │ here    │         │ l      │\n│ 1234567 │ not a   │ WG-12   │ 🚀     │\n│         │ tag     │         │ ship   │\n│         │         │         │ it 🚀  │\n│ Impleme │ naïve   │         │ 123456 │\n│ nt the  │ café    │         │ 7      │\n│ lifecyc │         │         │        │\n│ le      │         │         │        │\n│ transit │         │         │        │\n│ ion     │         │         │        │\n│ table   │         │         │        │\n│ for     │         │         │        │\n│ attempt │         │         │        │\n│ s and   │         │         │        │\n│ tasks   │         │         │        │\n│ across  │         │         │        │\n│ all     │         │         │        │\n│ states  │         │         │        │\n└─────────┴─────────┴─────────┴────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "table-4col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃ title             ┃ status            ┃ owner            ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩\n│ naïve café        │                   │ 1234567           │ not a tag        │\n│ xxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the     │ naïve café       │\n│ xxxxxxxxxxxxxxxxx │                   │ lifecycle         │                  │\n│ xxxxxxxxxxxxxxxxx │                   │ transition table  │                  │\n│ xxxxxxxxx         │                   │ for attempts and  │                  │\n│                   │                   │ tasks across all  │                  │\n│                   │                   │ states            │                  │\n│ 数据库迁移の確認  │ école             │                   │ xxxxxxxxxxxxxxxx │\n│ と適用            │                   │                   │ xxxxxxxxxxxxxxxx │\n│                   │                   │                   │ xxxxxxxxxxxxxxxx │\n│                   │                   │                   │ xxxxxxxxxxxx     │\n│ 0                 │ literal           │ word word word    │ 数据库迁移の確認 │\n│                   │                   │ word word word    │ と適用           │\n│                   │                   │ word word word    │                  │\n│                   │                   │ word word word    │                  │\n└───────────────────┴───────────────────┴───────────────────┴──────────────────┘\n"
+      },
+      "rows": [
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "table-4col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                     Tasks                                      \n┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃ title             ┃ status            ┃ owner            ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩\n│ naïve café        │                   │ 1234567           │ not a tag        │\n│ xxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the     │ naïve café       │\n│ xxxxxxxxxxxxxxxxx │                   │ lifecycle         │                  │\n│ xxxxxxxxxxxxxxxxx │                   │ transition table  │                  │\n│ xxxxxxxxx         │                   │ for attempts and  │                  │\n│                   │                   │ tasks across all  │                  │\n│                   │                   │ states            │                  │\n│ 数据库迁移の確認  │ école             │                   │ xxxxxxxxxxxxxxxx │\n│ と適用            │                   │                   │ xxxxxxxxxxxxxxxx │\n│                   │                   │                   │ xxxxxxxxxxxxxxxx │\n│                   │                   │                   │ xxxxxxxxxxxx     │\n│ 0                 │ literal           │ word word word    │ 数据库迁移の確認 │\n│                   │                   │ word word word    │ と適用           │\n│                   │                   │ word word word    │                  │\n│                   │                   │ word word word    │                  │\n└───────────────────┴───────────────────┴───────────────────┴──────────────────┘\n"
+      },
+      "rows": [
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "table-4col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ id                                   ┃ title                                ┃ status                 ┃ owner         ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ literal                              │ word word word word word word word   │ 数据库迁移の確認と適用 │ école         │\n│                                      │ word word word word word             │                        │               │\n│ 🚀 ship it 🚀                        │ tab     here                         │ 0                      │ literal       │\n│ 1234567                              │ not a tag                            │ WG-12                  │ 🚀 ship it 🚀 │\n│ Implement the lifecycle transition   │ naïve café                           │                        │ 1234567       │\n│ table for attempts and tasks across  │                                      │                        │               │\n│ all states                           │                                      │                        │               │\n└──────────────────────────────────────┴──────────────────────────────────────┴────────────────────────┴───────────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "table-4col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                         Tasks                                                          \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ id                                   ┃ title                                ┃ status                 ┃ owner         ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ literal                              │ word word word word word word word   │ 数据库迁移の確認と適用 │ école         │\n│                                      │ word word word word word             │                        │               │\n│ 🚀 ship it 🚀                        │ tab     here                         │ 0                      │ literal       │\n│ 1234567                              │ not a tag                            │ WG-12                  │ 🚀 ship it 🚀 │\n│ Implement the lifecycle transition   │ naïve café                           │                        │ 1234567       │\n│ table for attempts and tasks across  │                                      │                        │               │\n│ all states                           │                                      │                        │               │\n└──────────────────────────────────────┴──────────────────────────────────────┴────────────────────────┴───────────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "table-4col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ id                                                                                ┃ title                                                        ┃ status                 ┃ owner         ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ literal                                                                           │ word word word word word word word word word word word word  │ 数据库迁移の確認と適用 │ école         │\n│ 🚀 ship it 🚀                                                                     │ tab     here                                                 │ 0                      │ literal       │\n│ 1234567                                                                           │ not a tag                                                    │ WG-12                  │ 🚀 ship it 🚀 │\n│ Implement the lifecycle transition table for attempts and tasks across all states │ naïve café                                                   │                        │ 1234567       │\n└───────────────────────────────────────────────────────────────────────────────────┴──────────────────────────────────────────────────────────────┴────────────────────────┴───────────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "table-4col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                                                            Tasks                                                                                            \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ id                                                                                ┃ title                                                        ┃ status                 ┃ owner         ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ literal                                                                           │ word word word word word word word word word word word word  │ 数据库迁移の確認と適用 │ école         │\n│ 🚀 ship it 🚀                                                                     │ tab     here                                                 │ 0                      │ literal       │\n│ 1234567                                                                           │ not a tag                                                    │ WG-12                  │ 🚀 ship it 🚀 │\n│ Implement the lifecycle transition table for attempts and tasks across all states │ naïve café                                                   │                        │ 1234567       │\n└───────────────────────────────────────────────────────────────────────────────────┴──────────────────────────────────────────────────────────────┴────────────────────────┴───────────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "table-5col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━┳━━━━━━━┳━━━━━━━┳━━━━━━━┳━━━━━━┓\n┃       ┃       ┃ statu ┃       ┃ upda ┃\n┃ id    ┃ title ┃ s     ┃ owner ┃ ted  ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━╇━━━━━━━╇━━━━━━┩\n│ not a │ WG-12 │ 🚀    │ tab   │ 0    │\n│ tag   │       │ ship  │ here  │      │\n│       │       │ it 🚀 │       │      │\n│ naïve │       │ 12345 │ not a │ WG-1 │\n│ café  │       │ 67    │ tag   │ 2    │\n│ xxxxx │ trail │ Imple │ naïve │      │\n│ xxxxx │ ing   │ ment  │ café  │      │\n│ xxxxx │ brack │ the   │       │      │\n│ xxxxx │ et]   │ lifec │       │      │\n│ xxxxx │       │ ycle  │       │      │\n│ xxxxx │       │ trans │       │      │\n│ xxxxx │       │ ition │       │      │\n│ xxxxx │       │       │       │      │\n│ xxxxx │       │ table │       │      │\n│ xxxxx │       │ for   │       │      │\n│ xxxxx │       │ attem │       │      │\n│ xxxxx │       │ pts   │       │      │\n│       │       │ and   │       │      │\n│       │       │ tasks │       │      │\n│       │       │ acros │       │      │\n│       │       │ s all │       │      │\n│       │       │ state │       │      │\n│       │       │ s     │       │      │\n│ 数据  │ école │       │ xxxxx │ trai │\n│ 库迁  │       │       │ xxxxx │ ling │\n│ 移の  │       │       │ xxxxx │      │\n│ 確認  │       │       │ xxxxx │ brac │\n│ と適  │       │       │ xxxxx │ ket] │\n│ 用    │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n└───────┴───────┴───────┴───────┴──────┘\n"
+      },
+      "rows": [
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "table-5col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                 Tasks                  \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┳━━━━━━━┳━━━━━━┓\n┃       ┃       ┃ statu ┃       ┃ upda ┃\n┃ id    ┃ title ┃ s     ┃ owner ┃ ted  ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━╇━━━━━━━╇━━━━━━┩\n│ not a │ WG-12 │ 🚀    │ tab   │ 0    │\n│ tag   │       │ ship  │ here  │      │\n│       │       │ it 🚀 │       │      │\n│ naïve │       │ 12345 │ not a │ WG-1 │\n│ café  │       │ 67    │ tag   │ 2    │\n│ xxxxx │ trail │ Imple │ naïve │      │\n│ xxxxx │ ing   │ ment  │ café  │      │\n│ xxxxx │ brack │ the   │       │      │\n│ xxxxx │ et]   │ lifec │       │      │\n│ xxxxx │       │ ycle  │       │      │\n│ xxxxx │       │ trans │       │      │\n│ xxxxx │       │ ition │       │      │\n│ xxxxx │       │       │       │      │\n│ xxxxx │       │ table │       │      │\n│ xxxxx │       │ for   │       │      │\n│ xxxxx │       │ attem │       │      │\n│ xxxxx │       │ pts   │       │      │\n│       │       │ and   │       │      │\n│       │       │ tasks │       │      │\n│       │       │ acros │       │      │\n│       │       │ s all │       │      │\n│       │       │ state │       │      │\n│       │       │ s     │       │      │\n│ 数据  │ école │       │ xxxxx │ trai │\n│ 库迁  │       │       │ xxxxx │ ling │\n│ 移の  │       │       │ xxxxx │      │\n│ 確認  │       │       │ xxxxx │ brac │\n│ と適  │       │       │ xxxxx │ ket] │\n│ 用    │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n│       │       │       │ xxxxx │      │\n└───────┴───────┴───────┴───────┴──────┘\n"
+      },
+      "rows": [
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "table-5col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓\n┃ id            ┃ title         ┃ status        ┃ owner         ┃ updated      ┃\n┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩\n│ école         │               │ xxxxxxxxxxxxx │ trailing      │ Implement    │\n│               │               │ xxxxxxxxxxxxx │ bracket]      │ the          │\n│               │               │ xxxxxxxxxxxxx │               │ lifecycle    │\n│               │               │ xxxxxxxxxxxxx │               │ transition   │\n│               │               │ xxxxxxxx      │               │ table for    │\n│               │               │               │               │ attempts and │\n│               │               │               │               │ tasks across │\n│               │               │               │               │ all states   │\n│ literal       │ word word     │ 数据库迁移の  │ école         │              │\n│               │ word word     │ 確認と適用    │               │              │\n│               │ word word     │               │               │              │\n│               │ word word     │               │               │              │\n│               │ word word     │               │               │              │\n│               │ word word     │               │               │              │\n│ 🚀 ship it 🚀 │ tab     here  │ 0             │ literal       │ word word    │\n│               │               │               │               │ word word    │\n│               │               │               │               │ word word    │\n│               │               │               │               │ word word    │\n│               │               │               │               │ word word    │\n│               │               │               │               │ word word    │\n│ 1234567       │ not a tag     │ WG-12         │ 🚀 ship it 🚀 │ tab     here │\n└───────────────┴───────────────┴───────────────┴───────────────┴──────────────┘\n"
+      },
+      "rows": [
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "table-5col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                     Tasks                                      \n┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓\n┃ id            ┃ title         ┃ status        ┃ owner         ┃ updated      ┃\n┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩\n│ école         │               │ xxxxxxxxxxxxx │ trailing      │ Implement    │\n│               │               │ xxxxxxxxxxxxx │ bracket]      │ the          │\n│               │               │ xxxxxxxxxxxxx │               │ lifecycle    │\n│               │               │ xxxxxxxxxxxxx │               │ transition   │\n│               │               │ xxxxxxxx      │               │ table for    │\n│               │               │               │               │ attempts and │\n│               │               │               │               │ tasks across │\n│               │               │               │               │ all states   │\n│ literal       │ word word     │ 数据库迁移の  │ école         │              │\n│               │ word word     │ 確認と適用    │               │              │\n│               │ word word     │               │               │              │\n│               │ word word     │               │               │              │\n│               │ word word     │               │               │              │\n│               │ word word     │               │               │              │\n│ 🚀 ship it 🚀 │ tab     here  │ 0             │ literal       │ word word    │\n│               │               │               │               │ word word    │\n│               │               │               │               │ word word    │\n│               │               │               │               │ word word    │\n│               │               │               │               │ word word    │\n│               │               │               │               │ word word    │\n│ 1234567       │ not a tag     │ WG-12         │ 🚀 ship it 🚀 │ tab     here │\n└───────────────┴───────────────┴───────────────┴───────────────┴──────────────┘\n"
+      },
+      "rows": [
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "table-5col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓\n┃ id                      ┃ title             ┃ status                   ┃ owner                   ┃ updated           ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩\n│ not a tag               │ WG-12             │ 🚀 ship it 🚀            │ tab     here            │ 0                 │\n│ naïve café              │                   │ 1234567                  │ not a tag               │ WG-12             │\n│ xxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle  │ naïve café              │                   │\n│ xxxxxxxxxxxxxxxxxxxxxxx │                   │ transition table for     │                         │                   │\n│ xxxxxxxxxxxxxx          │                   │ attempts and tasks       │                         │                   │\n│                         │                   │ across all states        │                         │                   │\n│ 数据库迁移の確認と適用  │ école             │                          │ xxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │\n│                         │                   │                          │ xxxxxxxxxxxxxxxxxxxxxxx │                   │\n│                         │                   │                          │ xxxxxxxxxxxxxx          │                   │\n└─────────────────────────┴───────────────────┴──────────────────────────┴─────────────────────────┴───────────────────┘\n"
+      },
+      "rows": [
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "table-5col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                         Tasks                                                          \n┏━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓\n┃ id                      ┃ title             ┃ status                   ┃ owner                   ┃ updated           ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩\n│ not a tag               │ WG-12             │ 🚀 ship it 🚀            │ tab     here            │ 0                 │\n│ naïve café              │                   │ 1234567                  │ not a tag               │ WG-12             │\n│ xxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle  │ naïve café              │                   │\n│ xxxxxxxxxxxxxxxxxxxxxxx │                   │ transition table for     │                         │                   │\n│ xxxxxxxxxxxxxx          │                   │ attempts and tasks       │                         │                   │\n│                         │                   │ across all states        │                         │                   │\n│ 数据库迁移の確認と適用  │ école             │                          │ xxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │\n│                         │                   │                          │ xxxxxxxxxxxxxxxxxxxxxxx │                   │\n│                         │                   │                          │ xxxxxxxxxxxxxx          │                   │\n└─────────────────────────┴───────────────────┴──────────────────────────┴─────────────────────────┴───────────────────┘\n"
+      },
+      "rows": [
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "table-5col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                 ┃ title             ┃ status                                             ┃ owner                                              ┃ updated           ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩\n│ not a tag                                          │ WG-12             │ 🚀 ship it 🚀                                      │ tab     here                                       │ 0                 │\n│ naïve café                                         │                   │ 1234567                                            │ not a tag                                          │ WG-12             │\n│ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle transition table for       │ naïve café                                         │                   │\n│ xxxxxxxxxx                                         │                   │ attempts and tasks across all states               │                                                    │                   │\n│ 数据库迁移の確認と適用                             │ école             │                                                    │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │\n│                                                    │                   │                                                    │ xxxxxxxxxx                                         │                   │\n└────────────────────────────────────────────────────┴───────────────────┴────────────────────────────────────────────────────┴────────────────────────────────────────────────────┴───────────────────┘\n"
+      },
+      "rows": [
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "table-5col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                                                                 Tasks                                                                                                  \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓\n┃ id                                                 ┃ title             ┃ status                                             ┃ owner                                              ┃ updated           ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩\n│ not a tag                                          │ WG-12             │ 🚀 ship it 🚀                                      │ tab     here                                       │ 0                 │\n│ naïve café                                         │                   │ 1234567                                            │ not a tag                                          │ WG-12             │\n│ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle transition table for       │ naïve café                                         │                   │\n│ xxxxxxxxxx                                         │                   │ attempts and tasks across all states               │                                                    │                   │\n│ 数据库迁移の確認と適用                             │ école             │                                                    │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │\n│                                                    │                   │                                                    │ xxxxxxxxxx                                         │                   │\n└────────────────────────────────────────────────────┴───────────────────┴────────────────────────────────────────────────────┴────────────────────────────────────────────────────┴───────────────────┘\n"
+      },
+      "rows": [
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "table-6col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━┳━━━━━━┳━━━━━┳━━━━━━┳━━━━━┳━━━━━━┓\n┃     ┃      ┃     ┃      ┃ upd ┃      ┃\n┃     ┃ titl ┃ sta ┃ owne ┃ ate ┃ prio ┃\n┃ id  ┃ e    ┃ tus ┃ r    ┃ d   ┃ rity ┃\n┡━━━━━╇━━━━━━╇━━━━━╇━━━━━━╇━━━━━╇━━━━━━┩\n│ tra │ Impl │ naï │      │ 123 │ not  │\n│ ili │ emen │ ve  │      │ 456 │ a    │\n│ ng  │ t    │ caf │      │ 7   │ tag  │\n│ bra │ the  │ é   │      │     │      │\n│ cke │ life │     │      │     │      │\n│ t]  │ cycl │     │      │     │      │\n│     │ e    │     │      │     │      │\n│     │ tran │     │      │     │      │\n│     │ siti │     │      │     │      │\n│     │ on   │     │      │     │      │\n│     │ tabl │     │      │     │      │\n│     │ e    │     │      │     │      │\n│     │ for  │     │      │     │      │\n│     │ atte │     │      │     │      │\n│     │ mpts │     │      │     │      │\n│     │  and │     │      │     │      │\n│     │ task │     │      │     │      │\n│     │ s    │     │      │     │      │\n│     │ acro │     │      │     │      │\n│     │ ss   │     │      │     │      │\n│     │ all  │     │      │     │      │\n│     │ stat │     │      │     │      │\n│     │ es   │     │      │     │      │\n│ éco │      │ xxx │ trai │ Imp │ naïv │\n│ le  │      │ xxx │ ling │ lem │ e    │\n│     │      │ xxx │      │ ent │ café │\n│     │      │ xxx │ brac │     │      │\n│     │      │ xxx │ ket] │ the │      │\n│     │      │ xxx │      │ lif │      │\n│     │      │ xxx │      │ ecy │      │\n│     │      │ xxx │      │ cle │      │\n│     │      │ xxx │      │     │      │\n│     │      │ xxx │      │ tra │      │\n│     │      │ xxx │      │ nsi │      │\n│     │      │ xxx │      │ tio │      │\n│     │      │ xxx │      │ n   │      │\n│     │      │ xxx │      │ tab │      │\n│     │      │ xxx │      │ le  │      │\n│     │      │ xxx │      │ for │      │\n│     │      │ xxx │      │ att │      │\n│     │      │ xxx │      │ emp │      │\n│     │      │ xxx │      │ ts  │      │\n│     │      │ xxx │      │ and │      │\n│     │      │     │      │ tas │      │\n│     │      │     │      │ ks  │      │\n│     │      │     │      │ acr │      │\n│     │      │     │      │ oss │      │\n│     │      │     │      │     │      │\n│     │      │     │      │ all │      │\n│     │      │     │      │ sta │      │\n│     │      │     │      │ tes │      │\n│ lit │ word │ 数  │ écol │     │ xxxx │\n│ era │ word │ 据  │ e    │     │ xxxx │\n│ l   │ word │ 库  │      │     │ xxxx │\n│     │ word │ 迁  │      │     │ xxxx │\n│     │ word │ 移  │      │     │ xxxx │\n│     │ word │ の  │      │     │ xxxx │\n│     │ word │ 確  │      │     │ xxxx │\n│     │ word │ 認  │      │     │ xxxx │\n│     │ word │ と  │      │     │ xxxx │\n│     │ word │ 適  │      │     │ xxxx │\n│     │ word │ 用  │      │     │ xxxx │\n│     │ word │     │      │     │ xxxx │\n│     │      │     │      │     │ xxxx │\n│     │      │     │      │     │ xxxx │\n│     │      │     │      │     │ xxxx │\n│ 🚀  │ tab  │ 0   │ lite │ wor │ 数据 │\n│ shi │ here │     │ ral  │ d   │ 库迁 │\n│ p   │      │     │      │ wor │ 移の │\n│ it  │      │     │      │ d   │ 確認 │\n│ 🚀  │      │     │      │ wor │ と適 │\n│     │      │     │      │ d   │ 用   │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n└─────┴──────┴─────┴──────┴─────┴──────┘\n"
+      },
+      "rows": [
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "table-6col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                 Tasks                  \n┏━━━━━┳━━━━━━┳━━━━━┳━━━━━━┳━━━━━┳━━━━━━┓\n┃     ┃      ┃     ┃      ┃ upd ┃      ┃\n┃     ┃ titl ┃ sta ┃ owne ┃ ate ┃ prio ┃\n┃ id  ┃ e    ┃ tus ┃ r    ┃ d   ┃ rity ┃\n┡━━━━━╇━━━━━━╇━━━━━╇━━━━━━╇━━━━━╇━━━━━━┩\n│ tra │ Impl │ naï │      │ 123 │ not  │\n│ ili │ emen │ ve  │      │ 456 │ a    │\n│ ng  │ t    │ caf │      │ 7   │ tag  │\n│ bra │ the  │ é   │      │     │      │\n│ cke │ life │     │      │     │      │\n│ t]  │ cycl │     │      │     │      │\n│     │ e    │     │      │     │      │\n│     │ tran │     │      │     │      │\n│     │ siti │     │      │     │      │\n│     │ on   │     │      │     │      │\n│     │ tabl │     │      │     │      │\n│     │ e    │     │      │     │      │\n│     │ for  │     │      │     │      │\n│     │ atte │     │      │     │      │\n│     │ mpts │     │      │     │      │\n│     │  and │     │      │     │      │\n│     │ task │     │      │     │      │\n│     │ s    │     │      │     │      │\n│     │ acro │     │      │     │      │\n│     │ ss   │     │      │     │      │\n│     │ all  │     │      │     │      │\n│     │ stat │     │      │     │      │\n│     │ es   │     │      │     │      │\n│ éco │      │ xxx │ trai │ Imp │ naïv │\n│ le  │      │ xxx │ ling │ lem │ e    │\n│     │      │ xxx │      │ ent │ café │\n│     │      │ xxx │ brac │     │      │\n│     │      │ xxx │ ket] │ the │      │\n│     │      │ xxx │      │ lif │      │\n│     │      │ xxx │      │ ecy │      │\n│     │      │ xxx │      │ cle │      │\n│     │      │ xxx │      │     │      │\n│     │      │ xxx │      │ tra │      │\n│     │      │ xxx │      │ nsi │      │\n│     │      │ xxx │      │ tio │      │\n│     │      │ xxx │      │ n   │      │\n│     │      │ xxx │      │ tab │      │\n│     │      │ xxx │      │ le  │      │\n│     │      │ xxx │      │ for │      │\n│     │      │ xxx │      │ att │      │\n│     │      │ xxx │      │ emp │      │\n│     │      │ xxx │      │ ts  │      │\n│     │      │ xxx │      │ and │      │\n│     │      │     │      │ tas │      │\n│     │      │     │      │ ks  │      │\n│     │      │     │      │ acr │      │\n│     │      │     │      │ oss │      │\n│     │      │     │      │     │      │\n│     │      │     │      │ all │      │\n│     │      │     │      │ sta │      │\n│     │      │     │      │ tes │      │\n│ lit │ word │ 数  │ écol │     │ xxxx │\n│ era │ word │ 据  │ e    │     │ xxxx │\n│ l   │ word │ 库  │      │     │ xxxx │\n│     │ word │ 迁  │      │     │ xxxx │\n│     │ word │ 移  │      │     │ xxxx │\n│     │ word │ の  │      │     │ xxxx │\n│     │ word │ 確  │      │     │ xxxx │\n│     │ word │ 認  │      │     │ xxxx │\n│     │ word │ と  │      │     │ xxxx │\n│     │ word │ 適  │      │     │ xxxx │\n│     │ word │ 用  │      │     │ xxxx │\n│     │ word │     │      │     │ xxxx │\n│     │      │     │      │     │ xxxx │\n│     │      │     │      │     │ xxxx │\n│     │      │     │      │     │ xxxx │\n│ 🚀  │ tab  │ 0   │ lite │ wor │ 数据 │\n│ shi │ here │     │ ral  │ d   │ 库迁 │\n│ p   │      │     │      │ wor │ 移の │\n│ it  │      │     │      │ d   │ 確認 │\n│ 🚀  │      │     │      │ wor │ と適 │\n│     │      │     │      │ d   │ 用   │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n│     │      │     │      │ wor │      │\n│     │      │     │      │ d   │      │\n└─────┴──────┴─────┴──────┴─────┴──────┘\n"
+      },
+      "rows": [
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "table-6col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ id         ┃ title      ┃ status     ┃ owner      ┃ updated     ┃ priority   ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ tab        │ 0          │ literal    │ word word  │ 数据库迁移  │ école      │\n│ here       │            │            │ word word  │ の確認と適  │            │\n│            │            │            │ word word  │ 用          │            │\n│            │            │            │ word word  │             │            │\n│            │            │            │ word word  │             │            │\n│            │            │            │ word word  │             │            │\n│ not a tag  │ WG-12      │ 🚀 ship it │ tab        │ 0           │ literal    │\n│            │            │ 🚀         │ here       │             │            │\n│ naïve café │            │ 1234567    │ not a tag  │ WG-12       │ 🚀 ship it │\n│            │            │            │            │             │ 🚀         │\n│ xxxxxxxxxx │ trailing   │ Implement  │ naïve café │             │ 1234567    │\n│ xxxxxxxxxx │ bracket]   │ the        │            │             │            │\n│ xxxxxxxxxx │            │ lifecycle  │            │             │            │\n│ xxxxxxxxxx │            │ transition │            │             │            │\n│ xxxxxxxxxx │            │ table for  │            │             │            │\n│ xxxxxxxxxx │            │ attempts   │            │             │            │\n│            │            │ and tasks  │            │             │            │\n│            │            │ across all │            │             │            │\n│            │            │ states     │            │             │            │\n└────────────┴────────────┴────────────┴────────────┴─────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "table-6col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                     Tasks                                      \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ id         ┃ title      ┃ status     ┃ owner      ┃ updated     ┃ priority   ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ tab        │ 0          │ literal    │ word word  │ 数据库迁移  │ école      │\n│ here       │            │            │ word word  │ の確認と適  │            │\n│            │            │            │ word word  │ 用          │            │\n│            │            │            │ word word  │             │            │\n│            │            │            │ word word  │             │            │\n│            │            │            │ word word  │             │            │\n│ not a tag  │ WG-12      │ 🚀 ship it │ tab        │ 0           │ literal    │\n│            │            │ 🚀         │ here       │             │            │\n│ naïve café │            │ 1234567    │ not a tag  │ WG-12       │ 🚀 ship it │\n│            │            │            │            │             │ 🚀         │\n│ xxxxxxxxxx │ trailing   │ Implement  │ naïve café │             │ 1234567    │\n│ xxxxxxxxxx │ bracket]   │ the        │            │             │            │\n│ xxxxxxxxxx │            │ lifecycle  │            │             │            │\n│ xxxxxxxxxx │            │ transition │            │             │            │\n│ xxxxxxxxxx │            │ table for  │            │             │            │\n│ xxxxxxxxxx │            │ attempts   │            │             │            │\n│            │            │ and tasks  │            │             │            │\n│            │            │ across all │            │             │            │\n│            │            │ states     │            │             │            │\n└────────────┴────────────┴────────────┴────────────┴─────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "table-6col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃ title             ┃ status            ┃ owner             ┃ updated           ┃ priority         ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩\n│ trailing bracket] │ Implement the     │ naïve café        │                   │ 1234567           │ not a tag        │\n│                   │ lifecycle         │                   │                   │                   │                  │\n│                   │ transition table  │                   │                   │                   │                  │\n│                   │ for attempts and  │                   │                   │                   │                  │\n│                   │ tasks across all  │                   │                   │                   │                  │\n│                   │ states            │                   │                   │                   │                  │\n│ école             │                   │ xxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the     │ naïve café       │\n│                   │                   │ xxxxxxxxxxxxxxxxx │                   │ lifecycle         │                  │\n│                   │                   │ xxxxxxxxxxxxxxxxx │                   │ transition table  │                  │\n│                   │                   │ xxxxxxxxx         │                   │ for attempts and  │                  │\n│                   │                   │                   │                   │ tasks across all  │                  │\n│                   │                   │                   │                   │ states            │                  │\n│ literal           │ word word word    │ 数据库迁移の確認  │ école             │                   │ xxxxxxxxxxxxxxxx │\n│                   │ word word word    │ と適用            │                   │                   │ xxxxxxxxxxxxxxxx │\n│                   │ word word word    │                   │                   │                   │ xxxxxxxxxxxxxxxx │\n│                   │ word word word    │                   │                   │                   │ xxxxxxxxxxxx     │\n│ 🚀 ship it 🚀     │ tab     here      │ 0                 │ literal           │ word word word    │ 数据库迁移の確認 │\n│                   │                   │                   │                   │ word word word    │ と適用           │\n│                   │                   │                   │                   │ word word word    │                  │\n│                   │                   │                   │                   │ word word word    │                  │\n└───────────────────┴───────────────────┴───────────────────┴───────────────────┴───────────────────┴──────────────────┘\n"
+      },
+      "rows": [
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "table-6col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                         Tasks                                                          \n┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃ title             ┃ status            ┃ owner             ┃ updated           ┃ priority         ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩\n│ trailing bracket] │ Implement the     │ naïve café        │                   │ 1234567           │ not a tag        │\n│                   │ lifecycle         │                   │                   │                   │                  │\n│                   │ transition table  │                   │                   │                   │                  │\n│                   │ for attempts and  │                   │                   │                   │                  │\n│                   │ tasks across all  │                   │                   │                   │                  │\n│                   │ states            │                   │                   │                   │                  │\n│ école             │                   │ xxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the     │ naïve café       │\n│                   │                   │ xxxxxxxxxxxxxxxxx │                   │ lifecycle         │                  │\n│                   │                   │ xxxxxxxxxxxxxxxxx │                   │ transition table  │                  │\n│                   │                   │ xxxxxxxxx         │                   │ for attempts and  │                  │\n│                   │                   │                   │                   │ tasks across all  │                  │\n│                   │                   │                   │                   │ states            │                  │\n│ literal           │ word word word    │ 数据库迁移の確認  │ école             │                   │ xxxxxxxxxxxxxxxx │\n│                   │ word word word    │ と適用            │                   │                   │ xxxxxxxxxxxxxxxx │\n│                   │ word word word    │                   │                   │                   │ xxxxxxxxxxxxxxxx │\n│                   │ word word word    │                   │                   │                   │ xxxxxxxxxxxx     │\n│ 🚀 ship it 🚀     │ tab     here      │ 0                 │ literal           │ word word word    │ 数据库迁移の確認 │\n│                   │                   │                   │                   │ word word word    │ と適用           │\n│                   │                   │                   │                   │ word word word    │                  │\n│                   │                   │                   │                   │ word word word    │                  │\n└───────────────────┴───────────────────┴───────────────────┴───────────────────┴───────────────────┴──────────────────┘\n"
+      },
+      "rows": [
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "table-6col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃ title                                 ┃ status                                ┃ owner             ┃ updated                              ┃ priority                              ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ trailing bracket] │ Implement the lifecycle transition    │ naïve café                            │                   │ 1234567                              │ not a tag                             │\n│                   │ table for attempts and tasks across   │                                       │                   │                                      │                                       │\n│                   │ all states                            │                                       │                   │                                      │                                       │\n│ école             │                                       │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle transition   │ naïve café                            │\n│                   │                                       │ xxxxxxxxxxxxxxxxxxxxxxx               │                   │ table for attempts and tasks across  │                                       │\n│                   │                                       │                                       │                   │ all states                           │                                       │\n│ literal           │ word word word word word word word    │ 数据库迁移の確認と適用                │ école             │                                      │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │\n│                   │ word word word word word              │                                       │                   │                                      │ xxxxxxxxxxxxxxxxxxxxxxx               │\n│ 🚀 ship it 🚀     │ tab     here                          │ 0                                     │ literal           │ word word word word word word word   │ 数据库迁移の確認と適用                │\n│                   │                                       │                                       │                   │ word word word word word             │                                       │\n└───────────────────┴───────────────────────────────────────┴───────────────────────────────────────┴───────────────────┴──────────────────────────────────────┴───────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "table-6col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                                                                 Tasks                                                                                                  \n┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                ┃ title                                 ┃ status                                ┃ owner             ┃ updated                              ┃ priority                              ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ trailing bracket] │ Implement the lifecycle transition    │ naïve café                            │                   │ 1234567                              │ not a tag                             │\n│                   │ table for attempts and tasks across   │                                       │                   │                                      │                                       │\n│                   │ all states                            │                                       │                   │                                      │                                       │\n│ école             │                                       │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle transition   │ naïve café                            │\n│                   │                                       │ xxxxxxxxxxxxxxxxxxxxxxx               │                   │ table for attempts and tasks across  │                                       │\n│                   │                                       │                                       │                   │ all states                           │                                       │\n│ literal           │ word word word word word word word    │ 数据库迁移の確認と適用                │ école             │                                      │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │\n│                   │ word word word word word              │                                       │                   │                                      │ xxxxxxxxxxxxxxxxxxxxxxx               │\n│ 🚀 ship it 🚀     │ tab     here                          │ 0                                     │ literal           │ word word word word word word word   │ 数据库迁移の確認と適用                │\n│                   │                                       │                                       │                   │ word word word word word             │                                       │\n└───────────────────┴───────────────────────────────────────┴───────────────────────────────────────┴───────────────────┴──────────────────────────────────────┴───────────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "table-7col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━┳━━━━━┳━━━━┳━━━━━┳━━━━┳━━━━━┳━━━━┓\n┃     ┃     ┃    ┃     ┃ up ┃     ┃    ┃\n┃     ┃     ┃ st ┃     ┃ da ┃ pri ┃ ра ┃\n┃     ┃ tit ┃ at ┃ own ┃ te ┃ ori ┃ зм ┃\n┃ id  ┃ le  ┃ us ┃ er  ┃ d  ┃ ty  ┃ ер ┃\n┡━━━━━╇━━━━━╇━━━━╇━━━━━╇━━━━╇━━━━━╇━━━━┩\n│ wor │ 数  │ éc │     │ xx │ tra │ Im │\n│ d   │ 据  │ ol │     │ xx │ ili │ pl │\n│ wor │ 库  │ e  │     │ xx │ ng  │ em │\n│ d   │ 迁  │    │     │ xx │ bra │ en │\n│ wor │ 移  │    │     │ xx │ cke │ t  │\n│ d   │ の  │    │     │ xx │ t]  │ th │\n│ wor │ 確  │    │     │ xx │     │ e  │\n│ d   │ 認  │    │     │ xx │     │ li │\n│ wor │ と  │    │     │ xx │     │ fe │\n│ d   │ 適  │    │     │ xx │     │ cy │\n│ wor │ 用  │    │     │ xx │     │ cl │\n│ d   │     │    │     │ xx │     │ e  │\n│ wor │     │    │     │ xx │     │ tr │\n│ d   │     │    │     │ xx │     │ an │\n│ wor │     │    │     │ xx │     │ si │\n│ d   │     │    │     │ xx │     │ ti │\n│ wor │     │    │     │ xx │     │ on │\n│ d   │     │    │     │ xx │     │    │\n│ wor │     │    │     │ xx │     │ ta │\n│ d   │     │    │     │ xx │     │ bl │\n│ wor │     │    │     │ xx │     │ e  │\n│ d   │     │    │     │ xx │     │ fo │\n│ wor │     │    │     │ xx │     │ r  │\n│ d   │     │    │     │ xx │     │ at │\n│     │     │    │     │ xx │     │ te │\n│     │     │    │     │ xx │     │ mp │\n│     │     │    │     │ xx │     │ ts │\n│     │     │    │     │ xx │     │    │\n│     │     │    │     │ xx │     │ an │\n│     │     │    │     │ xx │     │ d  │\n│     │     │    │     │    │     │ ta │\n│     │     │    │     │    │     │ sk │\n│     │     │    │     │    │     │ s  │\n│     │     │    │     │    │     │ ac │\n│     │     │    │     │    │     │ ro │\n│     │     │    │     │    │     │ ss │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ al │\n│     │     │    │     │    │     │ l  │\n│     │     │    │     │    │     │ st │\n│     │     │    │     │    │     │ at │\n│     │     │    │     │    │     │ es │\n│ tab │ 0   │ li │ wor │ 数 │ éco │    │\n│ her │     │ te │ d   │ 据 │ le  │    │\n│ e   │     │ ra │ wor │ 库 │     │    │\n│     │     │ l  │ d   │ 迁 │     │    │\n│     │     │    │ wor │ 移 │     │    │\n│     │     │    │ d   │ の │     │    │\n│     │     │    │ wor │ 確 │     │    │\n│     │     │    │ d   │ 認 │     │    │\n│     │     │    │ wor │ と │     │    │\n│     │     │    │ d   │ 適 │     │    │\n│     │     │    │ wor │ 用 │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│ not │ WG- │ 🚀 │ tab │ 0  │ lit │ wo │\n│ a   │ 12  │ sh │ her │    │ era │ rd │\n│ tag │     │ ip │ e   │    │ l   │    │\n│     │     │    │     │    │     │ wo │\n│     │     │ it │     │    │     │ rd │\n│     │     │ 🚀 │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│ naï │     │ 12 │ not │ WG │ 🚀  │ ta │\n│ ve  │     │ 34 │ a   │ -1 │ shi │ b  │\n│ caf │     │ 56 │ tag │ 2  │ p   │    │\n│ é   │     │ 7  │     │    │ it  │    │\n│     │     │    │     │    │ 🚀  │ he │\n│     │     │    │     │    │     │ re │\n└─────┴─────┴────┴─────┴────┴─────┴────┘\n"
+      },
+      "rows": [
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "table-7col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                 Tasks                  \n┏━━━━━┳━━━━━┳━━━━┳━━━━━┳━━━━┳━━━━━┳━━━━┓\n┃     ┃     ┃    ┃     ┃ up ┃     ┃    ┃\n┃     ┃     ┃ st ┃     ┃ da ┃ pri ┃ ра ┃\n┃     ┃ tit ┃ at ┃ own ┃ te ┃ ori ┃ зм ┃\n┃ id  ┃ le  ┃ us ┃ er  ┃ d  ┃ ty  ┃ ер ┃\n┡━━━━━╇━━━━━╇━━━━╇━━━━━╇━━━━╇━━━━━╇━━━━┩\n│ wor │ 数  │ éc │     │ xx │ tra │ Im │\n│ d   │ 据  │ ol │     │ xx │ ili │ pl │\n│ wor │ 库  │ e  │     │ xx │ ng  │ em │\n│ d   │ 迁  │    │     │ xx │ bra │ en │\n│ wor │ 移  │    │     │ xx │ cke │ t  │\n│ d   │ の  │    │     │ xx │ t]  │ th │\n│ wor │ 確  │    │     │ xx │     │ e  │\n│ d   │ 認  │    │     │ xx │     │ li │\n│ wor │ と  │    │     │ xx │     │ fe │\n│ d   │ 適  │    │     │ xx │     │ cy │\n│ wor │ 用  │    │     │ xx │     │ cl │\n│ d   │     │    │     │ xx │     │ e  │\n│ wor │     │    │     │ xx │     │ tr │\n│ d   │     │    │     │ xx │     │ an │\n│ wor │     │    │     │ xx │     │ si │\n│ d   │     │    │     │ xx │     │ ti │\n│ wor │     │    │     │ xx │     │ on │\n│ d   │     │    │     │ xx │     │    │\n│ wor │     │    │     │ xx │     │ ta │\n│ d   │     │    │     │ xx │     │ bl │\n│ wor │     │    │     │ xx │     │ e  │\n│ d   │     │    │     │ xx │     │ fo │\n│ wor │     │    │     │ xx │     │ r  │\n│ d   │     │    │     │ xx │     │ at │\n│     │     │    │     │ xx │     │ te │\n│     │     │    │     │ xx │     │ mp │\n│     │     │    │     │ xx │     │ ts │\n│     │     │    │     │ xx │     │    │\n│     │     │    │     │ xx │     │ an │\n│     │     │    │     │ xx │     │ d  │\n│     │     │    │     │    │     │ ta │\n│     │     │    │     │    │     │ sk │\n│     │     │    │     │    │     │ s  │\n│     │     │    │     │    │     │ ac │\n│     │     │    │     │    │     │ ro │\n│     │     │    │     │    │     │ ss │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ al │\n│     │     │    │     │    │     │ l  │\n│     │     │    │     │    │     │ st │\n│     │     │    │     │    │     │ at │\n│     │     │    │     │    │     │ es │\n│ tab │ 0   │ li │ wor │ 数 │ éco │    │\n│ her │     │ te │ d   │ 据 │ le  │    │\n│ e   │     │ ra │ wor │ 库 │     │    │\n│     │     │ l  │ d   │ 迁 │     │    │\n│     │     │    │ wor │ 移 │     │    │\n│     │     │    │ d   │ の │     │    │\n│     │     │    │ wor │ 確 │     │    │\n│     │     │    │ d   │ 認 │     │    │\n│     │     │    │ wor │ と │     │    │\n│     │     │    │ d   │ 適 │     │    │\n│     │     │    │ wor │ 用 │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│     │     │    │ wor │    │     │    │\n│     │     │    │ d   │    │     │    │\n│ not │ WG- │ 🚀 │ tab │ 0  │ lit │ wo │\n│ a   │ 12  │ sh │ her │    │ era │ rd │\n│ tag │     │ ip │ e   │    │ l   │    │\n│     │     │    │     │    │     │ wo │\n│     │     │ it │     │    │     │ rd │\n│     │     │ 🚀 │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│     │     │    │     │    │     │ wo │\n│     │     │    │     │    │     │ rd │\n│     │     │    │     │    │     │    │\n│ naï │     │ 12 │ not │ WG │ 🚀  │ ta │\n│ ve  │     │ 34 │ a   │ -1 │ shi │ b  │\n│ caf │     │ 56 │ tag │ 2  │ p   │    │\n│ é   │     │ 7  │     │    │ it  │    │\n│     │     │    │     │    │ 🚀  │ he │\n│     │     │    │     │    │     │ re │\n└─────┴─────┴────┴─────┴────┴─────┴────┘\n"
+      },
+      "rows": [
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "table-7col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┓\n┃ id       ┃ title    ┃ status   ┃ owner     ┃ updated  ┃ priority  ┃ размер   ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━┩\n│          │ 1234567  │ not a    │ WG-12     │ 🚀 ship  │ tab       │ 0        │\n│          │          │ tag      │           │ it 🚀    │ here      │          │\n│ trailing │ Implemen │ naïve    │           │ 1234567  │ not a tag │ WG-12    │\n│ bracket] │ t the    │ café     │           │          │           │          │\n│          │ lifecycl │          │           │          │           │          │\n│          │ e        │          │           │          │           │          │\n│          │ transiti │          │           │          │           │          │\n│          │ on table │          │           │          │           │          │\n│          │ for      │          │           │          │           │          │\n│          │ attempts │          │           │          │           │          │\n│          │ and      │          │           │          │           │          │\n│          │ tasks    │          │           │          │           │          │\n│          │ across   │          │           │          │           │          │\n│          │ all      │          │           │          │           │          │\n│          │ states   │          │           │          │           │          │\n│ école    │          │ xxxxxxxx │ trailing  │ Implemen │ naïve     │          │\n│          │          │ xxxxxxxx │ bracket]  │ t the    │ café      │          │\n│          │          │ xxxxxxxx │           │ lifecycl │           │          │\n│          │          │ xxxxxxxx │           │ e        │           │          │\n│          │          │ xxxxxxxx │           │ transiti │           │          │\n│          │          │ xxxxxxxx │           │ on table │           │          │\n│          │          │ xxxxxxxx │           │ for      │           │          │\n│          │          │ xxxx     │           │ attempts │           │          │\n│          │          │          │           │ and      │           │          │\n│          │          │          │           │ tasks    │           │          │\n│          │          │          │           │ across   │           │          │\n│          │          │          │           │ all      │           │          │\n│          │          │          │           │ states   │           │          │\n│ literal  │ word     │ 数据库迁 │ école     │          │ xxxxxxxxx │ trailing │\n│          │ word     │ 移の確認 │           │          │ xxxxxxxxx │ bracket] │\n│          │ word     │ と適用   │           │          │ xxxxxxxxx │          │\n│          │ word     │          │           │          │ xxxxxxxxx │          │\n│          │ word     │          │           │          │ xxxxxxxxx │          │\n│          │ word     │          │           │          │ xxxxxxxxx │          │\n│          │ word     │          │           │          │ xxxxxx    │          │\n│          │ word     │          │           │          │           │          │\n│          │ word     │          │           │          │           │          │\n│          │ word     │          │           │          │           │          │\n│          │ word     │          │           │          │           │          │\n│          │ word     │          │           │          │           │          │\n└──────────┴──────────┴──────────┴───────────┴──────────┴───────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "table-7col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                     Tasks                                      \n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┓\n┃ id       ┃ title    ┃ status   ┃ owner     ┃ updated  ┃ priority  ┃ размер   ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━┩\n│          │ 1234567  │ not a    │ WG-12     │ 🚀 ship  │ tab       │ 0        │\n│          │          │ tag      │           │ it 🚀    │ here      │          │\n│ trailing │ Implemen │ naïve    │           │ 1234567  │ not a tag │ WG-12    │\n│ bracket] │ t the    │ café     │           │          │           │          │\n│          │ lifecycl │          │           │          │           │          │\n│          │ e        │          │           │          │           │          │\n│          │ transiti │          │           │          │           │          │\n│          │ on table │          │           │          │           │          │\n│          │ for      │          │           │          │           │          │\n│          │ attempts │          │           │          │           │          │\n│          │ and      │          │           │          │           │          │\n│          │ tasks    │          │           │          │           │          │\n│          │ across   │          │           │          │           │          │\n│          │ all      │          │           │          │           │          │\n│          │ states   │          │           │          │           │          │\n│ école    │          │ xxxxxxxx │ trailing  │ Implemen │ naïve     │          │\n│          │          │ xxxxxxxx │ bracket]  │ t the    │ café      │          │\n│          │          │ xxxxxxxx │           │ lifecycl │           │          │\n│          │          │ xxxxxxxx │           │ e        │           │          │\n│          │          │ xxxxxxxx │           │ transiti │           │          │\n│          │          │ xxxxxxxx │           │ on table │           │          │\n│          │          │ xxxxxxxx │           │ for      │           │          │\n│          │          │ xxxx     │           │ attempts │           │          │\n│          │          │          │           │ and      │           │          │\n│          │          │          │           │ tasks    │           │          │\n│          │          │          │           │ across   │           │          │\n│          │          │          │           │ all      │           │          │\n│          │          │          │           │ states   │           │          │\n│ literal  │ word     │ 数据库迁 │ école     │          │ xxxxxxxxx │ trailing │\n│          │ word     │ 移の確認 │           │          │ xxxxxxxxx │ bracket] │\n│          │ word     │ と適用   │           │          │ xxxxxxxxx │          │\n│          │ word     │          │           │          │ xxxxxxxxx │          │\n│          │ word     │          │           │          │ xxxxxxxxx │          │\n│          │ word     │          │           │          │ xxxxxxxxx │          │\n│          │ word     │          │           │          │ xxxxxx    │          │\n│          │ word     │          │           │          │           │          │\n│          │ word     │          │           │          │           │          │\n│          │ word     │          │           │          │           │          │\n│          │ word     │          │           │          │           │          │\n│          │ word     │          │           │          │           │          │\n└──────────┴──────────┴──────────┴───────────┴──────────┴───────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0
+        ],
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null
+        ],
+        [
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "table-7col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓\n┃ id             ┃ title          ┃ status        ┃ owner          ┃ updated        ┃ priority        ┃ размер         ┃\n┡━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━┩\n│ word word word │ 数据库迁移の確 │ école         │                │ xxxxxxxxxxxxxx │ trailing        │ Implement the  │\n│ word word word │ 認と適用       │               │                │ xxxxxxxxxxxxxx │ bracket]        │ lifecycle      │\n│ word word word │                │               │                │ xxxxxxxxxxxxxx │                 │ transition     │\n│ word word word │                │               │                │ xxxxxxxxxxxxxx │                 │ table for      │\n│                │                │               │                │ xxxx           │                 │ attempts and   │\n│                │                │               │                │                │                 │ tasks across   │\n│                │                │               │                │                │                 │ all states     │\n│ tab     here   │ 0              │ literal       │ word word word │ 数据库迁移の確 │ école           │                │\n│                │                │               │ word word word │ 認と適用       │                 │                │\n│                │                │               │ word word word │                │                 │                │\n│                │                │               │ word word word │                │                 │                │\n│ not a tag      │ WG-12          │ 🚀 ship it 🚀 │ tab     here   │ 0              │ literal         │ word word word │\n│                │                │               │                │                │                 │ word word word │\n│                │                │               │                │                │                 │ word word word │\n│                │                │               │                │                │                 │ word word word │\n│ naïve café     │                │ 1234567       │ not a tag      │ WG-12          │ 🚀 ship it 🚀   │ tab     here   │\n└────────────────┴────────────────┴───────────────┴────────────────┴────────────────┴─────────────────┴────────────────┘\n"
+      },
+      "rows": [
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "table-7col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                         Tasks                                                          \n┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓\n┃ id             ┃ title          ┃ status        ┃ owner          ┃ updated        ┃ priority        ┃ размер         ┃\n┡━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━┩\n│ word word word │ 数据库迁移の確 │ école         │                │ xxxxxxxxxxxxxx │ trailing        │ Implement the  │\n│ word word word │ 認と適用       │               │                │ xxxxxxxxxxxxxx │ bracket]        │ lifecycle      │\n│ word word word │                │               │                │ xxxxxxxxxxxxxx │                 │ transition     │\n│ word word word │                │               │                │ xxxxxxxxxxxxxx │                 │ table for      │\n│                │                │               │                │ xxxx           │                 │ attempts and   │\n│                │                │               │                │                │                 │ tasks across   │\n│                │                │               │                │                │                 │ all states     │\n│ tab     here   │ 0              │ literal       │ word word word │ 数据库迁移の確 │ école           │                │\n│                │                │               │ word word word │ 認と適用       │                 │                │\n│                │                │               │ word word word │                │                 │                │\n│                │                │               │ word word word │                │                 │                │\n│ not a tag      │ WG-12          │ 🚀 ship it 🚀 │ tab     here   │ 0              │ literal         │ word word word │\n│                │                │               │                │                │                 │ word word word │\n│                │                │               │                │                │                 │ word word word │\n│                │                │               │                │                │                 │ word word word │\n│ naïve café     │                │ 1234567       │ not a tag      │ WG-12          │ 🚀 ship it 🚀   │ tab     here   │\n└────────────────┴────────────────┴───────────────┴────────────────┴────────────────┴─────────────────┴────────────────┘\n"
+      },
+      "rows": [
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "table-7col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                               ┃ title                  ┃ status        ┃ owner                           ┃ updated                          ┃ priority          ┃ размер                          ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ word word word word word word    │ 数据库迁移の確認と適用 │ école         │                                 │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle         │\n│ word word word word word word    │                        │               │                                 │ xxxxxxxxxxxxxxxxxxxxxxxxxxxx     │                   │ transition table for attempts   │\n│                                  │                        │               │                                 │                                  │                   │ and tasks across all states     │\n│ tab     here                     │ 0                      │ literal       │ word word word word word word   │ 数据库迁移の確認と適用           │ école             │                                 │\n│                                  │                        │               │ word word word word word word   │                                  │                   │                                 │\n│ not a tag                        │ WG-12                  │ 🚀 ship it 🚀 │ tab     here                    │ 0                                │ literal           │ word word word word word word   │\n│                                  │                        │               │                                 │                                  │                   │ word word word word word word   │\n│ naïve café                       │                        │ 1234567       │ not a tag                       │ WG-12                            │ 🚀 ship it 🚀     │ tab     here                    │\n└──────────────────────────────────┴────────────────────────┴───────────────┴─────────────────────────────────┴──────────────────────────────────┴───────────────────┴─────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "table-7col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                                                                 Tasks                                                                                                  \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ id                               ┃ title                  ┃ status        ┃ owner                           ┃ updated                          ┃ priority          ┃ размер                          ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ word word word word word word    │ 数据库迁移の確認と適用 │ école         │                                 │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle         │\n│ word word word word word word    │                        │               │                                 │ xxxxxxxxxxxxxxxxxxxxxxxxxxxx     │                   │ transition table for attempts   │\n│                                  │                        │               │                                 │                                  │                   │ and tasks across all states     │\n│ tab     here                     │ 0                      │ literal       │ word word word word word word   │ 数据库迁移の確認と適用           │ école             │                                 │\n│                                  │                        │               │ word word word word word word   │                                  │                   │                                 │\n│ not a tag                        │ WG-12                  │ 🚀 ship it 🚀 │ tab     here                    │ 0                                │ literal           │ word word word word word word   │\n│                                  │                        │               │                                 │                                  │                   │ word word word word word word   │\n│ naïve café                       │                        │ 1234567       │ not a tag                       │ WG-12                            │ 🚀 ship it 🚀     │ tab     here                    │\n└──────────────────────────────────┴────────────────────────┴───────────────┴─────────────────────────────────┴──────────────────────────────────┴───────────────────┴─────────────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          ""
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word "
+        ],
+        [
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "table-8col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━┳━━━━┓\n┃    ┃    ┃    ┃    ┃    ┃    ┃ р ┃    ┃\n┃    ┃    ┃    ┃    ┃    ┃    ┃ а ┃    ┃\n┃    ┃    ┃    ┃    ┃ up ┃ pr ┃ з ┃    ┃\n┃    ┃ ti ┃ st ┃ ow ┃ da ┃ io ┃ м ┃    ┃\n┃    ┃ tl ┃ at ┃ ne ┃ te ┃ ri ┃ е ┃ 标 ┃\n┃ id ┃ e  ┃ us ┃ r  ┃ d  ┃ ty ┃ р ┃ 签 ┃\n┡━━━━╇━━━━╇━━━━╇━━━━╇━━━━╇━━━━╇━━━╇━━━━┩\n│ WG │ 🚀 │ ta │ 0  │ li │ wo │   │ éc │\n│ -1 │ sh │ b  │    │ te │ rd │   │ ol │\n│ 2  │ ip │    │    │ ra │    │   │ e  │\n│    │    │    │    │ l  │ wo │   │    │\n│    │ it │ he │    │    │ rd │   │    │\n│    │ 🚀 │ re │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │ 12 │ no │ WG │ 🚀 │ ta │ 0 │ li │\n│    │ 34 │ t  │ -1 │ sh │ b  │   │ te │\n│    │ 56 │ a  │ 2  │ ip │    │   │ ra │\n│    │ 7  │ ta │    │    │    │   │ l  │\n│    │    │ g  │    │ it │ he │   │    │\n│    │    │    │    │ 🚀 │ re │   │    │\n│ tr │ Im │ na │    │ 12 │ no │ W │ 🚀 │\n│ ai │ pl │ ïv │    │ 34 │ t  │ G │ sh │\n│ li │ em │ e  │    │ 56 │ a  │ - │ ip │\n│ ng │ en │ ca │    │ 7  │ ta │ 1 │    │\n│    │ t  │ fé │    │    │ g  │ 2 │ it │\n│ br │ th │    │    │    │    │   │ 🚀 │\n│ ac │ e  │    │    │    │    │   │    │\n│ ke │ li │    │    │    │    │   │    │\n│ t] │ fe │    │    │    │    │   │    │\n│    │ cy │    │    │    │    │   │    │\n│    │ cl │    │    │    │    │   │    │\n│    │ e  │    │    │    │    │   │    │\n│    │ tr │    │    │    │    │   │    │\n│    │ an │    │    │    │    │   │    │\n│    │ si │    │    │    │    │   │    │\n│    │ ti │    │    │    │    │   │    │\n│    │ on │    │    │    │    │   │    │\n│    │    │    │    │    │    │   │    │\n│    │ ta │    │    │    │    │   │    │\n│    │ bl │    │    │    │    │   │    │\n│    │ e  │    │    │    │    │   │    │\n│    │ fo │    │    │    │    │   │    │\n│    │ r  │    │    │    │    │   │    │\n│    │ at │    │    │    │    │   │    │\n│    │ te │    │    │    │    │   │    │\n│    │ mp │    │    │    │    │   │    │\n│    │ ts │    │    │    │    │   │    │\n│    │    │    │    │    │    │   │    │\n│    │ an │    │    │    │    │   │    │\n│    │ d  │    │    │    │    │   │    │\n│    │ ta │    │    │    │    │   │    │\n│    │ sk │    │    │    │    │   │    │\n│    │ s  │    │    │    │    │   │    │\n│    │ ac │    │    │    │    │   │    │\n│    │ ro │    │    │    │    │   │    │\n│    │ ss │    │    │    │    │   │    │\n│    │    │    │    │    │    │   │    │\n│    │ al │    │    │    │    │   │    │\n│    │ l  │    │    │    │    │   │    │\n│    │ st │    │    │    │    │   │    │\n│    │ at │    │    │    │    │   │    │\n│    │ es │    │    │    │    │   │    │\n│ éc │    │ xx │ tr │ Im │ na │   │ 12 │\n│ ol │    │ xx │ ai │ pl │ ïv │   │ 34 │\n│ e  │    │ xx │ li │ em │ e  │   │ 56 │\n│    │    │ xx │ ng │ en │ ca │   │ 7  │\n│    │    │ xx │    │ t  │ fé │   │    │\n│    │    │ xx │ br │ th │    │   │    │\n│    │    │ xx │ ac │ e  │    │   │    │\n│    │    │ xx │ ke │ li │    │   │    │\n│    │    │ xx │ t] │ fe │    │   │    │\n│    │    │ xx │    │ cy │    │   │    │\n│    │    │ xx │    │ cl │    │   │    │\n│    │    │ xx │    │ e  │    │   │    │\n│    │    │ xx │    │ tr │    │   │    │\n│    │    │ xx │    │ an │    │   │    │\n│    │    │ xx │    │ si │    │   │    │\n│    │    │ xx │    │ ti │    │   │    │\n│    │    │ xx │    │ on │    │   │    │\n│    │    │ xx │    │    │    │   │    │\n│    │    │ xx │    │ ta │    │   │    │\n│    │    │ xx │    │ bl │    │   │    │\n│    │    │ xx │    │ e  │    │   │    │\n│    │    │ xx │    │ fo │    │   │    │\n│    │    │ xx │    │ r  │    │   │    │\n│    │    │ xx │    │ at │    │   │    │\n│    │    │ xx │    │ te │    │   │    │\n│    │    │ xx │    │ mp │    │   │    │\n│    │    │ xx │    │ ts │    │   │    │\n│    │    │ xx │    │    │    │   │    │\n│    │    │ xx │    │ an │    │   │    │\n│    │    │ xx │    │ d  │    │   │    │\n│    │    │    │    │ ta │    │   │    │\n│    │    │    │    │ sk │    │   │    │\n│    │    │    │    │ s  │    │   │    │\n│    │    │    │    │ ac │    │   │    │\n│    │    │    │    │ ro │    │   │    │\n│    │    │    │    │ ss │    │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │ al │    │   │    │\n│    │    │    │    │ l  │    │   │    │\n│    │    │    │    │ st │    │   │    │\n│    │    │    │    │ at │    │   │    │\n│    │    │    │    │ es │    │   │    │\n└────┴────┴────┴────┴────┴────┴───┴────┘\n"
+      },
+      "rows": [
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "table-8col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                 Tasks                  \n┏━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━━┳━━━┳━━━━┓\n┃    ┃    ┃    ┃    ┃    ┃    ┃ р ┃    ┃\n┃    ┃    ┃    ┃    ┃    ┃    ┃ а ┃    ┃\n┃    ┃    ┃    ┃    ┃ up ┃ pr ┃ з ┃    ┃\n┃    ┃ ti ┃ st ┃ ow ┃ da ┃ io ┃ м ┃    ┃\n┃    ┃ tl ┃ at ┃ ne ┃ te ┃ ri ┃ е ┃ 标 ┃\n┃ id ┃ e  ┃ us ┃ r  ┃ d  ┃ ty ┃ р ┃ 签 ┃\n┡━━━━╇━━━━╇━━━━╇━━━━╇━━━━╇━━━━╇━━━╇━━━━┩\n│ WG │ 🚀 │ ta │ 0  │ li │ wo │   │ éc │\n│ -1 │ sh │ b  │    │ te │ rd │   │ ol │\n│ 2  │ ip │    │    │ ra │    │   │ e  │\n│    │    │    │    │ l  │ wo │   │    │\n│    │ it │ he │    │    │ rd │   │    │\n│    │ 🚀 │ re │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │    │ wo │   │    │\n│    │    │    │    │    │ rd │   │    │\n│    │    │    │    │    │    │   │    │\n│    │ 12 │ no │ WG │ 🚀 │ ta │ 0 │ li │\n│    │ 34 │ t  │ -1 │ sh │ b  │   │ te │\n│    │ 56 │ a  │ 2  │ ip │    │   │ ra │\n│    │ 7  │ ta │    │    │    │   │ l  │\n│    │    │ g  │    │ it │ he │   │    │\n│    │    │    │    │ 🚀 │ re │   │    │\n│ tr │ Im │ na │    │ 12 │ no │ W │ 🚀 │\n│ ai │ pl │ ïv │    │ 34 │ t  │ G │ sh │\n│ li │ em │ e  │    │ 56 │ a  │ - │ ip │\n│ ng │ en │ ca │    │ 7  │ ta │ 1 │    │\n│    │ t  │ fé │    │    │ g  │ 2 │ it │\n│ br │ th │    │    │    │    │   │ 🚀 │\n│ ac │ e  │    │    │    │    │   │    │\n│ ke │ li │    │    │    │    │   │    │\n│ t] │ fe │    │    │    │    │   │    │\n│    │ cy │    │    │    │    │   │    │\n│    │ cl │    │    │    │    │   │    │\n│    │ e  │    │    │    │    │   │    │\n│    │ tr │    │    │    │    │   │    │\n│    │ an │    │    │    │    │   │    │\n│    │ si │    │    │    │    │   │    │\n│    │ ti │    │    │    │    │   │    │\n│    │ on │    │    │    │    │   │    │\n│    │    │    │    │    │    │   │    │\n│    │ ta │    │    │    │    │   │    │\n│    │ bl │    │    │    │    │   │    │\n│    │ e  │    │    │    │    │   │    │\n│    │ fo │    │    │    │    │   │    │\n│    │ r  │    │    │    │    │   │    │\n│    │ at │    │    │    │    │   │    │\n│    │ te │    │    │    │    │   │    │\n│    │ mp │    │    │    │    │   │    │\n│    │ ts │    │    │    │    │   │    │\n│    │    │    │    │    │    │   │    │\n│    │ an │    │    │    │    │   │    │\n│    │ d  │    │    │    │    │   │    │\n│    │ ta │    │    │    │    │   │    │\n│    │ sk │    │    │    │    │   │    │\n│    │ s  │    │    │    │    │   │    │\n│    │ ac │    │    │    │    │   │    │\n│    │ ro │    │    │    │    │   │    │\n│    │ ss │    │    │    │    │   │    │\n│    │    │    │    │    │    │   │    │\n│    │ al │    │    │    │    │   │    │\n│    │ l  │    │    │    │    │   │    │\n│    │ st │    │    │    │    │   │    │\n│    │ at │    │    │    │    │   │    │\n│    │ es │    │    │    │    │   │    │\n│ éc │    │ xx │ tr │ Im │ na │   │ 12 │\n│ ol │    │ xx │ ai │ pl │ ïv │   │ 34 │\n│ e  │    │ xx │ li │ em │ e  │   │ 56 │\n│    │    │ xx │ ng │ en │ ca │   │ 7  │\n│    │    │ xx │    │ t  │ fé │   │    │\n│    │    │ xx │ br │ th │    │   │    │\n│    │    │ xx │ ac │ e  │    │   │    │\n│    │    │ xx │ ke │ li │    │   │    │\n│    │    │ xx │ t] │ fe │    │   │    │\n│    │    │ xx │    │ cy │    │   │    │\n│    │    │ xx │    │ cl │    │   │    │\n│    │    │ xx │    │ e  │    │   │    │\n│    │    │ xx │    │ tr │    │   │    │\n│    │    │ xx │    │ an │    │   │    │\n│    │    │ xx │    │ si │    │   │    │\n│    │    │ xx │    │ ti │    │   │    │\n│    │    │ xx │    │ on │    │   │    │\n│    │    │ xx │    │    │    │   │    │\n│    │    │ xx │    │ ta │    │   │    │\n│    │    │ xx │    │ bl │    │   │    │\n│    │    │ xx │    │ e  │    │   │    │\n│    │    │ xx │    │ fo │    │   │    │\n│    │    │ xx │    │ r  │    │   │    │\n│    │    │ xx │    │ at │    │   │    │\n│    │    │ xx │    │ te │    │   │    │\n│    │    │ xx │    │ mp │    │   │    │\n│    │    │ xx │    │ ts │    │   │    │\n│    │    │ xx │    │    │    │   │    │\n│    │    │ xx │    │ an │    │   │    │\n│    │    │ xx │    │ d  │    │   │    │\n│    │    │    │    │ ta │    │   │    │\n│    │    │    │    │ sk │    │   │    │\n│    │    │    │    │ s  │    │   │    │\n│    │    │    │    │ ac │    │   │    │\n│    │    │    │    │ ro │    │   │    │\n│    │    │    │    │ ss │    │   │    │\n│    │    │    │    │    │    │   │    │\n│    │    │    │    │ al │    │   │    │\n│    │    │    │    │ l  │    │   │    │\n│    │    │    │    │ st │    │   │    │\n│    │    │    │    │ at │    │   │    │\n│    │    │    │    │ es │    │   │    │\n└────┴────┴────┴────┴────┴────┴───┴────┘\n"
+      },
+      "rows": [
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "table-8col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┓\n┃         ┃         ┃         ┃         ┃         ┃ priorit ┃         ┃        ┃\n┃ id      ┃ title   ┃ status  ┃ owner   ┃ updated ┃ y       ┃ размер  ┃ 标签   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━┩\n│         │ xxxxxxx │ trailin │ Impleme │ naïve   │         │ 1234567 │ not a  │\n│         │ xxxxxxx │ g       │ nt the  │ café    │         │         │ tag    │\n│         │ xxxxxxx │ bracket │ lifecyc │         │         │         │        │\n│         │ xxxxxxx │ ]       │ le      │         │         │         │        │\n│         │ xxxxxxx │         │ transit │         │         │         │        │\n│         │ xxxxxxx │         │ ion     │         │         │         │        │\n│         │ xxxxxxx │         │ table   │         │         │         │        │\n│         │ xxxxxxx │         │ for     │         │         │         │        │\n│         │ xxxx    │         │ attempt │         │         │         │        │\n│         │         │         │ s and   │         │         │         │        │\n│         │         │         │ tasks   │         │         │         │        │\n│         │         │         │ across  │         │         │         │        │\n│         │         │         │ all     │         │         │         │        │\n│         │         │         │ states  │         │         │         │        │\n│ word    │ 数据库  │ école   │         │ xxxxxxx │ trailin │ Impleme │ naïve  │\n│ word    │ 迁移の  │         │         │ xxxxxxx │ g       │ nt the  │ café   │\n│ word    │ 確認と  │         │         │ xxxxxxx │ bracket │ lifecyc │        │\n│ word    │ 適用    │         │         │ xxxxxxx │ ]       │ le      │        │\n│ word    │         │         │         │ xxxxxxx │         │ transit │        │\n│ word    │         │         │         │ xxxxxxx │         │ ion     │        │\n│ word    │         │         │         │ xxxxxxx │         │ table   │        │\n│ word    │         │         │         │ xxxxxxx │         │ for     │        │\n│ word    │         │         │         │ xxxx    │         │ attempt │        │\n│ word    │         │         │         │         │         │ s and   │        │\n│ word    │         │         │         │         │         │ tasks   │        │\n│ word    │         │         │         │         │         │ across  │        │\n│         │         │         │         │         │         │ all     │        │\n│         │         │         │         │         │         │ states  │        │\n│ tab     │ 0       │ literal │ word    │ 数据库  │ école   │         │ xxxxxx │\n│ here    │         │         │ word    │ 迁移の  │         │         │ xxxxxx │\n│         │         │         │ word    │ 確認と  │         │         │ xxxxxx │\n│         │         │         │ word    │ 適用    │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │        │\n│         │         │         │ word    │         │         │         │        │\n│ not a   │ WG-12   │ 🚀 ship │ tab     │ 0       │ literal │ word    │ 数据库 │\n│ tag     │         │ it 🚀   │ here    │         │         │ word    │ 迁移の │\n│         │         │         │         │         │         │ word    │ 確認と │\n│         │         │         │         │         │         │ word    │ 適用   │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n└─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴────────┘\n"
+      },
+      "rows": [
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "table-8col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                     Tasks                                      \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┓\n┃         ┃         ┃         ┃         ┃         ┃ priorit ┃         ┃        ┃\n┃ id      ┃ title   ┃ status  ┃ owner   ┃ updated ┃ y       ┃ размер  ┃ 标签   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━┩\n│         │ xxxxxxx │ trailin │ Impleme │ naïve   │         │ 1234567 │ not a  │\n│         │ xxxxxxx │ g       │ nt the  │ café    │         │         │ tag    │\n│         │ xxxxxxx │ bracket │ lifecyc │         │         │         │        │\n│         │ xxxxxxx │ ]       │ le      │         │         │         │        │\n│         │ xxxxxxx │         │ transit │         │         │         │        │\n│         │ xxxxxxx │         │ ion     │         │         │         │        │\n│         │ xxxxxxx │         │ table   │         │         │         │        │\n│         │ xxxxxxx │         │ for     │         │         │         │        │\n│         │ xxxx    │         │ attempt │         │         │         │        │\n│         │         │         │ s and   │         │         │         │        │\n│         │         │         │ tasks   │         │         │         │        │\n│         │         │         │ across  │         │         │         │        │\n│         │         │         │ all     │         │         │         │        │\n│         │         │         │ states  │         │         │         │        │\n│ word    │ 数据库  │ école   │         │ xxxxxxx │ trailin │ Impleme │ naïve  │\n│ word    │ 迁移の  │         │         │ xxxxxxx │ g       │ nt the  │ café   │\n│ word    │ 確認と  │         │         │ xxxxxxx │ bracket │ lifecyc │        │\n│ word    │ 適用    │         │         │ xxxxxxx │ ]       │ le      │        │\n│ word    │         │         │         │ xxxxxxx │         │ transit │        │\n│ word    │         │         │         │ xxxxxxx │         │ ion     │        │\n│ word    │         │         │         │ xxxxxxx │         │ table   │        │\n│ word    │         │         │         │ xxxxxxx │         │ for     │        │\n│ word    │         │         │         │ xxxx    │         │ attempt │        │\n│ word    │         │         │         │         │         │ s and   │        │\n│ word    │         │         │         │         │         │ tasks   │        │\n│ word    │         │         │         │         │         │ across  │        │\n│         │         │         │         │         │         │ all     │        │\n│         │         │         │         │         │         │ states  │        │\n│ tab     │ 0       │ literal │ word    │ 数据库  │ école   │         │ xxxxxx │\n│ here    │         │         │ word    │ 迁移の  │         │         │ xxxxxx │\n│         │         │         │ word    │ 確認と  │         │         │ xxxxxx │\n│         │         │         │ word    │ 適用    │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │ xxxxxx │\n│         │         │         │ word    │         │         │         │        │\n│         │         │         │ word    │         │         │         │        │\n│ not a   │ WG-12   │ 🚀 ship │ tab     │ 0       │ literal │ word    │ 数据库 │\n│ tag     │         │ it 🚀   │ here    │         │         │ word    │ 迁移の │\n│         │         │         │         │         │         │ word    │ 確認と │\n│         │         │         │         │         │         │ word    │ 適用   │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n│         │         │         │         │         │         │ word    │        │\n└─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴────────┘\n"
+      },
+      "rows": [
+        [
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag"
+        ],
+        [
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café"
+        ],
+        [
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用"
+        ]
+      ],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "table-8col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓\n┃ id           ┃ title        ┃ status       ┃ owner        ┃ updated      ┃ priority     ┃ размер      ┃ 标签         ┃\n┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩\n│ WG-12        │ 🚀 ship it   │ tab     here │ 0            │ literal      │ word word    │ 数据库迁移  │ école        │\n│              │ 🚀           │              │              │              │ word word    │ の確認と適  │              │\n│              │              │              │              │              │ word word    │ 用          │              │\n│              │              │              │              │              │ word word    │             │              │\n│              │              │              │              │              │ word word    │             │              │\n│              │              │              │              │              │ word word    │             │              │\n│              │ 1234567      │ not a tag    │ WG-12        │ 🚀 ship it   │ tab     here │ 0           │ literal      │\n│              │              │              │              │ 🚀           │              │             │              │\n│ trailing     │ Implement    │ naïve café   │              │ 1234567      │ not a tag    │ WG-12       │ 🚀 ship it   │\n│ bracket]     │ the          │              │              │              │              │             │ 🚀           │\n│              │ lifecycle    │              │              │              │              │             │              │\n│              │ transition   │              │              │              │              │             │              │\n│              │ table for    │              │              │              │              │             │              │\n│              │ attempts and │              │              │              │              │             │              │\n│              │ tasks across │              │              │              │              │             │              │\n│              │ all states   │              │              │              │              │             │              │\n│ école        │              │ xxxxxxxxxxxx │ trailing     │ Implement    │ naïve café   │             │ 1234567      │\n│              │              │ xxxxxxxxxxxx │ bracket]     │ the          │              │             │              │\n│              │              │ xxxxxxxxxxxx │              │ lifecycle    │              │             │              │\n│              │              │ xxxxxxxxxxxx │              │ transition   │              │             │              │\n│              │              │ xxxxxxxxxxxx │              │ table for    │              │             │              │\n│              │              │              │              │ attempts and │              │             │              │\n│              │              │              │              │ tasks across │              │             │              │\n│              │              │              │              │ all states   │              │             │              │\n└──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴─────────────┴──────────────┘\n"
+      },
+      "rows": [
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "table-8col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                         Tasks                                                          \n┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓\n┃ id           ┃ title        ┃ status       ┃ owner        ┃ updated      ┃ priority     ┃ размер      ┃ 标签         ┃\n┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩\n│ WG-12        │ 🚀 ship it   │ tab     here │ 0            │ literal      │ word word    │ 数据库迁移  │ école        │\n│              │ 🚀           │              │              │              │ word word    │ の確認と適  │              │\n│              │              │              │              │              │ word word    │ 用          │              │\n│              │              │              │              │              │ word word    │             │              │\n│              │              │              │              │              │ word word    │             │              │\n│              │              │              │              │              │ word word    │             │              │\n│              │ 1234567      │ not a tag    │ WG-12        │ 🚀 ship it   │ tab     here │ 0           │ literal      │\n│              │              │              │              │ 🚀           │              │             │              │\n│ trailing     │ Implement    │ naïve café   │              │ 1234567      │ not a tag    │ WG-12       │ 🚀 ship it   │\n│ bracket]     │ the          │              │              │              │              │             │ 🚀           │\n│              │ lifecycle    │              │              │              │              │             │              │\n│              │ transition   │              │              │              │              │             │              │\n│              │ table for    │              │              │              │              │             │              │\n│              │ attempts and │              │              │              │              │             │              │\n│              │ tasks across │              │              │              │              │             │              │\n│              │ all states   │              │              │              │              │             │              │\n│ école        │              │ xxxxxxxxxxxx │ trailing     │ Implement    │ naïve café   │             │ 1234567      │\n│              │              │ xxxxxxxxxxxx │ bracket]     │ the          │              │             │              │\n│              │              │ xxxxxxxxxxxx │              │ lifecycle    │              │             │              │\n│              │              │ xxxxxxxxxxxx │              │ transition   │              │             │              │\n│              │              │ xxxxxxxxxxxx │              │ table for    │              │             │              │\n│              │              │              │              │ attempts and │              │             │              │\n│              │              │              │              │ tasks across │              │             │              │\n│              │              │              │              │ all states   │              │             │              │\n└──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴─────────────┴──────────────┘\n"
+      },
+      "rows": [
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "table-8col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ id                ┃ title                      ┃ status                      ┃ owner             ┃ updated                    ┃ priority                    ┃ размер                 ┃ 标签          ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ WG-12             │ 🚀 ship it 🚀              │ tab     here                │ 0                 │ literal                    │ word word word word word    │ 数据库迁移の確認と適用 │ école         │\n│                   │                            │                             │                   │                            │ word word word word word    │                        │               │\n│                   │                            │                             │                   │                            │ word word                   │                        │               │\n│                   │ 1234567                    │ not a tag                   │ WG-12             │ 🚀 ship it 🚀              │ tab     here                │ 0                      │ literal       │\n│ trailing bracket] │ Implement the lifecycle    │ naïve café                  │                   │ 1234567                    │ not a tag                   │ WG-12                  │ 🚀 ship it 🚀 │\n│                   │ transition table for       │                             │                   │                            │                             │                        │               │\n│                   │ attempts and tasks across  │                             │                   │                            │                             │                        │               │\n│                   │ all states                 │                             │                   │                            │                             │                        │               │\n│ école             │                            │ xxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle    │ naïve café                  │                        │ 1234567       │\n│                   │                            │ xxxxxxxxxxxxxxxxxxxxxxxxxxx │                   │ transition table for       │                             │                        │               │\n│                   │                            │ xxxxxx                      │                   │ attempts and tasks across  │                             │                        │               │\n│                   │                            │                             │                   │ all states                 │                             │                        │               │\n└───────────────────┴────────────────────────────┴─────────────────────────────┴───────────────────┴────────────────────────────┴─────────────────────────────┴────────────────────────┴───────────────┘\n"
+      },
+      "rows": [
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "table-8col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "                                                                                                 Tasks                                                                                                  \n┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ id                ┃ title                      ┃ status                      ┃ owner             ┃ updated                    ┃ priority                    ┃ размер                 ┃ 标签          ┃\n┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ WG-12             │ 🚀 ship it 🚀              │ tab     here                │ 0                 │ literal                    │ word word word word word    │ 数据库迁移の確認と適用 │ école         │\n│                   │                            │                             │                   │                            │ word word word word word    │                        │               │\n│                   │                            │                             │                   │                            │ word word                   │                        │               │\n│                   │ 1234567                    │ not a tag                   │ WG-12             │ 🚀 ship it 🚀              │ tab     here                │ 0                      │ literal       │\n│ trailing bracket] │ Implement the lifecycle    │ naïve café                  │                   │ 1234567                    │ not a tag                   │ WG-12                  │ 🚀 ship it 🚀 │\n│                   │ transition table for       │                             │                   │                            │                             │                        │               │\n│                   │ attempts and tasks across  │                             │                   │                            │                             │                        │               │\n│                   │ all states                 │                             │                   │                            │                             │                        │               │\n│ école             │                            │ xxxxxxxxxxxxxxxxxxxxxxxxxxx │ trailing bracket] │ Implement the lifecycle    │ naïve café                  │                        │ 1234567       │\n│                   │                            │ xxxxxxxxxxxxxxxxxxxxxxxxxxx │                   │ transition table for       │                             │                        │               │\n│                   │                            │ xxxxxx                      │                   │ attempts and tasks across  │                             │                        │               │\n│                   │                            │                             │                   │ all states                 │                             │                        │               │\n└───────────────────┴────────────────────────────┴─────────────────────────────┴───────────────────┴────────────────────────────┴─────────────────────────────┴────────────────────────┴───────────────┘\n"
+      },
+      "rows": [
+        [
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]",
+          "word word word word word word word word word word word word ",
+          "数据库迁移の確認と適用",
+          "école"
+        ],
+        [
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀",
+          "tab\there",
+          0,
+          "[bold]literal[/bold]"
+        ],
+        [
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567,
+          "[red]not a tag",
+          "WG-12",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "école",
+          "",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "trailing bracket]",
+          "Implement the lifecycle transition table for attempts and tasks across all states",
+          "naïve café",
+          null,
+          1234567
+        ]
+      ],
+      "title": "Tasks",
+      "width": 200
+    }
+  ],
+  "forced": {
+    "_environ": {},
+    "color_system": null,
+    "highlight": false,
+    "no_color": true
+  }
+}

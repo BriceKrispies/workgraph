@@ -1,0 +1,1066 @@
+{
+  "cases": [
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "empty-1col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "empty-1col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "empty-1col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "empty-1col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "empty-1col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "empty-1col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "empty-1col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id"
+      ],
+      "id": "empty-1col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "empty-2col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "empty-2col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "empty-2col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "empty-2col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "empty-2col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "empty-2col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "empty-2col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title"
+      ],
+      "id": "empty-2col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "empty-3col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "empty-3col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "empty-3col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "empty-3col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "empty-3col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "empty-3col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "empty-3col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status"
+      ],
+      "id": "empty-3col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "empty-4col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "empty-4col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "empty-4col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "empty-4col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "empty-4col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "empty-4col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "empty-4col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner"
+      ],
+      "id": "empty-4col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "empty-5col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "empty-5col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "empty-5col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "empty-5col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "empty-5col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "empty-5col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "empty-5col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "id": "empty-5col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "empty-6col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "empty-6col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "empty-6col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "empty-6col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "empty-6col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "empty-6col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "empty-6col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority"
+      ],
+      "id": "empty-6col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "empty-7col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "empty-7col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "empty-7col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "empty-7col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "empty-7col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "empty-7col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "empty-7col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер"
+      ],
+      "id": "empty-7col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "empty-8col-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "empty-8col-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "empty-8col-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "empty-8col-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "empty-8col-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "empty-8col-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "empty-8col-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "nothing to show\n"
+      },
+      "rows": [],
+      "title": null,
+      "width": 200
+    },
+    {
+      "headers": [
+        "id",
+        "title",
+        "status",
+        "owner",
+        "updated",
+        "priority",
+        "размер",
+        "标签"
+      ],
+      "id": "empty-8col-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks: nothing to show\n"
+      },
+      "rows": [],
+      "title": "Tasks",
+      "width": 200
+    }
+  ],
+  "forced": {
+    "_environ": {},
+    "color_system": null,
+    "highlight": false,
+    "no_color": true
+  }
+}

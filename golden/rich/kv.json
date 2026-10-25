@@ -1,0 +1,482 @@
+{
+  "cases": [
+    {
+      "id": "kv-w40-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "  id: WG-12\n  title: Implement the lifecycle \ntransition table for attempts and tasks \nacross all states\n  name: 数据库迁移の確認と適用\n  status: 🚀 ship it 🚀\n  labels: literal\n  bracket: not a tag\n  zero: 0\n  token: \nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nxxxxxxxxxxxxxxxxxxxx\n  long: word word word word word word \nword word word word word word word word \nword word word word word word \n"
+      },
+      "pairs": [
+        [
+          "id",
+          "WG-12"
+        ],
+        [
+          "title",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "name",
+          "数据库迁移の確認と適用"
+        ],
+        [
+          "status",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "labels",
+          "[bold]literal[/bold]"
+        ],
+        [
+          "bracket",
+          "[red]not a tag"
+        ],
+        [
+          "missing",
+          null
+        ],
+        [
+          "empty_list",
+          "[]"
+        ],
+        [
+          "empty_dict",
+          "{}"
+        ],
+        [
+          "zero",
+          0
+        ],
+        [
+          "token",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "long",
+          "word word word word word word word word word word word word word word word word word word word word "
+        ]
+      ],
+      "title": null,
+      "width": 40
+    },
+    {
+      "id": "kv-w40-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks\n  id: WG-12\n  title: Implement the lifecycle \ntransition table for attempts and tasks \nacross all states\n  name: 数据库迁移の確認と適用\n  status: 🚀 ship it 🚀\n  labels: literal\n  bracket: not a tag\n  zero: 0\n  token: \nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nxxxxxxxxxxxxxxxxxxxx\n  long: word word word word word word \nword word word word word word word word \nword word word word word word \n"
+      },
+      "pairs": [
+        [
+          "id",
+          "WG-12"
+        ],
+        [
+          "title",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "name",
+          "数据库迁移の確認と適用"
+        ],
+        [
+          "status",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "labels",
+          "[bold]literal[/bold]"
+        ],
+        [
+          "bracket",
+          "[red]not a tag"
+        ],
+        [
+          "missing",
+          null
+        ],
+        [
+          "empty_list",
+          "[]"
+        ],
+        [
+          "empty_dict",
+          "{}"
+        ],
+        [
+          "zero",
+          0
+        ],
+        [
+          "token",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "long",
+          "word word word word word word word word word word word word word word word word word word word word "
+        ]
+      ],
+      "title": "Tasks",
+      "width": 40
+    },
+    {
+      "id": "kv-w80-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "  id: WG-12\n  title: Implement the lifecycle transition table for attempts and tasks across \nall states\n  name: 数据库迁移の確認と適用\n  status: 🚀 ship it 🚀\n  labels: literal\n  bracket: not a tag\n  zero: 0\n  token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n  long: word word word word word word word word word word word word word word \nword word word word word word \n"
+      },
+      "pairs": [
+        [
+          "id",
+          "WG-12"
+        ],
+        [
+          "title",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "name",
+          "数据库迁移の確認と適用"
+        ],
+        [
+          "status",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "labels",
+          "[bold]literal[/bold]"
+        ],
+        [
+          "bracket",
+          "[red]not a tag"
+        ],
+        [
+          "missing",
+          null
+        ],
+        [
+          "empty_list",
+          "[]"
+        ],
+        [
+          "empty_dict",
+          "{}"
+        ],
+        [
+          "zero",
+          0
+        ],
+        [
+          "token",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "long",
+          "word word word word word word word word word word word word word word word word word word word word "
+        ]
+      ],
+      "title": null,
+      "width": 80
+    },
+    {
+      "id": "kv-w80-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks\n  id: WG-12\n  title: Implement the lifecycle transition table for attempts and tasks across \nall states\n  name: 数据库迁移の確認と適用\n  status: 🚀 ship it 🚀\n  labels: literal\n  bracket: not a tag\n  zero: 0\n  token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n  long: word word word word word word word word word word word word word word \nword word word word word word \n"
+      },
+      "pairs": [
+        [
+          "id",
+          "WG-12"
+        ],
+        [
+          "title",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "name",
+          "数据库迁移の確認と適用"
+        ],
+        [
+          "status",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "labels",
+          "[bold]literal[/bold]"
+        ],
+        [
+          "bracket",
+          "[red]not a tag"
+        ],
+        [
+          "missing",
+          null
+        ],
+        [
+          "empty_list",
+          "[]"
+        ],
+        [
+          "empty_dict",
+          "{}"
+        ],
+        [
+          "zero",
+          0
+        ],
+        [
+          "token",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "long",
+          "word word word word word word word word word word word word word word word word word word word word "
+        ]
+      ],
+      "title": "Tasks",
+      "width": 80
+    },
+    {
+      "id": "kv-w120-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "  id: WG-12\n  title: Implement the lifecycle transition table for attempts and tasks across all states\n  name: 数据库迁移の確認と適用\n  status: 🚀 ship it 🚀\n  labels: literal\n  bracket: not a tag\n  zero: 0\n  token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n  long: word word word word word word word word word word word word word word word word word word word word \n"
+      },
+      "pairs": [
+        [
+          "id",
+          "WG-12"
+        ],
+        [
+          "title",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "name",
+          "数据库迁移の確認と適用"
+        ],
+        [
+          "status",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "labels",
+          "[bold]literal[/bold]"
+        ],
+        [
+          "bracket",
+          "[red]not a tag"
+        ],
+        [
+          "missing",
+          null
+        ],
+        [
+          "empty_list",
+          "[]"
+        ],
+        [
+          "empty_dict",
+          "{}"
+        ],
+        [
+          "zero",
+          0
+        ],
+        [
+          "token",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "long",
+          "word word word word word word word word word word word word word word word word word word word word "
+        ]
+      ],
+      "title": null,
+      "width": 120
+    },
+    {
+      "id": "kv-w120-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks\n  id: WG-12\n  title: Implement the lifecycle transition table for attempts and tasks across all states\n  name: 数据库迁移の確認と適用\n  status: 🚀 ship it 🚀\n  labels: literal\n  bracket: not a tag\n  zero: 0\n  token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n  long: word word word word word word word word word word word word word word word word word word word word \n"
+      },
+      "pairs": [
+        [
+          "id",
+          "WG-12"
+        ],
+        [
+          "title",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "name",
+          "数据库迁移の確認と適用"
+        ],
+        [
+          "status",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "labels",
+          "[bold]literal[/bold]"
+        ],
+        [
+          "bracket",
+          "[red]not a tag"
+        ],
+        [
+          "missing",
+          null
+        ],
+        [
+          "empty_list",
+          "[]"
+        ],
+        [
+          "empty_dict",
+          "{}"
+        ],
+        [
+          "zero",
+          0
+        ],
+        [
+          "token",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "long",
+          "word word word word word word word word word word word word word word word word word word word word "
+        ]
+      ],
+      "title": "Tasks",
+      "width": 120
+    },
+    {
+      "id": "kv-w200-untitled",
+      "output": {
+        "stderr": "",
+        "stdout": "  id: WG-12\n  title: Implement the lifecycle transition table for attempts and tasks across all states\n  name: 数据库迁移の確認と適用\n  status: 🚀 ship it 🚀\n  labels: literal\n  bracket: not a tag\n  zero: 0\n  token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n  long: word word word word word word word word word word word word word word word word word word word word \n"
+      },
+      "pairs": [
+        [
+          "id",
+          "WG-12"
+        ],
+        [
+          "title",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "name",
+          "数据库迁移の確認と適用"
+        ],
+        [
+          "status",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "labels",
+          "[bold]literal[/bold]"
+        ],
+        [
+          "bracket",
+          "[red]not a tag"
+        ],
+        [
+          "missing",
+          null
+        ],
+        [
+          "empty_list",
+          "[]"
+        ],
+        [
+          "empty_dict",
+          "{}"
+        ],
+        [
+          "zero",
+          0
+        ],
+        [
+          "token",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "long",
+          "word word word word word word word word word word word word word word word word word word word word "
+        ]
+      ],
+      "title": null,
+      "width": 200
+    },
+    {
+      "id": "kv-w200-titled",
+      "output": {
+        "stderr": "",
+        "stdout": "Tasks\n  id: WG-12\n  title: Implement the lifecycle transition table for attempts and tasks across all states\n  name: 数据库迁移の確認と適用\n  status: 🚀 ship it 🚀\n  labels: literal\n  bracket: not a tag\n  zero: 0\n  token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n  long: word word word word word word word word word word word word word word word word word word word word \n"
+      },
+      "pairs": [
+        [
+          "id",
+          "WG-12"
+        ],
+        [
+          "title",
+          "Implement the lifecycle transition table for attempts and tasks across all states"
+        ],
+        [
+          "name",
+          "数据库迁移の確認と適用"
+        ],
+        [
+          "status",
+          "🚀 ship it 🚀"
+        ],
+        [
+          "labels",
+          "[bold]literal[/bold]"
+        ],
+        [
+          "bracket",
+          "[red]not a tag"
+        ],
+        [
+          "missing",
+          null
+        ],
+        [
+          "empty_list",
+          "[]"
+        ],
+        [
+          "empty_dict",
+          "{}"
+        ],
+        [
+          "zero",
+          0
+        ],
+        [
+          "token",
+          "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        ],
+        [
+          "long",
+          "word word word word word word word word word word word word word word word word word word word word "
+        ]
+      ],
+      "title": "Tasks",
+      "width": 200
+    }
+  ],
+  "forced": {
+    "_environ": {},
+    "color_system": null,
+    "highlight": false,
+    "no_color": true
+  }
+}

@@ -108,8 +108,10 @@ def test_migration_0009_moves_external_refs_into_task_links(tmp_path):
             '\'[{"system":"jira","id":"ABC-1","url":"https://acme.atlassian.net/browse/ABC-1"},'
             "{\"system\":\"jira\",\"id\":\"ABC-2\"}]', '{}', 'test', 1, '2026-01-01', '2026-01-01')"
         )
+    migrate.upgrade(db, "0009")
+    assert migrate.current_revision(db) == "0009"
     migrate.upgrade(db)
-    assert migrate.current_revision(db) == "0009" == migrate.head_revision()
+    assert migrate.current_revision(db) == migrate.head_revision()
     with db.engine.connect() as conn:
         rows = conn.execute(
             text(

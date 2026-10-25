@@ -220,6 +220,9 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:
             config.llm.summarization = ModelSelection(provider="heuristic", model="heuristic-v1")
             config.execution.enabled = True
             config.execution.default_agent = "scripted"
+            # The walkthrough accepts sdk and auth by hand (steps 13 and 17); with auto-accept on,
+            # the drain would accept them first and those explicit accepts would be invalid transitions.
+            config.verification.auto_accept = False
             agent = str(Path(scripted_agent.__file__))
             config.agents["scripted"] = CommandAgentConfig(
                 executable=sys.executable,

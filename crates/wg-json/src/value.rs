@@ -2,6 +2,8 @@
 
 use std::fmt;
 
+use wg_types::Timestamp;
+
 /// A Python `str`: a sequence of code points. Unlike a Rust `String` it may hold lone surrogates,
 /// which `ensure_ascii` output escapes and UTF-8 output refuses.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
@@ -31,10 +33,11 @@ impl From<String> for PyStr {
     }
 }
 
-/// A `datetime.datetime`: wall-clock fields plus an optional fixed UTC offset in seconds.
-/// A `None` offset is a naive datetime.
+/// A `datetime.datetime` that `wg_types::Timestamp` cannot hold: a naive value (`offset_seconds`
+/// `None`) or one with a non-zero fixed UTC offset in seconds. A UTC value is a `Timestamp` and
+/// belongs in [`Value::DateTime`]; a zero offset must not be stored here.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct DateTime {
+pub struct LocalDateTime {
     pub year: i32,
     pub month: u8,
     pub day: u8,
@@ -67,7 +70,10 @@ pub enum Value {
     Str(PyStr),
     List(Vec<Value>),
     Dict(Vec<(PyStr, Value)>),
-    DateTime(DateTime),
+    /// A UTC datetime, held by the shared `wg-types` timestamp type.
+    DateTime(Timestamp),
+    /// A naive or non-UTC wall-clock datetime; see [`LocalDateTime`].
+    LocalDateTime(LocalDateTime),
     Date(Date),
     Decimal(String),
     Uuid(String),

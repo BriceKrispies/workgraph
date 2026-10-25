@@ -1,14 +1,21 @@
 //! Python's text forms: `isoformat`, `strftime`-style `when`, `repr` and `str`.
+//!
+//! UTC datetimes are formatted by `wg_types::Timestamp`. The functions here cover only the
+//! [`LocalDateTime`] values (naive or non-UTC) and the bare dates that `Timestamp` cannot hold.
 
-use crate::value::{Date, DateTime, PyStr, Value};
+use wg_types::Timestamp;
 
-/// `datetime.isoformat()`: `T` separator, microseconds only when nonzero, `+HH:MM` offset.
-pub fn isoformat(dt: &DateTime) -> String {
-    format_datetime(dt, 'T', false)
+use crate::value::{Date, LocalDateTime, PyStr, Value};
+
+/// `datetime.isoformat()` of a naive or non-UTC value: `T` separator, microseconds only when
+/// nonzero, `+HH:MM` offset.
+pub fn isoformat(dt: &LocalDateTime) -> String {
+    format_local(dt, 'T')
 }
 
-/// The `when()` helper of the CLI: `%Y-%m-%d %H:%M` on the wall-clock fields, `""` for `None`.
-pub fn when(dt: Option<&DateTime>) -> String {
+/// The `when()` helper of the CLI for a naive or non-UTC value: `%Y-%m-%d %H:%M` on the
+/// wall-clock fields, `""` for `None`. UTC values use `Timestamp::format_display`.
+pub fn when(dt: Option<&LocalDateTime>) -> String {
     match dt {
         None => String::new(),
         Some(d) => format!(
@@ -18,21 +25,36 @@ pub fn when(dt: Option<&DateTime>) -> String {
     }
 }
 
-/// Pydantic's JSON form of a datetime: as `isoformat`, but a zero offset is written `Z`.
-pub(crate) fn pydantic_datetime(dt: &DateTime) -> String {
-    format_datetime(dt, 'T', true)
+/// `str(datetime)` of a naive or non-UTC value, which is `isoformat(sep=" ")`.
+pub(crate) fn local_datetime_str(dt: &LocalDateTime) -> String {
+    format_local(dt, ' ')
 }
 
-/// `str(datetime)`, which is `isoformat(sep=" ")`.
-pub(crate) fn datetime_str(dt: &DateTime) -> String {
-    format_datetime(dt, ' ', false)
+/// The fields of a UTC timestamp viewed as a zero-offset [`LocalDateTime`], for `repr` only.
+pub(crate) fn utc_fields(ts: &Timestamp) -> LocalDateTime {
+    let at = ts.to_offset_datetime();
+    LocalDateTime {
+        year: at.year(),
+        month: u8::from(at.month()),
+        day: at.day(),
+        hour: at.hour(),
+        minute: at.minute(),
+        second: at.second(),
+        microsecond: at.nanosecond() / 1_000,
+        offset_seconds: Some(0),
+    }
+}
+
+/// `str(datetime)` of a UTC timestamp: the `Timestamp` text with a space separator.
+pub(crate) fn utc_datetime_str(ts: &Timestamp) -> String {
+    ts.format_isoformat().replacen('T', " ", 1)
 }
 
 pub(crate) fn date_isoformat(d: &Date) -> String {
     format!("{:04}-{:02}-{:02}", d.year, d.month, d.day)
 }
 
-fn format_datetime(dt: &DateTime, sep: char, zulu: bool) -> String {
+fn format_local(dt: &LocalDateTime, sep: char) -> String {
     let mut text = format!(
         "{:04}-{:02}-{:02}{sep}{:02}:{:02}:{:02}",
         dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second
@@ -40,20 +62,16 @@ fn format_datetime(dt: &DateTime, sep: char, zulu: bool) -> String {
     if dt.microsecond != 0 {
         text.push_str(&format!(".{:06}", dt.microsecond));
     }
-    match dt.offset_seconds {
-        None => {}
-        Some(0) if zulu => text.push('Z'),
-        Some(offset) => {
-            let sign = if offset < 0 { '-' } else { '+' };
-            let magnitude = offset.abs();
-            text.push_str(&format!(
-                "{sign}{:02}:{:02}",
-                magnitude / 3600,
-                (magnitude % 3600) / 60
-            ));
-            if magnitude % 60 != 0 {
-                text.push_str(&format!(":{:02}", magnitude % 60));
-            }
+    if let Some(offset) = dt.offset_seconds {
+        let sign = if offset < 0 { '-' } else { '+' };
+        let magnitude = offset.abs();
+        text.push_str(&format!(
+            "{sign}{:02}:{:02}",
+            magnitude / 3600,
+            (magnitude % 3600) / 60
+        ));
+        if magnitude % 60 != 0 {
+            text.push_str(&format!(":{:02}", magnitude % 60));
         }
     }
     text
@@ -191,7 +209,7 @@ pub(crate) fn py_bytes_repr(bytes: &[u8]) -> String {
 }
 
 /// Python `repr(datetime.datetime)`.
-fn py_datetime_repr(dt: &DateTime) -> String {
+fn py_datetime_repr(dt: &LocalDateTime) -> String {
     let mut fields = vec![
         dt.year.to_string(),
         dt.month.to_string(),
@@ -257,7 +275,8 @@ pub(crate) fn py_repr(value: &Value) -> String {
                 .collect();
             format!("{{{}}}", inner.join(", "))
         }
-        Value::DateTime(dt) => py_datetime_repr(dt),
+        Value::DateTime(ts) => py_datetime_repr(&utc_fields(ts)),
+        Value::LocalDateTime(dt) => py_datetime_repr(dt),
         Value::Date(d) => format!("datetime.date({}, {}, {})", d.year, d.month, d.day),
         Value::Decimal(text) => format!("Decimal('{text}')"),
         Value::Uuid(text) => format!("UUID('{text}')"),

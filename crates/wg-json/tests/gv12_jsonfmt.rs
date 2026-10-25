@@ -2,7 +2,8 @@
 //! recorded Python exception name, in each dialect the case lists.
 
 use serde_json::Value as Json;
-use wg_json::{Date, DateTime, PyStr, Value, cli_json, db_json, http_json, isoformat, when};
+use wg_json::{Date, LocalDateTime, PyStr, Value, cli_json, db_json, http_json, isoformat, when};
+use wg_types::Timestamp;
 
 const CASES_PATH: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
@@ -98,7 +99,7 @@ fn parse_offset(text: &str) -> Result<i32, String> {
 
 /// Parses `YYYY-MM-DD[THH:MM:SS[.ffffff]][offset]` as `datetime.fromisoformat` does for the
 /// forms the vectors use.
-fn parse_datetime(text: &str) -> Result<DateTime, String> {
+fn parse_datetime(text: &str) -> Result<LocalDateTime, String> {
     let (date_part, time_part) = match text.split_once('T') {
         Some((d, t)) => (d, Some(t)),
         None => (text, None),
@@ -142,7 +143,7 @@ fn parse_datetime(text: &str) -> Result<DateTime, String> {
             (hour, minute, second, micro)
         }
     };
-    Ok(DateTime {
+    Ok(LocalDateTime {
         year: date.year,
         month: date.month,
         day: date.day,
@@ -152,6 +153,25 @@ fn parse_datetime(text: &str) -> Result<DateTime, String> {
         microsecond,
         offset_seconds: offset,
     })
+}
+
+/// A zero offset is UTC and becomes a `Timestamp`; any other offset, or none, stays a
+/// `LocalDateTime` so its wall-clock fields and offset are kept.
+fn datetime_value(local: LocalDateTime) -> Result<Value, String> {
+    match local.offset_seconds {
+        Some(0) => Timestamp::from_components(
+            local.year,
+            local.month,
+            local.day,
+            local.hour,
+            local.minute,
+            local.second,
+            local.microsecond,
+        )
+        .map(Value::DateTime)
+        .map_err(|e| e.to_string()),
+        _ => Ok(Value::LocalDateTime(local)),
+    }
 }
 
 fn parse_date(text: &str) -> Result<Date, String> {
@@ -188,7 +208,7 @@ fn build(node: &Json) -> Result<Value, String> {
                 .map_err(|_| "bad float".to_owned())?,
         ),
         "str" => Value::Str(pystr(str_of(&node["v"], "str")?)),
-        "datetime" => Value::DateTime(parse_datetime(str_of(&node["v"], "datetime")?)?),
+        "datetime" => datetime_value(parse_datetime(str_of(&node["v"], "datetime")?)?)?,
         "date" => Value::Date(parse_date(str_of(&node["v"], "date")?)?),
         "decimal" => Value::Decimal(str_of(&node["v"], "decimal")?.to_owned()),
         "uuid" => Value::Uuid(str_of(&node["v"], "uuid")?.to_owned()),
@@ -242,11 +262,13 @@ fn run(dialect: &str, value: &Value) -> Result<Option<String>, String> {
         "O06" => http_json(value).map(Some).map_err(named),
         "O10" => db_json(value).map_err(named),
         "isoformat" => match value {
-            Value::DateTime(dt) => Ok(Some(isoformat(dt))),
+            Value::DateTime(ts) => Ok(Some(ts.format_isoformat())),
+            Value::LocalDateTime(dt) => Ok(Some(isoformat(dt))),
             _ => Err("TypeError".to_owned()),
         },
         "when" => match value {
-            Value::DateTime(dt) => Ok(Some(when(Some(dt)))),
+            Value::DateTime(ts) => Ok(Some(ts.format_display())),
+            Value::LocalDateTime(dt) => Ok(Some(when(Some(dt)))),
             Value::Null => Ok(Some(when(None))),
             _ => Err("TypeError".to_owned()),
         },

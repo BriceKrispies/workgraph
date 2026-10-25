@@ -220,3 +220,78 @@ def test_graph(app, human, ws):
     assert kinds == ["depends_on", "parent"]
     blocked = {n.key: n.blocked for n in graph.nodes}
     assert blocked == {a.key: False, b.key: True}
+
+
+def _accept_ready_task(app, human, ws, key):
+    app.tasks.claim(human, ws, key, ClaimRequest())
+    app.tasks.complete(human, ws, key, summary="done")
+    app.verification.accept_manually(human, ws, key, reason="reviewed by hand")
+
+
+def test_promote_ready_moves_backlog_whose_dependencies_are_accepted(app, human, ws):
+    a = app.tasks.create(human, ws, TaskCreate(title="A", status="ready"))
+    e = app.tasks.create(human, ws, TaskCreate(title="E", status="ready"))
+    b = app.tasks.create(human, ws, TaskCreate(title="B", depends_on=[a.key]))
+    f = app.tasks.create(human, ws, TaskCreate(title="F", depends_on=[a.key, e.key]))
+    g = app.tasks.create(human, ws, TaskCreate(title="G"))
+    _accept_ready_task(app, human, ws, a.key)
+
+    promoted = app.tasks.promote_ready(human, ws)
+
+    assert promoted == [b.key, g.key]
+    assert app.tasks.get(human, ws, b.key).status == "ready"
+    assert app.tasks.get(human, ws, g.key).status == "ready"
+    # One unaccepted dependency keeps the task in backlog.
+    assert app.tasks.get(human, ws, f.key).status == "backlog"
+    assert app.tasks.get(human, ws, e.key).status == "ready"
+    assert app.tasks.get(human, ws, a.key).status == "accepted"
+
+
+def test_promote_ready_skips_parent_and_parked_tasks(app, human, ws):
+    parent = app.tasks.create(human, ws, TaskCreate(title="Parent"))
+    child = app.tasks.create(human, ws, TaskCreate(title="Child", parent=parent.key))
+    parked = app.tasks.create(human, ws, TaskCreate(title="Parked", tags=["parked"]))
+    plain = app.tasks.create(human, ws, TaskCreate(title="Plain"))
+
+    promoted = app.tasks.promote_ready(human, ws)
+
+    assert promoted == [child.key, plain.key]
+    assert app.tasks.get(human, ws, parent.key).status == "backlog"
+    assert app.tasks.get(human, ws, parked.key).status == "backlog"
+
+
+def test_promote_ready_filters_by_tag(app, human, ws):
+    sprint = app.tasks.create(human, ws, TaskCreate(title="Sprint", tags=["sprint-42"]))
+    other = app.tasks.create(human, ws, TaskCreate(title="Other"))
+
+    assert app.tasks.promote_ready(human, ws, tags=["sprint-42"]) == [sprint.key]
+    assert app.tasks.get(human, ws, other.key).status == "backlog"
+
+
+def test_promote_ready_dry_run_changes_nothing(app, human, ws):
+    a = app.tasks.create(human, ws, TaskCreate(title="A", status="ready"))
+    b = app.tasks.create(human, ws, TaskCreate(title="B", depends_on=[a.key]))
+    _accept_ready_task(app, human, ws, a.key)
+    before = app.tasks.get(human, ws, b.key)
+
+    assert app.tasks.promote_ready(human, ws, dry_run=True) == [b.key]
+
+    after = app.tasks.get(human, ws, b.key)
+    assert after.status == "backlog"
+    assert after.version == before.version
+    assert app.tasks.promote_ready(human, ws) == [b.key]
+    assert app.tasks.get(human, ws, b.key).status == "ready"
+
+
+def test_accept_then_promote_dependents(app, human, ws):
+    a = app.tasks.create(human, ws, TaskCreate(title="A", status="ready"))
+    x = app.tasks.create(human, ws, TaskCreate(title="X", status="ready"))
+    b = app.tasks.create(human, ws, TaskCreate(title="B", depends_on=[a.key]))
+    c = app.tasks.create(human, ws, TaskCreate(title="C", depends_on=[a.key, x.key]))
+    d = app.tasks.create(human, ws, TaskCreate(title="D", depends_on=[a.key], tags=["parked"]))
+    _accept_ready_task(app, human, ws, a.key)
+
+    assert app.tasks.promote_dependents(human, ws, a.key) == [b.key]
+    assert app.tasks.get(human, ws, b.key).status == "ready"
+    assert app.tasks.get(human, ws, c.key).status == "backlog"
+    assert app.tasks.get(human, ws, d.key).status == "backlog"

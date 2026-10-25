@@ -18,6 +18,7 @@ from workgraph.cli.common import (
     kv,
     parse_json_arg,
     table,
+    to_jsonable,
     when,
     workspace_option,
     ws,
@@ -414,6 +415,11 @@ def task_accept(
     ref: str,
     manual: bool = typer.Option(False, "--manual", help="Record a manual acceptance decision"),
     reason: str = typer.Option("", "--reason", "-m"),
+    promote_dependents: bool = typer.Option(
+        False,
+        "--promote-dependents",
+        help="After accepting, move the backlog dependents whose dependencies are now all accepted to ready",
+    ),
     workspace: str | None = workspace_option(),
 ) -> None:
     """Accept completed work (requires passing verification, or --manual with a reason)."""
@@ -422,7 +428,37 @@ def task_accept(
         out = app.verification.accept_manually(STATE.ctx(), ws(workspace), ref, reason=reason)
     else:
         out = app.verification.accept(STATE.ctx(), ws(workspace), ref, reason=reason)
-    emit(out, lambda a: console.print(f"accepted ({a.mode}) by {a.actor}"))
+    if not promote_dependents:
+        emit(out, lambda a: console.print(f"accepted ({a.mode}) by {a.actor}"))
+        return
+    promoted = app.tasks.promote_dependents(STATE.ctx(), ws(workspace), ref)
+    emit(
+        {**to_jsonable(out), "promoted": promoted},
+        lambda a: console.print(
+            f"accepted ({a['mode']}) by {a['actor']}; promoted {', '.join(promoted) or 'no dependents'}"
+        ),
+    )
+
+
+@task_app.command("promote-ready")
+@handle_errors
+def task_promote_ready(
+    tag: list[str] = typer.Option(None, "--tag", "-t", help="Only tasks with this tag (repeatable)"),
+    project: str | None = typer.Option(None, "--project", "-p"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Report what would move; change nothing"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Move backlog tasks whose dependencies are all accepted to ready (skips parents and parked tasks)."""
+    keys = STATE.app().tasks.promote_ready(
+        STATE.ctx(), ws(workspace), tags=_tag_values(tag), project=project, dry_run=dry_run
+    )
+    emit(
+        {"promoted": keys, "dry_run": dry_run},
+        lambda r: console.print(
+            f"{'would promote' if dry_run else 'promoted'} {len(keys)}"
+            + (f": {', '.join(keys)}" if keys else "")
+        ),
+    )
 
 
 @task_app.command("reject")

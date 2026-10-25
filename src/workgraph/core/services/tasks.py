@@ -96,6 +96,7 @@ from workgraph.search.indexer import index_task, to_fts_query
 from workgraph.security.permissions import Permission, require
 
 BLOCKED_BY_DEPENDENCIES = "dependencies"
+PARKED_TAG = "parked"
 TRACKER_KEY_RE = re.compile(r"[A-Z][A-Z0-9]{0,9}-\d+")
 
 TRACKER_OWNED_FIELDS = frozenset(
@@ -703,6 +704,94 @@ class TaskService(Service):
                 if len(ready) >= limit:
                     break
             return ready
+
+    # ------------------------------------------------------------------ promotion
+
+    def promote_ready(
+        self,
+        ctx: RequestContext,
+        workspace: str | None,
+        *,
+        tags: list[str] | None = None,
+        project: str | None = None,
+        dry_run: bool = False,
+    ) -> list[str]:
+        """Move every backlog task whose dependencies are all accepted to ready, in one transaction.
+
+        Skipped: tasks with children (a parent is rolled up, not claimed), tasks tagged ``parked``, and
+        archived tasks. ``tags`` and ``project`` narrow the candidates. ``dry_run`` returns the keys
+        that would move and writes nothing.
+        """
+        require(ctx, Permission.TASK_WRITE)
+        with self.db.session(write=not dry_run) as session:
+            ws_id = self._workspace_id(session, workspace)
+            flt = TaskFilter(statuses=[TaskStatus.BACKLOG], project=project, tags=tags or None)
+            candidates = list(session.scalars(self._filtered(session, ws_id, flt).order_by(Task.number)))
+            promotable = self._backlog_promotable(session, candidates)
+            if not dry_run:
+                for task in promotable:
+                    self._transition(session, ctx, task, TaskStatus.READY, reason="dependencies accepted")
+                    index_task(session, task.id)
+            return [task.key for task in promotable]
+
+    def promote_dependents(self, ctx: RequestContext, workspace: str | None, ref: str) -> list[str]:
+        """Move the backlog dependents of ``ref`` whose dependencies are now all accepted to ready.
+
+        Same skip rules as ``promote_ready``. Dependents that are already blocked are moved by the
+        acceptance itself (see ``_refresh_dependents``).
+        """
+        require(ctx, Permission.TASK_WRITE)
+        with self.db.session(write=True) as session:
+            ws_id = self._workspace_id(session, workspace) if workspace else None
+            task = resolve.task(session, ws_id, ref)
+            dependents = list(
+                session.scalars(
+                    select(Task)
+                    .join(TaskDependency, TaskDependency.task_id == Task.id)
+                    .where(
+                        TaskDependency.depends_on_id == task.id,
+                        Task.status == TaskStatus.BACKLOG,
+                        Task.archived_at.is_(None),
+                    )
+                    .distinct()
+                    .order_by(Task.number)
+                )
+            )
+            promotable = self._backlog_promotable(session, dependents)
+            for dependent in promotable:
+                self._transition(session, ctx, dependent, TaskStatus.READY, reason="dependencies accepted")
+                index_task(session, dependent.id)
+            return [dependent.key for dependent in promotable]
+
+    def _backlog_promotable(self, session: Session, tasks: Collection[Task]) -> builtins.list[Task]:
+        """The backlog tasks among ``tasks`` that may move to ready, found with three batched queries."""
+        ids = [t.id for t in tasks if t.status == TaskStatus.BACKLOG]
+        if not ids:
+            return []
+        with_children = set(session.scalars(select(Task.parent_id).where(Task.parent_id.in_(ids))))
+        parked = set(
+            session.scalars(
+                select(TaskTag.task_id).where(TaskTag.task_id.in_(ids), TaskTag.tag == PARKED_TAG)
+            )
+        )
+        edges = [
+            (task_id, depends_on_id)
+            for task_id, depends_on_id in session.execute(
+                select(TaskDependency.task_id, TaskDependency.depends_on_id).where(
+                    TaskDependency.task_id.in_(ids)
+                )
+            )
+        ]
+        satisfied = satisfied_dependencies(session, edges)
+        blocked = {task_id for task_id, depends_on_id in edges if (task_id, depends_on_id) not in satisfied}
+        return [
+            t
+            for t in tasks
+            if t.status == TaskStatus.BACKLOG
+            and t.id not in with_children
+            and t.id not in parked
+            and t.id not in blocked
+        ]
 
     # ------------------------------------------------------------------ update
 

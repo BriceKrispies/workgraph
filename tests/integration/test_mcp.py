@@ -30,6 +30,7 @@ REQUIRED_TOOLS = {
     "task_release",
     "task_complete",
     "task_get_ready",
+    "task_promote_ready",
     "task_add_dependency",
     "task_remove_dependency",
     "task_add_relation",

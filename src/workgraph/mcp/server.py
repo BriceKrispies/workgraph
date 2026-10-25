@@ -558,6 +558,21 @@ def build_server(
             )
         }
 
+    @tool(
+        "task_promote_ready",
+        "Move backlog tasks whose dependencies are all accepted to ready, in one step. Skips tasks with "
+        "children and tasks tagged parked. Optional tags and project narrow the candidates; dry_run lists "
+        "the keys that would move without changing anything.",
+    )
+    def task_promote_ready(
+        tags: list[str] | None = None,
+        project: str | None = None,
+        dry_run: bool = False,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        promoted = app.tasks.promote_ready(ctx(), workspace, tags=tags, project=project, dry_run=dry_run)
+        return {"promoted": promoted, "dry_run": dry_run}
+
     @tool("task_add_dependency", "Make TASK depend on DEPENDS_ON (cycles are rejected).")
     def task_add_dependency(
         task: TaskRef, depends_on: TaskRef, workspace: Workspace = None

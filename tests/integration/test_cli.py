@@ -250,3 +250,20 @@ def test_console_script_help():
         check=False,
     )
     assert proc.returncode == 0 and "task" in proc.stdout and "analytics" in proc.stdout
+
+
+def test_promote_ready_cli_and_accept_promote_dependents(run):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    run("task", "create", "Base", "--ready")  # AC-1
+    run("task", "create", "Follow", "--depends-on", "AC-1")  # AC-2
+    run("task", "create", "Plain")  # AC-3
+    assert run("task", "promote-ready", "--dry-run") == {"promoted": ["AC-3"], "dry_run": True}
+    assert run("task", "show", "AC-3")["status"] == "backlog"
+    assert run("task", "promote-ready") == {"promoted": ["AC-3"], "dry_run": False}
+    assert run("task", "show", "AC-3")["status"] == "ready"
+    run("task", "claim", "AC-1")
+    run("task", "complete", "AC-1", "-m", "done")
+    accepted = run("task", "accept", "AC-1", "--manual", "--reason", "reviewed", "--promote-dependents")
+    assert accepted["mode"] == "manual"
+    assert accepted["promoted"] == ["AC-2"]
+    assert run("task", "show", "AC-2")["status"] == "ready"

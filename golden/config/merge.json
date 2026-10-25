@@ -1,0 +1,876 @@
+[
+  {
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 7
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "files": {
+      "workspaces/team.toml": "[execution]\nmax_concurrent_runs = 7\n"
+    },
+    "name": "workspace_execution_override",
+    "outcome": "ok",
+    "problems": 0,
+    "workspace": "team"
+  },
+  {
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": true,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 3
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "other-model",
+          "provider": "heuristic"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "files": {
+      "config.toml": "[execution]\nenabled = true\nmax_concurrent_runs = 3\n[llm.classification]\nprovider = \"heuristic\"\nmodel = \"heuristic-v1\"\n",
+      "workspaces/team.toml": "[llm.classification]\nmodel = \"other-model\"\n"
+    },
+    "name": "global_then_workspace_deep_merge",
+    "outcome": "ok",
+    "problems": 0,
+    "workspace": "team"
+  },
+  {
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": 9,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "files": {
+      "config.toml": "[agents.claude_code]\ntype = \"claude_code\"\nmax_turns = 3\n",
+      "workspaces/team.toml": "[agents.claude_code]\ntype = \"claude_code\"\nmax_turns = 9\n"
+    },
+    "name": "agents_deep_merge",
+    "outcome": "ok",
+    "problems": 0,
+    "workspace": "team"
+  },
+  {
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": true,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "files": {
+      "workspaces/team.toml": "schema_version = 1\n[agents]\nenabled = true\n"
+    },
+    "name": "workspace_v1_agents_enabled",
+    "outcome": "ok",
+    "problems": 0,
+    "workspace": "team"
+  },
+  {
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": false
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "files": {
+      "config.toml": "[stacks]\nauto_accept = true\n",
+      "workspaces/team.toml": "[stacks]\nauto_accept = false\n"
+    },
+    "name": "workspace_stacks_override",
+    "outcome": "ok",
+    "problems": 0,
+    "workspace": "team"
+  },
+  {
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 6
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "files": {
+      "config.toml": "[jobs]\nworker_concurrency = 6\n",
+      "workspaces/team.toml": ""
+    },
+    "name": "workspace_empty_file",
+    "outcome": "ok",
+    "problems": 0,
+    "workspace": "team"
+  },
+  {
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 120,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "files": {
+      "workspaces/team.toml": "[jobs]\nlease_seconds = 120\n"
+    },
+    "name": "workspace_without_global_file",
+    "outcome": "ok",
+    "problems": 0,
+    "workspace": "team"
+  },
+  {
+    "errors": [
+      {
+        "loc": [
+          "bogus"
+        ],
+        "msg": "Extra inputs are not permitted",
+        "type": "extra_forbidden"
+      }
+    ],
+    "files": {
+      "workspaces/team.toml": "bogus = 1\n"
+    },
+    "kind": "validation",
+    "name": "workspace_unknown_key",
+    "outcome": "error",
+    "problems": 1,
+    "workspace": "team"
+  },
+  {
+    "errors": [
+      {
+        "loc": [
+          "execution",
+          "max_concurrent_runs"
+        ],
+        "msg": "Input should be greater than or equal to 1",
+        "type": "greater_than_equal"
+      }
+    ],
+    "files": {
+      "workspaces/team.toml": "[execution]\nmax_concurrent_runs = 0\n"
+    },
+    "kind": "validation",
+    "name": "workspace_invalid_merged_value",
+    "outcome": "error",
+    "problems": 1,
+    "workspace": "team"
+  },
+  {
+    "errors": [],
+    "files": {
+      "workspaces/team.toml": "not = [valid\n"
+    },
+    "kind": "invalid_toml",
+    "name": "workspace_invalid_toml",
+    "outcome": "error",
+    "problems": 1,
+    "workspace": "team"
+  },
+  {
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 1
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "files": {
+      "workspaces/team.toml": "[execution]\nmax_concurrent_runs = true\n"
+    },
+    "name": "workspace_wrong_section_type",
+    "outcome": "ok",
+    "problems": 0,
+    "workspace": "team"
+  },
+  {
+    "errors": [
+      {
+        "loc": [
+          "server",
+          "port"
+        ],
+        "msg": "Input should be greater than or equal to 1",
+        "type": "greater_than_equal"
+      }
+    ],
+    "files": {
+      "config.toml": "[server]\nport = 0\n"
+    },
+    "kind": "validation",
+    "name": "global_invalid_no_workspace",
+    "outcome": "error",
+    "problems": 1,
+    "workspace": "team"
+  }
+]

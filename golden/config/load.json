@@ -1,0 +1,1183 @@
+[
+  {
+    "config_toml": "",
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "empty_file",
+    "outcome": "ok",
+    "problems": 0
+  },
+  {
+    "config_toml": "schema_version = 2\nserver = { port = 8765 }\n",
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "current_defaults_only",
+    "outcome": "ok",
+    "problems": 0
+  },
+  {
+    "config_toml": "bogus = 1\n",
+    "errors": [
+      {
+        "loc": [
+          "bogus"
+        ],
+        "msg": "Extra inputs are not permitted",
+        "type": "extra_forbidden"
+      }
+    ],
+    "kind": "validation",
+    "name": "unknown_top_level_key",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "[server]\nprt = 9\n",
+    "errors": [
+      {
+        "loc": [
+          "server",
+          "prt"
+        ],
+        "msg": "Extra inputs are not permitted",
+        "type": "extra_forbidden"
+      }
+    ],
+    "kind": "validation",
+    "name": "unknown_nested_key",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "[server]\nport = 0\n",
+    "errors": [
+      {
+        "loc": [
+          "server",
+          "port"
+        ],
+        "msg": "Input should be greater than or equal to 1",
+        "type": "greater_than_equal"
+      }
+    ],
+    "kind": "validation",
+    "name": "port_zero",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "[server]\nport = \"eighty\"\n",
+    "errors": [
+      {
+        "loc": [
+          "server",
+          "port"
+        ],
+        "msg": "Input should be a valid integer, unable to parse string as an integer",
+        "type": "int_parsing"
+      }
+    ],
+    "kind": "validation",
+    "name": "port_not_a_number",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "not = [valid\n",
+    "errors": [],
+    "kind": "invalid_toml",
+    "name": "invalid_toml",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "[agents]\nenabled = true\n",
+    "effective": {
+      "agents": {},
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": true,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "v1_agents_enabled_true",
+    "outcome": "ok",
+    "problems": 0
+  },
+  {
+    "config_toml": "schema_version = 1\n[agents]\nenabled = false\n[agents.claude_code]\ntype = \"claude_code\"\nexecutable = \"claude\"\n",
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "v1_agents_enabled_false_with_agent",
+    "outcome": "ok",
+    "problems": 0
+  },
+  {
+    "config_toml": "schema_version = 1\n",
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "v1_without_agents_table",
+    "outcome": "ok",
+    "problems": 0
+  },
+  {
+    "config_toml": "schema_version = 1\n[server]\nport = 9000\n",
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 9000
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "v1_with_server_section",
+    "outcome": "ok",
+    "problems": 0
+  },
+  {
+    "config_toml": "[server]\nport = 0\nhost = \" \"\n[jobs]\nlease_seconds = 1\n",
+    "errors": [
+      {
+        "loc": [
+          "server",
+          "host"
+        ],
+        "msg": "Value error, host must not be empty",
+        "type": "value_error"
+      },
+      {
+        "loc": [
+          "server",
+          "port"
+        ],
+        "msg": "Input should be greater than or equal to 1",
+        "type": "greater_than_equal"
+      },
+      {
+        "loc": [
+          "jobs",
+          "lease_seconds"
+        ],
+        "msg": "Input should be greater than or equal to 5",
+        "type": "greater_than_equal"
+      }
+    ],
+    "kind": "validation",
+    "name": "multiple_errors",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "[server]\nlan_networks = [\"10.0.0.0/8\", \"nope\"]\n",
+    "errors": [
+      {
+        "loc": [
+          "server",
+          "lan_networks"
+        ],
+        "msg": "Value error, 'nope' does not appear to be an IPv4 or IPv6 network",
+        "type": "value_error"
+      }
+    ],
+    "kind": "validation",
+    "name": "lan_networks_invalid",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "[execution]\nisolation = \"shared\"\n",
+    "errors": [
+      {
+        "loc": [
+          "execution",
+          "isolation"
+        ],
+        "msg": "Input should be 'worktree' or 'in_place'",
+        "type": "literal_error"
+      }
+    ],
+    "kind": "validation",
+    "name": "isolation_invalid",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "[llm.providers.x]\nbase_url = \"http://x\"\n",
+    "errors": [
+      {
+        "loc": [
+          "llm",
+          "providers",
+          "x"
+        ],
+        "msg": "Unable to extract tag using discriminator 'type'",
+        "type": "union_tag_not_found"
+      }
+    ],
+    "kind": "validation",
+    "name": "provider_missing_type",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "[llm.providers.ollama]\ntype = \"ollama\"\ntimeout_seconds = 0\n",
+    "errors": [
+      {
+        "loc": [
+          "llm",
+          "providers",
+          "ollama",
+          "ollama",
+          "timeout_seconds"
+        ],
+        "msg": "Input should be greater than 0",
+        "type": "greater_than"
+      }
+    ],
+    "kind": "validation",
+    "name": "provider_timeout_zero",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "schema_version = 3\n",
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 3,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "schema_version_3_accepted",
+    "outcome": "ok",
+    "problems": 0
+  },
+  {
+    "config_toml": "[server]\nlan_networks = [\"192.168.0.0/16\"]\n",
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [
+          "192.168.0.0/16"
+        ],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "json_style_list_in_toml",
+    "outcome": "ok",
+    "problems": 0
+  },
+  {
+    "config_toml": "schema_version = 2\n[trackers.acme]\ntype = \"jira\"\nbase_url = \"https://acme.atlassian.net\"\nworkspace = \"acme\"\nprojects = [\"ACME\"]\ntoken_env = \"JIRA_TOKEN\"\n",
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {
+        "acme": {
+          "base_url": "https://acme.atlassian.net",
+          "cancelled_resolutions": [
+            "Won't Do",
+            "Duplicate"
+          ],
+          "dev_panel": true,
+          "email_env": null,
+          "flavour": "cloud",
+          "full_sync_interval_seconds": 86400,
+          "missing_grace_seconds": 86400,
+          "overlap_seconds": 120,
+          "poll_interval_seconds": 300,
+          "pr_fields": [],
+          "projects": [
+            "ACME"
+          ],
+          "timeout_seconds": 30.0,
+          "token_env": "JIRA_TOKEN",
+          "type": "jira",
+          "workspace": "acme"
+        }
+      },
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "tracker_jira_valid",
+    "outcome": "ok",
+    "problems": 0
+  },
+  {
+    "config_toml": "[trackers.acme]\ntype = \"jira\"\nbase_url = \"https://a\"\nworkspace = \"a\"\nprojects = [\"acme\"]\ntoken_env = \"T\"\n",
+    "errors": [
+      {
+        "loc": [
+          "trackers",
+          "acme",
+          "projects"
+        ],
+        "msg": "Value error, invalid Jira project key 'acme'",
+        "type": "value_error"
+      }
+    ],
+    "kind": "validation",
+    "name": "tracker_projects_lowercase",
+    "outcome": "error",
+    "problems": 1
+  },
+  {
+    "config_toml": "[execution]\nenabled = true\nmax_concurrent_runs = 4\nisolation = \"in_place\"\n",
+    "effective": {
+      "agents": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
+      "automation": {
+        "max_depth": 3
+      },
+      "claude": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "default_workspace": null,
+      "execution": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": true,
+        "isolation": "in_place",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 4
+      },
+      "jobs": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      },
+      "llm": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      },
+      "retention": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      },
+      "schema_version": 2,
+      "server": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      },
+      "stacks": {
+        "auto_accept": true
+      },
+      "trackers": {},
+      "verification": {
+        "auto_accept": true
+      }
+    },
+    "name": "execution_block_valid",
+    "outcome": "ok",
+    "problems": 0
+  }
+]

@@ -278,6 +278,18 @@ def test_config_validation_and_migration(tmp_path):
         store.load_global()
 
 
+def test_non_integer_schema_version_is_config_error(tmp_path):
+    paths = AppPaths.resolve(tmp_path)
+    paths.ensure()
+    store = ConfigStore(paths)
+    for bad in ("two", 2.0):
+        paths.config_file.write_text(tomli_w.dumps({"schema_version": bad}))
+        with pytest.raises(ConfigError, match="schema_version"):
+            store.load_global()
+        with pytest.raises(ConfigError, match="schema_version"):
+            store.migrate_files()
+
+
 def test_workspace_overrides(tmp_path):
     paths = AppPaths.resolve(tmp_path)
     paths.ensure()

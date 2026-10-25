@@ -3,14 +3,13 @@ from __future__ import annotations
 import sys
 
 import pytest
+from sqlalchemy import select
 
 from workgraph.core.errors import ConflictError, ValidationFailed
 from workgraph.core.models.enums import AttemptStatus
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.core.services import resolve
 from workgraph.core.services.attempts import new_attempt
-from sqlalchemy import select
-
 from workgraph.persistence.orm import Repository, Stack, StackRepository, Task
 
 

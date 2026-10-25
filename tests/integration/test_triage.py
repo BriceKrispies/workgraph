@@ -237,7 +237,9 @@ def test_rerun_is_idempotent(app, human, ws):
 
 def test_decision_replaces_a_pending_verdict(app, human, ws):
     key = _task(app, human, ws, "Port the game?")
-    _apply(app, human, ws, [{"key": key, "verdict": "needs-decision", "summary": "Ask.", "decision": "Port it?"}])
+    _apply(
+        app, human, ws, [{"key": key, "verdict": "needs-decision", "summary": "Ask.", "decision": "Port it?"}]
+    )
     again = _apply(app, human, ws, [{"key": key, "verdict": "needs-decision", "summary": "Ask."}])
     assert again["skipped"][0]["reason"] == "already triaged (triage:needs-decision)"
     report = _apply(app, human, ws, [{"key": key, "verdict": "obsolete", "summary": "Port dropped."}])

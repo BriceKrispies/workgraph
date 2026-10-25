@@ -36,7 +36,14 @@ dimensions and typed filters.
 `attempt_list`, `run_start`, `run_get`, `run_cancel`, `git_get_changes`, `git_get_task_diff`,
 `classification_get`, `classification_request`, `analytics_query`, `analytics_report`, `analytics_subagents`, `analytics_agent_time`, `analytics_bottlenecks`,
 `automation_list`, `automation_trigger`, `stack_get`, `stack_list`, `stack_history`, `experiment_list`,
-`experiment_get`, `experiment_report`, `experiment_predict`, `task_contract_check`.
+`experiment_get`, `experiment_report`, `experiment_predict`, `task_contract_check`, `task_request_decision`,
+`decision_list`, `task_decisions`.
+
+`task_request_decision(task, question, options)` asks the user a question the task waits on; `options` is a list of
+`{id?, label, detail?, recommended?}` (empty means a free-text answer) and the recommended option should be marked.
+It tags the task `needs-decision`. The user answers in the web UI or CLI; agents have no tool to answer.
+`task_decisions(task)` returns the task's decisions with the chosen option or free-text answer and note once given,
+and `decision_list(status, limit)` lists decisions (`open` by default) with their task. See [Decisions](api.md#decisions).
 
 `task_create` and `task_update` take `files` (a list of `{path, anchor?, note?}`; `task_update` also
 takes `add_files`, and `files: []` clears them). `task_get` returns them as `files`, and `task_list`

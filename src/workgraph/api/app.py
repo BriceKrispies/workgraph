@@ -122,10 +122,11 @@ def create_app(
             status_code=422,
         )
 
-    from workgraph.api.routes import core, ops, stacks, tasks
+    from workgraph.api.routes import core, decisions, ops, stacks, tasks
 
     api.include_router(core.router)
     api.include_router(tasks.router)
+    api.include_router(decisions.router)
     api.include_router(stacks.router)
     api.include_router(ops.router)
 

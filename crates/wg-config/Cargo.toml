@@ -10,5 +10,7 @@ description = "configuration model, TOML parsing, migration, writer"
 [lints]
 workspace = true
 
-[dev-dependencies]
-serde_json = "1"
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }
+toml = { version = "0.9", features = ["preserve_order"] }
+wg-validate = { path = "../wg-validate" }

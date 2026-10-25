@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scenario.schema.json",
+  "title": "Workgraph conformance scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "covers", "steps"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "covers": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Z]+[0-9]+$" }
+    },
+    "setup": { "type": "array", "items": { "$ref": "#/$defs/setup" } },
+    "steps": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/step" } },
+    "not_observable": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case", "covered_by"],
+        "properties": {
+          "case": { "type": "string" },
+          "covered_by": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "setup": {
+      "type": "object",
+      "required": ["git", "repo"],
+      "properties": {
+        "git": { "type": "string", "minLength": 1 },
+        "repo": { "type": "string", "minLength": 1 },
+        "files": { "type": "object", "additionalProperties": { "type": "string" } },
+        "message": { "type": "string" },
+        "args": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "step": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["cli"],
+          "additionalProperties": false,
+          "properties": {
+            "cli": { "type": "array", "items": { "type": "string" } },
+            "json": { "type": "boolean" },
+            "stdin": { "type": "string" },
+            "env": { "type": "object", "additionalProperties": { "type": "string" } },
+            "save": { "type": "object", "additionalProperties": { "type": "string" } },
+            "expect_exit": { "type": "integer" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["mcp"],
+          "additionalProperties": false,
+          "properties": {
+            "mcp": { "type": "string" },
+            "args": { "type": "object" },
+            "save": { "type": "object", "additionalProperties": { "type": "string" } }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["http", "path"],
+          "additionalProperties": false,
+          "properties": {
+            "http": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+            "path": { "type": "string" },
+            "body": {},
+            "save": { "type": "object", "additionalProperties": { "type": "string" } }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["drain"],
+          "additionalProperties": false,
+          "properties": {
+            "drain": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": { "max_jobs": { "type": "integer", "minimum": 1 } }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["assert"],
+          "additionalProperties": false,
+          "properties": { "assert": { "$ref": "#/$defs/assertion" } }
+        }
+      ]
+    },
+    "assertion": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "exit": { "type": "integer" },
+        "stdout_contains": { "type": "string" },
+        "stderr_contains": { "type": "string" },
+        "json": {
+          "type": "object",
+          "required": ["path", "equals"],
+          "additionalProperties": false,
+          "properties": { "path": { "type": "string" }, "equals": {} }
+        },
+        "file": { "type": "string" },
+        "exists": { "type": "boolean" },
+        "contains": { "type": "string" },
+        "db": { "type": "string" },
+        "where": { "type": "object" },
+        "count": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

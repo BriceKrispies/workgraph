@@ -9,3 +9,11 @@ description = "differential runner, normaliser, drivers and coverage report"
 
 [lints]
 workspace = true
+
+[dependencies]
+serde_json = "1"
+toml = { version = "0.9", default-features = false, features = ["parse", "serde", "std"] }
+
+[[bin]]
+name = "wg-conformance"
+path = "src/main.rs"

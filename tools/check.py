@@ -1,7 +1,7 @@
 """Unified quality gate: `uv run tools/check.py` (add --fast to skip slow tests, --no-web to skip the frontend).
 
 Runs, in order: ruff lint, ruff format check, ty, pytest with coverage (80% gate) and,
-when the frontend dependencies are installed, pnpm typecheck / test / build.
+when the frontend dependencies are installed, bun run typecheck / test / build.
 Exits non-zero on the first failing step.
 """
 
@@ -47,15 +47,15 @@ def main() -> None:
             [uv, "run", "pytest", "-q", "--cov=workgraph", "--cov-report=term", "--cov-fail-under=80"],
         )
     web = ROOT / "web"
-    pnpm = shutil.which("pnpm")
+    bun = shutil.which("bun")
     if args.no_web:
         print("\n(skipping frontend checks)")
-    elif pnpm and (web / "node_modules").exists():
-        step("web typecheck", [pnpm, "typecheck"], cwd=web)
-        step("web unit tests", [pnpm, "test"], cwd=web)
-        step("web build", [pnpm, "build"], cwd=web)
+    elif bun and (web / "node_modules").exists():
+        step("web typecheck", [bun, "run", "typecheck"], cwd=web)
+        step("web unit tests", [bun, "run", "test"], cwd=web)
+        step("web build", [bun, "run", "build"], cwd=web)
     else:
-        print("\n(frontend dependencies not installed; run `pnpm --dir web install` to include web checks)")
+        print("\n(frontend dependencies not installed; run `bun install --cwd web` to include web checks)")
     print("\nall checks passed")
 
 

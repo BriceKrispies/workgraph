@@ -10,9 +10,11 @@ import typer
 from rich.markup import escape
 
 from workgraph.cli.common import (
+    EXIT_CODES,
     STATE,
     console,
     emit,
+    err_console,
     fail,
     handle_errors,
     kv,
@@ -23,6 +25,7 @@ from workgraph.cli.common import (
     workspace_option,
     ws,
 )
+from workgraph.core.errors import ValidationFailed, WorkgraphError
 from workgraph.core.models.enums import RelationType, TaskPriority, TaskStatus
 from workgraph.core.models.schemas import (
     BulkUpdate,
@@ -247,11 +250,48 @@ def task_ready(
     emit(items, lambda rows: table([_row(t) for t in rows], HEAD, title="ready"))
 
 
+def _exit_code(exc: WorkgraphError) -> int:
+    return next((code for cls, code in EXIT_CODES if isinstance(exc, cls)), 1)
+
+
 @task_app.command("show")
 @handle_errors
-def task_show(ref: str, workspace: str | None = workspace_option()) -> None:
-    """Show task details, comments, rollup and blockers."""
-    emit(STATE.app().tasks.detail(STATE.ctx(), ws(workspace), ref), _render_task)
+def task_show(
+    refs: list[str] = typer.Argument(..., help="One or more task refs"),
+    workspace: str | None = workspace_option(),
+) -> None:
+    """Show task details, comments, rollup and blockers for one or more tasks.
+
+    With several refs, the other tasks are still shown when one is unknown; the
+    failures are reported and the command exits with the first failure's code.
+    """
+    if len(refs) == 1:
+        emit(STATE.app().tasks.detail(STATE.ctx(), ws(workspace), refs[0]), _render_task)
+        return
+    app = STATE.app()
+    ctx = STATE.ctx()
+    items: list[Any] = []
+    errors: list[tuple[str, WorkgraphError]] = []
+    for ref in refs:
+        try:
+            items.append(app.tasks.detail(ctx, ws(workspace), ref))
+        except WorkgraphError as exc:
+            errors.append((ref, exc))
+
+    def human(_: Any) -> None:
+        for index, task in enumerate(items):
+            if index:
+                console.print()
+            _render_task(task)
+        for ref, exc in errors:
+            err_console.print(f"[red]error[/red] ({exc.code}) {escape(ref)}: {escape(exc.message)}")
+
+    emit(
+        {"items": items, "errors": [{"ref": ref, "error": exc.to_dict()} for ref, exc in errors]},
+        human,
+    )
+    if errors:
+        raise typer.Exit(_exit_code(errors[0][1]))
 
 
 def _render_verdict(out: dict[str, Any]) -> None:
@@ -444,21 +484,38 @@ def task_accept(
 @handle_errors
 def task_promote_ready(
     tag: list[str] = typer.Option(None, "--tag", "-t", help="Only tasks with this tag (repeatable)"),
-    project: str | None = typer.Option(None, "--project", "-p"),
+    project: str | None = typer.Option(None, "--project", "-p", help="Only tasks in this project"),
+    all_tasks: bool = typer.Option(
+        False,
+        "--all",
+        help="Consider every backlog task in the workspace (required when no --project or --tag)",
+    ),
     dry_run: bool = typer.Option(False, "--dry-run", help="Report what would move; change nothing"),
     workspace: str | None = workspace_option(),
 ) -> None:
-    """Move backlog tasks whose dependencies are all accepted to ready (skips parents and parked tasks)."""
-    keys = STATE.app().tasks.promote_ready(
-        STATE.ctx(), ws(workspace), tags=_tag_values(tag), project=project, dry_run=dry_run
+    """Move backlog tasks whose dependencies are all accepted to ready (skips parents and parked tasks).
+
+    A scope is required: --project, --tag, or --all.
+    """
+    tags = _tag_values(tag)
+    if all_tasks and (project or tags):
+        raise ValidationFailed("--all cannot be combined with --project or --tag")
+    if not (all_tasks or project or tags):
+        raise ValidationFailed("give --project, --tag or --all to choose the tasks to promote")
+    report = STATE.app().tasks.promote_ready_report(
+        STATE.ctx(), ws(workspace), tags=tags, project=project, dry_run=dry_run
     )
-    emit(
-        {"promoted": keys, "dry_run": dry_run},
-        lambda r: console.print(
+    keys = report["promoted"]
+
+    def render(r: dict[str, Any]) -> None:
+        console.print(
             f"{'would promote' if dry_run else 'promoted'} {len(keys)}"
             + (f": {', '.join(keys)}" if keys else "")
-        ),
-    )
+        )
+        for slug, count in r["by_project"].items():
+            console.print(f"  {escape(slug)}: {count}")
+
+    emit({**report, "dry_run": dry_run}, render)
 
 
 @task_app.command("import-breakdown")

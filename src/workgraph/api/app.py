@@ -41,7 +41,7 @@ def _index_html(token: str) -> str:
         return (
             "<!doctype html><html><head><meta charset='utf-8'><title>Workgraph</title></head><body>"
             "<h1>Workgraph API is running</h1><p>The web UI has not been built. Run "
-            "<code>pnpm --dir web install</code> and <code>pnpm --dir web build</code>, then reload.</p>"
+            "<code>bun install --cwd web</code> and <code>bun run --cwd web build</code>, then reload.</p>"
             "<p>API: <code>/api/v1</code></p></body></html>"
         )
     html = index.read_text(encoding="utf-8")
@@ -122,10 +122,11 @@ def create_app(
             status_code=422,
         )
 
-    from workgraph.api.routes import core, ops, stacks, tasks
+    from workgraph.api.routes import core, decisions, ops, stacks, tasks
 
     api.include_router(core.router)
     api.include_router(tasks.router)
+    api.include_router(decisions.router)
     api.include_router(stacks.router)
     api.include_router(ops.router)
 

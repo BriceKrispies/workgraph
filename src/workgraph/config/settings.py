@@ -264,9 +264,20 @@ class WorkspaceOverrides(_Strict):
     verification: dict[str, Any] | None = None
 
 
-def _migrate(raw: dict[str, Any]) -> dict[str, Any]:
+def _schema_version(raw: dict[str, Any], source: Path | str = "config") -> int:
+    """Return the document's schema_version, rejecting anything that is not an integer."""
+    value = raw.get("schema_version", 1)
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ConfigError(
+            f"{source} has an invalid schema_version: expected an integer, got {value!r}",
+            details={"schema_version": value},
+        )
+    return value
+
+
+def _migrate(raw: dict[str, Any], source: Path | str = "config") -> dict[str, Any]:
     """Upgrade older config documents in place to the current schema."""
-    version = int(raw.get("schema_version", 1))
+    version = _schema_version(raw, source)
     if version < 2:
         # v1 kept agent execution under "agents.enabled"; v2 moved it into [execution].
         agents = raw.get("agents")
@@ -302,7 +313,7 @@ class ConfigStore:
             raise ConfigError(f"{path} is not valid TOML: {exc}") from exc
 
     def load_global(self) -> GlobalConfig:
-        raw = _migrate(self._read_toml(self.paths.config_file))
+        raw = _migrate(self._read_toml(self.paths.config_file), self.paths.config_file)
         try:
             return GlobalConfig.model_validate(raw)
         except ValidationError as exc:
@@ -318,7 +329,7 @@ class ConfigStore:
         return self.paths.workspace_config_dir / f"{slug}.toml"
 
     def load_workspace_overrides(self, slug: str) -> WorkspaceOverrides:
-        raw = _migrate(self._read_toml(self.workspace_file(slug)))
+        raw = _migrate(self._read_toml(self.workspace_file(slug)), self.workspace_file(slug))
         try:
             return WorkspaceOverrides.model_validate(raw)
         except ValidationError as exc:
@@ -369,13 +380,13 @@ class ConfigStore:
         rewritten: list[Path] = []
         if self.paths.config_file.exists():
             raw = self._read_toml(self.paths.config_file)
-            if int(raw.get("schema_version", 1)) < CONFIG_SCHEMA_VERSION:
+            if _schema_version(raw, self.paths.config_file) < CONFIG_SCHEMA_VERSION:
                 self.save_global(self.load_global())
                 rewritten.append(self.paths.config_file)
         if self.paths.workspace_config_dir.exists():
             for file in sorted(self.paths.workspace_config_dir.glob("*.toml")):
                 raw = self._read_toml(file)
-                if int(raw.get("schema_version", 1)) < CONFIG_SCHEMA_VERSION:
+                if _schema_version(raw, file) < CONFIG_SCHEMA_VERSION:
                     self.save_workspace_overrides(file.stem, self.load_workspace_overrides(file.stem))
                     rewritten.append(file)
         return rewritten

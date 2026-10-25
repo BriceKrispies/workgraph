@@ -147,6 +147,62 @@ def test_cli_errors_and_exit_codes(run):
     run("task", "depend", "WG-1", "WG-1", expect=2)
 
 
+def test_task_list_limit_above_maximum_is_a_validation_error(run, home, monkeypatch):
+    run("init")
+    err = run("task", "list", "--limit", "2000", expect=2)
+    assert err["error"]["code"] == "validation_failed"
+    assert "500" in err["error"]["message"]
+    assert any(item["loc"] == ["limit"] for item in err["error"]["details"]["errors"])
+
+    monkeypatch.setenv("WORKGRAPH_HOME", str(home))
+    try:
+        result = CliRunner().invoke(cli, ["task", "list", "--limit", "2000"])
+    finally:
+        STATE.close()  # the app opened here would otherwise serve the next test's home
+    assert result.exit_code == 2, result.output
+    assert "validation_failed" in result.output
+    assert "limit" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_cli_task_show_single_ref_shape(run):
+    run("init")
+    run("task", "create", "Solo")
+    shown = run("task", "show", "WG-1")
+    assert shown["key"] == "WG-1" and "items" not in shown
+
+
+def test_cli_task_show_several_refs(run, monkeypatch):
+    run("init")
+    run("task", "create", "First")
+    run("task", "create", "Second")
+    run("task", "comment", "WG-1", "first note")
+    run("task", "comment", "WG-2", "second note")
+    single = run("task", "show", "WG-1")
+
+    opened = []
+    original_app = STATE.app
+    monkeypatch.setattr(STATE, "app", lambda: opened.append(1) or original_app())
+    many = run("task", "show", "WG-2", "WG-1")
+
+    assert len(opened) == 1
+    assert set(many) == {"items", "errors"}
+    assert [item["key"] for item in many["items"]] == ["WG-2", "WG-1"]
+    assert many["items"][1] == single
+    assert [c["body"] for c in many["items"][1]["comments"]] == ["first note"]
+    assert [c["body"] for c in many["items"][0]["comments"]] == ["second note"]
+    assert many["errors"] == []
+
+
+def test_cli_task_show_unknown_ref_among_several(run):
+    run("init")
+    run("task", "create", "Known")
+    out = run("task", "show", "WG-404", "WG-1", expect=4)
+    assert [item["key"] for item in out["items"]] == ["WG-1"]
+    assert out["errors"][0]["ref"] == "WG-404"
+    assert out["errors"][0]["error"]["code"] == "not_found"
+
+
 def test_cli_backup_restore_export_import(run, tmp_path, home):
     run("init")
     run("task", "create", "Keep me", "--description", "important")
@@ -290,14 +346,51 @@ def test_console_script_help():
     assert proc.returncode == 0 and "task" in proc.stdout and "analytics" in proc.stdout
 
 
+def test_promote_ready_cli_refuses_without_a_scope(run):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    run("task", "create", "Plain")  # AC-1
+    for args in ([], ["--all", "--project", "core"], ["--all", "--tag", "sprint"]):
+        refused = run("task", "promote-ready", *args, expect=2)
+        assert refused["error"]["code"] == "validation_failed"
+    assert run("task", "show", "AC-1")["status"] == "backlog"
+
+
+def test_promote_ready_cli_counts_per_project(run):
+    run("init", "--workspace", "acme", "--prefix", "AC")
+    run("project", "create", "core")
+    run("project", "create", "ops")
+    run("task", "create", "Both", "--project", "core", "--project", "ops")  # AC-1
+    run("task", "create", "Core", "--project", "core")  # AC-2
+    run("task", "create", "Unfiled")  # AC-3
+    assert run("task", "promote-ready", "--project", "core", "--dry-run") == {
+        "promoted": ["AC-1", "AC-2"],
+        "by_project": {"core": 2, "ops": 1},
+        "dry_run": True,
+    }
+    assert run("task", "show", "AC-1")["status"] == "backlog"
+    assert run("task", "promote-ready", "--all") == {
+        "promoted": ["AC-1", "AC-2", "AC-3"],
+        "by_project": {"(none)": 1, "core": 2, "ops": 1},
+        "dry_run": False,
+    }
+
+
 def test_promote_ready_cli_and_accept_promote_dependents(run):
     run("init", "--workspace", "acme", "--prefix", "AC")
     run("task", "create", "Base", "--ready")  # AC-1
     run("task", "create", "Follow", "--depends-on", "AC-1")  # AC-2
     run("task", "create", "Plain")  # AC-3
-    assert run("task", "promote-ready", "--dry-run") == {"promoted": ["AC-3"], "dry_run": True}
+    assert run("task", "promote-ready", "--all", "--dry-run") == {
+        "promoted": ["AC-3"],
+        "by_project": {"(none)": 1},
+        "dry_run": True,
+    }
     assert run("task", "show", "AC-3")["status"] == "backlog"
-    assert run("task", "promote-ready") == {"promoted": ["AC-3"], "dry_run": False}
+    assert run("task", "promote-ready", "--all") == {
+        "promoted": ["AC-3"],
+        "by_project": {"(none)": 1},
+        "dry_run": False,
+    }
     assert run("task", "show", "AC-3")["status"] == "ready"
     run("task", "claim", "AC-1")
     run("task", "complete", "AC-1", "-m", "done")

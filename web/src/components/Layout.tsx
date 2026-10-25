@@ -21,6 +21,7 @@ const NAV: NavItem[] = [
   { to: "/tasks", text: "Tasks", key: "t", icon: "tasks", primary: true },
   { to: "/stacks", text: "Stacks", key: "k", icon: "stacks", primary: true },
   { to: "/execution", text: "Runs", key: "e", icon: "runs", primary: true },
+  { to: "/decisions", text: "Decisions", key: "d", icon: "decisions" },
   { to: "/graph", text: "Graph", key: "g", icon: "graph" },
   { to: "/repositories", text: "Repositories", key: "r", icon: "repo" },
   { to: "/analytics", text: "Analytics", key: "a", icon: "analytics" },

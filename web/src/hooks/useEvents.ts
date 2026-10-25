@@ -46,6 +46,7 @@ export function useEventStream(ws: string): { connected: boolean } {
         schedule("run");
       }
       if (prefix === "automation" || prefix === "notification") schedule("automation");
+      if (prefix === "decision") schedule("decisions");
       if (prefix === "repository" || prefix === "git") schedule("repositories");
       if (prefix === "stack" || prefix === "verification") schedule("stacks");
     });

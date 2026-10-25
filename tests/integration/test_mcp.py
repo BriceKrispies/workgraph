@@ -31,6 +31,7 @@ REQUIRED_TOOLS = {
     "task_complete",
     "task_get_ready",
     "task_promote_ready",
+    "task_import_breakdown",
     "task_add_dependency",
     "task_remove_dependency",
     "task_add_relation",

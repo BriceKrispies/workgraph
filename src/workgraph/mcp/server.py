@@ -45,6 +45,7 @@ from workgraph.core.models.schemas import (
     TaskFilter,
     TaskUpdate,
 )
+from workgraph.core.services import breakdown
 from workgraph.security.permissions import DEFAULT_AGENT_PERMISSIONS, Permission
 
 P = ParamSpec("P")
@@ -572,6 +573,38 @@ def build_server(
     ) -> dict[str, Any]:
         promoted = app.tasks.promote_ready(ctx(), workspace, tags=tags, project=project, dry_run=dry_run)
         return {"promoted": promoted, "dry_run": dry_run}
+
+    @tool(
+        "task_import_breakdown",
+        "Create or update the tasks of one section of a markdown breakdown document, given as text. "
+        "Bold headers (**V1. Title**) are tasks; a ranged header followed by a table makes one task per row; "
+        "'Depends on:' / 'Deps:' lists link tasks. SOURCE names the document (stored with each task so a re-run "
+        "updates instead of duplicating). dry_run reports the plan and changes nothing.",
+    )
+    def task_import_breakdown(
+        markdown: Annotated[str, Field(min_length=1, description="The markdown document text")],
+        section: Annotated[str, Field(min_length=1, description="Heading text of the section to import")],
+        source: Annotated[str, Field(min_length=1, description="Document name, stored with each task")],
+        parent: Annotated[str, Field(min_length=1, description="Parent task key or id")],
+        tags: list[str] | None = None,
+        project: str | None = None,
+        repository: str | None = None,
+        dry_run: bool = False,
+        workspace: Workspace = None,
+    ) -> dict[str, Any]:
+        return breakdown.import_breakdown(
+            app.tasks,
+            ctx(),
+            workspace,
+            markdown,
+            section=section,
+            source=source,
+            parent=parent,
+            tags=tags or [],
+            project=project,
+            repository=repository,
+            dry_run=dry_run,
+        )
 
     @tool("task_add_dependency", "Make TASK depend on DEPENDS_ON (cycles are rejected).")
     def task_add_dependency(

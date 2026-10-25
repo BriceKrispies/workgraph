@@ -21,7 +21,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `workspace` | `create`, `list`, `show`, `use`, `archive`, `set --allowed-root` |
 | `project` | `create`, `list`, `show`, `update` (`--name`, `--description`, `--status`), `add-repo`, `remove-repo`, `rename-term PROJECT --from OLD --to NEW [--keep TOKEN]... [--dry-run]` (renames a word, such as a language's name, across the project's live records: open tasks' title, description, acceptance criteria and file paths; every task's tags; the project's slug, name and description; its repositories' names and descriptions; and every string in the checks of verification configs scoped to them. Accepted, cancelled and archived tasks keep their text as records and take only the renamed tags. The word matches in three spellings (`rho`, `Rho`, `RHO`) when no letter precedes it and no letter of its case follows, so `rhombus` stays; `--keep` protects tokens that contain it but are not it. Each change is an ordinary event with reason `rename OLD to NEW` and queues no reclassification. A rewritten absolute path in a check that names nothing on disk is reported; checkout paths are not moved) |
 | `repo` | `register`, `list`, `show`, `refresh`, `status`, `update`, `remove`, `remove-checkout`, `depend` |
-| `task` | `create`, `list`, `ready`, `promote-ready [--tag T] [--project P] [--dry-run]` (moves every backlog task whose dependencies are all accepted to `ready` in one transaction and prints the promoted keys; skips tasks with children and tasks tagged `parked`), `show`, `contract-check TASK --model M [--target 0.8]` (triage: `not_delegable`, `incomplete`, `split` or `leaf`, with the missing contract fields, reasons and the predicted success, labelled an inference; `--json` for the verdict), `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` (`--project`, `--repo`, `--open`), `triage-apply FILE [--dry-run] [--source TEXT]` (applies a JSON array of triage verdicts; see [Triage verdicts](#triage-verdicts)) |
+| `task` | `create`, `list`, `ready`, `promote-ready [--tag T] [--project P] [--dry-run]` (moves every backlog task whose dependencies are all accepted to `ready` in one transaction and prints the promoted keys; skips tasks with children and tasks tagged `parked`), `show`, `contract-check TASK --model M [--target 0.8]` (triage: `not_delegable`, `incomplete`, `split` or `leaf`, with the missing contract fields, reasons and the predicted success, labelled an inference; `--json` for the verdict), `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` (`--project`, `--repo`, `--open`), `triage-apply FILE [--dry-run] [--source TEXT]` (applies a JSON array of triage verdicts; see [Triage verdicts](#triage-verdicts)), `import-breakdown FILE --section TEXT --parent KEY [--tag T]... [--project P] [--repo R] [--dry-run]` (creates or updates the tasks of one markdown section; see [Importing a breakdown](#importing-a-breakdown)) |
 | `experiment` | `create SLUG --title T [--question Q] --protocol @file.json\|JSON`, `list [--status]`, `show EXP` (protocol summary and trials in order), `freeze EXP` (validates the protocol, freezes it and starts the experiment), `close EXP`, `trial add EXP TASK --arm A --phase P [--band N]` (a planned trial of a running experiment), `trial show TRIAL`, `trial start TRIAL` (clones the task's replay base into a fresh single-branch clone with no remote, runs the protocol's `setup`, prints the worktree, branch, base sha and brief), `trial grade TRIAL [--timeout S]` (runs the oracle and gates in the clone and records the outcome; a failure with flags is classed `gaming`), `trial classify TRIAL --cause C --source human\|agent\|mechanical [--notes N]`, `next EXP` (the pending trial, or a newly planned one from the protocol, or `done` with the reason), `report EXP` (per arm: bands with Wilson intervals, size fit with bootstrap intervals, usage, failure causes, invalid trials; `--json` for the data), `fit --model M [--repo-penalty X] [--feature-penalty X] [--samples N] [--seed S]` (fits the success predictor for one model over every graded trial with ex-ante features, stores the fit with its data cutoff and trial ids, and bootstraps it), `predict --model M (--task TASK \| --repo R --lines N --files F --packages P,Q) [--fit ID]` (probability of success with a 95% interval and the fit it came from; labelled an inference; `--packages` is a comma-separated list, may be empty) (see [Experiments](data-model.md#experiments)) ; `replay scan --repo R [--rev REV] [--limit N] [--min-lines N] [--max-lines N] [--include-excluded]` (commits that could become replay tasks, with size band and exclusion reasons), `replay create --repo R SHA... [--validate] [--oracle-template JSON-list] [--env K=V]... [--timeout S]` (one replay task per commit: `created`, `exists`, `skipped` or `rejected`) |
 | `stack` | `create PARENT`, `show PARENT` (repositories with base, integration branch and tip; children in merge order), `list [--all]`, `add PARENT TASK` and `remove PARENT TASK` (change the children of the active stack), `readmit PARENT TASK` (queue an ejected or pending child for integration again without re-running its fast gate, for an ejection caused outside the change), `eject PARENT TASK -m REASON` (eject a merged child the evidence already names as the failure and rebuild without it, skipping bisection), `history PARENT` (the stack's events in order, with their verification runs), `integrate PARENT` (queues merging the ready children onto each repository's integration branch), `verify PARENT` (queues full verification of the integration tip, bisecting and ejecting a failing child). Acceptance goes through `task`: `task accept PARENT` (or `--manual --reason`) lands a verified stack on the default branch, refused with `landing: deferred` when the default branch moved and the stack is rebuilt to verify again; `task accept CHILD` accepts one child alone and removes it from its stack; `task reject PARENT` leaves the stack as it is (see [Git](git.md#stack-landing)) |
 | `attempt` | `list`, `show`, `create`, `start TASK [--agent-name N] [--adapter A] [--model M] [--isolation worktree\|in_place]`, `submit ATTEMPT [--failed] [--summary TEXT] [--error TEXT]`, `abandon ATTEMPT [--reason TEXT]` (an external attempt whose agent stopped without submitting: marked abandoned, the task returns to ready and its worktrees are released), `finish`, `compare`, `manifests` |
@@ -63,6 +63,41 @@ integration-ready in an active stack).
 
 `task accept TASK --promote-dependents` promotes the direct backlog dependents of TASK that are fully satisfied
 after the acceptance, with the same skip rules. Its JSON output is the acceptance with a `promoted` list added.
+
+## Importing a breakdown
+
+`task import-breakdown FILE.md --section "HEADING" --parent KEY` turns one section of a planning document
+into tasks. The section runs from its heading to the next heading of the same or a higher level.
+
+- A task is a bold line at the start of a line: `**V12 Title**`, `**V1. Title**`, `**FD-01 Title**`. The text
+  under it, up to the next task header, is the description.
+- A ranged header, `**GV-01 to GV-21 Name**`, is followed by a markdown table whose first column holds one id per
+  row. Each row becomes a task titled `Name: <second column>`; its description is the block text plus the row.
+  A table may also have `Deps` and `Tier` columns (as the interface tables of `docs/rust-rewrite.md` do); those
+  apply to their row only.
+- `Depends on:` or `Deps:` lists name other ids (`SC-01 to SC-36` expands) or existing task keys (`WG-12`).
+  Anything else in such a list (`Q1 answered`) stays in the description and is reported as unresolved.
+  A task with an unresolved item stays in `backlog`.
+- `Tier: mid` and `Tier: top` add the tags `tier-mid` and `tier-top`. `--tag` adds a tag to every task, `--parent`
+  sets the parent of every task, and `--project` and `--repo` apply to the tasks this run creates.
+- A task whose dependencies are all accepted (or that has none) is `ready`; the rest are `backlog`.
+- Each task stores `metadata.breakdown_id` (its id) and `metadata.breakdown_doc` (the file's absolute path, a `#`,
+  then the section heading). A re-run finds those tasks and updates their title, description, tier and `--tag`
+  tags, parent and new dependencies; unchanged tasks are left alone, and a `backlog` task whose dependencies are now
+  accepted becomes `ready`. A re-run never creates a duplicate and never removes a dependency or changes the status
+  of a task that has started (remove a stale dependency with `task depend --remove`).
+- The whole section is validated before any write (a missing heading, a ranged block without a table, or a repeated
+  id is refused). `--dry-run` prints the plan with `key` empty for tasks it would create and changes nothing.
+- Output is a table of id, key, action (`created`, `updated`, `unchanged`), status and title, followed by the
+  unresolved dependencies. With `--json` it is `{"tasks": [...], "map": {id: key}, "unresolved": [...], "counts": {...}, "dry_run", "source"}`.
+
+The MCP tool `task_import_breakdown` takes the document text (`markdown`), `section`, a `source` name for the
+metadata, `parent`, optional `tags`, `project`, `repository` and `dry_run`.
+
+```sh
+uv run workgraph task import-breakdown docs/rust-rewrite.md --section "9. Task breakdown" --parent WG-3362 --dry-run
+uv run workgraph --json task import-breakdown docs/rust-rewrite.md --section "9. Task breakdown" --parent WG-3362
+```
 
 ## Triage verdicts
 

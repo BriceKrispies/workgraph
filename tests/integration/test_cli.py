@@ -1,30 +1,18 @@
 from __future__ import annotations
 
 import json
-import os
-import subprocess
-import sys
 
 import pytest
-from typer.testing import CliRunner
 
-from workgraph.cli.common import STATE
-from workgraph.cli.main import app as cli
+from tests.helpers import run_cli, run_cli_process
 
 
 @pytest.fixture
 def run(home, monkeypatch):
     monkeypatch.setenv("WORKGRAPH_HOME", str(home))
-    runner = CliRunner()
 
     def invoke(*args: str, expect: int = 0) -> object:
-        STATE.json = True
-        STATE.home = None
-        try:
-            result = runner.invoke(cli, list(args), catch_exceptions=False)
-        finally:
-            STATE.close()
-            STATE.json = False
+        result = run_cli(["--json", *args])
         assert result.exit_code == expect, f"{args}: exit {result.exit_code}\n{result.output}"
         text = result.output.strip()
         return json.loads(text) if text.startswith(("{", "[")) else text
@@ -216,57 +204,18 @@ def test_cli_backup_restore_export_import(run, tmp_path, home):
     exported = run("export", "workspace", str(tmp_path / "ws.jsonl"))
     assert exported["tables"]["tasks"] == 1
     other_home = tmp_path / "other"
-    env = {**os.environ, "WORKGRAPH_HOME": str(other_home)}
-    subprocess.run(
-        [sys.executable, "-m", "workgraph", "init", "--no-workspace"],
-        env=env,
-        check=True,
-        capture_output=True,
-    )
-    imported = subprocess.run(
-        [sys.executable, "-m", "workgraph", "--json", "import", str(tmp_path / "ws.jsonl")],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert imported.returncode == 0, imported.stderr
-    tasks = subprocess.run(
-        [sys.executable, "-m", "workgraph", "--json", "-w", "default", "task", "list"],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    env = {"WORKGRAPH_HOME": str(other_home)}
+    init = run_cli(["init", "--no-workspace"], env=env)
+    assert init.exit_code == 0, init.stderr
+    imported = run_cli(["--json", "import", str(tmp_path / "ws.jsonl")], env=env)
+    assert imported.exit_code == 0, imported.stderr
+    tasks = run_cli(["--json", "-w", "default", "task", "list"], env=env)
     data = json.loads(tasks.stdout)
     assert data["total"] == 1 and data["items"][0]["title"] == "Keep me"
-    search = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "workgraph",
-            "--json",
-            "-w",
-            "default",
-            "search",
-            "important",
-            "--mode",
-            "lexical",
-        ],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    search = run_cli(["--json", "-w", "default", "search", "important", "--mode", "lexical"], env=env)
     assert json.loads(search.stdout)["hits"]
-    again = subprocess.run(
-        [sys.executable, "-m", "workgraph", "--json", "import", str(tmp_path / "ws.jsonl")],
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert again.returncode == 3
+    again = run_cli(["--json", "import", str(tmp_path / "ws.jsonl")], env=env)
+    assert again.exit_code == 3
 
 
 def test_doctor_reports_health(run):
@@ -282,43 +231,37 @@ def test_task_show_survives_cp1252_console(run, home):
     run("init")
     run("task", "create", "Unicode task", "--description", "step a → b — c ≤ d")
     env = {
-        **os.environ,
         "WORKGRAPH_HOME": str(home),
         "PYTHONIOENCODING": "cp1252",
         "PYTHONUTF8": "0",
     }
-    proc = subprocess.run(
-        [sys.executable, "-m", "workgraph", "-w", "default", "task", "show", "WG-1"],
-        env=env,
-        capture_output=True,
-        check=False,
-    )
-    assert proc.returncode == 0, proc.stderr.decode("ascii", "replace")
+    proc = run_cli_process(["-w", "default", "task", "show", "WG-1"], env=env)
+    assert proc.exit_code == 0, proc.stderr.decode("ascii", "replace")
     assert b"Unicode task" in proc.stdout
 
 
-def _piped_cli(home, *args: str) -> subprocess.CompletedProcess[bytes]:
+def _piped_cli(home, *args: str):
     # stdout is a pipe here, the case that crashed rich's legacy Windows path.
-    env = {key: value for key, value in os.environ.items() if key not in ("FORCE_COLOR", "COLUMNS")}
-    env.update({"WORKGRAPH_HOME": str(home), "PYTHONUTF8": "1", "NO_COLOR": "1"})
-    return subprocess.run(
-        [sys.executable, "-m", "workgraph", "-w", "default", *args],
-        env=env,
-        capture_output=True,
-        check=False,
-    )
+    env = {
+        "FORCE_COLOR": None,
+        "COLUMNS": None,
+        "WORKGRAPH_HOME": str(home),
+        "PYTHONUTF8": "1",
+        "NO_COLOR": "1",
+    }
+    return run_cli_process(["-w", "default", *args], env=env)
 
 
 def test_piped_human_output_renders_as_plain_text(run, home):
     run("init")
     run("task", "create", "Piped task", "--ready", "--description", "body text")
     show = _piped_cli(home, "task", "show", "WG-1")
-    assert show.returncode == 0, show.stderr.decode("utf-8", "replace")
+    assert show.exit_code == 0, show.stderr.decode("utf-8", "replace")
     assert b"Traceback" not in show.stderr
     assert b"Piped task" in show.stdout
     assert b"\x1b[" not in show.stdout
     listing = _piped_cli(home, "task", "list")
-    assert listing.returncode == 0, listing.stderr.decode("utf-8", "replace")
+    assert listing.exit_code == 0, listing.stderr.decode("utf-8", "replace")
     assert b"WG-1" in listing.stdout and b"Piped task" in listing.stdout
 
 
@@ -336,14 +279,8 @@ def test_cli_console_skips_legacy_windows_path_off_a_terminal():
 
 
 def test_console_script_help():
-    proc = subprocess.run(
-        [sys.executable, "-m", "workgraph", "--help"],
-        capture_output=True,
-        encoding="utf-8",
-        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
-        check=False,
-    )
-    assert proc.returncode == 0 and "task" in proc.stdout and "analytics" in proc.stdout
+    proc = run_cli(["--help"], env={"PYTHONIOENCODING": "utf-8"})
+    assert proc.exit_code == 0 and "task" in proc.stdout and "analytics" in proc.stdout
 
 
 def test_promote_ready_cli_refuses_without_a_scope(run):

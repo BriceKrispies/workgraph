@@ -155,7 +155,10 @@ def test_task_list_limit_above_maximum_is_a_validation_error(run, home, monkeypa
     assert any(item["loc"] == ["limit"] for item in err["error"]["details"]["errors"])
 
     monkeypatch.setenv("WORKGRAPH_HOME", str(home))
-    result = CliRunner().invoke(cli, ["task", "list", "--limit", "2000"])
+    try:
+        result = CliRunner().invoke(cli, ["task", "list", "--limit", "2000"])
+    finally:
+        STATE.close()  # the app opened here would otherwise serve the next test's home
     assert result.exit_code == 2, result.output
     assert "validation_failed" in result.output
     assert "limit" in result.output

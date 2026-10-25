@@ -1,7 +1,8 @@
 # Testing
 
 ```sh
-uv run pytest
+uv run pytest -n auto                       # default: run the suite in parallel across CPU cores
+uv run pytest                               # serial run, useful when debugging one ordering problem
 uv run pytest -m "not slow and not e2e"
 uv run pytest tests/e2e
 uv run pytest --cov=workgraph --cov-report=term
@@ -20,6 +21,11 @@ The ordinary suite needs **no network, no Ollama, no Claude Code and no paid API
 | MCP | the real server over stdio (subprocess) and Streamable HTTP (uvicorn), driven by the SDK client |
 | HTTP API | Starlette `TestClient` with the real security middleware, and uvicorn for MCP/e2e |
 | Database | real SQLite files in WAL mode, real Alembic migrations |
+
+`pytest-xdist` is a dev dependency and `uv run pytest -n auto` is the default way to run the suite.
+Each test gets its own `WORKGRAPH_HOME` under `tmp_path`, and tests that open a socket use a free
+port from `_free_port()` or an OS-assigned port, so workers do not share a database, data directory
+or port. A test that writes to a process-wide location must monkeypatch it per test.
 
 Layout: `tests/unit` (pure logic, queue semantics, parsers, configuration, migrations),
 `tests/integration` (services against real Git/SQLite/processes, API, MCP, CLI),

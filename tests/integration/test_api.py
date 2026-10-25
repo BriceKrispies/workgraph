@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from starlette.testclient import TestClient
 
 from workgraph.api.app import create_app
 from workgraph.api.security import DEVICE_COOKIE, PAIRING_MAX_FAILURES, LanAccess
 from workgraph.core.models.schemas import RepositoryRegister
+
+# The shell embeds the API token only when the web UI has been built (cd web && npm run build).
+BUILT_UI = (Path(__file__).parents[2] / "src" / "workgraph" / "api" / "static" / "index.html").exists()
 
 
 @pytest.fixture
@@ -228,7 +233,8 @@ def test_lan_mode_requires_pairing_before_handing_out_the_token(app, ws):
     asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=True, lan=lan)
     token = app.api_token()
     # Not entered as a context manager: the MCP lifespan may only run once per app.
-    assert token in _lan_client(asgi, "127.0.0.1", "http://127.0.0.1:8765").get("/").text
+    if BUILT_UI:
+        assert token in _lan_client(asgi, "127.0.0.1", "http://127.0.0.1:8765").get("/").text
     with _lan_client(asgi, "192.168.1.42") as phone:
         page = phone.get("/tasks")
         assert page.status_code == 303 and page.headers["location"] == "/pair"
@@ -238,7 +244,8 @@ def test_lan_mode_requires_pairing_before_handing_out_the_token(app, ws):
         assert wrong.status_code == 403 and DEVICE_COOKIE not in wrong.cookies
         ok = phone.post("/pair", data={"code": lan.pairing_code.lower()})
         assert ok.status_code == 303 and DEVICE_COOKIE in ok.cookies
-        assert token in phone.get("/").text
+        if BUILT_UI:
+            assert token in phone.get("/").text
         auth = {"Authorization": f"Bearer {token}"}
         assert phone.get("/api/v1/workspaces", headers=auth).status_code == 200
         # MCP stays loopback-only even with the token.

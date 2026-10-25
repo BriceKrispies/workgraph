@@ -1,0 +1,1152 @@
+{
+  "cases": [
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local"
+      },
+      "expected": {
+        "analytics_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\analytics.duckdb",
+        "api_token_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\api-token",
+        "artifacts_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\artifacts",
+        "backups_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\backups",
+        "config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "config_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\config.toml",
+        "data_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "database_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workgraph.db",
+        "log_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\Logs",
+        "runs_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\runs",
+        "spool_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\spool\\claude-hooks",
+        "workspace_config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workspaces",
+        "worktrees_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\worktrees"
+      },
+      "id": "windows-home-unset-xdg-unset",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\analytics.duckdb",
+        "api_token_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\api-token",
+        "artifacts_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\artifacts",
+        "backups_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\backups",
+        "config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "config_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\config.toml",
+        "data_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "database_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workgraph.db",
+        "log_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\Logs",
+        "runs_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\runs",
+        "spool_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\spool\\claude-hooks",
+        "workspace_config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workspaces",
+        "worktrees_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\worktrees"
+      },
+      "id": "windows-home-unset-xdg-absolute",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\analytics.duckdb",
+        "api_token_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\api-token",
+        "artifacts_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\artifacts",
+        "backups_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\backups",
+        "config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "config_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\config.toml",
+        "data_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "database_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workgraph.db",
+        "log_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\Logs",
+        "runs_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\runs",
+        "spool_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\spool\\claude-hooks",
+        "workspace_config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workspaces",
+        "worktrees_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\worktrees"
+      },
+      "id": "windows-home-unset-xdg-relative",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": ""
+      },
+      "expected": {
+        "analytics_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\analytics.duckdb",
+        "api_token_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\api-token",
+        "artifacts_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\artifacts",
+        "backups_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\backups",
+        "config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "config_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\config.toml",
+        "data_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "database_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workgraph.db",
+        "log_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\Logs",
+        "runs_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\runs",
+        "spool_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\spool\\claude-hooks",
+        "workspace_config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workspaces",
+        "worktrees_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\worktrees"
+      },
+      "id": "windows-home-empty-xdg-unset",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\analytics.duckdb",
+        "api_token_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\api-token",
+        "artifacts_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\artifacts",
+        "backups_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\backups",
+        "config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "config_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\config.toml",
+        "data_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "database_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workgraph.db",
+        "log_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\Logs",
+        "runs_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\runs",
+        "spool_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\spool\\claude-hooks",
+        "workspace_config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workspaces",
+        "worktrees_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\worktrees"
+      },
+      "id": "windows-home-empty-xdg-absolute",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\analytics.duckdb",
+        "api_token_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\api-token",
+        "artifacts_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\artifacts",
+        "backups_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\backups",
+        "config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "config_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\config.toml",
+        "data_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph",
+        "database_file": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workgraph.db",
+        "log_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\Logs",
+        "runs_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\runs",
+        "spool_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\spool\\claude-hooks",
+        "workspace_config_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\workspaces",
+        "worktrees_dir": "C:\\Users\\Ada\\AppData\\Local\\workgraph\\worktrees"
+      },
+      "id": "windows-home-empty-xdg-relative",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "D:\\wg-home"
+      },
+      "expected": {
+        "analytics_file": "D:\\wg-home\\data\\analytics.duckdb",
+        "api_token_file": "D:\\wg-home\\config\\api-token",
+        "artifacts_dir": "D:\\wg-home\\data\\artifacts",
+        "backups_dir": "D:\\wg-home\\data\\backups",
+        "config_dir": "D:\\wg-home\\config",
+        "config_file": "D:\\wg-home\\config\\config.toml",
+        "data_dir": "D:\\wg-home\\data",
+        "database_file": "D:\\wg-home\\data\\workgraph.db",
+        "log_dir": "D:\\wg-home\\logs",
+        "runs_dir": "D:\\wg-home\\data\\runs",
+        "spool_dir": "D:\\wg-home\\data\\spool\\claude-hooks",
+        "workspace_config_dir": "D:\\wg-home\\config\\workspaces",
+        "worktrees_dir": "D:\\wg-home\\data\\worktrees"
+      },
+      "id": "windows-home-absolute-xdg-unset",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "D:\\wg-home",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "D:\\wg-home\\data\\analytics.duckdb",
+        "api_token_file": "D:\\wg-home\\config\\api-token",
+        "artifacts_dir": "D:\\wg-home\\data\\artifacts",
+        "backups_dir": "D:\\wg-home\\data\\backups",
+        "config_dir": "D:\\wg-home\\config",
+        "config_file": "D:\\wg-home\\config\\config.toml",
+        "data_dir": "D:\\wg-home\\data",
+        "database_file": "D:\\wg-home\\data\\workgraph.db",
+        "log_dir": "D:\\wg-home\\logs",
+        "runs_dir": "D:\\wg-home\\data\\runs",
+        "spool_dir": "D:\\wg-home\\data\\spool\\claude-hooks",
+        "workspace_config_dir": "D:\\wg-home\\config\\workspaces",
+        "worktrees_dir": "D:\\wg-home\\data\\worktrees"
+      },
+      "id": "windows-home-absolute-xdg-absolute",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "D:\\wg-home",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "D:\\wg-home\\data\\analytics.duckdb",
+        "api_token_file": "D:\\wg-home\\config\\api-token",
+        "artifacts_dir": "D:\\wg-home\\data\\artifacts",
+        "backups_dir": "D:\\wg-home\\data\\backups",
+        "config_dir": "D:\\wg-home\\config",
+        "config_file": "D:\\wg-home\\config\\config.toml",
+        "data_dir": "D:\\wg-home\\data",
+        "database_file": "D:\\wg-home\\data\\workgraph.db",
+        "log_dir": "D:\\wg-home\\logs",
+        "runs_dir": "D:\\wg-home\\data\\runs",
+        "spool_dir": "D:\\wg-home\\data\\spool\\claude-hooks",
+        "workspace_config_dir": "D:\\wg-home\\config\\workspaces",
+        "worktrees_dir": "D:\\wg-home\\data\\worktrees"
+      },
+      "id": "windows-home-absolute-xdg-relative",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "~/wg-home"
+      },
+      "expected": {
+        "analytics_file": "C:\\Users\\Ada\\wg-home\\data\\analytics.duckdb",
+        "api_token_file": "C:\\Users\\Ada\\wg-home\\config\\api-token",
+        "artifacts_dir": "C:\\Users\\Ada\\wg-home\\data\\artifacts",
+        "backups_dir": "C:\\Users\\Ada\\wg-home\\data\\backups",
+        "config_dir": "C:\\Users\\Ada\\wg-home\\config",
+        "config_file": "C:\\Users\\Ada\\wg-home\\config\\config.toml",
+        "data_dir": "C:\\Users\\Ada\\wg-home\\data",
+        "database_file": "C:\\Users\\Ada\\wg-home\\data\\workgraph.db",
+        "log_dir": "C:\\Users\\Ada\\wg-home\\logs",
+        "runs_dir": "C:\\Users\\Ada\\wg-home\\data\\runs",
+        "spool_dir": "C:\\Users\\Ada\\wg-home\\data\\spool\\claude-hooks",
+        "workspace_config_dir": "C:\\Users\\Ada\\wg-home\\config\\workspaces",
+        "worktrees_dir": "C:\\Users\\Ada\\wg-home\\data\\worktrees"
+      },
+      "id": "windows-home-tilde-xdg-unset",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "~/wg-home",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "C:\\Users\\Ada\\wg-home\\data\\analytics.duckdb",
+        "api_token_file": "C:\\Users\\Ada\\wg-home\\config\\api-token",
+        "artifacts_dir": "C:\\Users\\Ada\\wg-home\\data\\artifacts",
+        "backups_dir": "C:\\Users\\Ada\\wg-home\\data\\backups",
+        "config_dir": "C:\\Users\\Ada\\wg-home\\config",
+        "config_file": "C:\\Users\\Ada\\wg-home\\config\\config.toml",
+        "data_dir": "C:\\Users\\Ada\\wg-home\\data",
+        "database_file": "C:\\Users\\Ada\\wg-home\\data\\workgraph.db",
+        "log_dir": "C:\\Users\\Ada\\wg-home\\logs",
+        "runs_dir": "C:\\Users\\Ada\\wg-home\\data\\runs",
+        "spool_dir": "C:\\Users\\Ada\\wg-home\\data\\spool\\claude-hooks",
+        "workspace_config_dir": "C:\\Users\\Ada\\wg-home\\config\\workspaces",
+        "worktrees_dir": "C:\\Users\\Ada\\wg-home\\data\\worktrees"
+      },
+      "id": "windows-home-tilde-xdg-absolute",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "~/wg-home",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "C:\\Users\\Ada\\wg-home\\data\\analytics.duckdb",
+        "api_token_file": "C:\\Users\\Ada\\wg-home\\config\\api-token",
+        "artifacts_dir": "C:\\Users\\Ada\\wg-home\\data\\artifacts",
+        "backups_dir": "C:\\Users\\Ada\\wg-home\\data\\backups",
+        "config_dir": "C:\\Users\\Ada\\wg-home\\config",
+        "config_file": "C:\\Users\\Ada\\wg-home\\config\\config.toml",
+        "data_dir": "C:\\Users\\Ada\\wg-home\\data",
+        "database_file": "C:\\Users\\Ada\\wg-home\\data\\workgraph.db",
+        "log_dir": "C:\\Users\\Ada\\wg-home\\logs",
+        "runs_dir": "C:\\Users\\Ada\\wg-home\\data\\runs",
+        "spool_dir": "C:\\Users\\Ada\\wg-home\\data\\spool\\claude-hooks",
+        "workspace_config_dir": "C:\\Users\\Ada\\wg-home\\config\\workspaces",
+        "worktrees_dir": "C:\\Users\\Ada\\wg-home\\data\\worktrees"
+      },
+      "id": "windows-home-tilde-xdg-relative",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "D:\\wg-home\\.\\"
+      },
+      "expected": {
+        "analytics_file": "D:\\wg-home\\data\\analytics.duckdb",
+        "api_token_file": "D:\\wg-home\\config\\api-token",
+        "artifacts_dir": "D:\\wg-home\\data\\artifacts",
+        "backups_dir": "D:\\wg-home\\data\\backups",
+        "config_dir": "D:\\wg-home\\config",
+        "config_file": "D:\\wg-home\\config\\config.toml",
+        "data_dir": "D:\\wg-home\\data",
+        "database_file": "D:\\wg-home\\data\\workgraph.db",
+        "log_dir": "D:\\wg-home\\logs",
+        "runs_dir": "D:\\wg-home\\data\\runs",
+        "spool_dir": "D:\\wg-home\\data\\spool\\claude-hooks",
+        "workspace_config_dir": "D:\\wg-home\\config\\workspaces",
+        "worktrees_dir": "D:\\wg-home\\data\\worktrees"
+      },
+      "id": "windows-home-dotted-xdg-unset",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "D:\\wg-home\\.\\",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "D:\\wg-home\\data\\analytics.duckdb",
+        "api_token_file": "D:\\wg-home\\config\\api-token",
+        "artifacts_dir": "D:\\wg-home\\data\\artifacts",
+        "backups_dir": "D:\\wg-home\\data\\backups",
+        "config_dir": "D:\\wg-home\\config",
+        "config_file": "D:\\wg-home\\config\\config.toml",
+        "data_dir": "D:\\wg-home\\data",
+        "database_file": "D:\\wg-home\\data\\workgraph.db",
+        "log_dir": "D:\\wg-home\\logs",
+        "runs_dir": "D:\\wg-home\\data\\runs",
+        "spool_dir": "D:\\wg-home\\data\\spool\\claude-hooks",
+        "workspace_config_dir": "D:\\wg-home\\config\\workspaces",
+        "worktrees_dir": "D:\\wg-home\\data\\worktrees"
+      },
+      "id": "windows-home-dotted-xdg-absolute",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "USERPROFILE": "C:\\Users\\Ada",
+        "WIN_PD_OVERRIDE_LOCAL_APPDATA": "C:\\Users\\Ada\\AppData\\Local",
+        "WORKGRAPH_HOME": "D:\\wg-home\\.\\",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "D:\\wg-home\\data\\analytics.duckdb",
+        "api_token_file": "D:\\wg-home\\config\\api-token",
+        "artifacts_dir": "D:\\wg-home\\data\\artifacts",
+        "backups_dir": "D:\\wg-home\\data\\backups",
+        "config_dir": "D:\\wg-home\\config",
+        "config_file": "D:\\wg-home\\config\\config.toml",
+        "data_dir": "D:\\wg-home\\data",
+        "database_file": "D:\\wg-home\\data\\workgraph.db",
+        "log_dir": "D:\\wg-home\\logs",
+        "runs_dir": "D:\\wg-home\\data\\runs",
+        "spool_dir": "D:\\wg-home\\data\\spool\\claude-hooks",
+        "workspace_config_dir": "D:\\wg-home\\config\\workspaces",
+        "worktrees_dir": "D:\\wg-home\\data\\worktrees"
+      },
+      "id": "windows-home-dotted-xdg-relative",
+      "os": "windows"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada"
+      },
+      "expected": {
+        "analytics_file": "/home/ada/.local/share/workgraph/analytics.duckdb",
+        "api_token_file": "/home/ada/.config/workgraph/api-token",
+        "artifacts_dir": "/home/ada/.local/share/workgraph/artifacts",
+        "backups_dir": "/home/ada/.local/share/workgraph/backups",
+        "config_dir": "/home/ada/.config/workgraph",
+        "config_file": "/home/ada/.config/workgraph/config.toml",
+        "data_dir": "/home/ada/.local/share/workgraph",
+        "database_file": "/home/ada/.local/share/workgraph/workgraph.db",
+        "log_dir": "/home/ada/.local/state/workgraph/log",
+        "runs_dir": "/home/ada/.local/share/workgraph/runs",
+        "spool_dir": "/home/ada/.local/share/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/home/ada/.config/workgraph/workspaces",
+        "worktrees_dir": "/home/ada/.local/share/workgraph/worktrees"
+      },
+      "id": "linux-home-unset-xdg-unset",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/xdg/data/workgraph/analytics.duckdb",
+        "api_token_file": "/xdg/config/workgraph/api-token",
+        "artifacts_dir": "/xdg/data/workgraph/artifacts",
+        "backups_dir": "/xdg/data/workgraph/backups",
+        "config_dir": "/xdg/config/workgraph",
+        "config_file": "/xdg/config/workgraph/config.toml",
+        "data_dir": "/xdg/data/workgraph",
+        "database_file": "/xdg/data/workgraph/workgraph.db",
+        "log_dir": "/xdg/state/workgraph/log",
+        "runs_dir": "/xdg/data/workgraph/runs",
+        "spool_dir": "/xdg/data/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/xdg/config/workgraph/workspaces",
+        "worktrees_dir": "/xdg/data/workgraph/worktrees"
+      },
+      "id": "linux-home-unset-xdg-absolute",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/home/ada/.local/share/workgraph/analytics.duckdb",
+        "api_token_file": "/home/ada/.config/workgraph/api-token",
+        "artifacts_dir": "/home/ada/.local/share/workgraph/artifacts",
+        "backups_dir": "/home/ada/.local/share/workgraph/backups",
+        "config_dir": "/home/ada/.config/workgraph",
+        "config_file": "/home/ada/.config/workgraph/config.toml",
+        "data_dir": "/home/ada/.local/share/workgraph",
+        "database_file": "/home/ada/.local/share/workgraph/workgraph.db",
+        "log_dir": "/home/ada/.local/state/workgraph/log",
+        "runs_dir": "/home/ada/.local/share/workgraph/runs",
+        "spool_dir": "/home/ada/.local/share/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/home/ada/.config/workgraph/workspaces",
+        "worktrees_dir": "/home/ada/.local/share/workgraph/worktrees"
+      },
+      "id": "linux-home-unset-xdg-relative",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": ""
+      },
+      "expected": {
+        "analytics_file": "/home/ada/.local/share/workgraph/analytics.duckdb",
+        "api_token_file": "/home/ada/.config/workgraph/api-token",
+        "artifacts_dir": "/home/ada/.local/share/workgraph/artifacts",
+        "backups_dir": "/home/ada/.local/share/workgraph/backups",
+        "config_dir": "/home/ada/.config/workgraph",
+        "config_file": "/home/ada/.config/workgraph/config.toml",
+        "data_dir": "/home/ada/.local/share/workgraph",
+        "database_file": "/home/ada/.local/share/workgraph/workgraph.db",
+        "log_dir": "/home/ada/.local/state/workgraph/log",
+        "runs_dir": "/home/ada/.local/share/workgraph/runs",
+        "spool_dir": "/home/ada/.local/share/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/home/ada/.config/workgraph/workspaces",
+        "worktrees_dir": "/home/ada/.local/share/workgraph/worktrees"
+      },
+      "id": "linux-home-empty-xdg-unset",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/xdg/data/workgraph/analytics.duckdb",
+        "api_token_file": "/xdg/config/workgraph/api-token",
+        "artifacts_dir": "/xdg/data/workgraph/artifacts",
+        "backups_dir": "/xdg/data/workgraph/backups",
+        "config_dir": "/xdg/config/workgraph",
+        "config_file": "/xdg/config/workgraph/config.toml",
+        "data_dir": "/xdg/data/workgraph",
+        "database_file": "/xdg/data/workgraph/workgraph.db",
+        "log_dir": "/xdg/state/workgraph/log",
+        "runs_dir": "/xdg/data/workgraph/runs",
+        "spool_dir": "/xdg/data/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/xdg/config/workgraph/workspaces",
+        "worktrees_dir": "/xdg/data/workgraph/worktrees"
+      },
+      "id": "linux-home-empty-xdg-absolute",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/home/ada/.local/share/workgraph/analytics.duckdb",
+        "api_token_file": "/home/ada/.config/workgraph/api-token",
+        "artifacts_dir": "/home/ada/.local/share/workgraph/artifacts",
+        "backups_dir": "/home/ada/.local/share/workgraph/backups",
+        "config_dir": "/home/ada/.config/workgraph",
+        "config_file": "/home/ada/.config/workgraph/config.toml",
+        "data_dir": "/home/ada/.local/share/workgraph",
+        "database_file": "/home/ada/.local/share/workgraph/workgraph.db",
+        "log_dir": "/home/ada/.local/state/workgraph/log",
+        "runs_dir": "/home/ada/.local/share/workgraph/runs",
+        "spool_dir": "/home/ada/.local/share/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/home/ada/.config/workgraph/workspaces",
+        "worktrees_dir": "/home/ada/.local/share/workgraph/worktrees"
+      },
+      "id": "linux-home-empty-xdg-relative",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "linux-home-absolute-xdg-unset",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "linux-home-absolute-xdg-absolute",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "linux-home-absolute-xdg-relative",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "~/wg-home"
+      },
+      "expected": {
+        "analytics_file": "/home/ada/wg-home/data/analytics.duckdb",
+        "api_token_file": "/home/ada/wg-home/config/api-token",
+        "artifacts_dir": "/home/ada/wg-home/data/artifacts",
+        "backups_dir": "/home/ada/wg-home/data/backups",
+        "config_dir": "/home/ada/wg-home/config",
+        "config_file": "/home/ada/wg-home/config/config.toml",
+        "data_dir": "/home/ada/wg-home/data",
+        "database_file": "/home/ada/wg-home/data/workgraph.db",
+        "log_dir": "/home/ada/wg-home/logs",
+        "runs_dir": "/home/ada/wg-home/data/runs",
+        "spool_dir": "/home/ada/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/home/ada/wg-home/config/workspaces",
+        "worktrees_dir": "/home/ada/wg-home/data/worktrees"
+      },
+      "id": "linux-home-tilde-xdg-unset",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "~/wg-home",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/home/ada/wg-home/data/analytics.duckdb",
+        "api_token_file": "/home/ada/wg-home/config/api-token",
+        "artifacts_dir": "/home/ada/wg-home/data/artifacts",
+        "backups_dir": "/home/ada/wg-home/data/backups",
+        "config_dir": "/home/ada/wg-home/config",
+        "config_file": "/home/ada/wg-home/config/config.toml",
+        "data_dir": "/home/ada/wg-home/data",
+        "database_file": "/home/ada/wg-home/data/workgraph.db",
+        "log_dir": "/home/ada/wg-home/logs",
+        "runs_dir": "/home/ada/wg-home/data/runs",
+        "spool_dir": "/home/ada/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/home/ada/wg-home/config/workspaces",
+        "worktrees_dir": "/home/ada/wg-home/data/worktrees"
+      },
+      "id": "linux-home-tilde-xdg-absolute",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "~/wg-home",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/home/ada/wg-home/data/analytics.duckdb",
+        "api_token_file": "/home/ada/wg-home/config/api-token",
+        "artifacts_dir": "/home/ada/wg-home/data/artifacts",
+        "backups_dir": "/home/ada/wg-home/data/backups",
+        "config_dir": "/home/ada/wg-home/config",
+        "config_file": "/home/ada/wg-home/config/config.toml",
+        "data_dir": "/home/ada/wg-home/data",
+        "database_file": "/home/ada/wg-home/data/workgraph.db",
+        "log_dir": "/home/ada/wg-home/logs",
+        "runs_dir": "/home/ada/wg-home/data/runs",
+        "spool_dir": "/home/ada/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/home/ada/wg-home/config/workspaces",
+        "worktrees_dir": "/home/ada/wg-home/data/worktrees"
+      },
+      "id": "linux-home-tilde-xdg-relative",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home/./"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "linux-home-dotted-xdg-unset",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home/./",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "linux-home-dotted-xdg-absolute",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/home/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home/./",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "linux-home-dotted-xdg-relative",
+      "os": "linux"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada"
+      },
+      "expected": {
+        "analytics_file": "/Users/ada/Library/Application Support/workgraph/analytics.duckdb",
+        "api_token_file": "/Users/ada/Library/Application Support/workgraph/api-token",
+        "artifacts_dir": "/Users/ada/Library/Application Support/workgraph/artifacts",
+        "backups_dir": "/Users/ada/Library/Application Support/workgraph/backups",
+        "config_dir": "/Users/ada/Library/Application Support/workgraph",
+        "config_file": "/Users/ada/Library/Application Support/workgraph/config.toml",
+        "data_dir": "/Users/ada/Library/Application Support/workgraph",
+        "database_file": "/Users/ada/Library/Application Support/workgraph/workgraph.db",
+        "log_dir": "/Users/ada/Library/Logs/workgraph",
+        "runs_dir": "/Users/ada/Library/Application Support/workgraph/runs",
+        "spool_dir": "/Users/ada/Library/Application Support/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/Users/ada/Library/Application Support/workgraph/workspaces",
+        "worktrees_dir": "/Users/ada/Library/Application Support/workgraph/worktrees"
+      },
+      "id": "macos-home-unset-xdg-unset",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/xdg/data/workgraph/analytics.duckdb",
+        "api_token_file": "/xdg/config/workgraph/api-token",
+        "artifacts_dir": "/xdg/data/workgraph/artifacts",
+        "backups_dir": "/xdg/data/workgraph/backups",
+        "config_dir": "/xdg/config/workgraph",
+        "config_file": "/xdg/config/workgraph/config.toml",
+        "data_dir": "/xdg/data/workgraph",
+        "database_file": "/xdg/data/workgraph/workgraph.db",
+        "log_dir": "/Users/ada/Library/Logs/workgraph",
+        "runs_dir": "/xdg/data/workgraph/runs",
+        "spool_dir": "/xdg/data/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/xdg/config/workgraph/workspaces",
+        "worktrees_dir": "/xdg/data/workgraph/worktrees"
+      },
+      "id": "macos-home-unset-xdg-absolute",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/Users/ada/Library/Application Support/workgraph/analytics.duckdb",
+        "api_token_file": "/Users/ada/Library/Application Support/workgraph/api-token",
+        "artifacts_dir": "/Users/ada/Library/Application Support/workgraph/artifacts",
+        "backups_dir": "/Users/ada/Library/Application Support/workgraph/backups",
+        "config_dir": "/Users/ada/Library/Application Support/workgraph",
+        "config_file": "/Users/ada/Library/Application Support/workgraph/config.toml",
+        "data_dir": "/Users/ada/Library/Application Support/workgraph",
+        "database_file": "/Users/ada/Library/Application Support/workgraph/workgraph.db",
+        "log_dir": "/Users/ada/Library/Logs/workgraph",
+        "runs_dir": "/Users/ada/Library/Application Support/workgraph/runs",
+        "spool_dir": "/Users/ada/Library/Application Support/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/Users/ada/Library/Application Support/workgraph/workspaces",
+        "worktrees_dir": "/Users/ada/Library/Application Support/workgraph/worktrees"
+      },
+      "id": "macos-home-unset-xdg-relative",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": ""
+      },
+      "expected": {
+        "analytics_file": "/Users/ada/Library/Application Support/workgraph/analytics.duckdb",
+        "api_token_file": "/Users/ada/Library/Application Support/workgraph/api-token",
+        "artifacts_dir": "/Users/ada/Library/Application Support/workgraph/artifacts",
+        "backups_dir": "/Users/ada/Library/Application Support/workgraph/backups",
+        "config_dir": "/Users/ada/Library/Application Support/workgraph",
+        "config_file": "/Users/ada/Library/Application Support/workgraph/config.toml",
+        "data_dir": "/Users/ada/Library/Application Support/workgraph",
+        "database_file": "/Users/ada/Library/Application Support/workgraph/workgraph.db",
+        "log_dir": "/Users/ada/Library/Logs/workgraph",
+        "runs_dir": "/Users/ada/Library/Application Support/workgraph/runs",
+        "spool_dir": "/Users/ada/Library/Application Support/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/Users/ada/Library/Application Support/workgraph/workspaces",
+        "worktrees_dir": "/Users/ada/Library/Application Support/workgraph/worktrees"
+      },
+      "id": "macos-home-empty-xdg-unset",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/xdg/data/workgraph/analytics.duckdb",
+        "api_token_file": "/xdg/config/workgraph/api-token",
+        "artifacts_dir": "/xdg/data/workgraph/artifacts",
+        "backups_dir": "/xdg/data/workgraph/backups",
+        "config_dir": "/xdg/config/workgraph",
+        "config_file": "/xdg/config/workgraph/config.toml",
+        "data_dir": "/xdg/data/workgraph",
+        "database_file": "/xdg/data/workgraph/workgraph.db",
+        "log_dir": "/Users/ada/Library/Logs/workgraph",
+        "runs_dir": "/xdg/data/workgraph/runs",
+        "spool_dir": "/xdg/data/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/xdg/config/workgraph/workspaces",
+        "worktrees_dir": "/xdg/data/workgraph/worktrees"
+      },
+      "id": "macos-home-empty-xdg-absolute",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/Users/ada/Library/Application Support/workgraph/analytics.duckdb",
+        "api_token_file": "/Users/ada/Library/Application Support/workgraph/api-token",
+        "artifacts_dir": "/Users/ada/Library/Application Support/workgraph/artifacts",
+        "backups_dir": "/Users/ada/Library/Application Support/workgraph/backups",
+        "config_dir": "/Users/ada/Library/Application Support/workgraph",
+        "config_file": "/Users/ada/Library/Application Support/workgraph/config.toml",
+        "data_dir": "/Users/ada/Library/Application Support/workgraph",
+        "database_file": "/Users/ada/Library/Application Support/workgraph/workgraph.db",
+        "log_dir": "/Users/ada/Library/Logs/workgraph",
+        "runs_dir": "/Users/ada/Library/Application Support/workgraph/runs",
+        "spool_dir": "/Users/ada/Library/Application Support/workgraph/spool/claude-hooks",
+        "workspace_config_dir": "/Users/ada/Library/Application Support/workgraph/workspaces",
+        "worktrees_dir": "/Users/ada/Library/Application Support/workgraph/worktrees"
+      },
+      "id": "macos-home-empty-xdg-relative",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "macos-home-absolute-xdg-unset",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "macos-home-absolute-xdg-absolute",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "macos-home-absolute-xdg-relative",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "~/wg-home"
+      },
+      "expected": {
+        "analytics_file": "/Users/ada/wg-home/data/analytics.duckdb",
+        "api_token_file": "/Users/ada/wg-home/config/api-token",
+        "artifacts_dir": "/Users/ada/wg-home/data/artifacts",
+        "backups_dir": "/Users/ada/wg-home/data/backups",
+        "config_dir": "/Users/ada/wg-home/config",
+        "config_file": "/Users/ada/wg-home/config/config.toml",
+        "data_dir": "/Users/ada/wg-home/data",
+        "database_file": "/Users/ada/wg-home/data/workgraph.db",
+        "log_dir": "/Users/ada/wg-home/logs",
+        "runs_dir": "/Users/ada/wg-home/data/runs",
+        "spool_dir": "/Users/ada/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/Users/ada/wg-home/config/workspaces",
+        "worktrees_dir": "/Users/ada/wg-home/data/worktrees"
+      },
+      "id": "macos-home-tilde-xdg-unset",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "~/wg-home",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/Users/ada/wg-home/data/analytics.duckdb",
+        "api_token_file": "/Users/ada/wg-home/config/api-token",
+        "artifacts_dir": "/Users/ada/wg-home/data/artifacts",
+        "backups_dir": "/Users/ada/wg-home/data/backups",
+        "config_dir": "/Users/ada/wg-home/config",
+        "config_file": "/Users/ada/wg-home/config/config.toml",
+        "data_dir": "/Users/ada/wg-home/data",
+        "database_file": "/Users/ada/wg-home/data/workgraph.db",
+        "log_dir": "/Users/ada/wg-home/logs",
+        "runs_dir": "/Users/ada/wg-home/data/runs",
+        "spool_dir": "/Users/ada/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/Users/ada/wg-home/config/workspaces",
+        "worktrees_dir": "/Users/ada/wg-home/data/worktrees"
+      },
+      "id": "macos-home-tilde-xdg-absolute",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "~/wg-home",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/Users/ada/wg-home/data/analytics.duckdb",
+        "api_token_file": "/Users/ada/wg-home/config/api-token",
+        "artifacts_dir": "/Users/ada/wg-home/data/artifacts",
+        "backups_dir": "/Users/ada/wg-home/data/backups",
+        "config_dir": "/Users/ada/wg-home/config",
+        "config_file": "/Users/ada/wg-home/config/config.toml",
+        "data_dir": "/Users/ada/wg-home/data",
+        "database_file": "/Users/ada/wg-home/data/workgraph.db",
+        "log_dir": "/Users/ada/wg-home/logs",
+        "runs_dir": "/Users/ada/wg-home/data/runs",
+        "spool_dir": "/Users/ada/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/Users/ada/wg-home/config/workspaces",
+        "worktrees_dir": "/Users/ada/wg-home/data/worktrees"
+      },
+      "id": "macos-home-tilde-xdg-relative",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home/./"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "macos-home-dotted-xdg-unset",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home/./",
+        "XDG_CONFIG_HOME": "/xdg/config",
+        "XDG_DATA_HOME": "/xdg/data",
+        "XDG_STATE_HOME": "/xdg/state"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "macos-home-dotted-xdg-absolute",
+      "os": "macos"
+    },
+    {
+      "env": {
+        "HOME": "/Users/ada",
+        "WORKGRAPH_HOME": "/srv/wg-home/./",
+        "XDG_CONFIG_HOME": "relative/config",
+        "XDG_DATA_HOME": "relative/data",
+        "XDG_STATE_HOME": "relative/state"
+      },
+      "expected": {
+        "analytics_file": "/srv/wg-home/data/analytics.duckdb",
+        "api_token_file": "/srv/wg-home/config/api-token",
+        "artifacts_dir": "/srv/wg-home/data/artifacts",
+        "backups_dir": "/srv/wg-home/data/backups",
+        "config_dir": "/srv/wg-home/config",
+        "config_file": "/srv/wg-home/config/config.toml",
+        "data_dir": "/srv/wg-home/data",
+        "database_file": "/srv/wg-home/data/workgraph.db",
+        "log_dir": "/srv/wg-home/logs",
+        "runs_dir": "/srv/wg-home/data/runs",
+        "spool_dir": "/srv/wg-home/data/spool/claude-hooks",
+        "workspace_config_dir": "/srv/wg-home/config/workspaces",
+        "worktrees_dir": "/srv/wg-home/data/worktrees"
+      },
+      "id": "macos-home-dotted-xdg-relative",
+      "os": "macos"
+    }
+  ],
+  "module": "workgraph.config.paths",
+  "platformdirs": "4.13.3"
+}

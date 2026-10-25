@@ -4,7 +4,7 @@ Drives the real ``workgraph.cli.common`` helpers (``table``, ``kv``, ``fail``,
 ``handle_errors``) against consoles whose width, colour and environment are forced
 here, so the bytes do not depend on the terminal that runs the script.
 
-Usage: uv run python tools/golden/rich.py
+Usage: uv run python tools/golden/gen_rich.py
 
 Writes ``golden/rich/{tables,empty_tables,kv,markup,errors}.json`` with sorted keys,
 ``\\n`` line endings and UTF-8.

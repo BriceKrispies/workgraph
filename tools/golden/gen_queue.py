@@ -11,7 +11,7 @@ Determinism:
 * Job ids never reach the output: each job is written under the label given at enqueue.
 * Timestamps are written as seconds after the fixed epoch.
 
-Run with ``uv run python tools/golden/queue.py``; the output bytes do not depend on the
+Run with ``uv run python tools/golden/gen_queue.py``; the output bytes do not depend on the
 machine, the time of day or the temporary directory.
 """
 

@@ -13,7 +13,7 @@ Drives the Python implementation in ``src/workgraph/config/settings.py`` and wri
                        ``cli/commands/core.py``;
 * ``writer.json``    - ``tomli_w`` output for the shapes Workgraph writes.
 
-Run with ``uv run python tools/golden/config.py``. Output is deterministic: sorted keys,
+Run with ``uv run python tools/golden/gen_config.py``. Output is deterministic: sorted keys,
 two-space indent, LF line endings, UTF-8.
 """
 

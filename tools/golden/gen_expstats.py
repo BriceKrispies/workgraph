@@ -3,7 +3,7 @@
 Imports the Python functions of ``workgraph.experiments.stats``, ``staircase``, ``planner`` (pure
 helpers) and ``predictor`` (pure helpers), runs them over curated and generated inputs and writes
 ``golden/expstats/*.json``. Every generated input is stored in the vector, so the Rust side never
-needs Python's random generator to reproduce a case. Run with ``uv run python tools/golden/expstats.py``.
+needs Python's random generator to reproduce a case. Run with ``uv run python tools/golden/gen_expstats.py``.
 """
 
 from __future__ import annotations

@@ -10,7 +10,7 @@ Writes golden/codeparse/*.json from the Python analyzer in analytics/code/struct
   sources, and the hunk example of test_analyze_file_changes_and_fallback.
 * grammars.json: the analyzer version and the installed tree-sitter and grammar versions.
 
-Run from the repository root: uv run python tools/golden/codeparse.py
+Run from the repository root: uv run python tools/golden/gen_codeparse.py
 Output is sorted-key JSON with UTF-8 and LF line endings, so repeated runs give identical bytes.
 """
 

@@ -472,6 +472,7 @@ name = "wg-json"
 version = "0.1.0"
 dependencies = [
  "serde_json",
+ "wg-types",
 ]
 
 [[package]]

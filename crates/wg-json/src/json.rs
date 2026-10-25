@@ -2,8 +2,10 @@
 //! stored in DB columns (O10). Each one is a conversion from `Value` to a JSON tree followed by a
 //! layout pass that reproduces Python's `json.dumps` options for that dialect.
 
+use wg_types::Timestamp;
+
 use crate::text::{
-    date_isoformat, datetime_str, model_str, py_bytes_repr, py_float_repr, pydantic_datetime,
+    date_isoformat, local_datetime_str, model_str, py_bytes_repr, py_float_repr, utc_datetime_str,
 };
 use crate::value::{DumpError, PyStr, Value};
 
@@ -108,11 +110,11 @@ fn to_node(value: &Value, dialect: Dialect, in_model: bool) -> Result<Node, Dump
                 .map(|(k, v)| Ok((k.clone(), to_node(v, dialect, in_model)?)))
                 .collect::<Result<Vec<_>, DumpError>>()?,
         ),
-        Value::DateTime(dt) => match dialect {
-            Dialect::Db => Node::Str(PyStr::from(datetime_str(dt))),
-            _ if in_model => Node::Str(PyStr::from(pydantic_datetime(dt))),
-            _ => Node::Str(PyStr::from(crate::text::isoformat(dt))),
-        },
+        Value::DateTime(ts) => Node::Str(PyStr::from(utc_datetime(ts, dialect, in_model))),
+        Value::LocalDateTime(dt) => Node::Str(PyStr::from(match dialect {
+            Dialect::Db => local_datetime_str(dt),
+            _ => crate::text::isoformat(dt),
+        })),
         Value::Date(d) => {
             refuse_under_http(dialect, in_model)?;
             Node::Str(PyStr::from(date_isoformat(d)))
@@ -140,6 +142,16 @@ fn to_node(value: &Value, dialect: Dialect, in_model: bool) -> Result<Node, Dump
             ),
         },
     })
+}
+
+/// A UTC datetime as the dialect writes it. Pydantic's model form (`Z`) applies under a model;
+/// `str(datetime)` (the DB dialect) uses a space separator. Both reuse the `Timestamp` forms.
+fn utc_datetime(ts: &Timestamp, dialect: Dialect, in_model: bool) -> String {
+    match dialect {
+        Dialect::Db => utc_datetime_str(ts),
+        _ if in_model => ts.format_z(),
+        _ => ts.format_isoformat(),
+    }
 }
 
 /// Starlette's encoder has no `default=`, so only JSON-native values and models pass.

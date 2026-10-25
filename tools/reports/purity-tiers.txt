@@ -28,6 +28,7 @@ wg-mcp Shell
 wg-model Core
 wg-net Shell
 wg-proc Shell
+wg-procspec Pure
 wg-pyrand Pure
 wg-registry Core
 wg-render Pure

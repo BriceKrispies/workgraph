@@ -7,9 +7,19 @@ license.workspace = true
 publish.workspace = true
 description = "purity tiers and the Core rules, copied from noether"
 
+[lib]
+name = "arch_lint"
+path = "src/lib.rs"
+
 [[bin]]
 name = "arch-lint"
 path = "src/main.rs"
+
+[dependencies]
+# The lints parse Rust into an AST with `syn`; `span-locations` gives line numbers.
+syn = { version = "2", features = ["full", "visit", "parsing"] }
+proc-macro2 = { version = "1", features = ["span-locations"] }
+quote = "1"
 
 [lints]
 workspace = true

@@ -1,0 +1,8 @@
+# Shell logic ceiling for arch-lint (crates/arch-lint/src/purity.rs).
+# Non-test LOC of pure candidates summed over the `Shell` crates, as
+# `cargo purity --candidates` lists them: functions whose signature and body already pass
+# the Pure rules (shell-pure) and also the StrictPure rules (shell-strict). Logic that could
+# be pure may not settle in the shell, so each figure must stay at or below the first
+# measured value below. Change a figure only in a reviewed edit.
+shell-pure-candidate-loc 2
+shell-strict-candidate-loc 2

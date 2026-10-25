@@ -1,0 +1,215 @@
+{
+  "analyzer_version": "ts-1",
+  "cases": [
+    {
+      "added_lines": [
+        4,
+        11,
+        12,
+        13,
+        14,
+        17,
+        18,
+        19
+      ],
+      "deleted_lines": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "diff": "@@ -3,0 +4 @@\n+  email: string;\n@@ -9,0 +11,4 @@\n+\n+  remove(id: number): boolean {\n+    return false;\n+  }\n@@ -12,4 +17,3 @@\n-type Id = number;\n-\n-export function make(): UserService {\n-  return new UserService();\n+export enum Role {\n+  Admin,\n+  Guest,\n",
+      "expected": {
+        "changes": [
+          {
+            "change": "added",
+            "end_line": 14,
+            "kind": "function",
+            "lines_changed": 3,
+            "name": "UserService.remove",
+            "start_line": 12
+          },
+          {
+            "change": "deleted",
+            "end_line": 16,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "make",
+            "start_line": 14
+          },
+          {
+            "change": "deleted",
+            "end_line": 12,
+            "kind": "type",
+            "lines_changed": 1,
+            "name": "Id",
+            "start_line": 12
+          },
+          {
+            "change": "added",
+            "end_line": 20,
+            "kind": "type",
+            "lines_changed": 3,
+            "name": "Role",
+            "start_line": 17
+          },
+          {
+            "change": "modified",
+            "end_line": 5,
+            "kind": "type",
+            "lines_changed": 1,
+            "name": "User",
+            "start_line": 1
+          },
+          {
+            "change": "modified",
+            "end_line": 15,
+            "kind": "type",
+            "lines_changed": 1,
+            "name": "UserService",
+            "start_line": 7
+          }
+        ],
+        "functions": 2,
+        "mode": "structural",
+        "reason": null,
+        "types": 4,
+        "unattributed_lines": 1
+      },
+      "id": "users",
+      "language": "typescript",
+      "new": "export interface User {\n  id: number;\n  name: string;\n  email: string;\n}\n\nexport class UserService {\n  find(id: number): User | undefined {\n    return undefined;\n  }\n\n  remove(id: number): boolean {\n    return false;\n  }\n}\n\nexport enum Role {\n  Admin,\n  Guest,\n}\n",
+      "old": "export interface User {\n  id: number;\n  name: string;\n}\n\nexport class UserService {\n  find(id: number): User | undefined {\n    return undefined;\n  }\n}\n\ntype Id = number;\n\nexport function make(): UserService {\n  return new UserService();\n}\n",
+      "path": "users.typescript",
+      "symbols_new": [
+        {
+          "end_line": 5,
+          "kind": "type",
+          "name": "User",
+          "start_line": 1
+        },
+        {
+          "end_line": 15,
+          "kind": "type",
+          "name": "UserService",
+          "start_line": 7
+        },
+        {
+          "end_line": 10,
+          "kind": "function",
+          "name": "UserService.find",
+          "start_line": 8
+        },
+        {
+          "end_line": 14,
+          "kind": "function",
+          "name": "UserService.remove",
+          "start_line": 12
+        },
+        {
+          "end_line": 20,
+          "kind": "type",
+          "name": "Role",
+          "start_line": 17
+        }
+      ],
+      "symbols_old": [
+        {
+          "end_line": 4,
+          "kind": "type",
+          "name": "User",
+          "start_line": 1
+        },
+        {
+          "end_line": 10,
+          "kind": "type",
+          "name": "UserService",
+          "start_line": 6
+        },
+        {
+          "end_line": 9,
+          "kind": "function",
+          "name": "UserService.find",
+          "start_line": 7
+        },
+        {
+          "end_line": 12,
+          "kind": "type",
+          "name": "Id",
+          "start_line": 12
+        },
+        {
+          "end_line": 16,
+          "kind": "function",
+          "name": "make",
+          "start_line": 14
+        }
+      ]
+    },
+    {
+      "added_lines": [
+        3
+      ],
+      "deleted_lines": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "diff": "@@ -2,0 +3 @@\n+  abstract stop(): void;\n@@ -4,4 +4,0 @@\n-\n-export function helper(): number {\n-  return 1;\n-}\n",
+      "expected": {
+        "changes": [
+          {
+            "change": "deleted",
+            "end_line": 7,
+            "kind": "function",
+            "lines_changed": 3,
+            "name": "helper",
+            "start_line": 5
+          },
+          {
+            "change": "modified",
+            "end_line": 4,
+            "kind": "type",
+            "lines_changed": 1,
+            "name": "Base",
+            "start_line": 1
+          }
+        ],
+        "functions": 1,
+        "mode": "structural",
+        "reason": null,
+        "types": 1,
+        "unattributed_lines": 1
+      },
+      "id": "abstract-base",
+      "language": "typescript",
+      "new": "export abstract class Base {\n  abstract run(): void;\n  abstract stop(): void;\n}\n",
+      "old": "export abstract class Base {\n  abstract run(): void;\n}\n\nexport function helper(): number {\n  return 1;\n}\n",
+      "path": "abstract-base.typescript",
+      "symbols_new": [
+        {
+          "end_line": 4,
+          "kind": "type",
+          "name": "Base",
+          "start_line": 1
+        }
+      ],
+      "symbols_old": [
+        {
+          "end_line": 3,
+          "kind": "type",
+          "name": "Base",
+          "start_line": 1
+        },
+        {
+          "end_line": 7,
+          "kind": "function",
+          "name": "helper",
+          "start_line": 5
+        }
+      ]
+    }
+  ],
+  "compare": "changes are sorted by (kind, name, change); compare as lists after that sort"
+}

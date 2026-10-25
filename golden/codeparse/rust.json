@@ -1,0 +1,145 @@
+{
+  "analyzer_version": "ts-1",
+  "cases": [
+    {
+      "added_lines": [
+        3,
+        8,
+        9,
+        10,
+        11,
+        12,
+        16,
+        17,
+        18
+      ],
+      "deleted_lines": [
+        7,
+        11,
+        12
+      ],
+      "diff": "@@ -2,0 +3 @@\n+    step: u32,\n@@ -7 +8,5 @@\n-        self.n += 1;\n+        self.n += self.step;\n+    }\n+\n+    fn peek(&self) -> u32 {\n+        self.n\n@@ -11,2 +16,3 @@\n-fn reset() -> u32 {\n-    0\n+enum Mode {\n+    Fast,\n+    Slow,\n",
+      "expected": {
+        "changes": [
+          {
+            "change": "modified",
+            "end_line": 9,
+            "kind": "function",
+            "lines_changed": 3,
+            "name": "impl Counter.bump",
+            "start_line": 7
+          },
+          {
+            "change": "added",
+            "end_line": 13,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "impl Counter.peek",
+            "start_line": 11
+          },
+          {
+            "change": "deleted",
+            "end_line": 13,
+            "kind": "function",
+            "lines_changed": 2,
+            "name": "reset",
+            "start_line": 11
+          },
+          {
+            "change": "modified",
+            "end_line": 4,
+            "kind": "type",
+            "lines_changed": 1,
+            "name": "Counter",
+            "start_line": 1
+          },
+          {
+            "change": "added",
+            "end_line": 19,
+            "kind": "type",
+            "lines_changed": 3,
+            "name": "Mode",
+            "start_line": 16
+          },
+          {
+            "change": "modified",
+            "end_line": 14,
+            "kind": "type",
+            "lines_changed": 1,
+            "name": "impl Counter",
+            "start_line": 6
+          }
+        ],
+        "functions": 3,
+        "mode": "structural",
+        "reason": null,
+        "types": 3,
+        "unattributed_lines": 0
+      },
+      "id": "counter",
+      "language": "rust",
+      "new": "struct Counter {\n    n: u32,\n    step: u32,\n}\n\nimpl Counter {\n    fn bump(&mut self) {\n        self.n += self.step;\n    }\n\n    fn peek(&self) -> u32 {\n        self.n\n    }\n}\n\nenum Mode {\n    Fast,\n    Slow,\n}\n",
+      "old": "struct Counter {\n    n: u32,\n}\n\nimpl Counter {\n    fn bump(&mut self) {\n        self.n += 1;\n    }\n}\n\nfn reset() -> u32 {\n    0\n}\n",
+      "path": "counter.rust",
+      "symbols_new": [
+        {
+          "end_line": 4,
+          "kind": "type",
+          "name": "Counter",
+          "start_line": 1
+        },
+        {
+          "end_line": 14,
+          "kind": "type",
+          "name": "impl Counter",
+          "start_line": 6
+        },
+        {
+          "end_line": 9,
+          "kind": "function",
+          "name": "impl Counter.bump",
+          "start_line": 7
+        },
+        {
+          "end_line": 13,
+          "kind": "function",
+          "name": "impl Counter.peek",
+          "start_line": 11
+        },
+        {
+          "end_line": 19,
+          "kind": "type",
+          "name": "Mode",
+          "start_line": 16
+        }
+      ],
+      "symbols_old": [
+        {
+          "end_line": 3,
+          "kind": "type",
+          "name": "Counter",
+          "start_line": 1
+        },
+        {
+          "end_line": 9,
+          "kind": "type",
+          "name": "impl Counter",
+          "start_line": 5
+        },
+        {
+          "end_line": 8,
+          "kind": "function",
+          "name": "impl Counter.bump",
+          "start_line": 6
+        },
+        {
+          "end_line": 13,
+          "kind": "function",
+          "name": "reset",
+          "start_line": 11
+        }
+      ]
+    }
+  ],
+  "compare": "changes are sorted by (kind, name, change); compare as lists after that sort"
+}

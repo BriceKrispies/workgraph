@@ -9,3 +9,6 @@ description = "rich-compatible tables, key-value blocks and colour rules"
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+serde_json = "1"

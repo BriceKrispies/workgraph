@@ -1,0 +1,1751 @@
+{
+  "case": "generated_10",
+  "observations": {
+    "after_promotion": {
+      "dependency_edges": [
+        [
+          "TAQ-2",
+          "TAQ-1"
+        ],
+        [
+          "TAQ-4",
+          "TAQ-1"
+        ],
+        [
+          "TAQ-4",
+          "TAQ-2"
+        ],
+        [
+          "TAQ-4",
+          "TAQ-3"
+        ],
+        [
+          "TAQ-5",
+          "TAQ-1"
+        ],
+        [
+          "TAQ-5",
+          "TAQ-2"
+        ],
+        [
+          "TAQ-5",
+          "TAQ-3"
+        ],
+        [
+          "TAQ-5",
+          "TAQ-4"
+        ],
+        [
+          "TAQ-6",
+          "TAQ-1"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-4>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-1>",
+              "key": "TAQ-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-2>",
+              "key": "TAQ-2",
+              "parent_id": "<task:TAQ-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-3>",
+              "key": "TAQ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-4>",
+              "key": "TAQ-4",
+              "parent_id": "<task:TAQ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-5>",
+              "key": "TAQ-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-6>",
+              "key": "TAQ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-4>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-1>",
+              "key": "TAQ-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-2>",
+              "key": "TAQ-2",
+              "parent_id": "<task:TAQ-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-3>",
+              "key": "TAQ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-4>",
+              "key": "TAQ-4",
+              "parent_id": "<task:TAQ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-5>",
+              "key": "TAQ-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-6>",
+              "key": "TAQ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-4>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-1>",
+              "key": "TAQ-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-2>",
+              "key": "TAQ-2",
+              "parent_id": "<task:TAQ-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-3>",
+              "key": "TAQ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-4>",
+              "key": "TAQ-4",
+              "parent_id": "<task:TAQ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-5>",
+              "key": "TAQ-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 4"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAQ-1>TAQ-1": true,
+        "TAQ-1>TAQ-2": false,
+        "TAQ-1>TAQ-3": false,
+        "TAQ-1>TAQ-4": false,
+        "TAQ-1>TAQ-5": false,
+        "TAQ-1>TAQ-6": false,
+        "TAQ-2>TAQ-1": false,
+        "TAQ-2>TAQ-2": true,
+        "TAQ-2>TAQ-3": false,
+        "TAQ-2>TAQ-4": true,
+        "TAQ-2>TAQ-5": false,
+        "TAQ-2>TAQ-6": false,
+        "TAQ-3>TAQ-1": false,
+        "TAQ-3>TAQ-2": true,
+        "TAQ-3>TAQ-3": true,
+        "TAQ-3>TAQ-4": true,
+        "TAQ-3>TAQ-5": false,
+        "TAQ-3>TAQ-6": false,
+        "TAQ-4>TAQ-1": false,
+        "TAQ-4>TAQ-2": false,
+        "TAQ-4>TAQ-3": false,
+        "TAQ-4>TAQ-4": true,
+        "TAQ-4>TAQ-5": false,
+        "TAQ-4>TAQ-6": false,
+        "TAQ-5>TAQ-1": false,
+        "TAQ-5>TAQ-2": false,
+        "TAQ-5>TAQ-3": false,
+        "TAQ-5>TAQ-4": false,
+        "TAQ-5>TAQ-5": true,
+        "TAQ-5>TAQ-6": false,
+        "TAQ-6>TAQ-1": false,
+        "TAQ-6>TAQ-2": false,
+        "TAQ-6>TAQ-3": false,
+        "TAQ-6>TAQ-4": false,
+        "TAQ-6>TAQ-5": false,
+        "TAQ-6>TAQ-6": true
+      },
+      "reachable_path": {
+        "TAQ-1>TAQ-1": [
+          "TAQ-1"
+        ],
+        "TAQ-1>TAQ-2": null,
+        "TAQ-1>TAQ-3": null,
+        "TAQ-1>TAQ-4": null,
+        "TAQ-1>TAQ-5": null,
+        "TAQ-1>TAQ-6": null,
+        "TAQ-2>TAQ-1": [
+          "TAQ-2",
+          "TAQ-1"
+        ],
+        "TAQ-2>TAQ-2": [
+          "TAQ-2"
+        ],
+        "TAQ-2>TAQ-3": null,
+        "TAQ-2>TAQ-4": null,
+        "TAQ-2>TAQ-5": null,
+        "TAQ-2>TAQ-6": null,
+        "TAQ-3>TAQ-1": null,
+        "TAQ-3>TAQ-2": null,
+        "TAQ-3>TAQ-3": [
+          "TAQ-3"
+        ],
+        "TAQ-3>TAQ-4": null,
+        "TAQ-3>TAQ-5": null,
+        "TAQ-3>TAQ-6": null,
+        "TAQ-4>TAQ-1": [
+          "TAQ-4",
+          "TAQ-1"
+        ],
+        "TAQ-4>TAQ-2": [
+          "TAQ-4",
+          "TAQ-2"
+        ],
+        "TAQ-4>TAQ-3": [
+          "TAQ-4",
+          "TAQ-3"
+        ],
+        "TAQ-4>TAQ-4": [
+          "TAQ-4"
+        ],
+        "TAQ-4>TAQ-5": null,
+        "TAQ-4>TAQ-6": null,
+        "TAQ-5>TAQ-1": [
+          "TAQ-5",
+          "TAQ-1"
+        ],
+        "TAQ-5>TAQ-2": [
+          "TAQ-5",
+          "TAQ-2"
+        ],
+        "TAQ-5>TAQ-3": [
+          "TAQ-5",
+          "TAQ-3"
+        ],
+        "TAQ-5>TAQ-4": [
+          "TAQ-5",
+          "TAQ-4"
+        ],
+        "TAQ-5>TAQ-5": [
+          "TAQ-5"
+        ],
+        "TAQ-5>TAQ-6": null,
+        "TAQ-6>TAQ-1": [
+          "TAQ-6",
+          "TAQ-1"
+        ],
+        "TAQ-6>TAQ-2": null,
+        "TAQ-6>TAQ-3": null,
+        "TAQ-6>TAQ-4": null,
+        "TAQ-6>TAQ-5": null,
+        "TAQ-6>TAQ-6": [
+          "TAQ-6"
+        ]
+      },
+      "ready": [
+        "TAQ-1",
+        "TAQ-3"
+      ],
+      "rollup": {
+        "TAQ-1": null,
+        "TAQ-2": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAQ-3": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAQ-4": null,
+        "TAQ-5": null,
+        "TAQ-6": null
+      },
+      "satisfied": [
+        [
+          "TAQ-2",
+          "TAQ-1",
+          false
+        ],
+        [
+          "TAQ-4",
+          "TAQ-1",
+          false
+        ],
+        [
+          "TAQ-4",
+          "TAQ-2",
+          false
+        ],
+        [
+          "TAQ-4",
+          "TAQ-3",
+          false
+        ],
+        [
+          "TAQ-5",
+          "TAQ-1",
+          false
+        ],
+        [
+          "TAQ-5",
+          "TAQ-2",
+          false
+        ],
+        [
+          "TAQ-5",
+          "TAQ-3",
+          false
+        ],
+        [
+          "TAQ-5",
+          "TAQ-4",
+          false
+        ],
+        [
+          "TAQ-6",
+          "TAQ-1",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAQ-1": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAQ-2": {
+          "archived": false,
+          "parent": "TAQ-3",
+          "status": "blocked",
+          "tags": [
+            "parked",
+            "rho"
+          ]
+        },
+        "TAQ-3": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAQ-4": {
+          "archived": false,
+          "parent": "TAQ-2",
+          "status": "backlog",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAQ-5": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAQ-6": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAQ-1": [],
+        "TAQ-2": [
+          "TAQ-1"
+        ],
+        "TAQ-3": [],
+        "TAQ-4": [
+          "TAQ-1",
+          "TAQ-2",
+          "TAQ-3"
+        ],
+        "TAQ-5": [
+          "TAQ-1",
+          "TAQ-2",
+          "TAQ-3",
+          "TAQ-4"
+        ],
+        "TAQ-6": [
+          "TAQ-1"
+        ]
+      }
+    },
+    "before_promotion": {
+      "dependency_edges": [
+        [
+          "TAQ-2",
+          "TAQ-1"
+        ],
+        [
+          "TAQ-4",
+          "TAQ-1"
+        ],
+        [
+          "TAQ-4",
+          "TAQ-2"
+        ],
+        [
+          "TAQ-4",
+          "TAQ-3"
+        ],
+        [
+          "TAQ-5",
+          "TAQ-1"
+        ],
+        [
+          "TAQ-5",
+          "TAQ-2"
+        ],
+        [
+          "TAQ-5",
+          "TAQ-3"
+        ],
+        [
+          "TAQ-5",
+          "TAQ-4"
+        ],
+        [
+          "TAQ-6",
+          "TAQ-1"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-4>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-1>",
+              "key": "TAQ-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-2>",
+              "key": "TAQ-2",
+              "parent_id": "<task:TAQ-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-3>",
+              "key": "TAQ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-4>",
+              "key": "TAQ-4",
+              "parent_id": "<task:TAQ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-5>",
+              "key": "TAQ-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-6>",
+              "key": "TAQ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-4>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-1>",
+              "key": "TAQ-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-2>",
+              "key": "TAQ-2",
+              "parent_id": "<task:TAQ-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-3>",
+              "key": "TAQ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-4>",
+              "key": "TAQ-4",
+              "parent_id": "<task:TAQ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-5>",
+              "key": "TAQ-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-6>",
+              "key": "TAQ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-1>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAQ-4>",
+              "target": "<task:TAQ-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-2>",
+              "target": "<task:TAQ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAQ-3>",
+              "target": "<task:TAQ-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-1>",
+              "key": "TAQ-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-2>",
+              "key": "TAQ-2",
+              "parent_id": "<task:TAQ-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAQ-3>",
+              "key": "TAQ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-4>",
+              "key": "TAQ-4",
+              "parent_id": "<task:TAQ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAQ-5>",
+              "key": "TAQ-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 4"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAQ-1>TAQ-1": true,
+        "TAQ-1>TAQ-2": false,
+        "TAQ-1>TAQ-3": false,
+        "TAQ-1>TAQ-4": false,
+        "TAQ-1>TAQ-5": false,
+        "TAQ-1>TAQ-6": false,
+        "TAQ-2>TAQ-1": false,
+        "TAQ-2>TAQ-2": true,
+        "TAQ-2>TAQ-3": false,
+        "TAQ-2>TAQ-4": true,
+        "TAQ-2>TAQ-5": false,
+        "TAQ-2>TAQ-6": false,
+        "TAQ-3>TAQ-1": false,
+        "TAQ-3>TAQ-2": true,
+        "TAQ-3>TAQ-3": true,
+        "TAQ-3>TAQ-4": true,
+        "TAQ-3>TAQ-5": false,
+        "TAQ-3>TAQ-6": false,
+        "TAQ-4>TAQ-1": false,
+        "TAQ-4>TAQ-2": false,
+        "TAQ-4>TAQ-3": false,
+        "TAQ-4>TAQ-4": true,
+        "TAQ-4>TAQ-5": false,
+        "TAQ-4>TAQ-6": false,
+        "TAQ-5>TAQ-1": false,
+        "TAQ-5>TAQ-2": false,
+        "TAQ-5>TAQ-3": false,
+        "TAQ-5>TAQ-4": false,
+        "TAQ-5>TAQ-5": true,
+        "TAQ-5>TAQ-6": false,
+        "TAQ-6>TAQ-1": false,
+        "TAQ-6>TAQ-2": false,
+        "TAQ-6>TAQ-3": false,
+        "TAQ-6>TAQ-4": false,
+        "TAQ-6>TAQ-5": false,
+        "TAQ-6>TAQ-6": true
+      },
+      "reachable_path": {
+        "TAQ-1>TAQ-1": [
+          "TAQ-1"
+        ],
+        "TAQ-1>TAQ-2": null,
+        "TAQ-1>TAQ-3": null,
+        "TAQ-1>TAQ-4": null,
+        "TAQ-1>TAQ-5": null,
+        "TAQ-1>TAQ-6": null,
+        "TAQ-2>TAQ-1": [
+          "TAQ-2",
+          "TAQ-1"
+        ],
+        "TAQ-2>TAQ-2": [
+          "TAQ-2"
+        ],
+        "TAQ-2>TAQ-3": null,
+        "TAQ-2>TAQ-4": null,
+        "TAQ-2>TAQ-5": null,
+        "TAQ-2>TAQ-6": null,
+        "TAQ-3>TAQ-1": null,
+        "TAQ-3>TAQ-2": null,
+        "TAQ-3>TAQ-3": [
+          "TAQ-3"
+        ],
+        "TAQ-3>TAQ-4": null,
+        "TAQ-3>TAQ-5": null,
+        "TAQ-3>TAQ-6": null,
+        "TAQ-4>TAQ-1": [
+          "TAQ-4",
+          "TAQ-1"
+        ],
+        "TAQ-4>TAQ-2": [
+          "TAQ-4",
+          "TAQ-2"
+        ],
+        "TAQ-4>TAQ-3": [
+          "TAQ-4",
+          "TAQ-3"
+        ],
+        "TAQ-4>TAQ-4": [
+          "TAQ-4"
+        ],
+        "TAQ-4>TAQ-5": null,
+        "TAQ-4>TAQ-6": null,
+        "TAQ-5>TAQ-1": [
+          "TAQ-5",
+          "TAQ-1"
+        ],
+        "TAQ-5>TAQ-2": [
+          "TAQ-5",
+          "TAQ-2"
+        ],
+        "TAQ-5>TAQ-3": [
+          "TAQ-5",
+          "TAQ-3"
+        ],
+        "TAQ-5>TAQ-4": [
+          "TAQ-5",
+          "TAQ-4"
+        ],
+        "TAQ-5>TAQ-5": [
+          "TAQ-5"
+        ],
+        "TAQ-5>TAQ-6": null,
+        "TAQ-6>TAQ-1": [
+          "TAQ-6",
+          "TAQ-1"
+        ],
+        "TAQ-6>TAQ-2": null,
+        "TAQ-6>TAQ-3": null,
+        "TAQ-6>TAQ-4": null,
+        "TAQ-6>TAQ-5": null,
+        "TAQ-6>TAQ-6": [
+          "TAQ-6"
+        ]
+      },
+      "ready": [
+        "TAQ-1",
+        "TAQ-3"
+      ],
+      "rollup": {
+        "TAQ-1": null,
+        "TAQ-2": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAQ-3": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAQ-4": null,
+        "TAQ-5": null,
+        "TAQ-6": null
+      },
+      "satisfied": [
+        [
+          "TAQ-2",
+          "TAQ-1",
+          false
+        ],
+        [
+          "TAQ-4",
+          "TAQ-1",
+          false
+        ],
+        [
+          "TAQ-4",
+          "TAQ-2",
+          false
+        ],
+        [
+          "TAQ-4",
+          "TAQ-3",
+          false
+        ],
+        [
+          "TAQ-5",
+          "TAQ-1",
+          false
+        ],
+        [
+          "TAQ-5",
+          "TAQ-2",
+          false
+        ],
+        [
+          "TAQ-5",
+          "TAQ-3",
+          false
+        ],
+        [
+          "TAQ-5",
+          "TAQ-4",
+          false
+        ],
+        [
+          "TAQ-6",
+          "TAQ-1",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAQ-1": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAQ-2": {
+          "archived": false,
+          "parent": "TAQ-3",
+          "status": "blocked",
+          "tags": [
+            "parked",
+            "rho"
+          ]
+        },
+        "TAQ-3": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAQ-4": {
+          "archived": false,
+          "parent": "TAQ-2",
+          "status": "backlog",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAQ-5": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAQ-6": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAQ-1": [],
+        "TAQ-2": [
+          "TAQ-1"
+        ],
+        "TAQ-3": [],
+        "TAQ-4": [
+          "TAQ-1",
+          "TAQ-2",
+          "TAQ-3"
+        ],
+        "TAQ-5": [
+          "TAQ-1",
+          "TAQ-2",
+          "TAQ-3",
+          "TAQ-4"
+        ],
+        "TAQ-6": [
+          "TAQ-1"
+        ]
+      }
+    },
+    "dry_run": [],
+    "promoted": []
+  },
+  "seed": 10,
+  "source": "generated: random task graph",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 0"
+    },
+    {
+      "depends_on": [
+        "TAQ-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "parked",
+        "rho"
+      ],
+      "title": "Task 1"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 2"
+    },
+    {
+      "depends_on": [
+        "TAQ-2",
+        "TAQ-3",
+        "TAQ-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 3"
+    },
+    {
+      "depends_on": [
+        "TAQ-4",
+        "TAQ-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 4"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 5"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAQ-2 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAQ-2"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAQ-2 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAQ-2"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAQ-2 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAQ-2"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAQ-6 is backlog; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAQ-6"
+    },
+    {
+      "depends_on": "TAQ-4",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAQ-1 -> TAQ-4 would create a cycle: TAQ-1 -> TAQ-4 -> TAQ-1"
+      },
+      "task": "TAQ-1"
+    },
+    {
+      "depends_on": "TAQ-5",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAQ-3 -> TAQ-5 would create a cycle: TAQ-3 -> TAQ-5 -> TAQ-4 -> TAQ-3"
+      },
+      "task": "TAQ-3"
+    },
+    {
+      "depends_on": "TAQ-1",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAQ-6"
+    },
+    {
+      "depends_on": "TAQ-1",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAQ-5"
+    },
+    {
+      "depends_on": "TAQ-4",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAQ-2 -> TAQ-4 would create a cycle: TAQ-2 -> TAQ-4 -> TAQ-2"
+      },
+      "task": "TAQ-2"
+    },
+    {
+      "depends_on": "TAQ-3",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAQ-5"
+    },
+    {
+      "depends_on": "TAQ-2",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAQ-5"
+    },
+    {
+      "depends_on": "TAQ-6",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAQ-1 -> TAQ-6 would create a cycle: TAQ-1 -> TAQ-6 -> TAQ-1"
+      },
+      "task": "TAQ-1"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAQ-2",
+      "task": "TAQ-4"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAQ-3",
+      "task": "TAQ-2"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAQ-6",
+      "task": "TAQ-4"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAQ-2",
+      "task": "TAQ-4"
+    },
+    {
+      "depends_on": "TAQ-1",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "a task cannot depend on itself"
+      },
+      "task": "TAQ-1"
+    },
+    {
+      "dry_run": true,
+      "op": "promote_ready",
+      "outcome": "ok"
+    },
+    {
+      "dry_run": false,
+      "op": "promote_ready",
+      "outcome": "ok"
+    }
+  ]
+}

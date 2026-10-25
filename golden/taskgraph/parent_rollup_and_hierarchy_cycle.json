@@ -1,0 +1,383 @@
+{
+  "case": "parent_rollup_and_hierarchy_cycle",
+  "observations": {
+    "observed": {
+      "dependency_edges": [],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAC-1>",
+              "target": "<task:TAC-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAC-1>",
+              "target": "<task:TAC-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAC-3>",
+              "target": "<task:TAC-4>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-1>",
+              "key": "TAC-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-2>",
+              "key": "TAC-2",
+              "parent_id": "<task:TAC-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "C1"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-3>",
+              "key": "TAC-3",
+              "parent_id": "<task:TAC-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "C2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-4>",
+              "key": "TAC-4",
+              "parent_id": "<task:TAC-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "GC"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAC-1>",
+              "target": "<task:TAC-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAC-3>",
+              "target": "<task:TAC-4>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-1>",
+              "key": "TAC-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-3>",
+              "key": "TAC-3",
+              "parent_id": "<task:TAC-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "C2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-4>",
+              "key": "TAC-4",
+              "parent_id": "<task:TAC-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "GC"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAC-1>",
+              "target": "<task:TAC-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAC-1>",
+              "target": "<task:TAC-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAC-3>",
+              "target": "<task:TAC-4>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-1>",
+              "key": "TAC-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-2>",
+              "key": "TAC-2",
+              "parent_id": "<task:TAC-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "C1"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-3>",
+              "key": "TAC-3",
+              "parent_id": "<task:TAC-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "C2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAC-4>",
+              "key": "TAC-4",
+              "parent_id": "<task:TAC-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "GC"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAC-1>TAC-1": true,
+        "TAC-1>TAC-2": true,
+        "TAC-1>TAC-3": true,
+        "TAC-1>TAC-4": true,
+        "TAC-2>TAC-1": false,
+        "TAC-2>TAC-2": true,
+        "TAC-2>TAC-3": false,
+        "TAC-2>TAC-4": false,
+        "TAC-3>TAC-1": false,
+        "TAC-3>TAC-2": false,
+        "TAC-3>TAC-3": true,
+        "TAC-3>TAC-4": true,
+        "TAC-4>TAC-1": false,
+        "TAC-4>TAC-2": false,
+        "TAC-4>TAC-3": false,
+        "TAC-4>TAC-4": true
+      },
+      "reachable_path": {
+        "TAC-1>TAC-1": [
+          "TAC-1"
+        ],
+        "TAC-1>TAC-2": null,
+        "TAC-1>TAC-3": null,
+        "TAC-1>TAC-4": null,
+        "TAC-2>TAC-1": null,
+        "TAC-2>TAC-2": [
+          "TAC-2"
+        ],
+        "TAC-2>TAC-3": null,
+        "TAC-2>TAC-4": null,
+        "TAC-3>TAC-1": null,
+        "TAC-3>TAC-2": null,
+        "TAC-3>TAC-3": [
+          "TAC-3"
+        ],
+        "TAC-3>TAC-4": null,
+        "TAC-4>TAC-1": null,
+        "TAC-4>TAC-2": null,
+        "TAC-4>TAC-3": null,
+        "TAC-4>TAC-4": [
+          "TAC-4"
+        ]
+      },
+      "ready": [],
+      "rollup": {
+        "TAC-1": {
+          "accepted": 1,
+          "by_status": {
+            "accepted": 1,
+            "backlog": 2
+          },
+          "progress": 0.3333,
+          "total_descendants": 3
+        },
+        "TAC-2": null,
+        "TAC-3": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAC-4": null
+      },
+      "satisfied": [],
+      "tasks": {
+        "TAC-1": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAC-2": {
+          "archived": false,
+          "parent": "TAC-1",
+          "status": "accepted",
+          "tags": []
+        },
+        "TAC-3": {
+          "archived": false,
+          "parent": "TAC-1",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAC-4": {
+          "archived": false,
+          "parent": "TAC-3",
+          "status": "backlog",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAC-1": [],
+        "TAC-2": [],
+        "TAC-3": [],
+        "TAC-4": []
+      }
+    }
+  },
+  "seed": null,
+  "source": "tests/unit/test_tasks_core.py::test_parent_child_rollup_and_hierarchy_cycle",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "Parent"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAC-1",
+      "status": "ready",
+      "tags": [],
+      "title": "C1"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAC-1",
+      "status": null,
+      "tags": [],
+      "title": "C2"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAC-3",
+      "status": null,
+      "tags": [],
+      "title": "GC"
+    },
+    {
+      "op": "claim",
+      "outcome": "ok",
+      "task": "TAC-2"
+    },
+    {
+      "op": "complete",
+      "outcome": "ok",
+      "summary": "done",
+      "task": "TAC-2"
+    },
+    {
+      "op": "accept",
+      "outcome": "ok",
+      "task": "TAC-2"
+    },
+    {
+      "op": "set_parent",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "setting TAC-4 as parent of TAC-1 would create a hierarchy cycle"
+      },
+      "parent": "TAC-4",
+      "task": "TAC-1"
+    }
+  ]
+}

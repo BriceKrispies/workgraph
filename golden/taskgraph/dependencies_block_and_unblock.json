@@ -1,0 +1,438 @@
+{
+  "case": "dependencies_block_and_unblock",
+  "observations": {
+    "after_acceptance": {
+      "dependency_edges": [
+        [
+          "TAA-2",
+          "TAA-1"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAA-1>",
+              "target": "<task:TAA-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAA-1>",
+              "key": "TAA-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAA-2>",
+              "key": "TAA-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "B"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAA-2>",
+              "key": "TAA-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "B"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAA-1>TAA-1": true,
+        "TAA-1>TAA-2": false,
+        "TAA-2>TAA-1": false,
+        "TAA-2>TAA-2": true
+      },
+      "reachable_path": {
+        "TAA-1>TAA-1": [
+          "TAA-1"
+        ],
+        "TAA-1>TAA-2": null,
+        "TAA-2>TAA-1": [
+          "TAA-2",
+          "TAA-1"
+        ],
+        "TAA-2>TAA-2": [
+          "TAA-2"
+        ]
+      },
+      "ready": [
+        "TAA-2"
+      ],
+      "rollup": {
+        "TAA-1": null,
+        "TAA-2": null
+      },
+      "satisfied": [
+        [
+          "TAA-2",
+          "TAA-1",
+          true
+        ]
+      ],
+      "tasks": {
+        "TAA-1": {
+          "archived": false,
+          "parent": null,
+          "status": "accepted",
+          "tags": []
+        },
+        "TAA-2": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAA-1": [],
+        "TAA-2": []
+      }
+    },
+    "after_completion": {
+      "dependency_edges": [
+        [
+          "TAA-2",
+          "TAA-1"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAA-1>",
+              "target": "<task:TAA-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAA-1>",
+              "key": "TAA-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "awaiting_review",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAA-2>",
+              "key": "TAA-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "B"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAA-1>",
+              "target": "<task:TAA-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAA-1>",
+              "key": "TAA-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "awaiting_review",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAA-2>",
+              "key": "TAA-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "B"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAA-1>TAA-1": true,
+        "TAA-1>TAA-2": false,
+        "TAA-2>TAA-1": false,
+        "TAA-2>TAA-2": true
+      },
+      "reachable_path": {
+        "TAA-1>TAA-1": [
+          "TAA-1"
+        ],
+        "TAA-1>TAA-2": null,
+        "TAA-2>TAA-1": [
+          "TAA-2",
+          "TAA-1"
+        ],
+        "TAA-2>TAA-2": [
+          "TAA-2"
+        ]
+      },
+      "ready": [],
+      "rollup": {
+        "TAA-1": null,
+        "TAA-2": null
+      },
+      "satisfied": [
+        [
+          "TAA-2",
+          "TAA-1",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAA-1": {
+          "archived": false,
+          "parent": null,
+          "status": "awaiting_review",
+          "tags": []
+        },
+        "TAA-2": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAA-1": [],
+        "TAA-2": [
+          "TAA-1"
+        ]
+      }
+    },
+    "before_completion": {
+      "dependency_edges": [
+        [
+          "TAA-2",
+          "TAA-1"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAA-1>",
+              "target": "<task:TAA-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAA-1>",
+              "key": "TAA-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAA-2>",
+              "key": "TAA-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "B"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAA-1>",
+              "target": "<task:TAA-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAA-1>",
+              "key": "TAA-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAA-2>",
+              "key": "TAA-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "B"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAA-1>TAA-1": true,
+        "TAA-1>TAA-2": false,
+        "TAA-2>TAA-1": false,
+        "TAA-2>TAA-2": true
+      },
+      "reachable_path": {
+        "TAA-1>TAA-1": [
+          "TAA-1"
+        ],
+        "TAA-1>TAA-2": null,
+        "TAA-2>TAA-1": [
+          "TAA-2",
+          "TAA-1"
+        ],
+        "TAA-2>TAA-2": [
+          "TAA-2"
+        ]
+      },
+      "ready": [
+        "TAA-1"
+      ],
+      "rollup": {
+        "TAA-1": null,
+        "TAA-2": null
+      },
+      "satisfied": [
+        [
+          "TAA-2",
+          "TAA-1",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAA-1": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": []
+        },
+        "TAA-2": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAA-1": [],
+        "TAA-2": [
+          "TAA-1"
+        ]
+      }
+    }
+  },
+  "seed": null,
+  "source": "tests/unit/test_tasks_core.py::test_dependencies_block_and_unblock",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "A"
+    },
+    {
+      "depends_on": [
+        "TAA-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "B"
+    },
+    {
+      "op": "claim",
+      "outcome": "ok",
+      "task": "TAA-1"
+    },
+    {
+      "op": "complete",
+      "outcome": "ok",
+      "summary": "done",
+      "task": "TAA-1"
+    },
+    {
+      "op": "accept",
+      "outcome": "ok",
+      "task": "TAA-1"
+    }
+  ]
+}

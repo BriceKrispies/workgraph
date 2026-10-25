@@ -1,0 +1,336 @@
+{
+  "case": "promote_skips_parent_and_parked",
+  "observations": {
+    "after": {
+      "dependency_edges": [],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAE-1>",
+              "target": "<task:TAE-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-1>",
+              "key": "TAE-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-2>",
+              "key": "TAE-2",
+              "parent_id": "<task:TAE-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Child"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-3>",
+              "key": "TAE-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked"
+              ],
+              "title": "Parked"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-4>",
+              "key": "TAE-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Plain"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAE-1>",
+              "target": "<task:TAE-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-1>",
+              "key": "TAE-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-2>",
+              "key": "TAE-2",
+              "parent_id": "<task:TAE-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Child"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-3>",
+              "key": "TAE-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked"
+              ],
+              "title": "Parked"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-4>",
+              "key": "TAE-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Plain"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAE-1>",
+              "target": "<task:TAE-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-1>",
+              "key": "TAE-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAE-2>",
+              "key": "TAE-2",
+              "parent_id": "<task:TAE-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Child"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAE-1>TAE-1": true,
+        "TAE-1>TAE-2": true,
+        "TAE-1>TAE-3": false,
+        "TAE-1>TAE-4": false,
+        "TAE-2>TAE-1": false,
+        "TAE-2>TAE-2": true,
+        "TAE-2>TAE-3": false,
+        "TAE-2>TAE-4": false,
+        "TAE-3>TAE-1": false,
+        "TAE-3>TAE-2": false,
+        "TAE-3>TAE-3": true,
+        "TAE-3>TAE-4": false,
+        "TAE-4>TAE-1": false,
+        "TAE-4>TAE-2": false,
+        "TAE-4>TAE-3": false,
+        "TAE-4>TAE-4": true
+      },
+      "reachable_path": {
+        "TAE-1>TAE-1": [
+          "TAE-1"
+        ],
+        "TAE-1>TAE-2": null,
+        "TAE-1>TAE-3": null,
+        "TAE-1>TAE-4": null,
+        "TAE-2>TAE-1": null,
+        "TAE-2>TAE-2": [
+          "TAE-2"
+        ],
+        "TAE-2>TAE-3": null,
+        "TAE-2>TAE-4": null,
+        "TAE-3>TAE-1": null,
+        "TAE-3>TAE-2": null,
+        "TAE-3>TAE-3": [
+          "TAE-3"
+        ],
+        "TAE-3>TAE-4": null,
+        "TAE-4>TAE-1": null,
+        "TAE-4>TAE-2": null,
+        "TAE-4>TAE-3": null,
+        "TAE-4>TAE-4": [
+          "TAE-4"
+        ]
+      },
+      "ready": [
+        "TAE-2",
+        "TAE-4"
+      ],
+      "rollup": {
+        "TAE-1": {
+          "accepted": 0,
+          "by_status": {
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAE-2": null,
+        "TAE-3": null,
+        "TAE-4": null
+      },
+      "satisfied": [],
+      "tasks": {
+        "TAE-1": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAE-2": {
+          "archived": false,
+          "parent": "TAE-1",
+          "status": "ready",
+          "tags": []
+        },
+        "TAE-3": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "parked"
+          ]
+        },
+        "TAE-4": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAE-1": [],
+        "TAE-2": [],
+        "TAE-3": [],
+        "TAE-4": []
+      }
+    },
+    "dry_run": [
+      "TAE-2",
+      "TAE-4"
+    ],
+    "promoted": [
+      "TAE-2",
+      "TAE-4"
+    ]
+  },
+  "seed": null,
+  "source": "tests/unit/test_tasks_core.py::test_promote_ready_skips_parent_and_parked_tasks",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "Parent"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAE-1",
+      "status": null,
+      "tags": [],
+      "title": "Child"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [
+        "parked"
+      ],
+      "title": "Parked"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "Plain"
+    },
+    {
+      "dry_run": true,
+      "op": "promote_ready",
+      "outcome": "ok"
+    },
+    {
+      "dry_run": false,
+      "op": "promote_ready",
+      "outcome": "ok"
+    }
+  ]
+}

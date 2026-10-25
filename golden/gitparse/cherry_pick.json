@@ -1,0 +1,139 @@
+{
+  "cases": [
+    {
+      "input": {
+        "message": "Subject\n\n(cherry picked from commit 0123456789abcdef0123456789abcdef01234567)\n"
+      },
+      "name": "message:0",
+      "output": {
+        "sha": "0123456789abcdef0123456789abcdef01234567"
+      }
+    },
+    {
+      "input": {
+        "message": "(cherry picked from commit abcdef1)"
+      },
+      "name": "message:1",
+      "output": {
+        "sha": "abcdef1"
+      }
+    },
+    {
+      "input": {
+        "message": "(cherry picked from commit abcdef)"
+      },
+      "name": "message:2",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "(cherry picked from commit ABCDEF1)"
+      },
+      "name": "message:3",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "(cherry picked from commit abcdef1) and (cherry picked from commit 1234567)"
+      },
+      "name": "message:4",
+      "output": {
+        "sha": "abcdef1"
+      }
+    },
+    {
+      "input": {
+        "message": "no reference here"
+      },
+      "name": "message:5",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "Initial import\n\nBody of the root commit.\n\nTask-ID: WG-1\nReviewed-by: Grace Hopper <grace@example.test>"
+      },
+      "name": "commit:root",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "Refactor main, add assets\n\nTask-ID: WG-2"
+      },
+      "name": "commit:refactor",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "Add feature flag\n\nTask-ID: WG-3"
+      },
+      "name": "commit:feature",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "Copy main and tweak the original\n\nTask-ID: WG-5"
+      },
+      "name": "commit:copy",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "Fix guide wording\n\nTask-ID: WG-4"
+      },
+      "name": "commit:guide",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "Merge feature into main\n\nTask-ID: WG-3"
+      },
+      "name": "commit:merge",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "Fix guide wording\n\nTask-ID: WG-4\n(cherry picked from commit 0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f)"
+      },
+      "name": "commit:cherry",
+      "output": {
+        "sha": "0c9046d4e8a4887bcf0e7dcb1a572e448caf0f2f"
+      }
+    },
+    {
+      "input": {
+        "message": "Empty checkpoint"
+      },
+      "name": "commit:empty",
+      "output": {
+        "sha": null
+      }
+    },
+    {
+      "input": {
+        "message": "Schöne Grüße ✓\n\nReviewed-by: Zoë Ångström <zoe@example.test>\nReviewed-by: Carl Sagan <carl@example.test>"
+      },
+      "name": "commit:unicode",
+      "output": {
+        "sha": null
+      }
+    }
+  ]
+}

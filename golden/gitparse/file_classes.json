@@ -1,0 +1,619 @@
+{
+  "cases": [
+    {
+      "input": {
+        "path": ".env.local"
+      },
+      "name": ".env.local",
+      "output": {
+        "class": "config",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": ".github/workflows/ci.yml"
+      },
+      "name": ".github/workflows/ci.yml",
+      "output": {
+        "class": "config",
+        "language": null,
+        "module": {
+          "1": ".github",
+          "2": ".github/workflows",
+          "3": ".github/workflows"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": ".gitignore"
+      },
+      "name": ".gitignore",
+      "output": {
+        "class": "config",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "CHANGELOG.md"
+      },
+      "name": "CHANGELOG.md",
+      "output": {
+        "class": "docs",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "Dockerfile"
+      },
+      "name": "Dockerfile",
+      "output": {
+        "class": "config",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "LICENSE"
+      },
+      "name": "LICENSE",
+      "output": {
+        "class": "docs",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "Makefile"
+      },
+      "name": "Makefile",
+      "output": {
+        "class": "config",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "README"
+      },
+      "name": "README",
+      "output": {
+        "class": "production",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "README.md"
+      },
+      "name": "README.md",
+      "output": {
+        "class": "docs",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "Tests/FooTests.cs"
+      },
+      "name": "Tests/FooTests.cs",
+      "output": {
+        "class": "test",
+        "language": "c_sharp",
+        "module": {
+          "1": "Tests",
+          "2": "Tests",
+          "3": "Tests"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "a.rs"
+      },
+      "name": "a.rs",
+      "output": {
+        "class": "production",
+        "language": "rust",
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "a.unknown"
+      },
+      "name": "a.unknown",
+      "output": {
+        "class": "production",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "a/b/c/d/e.py"
+      },
+      "name": "a/b/c/d/e.py",
+      "output": {
+        "class": "production",
+        "language": "python",
+        "module": {
+          "1": "a",
+          "2": "a/b",
+          "3": "a/b/c"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "apps/web/page.tsx"
+      },
+      "name": "apps/web/page.tsx",
+      "output": {
+        "class": "production",
+        "language": "tsx",
+        "module": {
+          "1": "apps/web",
+          "2": "apps/web",
+          "3": "apps/web"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "assets/logo.bin"
+      },
+      "name": "assets/logo.bin",
+      "output": {
+        "class": "production",
+        "language": null,
+        "module": {
+          "1": "assets",
+          "2": "assets",
+          "3": "assets"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "cmd/tool/main.go"
+      },
+      "name": "cmd/tool/main.go",
+      "output": {
+        "class": "production",
+        "language": "go",
+        "module": {
+          "1": "cmd/tool",
+          "2": "cmd/tool",
+          "3": "cmd/tool"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "data/config.json"
+      },
+      "name": "data/config.json",
+      "output": {
+        "class": "config",
+        "language": null,
+        "module": {
+          "1": "data",
+          "2": "data",
+          "3": "data"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "docs/GUIDE.md"
+      },
+      "name": "docs/GUIDE.md",
+      "output": {
+        "class": "docs",
+        "language": null,
+        "module": {
+          "1": "docs",
+          "2": "docs",
+          "3": "docs"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "docs/guide.md"
+      },
+      "name": "docs/guide.md",
+      "output": {
+        "class": "docs",
+        "language": null,
+        "module": {
+          "1": "docs",
+          "2": "docs",
+          "3": "docs"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "docs/x/y.rst"
+      },
+      "name": "docs/x/y.rst",
+      "output": {
+        "class": "docs",
+        "language": null,
+        "module": {
+          "1": "docs",
+          "2": "docs/x",
+          "3": "docs/x"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "e2e/login.spec.ts"
+      },
+      "name": "e2e/login.spec.ts",
+      "output": {
+        "class": "test",
+        "language": "typescript",
+        "module": {
+          "1": "e2e",
+          "2": "e2e",
+          "3": "e2e"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "internal/x/y.go"
+      },
+      "name": "internal/x/y.go",
+      "output": {
+        "class": "production",
+        "language": "go",
+        "module": {
+          "1": "internal/x",
+          "2": "internal/x",
+          "3": "internal/x"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "lib/Foo_test.go"
+      },
+      "name": "lib/Foo_test.go",
+      "output": {
+        "class": "test",
+        "language": "go",
+        "module": {
+          "1": "lib",
+          "2": "lib",
+          "3": "lib"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "lib/pkg/mod.c"
+      },
+      "name": "lib/pkg/mod.c",
+      "output": {
+        "class": "production",
+        "language": "c",
+        "module": {
+          "1": "lib/pkg",
+          "2": "lib/pkg",
+          "3": "lib/pkg"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "packages/ui/src/index.tsx"
+      },
+      "name": "packages/ui/src/index.tsx",
+      "output": {
+        "class": "production",
+        "language": "tsx",
+        "module": {
+          "1": "packages/ui",
+          "2": "packages/ui/src",
+          "3": "packages/ui/src"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "pkg/x_spec.rb"
+      },
+      "name": "pkg/x_spec.rb",
+      "output": {
+        "class": "test",
+        "language": "ruby",
+        "module": {
+          "1": "pkg",
+          "2": "pkg",
+          "3": "pkg"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "pyproject.toml"
+      },
+      "name": "pyproject.toml",
+      "output": {
+        "class": "config",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/A.PY"
+      },
+      "name": "src/A.PY",
+      "output": {
+        "class": "production",
+        "language": "python",
+        "module": {
+          "1": "src",
+          "2": "src",
+          "3": "src"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/__tests__/x.tsx"
+      },
+      "name": "src/__tests__/x.tsx",
+      "output": {
+        "class": "test",
+        "language": "tsx",
+        "module": {
+          "1": "src/__tests__",
+          "2": "src/__tests__",
+          "3": "src/__tests__"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/a b.py"
+      },
+      "name": "src/a b.py",
+      "output": {
+        "class": "production",
+        "language": "python",
+        "module": {
+          "1": "src",
+          "2": "src",
+          "3": "src"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/app.test.ts"
+      },
+      "name": "src/app.test.ts",
+      "output": {
+        "class": "test",
+        "language": "typescript",
+        "module": {
+          "1": "src",
+          "2": "src",
+          "3": "src"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/app/main.py"
+      },
+      "name": "src/app/main.py",
+      "output": {
+        "class": "production",
+        "language": "python",
+        "module": {
+          "1": "src/app",
+          "2": "src/app",
+          "3": "src/app"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/app/main_copy.py"
+      },
+      "name": "src/app/main_copy.py",
+      "output": {
+        "class": "production",
+        "language": "python",
+        "module": {
+          "1": "src/app",
+          "2": "src/app",
+          "3": "src/app"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/feature.py"
+      },
+      "name": "src/feature.py",
+      "output": {
+        "class": "production",
+        "language": "python",
+        "module": {
+          "1": "src",
+          "2": "src",
+          "3": "src"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/main/java/App.java"
+      },
+      "name": "src/main/java/App.java",
+      "output": {
+        "class": "production",
+        "language": "java",
+        "module": {
+          "1": "src/main",
+          "2": "src/main/java",
+          "3": "src/main/java"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/naïve.py"
+      },
+      "name": "src/naïve.py",
+      "output": {
+        "class": "production",
+        "language": "python",
+        "module": {
+          "1": "src",
+          "2": "src",
+          "3": "src"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/workgraph/app.py"
+      },
+      "name": "src/workgraph/app.py",
+      "output": {
+        "class": "production",
+        "language": "python",
+        "module": {
+          "1": "src/workgraph",
+          "2": "src/workgraph",
+          "3": "src/workgraph"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "src/workgraph/core/x.py"
+      },
+      "name": "src/workgraph/core/x.py",
+      "output": {
+        "class": "production",
+        "language": "python",
+        "module": {
+          "1": "src/workgraph",
+          "2": "src/workgraph/core",
+          "3": "src/workgraph/core"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "tests/test_api.py"
+      },
+      "name": "tests/test_api.py",
+      "output": {
+        "class": "test",
+        "language": "python",
+        "module": {
+          "1": "tests",
+          "2": "tests",
+          "3": "tests"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "uv.lock"
+      },
+      "name": "uv.lock",
+      "output": {
+        "class": "config",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    },
+    {
+      "input": {
+        "path": "x"
+      },
+      "name": "x",
+      "output": {
+        "class": "production",
+        "language": null,
+        "module": {
+          "1": "/",
+          "2": "/",
+          "3": "/"
+        }
+      }
+    }
+  ]
+}

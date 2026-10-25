@@ -1,0 +1,11 @@
+[package]
+name = "wg-model"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "entity values, slices, writes, events, effects, stamps, decisions"
+
+[lints]
+workspace = true

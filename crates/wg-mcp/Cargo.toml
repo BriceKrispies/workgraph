@@ -1,0 +1,11 @@
+[package]
+name = "wg-mcp"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "MCP server over stdio and Streamable HTTP"
+
+[lints]
+workspace = true

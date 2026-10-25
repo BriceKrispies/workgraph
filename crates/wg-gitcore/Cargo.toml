@@ -1,0 +1,11 @@
+[package]
+name = "wg-gitcore"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "parsers for git output, attribution, rewrite reconciliation"
+
+[lints]
+workspace = true

@@ -1,0 +1,44 @@
+# Purity tiers for arch-lint (crates/arch-lint).
+# One `crate-name Tier` pair per line; Tier is `Pure`, `Core`, `Shell` or `Tooling`.
+# `Core` crates depend only on Core crates and the allowlist in tools/reports/core-rules.toml.
+# `Shell` marks an Impure crate. `Tooling` marks a build or lint crate outside the product.
+# A crate has one line. Every crate under crates/ must be listed; an unlisted crate fails the gate.
+# Sorted by crate name.
+
+arch-lint Tooling
+wg-agents Shell
+wg-analytics Core
+wg-archive Shell
+wg-automation Core
+wg-browser Shell
+wg-cli Shell
+wg-codeparse Shell
+wg-config Pure
+wg-conformance Tooling
+wg-demo-agent Shell
+wg-events Core
+wg-exec Core
+wg-experiments Core
+wg-git Shell
+wg-gitcore Core
+wg-intel Core
+wg-jobs Core
+wg-json Pure
+wg-mcp Shell
+wg-model Core
+wg-net Shell
+wg-proc Shell
+wg-pyrand Pure
+wg-registry Core
+wg-render Pure
+wg-runtime Shell
+wg-server Shell
+wg-stacks Core
+wg-store Shell
+wg-tasks Core
+wg-telemetry Core
+wg-trackers Core
+wg-types Core
+wg-validate Pure
+wg-verify Core
+wg-wire Pure

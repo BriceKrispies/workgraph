@@ -1,0 +1,5 @@
+world_roots = ["TaskSlice", "RegistrySlice", "RunSlice", "RunState", "StackSlice", "StackFlow",
+               "VerifySlice", "QueueSlice", "AutomationSlice", "IntelSlice", "TelemetrySlice",
+               "TrackerSlice", "ExperimentSlice", "AnalyticsInput"]
+external_deps = ["rpds", "serde", "serde_json", "uuid", "time", "regex"]
+banned_calls = ["OffsetDateTime::now_utc", "SystemTime::now", "Instant::now", "Uuid::new_v4"]

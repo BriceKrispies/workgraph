@@ -1,0 +1,11 @@
+[package]
+name = "wg-agents"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "Claude Code adapter and command agent adapter"
+
+[lints]
+workspace = true

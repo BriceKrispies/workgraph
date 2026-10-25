@@ -1,0 +1,11 @@
+[package]
+name = "wg-config"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "configuration model, TOML parsing, migration, writer"
+
+[lints]
+workspace = true

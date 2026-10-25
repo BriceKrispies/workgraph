@@ -1,0 +1,11 @@
+[package]
+name = "wg-types"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "ids, task keys, timestamps, enums, actors, permissions, errors"
+
+[lints]
+workspace = true

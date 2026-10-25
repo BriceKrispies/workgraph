@@ -1,0 +1,11 @@
+[package]
+name = "wg-experiments"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "protocol validation, planner, trials, statistics, predictor"
+
+[lints]
+workspace = true

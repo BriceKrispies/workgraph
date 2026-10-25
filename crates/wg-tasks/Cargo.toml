@@ -1,0 +1,11 @@
+[package]
+name = "wg-tasks"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "task lifecycle, dependency graph, task writes, claims, comments"
+
+[lints]
+workspace = true

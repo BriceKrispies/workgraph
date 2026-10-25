@@ -1,0 +1,11 @@
+[package]
+name = "wg-archive"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "backup and restore zips, JSON Lines, CSV and Parquet export"
+
+[lints]
+workspace = true

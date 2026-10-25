@@ -1,0 +1,4 @@
+[alias]
+# Architecture lints and the purity report, implemented by crates/arch-lint.
+lint-arch = "run -q -p arch-lint -- lint-architecture"
+purity = "run -q -p arch-lint -- purity-report"

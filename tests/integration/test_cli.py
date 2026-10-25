@@ -147,6 +147,21 @@ def test_cli_errors_and_exit_codes(run):
     run("task", "depend", "WG-1", "WG-1", expect=2)
 
 
+def test_task_list_limit_above_maximum_is_a_validation_error(run, home, monkeypatch):
+    run("init")
+    err = run("task", "list", "--limit", "2000", expect=2)
+    assert err["error"]["code"] == "validation_failed"
+    assert "500" in err["error"]["message"]
+    assert any(item["loc"] == ["limit"] for item in err["error"]["details"]["errors"])
+
+    monkeypatch.setenv("WORKGRAPH_HOME", str(home))
+    result = CliRunner().invoke(cli, ["task", "list", "--limit", "2000"])
+    assert result.exit_code == 2, result.output
+    assert "validation_failed" in result.output
+    assert "limit" in result.output
+    assert "Traceback" not in result.output
+
+
 def test_cli_backup_restore_export_import(run, tmp_path, home):
     run("init")
     run("task", "create", "Keep me", "--description", "important")

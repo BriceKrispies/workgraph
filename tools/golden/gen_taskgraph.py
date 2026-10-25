@@ -7,7 +7,7 @@ written to ``golden/taskgraph/<case>.json`` with its steps (input) and observati
 Identifiers become ``<task:KEY>`` or ``<uuid:N>`` and timestamps become ``<ts>``, so two runs give
 identical bytes.
 
-Usage: ``uv run python tools/golden/taskgraph.py``
+Usage: ``uv run python tools/golden/gen_taskgraph.py``
 """
 
 from __future__ import annotations

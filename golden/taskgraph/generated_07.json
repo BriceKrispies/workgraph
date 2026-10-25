@@ -1,0 +1,3222 @@
+{
+  "case": "generated_07",
+  "observations": {
+    "after_promotion": {
+      "dependency_edges": [
+        [
+          "TAN-10",
+          "TAN-2"
+        ],
+        [
+          "TAN-3",
+          "TAN-1"
+        ],
+        [
+          "TAN-3",
+          "TAN-2"
+        ],
+        [
+          "TAN-3",
+          "TAN-4"
+        ],
+        [
+          "TAN-4",
+          "TAN-5"
+        ],
+        [
+          "TAN-6",
+          "TAN-1"
+        ],
+        [
+          "TAN-6",
+          "TAN-2"
+        ],
+        [
+          "TAN-6",
+          "TAN-3"
+        ],
+        [
+          "TAN-7",
+          "TAN-11"
+        ],
+        [
+          "TAN-7",
+          "TAN-2"
+        ],
+        [
+          "TAN-7",
+          "TAN-4"
+        ],
+        [
+          "TAN-7",
+          "TAN-6"
+        ],
+        [
+          "TAN-8",
+          "TAN-1"
+        ],
+        [
+          "TAN-8",
+          "TAN-3"
+        ],
+        [
+          "TAN-9",
+          "TAN-3"
+        ],
+        [
+          "TAN-9",
+          "TAN-8"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-11>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-10>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-5>",
+              "target": "<task:TAN-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-6>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-9>",
+              "target": "<task:TAN-7>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-1>",
+              "key": "TAN-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-2>",
+              "key": "TAN-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "cancelled",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-3>",
+              "key": "TAN-3",
+              "parent_id": "<task:TAN-8>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-4>",
+              "key": "TAN-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-5>",
+              "key": "TAN-5",
+              "parent_id": "<task:TAN-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-6>",
+              "key": "TAN-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-7>",
+              "key": "TAN-7",
+              "parent_id": "<task:TAN-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-8>",
+              "key": "TAN-8",
+              "parent_id": "<task:TAN-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-9>",
+              "key": "TAN-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 8"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-10>",
+              "key": "TAN-10",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 9"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-11>",
+              "key": "TAN-11",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "Task 10"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-6>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-9>",
+              "target": "<task:TAN-7>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-1>",
+              "key": "TAN-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-3>",
+              "key": "TAN-3",
+              "parent_id": "<task:TAN-8>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-4>",
+              "key": "TAN-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-6>",
+              "key": "TAN-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-7>",
+              "key": "TAN-7",
+              "parent_id": "<task:TAN-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-8>",
+              "key": "TAN-8",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-9>",
+              "key": "TAN-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 8"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-10>",
+              "key": "TAN-10",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 9"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-10>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-5>",
+              "target": "<task:TAN-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-6>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-9>",
+              "target": "<task:TAN-7>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-1>",
+              "key": "TAN-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-2>",
+              "key": "TAN-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "cancelled",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-3>",
+              "key": "TAN-3",
+              "parent_id": "<task:TAN-8>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-4>",
+              "key": "TAN-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-5>",
+              "key": "TAN-5",
+              "parent_id": "<task:TAN-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-6>",
+              "key": "TAN-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-7>",
+              "key": "TAN-7",
+              "parent_id": "<task:TAN-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-8>",
+              "key": "TAN-8",
+              "parent_id": "<task:TAN-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-9>",
+              "key": "TAN-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 8"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-10>",
+              "key": "TAN-10",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 9"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAN-10>TAN-1": false,
+        "TAN-10>TAN-10": true,
+        "TAN-10>TAN-11": false,
+        "TAN-10>TAN-2": false,
+        "TAN-10>TAN-3": false,
+        "TAN-10>TAN-4": false,
+        "TAN-10>TAN-5": false,
+        "TAN-10>TAN-6": false,
+        "TAN-10>TAN-7": false,
+        "TAN-10>TAN-8": false,
+        "TAN-10>TAN-9": false,
+        "TAN-11>TAN-1": false,
+        "TAN-11>TAN-10": false,
+        "TAN-11>TAN-11": true,
+        "TAN-11>TAN-2": false,
+        "TAN-11>TAN-3": false,
+        "TAN-11>TAN-4": false,
+        "TAN-11>TAN-5": false,
+        "TAN-11>TAN-6": false,
+        "TAN-11>TAN-7": false,
+        "TAN-11>TAN-8": false,
+        "TAN-11>TAN-9": false,
+        "TAN-1>TAN-1": true,
+        "TAN-1>TAN-10": false,
+        "TAN-1>TAN-11": false,
+        "TAN-1>TAN-2": false,
+        "TAN-1>TAN-3": false,
+        "TAN-1>TAN-4": false,
+        "TAN-1>TAN-5": false,
+        "TAN-1>TAN-6": false,
+        "TAN-1>TAN-7": false,
+        "TAN-1>TAN-8": false,
+        "TAN-1>TAN-9": false,
+        "TAN-2>TAN-1": false,
+        "TAN-2>TAN-10": false,
+        "TAN-2>TAN-11": false,
+        "TAN-2>TAN-2": true,
+        "TAN-2>TAN-3": true,
+        "TAN-2>TAN-4": false,
+        "TAN-2>TAN-5": true,
+        "TAN-2>TAN-6": false,
+        "TAN-2>TAN-7": false,
+        "TAN-2>TAN-8": true,
+        "TAN-2>TAN-9": false,
+        "TAN-3>TAN-1": false,
+        "TAN-3>TAN-10": false,
+        "TAN-3>TAN-11": false,
+        "TAN-3>TAN-2": false,
+        "TAN-3>TAN-3": true,
+        "TAN-3>TAN-4": false,
+        "TAN-3>TAN-5": true,
+        "TAN-3>TAN-6": false,
+        "TAN-3>TAN-7": false,
+        "TAN-3>TAN-8": false,
+        "TAN-3>TAN-9": false,
+        "TAN-4>TAN-1": false,
+        "TAN-4>TAN-10": false,
+        "TAN-4>TAN-11": false,
+        "TAN-4>TAN-2": false,
+        "TAN-4>TAN-3": false,
+        "TAN-4>TAN-4": true,
+        "TAN-4>TAN-5": false,
+        "TAN-4>TAN-6": false,
+        "TAN-4>TAN-7": false,
+        "TAN-4>TAN-8": false,
+        "TAN-4>TAN-9": false,
+        "TAN-5>TAN-1": false,
+        "TAN-5>TAN-10": false,
+        "TAN-5>TAN-11": false,
+        "TAN-5>TAN-2": false,
+        "TAN-5>TAN-3": false,
+        "TAN-5>TAN-4": false,
+        "TAN-5>TAN-5": true,
+        "TAN-5>TAN-6": false,
+        "TAN-5>TAN-7": false,
+        "TAN-5>TAN-8": false,
+        "TAN-5>TAN-9": false,
+        "TAN-6>TAN-1": false,
+        "TAN-6>TAN-10": false,
+        "TAN-6>TAN-11": false,
+        "TAN-6>TAN-2": false,
+        "TAN-6>TAN-3": false,
+        "TAN-6>TAN-4": false,
+        "TAN-6>TAN-5": false,
+        "TAN-6>TAN-6": true,
+        "TAN-6>TAN-7": false,
+        "TAN-6>TAN-8": false,
+        "TAN-6>TAN-9": false,
+        "TAN-7>TAN-1": false,
+        "TAN-7>TAN-10": false,
+        "TAN-7>TAN-11": false,
+        "TAN-7>TAN-2": false,
+        "TAN-7>TAN-3": false,
+        "TAN-7>TAN-4": false,
+        "TAN-7>TAN-5": false,
+        "TAN-7>TAN-6": false,
+        "TAN-7>TAN-7": true,
+        "TAN-7>TAN-8": false,
+        "TAN-7>TAN-9": false,
+        "TAN-8>TAN-1": false,
+        "TAN-8>TAN-10": false,
+        "TAN-8>TAN-11": false,
+        "TAN-8>TAN-2": false,
+        "TAN-8>TAN-3": true,
+        "TAN-8>TAN-4": false,
+        "TAN-8>TAN-5": true,
+        "TAN-8>TAN-6": false,
+        "TAN-8>TAN-7": false,
+        "TAN-8>TAN-8": true,
+        "TAN-8>TAN-9": false,
+        "TAN-9>TAN-1": false,
+        "TAN-9>TAN-10": false,
+        "TAN-9>TAN-11": false,
+        "TAN-9>TAN-2": false,
+        "TAN-9>TAN-3": false,
+        "TAN-9>TAN-4": false,
+        "TAN-9>TAN-5": false,
+        "TAN-9>TAN-6": false,
+        "TAN-9>TAN-7": true,
+        "TAN-9>TAN-8": false,
+        "TAN-9>TAN-9": true
+      },
+      "reachable_path": {
+        "TAN-10>TAN-1": null,
+        "TAN-10>TAN-10": [
+          "TAN-10"
+        ],
+        "TAN-10>TAN-11": null,
+        "TAN-10>TAN-2": [
+          "TAN-10",
+          "TAN-2"
+        ],
+        "TAN-10>TAN-3": null,
+        "TAN-10>TAN-4": null,
+        "TAN-10>TAN-5": null,
+        "TAN-10>TAN-6": null,
+        "TAN-10>TAN-7": null,
+        "TAN-10>TAN-8": null,
+        "TAN-10>TAN-9": null,
+        "TAN-11>TAN-1": null,
+        "TAN-11>TAN-10": null,
+        "TAN-11>TAN-11": [
+          "TAN-11"
+        ],
+        "TAN-11>TAN-2": null,
+        "TAN-11>TAN-3": null,
+        "TAN-11>TAN-4": null,
+        "TAN-11>TAN-5": null,
+        "TAN-11>TAN-6": null,
+        "TAN-11>TAN-7": null,
+        "TAN-11>TAN-8": null,
+        "TAN-11>TAN-9": null,
+        "TAN-1>TAN-1": [
+          "TAN-1"
+        ],
+        "TAN-1>TAN-10": null,
+        "TAN-1>TAN-11": null,
+        "TAN-1>TAN-2": null,
+        "TAN-1>TAN-3": null,
+        "TAN-1>TAN-4": null,
+        "TAN-1>TAN-5": null,
+        "TAN-1>TAN-6": null,
+        "TAN-1>TAN-7": null,
+        "TAN-1>TAN-8": null,
+        "TAN-1>TAN-9": null,
+        "TAN-2>TAN-1": null,
+        "TAN-2>TAN-10": null,
+        "TAN-2>TAN-11": null,
+        "TAN-2>TAN-2": [
+          "TAN-2"
+        ],
+        "TAN-2>TAN-3": null,
+        "TAN-2>TAN-4": null,
+        "TAN-2>TAN-5": null,
+        "TAN-2>TAN-6": null,
+        "TAN-2>TAN-7": null,
+        "TAN-2>TAN-8": null,
+        "TAN-2>TAN-9": null,
+        "TAN-3>TAN-1": [
+          "TAN-3",
+          "TAN-1"
+        ],
+        "TAN-3>TAN-10": null,
+        "TAN-3>TAN-11": null,
+        "TAN-3>TAN-2": [
+          "TAN-3",
+          "TAN-2"
+        ],
+        "TAN-3>TAN-3": [
+          "TAN-3"
+        ],
+        "TAN-3>TAN-4": [
+          "TAN-3",
+          "TAN-4"
+        ],
+        "TAN-3>TAN-5": [
+          "TAN-3",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-3>TAN-6": null,
+        "TAN-3>TAN-7": null,
+        "TAN-3>TAN-8": null,
+        "TAN-3>TAN-9": null,
+        "TAN-4>TAN-1": null,
+        "TAN-4>TAN-10": null,
+        "TAN-4>TAN-11": null,
+        "TAN-4>TAN-2": null,
+        "TAN-4>TAN-3": null,
+        "TAN-4>TAN-4": [
+          "TAN-4"
+        ],
+        "TAN-4>TAN-5": [
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-4>TAN-6": null,
+        "TAN-4>TAN-7": null,
+        "TAN-4>TAN-8": null,
+        "TAN-4>TAN-9": null,
+        "TAN-5>TAN-1": null,
+        "TAN-5>TAN-10": null,
+        "TAN-5>TAN-11": null,
+        "TAN-5>TAN-2": null,
+        "TAN-5>TAN-3": null,
+        "TAN-5>TAN-4": null,
+        "TAN-5>TAN-5": [
+          "TAN-5"
+        ],
+        "TAN-5>TAN-6": null,
+        "TAN-5>TAN-7": null,
+        "TAN-5>TAN-8": null,
+        "TAN-5>TAN-9": null,
+        "TAN-6>TAN-1": [
+          "TAN-6",
+          "TAN-1"
+        ],
+        "TAN-6>TAN-10": null,
+        "TAN-6>TAN-11": null,
+        "TAN-6>TAN-2": [
+          "TAN-6",
+          "TAN-2"
+        ],
+        "TAN-6>TAN-3": [
+          "TAN-6",
+          "TAN-3"
+        ],
+        "TAN-6>TAN-4": [
+          "TAN-6",
+          "TAN-3",
+          "TAN-4"
+        ],
+        "TAN-6>TAN-5": [
+          "TAN-6",
+          "TAN-3",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-6>TAN-6": [
+          "TAN-6"
+        ],
+        "TAN-6>TAN-7": null,
+        "TAN-6>TAN-8": null,
+        "TAN-6>TAN-9": null,
+        "TAN-7>TAN-1": [
+          "TAN-7",
+          "TAN-6",
+          "TAN-1"
+        ],
+        "TAN-7>TAN-10": null,
+        "TAN-7>TAN-11": [
+          "TAN-7",
+          "TAN-11"
+        ],
+        "TAN-7>TAN-2": [
+          "TAN-7",
+          "TAN-2"
+        ],
+        "TAN-7>TAN-3": [
+          "TAN-7",
+          "TAN-6",
+          "TAN-3"
+        ],
+        "TAN-7>TAN-4": [
+          "TAN-7",
+          "TAN-4"
+        ],
+        "TAN-7>TAN-5": [
+          "TAN-7",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-7>TAN-6": [
+          "TAN-7",
+          "TAN-6"
+        ],
+        "TAN-7>TAN-7": [
+          "TAN-7"
+        ],
+        "TAN-7>TAN-8": null,
+        "TAN-7>TAN-9": null,
+        "TAN-8>TAN-1": [
+          "TAN-8",
+          "TAN-1"
+        ],
+        "TAN-8>TAN-10": null,
+        "TAN-8>TAN-11": null,
+        "TAN-8>TAN-2": [
+          "TAN-8",
+          "TAN-3",
+          "TAN-2"
+        ],
+        "TAN-8>TAN-3": [
+          "TAN-8",
+          "TAN-3"
+        ],
+        "TAN-8>TAN-4": [
+          "TAN-8",
+          "TAN-3",
+          "TAN-4"
+        ],
+        "TAN-8>TAN-5": [
+          "TAN-8",
+          "TAN-3",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-8>TAN-6": null,
+        "TAN-8>TAN-7": null,
+        "TAN-8>TAN-8": [
+          "TAN-8"
+        ],
+        "TAN-8>TAN-9": null,
+        "TAN-9>TAN-1": [
+          "TAN-9",
+          "TAN-3",
+          "TAN-1"
+        ],
+        "TAN-9>TAN-10": null,
+        "TAN-9>TAN-11": null,
+        "TAN-9>TAN-2": [
+          "TAN-9",
+          "TAN-3",
+          "TAN-2"
+        ],
+        "TAN-9>TAN-3": [
+          "TAN-9",
+          "TAN-3"
+        ],
+        "TAN-9>TAN-4": [
+          "TAN-9",
+          "TAN-3",
+          "TAN-4"
+        ],
+        "TAN-9>TAN-5": [
+          "TAN-9",
+          "TAN-3",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-9>TAN-6": null,
+        "TAN-9>TAN-7": null,
+        "TAN-9>TAN-8": [
+          "TAN-9",
+          "TAN-8"
+        ],
+        "TAN-9>TAN-9": [
+          "TAN-9"
+        ]
+      },
+      "ready": [
+        "TAN-1",
+        "TAN-4"
+      ],
+      "rollup": {
+        "TAN-1": null,
+        "TAN-10": null,
+        "TAN-11": null,
+        "TAN-2": {
+          "accepted": 1,
+          "by_status": {
+            "accepted": 1,
+            "backlog": 1,
+            "blocked": 1
+          },
+          "progress": 0.3333,
+          "total_descendants": 3
+        },
+        "TAN-3": {
+          "accepted": 1,
+          "by_status": {
+            "accepted": 1
+          },
+          "progress": 1.0,
+          "total_descendants": 1
+        },
+        "TAN-4": null,
+        "TAN-5": null,
+        "TAN-6": null,
+        "TAN-7": null,
+        "TAN-8": {
+          "accepted": 1,
+          "by_status": {
+            "accepted": 1,
+            "blocked": 1
+          },
+          "progress": 0.5,
+          "total_descendants": 2
+        },
+        "TAN-9": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        }
+      },
+      "satisfied": [
+        [
+          "TAN-10",
+          "TAN-2",
+          false
+        ],
+        [
+          "TAN-3",
+          "TAN-1",
+          false
+        ],
+        [
+          "TAN-3",
+          "TAN-2",
+          false
+        ],
+        [
+          "TAN-3",
+          "TAN-4",
+          false
+        ],
+        [
+          "TAN-4",
+          "TAN-5",
+          true
+        ],
+        [
+          "TAN-6",
+          "TAN-1",
+          false
+        ],
+        [
+          "TAN-6",
+          "TAN-2",
+          false
+        ],
+        [
+          "TAN-6",
+          "TAN-3",
+          false
+        ],
+        [
+          "TAN-7",
+          "TAN-11",
+          true
+        ],
+        [
+          "TAN-7",
+          "TAN-2",
+          false
+        ],
+        [
+          "TAN-7",
+          "TAN-4",
+          false
+        ],
+        [
+          "TAN-7",
+          "TAN-6",
+          false
+        ],
+        [
+          "TAN-8",
+          "TAN-1",
+          false
+        ],
+        [
+          "TAN-8",
+          "TAN-3",
+          false
+        ],
+        [
+          "TAN-9",
+          "TAN-3",
+          false
+        ],
+        [
+          "TAN-9",
+          "TAN-8",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAN-1": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAN-10": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAN-11": {
+          "archived": false,
+          "parent": null,
+          "status": "accepted",
+          "tags": []
+        },
+        "TAN-2": {
+          "archived": false,
+          "parent": null,
+          "status": "cancelled",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAN-3": {
+          "archived": false,
+          "parent": "TAN-8",
+          "status": "blocked",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAN-4": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": []
+        },
+        "TAN-5": {
+          "archived": false,
+          "parent": "TAN-3",
+          "status": "accepted",
+          "tags": [
+            "area:x",
+            "rho"
+          ]
+        },
+        "TAN-6": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "area:x",
+            "rho"
+          ]
+        },
+        "TAN-7": {
+          "archived": false,
+          "parent": "TAN-9",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAN-8": {
+          "archived": false,
+          "parent": "TAN-2",
+          "status": "backlog",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAN-9": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAN-1": [],
+        "TAN-10": [
+          "TAN-2"
+        ],
+        "TAN-11": [],
+        "TAN-2": [],
+        "TAN-3": [
+          "TAN-1",
+          "TAN-2",
+          "TAN-4"
+        ],
+        "TAN-4": [],
+        "TAN-5": [],
+        "TAN-6": [
+          "TAN-1",
+          "TAN-2",
+          "TAN-3"
+        ],
+        "TAN-7": [
+          "TAN-2",
+          "TAN-4",
+          "TAN-6"
+        ],
+        "TAN-8": [
+          "TAN-1",
+          "TAN-3"
+        ],
+        "TAN-9": [
+          "TAN-3",
+          "TAN-8"
+        ]
+      }
+    },
+    "before_promotion": {
+      "dependency_edges": [
+        [
+          "TAN-10",
+          "TAN-2"
+        ],
+        [
+          "TAN-3",
+          "TAN-1"
+        ],
+        [
+          "TAN-3",
+          "TAN-2"
+        ],
+        [
+          "TAN-3",
+          "TAN-4"
+        ],
+        [
+          "TAN-4",
+          "TAN-5"
+        ],
+        [
+          "TAN-6",
+          "TAN-1"
+        ],
+        [
+          "TAN-6",
+          "TAN-2"
+        ],
+        [
+          "TAN-6",
+          "TAN-3"
+        ],
+        [
+          "TAN-7",
+          "TAN-11"
+        ],
+        [
+          "TAN-7",
+          "TAN-2"
+        ],
+        [
+          "TAN-7",
+          "TAN-4"
+        ],
+        [
+          "TAN-7",
+          "TAN-6"
+        ],
+        [
+          "TAN-8",
+          "TAN-1"
+        ],
+        [
+          "TAN-8",
+          "TAN-3"
+        ],
+        [
+          "TAN-9",
+          "TAN-3"
+        ],
+        [
+          "TAN-9",
+          "TAN-8"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-11>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-10>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-5>",
+              "target": "<task:TAN-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-6>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-9>",
+              "target": "<task:TAN-7>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-1>",
+              "key": "TAN-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-2>",
+              "key": "TAN-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "cancelled",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-3>",
+              "key": "TAN-3",
+              "parent_id": "<task:TAN-8>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-4>",
+              "key": "TAN-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-5>",
+              "key": "TAN-5",
+              "parent_id": "<task:TAN-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-6>",
+              "key": "TAN-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-7>",
+              "key": "TAN-7",
+              "parent_id": "<task:TAN-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-8>",
+              "key": "TAN-8",
+              "parent_id": "<task:TAN-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-9>",
+              "key": "TAN-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 8"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-10>",
+              "key": "TAN-10",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 9"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-11>",
+              "key": "TAN-11",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "Task 10"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-6>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-9>",
+              "target": "<task:TAN-7>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-1>",
+              "key": "TAN-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-3>",
+              "key": "TAN-3",
+              "parent_id": "<task:TAN-8>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-4>",
+              "key": "TAN-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-6>",
+              "key": "TAN-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-7>",
+              "key": "TAN-7",
+              "parent_id": "<task:TAN-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-8>",
+              "key": "TAN-8",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-9>",
+              "key": "TAN-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 8"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-10>",
+              "key": "TAN-10",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 9"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-1>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-10>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-4>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-5>",
+              "target": "<task:TAN-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-6>",
+              "target": "<task:TAN-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-2>",
+              "target": "<task:TAN-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-3>",
+              "target": "<task:TAN-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-8>",
+              "target": "<task:TAN-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAN-9>",
+              "target": "<task:TAN-7>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-1>",
+              "key": "TAN-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-2>",
+              "key": "TAN-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "cancelled",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-3>",
+              "key": "TAN-3",
+              "parent_id": "<task:TAN-8>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-4>",
+              "key": "TAN-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAN-5>",
+              "key": "TAN-5",
+              "parent_id": "<task:TAN-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-6>",
+              "key": "TAN-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-7>",
+              "key": "TAN-7",
+              "parent_id": "<task:TAN-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-8>",
+              "key": "TAN-8",
+              "parent_id": "<task:TAN-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-9>",
+              "key": "TAN-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 8"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAN-10>",
+              "key": "TAN-10",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 9"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAN-10>TAN-1": false,
+        "TAN-10>TAN-10": true,
+        "TAN-10>TAN-11": false,
+        "TAN-10>TAN-2": false,
+        "TAN-10>TAN-3": false,
+        "TAN-10>TAN-4": false,
+        "TAN-10>TAN-5": false,
+        "TAN-10>TAN-6": false,
+        "TAN-10>TAN-7": false,
+        "TAN-10>TAN-8": false,
+        "TAN-10>TAN-9": false,
+        "TAN-11>TAN-1": false,
+        "TAN-11>TAN-10": false,
+        "TAN-11>TAN-11": true,
+        "TAN-11>TAN-2": false,
+        "TAN-11>TAN-3": false,
+        "TAN-11>TAN-4": false,
+        "TAN-11>TAN-5": false,
+        "TAN-11>TAN-6": false,
+        "TAN-11>TAN-7": false,
+        "TAN-11>TAN-8": false,
+        "TAN-11>TAN-9": false,
+        "TAN-1>TAN-1": true,
+        "TAN-1>TAN-10": false,
+        "TAN-1>TAN-11": false,
+        "TAN-1>TAN-2": false,
+        "TAN-1>TAN-3": false,
+        "TAN-1>TAN-4": false,
+        "TAN-1>TAN-5": false,
+        "TAN-1>TAN-6": false,
+        "TAN-1>TAN-7": false,
+        "TAN-1>TAN-8": false,
+        "TAN-1>TAN-9": false,
+        "TAN-2>TAN-1": false,
+        "TAN-2>TAN-10": false,
+        "TAN-2>TAN-11": false,
+        "TAN-2>TAN-2": true,
+        "TAN-2>TAN-3": true,
+        "TAN-2>TAN-4": false,
+        "TAN-2>TAN-5": true,
+        "TAN-2>TAN-6": false,
+        "TAN-2>TAN-7": false,
+        "TAN-2>TAN-8": true,
+        "TAN-2>TAN-9": false,
+        "TAN-3>TAN-1": false,
+        "TAN-3>TAN-10": false,
+        "TAN-3>TAN-11": false,
+        "TAN-3>TAN-2": false,
+        "TAN-3>TAN-3": true,
+        "TAN-3>TAN-4": false,
+        "TAN-3>TAN-5": true,
+        "TAN-3>TAN-6": false,
+        "TAN-3>TAN-7": false,
+        "TAN-3>TAN-8": false,
+        "TAN-3>TAN-9": false,
+        "TAN-4>TAN-1": false,
+        "TAN-4>TAN-10": false,
+        "TAN-4>TAN-11": false,
+        "TAN-4>TAN-2": false,
+        "TAN-4>TAN-3": false,
+        "TAN-4>TAN-4": true,
+        "TAN-4>TAN-5": false,
+        "TAN-4>TAN-6": false,
+        "TAN-4>TAN-7": false,
+        "TAN-4>TAN-8": false,
+        "TAN-4>TAN-9": false,
+        "TAN-5>TAN-1": false,
+        "TAN-5>TAN-10": false,
+        "TAN-5>TAN-11": false,
+        "TAN-5>TAN-2": false,
+        "TAN-5>TAN-3": false,
+        "TAN-5>TAN-4": false,
+        "TAN-5>TAN-5": true,
+        "TAN-5>TAN-6": false,
+        "TAN-5>TAN-7": false,
+        "TAN-5>TAN-8": false,
+        "TAN-5>TAN-9": false,
+        "TAN-6>TAN-1": false,
+        "TAN-6>TAN-10": false,
+        "TAN-6>TAN-11": false,
+        "TAN-6>TAN-2": false,
+        "TAN-6>TAN-3": false,
+        "TAN-6>TAN-4": false,
+        "TAN-6>TAN-5": false,
+        "TAN-6>TAN-6": true,
+        "TAN-6>TAN-7": false,
+        "TAN-6>TAN-8": false,
+        "TAN-6>TAN-9": false,
+        "TAN-7>TAN-1": false,
+        "TAN-7>TAN-10": false,
+        "TAN-7>TAN-11": false,
+        "TAN-7>TAN-2": false,
+        "TAN-7>TAN-3": false,
+        "TAN-7>TAN-4": false,
+        "TAN-7>TAN-5": false,
+        "TAN-7>TAN-6": false,
+        "TAN-7>TAN-7": true,
+        "TAN-7>TAN-8": false,
+        "TAN-7>TAN-9": false,
+        "TAN-8>TAN-1": false,
+        "TAN-8>TAN-10": false,
+        "TAN-8>TAN-11": false,
+        "TAN-8>TAN-2": false,
+        "TAN-8>TAN-3": true,
+        "TAN-8>TAN-4": false,
+        "TAN-8>TAN-5": true,
+        "TAN-8>TAN-6": false,
+        "TAN-8>TAN-7": false,
+        "TAN-8>TAN-8": true,
+        "TAN-8>TAN-9": false,
+        "TAN-9>TAN-1": false,
+        "TAN-9>TAN-10": false,
+        "TAN-9>TAN-11": false,
+        "TAN-9>TAN-2": false,
+        "TAN-9>TAN-3": false,
+        "TAN-9>TAN-4": false,
+        "TAN-9>TAN-5": false,
+        "TAN-9>TAN-6": false,
+        "TAN-9>TAN-7": true,
+        "TAN-9>TAN-8": false,
+        "TAN-9>TAN-9": true
+      },
+      "reachable_path": {
+        "TAN-10>TAN-1": null,
+        "TAN-10>TAN-10": [
+          "TAN-10"
+        ],
+        "TAN-10>TAN-11": null,
+        "TAN-10>TAN-2": [
+          "TAN-10",
+          "TAN-2"
+        ],
+        "TAN-10>TAN-3": null,
+        "TAN-10>TAN-4": null,
+        "TAN-10>TAN-5": null,
+        "TAN-10>TAN-6": null,
+        "TAN-10>TAN-7": null,
+        "TAN-10>TAN-8": null,
+        "TAN-10>TAN-9": null,
+        "TAN-11>TAN-1": null,
+        "TAN-11>TAN-10": null,
+        "TAN-11>TAN-11": [
+          "TAN-11"
+        ],
+        "TAN-11>TAN-2": null,
+        "TAN-11>TAN-3": null,
+        "TAN-11>TAN-4": null,
+        "TAN-11>TAN-5": null,
+        "TAN-11>TAN-6": null,
+        "TAN-11>TAN-7": null,
+        "TAN-11>TAN-8": null,
+        "TAN-11>TAN-9": null,
+        "TAN-1>TAN-1": [
+          "TAN-1"
+        ],
+        "TAN-1>TAN-10": null,
+        "TAN-1>TAN-11": null,
+        "TAN-1>TAN-2": null,
+        "TAN-1>TAN-3": null,
+        "TAN-1>TAN-4": null,
+        "TAN-1>TAN-5": null,
+        "TAN-1>TAN-6": null,
+        "TAN-1>TAN-7": null,
+        "TAN-1>TAN-8": null,
+        "TAN-1>TAN-9": null,
+        "TAN-2>TAN-1": null,
+        "TAN-2>TAN-10": null,
+        "TAN-2>TAN-11": null,
+        "TAN-2>TAN-2": [
+          "TAN-2"
+        ],
+        "TAN-2>TAN-3": null,
+        "TAN-2>TAN-4": null,
+        "TAN-2>TAN-5": null,
+        "TAN-2>TAN-6": null,
+        "TAN-2>TAN-7": null,
+        "TAN-2>TAN-8": null,
+        "TAN-2>TAN-9": null,
+        "TAN-3>TAN-1": [
+          "TAN-3",
+          "TAN-1"
+        ],
+        "TAN-3>TAN-10": null,
+        "TAN-3>TAN-11": null,
+        "TAN-3>TAN-2": [
+          "TAN-3",
+          "TAN-2"
+        ],
+        "TAN-3>TAN-3": [
+          "TAN-3"
+        ],
+        "TAN-3>TAN-4": [
+          "TAN-3",
+          "TAN-4"
+        ],
+        "TAN-3>TAN-5": [
+          "TAN-3",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-3>TAN-6": null,
+        "TAN-3>TAN-7": null,
+        "TAN-3>TAN-8": null,
+        "TAN-3>TAN-9": null,
+        "TAN-4>TAN-1": null,
+        "TAN-4>TAN-10": null,
+        "TAN-4>TAN-11": null,
+        "TAN-4>TAN-2": null,
+        "TAN-4>TAN-3": null,
+        "TAN-4>TAN-4": [
+          "TAN-4"
+        ],
+        "TAN-4>TAN-5": [
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-4>TAN-6": null,
+        "TAN-4>TAN-7": null,
+        "TAN-4>TAN-8": null,
+        "TAN-4>TAN-9": null,
+        "TAN-5>TAN-1": null,
+        "TAN-5>TAN-10": null,
+        "TAN-5>TAN-11": null,
+        "TAN-5>TAN-2": null,
+        "TAN-5>TAN-3": null,
+        "TAN-5>TAN-4": null,
+        "TAN-5>TAN-5": [
+          "TAN-5"
+        ],
+        "TAN-5>TAN-6": null,
+        "TAN-5>TAN-7": null,
+        "TAN-5>TAN-8": null,
+        "TAN-5>TAN-9": null,
+        "TAN-6>TAN-1": [
+          "TAN-6",
+          "TAN-1"
+        ],
+        "TAN-6>TAN-10": null,
+        "TAN-6>TAN-11": null,
+        "TAN-6>TAN-2": [
+          "TAN-6",
+          "TAN-2"
+        ],
+        "TAN-6>TAN-3": [
+          "TAN-6",
+          "TAN-3"
+        ],
+        "TAN-6>TAN-4": [
+          "TAN-6",
+          "TAN-3",
+          "TAN-4"
+        ],
+        "TAN-6>TAN-5": [
+          "TAN-6",
+          "TAN-3",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-6>TAN-6": [
+          "TAN-6"
+        ],
+        "TAN-6>TAN-7": null,
+        "TAN-6>TAN-8": null,
+        "TAN-6>TAN-9": null,
+        "TAN-7>TAN-1": [
+          "TAN-7",
+          "TAN-6",
+          "TAN-1"
+        ],
+        "TAN-7>TAN-10": null,
+        "TAN-7>TAN-11": [
+          "TAN-7",
+          "TAN-11"
+        ],
+        "TAN-7>TAN-2": [
+          "TAN-7",
+          "TAN-2"
+        ],
+        "TAN-7>TAN-3": [
+          "TAN-7",
+          "TAN-6",
+          "TAN-3"
+        ],
+        "TAN-7>TAN-4": [
+          "TAN-7",
+          "TAN-4"
+        ],
+        "TAN-7>TAN-5": [
+          "TAN-7",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-7>TAN-6": [
+          "TAN-7",
+          "TAN-6"
+        ],
+        "TAN-7>TAN-7": [
+          "TAN-7"
+        ],
+        "TAN-7>TAN-8": null,
+        "TAN-7>TAN-9": null,
+        "TAN-8>TAN-1": [
+          "TAN-8",
+          "TAN-1"
+        ],
+        "TAN-8>TAN-10": null,
+        "TAN-8>TAN-11": null,
+        "TAN-8>TAN-2": [
+          "TAN-8",
+          "TAN-3",
+          "TAN-2"
+        ],
+        "TAN-8>TAN-3": [
+          "TAN-8",
+          "TAN-3"
+        ],
+        "TAN-8>TAN-4": [
+          "TAN-8",
+          "TAN-3",
+          "TAN-4"
+        ],
+        "TAN-8>TAN-5": [
+          "TAN-8",
+          "TAN-3",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-8>TAN-6": null,
+        "TAN-8>TAN-7": null,
+        "TAN-8>TAN-8": [
+          "TAN-8"
+        ],
+        "TAN-8>TAN-9": null,
+        "TAN-9>TAN-1": [
+          "TAN-9",
+          "TAN-3",
+          "TAN-1"
+        ],
+        "TAN-9>TAN-10": null,
+        "TAN-9>TAN-11": null,
+        "TAN-9>TAN-2": [
+          "TAN-9",
+          "TAN-3",
+          "TAN-2"
+        ],
+        "TAN-9>TAN-3": [
+          "TAN-9",
+          "TAN-3"
+        ],
+        "TAN-9>TAN-4": [
+          "TAN-9",
+          "TAN-3",
+          "TAN-4"
+        ],
+        "TAN-9>TAN-5": [
+          "TAN-9",
+          "TAN-3",
+          "TAN-4",
+          "TAN-5"
+        ],
+        "TAN-9>TAN-6": null,
+        "TAN-9>TAN-7": null,
+        "TAN-9>TAN-8": [
+          "TAN-9",
+          "TAN-8"
+        ],
+        "TAN-9>TAN-9": [
+          "TAN-9"
+        ]
+      },
+      "ready": [],
+      "rollup": {
+        "TAN-1": null,
+        "TAN-10": null,
+        "TAN-11": null,
+        "TAN-2": {
+          "accepted": 1,
+          "by_status": {
+            "accepted": 1,
+            "backlog": 1,
+            "blocked": 1
+          },
+          "progress": 0.3333,
+          "total_descendants": 3
+        },
+        "TAN-3": {
+          "accepted": 1,
+          "by_status": {
+            "accepted": 1
+          },
+          "progress": 1.0,
+          "total_descendants": 1
+        },
+        "TAN-4": null,
+        "TAN-5": null,
+        "TAN-6": null,
+        "TAN-7": null,
+        "TAN-8": {
+          "accepted": 1,
+          "by_status": {
+            "accepted": 1,
+            "blocked": 1
+          },
+          "progress": 0.5,
+          "total_descendants": 2
+        },
+        "TAN-9": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        }
+      },
+      "satisfied": [
+        [
+          "TAN-10",
+          "TAN-2",
+          false
+        ],
+        [
+          "TAN-3",
+          "TAN-1",
+          false
+        ],
+        [
+          "TAN-3",
+          "TAN-2",
+          false
+        ],
+        [
+          "TAN-3",
+          "TAN-4",
+          false
+        ],
+        [
+          "TAN-4",
+          "TAN-5",
+          true
+        ],
+        [
+          "TAN-6",
+          "TAN-1",
+          false
+        ],
+        [
+          "TAN-6",
+          "TAN-2",
+          false
+        ],
+        [
+          "TAN-6",
+          "TAN-3",
+          false
+        ],
+        [
+          "TAN-7",
+          "TAN-11",
+          true
+        ],
+        [
+          "TAN-7",
+          "TAN-2",
+          false
+        ],
+        [
+          "TAN-7",
+          "TAN-4",
+          false
+        ],
+        [
+          "TAN-7",
+          "TAN-6",
+          false
+        ],
+        [
+          "TAN-8",
+          "TAN-1",
+          false
+        ],
+        [
+          "TAN-8",
+          "TAN-3",
+          false
+        ],
+        [
+          "TAN-9",
+          "TAN-3",
+          false
+        ],
+        [
+          "TAN-9",
+          "TAN-8",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAN-1": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAN-10": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAN-11": {
+          "archived": false,
+          "parent": null,
+          "status": "accepted",
+          "tags": []
+        },
+        "TAN-2": {
+          "archived": false,
+          "parent": null,
+          "status": "cancelled",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAN-3": {
+          "archived": false,
+          "parent": "TAN-8",
+          "status": "blocked",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAN-4": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAN-5": {
+          "archived": false,
+          "parent": "TAN-3",
+          "status": "accepted",
+          "tags": [
+            "area:x",
+            "rho"
+          ]
+        },
+        "TAN-6": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "area:x",
+            "rho"
+          ]
+        },
+        "TAN-7": {
+          "archived": false,
+          "parent": "TAN-9",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAN-8": {
+          "archived": false,
+          "parent": "TAN-2",
+          "status": "backlog",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAN-9": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAN-1": [],
+        "TAN-10": [
+          "TAN-2"
+        ],
+        "TAN-11": [],
+        "TAN-2": [],
+        "TAN-3": [
+          "TAN-1",
+          "TAN-2",
+          "TAN-4"
+        ],
+        "TAN-4": [],
+        "TAN-5": [],
+        "TAN-6": [
+          "TAN-1",
+          "TAN-2",
+          "TAN-3"
+        ],
+        "TAN-7": [
+          "TAN-2",
+          "TAN-4",
+          "TAN-6"
+        ],
+        "TAN-8": [
+          "TAN-1",
+          "TAN-3"
+        ],
+        "TAN-9": [
+          "TAN-3",
+          "TAN-8"
+        ]
+      }
+    },
+    "dry_run": [
+      "TAN-1",
+      "TAN-4"
+    ],
+    "promoted": [
+      "TAN-1",
+      "TAN-4"
+    ]
+  },
+  "seed": 7,
+  "source": "generated: random task graph",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 0"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 1"
+    },
+    {
+      "depends_on": [
+        "TAN-2",
+        "TAN-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAN-1",
+      "status": "ready",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 2"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 3"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "area:x",
+        "rho"
+      ],
+      "title": "Task 4"
+    },
+    {
+      "depends_on": [
+        "TAN-2",
+        "TAN-1",
+        "TAN-3"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "area:x",
+        "rho"
+      ],
+      "title": "Task 5"
+    },
+    {
+      "depends_on": [
+        "TAN-2",
+        "TAN-4"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAN-1",
+      "status": "ready",
+      "tags": [],
+      "title": "Task 6"
+    },
+    {
+      "depends_on": [
+        "TAN-3"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 7"
+    },
+    {
+      "depends_on": [
+        "TAN-8",
+        "TAN-3"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 8"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 9"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 10"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAN-1 is backlog; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAN-1"
+    },
+    {
+      "op": "set_status",
+      "outcome": "ok",
+      "status": "cancelled",
+      "task": "TAN-2"
+    },
+    {
+      "op": "claim",
+      "outcome": "ok",
+      "task": "TAN-5"
+    },
+    {
+      "op": "complete",
+      "outcome": "ok",
+      "summary": "done",
+      "task": "TAN-5"
+    },
+    {
+      "op": "accept",
+      "outcome": "ok",
+      "task": "TAN-5"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAN-6 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAN-6"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAN-6 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAN-6"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAN-6 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAN-6"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAN-7 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAN-7"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAN-7 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAN-7"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAN-7 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAN-7"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAN-9 is backlog; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAN-9"
+    },
+    {
+      "op": "claim",
+      "outcome": "ok",
+      "task": "TAN-11"
+    },
+    {
+      "op": "complete",
+      "outcome": "ok",
+      "summary": "done",
+      "task": "TAN-11"
+    },
+    {
+      "op": "accept",
+      "outcome": "ok",
+      "task": "TAN-11"
+    },
+    {
+      "items": [
+        [
+          "TAN-3",
+          "ejected"
+        ],
+        [
+          "TAN-7",
+          "conflict"
+        ]
+      ],
+      "op": "add_stack",
+      "outcome": "ok",
+      "parent": "TAN-1",
+      "status": "verifying"
+    },
+    {
+      "depends_on": "TAN-6",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAN-7"
+    },
+    {
+      "depends_on": "TAN-8",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAN-1 -> TAN-8 would create a cycle: TAN-1 -> TAN-8 -> TAN-3 -> TAN-1"
+      },
+      "task": "TAN-1"
+    },
+    {
+      "depends_on": "TAN-3",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAN-6"
+    },
+    {
+      "depends_on": "TAN-2",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAN-10"
+    },
+    {
+      "depends_on": "TAN-1",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAN-8"
+    },
+    {
+      "depends_on": "TAN-5",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAN-4"
+    },
+    {
+      "depends_on": "TAN-4",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAN-3"
+    },
+    {
+      "depends_on": "TAN-11",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAN-7"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAN-2",
+      "task": "TAN-8"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAN-8",
+      "task": "TAN-3"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAN-9",
+      "task": "TAN-7"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAN-3",
+      "task": "TAN-5"
+    },
+    {
+      "depends_on": "TAN-1",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "a task cannot depend on itself"
+      },
+      "task": "TAN-1"
+    },
+    {
+      "dry_run": true,
+      "op": "promote_ready",
+      "outcome": "ok"
+    },
+    {
+      "dry_run": false,
+      "op": "promote_ready",
+      "outcome": "ok"
+    }
+  ]
+}

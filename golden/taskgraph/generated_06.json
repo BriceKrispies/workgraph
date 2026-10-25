@@ -1,0 +1,2300 @@
+{
+  "case": "generated_06",
+  "observations": {
+    "after_promotion": {
+      "dependency_edges": [
+        [
+          "TAM-2",
+          "TAM-1"
+        ],
+        [
+          "TAM-2",
+          "TAM-5"
+        ],
+        [
+          "TAM-2",
+          "TAM-7"
+        ],
+        [
+          "TAM-3",
+          "TAM-1"
+        ],
+        [
+          "TAM-3",
+          "TAM-5"
+        ],
+        [
+          "TAM-4",
+          "TAM-1"
+        ],
+        [
+          "TAM-4",
+          "TAM-2"
+        ],
+        [
+          "TAM-4",
+          "TAM-3"
+        ],
+        [
+          "TAM-5",
+          "TAM-1"
+        ],
+        [
+          "TAM-6",
+          "TAM-2"
+        ],
+        [
+          "TAM-6",
+          "TAM-3"
+        ],
+        [
+          "TAM-6",
+          "TAM-5"
+        ],
+        [
+          "TAM-7",
+          "TAM-1"
+        ],
+        [
+          "TAM-7",
+          "TAM-3"
+        ],
+        [
+          "TAM-7",
+          "TAM-5"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-7>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-4>",
+              "target": "<task:TAM-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-1>",
+              "key": "TAM-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-2>",
+              "key": "TAM-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-3>",
+              "key": "TAM-3",
+              "parent_id": "<task:TAM-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-4>",
+              "key": "TAM-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-5>",
+              "key": "TAM-5",
+              "parent_id": "<task:TAM-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-6>",
+              "key": "TAM-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-7>",
+              "key": "TAM-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-7>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-4>",
+              "target": "<task:TAM-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-2>",
+              "key": "TAM-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-3>",
+              "key": "TAM-3",
+              "parent_id": "<task:TAM-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-4>",
+              "key": "TAM-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-5>",
+              "key": "TAM-5",
+              "parent_id": "<task:TAM-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-6>",
+              "key": "TAM-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-7>",
+              "key": "TAM-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-7>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-4>",
+              "target": "<task:TAM-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-1>",
+              "key": "TAM-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-2>",
+              "key": "TAM-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-3>",
+              "key": "TAM-3",
+              "parent_id": "<task:TAM-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-4>",
+              "key": "TAM-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-5>",
+              "key": "TAM-5",
+              "parent_id": "<task:TAM-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-6>",
+              "key": "TAM-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-7>",
+              "key": "TAM-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAM-1>TAM-1": true,
+        "TAM-1>TAM-2": false,
+        "TAM-1>TAM-3": false,
+        "TAM-1>TAM-4": false,
+        "TAM-1>TAM-5": false,
+        "TAM-1>TAM-6": false,
+        "TAM-1>TAM-7": false,
+        "TAM-2>TAM-1": false,
+        "TAM-2>TAM-2": true,
+        "TAM-2>TAM-3": true,
+        "TAM-2>TAM-4": false,
+        "TAM-2>TAM-5": false,
+        "TAM-2>TAM-6": false,
+        "TAM-2>TAM-7": false,
+        "TAM-3>TAM-1": false,
+        "TAM-3>TAM-2": false,
+        "TAM-3>TAM-3": true,
+        "TAM-3>TAM-4": false,
+        "TAM-3>TAM-5": false,
+        "TAM-3>TAM-6": false,
+        "TAM-3>TAM-7": false,
+        "TAM-4>TAM-1": false,
+        "TAM-4>TAM-2": false,
+        "TAM-4>TAM-3": false,
+        "TAM-4>TAM-4": true,
+        "TAM-4>TAM-5": true,
+        "TAM-4>TAM-6": false,
+        "TAM-4>TAM-7": false,
+        "TAM-5>TAM-1": false,
+        "TAM-5>TAM-2": false,
+        "TAM-5>TAM-3": false,
+        "TAM-5>TAM-4": false,
+        "TAM-5>TAM-5": true,
+        "TAM-5>TAM-6": false,
+        "TAM-5>TAM-7": false,
+        "TAM-6>TAM-1": false,
+        "TAM-6>TAM-2": false,
+        "TAM-6>TAM-3": false,
+        "TAM-6>TAM-4": false,
+        "TAM-6>TAM-5": false,
+        "TAM-6>TAM-6": true,
+        "TAM-6>TAM-7": false,
+        "TAM-7>TAM-1": false,
+        "TAM-7>TAM-2": false,
+        "TAM-7>TAM-3": false,
+        "TAM-7>TAM-4": false,
+        "TAM-7>TAM-5": false,
+        "TAM-7>TAM-6": false,
+        "TAM-7>TAM-7": true
+      },
+      "reachable_path": {
+        "TAM-1>TAM-1": [
+          "TAM-1"
+        ],
+        "TAM-1>TAM-2": null,
+        "TAM-1>TAM-3": null,
+        "TAM-1>TAM-4": null,
+        "TAM-1>TAM-5": null,
+        "TAM-1>TAM-6": null,
+        "TAM-1>TAM-7": null,
+        "TAM-2>TAM-1": [
+          "TAM-2",
+          "TAM-1"
+        ],
+        "TAM-2>TAM-2": [
+          "TAM-2"
+        ],
+        "TAM-2>TAM-3": [
+          "TAM-2",
+          "TAM-7",
+          "TAM-3"
+        ],
+        "TAM-2>TAM-4": null,
+        "TAM-2>TAM-5": [
+          "TAM-2",
+          "TAM-5"
+        ],
+        "TAM-2>TAM-6": null,
+        "TAM-2>TAM-7": [
+          "TAM-2",
+          "TAM-7"
+        ],
+        "TAM-3>TAM-1": [
+          "TAM-3",
+          "TAM-1"
+        ],
+        "TAM-3>TAM-2": null,
+        "TAM-3>TAM-3": [
+          "TAM-3"
+        ],
+        "TAM-3>TAM-4": null,
+        "TAM-3>TAM-5": [
+          "TAM-3",
+          "TAM-5"
+        ],
+        "TAM-3>TAM-6": null,
+        "TAM-3>TAM-7": null,
+        "TAM-4>TAM-1": [
+          "TAM-4",
+          "TAM-1"
+        ],
+        "TAM-4>TAM-2": [
+          "TAM-4",
+          "TAM-2"
+        ],
+        "TAM-4>TAM-3": [
+          "TAM-4",
+          "TAM-3"
+        ],
+        "TAM-4>TAM-4": [
+          "TAM-4"
+        ],
+        "TAM-4>TAM-5": [
+          "TAM-4",
+          "TAM-2",
+          "TAM-5"
+        ],
+        "TAM-4>TAM-6": null,
+        "TAM-4>TAM-7": [
+          "TAM-4",
+          "TAM-2",
+          "TAM-7"
+        ],
+        "TAM-5>TAM-1": [
+          "TAM-5",
+          "TAM-1"
+        ],
+        "TAM-5>TAM-2": null,
+        "TAM-5>TAM-3": null,
+        "TAM-5>TAM-4": null,
+        "TAM-5>TAM-5": [
+          "TAM-5"
+        ],
+        "TAM-5>TAM-6": null,
+        "TAM-5>TAM-7": null,
+        "TAM-6>TAM-1": [
+          "TAM-6",
+          "TAM-2",
+          "TAM-1"
+        ],
+        "TAM-6>TAM-2": [
+          "TAM-6",
+          "TAM-2"
+        ],
+        "TAM-6>TAM-3": [
+          "TAM-6",
+          "TAM-3"
+        ],
+        "TAM-6>TAM-4": null,
+        "TAM-6>TAM-5": [
+          "TAM-6",
+          "TAM-5"
+        ],
+        "TAM-6>TAM-6": [
+          "TAM-6"
+        ],
+        "TAM-6>TAM-7": [
+          "TAM-6",
+          "TAM-2",
+          "TAM-7"
+        ],
+        "TAM-7>TAM-1": [
+          "TAM-7",
+          "TAM-1"
+        ],
+        "TAM-7>TAM-2": null,
+        "TAM-7>TAM-3": [
+          "TAM-7",
+          "TAM-3"
+        ],
+        "TAM-7>TAM-4": null,
+        "TAM-7>TAM-5": [
+          "TAM-7",
+          "TAM-5"
+        ],
+        "TAM-7>TAM-6": null,
+        "TAM-7>TAM-7": [
+          "TAM-7"
+        ]
+      },
+      "ready": [
+        "TAM-5"
+      ],
+      "rollup": {
+        "TAM-1": null,
+        "TAM-2": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAM-3": null,
+        "TAM-4": {
+          "accepted": 0,
+          "by_status": {
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAM-5": null,
+        "TAM-6": null,
+        "TAM-7": null
+      },
+      "satisfied": [
+        [
+          "TAM-2",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-2",
+          "TAM-5",
+          false
+        ],
+        [
+          "TAM-2",
+          "TAM-7",
+          false
+        ],
+        [
+          "TAM-3",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-3",
+          "TAM-5",
+          false
+        ],
+        [
+          "TAM-4",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-4",
+          "TAM-2",
+          false
+        ],
+        [
+          "TAM-4",
+          "TAM-3",
+          false
+        ],
+        [
+          "TAM-5",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-6",
+          "TAM-2",
+          false
+        ],
+        [
+          "TAM-6",
+          "TAM-3",
+          false
+        ],
+        [
+          "TAM-6",
+          "TAM-5",
+          false
+        ],
+        [
+          "TAM-7",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-7",
+          "TAM-3",
+          false
+        ],
+        [
+          "TAM-7",
+          "TAM-5",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAM-1": {
+          "archived": false,
+          "parent": null,
+          "status": "accepted",
+          "tags": [
+            "area:x",
+            "rho"
+          ]
+        },
+        "TAM-2": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAM-3": {
+          "archived": false,
+          "parent": "TAM-2",
+          "status": "blocked",
+          "tags": [
+            "parked"
+          ]
+        },
+        "TAM-4": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAM-5": {
+          "archived": false,
+          "parent": "TAM-4",
+          "status": "ready",
+          "tags": []
+        },
+        "TAM-6": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAM-7": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAM-1": [],
+        "TAM-2": [
+          "TAM-5",
+          "TAM-7"
+        ],
+        "TAM-3": [
+          "TAM-5"
+        ],
+        "TAM-4": [
+          "TAM-2",
+          "TAM-3"
+        ],
+        "TAM-5": [],
+        "TAM-6": [
+          "TAM-2",
+          "TAM-3",
+          "TAM-5"
+        ],
+        "TAM-7": [
+          "TAM-3",
+          "TAM-5"
+        ]
+      }
+    },
+    "before_promotion": {
+      "dependency_edges": [
+        [
+          "TAM-2",
+          "TAM-1"
+        ],
+        [
+          "TAM-2",
+          "TAM-5"
+        ],
+        [
+          "TAM-2",
+          "TAM-7"
+        ],
+        [
+          "TAM-3",
+          "TAM-1"
+        ],
+        [
+          "TAM-3",
+          "TAM-5"
+        ],
+        [
+          "TAM-4",
+          "TAM-1"
+        ],
+        [
+          "TAM-4",
+          "TAM-2"
+        ],
+        [
+          "TAM-4",
+          "TAM-3"
+        ],
+        [
+          "TAM-5",
+          "TAM-1"
+        ],
+        [
+          "TAM-6",
+          "TAM-2"
+        ],
+        [
+          "TAM-6",
+          "TAM-3"
+        ],
+        [
+          "TAM-6",
+          "TAM-5"
+        ],
+        [
+          "TAM-7",
+          "TAM-1"
+        ],
+        [
+          "TAM-7",
+          "TAM-3"
+        ],
+        [
+          "TAM-7",
+          "TAM-5"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-7>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-4>",
+              "target": "<task:TAM-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-1>",
+              "key": "TAM-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-2>",
+              "key": "TAM-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-3>",
+              "key": "TAM-3",
+              "parent_id": "<task:TAM-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-4>",
+              "key": "TAM-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-5>",
+              "key": "TAM-5",
+              "parent_id": "<task:TAM-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-6>",
+              "key": "TAM-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-7>",
+              "key": "TAM-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-7>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-4>",
+              "target": "<task:TAM-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-2>",
+              "key": "TAM-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-3>",
+              "key": "TAM-3",
+              "parent_id": "<task:TAM-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-4>",
+              "key": "TAM-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-5>",
+              "key": "TAM-5",
+              "parent_id": "<task:TAM-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-6>",
+              "key": "TAM-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-7>",
+              "key": "TAM-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-1>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-3>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-5>",
+              "target": "<task:TAM-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAM-7>",
+              "target": "<task:TAM-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-2>",
+              "target": "<task:TAM-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAM-4>",
+              "target": "<task:TAM-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-1>",
+              "key": "TAM-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-2>",
+              "key": "TAM-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-3>",
+              "key": "TAM-3",
+              "parent_id": "<task:TAM-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-4>",
+              "key": "TAM-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAM-5>",
+              "key": "TAM-5",
+              "parent_id": "<task:TAM-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-6>",
+              "key": "TAM-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAM-7>",
+              "key": "TAM-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAM-1>TAM-1": true,
+        "TAM-1>TAM-2": false,
+        "TAM-1>TAM-3": false,
+        "TAM-1>TAM-4": false,
+        "TAM-1>TAM-5": false,
+        "TAM-1>TAM-6": false,
+        "TAM-1>TAM-7": false,
+        "TAM-2>TAM-1": false,
+        "TAM-2>TAM-2": true,
+        "TAM-2>TAM-3": true,
+        "TAM-2>TAM-4": false,
+        "TAM-2>TAM-5": false,
+        "TAM-2>TAM-6": false,
+        "TAM-2>TAM-7": false,
+        "TAM-3>TAM-1": false,
+        "TAM-3>TAM-2": false,
+        "TAM-3>TAM-3": true,
+        "TAM-3>TAM-4": false,
+        "TAM-3>TAM-5": false,
+        "TAM-3>TAM-6": false,
+        "TAM-3>TAM-7": false,
+        "TAM-4>TAM-1": false,
+        "TAM-4>TAM-2": false,
+        "TAM-4>TAM-3": false,
+        "TAM-4>TAM-4": true,
+        "TAM-4>TAM-5": true,
+        "TAM-4>TAM-6": false,
+        "TAM-4>TAM-7": false,
+        "TAM-5>TAM-1": false,
+        "TAM-5>TAM-2": false,
+        "TAM-5>TAM-3": false,
+        "TAM-5>TAM-4": false,
+        "TAM-5>TAM-5": true,
+        "TAM-5>TAM-6": false,
+        "TAM-5>TAM-7": false,
+        "TAM-6>TAM-1": false,
+        "TAM-6>TAM-2": false,
+        "TAM-6>TAM-3": false,
+        "TAM-6>TAM-4": false,
+        "TAM-6>TAM-5": false,
+        "TAM-6>TAM-6": true,
+        "TAM-6>TAM-7": false,
+        "TAM-7>TAM-1": false,
+        "TAM-7>TAM-2": false,
+        "TAM-7>TAM-3": false,
+        "TAM-7>TAM-4": false,
+        "TAM-7>TAM-5": false,
+        "TAM-7>TAM-6": false,
+        "TAM-7>TAM-7": true
+      },
+      "reachable_path": {
+        "TAM-1>TAM-1": [
+          "TAM-1"
+        ],
+        "TAM-1>TAM-2": null,
+        "TAM-1>TAM-3": null,
+        "TAM-1>TAM-4": null,
+        "TAM-1>TAM-5": null,
+        "TAM-1>TAM-6": null,
+        "TAM-1>TAM-7": null,
+        "TAM-2>TAM-1": [
+          "TAM-2",
+          "TAM-1"
+        ],
+        "TAM-2>TAM-2": [
+          "TAM-2"
+        ],
+        "TAM-2>TAM-3": [
+          "TAM-2",
+          "TAM-7",
+          "TAM-3"
+        ],
+        "TAM-2>TAM-4": null,
+        "TAM-2>TAM-5": [
+          "TAM-2",
+          "TAM-5"
+        ],
+        "TAM-2>TAM-6": null,
+        "TAM-2>TAM-7": [
+          "TAM-2",
+          "TAM-7"
+        ],
+        "TAM-3>TAM-1": [
+          "TAM-3",
+          "TAM-1"
+        ],
+        "TAM-3>TAM-2": null,
+        "TAM-3>TAM-3": [
+          "TAM-3"
+        ],
+        "TAM-3>TAM-4": null,
+        "TAM-3>TAM-5": [
+          "TAM-3",
+          "TAM-5"
+        ],
+        "TAM-3>TAM-6": null,
+        "TAM-3>TAM-7": null,
+        "TAM-4>TAM-1": [
+          "TAM-4",
+          "TAM-1"
+        ],
+        "TAM-4>TAM-2": [
+          "TAM-4",
+          "TAM-2"
+        ],
+        "TAM-4>TAM-3": [
+          "TAM-4",
+          "TAM-3"
+        ],
+        "TAM-4>TAM-4": [
+          "TAM-4"
+        ],
+        "TAM-4>TAM-5": [
+          "TAM-4",
+          "TAM-2",
+          "TAM-5"
+        ],
+        "TAM-4>TAM-6": null,
+        "TAM-4>TAM-7": [
+          "TAM-4",
+          "TAM-2",
+          "TAM-7"
+        ],
+        "TAM-5>TAM-1": [
+          "TAM-5",
+          "TAM-1"
+        ],
+        "TAM-5>TAM-2": null,
+        "TAM-5>TAM-3": null,
+        "TAM-5>TAM-4": null,
+        "TAM-5>TAM-5": [
+          "TAM-5"
+        ],
+        "TAM-5>TAM-6": null,
+        "TAM-5>TAM-7": null,
+        "TAM-6>TAM-1": [
+          "TAM-6",
+          "TAM-2",
+          "TAM-1"
+        ],
+        "TAM-6>TAM-2": [
+          "TAM-6",
+          "TAM-2"
+        ],
+        "TAM-6>TAM-3": [
+          "TAM-6",
+          "TAM-3"
+        ],
+        "TAM-6>TAM-4": null,
+        "TAM-6>TAM-5": [
+          "TAM-6",
+          "TAM-5"
+        ],
+        "TAM-6>TAM-6": [
+          "TAM-6"
+        ],
+        "TAM-6>TAM-7": [
+          "TAM-6",
+          "TAM-2",
+          "TAM-7"
+        ],
+        "TAM-7>TAM-1": [
+          "TAM-7",
+          "TAM-1"
+        ],
+        "TAM-7>TAM-2": null,
+        "TAM-7>TAM-3": [
+          "TAM-7",
+          "TAM-3"
+        ],
+        "TAM-7>TAM-4": null,
+        "TAM-7>TAM-5": [
+          "TAM-7",
+          "TAM-5"
+        ],
+        "TAM-7>TAM-6": null,
+        "TAM-7>TAM-7": [
+          "TAM-7"
+        ]
+      },
+      "ready": [],
+      "rollup": {
+        "TAM-1": null,
+        "TAM-2": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAM-3": null,
+        "TAM-4": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAM-5": null,
+        "TAM-6": null,
+        "TAM-7": null
+      },
+      "satisfied": [
+        [
+          "TAM-2",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-2",
+          "TAM-5",
+          false
+        ],
+        [
+          "TAM-2",
+          "TAM-7",
+          false
+        ],
+        [
+          "TAM-3",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-3",
+          "TAM-5",
+          false
+        ],
+        [
+          "TAM-4",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-4",
+          "TAM-2",
+          false
+        ],
+        [
+          "TAM-4",
+          "TAM-3",
+          false
+        ],
+        [
+          "TAM-5",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-6",
+          "TAM-2",
+          false
+        ],
+        [
+          "TAM-6",
+          "TAM-3",
+          false
+        ],
+        [
+          "TAM-6",
+          "TAM-5",
+          false
+        ],
+        [
+          "TAM-7",
+          "TAM-1",
+          true
+        ],
+        [
+          "TAM-7",
+          "TAM-3",
+          false
+        ],
+        [
+          "TAM-7",
+          "TAM-5",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAM-1": {
+          "archived": false,
+          "parent": null,
+          "status": "accepted",
+          "tags": [
+            "area:x",
+            "rho"
+          ]
+        },
+        "TAM-2": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAM-3": {
+          "archived": false,
+          "parent": "TAM-2",
+          "status": "blocked",
+          "tags": [
+            "parked"
+          ]
+        },
+        "TAM-4": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAM-5": {
+          "archived": false,
+          "parent": "TAM-4",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAM-6": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAM-7": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAM-1": [],
+        "TAM-2": [
+          "TAM-5",
+          "TAM-7"
+        ],
+        "TAM-3": [
+          "TAM-5"
+        ],
+        "TAM-4": [
+          "TAM-2",
+          "TAM-3"
+        ],
+        "TAM-5": [],
+        "TAM-6": [
+          "TAM-2",
+          "TAM-3",
+          "TAM-5"
+        ],
+        "TAM-7": [
+          "TAM-3",
+          "TAM-5"
+        ]
+      }
+    },
+    "dry_run": [
+      "TAM-5"
+    ],
+    "promoted": [
+      "TAM-5"
+    ]
+  },
+  "seed": 6,
+  "source": "generated: random task graph",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "area:x",
+        "rho"
+      ],
+      "title": "Task 0"
+    },
+    {
+      "depends_on": [
+        "TAM-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 1"
+    },
+    {
+      "depends_on": [
+        "TAM-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "parked"
+      ],
+      "title": "Task 2"
+    },
+    {
+      "depends_on": [
+        "TAM-3",
+        "TAM-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 3"
+    },
+    {
+      "depends_on": [
+        "TAM-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 4"
+    },
+    {
+      "depends_on": [
+        "TAM-2",
+        "TAM-3"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 5"
+    },
+    {
+      "depends_on": [
+        "TAM-5",
+        "TAM-1",
+        "TAM-3"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 6"
+    },
+    {
+      "op": "claim",
+      "outcome": "ok",
+      "task": "TAM-1"
+    },
+    {
+      "op": "complete",
+      "outcome": "ok",
+      "summary": "done",
+      "task": "TAM-1"
+    },
+    {
+      "op": "accept",
+      "outcome": "ok",
+      "task": "TAM-1"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAM-4 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAM-4"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAM-4 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAM-4"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAM-4 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAM-4"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAM-6 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAM-6"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAM-6 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAM-6"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAM-6 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAM-6"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAM-7 is backlog; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAM-7"
+    },
+    {
+      "depends_on": "TAM-2",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAM-4"
+    },
+    {
+      "depends_on": "TAM-5",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAM-2"
+    },
+    {
+      "depends_on": "TAM-6",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAM-2 -> TAM-6 would create a cycle: TAM-2 -> TAM-6 -> TAM-2"
+      },
+      "task": "TAM-2"
+    },
+    {
+      "depends_on": "TAM-1",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAM-5"
+    },
+    {
+      "depends_on": "TAM-7",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAM-2"
+    },
+    {
+      "depends_on": "TAM-6",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAM-1 -> TAM-6 would create a cycle: TAM-1 -> TAM-6 -> TAM-2 -> TAM-1"
+      },
+      "task": "TAM-1"
+    },
+    {
+      "depends_on": "TAM-5",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAM-3"
+    },
+    {
+      "depends_on": "TAM-5",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAM-6"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAM-3",
+      "task": "TAM-5"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAM-4",
+      "task": "TAM-3"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAM-4",
+      "task": "TAM-5"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAM-2",
+      "task": "TAM-3"
+    },
+    {
+      "depends_on": "TAM-1",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "a task cannot depend on itself"
+      },
+      "task": "TAM-1"
+    },
+    {
+      "dry_run": true,
+      "op": "promote_ready",
+      "outcome": "ok"
+    },
+    {
+      "dry_run": false,
+      "op": "promote_ready",
+      "outcome": "ok"
+    }
+  ]
+}

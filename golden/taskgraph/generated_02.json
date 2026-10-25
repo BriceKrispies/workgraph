@@ -1,0 +1,1641 @@
+{
+  "case": "generated_02",
+  "observations": {
+    "after_promotion": {
+      "dependency_edges": [
+        [
+          "TAI-2",
+          "TAI-1"
+        ],
+        [
+          "TAI-3",
+          "TAI-1"
+        ],
+        [
+          "TAI-3",
+          "TAI-2"
+        ],
+        [
+          "TAI-3",
+          "TAI-4"
+        ],
+        [
+          "TAI-4",
+          "TAI-2"
+        ],
+        [
+          "TAI-4",
+          "TAI-6"
+        ],
+        [
+          "TAI-6",
+          "TAI-5"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-4>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-5>",
+              "target": "<task:TAI-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-6>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-3>",
+              "target": "<task:TAI-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-4>",
+              "target": "<task:TAI-6>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-1>",
+              "key": "TAI-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-2>",
+              "key": "TAI-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-3>",
+              "key": "TAI-3",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-4>",
+              "key": "TAI-4",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "cancelled",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-5>",
+              "key": "TAI-5",
+              "parent_id": "<task:TAI-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-6>",
+              "key": "TAI-6",
+              "parent_id": "<task:TAI-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-5>",
+              "target": "<task:TAI-6>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-3>",
+              "target": "<task:TAI-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-1>",
+              "key": "TAI-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-2>",
+              "key": "TAI-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-3>",
+              "key": "TAI-3",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-5>",
+              "key": "TAI-5",
+              "parent_id": "<task:TAI-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-6>",
+              "key": "TAI-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-4>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-5>",
+              "target": "<task:TAI-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-6>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-3>",
+              "target": "<task:TAI-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-4>",
+              "target": "<task:TAI-6>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-1>",
+              "key": "TAI-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-2>",
+              "key": "TAI-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-3>",
+              "key": "TAI-3",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-4>",
+              "key": "TAI-4",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "cancelled",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-5>",
+              "key": "TAI-5",
+              "parent_id": "<task:TAI-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-6>",
+              "key": "TAI-6",
+              "parent_id": "<task:TAI-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAI-1>TAI-1": true,
+        "TAI-1>TAI-2": false,
+        "TAI-1>TAI-3": false,
+        "TAI-1>TAI-4": false,
+        "TAI-1>TAI-5": false,
+        "TAI-1>TAI-6": false,
+        "TAI-2>TAI-1": false,
+        "TAI-2>TAI-2": true,
+        "TAI-2>TAI-3": true,
+        "TAI-2>TAI-4": true,
+        "TAI-2>TAI-5": true,
+        "TAI-2>TAI-6": true,
+        "TAI-3>TAI-1": false,
+        "TAI-3>TAI-2": false,
+        "TAI-3>TAI-3": true,
+        "TAI-3>TAI-4": false,
+        "TAI-3>TAI-5": true,
+        "TAI-3>TAI-6": false,
+        "TAI-4>TAI-1": false,
+        "TAI-4>TAI-2": false,
+        "TAI-4>TAI-3": false,
+        "TAI-4>TAI-4": true,
+        "TAI-4>TAI-5": false,
+        "TAI-4>TAI-6": true,
+        "TAI-5>TAI-1": false,
+        "TAI-5>TAI-2": false,
+        "TAI-5>TAI-3": false,
+        "TAI-5>TAI-4": false,
+        "TAI-5>TAI-5": true,
+        "TAI-5>TAI-6": false,
+        "TAI-6>TAI-1": false,
+        "TAI-6>TAI-2": false,
+        "TAI-6>TAI-3": false,
+        "TAI-6>TAI-4": false,
+        "TAI-6>TAI-5": false,
+        "TAI-6>TAI-6": true
+      },
+      "reachable_path": {
+        "TAI-1>TAI-1": [
+          "TAI-1"
+        ],
+        "TAI-1>TAI-2": null,
+        "TAI-1>TAI-3": null,
+        "TAI-1>TAI-4": null,
+        "TAI-1>TAI-5": null,
+        "TAI-1>TAI-6": null,
+        "TAI-2>TAI-1": [
+          "TAI-2",
+          "TAI-1"
+        ],
+        "TAI-2>TAI-2": [
+          "TAI-2"
+        ],
+        "TAI-2>TAI-3": null,
+        "TAI-2>TAI-4": null,
+        "TAI-2>TAI-5": null,
+        "TAI-2>TAI-6": null,
+        "TAI-3>TAI-1": [
+          "TAI-3",
+          "TAI-1"
+        ],
+        "TAI-3>TAI-2": [
+          "TAI-3",
+          "TAI-2"
+        ],
+        "TAI-3>TAI-3": [
+          "TAI-3"
+        ],
+        "TAI-3>TAI-4": [
+          "TAI-3",
+          "TAI-4"
+        ],
+        "TAI-3>TAI-5": [
+          "TAI-3",
+          "TAI-4",
+          "TAI-6",
+          "TAI-5"
+        ],
+        "TAI-3>TAI-6": [
+          "TAI-3",
+          "TAI-4",
+          "TAI-6"
+        ],
+        "TAI-4>TAI-1": [
+          "TAI-4",
+          "TAI-2",
+          "TAI-1"
+        ],
+        "TAI-4>TAI-2": [
+          "TAI-4",
+          "TAI-2"
+        ],
+        "TAI-4>TAI-3": null,
+        "TAI-4>TAI-4": [
+          "TAI-4"
+        ],
+        "TAI-4>TAI-5": [
+          "TAI-4",
+          "TAI-6",
+          "TAI-5"
+        ],
+        "TAI-4>TAI-6": [
+          "TAI-4",
+          "TAI-6"
+        ],
+        "TAI-5>TAI-1": null,
+        "TAI-5>TAI-2": null,
+        "TAI-5>TAI-3": null,
+        "TAI-5>TAI-4": null,
+        "TAI-5>TAI-5": [
+          "TAI-5"
+        ],
+        "TAI-5>TAI-6": null,
+        "TAI-6>TAI-1": null,
+        "TAI-6>TAI-2": null,
+        "TAI-6>TAI-3": null,
+        "TAI-6>TAI-4": null,
+        "TAI-6>TAI-5": [
+          "TAI-6",
+          "TAI-5"
+        ],
+        "TAI-6>TAI-6": [
+          "TAI-6"
+        ]
+      },
+      "ready": [
+        "TAI-1",
+        "TAI-5"
+      ],
+      "rollup": {
+        "TAI-1": null,
+        "TAI-2": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 2,
+            "cancelled": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 4
+        },
+        "TAI-3": {
+          "accepted": 0,
+          "by_status": {
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAI-4": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAI-5": null,
+        "TAI-6": null
+      },
+      "satisfied": [
+        [
+          "TAI-2",
+          "TAI-1",
+          false
+        ],
+        [
+          "TAI-3",
+          "TAI-1",
+          false
+        ],
+        [
+          "TAI-3",
+          "TAI-2",
+          false
+        ],
+        [
+          "TAI-3",
+          "TAI-4",
+          false
+        ],
+        [
+          "TAI-4",
+          "TAI-2",
+          false
+        ],
+        [
+          "TAI-4",
+          "TAI-6",
+          false
+        ],
+        [
+          "TAI-6",
+          "TAI-5",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAI-1": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": [
+            "parked"
+          ]
+        },
+        "TAI-2": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAI-3": {
+          "archived": false,
+          "parent": "TAI-2",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAI-4": {
+          "archived": false,
+          "parent": "TAI-2",
+          "status": "cancelled",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAI-5": {
+          "archived": false,
+          "parent": "TAI-3",
+          "status": "ready",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAI-6": {
+          "archived": false,
+          "parent": "TAI-4",
+          "status": "blocked",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAI-1": [],
+        "TAI-2": [
+          "TAI-1"
+        ],
+        "TAI-3": [
+          "TAI-1",
+          "TAI-2",
+          "TAI-4"
+        ],
+        "TAI-4": [
+          "TAI-2",
+          "TAI-6"
+        ],
+        "TAI-5": [],
+        "TAI-6": [
+          "TAI-5"
+        ]
+      }
+    },
+    "before_promotion": {
+      "dependency_edges": [
+        [
+          "TAI-2",
+          "TAI-1"
+        ],
+        [
+          "TAI-3",
+          "TAI-1"
+        ],
+        [
+          "TAI-3",
+          "TAI-2"
+        ],
+        [
+          "TAI-3",
+          "TAI-4"
+        ],
+        [
+          "TAI-4",
+          "TAI-2"
+        ],
+        [
+          "TAI-4",
+          "TAI-6"
+        ],
+        [
+          "TAI-6",
+          "TAI-5"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-4>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-5>",
+              "target": "<task:TAI-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-6>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-3>",
+              "target": "<task:TAI-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-4>",
+              "target": "<task:TAI-6>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-1>",
+              "key": "TAI-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-2>",
+              "key": "TAI-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-3>",
+              "key": "TAI-3",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-4>",
+              "key": "TAI-4",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "cancelled",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-5>",
+              "key": "TAI-5",
+              "parent_id": "<task:TAI-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-6>",
+              "key": "TAI-6",
+              "parent_id": "<task:TAI-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-5>",
+              "target": "<task:TAI-6>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-3>",
+              "target": "<task:TAI-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-1>",
+              "key": "TAI-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-2>",
+              "key": "TAI-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-3>",
+              "key": "TAI-3",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-5>",
+              "key": "TAI-5",
+              "parent_id": "<task:TAI-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-6>",
+              "key": "TAI-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-1>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-4>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-5>",
+              "target": "<task:TAI-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAI-6>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-2>",
+              "target": "<task:TAI-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-3>",
+              "target": "<task:TAI-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAI-4>",
+              "target": "<task:TAI-6>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-1>",
+              "key": "TAI-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-2>",
+              "key": "TAI-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-3>",
+              "key": "TAI-3",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-4>",
+              "key": "TAI-4",
+              "parent_id": "<task:TAI-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "cancelled",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAI-5>",
+              "key": "TAI-5",
+              "parent_id": "<task:TAI-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAI-6>",
+              "key": "TAI-6",
+              "parent_id": "<task:TAI-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 5"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAI-1>TAI-1": true,
+        "TAI-1>TAI-2": false,
+        "TAI-1>TAI-3": false,
+        "TAI-1>TAI-4": false,
+        "TAI-1>TAI-5": false,
+        "TAI-1>TAI-6": false,
+        "TAI-2>TAI-1": false,
+        "TAI-2>TAI-2": true,
+        "TAI-2>TAI-3": true,
+        "TAI-2>TAI-4": true,
+        "TAI-2>TAI-5": true,
+        "TAI-2>TAI-6": true,
+        "TAI-3>TAI-1": false,
+        "TAI-3>TAI-2": false,
+        "TAI-3>TAI-3": true,
+        "TAI-3>TAI-4": false,
+        "TAI-3>TAI-5": true,
+        "TAI-3>TAI-6": false,
+        "TAI-4>TAI-1": false,
+        "TAI-4>TAI-2": false,
+        "TAI-4>TAI-3": false,
+        "TAI-4>TAI-4": true,
+        "TAI-4>TAI-5": false,
+        "TAI-4>TAI-6": true,
+        "TAI-5>TAI-1": false,
+        "TAI-5>TAI-2": false,
+        "TAI-5>TAI-3": false,
+        "TAI-5>TAI-4": false,
+        "TAI-5>TAI-5": true,
+        "TAI-5>TAI-6": false,
+        "TAI-6>TAI-1": false,
+        "TAI-6>TAI-2": false,
+        "TAI-6>TAI-3": false,
+        "TAI-6>TAI-4": false,
+        "TAI-6>TAI-5": false,
+        "TAI-6>TAI-6": true
+      },
+      "reachable_path": {
+        "TAI-1>TAI-1": [
+          "TAI-1"
+        ],
+        "TAI-1>TAI-2": null,
+        "TAI-1>TAI-3": null,
+        "TAI-1>TAI-4": null,
+        "TAI-1>TAI-5": null,
+        "TAI-1>TAI-6": null,
+        "TAI-2>TAI-1": [
+          "TAI-2",
+          "TAI-1"
+        ],
+        "TAI-2>TAI-2": [
+          "TAI-2"
+        ],
+        "TAI-2>TAI-3": null,
+        "TAI-2>TAI-4": null,
+        "TAI-2>TAI-5": null,
+        "TAI-2>TAI-6": null,
+        "TAI-3>TAI-1": [
+          "TAI-3",
+          "TAI-1"
+        ],
+        "TAI-3>TAI-2": [
+          "TAI-3",
+          "TAI-2"
+        ],
+        "TAI-3>TAI-3": [
+          "TAI-3"
+        ],
+        "TAI-3>TAI-4": [
+          "TAI-3",
+          "TAI-4"
+        ],
+        "TAI-3>TAI-5": [
+          "TAI-3",
+          "TAI-4",
+          "TAI-6",
+          "TAI-5"
+        ],
+        "TAI-3>TAI-6": [
+          "TAI-3",
+          "TAI-4",
+          "TAI-6"
+        ],
+        "TAI-4>TAI-1": [
+          "TAI-4",
+          "TAI-2",
+          "TAI-1"
+        ],
+        "TAI-4>TAI-2": [
+          "TAI-4",
+          "TAI-2"
+        ],
+        "TAI-4>TAI-3": null,
+        "TAI-4>TAI-4": [
+          "TAI-4"
+        ],
+        "TAI-4>TAI-5": [
+          "TAI-4",
+          "TAI-6",
+          "TAI-5"
+        ],
+        "TAI-4>TAI-6": [
+          "TAI-4",
+          "TAI-6"
+        ],
+        "TAI-5>TAI-1": null,
+        "TAI-5>TAI-2": null,
+        "TAI-5>TAI-3": null,
+        "TAI-5>TAI-4": null,
+        "TAI-5>TAI-5": [
+          "TAI-5"
+        ],
+        "TAI-5>TAI-6": null,
+        "TAI-6>TAI-1": null,
+        "TAI-6>TAI-2": null,
+        "TAI-6>TAI-3": null,
+        "TAI-6>TAI-4": null,
+        "TAI-6>TAI-5": [
+          "TAI-6",
+          "TAI-5"
+        ],
+        "TAI-6>TAI-6": [
+          "TAI-6"
+        ]
+      },
+      "ready": [
+        "TAI-1",
+        "TAI-5"
+      ],
+      "rollup": {
+        "TAI-1": null,
+        "TAI-2": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 2,
+            "cancelled": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 4
+        },
+        "TAI-3": {
+          "accepted": 0,
+          "by_status": {
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAI-4": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAI-5": null,
+        "TAI-6": null
+      },
+      "satisfied": [
+        [
+          "TAI-2",
+          "TAI-1",
+          false
+        ],
+        [
+          "TAI-3",
+          "TAI-1",
+          false
+        ],
+        [
+          "TAI-3",
+          "TAI-2",
+          false
+        ],
+        [
+          "TAI-3",
+          "TAI-4",
+          false
+        ],
+        [
+          "TAI-4",
+          "TAI-2",
+          false
+        ],
+        [
+          "TAI-4",
+          "TAI-6",
+          false
+        ],
+        [
+          "TAI-6",
+          "TAI-5",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAI-1": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": [
+            "parked"
+          ]
+        },
+        "TAI-2": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAI-3": {
+          "archived": false,
+          "parent": "TAI-2",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAI-4": {
+          "archived": false,
+          "parent": "TAI-2",
+          "status": "cancelled",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAI-5": {
+          "archived": false,
+          "parent": "TAI-3",
+          "status": "ready",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAI-6": {
+          "archived": false,
+          "parent": "TAI-4",
+          "status": "blocked",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAI-1": [],
+        "TAI-2": [
+          "TAI-1"
+        ],
+        "TAI-3": [
+          "TAI-1",
+          "TAI-2",
+          "TAI-4"
+        ],
+        "TAI-4": [
+          "TAI-2",
+          "TAI-6"
+        ],
+        "TAI-5": [],
+        "TAI-6": [
+          "TAI-5"
+        ]
+      }
+    },
+    "dry_run": [],
+    "promoted": []
+  },
+  "seed": 2,
+  "source": "generated: random task graph",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "parked"
+      ],
+      "title": "Task 0"
+    },
+    {
+      "depends_on": [
+        "TAI-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 1"
+    },
+    {
+      "depends_on": [
+        "TAI-2",
+        "TAI-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 2"
+    },
+    {
+      "depends_on": [
+        "TAI-2"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 3"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAI-1",
+      "status": "ready",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 4"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 5"
+    },
+    {
+      "op": "set_status",
+      "outcome": "ok",
+      "status": "cancelled",
+      "task": "TAI-4"
+    },
+    {
+      "depends_on": "TAI-6",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAI-4"
+    },
+    {
+      "depends_on": "TAI-5",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAI-6"
+    },
+    {
+      "depends_on": "TAI-4",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAI-2 -> TAI-4 would create a cycle: TAI-2 -> TAI-4 -> TAI-2"
+      },
+      "task": "TAI-2"
+    },
+    {
+      "depends_on": "TAI-4",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAI-3"
+    },
+    {
+      "depends_on": "TAI-6",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAI-5 -> TAI-6 would create a cycle: TAI-5 -> TAI-6 -> TAI-5"
+      },
+      "task": "TAI-5"
+    },
+    {
+      "depends_on": "TAI-4",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAI-3"
+    },
+    {
+      "depends_on": "TAI-3",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAI-4 -> TAI-3 would create a cycle: TAI-4 -> TAI-3 -> TAI-4"
+      },
+      "task": "TAI-4"
+    },
+    {
+      "depends_on": "TAI-6",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAI-5 -> TAI-6 would create a cycle: TAI-5 -> TAI-6 -> TAI-5"
+      },
+      "task": "TAI-5"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAI-4",
+      "task": "TAI-6"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAI-2",
+      "task": "TAI-4"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAI-2",
+      "task": "TAI-3"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAI-3",
+      "task": "TAI-5"
+    },
+    {
+      "depends_on": "TAI-1",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "a task cannot depend on itself"
+      },
+      "task": "TAI-1"
+    },
+    {
+      "dry_run": true,
+      "op": "promote_ready",
+      "outcome": "ok"
+    },
+    {
+      "dry_run": false,
+      "op": "promote_ready",
+      "outcome": "ok"
+    }
+  ]
+}

@@ -1,0 +1,2464 @@
+{
+  "case": "stack_sibling_states",
+  "observations": {
+    "observed": {
+      "dependency_edges": [
+        [
+          "TAG-12",
+          "TAG-11"
+        ],
+        [
+          "TAG-15",
+          "TAG-14"
+        ],
+        [
+          "TAG-18",
+          "TAG-17"
+        ],
+        [
+          "TAG-21",
+          "TAG-20"
+        ],
+        [
+          "TAG-3",
+          "TAG-2"
+        ],
+        [
+          "TAG-6",
+          "TAG-5"
+        ],
+        [
+          "TAG-9",
+          "TAG-8"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-11>",
+              "target": "<task:TAG-12>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-14>",
+              "target": "<task:TAG-15>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-17>",
+              "target": "<task:TAG-18>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-2>",
+              "target": "<task:TAG-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-20>",
+              "target": "<task:TAG-21>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-5>",
+              "target": "<task:TAG-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-8>",
+              "target": "<task:TAG-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-1>",
+              "target": "<task:TAG-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-1>",
+              "target": "<task:TAG-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-10>",
+              "target": "<task:TAG-11>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-10>",
+              "target": "<task:TAG-12>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-13>",
+              "target": "<task:TAG-14>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-13>",
+              "target": "<task:TAG-15>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-16>",
+              "target": "<task:TAG-17>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-16>",
+              "target": "<task:TAG-18>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-19>",
+              "target": "<task:TAG-20>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-19>",
+              "target": "<task:TAG-21>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-4>",
+              "target": "<task:TAG-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-4>",
+              "target": "<task:TAG-6>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-7>",
+              "target": "<task:TAG-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-7>",
+              "target": "<task:TAG-9>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-1>",
+              "key": "TAG-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "pending_item_open_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-2>",
+              "key": "TAG-2",
+              "parent_id": "<task:TAG-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "pending_item_open_stack first"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAG-3>",
+              "key": "TAG-3",
+              "parent_id": "<task:TAG-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "pending_item_open_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-4>",
+              "key": "TAG-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_open_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-5>",
+              "key": "TAG-5",
+              "parent_id": "<task:TAG-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "ready_item_open_stack first"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-6>",
+              "key": "TAG-6",
+              "parent_id": "<task:TAG-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_open_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-7>",
+              "key": "TAG-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "verified_item_verifying_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-8>",
+              "key": "TAG-8",
+              "parent_id": "<task:TAG-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "verified_item_verifying_stack first"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-9>",
+              "key": "TAG-9",
+              "parent_id": "<task:TAG-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "verified_item_verifying_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-10>",
+              "key": "TAG-10",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "merged_item_open_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-11>",
+              "key": "TAG-11",
+              "parent_id": "<task:TAG-10>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "merged_item_open_stack first"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-12>",
+              "key": "TAG-12",
+              "parent_id": "<task:TAG-10>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "merged_item_open_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-13>",
+              "key": "TAG-13",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "conflict_item_open_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-14>",
+              "key": "TAG-14",
+              "parent_id": "<task:TAG-13>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "conflict_item_open_stack first"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAG-15>",
+              "key": "TAG-15",
+              "parent_id": "<task:TAG-13>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "conflict_item_open_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-16>",
+              "key": "TAG-16",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_landed_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-17>",
+              "key": "TAG-17",
+              "parent_id": "<task:TAG-16>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "ready_item_landed_stack first"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAG-18>",
+              "key": "TAG-18",
+              "parent_id": "<task:TAG-16>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_landed_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-19>",
+              "key": "TAG-19",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_abandoned_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-20>",
+              "key": "TAG-20",
+              "parent_id": "<task:TAG-19>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "ready_item_abandoned_stack first"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAG-21>",
+              "key": "TAG-21",
+              "parent_id": "<task:TAG-19>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_abandoned_stack second"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-11>",
+              "target": "<task:TAG-12>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-14>",
+              "target": "<task:TAG-15>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-17>",
+              "target": "<task:TAG-18>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-2>",
+              "target": "<task:TAG-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-20>",
+              "target": "<task:TAG-21>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-5>",
+              "target": "<task:TAG-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-8>",
+              "target": "<task:TAG-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-1>",
+              "target": "<task:TAG-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-1>",
+              "target": "<task:TAG-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-10>",
+              "target": "<task:TAG-11>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-10>",
+              "target": "<task:TAG-12>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-13>",
+              "target": "<task:TAG-14>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-13>",
+              "target": "<task:TAG-15>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-16>",
+              "target": "<task:TAG-17>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-16>",
+              "target": "<task:TAG-18>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-19>",
+              "target": "<task:TAG-20>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-19>",
+              "target": "<task:TAG-21>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-4>",
+              "target": "<task:TAG-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-4>",
+              "target": "<task:TAG-6>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-7>",
+              "target": "<task:TAG-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-7>",
+              "target": "<task:TAG-9>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-1>",
+              "key": "TAG-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "pending_item_open_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-2>",
+              "key": "TAG-2",
+              "parent_id": "<task:TAG-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "pending_item_open_stack first"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAG-3>",
+              "key": "TAG-3",
+              "parent_id": "<task:TAG-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "pending_item_open_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-4>",
+              "key": "TAG-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_open_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-5>",
+              "key": "TAG-5",
+              "parent_id": "<task:TAG-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "ready_item_open_stack first"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-6>",
+              "key": "TAG-6",
+              "parent_id": "<task:TAG-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_open_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-7>",
+              "key": "TAG-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "verified_item_verifying_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-8>",
+              "key": "TAG-8",
+              "parent_id": "<task:TAG-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "verified_item_verifying_stack first"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-9>",
+              "key": "TAG-9",
+              "parent_id": "<task:TAG-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "verified_item_verifying_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-10>",
+              "key": "TAG-10",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "merged_item_open_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-11>",
+              "key": "TAG-11",
+              "parent_id": "<task:TAG-10>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "merged_item_open_stack first"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-12>",
+              "key": "TAG-12",
+              "parent_id": "<task:TAG-10>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "merged_item_open_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-13>",
+              "key": "TAG-13",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "conflict_item_open_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-14>",
+              "key": "TAG-14",
+              "parent_id": "<task:TAG-13>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "conflict_item_open_stack first"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAG-15>",
+              "key": "TAG-15",
+              "parent_id": "<task:TAG-13>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "conflict_item_open_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-16>",
+              "key": "TAG-16",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_landed_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-17>",
+              "key": "TAG-17",
+              "parent_id": "<task:TAG-16>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "ready_item_landed_stack first"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAG-18>",
+              "key": "TAG-18",
+              "parent_id": "<task:TAG-16>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_landed_stack second"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-19>",
+              "key": "TAG-19",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_abandoned_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-20>",
+              "key": "TAG-20",
+              "parent_id": "<task:TAG-19>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "ready_item_abandoned_stack first"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAG-21>",
+              "key": "TAG-21",
+              "parent_id": "<task:TAG-19>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "ready_item_abandoned_stack second"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAG-2>",
+              "target": "<task:TAG-3>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-1>",
+              "target": "<task:TAG-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAG-1>",
+              "target": "<task:TAG-3>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-1>",
+              "key": "TAG-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "pending_item_open_stack parent"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAG-2>",
+              "key": "TAG-2",
+              "parent_id": "<task:TAG-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "pending_item_open_stack first"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAG-3>",
+              "key": "TAG-3",
+              "parent_id": "<task:TAG-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "pending_item_open_stack second"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAG-10>TAG-1": false,
+        "TAG-10>TAG-10": true,
+        "TAG-10>TAG-11": true,
+        "TAG-10>TAG-12": true,
+        "TAG-10>TAG-13": false,
+        "TAG-10>TAG-14": false,
+        "TAG-10>TAG-15": false,
+        "TAG-10>TAG-16": false,
+        "TAG-10>TAG-17": false,
+        "TAG-10>TAG-18": false,
+        "TAG-10>TAG-19": false,
+        "TAG-10>TAG-2": false,
+        "TAG-10>TAG-20": false,
+        "TAG-10>TAG-21": false,
+        "TAG-10>TAG-3": false,
+        "TAG-10>TAG-4": false,
+        "TAG-10>TAG-5": false,
+        "TAG-10>TAG-6": false,
+        "TAG-10>TAG-7": false,
+        "TAG-10>TAG-8": false,
+        "TAG-10>TAG-9": false,
+        "TAG-11>TAG-1": false,
+        "TAG-11>TAG-10": false,
+        "TAG-11>TAG-11": true,
+        "TAG-11>TAG-12": false,
+        "TAG-11>TAG-13": false,
+        "TAG-11>TAG-14": false,
+        "TAG-11>TAG-15": false,
+        "TAG-11>TAG-16": false,
+        "TAG-11>TAG-17": false,
+        "TAG-11>TAG-18": false,
+        "TAG-11>TAG-19": false,
+        "TAG-11>TAG-2": false,
+        "TAG-11>TAG-20": false,
+        "TAG-11>TAG-21": false,
+        "TAG-11>TAG-3": false,
+        "TAG-11>TAG-4": false,
+        "TAG-11>TAG-5": false,
+        "TAG-11>TAG-6": false,
+        "TAG-11>TAG-7": false,
+        "TAG-11>TAG-8": false,
+        "TAG-11>TAG-9": false,
+        "TAG-12>TAG-1": false,
+        "TAG-12>TAG-10": false,
+        "TAG-12>TAG-11": false,
+        "TAG-12>TAG-12": true,
+        "TAG-12>TAG-13": false,
+        "TAG-12>TAG-14": false,
+        "TAG-12>TAG-15": false,
+        "TAG-12>TAG-16": false,
+        "TAG-12>TAG-17": false,
+        "TAG-12>TAG-18": false,
+        "TAG-12>TAG-19": false,
+        "TAG-12>TAG-2": false,
+        "TAG-12>TAG-20": false,
+        "TAG-12>TAG-21": false,
+        "TAG-12>TAG-3": false,
+        "TAG-12>TAG-4": false,
+        "TAG-12>TAG-5": false,
+        "TAG-12>TAG-6": false,
+        "TAG-12>TAG-7": false,
+        "TAG-12>TAG-8": false,
+        "TAG-12>TAG-9": false,
+        "TAG-13>TAG-1": false,
+        "TAG-13>TAG-10": false,
+        "TAG-13>TAG-11": false,
+        "TAG-13>TAG-12": false,
+        "TAG-13>TAG-13": true,
+        "TAG-13>TAG-14": true,
+        "TAG-13>TAG-15": true,
+        "TAG-13>TAG-16": false,
+        "TAG-13>TAG-17": false,
+        "TAG-13>TAG-18": false,
+        "TAG-13>TAG-19": false,
+        "TAG-13>TAG-2": false,
+        "TAG-13>TAG-20": false,
+        "TAG-13>TAG-21": false,
+        "TAG-13>TAG-3": false,
+        "TAG-13>TAG-4": false,
+        "TAG-13>TAG-5": false,
+        "TAG-13>TAG-6": false,
+        "TAG-13>TAG-7": false,
+        "TAG-13>TAG-8": false,
+        "TAG-13>TAG-9": false,
+        "TAG-14>TAG-1": false,
+        "TAG-14>TAG-10": false,
+        "TAG-14>TAG-11": false,
+        "TAG-14>TAG-12": false,
+        "TAG-14>TAG-13": false,
+        "TAG-14>TAG-14": true,
+        "TAG-14>TAG-15": false,
+        "TAG-14>TAG-16": false,
+        "TAG-14>TAG-17": false,
+        "TAG-14>TAG-18": false,
+        "TAG-14>TAG-19": false,
+        "TAG-14>TAG-2": false,
+        "TAG-14>TAG-20": false,
+        "TAG-14>TAG-21": false,
+        "TAG-14>TAG-3": false,
+        "TAG-14>TAG-4": false,
+        "TAG-14>TAG-5": false,
+        "TAG-14>TAG-6": false,
+        "TAG-14>TAG-7": false,
+        "TAG-14>TAG-8": false,
+        "TAG-14>TAG-9": false,
+        "TAG-15>TAG-1": false,
+        "TAG-15>TAG-10": false,
+        "TAG-15>TAG-11": false,
+        "TAG-15>TAG-12": false,
+        "TAG-15>TAG-13": false,
+        "TAG-15>TAG-14": false,
+        "TAG-15>TAG-15": true,
+        "TAG-15>TAG-16": false,
+        "TAG-15>TAG-17": false,
+        "TAG-15>TAG-18": false,
+        "TAG-15>TAG-19": false,
+        "TAG-15>TAG-2": false,
+        "TAG-15>TAG-20": false,
+        "TAG-15>TAG-21": false,
+        "TAG-15>TAG-3": false,
+        "TAG-15>TAG-4": false,
+        "TAG-15>TAG-5": false,
+        "TAG-15>TAG-6": false,
+        "TAG-15>TAG-7": false,
+        "TAG-15>TAG-8": false,
+        "TAG-15>TAG-9": false,
+        "TAG-16>TAG-1": false,
+        "TAG-16>TAG-10": false,
+        "TAG-16>TAG-11": false,
+        "TAG-16>TAG-12": false,
+        "TAG-16>TAG-13": false,
+        "TAG-16>TAG-14": false,
+        "TAG-16>TAG-15": false,
+        "TAG-16>TAG-16": true,
+        "TAG-16>TAG-17": true,
+        "TAG-16>TAG-18": true,
+        "TAG-16>TAG-19": false,
+        "TAG-16>TAG-2": false,
+        "TAG-16>TAG-20": false,
+        "TAG-16>TAG-21": false,
+        "TAG-16>TAG-3": false,
+        "TAG-16>TAG-4": false,
+        "TAG-16>TAG-5": false,
+        "TAG-16>TAG-6": false,
+        "TAG-16>TAG-7": false,
+        "TAG-16>TAG-8": false,
+        "TAG-16>TAG-9": false,
+        "TAG-17>TAG-1": false,
+        "TAG-17>TAG-10": false,
+        "TAG-17>TAG-11": false,
+        "TAG-17>TAG-12": false,
+        "TAG-17>TAG-13": false,
+        "TAG-17>TAG-14": false,
+        "TAG-17>TAG-15": false,
+        "TAG-17>TAG-16": false,
+        "TAG-17>TAG-17": true,
+        "TAG-17>TAG-18": false,
+        "TAG-17>TAG-19": false,
+        "TAG-17>TAG-2": false,
+        "TAG-17>TAG-20": false,
+        "TAG-17>TAG-21": false,
+        "TAG-17>TAG-3": false,
+        "TAG-17>TAG-4": false,
+        "TAG-17>TAG-5": false,
+        "TAG-17>TAG-6": false,
+        "TAG-17>TAG-7": false,
+        "TAG-17>TAG-8": false,
+        "TAG-17>TAG-9": false,
+        "TAG-18>TAG-1": false,
+        "TAG-18>TAG-10": false,
+        "TAG-18>TAG-11": false,
+        "TAG-18>TAG-12": false,
+        "TAG-18>TAG-13": false,
+        "TAG-18>TAG-14": false,
+        "TAG-18>TAG-15": false,
+        "TAG-18>TAG-16": false,
+        "TAG-18>TAG-17": false,
+        "TAG-18>TAG-18": true,
+        "TAG-18>TAG-19": false,
+        "TAG-18>TAG-2": false,
+        "TAG-18>TAG-20": false,
+        "TAG-18>TAG-21": false,
+        "TAG-18>TAG-3": false,
+        "TAG-18>TAG-4": false,
+        "TAG-18>TAG-5": false,
+        "TAG-18>TAG-6": false,
+        "TAG-18>TAG-7": false,
+        "TAG-18>TAG-8": false,
+        "TAG-18>TAG-9": false,
+        "TAG-19>TAG-1": false,
+        "TAG-19>TAG-10": false,
+        "TAG-19>TAG-11": false,
+        "TAG-19>TAG-12": false,
+        "TAG-19>TAG-13": false,
+        "TAG-19>TAG-14": false,
+        "TAG-19>TAG-15": false,
+        "TAG-19>TAG-16": false,
+        "TAG-19>TAG-17": false,
+        "TAG-19>TAG-18": false,
+        "TAG-19>TAG-19": true,
+        "TAG-19>TAG-2": false,
+        "TAG-19>TAG-20": true,
+        "TAG-19>TAG-21": true,
+        "TAG-19>TAG-3": false,
+        "TAG-19>TAG-4": false,
+        "TAG-19>TAG-5": false,
+        "TAG-19>TAG-6": false,
+        "TAG-19>TAG-7": false,
+        "TAG-19>TAG-8": false,
+        "TAG-19>TAG-9": false,
+        "TAG-1>TAG-1": true,
+        "TAG-1>TAG-10": false,
+        "TAG-1>TAG-11": false,
+        "TAG-1>TAG-12": false,
+        "TAG-1>TAG-13": false,
+        "TAG-1>TAG-14": false,
+        "TAG-1>TAG-15": false,
+        "TAG-1>TAG-16": false,
+        "TAG-1>TAG-17": false,
+        "TAG-1>TAG-18": false,
+        "TAG-1>TAG-19": false,
+        "TAG-1>TAG-2": true,
+        "TAG-1>TAG-20": false,
+        "TAG-1>TAG-21": false,
+        "TAG-1>TAG-3": true,
+        "TAG-1>TAG-4": false,
+        "TAG-1>TAG-5": false,
+        "TAG-1>TAG-6": false,
+        "TAG-1>TAG-7": false,
+        "TAG-1>TAG-8": false,
+        "TAG-1>TAG-9": false,
+        "TAG-20>TAG-1": false,
+        "TAG-20>TAG-10": false,
+        "TAG-20>TAG-11": false,
+        "TAG-20>TAG-12": false,
+        "TAG-20>TAG-13": false,
+        "TAG-20>TAG-14": false,
+        "TAG-20>TAG-15": false,
+        "TAG-20>TAG-16": false,
+        "TAG-20>TAG-17": false,
+        "TAG-20>TAG-18": false,
+        "TAG-20>TAG-19": false,
+        "TAG-20>TAG-2": false,
+        "TAG-20>TAG-20": true,
+        "TAG-20>TAG-21": false,
+        "TAG-20>TAG-3": false,
+        "TAG-20>TAG-4": false,
+        "TAG-20>TAG-5": false,
+        "TAG-20>TAG-6": false,
+        "TAG-20>TAG-7": false,
+        "TAG-20>TAG-8": false,
+        "TAG-20>TAG-9": false,
+        "TAG-21>TAG-1": false,
+        "TAG-21>TAG-10": false,
+        "TAG-21>TAG-11": false,
+        "TAG-21>TAG-12": false,
+        "TAG-21>TAG-13": false,
+        "TAG-21>TAG-14": false,
+        "TAG-21>TAG-15": false,
+        "TAG-21>TAG-16": false,
+        "TAG-21>TAG-17": false,
+        "TAG-21>TAG-18": false,
+        "TAG-21>TAG-19": false,
+        "TAG-21>TAG-2": false,
+        "TAG-21>TAG-20": false,
+        "TAG-21>TAG-21": true,
+        "TAG-21>TAG-3": false,
+        "TAG-21>TAG-4": false,
+        "TAG-21>TAG-5": false,
+        "TAG-21>TAG-6": false,
+        "TAG-21>TAG-7": false,
+        "TAG-21>TAG-8": false,
+        "TAG-21>TAG-9": false,
+        "TAG-2>TAG-1": false,
+        "TAG-2>TAG-10": false,
+        "TAG-2>TAG-11": false,
+        "TAG-2>TAG-12": false,
+        "TAG-2>TAG-13": false,
+        "TAG-2>TAG-14": false,
+        "TAG-2>TAG-15": false,
+        "TAG-2>TAG-16": false,
+        "TAG-2>TAG-17": false,
+        "TAG-2>TAG-18": false,
+        "TAG-2>TAG-19": false,
+        "TAG-2>TAG-2": true,
+        "TAG-2>TAG-20": false,
+        "TAG-2>TAG-21": false,
+        "TAG-2>TAG-3": false,
+        "TAG-2>TAG-4": false,
+        "TAG-2>TAG-5": false,
+        "TAG-2>TAG-6": false,
+        "TAG-2>TAG-7": false,
+        "TAG-2>TAG-8": false,
+        "TAG-2>TAG-9": false,
+        "TAG-3>TAG-1": false,
+        "TAG-3>TAG-10": false,
+        "TAG-3>TAG-11": false,
+        "TAG-3>TAG-12": false,
+        "TAG-3>TAG-13": false,
+        "TAG-3>TAG-14": false,
+        "TAG-3>TAG-15": false,
+        "TAG-3>TAG-16": false,
+        "TAG-3>TAG-17": false,
+        "TAG-3>TAG-18": false,
+        "TAG-3>TAG-19": false,
+        "TAG-3>TAG-2": false,
+        "TAG-3>TAG-20": false,
+        "TAG-3>TAG-21": false,
+        "TAG-3>TAG-3": true,
+        "TAG-3>TAG-4": false,
+        "TAG-3>TAG-5": false,
+        "TAG-3>TAG-6": false,
+        "TAG-3>TAG-7": false,
+        "TAG-3>TAG-8": false,
+        "TAG-3>TAG-9": false,
+        "TAG-4>TAG-1": false,
+        "TAG-4>TAG-10": false,
+        "TAG-4>TAG-11": false,
+        "TAG-4>TAG-12": false,
+        "TAG-4>TAG-13": false,
+        "TAG-4>TAG-14": false,
+        "TAG-4>TAG-15": false,
+        "TAG-4>TAG-16": false,
+        "TAG-4>TAG-17": false,
+        "TAG-4>TAG-18": false,
+        "TAG-4>TAG-19": false,
+        "TAG-4>TAG-2": false,
+        "TAG-4>TAG-20": false,
+        "TAG-4>TAG-21": false,
+        "TAG-4>TAG-3": false,
+        "TAG-4>TAG-4": true,
+        "TAG-4>TAG-5": true,
+        "TAG-4>TAG-6": true,
+        "TAG-4>TAG-7": false,
+        "TAG-4>TAG-8": false,
+        "TAG-4>TAG-9": false,
+        "TAG-5>TAG-1": false,
+        "TAG-5>TAG-10": false,
+        "TAG-5>TAG-11": false,
+        "TAG-5>TAG-12": false,
+        "TAG-5>TAG-13": false,
+        "TAG-5>TAG-14": false,
+        "TAG-5>TAG-15": false,
+        "TAG-5>TAG-16": false,
+        "TAG-5>TAG-17": false,
+        "TAG-5>TAG-18": false,
+        "TAG-5>TAG-19": false,
+        "TAG-5>TAG-2": false,
+        "TAG-5>TAG-20": false,
+        "TAG-5>TAG-21": false,
+        "TAG-5>TAG-3": false,
+        "TAG-5>TAG-4": false,
+        "TAG-5>TAG-5": true,
+        "TAG-5>TAG-6": false,
+        "TAG-5>TAG-7": false,
+        "TAG-5>TAG-8": false,
+        "TAG-5>TAG-9": false,
+        "TAG-6>TAG-1": false,
+        "TAG-6>TAG-10": false,
+        "TAG-6>TAG-11": false,
+        "TAG-6>TAG-12": false,
+        "TAG-6>TAG-13": false,
+        "TAG-6>TAG-14": false,
+        "TAG-6>TAG-15": false,
+        "TAG-6>TAG-16": false,
+        "TAG-6>TAG-17": false,
+        "TAG-6>TAG-18": false,
+        "TAG-6>TAG-19": false,
+        "TAG-6>TAG-2": false,
+        "TAG-6>TAG-20": false,
+        "TAG-6>TAG-21": false,
+        "TAG-6>TAG-3": false,
+        "TAG-6>TAG-4": false,
+        "TAG-6>TAG-5": false,
+        "TAG-6>TAG-6": true,
+        "TAG-6>TAG-7": false,
+        "TAG-6>TAG-8": false,
+        "TAG-6>TAG-9": false,
+        "TAG-7>TAG-1": false,
+        "TAG-7>TAG-10": false,
+        "TAG-7>TAG-11": false,
+        "TAG-7>TAG-12": false,
+        "TAG-7>TAG-13": false,
+        "TAG-7>TAG-14": false,
+        "TAG-7>TAG-15": false,
+        "TAG-7>TAG-16": false,
+        "TAG-7>TAG-17": false,
+        "TAG-7>TAG-18": false,
+        "TAG-7>TAG-19": false,
+        "TAG-7>TAG-2": false,
+        "TAG-7>TAG-20": false,
+        "TAG-7>TAG-21": false,
+        "TAG-7>TAG-3": false,
+        "TAG-7>TAG-4": false,
+        "TAG-7>TAG-5": false,
+        "TAG-7>TAG-6": false,
+        "TAG-7>TAG-7": true,
+        "TAG-7>TAG-8": true,
+        "TAG-7>TAG-9": true,
+        "TAG-8>TAG-1": false,
+        "TAG-8>TAG-10": false,
+        "TAG-8>TAG-11": false,
+        "TAG-8>TAG-12": false,
+        "TAG-8>TAG-13": false,
+        "TAG-8>TAG-14": false,
+        "TAG-8>TAG-15": false,
+        "TAG-8>TAG-16": false,
+        "TAG-8>TAG-17": false,
+        "TAG-8>TAG-18": false,
+        "TAG-8>TAG-19": false,
+        "TAG-8>TAG-2": false,
+        "TAG-8>TAG-20": false,
+        "TAG-8>TAG-21": false,
+        "TAG-8>TAG-3": false,
+        "TAG-8>TAG-4": false,
+        "TAG-8>TAG-5": false,
+        "TAG-8>TAG-6": false,
+        "TAG-8>TAG-7": false,
+        "TAG-8>TAG-8": true,
+        "TAG-8>TAG-9": false,
+        "TAG-9>TAG-1": false,
+        "TAG-9>TAG-10": false,
+        "TAG-9>TAG-11": false,
+        "TAG-9>TAG-12": false,
+        "TAG-9>TAG-13": false,
+        "TAG-9>TAG-14": false,
+        "TAG-9>TAG-15": false,
+        "TAG-9>TAG-16": false,
+        "TAG-9>TAG-17": false,
+        "TAG-9>TAG-18": false,
+        "TAG-9>TAG-19": false,
+        "TAG-9>TAG-2": false,
+        "TAG-9>TAG-20": false,
+        "TAG-9>TAG-21": false,
+        "TAG-9>TAG-3": false,
+        "TAG-9>TAG-4": false,
+        "TAG-9>TAG-5": false,
+        "TAG-9>TAG-6": false,
+        "TAG-9>TAG-7": false,
+        "TAG-9>TAG-8": false,
+        "TAG-9>TAG-9": true
+      },
+      "reachable_path": {
+        "TAG-10>TAG-1": null,
+        "TAG-10>TAG-10": [
+          "TAG-10"
+        ],
+        "TAG-10>TAG-11": null,
+        "TAG-10>TAG-12": null,
+        "TAG-10>TAG-13": null,
+        "TAG-10>TAG-14": null,
+        "TAG-10>TAG-15": null,
+        "TAG-10>TAG-16": null,
+        "TAG-10>TAG-17": null,
+        "TAG-10>TAG-18": null,
+        "TAG-10>TAG-19": null,
+        "TAG-10>TAG-2": null,
+        "TAG-10>TAG-20": null,
+        "TAG-10>TAG-21": null,
+        "TAG-10>TAG-3": null,
+        "TAG-10>TAG-4": null,
+        "TAG-10>TAG-5": null,
+        "TAG-10>TAG-6": null,
+        "TAG-10>TAG-7": null,
+        "TAG-10>TAG-8": null,
+        "TAG-10>TAG-9": null,
+        "TAG-11>TAG-1": null,
+        "TAG-11>TAG-10": null,
+        "TAG-11>TAG-11": [
+          "TAG-11"
+        ],
+        "TAG-11>TAG-12": null,
+        "TAG-11>TAG-13": null,
+        "TAG-11>TAG-14": null,
+        "TAG-11>TAG-15": null,
+        "TAG-11>TAG-16": null,
+        "TAG-11>TAG-17": null,
+        "TAG-11>TAG-18": null,
+        "TAG-11>TAG-19": null,
+        "TAG-11>TAG-2": null,
+        "TAG-11>TAG-20": null,
+        "TAG-11>TAG-21": null,
+        "TAG-11>TAG-3": null,
+        "TAG-11>TAG-4": null,
+        "TAG-11>TAG-5": null,
+        "TAG-11>TAG-6": null,
+        "TAG-11>TAG-7": null,
+        "TAG-11>TAG-8": null,
+        "TAG-11>TAG-9": null,
+        "TAG-12>TAG-1": null,
+        "TAG-12>TAG-10": null,
+        "TAG-12>TAG-11": [
+          "TAG-12",
+          "TAG-11"
+        ],
+        "TAG-12>TAG-12": [
+          "TAG-12"
+        ],
+        "TAG-12>TAG-13": null,
+        "TAG-12>TAG-14": null,
+        "TAG-12>TAG-15": null,
+        "TAG-12>TAG-16": null,
+        "TAG-12>TAG-17": null,
+        "TAG-12>TAG-18": null,
+        "TAG-12>TAG-19": null,
+        "TAG-12>TAG-2": null,
+        "TAG-12>TAG-20": null,
+        "TAG-12>TAG-21": null,
+        "TAG-12>TAG-3": null,
+        "TAG-12>TAG-4": null,
+        "TAG-12>TAG-5": null,
+        "TAG-12>TAG-6": null,
+        "TAG-12>TAG-7": null,
+        "TAG-12>TAG-8": null,
+        "TAG-12>TAG-9": null,
+        "TAG-13>TAG-1": null,
+        "TAG-13>TAG-10": null,
+        "TAG-13>TAG-11": null,
+        "TAG-13>TAG-12": null,
+        "TAG-13>TAG-13": [
+          "TAG-13"
+        ],
+        "TAG-13>TAG-14": null,
+        "TAG-13>TAG-15": null,
+        "TAG-13>TAG-16": null,
+        "TAG-13>TAG-17": null,
+        "TAG-13>TAG-18": null,
+        "TAG-13>TAG-19": null,
+        "TAG-13>TAG-2": null,
+        "TAG-13>TAG-20": null,
+        "TAG-13>TAG-21": null,
+        "TAG-13>TAG-3": null,
+        "TAG-13>TAG-4": null,
+        "TAG-13>TAG-5": null,
+        "TAG-13>TAG-6": null,
+        "TAG-13>TAG-7": null,
+        "TAG-13>TAG-8": null,
+        "TAG-13>TAG-9": null,
+        "TAG-14>TAG-1": null,
+        "TAG-14>TAG-10": null,
+        "TAG-14>TAG-11": null,
+        "TAG-14>TAG-12": null,
+        "TAG-14>TAG-13": null,
+        "TAG-14>TAG-14": [
+          "TAG-14"
+        ],
+        "TAG-14>TAG-15": null,
+        "TAG-14>TAG-16": null,
+        "TAG-14>TAG-17": null,
+        "TAG-14>TAG-18": null,
+        "TAG-14>TAG-19": null,
+        "TAG-14>TAG-2": null,
+        "TAG-14>TAG-20": null,
+        "TAG-14>TAG-21": null,
+        "TAG-14>TAG-3": null,
+        "TAG-14>TAG-4": null,
+        "TAG-14>TAG-5": null,
+        "TAG-14>TAG-6": null,
+        "TAG-14>TAG-7": null,
+        "TAG-14>TAG-8": null,
+        "TAG-14>TAG-9": null,
+        "TAG-15>TAG-1": null,
+        "TAG-15>TAG-10": null,
+        "TAG-15>TAG-11": null,
+        "TAG-15>TAG-12": null,
+        "TAG-15>TAG-13": null,
+        "TAG-15>TAG-14": [
+          "TAG-15",
+          "TAG-14"
+        ],
+        "TAG-15>TAG-15": [
+          "TAG-15"
+        ],
+        "TAG-15>TAG-16": null,
+        "TAG-15>TAG-17": null,
+        "TAG-15>TAG-18": null,
+        "TAG-15>TAG-19": null,
+        "TAG-15>TAG-2": null,
+        "TAG-15>TAG-20": null,
+        "TAG-15>TAG-21": null,
+        "TAG-15>TAG-3": null,
+        "TAG-15>TAG-4": null,
+        "TAG-15>TAG-5": null,
+        "TAG-15>TAG-6": null,
+        "TAG-15>TAG-7": null,
+        "TAG-15>TAG-8": null,
+        "TAG-15>TAG-9": null,
+        "TAG-16>TAG-1": null,
+        "TAG-16>TAG-10": null,
+        "TAG-16>TAG-11": null,
+        "TAG-16>TAG-12": null,
+        "TAG-16>TAG-13": null,
+        "TAG-16>TAG-14": null,
+        "TAG-16>TAG-15": null,
+        "TAG-16>TAG-16": [
+          "TAG-16"
+        ],
+        "TAG-16>TAG-17": null,
+        "TAG-16>TAG-18": null,
+        "TAG-16>TAG-19": null,
+        "TAG-16>TAG-2": null,
+        "TAG-16>TAG-20": null,
+        "TAG-16>TAG-21": null,
+        "TAG-16>TAG-3": null,
+        "TAG-16>TAG-4": null,
+        "TAG-16>TAG-5": null,
+        "TAG-16>TAG-6": null,
+        "TAG-16>TAG-7": null,
+        "TAG-16>TAG-8": null,
+        "TAG-16>TAG-9": null,
+        "TAG-17>TAG-1": null,
+        "TAG-17>TAG-10": null,
+        "TAG-17>TAG-11": null,
+        "TAG-17>TAG-12": null,
+        "TAG-17>TAG-13": null,
+        "TAG-17>TAG-14": null,
+        "TAG-17>TAG-15": null,
+        "TAG-17>TAG-16": null,
+        "TAG-17>TAG-17": [
+          "TAG-17"
+        ],
+        "TAG-17>TAG-18": null,
+        "TAG-17>TAG-19": null,
+        "TAG-17>TAG-2": null,
+        "TAG-17>TAG-20": null,
+        "TAG-17>TAG-21": null,
+        "TAG-17>TAG-3": null,
+        "TAG-17>TAG-4": null,
+        "TAG-17>TAG-5": null,
+        "TAG-17>TAG-6": null,
+        "TAG-17>TAG-7": null,
+        "TAG-17>TAG-8": null,
+        "TAG-17>TAG-9": null,
+        "TAG-18>TAG-1": null,
+        "TAG-18>TAG-10": null,
+        "TAG-18>TAG-11": null,
+        "TAG-18>TAG-12": null,
+        "TAG-18>TAG-13": null,
+        "TAG-18>TAG-14": null,
+        "TAG-18>TAG-15": null,
+        "TAG-18>TAG-16": null,
+        "TAG-18>TAG-17": [
+          "TAG-18",
+          "TAG-17"
+        ],
+        "TAG-18>TAG-18": [
+          "TAG-18"
+        ],
+        "TAG-18>TAG-19": null,
+        "TAG-18>TAG-2": null,
+        "TAG-18>TAG-20": null,
+        "TAG-18>TAG-21": null,
+        "TAG-18>TAG-3": null,
+        "TAG-18>TAG-4": null,
+        "TAG-18>TAG-5": null,
+        "TAG-18>TAG-6": null,
+        "TAG-18>TAG-7": null,
+        "TAG-18>TAG-8": null,
+        "TAG-18>TAG-9": null,
+        "TAG-19>TAG-1": null,
+        "TAG-19>TAG-10": null,
+        "TAG-19>TAG-11": null,
+        "TAG-19>TAG-12": null,
+        "TAG-19>TAG-13": null,
+        "TAG-19>TAG-14": null,
+        "TAG-19>TAG-15": null,
+        "TAG-19>TAG-16": null,
+        "TAG-19>TAG-17": null,
+        "TAG-19>TAG-18": null,
+        "TAG-19>TAG-19": [
+          "TAG-19"
+        ],
+        "TAG-19>TAG-2": null,
+        "TAG-19>TAG-20": null,
+        "TAG-19>TAG-21": null,
+        "TAG-19>TAG-3": null,
+        "TAG-19>TAG-4": null,
+        "TAG-19>TAG-5": null,
+        "TAG-19>TAG-6": null,
+        "TAG-19>TAG-7": null,
+        "TAG-19>TAG-8": null,
+        "TAG-19>TAG-9": null,
+        "TAG-1>TAG-1": [
+          "TAG-1"
+        ],
+        "TAG-1>TAG-10": null,
+        "TAG-1>TAG-11": null,
+        "TAG-1>TAG-12": null,
+        "TAG-1>TAG-13": null,
+        "TAG-1>TAG-14": null,
+        "TAG-1>TAG-15": null,
+        "TAG-1>TAG-16": null,
+        "TAG-1>TAG-17": null,
+        "TAG-1>TAG-18": null,
+        "TAG-1>TAG-19": null,
+        "TAG-1>TAG-2": null,
+        "TAG-1>TAG-20": null,
+        "TAG-1>TAG-21": null,
+        "TAG-1>TAG-3": null,
+        "TAG-1>TAG-4": null,
+        "TAG-1>TAG-5": null,
+        "TAG-1>TAG-6": null,
+        "TAG-1>TAG-7": null,
+        "TAG-1>TAG-8": null,
+        "TAG-1>TAG-9": null,
+        "TAG-20>TAG-1": null,
+        "TAG-20>TAG-10": null,
+        "TAG-20>TAG-11": null,
+        "TAG-20>TAG-12": null,
+        "TAG-20>TAG-13": null,
+        "TAG-20>TAG-14": null,
+        "TAG-20>TAG-15": null,
+        "TAG-20>TAG-16": null,
+        "TAG-20>TAG-17": null,
+        "TAG-20>TAG-18": null,
+        "TAG-20>TAG-19": null,
+        "TAG-20>TAG-2": null,
+        "TAG-20>TAG-20": [
+          "TAG-20"
+        ],
+        "TAG-20>TAG-21": null,
+        "TAG-20>TAG-3": null,
+        "TAG-20>TAG-4": null,
+        "TAG-20>TAG-5": null,
+        "TAG-20>TAG-6": null,
+        "TAG-20>TAG-7": null,
+        "TAG-20>TAG-8": null,
+        "TAG-20>TAG-9": null,
+        "TAG-21>TAG-1": null,
+        "TAG-21>TAG-10": null,
+        "TAG-21>TAG-11": null,
+        "TAG-21>TAG-12": null,
+        "TAG-21>TAG-13": null,
+        "TAG-21>TAG-14": null,
+        "TAG-21>TAG-15": null,
+        "TAG-21>TAG-16": null,
+        "TAG-21>TAG-17": null,
+        "TAG-21>TAG-18": null,
+        "TAG-21>TAG-19": null,
+        "TAG-21>TAG-2": null,
+        "TAG-21>TAG-20": [
+          "TAG-21",
+          "TAG-20"
+        ],
+        "TAG-21>TAG-21": [
+          "TAG-21"
+        ],
+        "TAG-21>TAG-3": null,
+        "TAG-21>TAG-4": null,
+        "TAG-21>TAG-5": null,
+        "TAG-21>TAG-6": null,
+        "TAG-21>TAG-7": null,
+        "TAG-21>TAG-8": null,
+        "TAG-21>TAG-9": null,
+        "TAG-2>TAG-1": null,
+        "TAG-2>TAG-10": null,
+        "TAG-2>TAG-11": null,
+        "TAG-2>TAG-12": null,
+        "TAG-2>TAG-13": null,
+        "TAG-2>TAG-14": null,
+        "TAG-2>TAG-15": null,
+        "TAG-2>TAG-16": null,
+        "TAG-2>TAG-17": null,
+        "TAG-2>TAG-18": null,
+        "TAG-2>TAG-19": null,
+        "TAG-2>TAG-2": [
+          "TAG-2"
+        ],
+        "TAG-2>TAG-20": null,
+        "TAG-2>TAG-21": null,
+        "TAG-2>TAG-3": null,
+        "TAG-2>TAG-4": null,
+        "TAG-2>TAG-5": null,
+        "TAG-2>TAG-6": null,
+        "TAG-2>TAG-7": null,
+        "TAG-2>TAG-8": null,
+        "TAG-2>TAG-9": null,
+        "TAG-3>TAG-1": null,
+        "TAG-3>TAG-10": null,
+        "TAG-3>TAG-11": null,
+        "TAG-3>TAG-12": null,
+        "TAG-3>TAG-13": null,
+        "TAG-3>TAG-14": null,
+        "TAG-3>TAG-15": null,
+        "TAG-3>TAG-16": null,
+        "TAG-3>TAG-17": null,
+        "TAG-3>TAG-18": null,
+        "TAG-3>TAG-19": null,
+        "TAG-3>TAG-2": [
+          "TAG-3",
+          "TAG-2"
+        ],
+        "TAG-3>TAG-20": null,
+        "TAG-3>TAG-21": null,
+        "TAG-3>TAG-3": [
+          "TAG-3"
+        ],
+        "TAG-3>TAG-4": null,
+        "TAG-3>TAG-5": null,
+        "TAG-3>TAG-6": null,
+        "TAG-3>TAG-7": null,
+        "TAG-3>TAG-8": null,
+        "TAG-3>TAG-9": null,
+        "TAG-4>TAG-1": null,
+        "TAG-4>TAG-10": null,
+        "TAG-4>TAG-11": null,
+        "TAG-4>TAG-12": null,
+        "TAG-4>TAG-13": null,
+        "TAG-4>TAG-14": null,
+        "TAG-4>TAG-15": null,
+        "TAG-4>TAG-16": null,
+        "TAG-4>TAG-17": null,
+        "TAG-4>TAG-18": null,
+        "TAG-4>TAG-19": null,
+        "TAG-4>TAG-2": null,
+        "TAG-4>TAG-20": null,
+        "TAG-4>TAG-21": null,
+        "TAG-4>TAG-3": null,
+        "TAG-4>TAG-4": [
+          "TAG-4"
+        ],
+        "TAG-4>TAG-5": null,
+        "TAG-4>TAG-6": null,
+        "TAG-4>TAG-7": null,
+        "TAG-4>TAG-8": null,
+        "TAG-4>TAG-9": null,
+        "TAG-5>TAG-1": null,
+        "TAG-5>TAG-10": null,
+        "TAG-5>TAG-11": null,
+        "TAG-5>TAG-12": null,
+        "TAG-5>TAG-13": null,
+        "TAG-5>TAG-14": null,
+        "TAG-5>TAG-15": null,
+        "TAG-5>TAG-16": null,
+        "TAG-5>TAG-17": null,
+        "TAG-5>TAG-18": null,
+        "TAG-5>TAG-19": null,
+        "TAG-5>TAG-2": null,
+        "TAG-5>TAG-20": null,
+        "TAG-5>TAG-21": null,
+        "TAG-5>TAG-3": null,
+        "TAG-5>TAG-4": null,
+        "TAG-5>TAG-5": [
+          "TAG-5"
+        ],
+        "TAG-5>TAG-6": null,
+        "TAG-5>TAG-7": null,
+        "TAG-5>TAG-8": null,
+        "TAG-5>TAG-9": null,
+        "TAG-6>TAG-1": null,
+        "TAG-6>TAG-10": null,
+        "TAG-6>TAG-11": null,
+        "TAG-6>TAG-12": null,
+        "TAG-6>TAG-13": null,
+        "TAG-6>TAG-14": null,
+        "TAG-6>TAG-15": null,
+        "TAG-6>TAG-16": null,
+        "TAG-6>TAG-17": null,
+        "TAG-6>TAG-18": null,
+        "TAG-6>TAG-19": null,
+        "TAG-6>TAG-2": null,
+        "TAG-6>TAG-20": null,
+        "TAG-6>TAG-21": null,
+        "TAG-6>TAG-3": null,
+        "TAG-6>TAG-4": null,
+        "TAG-6>TAG-5": [
+          "TAG-6",
+          "TAG-5"
+        ],
+        "TAG-6>TAG-6": [
+          "TAG-6"
+        ],
+        "TAG-6>TAG-7": null,
+        "TAG-6>TAG-8": null,
+        "TAG-6>TAG-9": null,
+        "TAG-7>TAG-1": null,
+        "TAG-7>TAG-10": null,
+        "TAG-7>TAG-11": null,
+        "TAG-7>TAG-12": null,
+        "TAG-7>TAG-13": null,
+        "TAG-7>TAG-14": null,
+        "TAG-7>TAG-15": null,
+        "TAG-7>TAG-16": null,
+        "TAG-7>TAG-17": null,
+        "TAG-7>TAG-18": null,
+        "TAG-7>TAG-19": null,
+        "TAG-7>TAG-2": null,
+        "TAG-7>TAG-20": null,
+        "TAG-7>TAG-21": null,
+        "TAG-7>TAG-3": null,
+        "TAG-7>TAG-4": null,
+        "TAG-7>TAG-5": null,
+        "TAG-7>TAG-6": null,
+        "TAG-7>TAG-7": [
+          "TAG-7"
+        ],
+        "TAG-7>TAG-8": null,
+        "TAG-7>TAG-9": null,
+        "TAG-8>TAG-1": null,
+        "TAG-8>TAG-10": null,
+        "TAG-8>TAG-11": null,
+        "TAG-8>TAG-12": null,
+        "TAG-8>TAG-13": null,
+        "TAG-8>TAG-14": null,
+        "TAG-8>TAG-15": null,
+        "TAG-8>TAG-16": null,
+        "TAG-8>TAG-17": null,
+        "TAG-8>TAG-18": null,
+        "TAG-8>TAG-19": null,
+        "TAG-8>TAG-2": null,
+        "TAG-8>TAG-20": null,
+        "TAG-8>TAG-21": null,
+        "TAG-8>TAG-3": null,
+        "TAG-8>TAG-4": null,
+        "TAG-8>TAG-5": null,
+        "TAG-8>TAG-6": null,
+        "TAG-8>TAG-7": null,
+        "TAG-8>TAG-8": [
+          "TAG-8"
+        ],
+        "TAG-8>TAG-9": null,
+        "TAG-9>TAG-1": null,
+        "TAG-9>TAG-10": null,
+        "TAG-9>TAG-11": null,
+        "TAG-9>TAG-12": null,
+        "TAG-9>TAG-13": null,
+        "TAG-9>TAG-14": null,
+        "TAG-9>TAG-15": null,
+        "TAG-9>TAG-16": null,
+        "TAG-9>TAG-17": null,
+        "TAG-9>TAG-18": null,
+        "TAG-9>TAG-19": null,
+        "TAG-9>TAG-2": null,
+        "TAG-9>TAG-20": null,
+        "TAG-9>TAG-21": null,
+        "TAG-9>TAG-3": null,
+        "TAG-9>TAG-4": null,
+        "TAG-9>TAG-5": null,
+        "TAG-9>TAG-6": null,
+        "TAG-9>TAG-7": null,
+        "TAG-9>TAG-8": [
+          "TAG-9",
+          "TAG-8"
+        ],
+        "TAG-9>TAG-9": [
+          "TAG-9"
+        ]
+      },
+      "ready": [
+        "TAG-2",
+        "TAG-5",
+        "TAG-8",
+        "TAG-11",
+        "TAG-14",
+        "TAG-17",
+        "TAG-20"
+      ],
+      "rollup": {
+        "TAG-1": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAG-10": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAG-11": null,
+        "TAG-12": null,
+        "TAG-13": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAG-14": null,
+        "TAG-15": null,
+        "TAG-16": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAG-17": null,
+        "TAG-18": null,
+        "TAG-19": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAG-2": null,
+        "TAG-20": null,
+        "TAG-21": null,
+        "TAG-3": null,
+        "TAG-4": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAG-5": null,
+        "TAG-6": null,
+        "TAG-7": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAG-8": null,
+        "TAG-9": null
+      },
+      "satisfied": [
+        [
+          "TAG-12",
+          "TAG-11",
+          true
+        ],
+        [
+          "TAG-15",
+          "TAG-14",
+          false
+        ],
+        [
+          "TAG-18",
+          "TAG-17",
+          false
+        ],
+        [
+          "TAG-21",
+          "TAG-20",
+          false
+        ],
+        [
+          "TAG-3",
+          "TAG-2",
+          false
+        ],
+        [
+          "TAG-6",
+          "TAG-5",
+          true
+        ],
+        [
+          "TAG-9",
+          "TAG-8",
+          true
+        ]
+      ],
+      "tasks": {
+        "TAG-1": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-10": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-11": {
+          "archived": false,
+          "parent": "TAG-10",
+          "status": "ready",
+          "tags": []
+        },
+        "TAG-12": {
+          "archived": false,
+          "parent": "TAG-10",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-13": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-14": {
+          "archived": false,
+          "parent": "TAG-13",
+          "status": "ready",
+          "tags": []
+        },
+        "TAG-15": {
+          "archived": false,
+          "parent": "TAG-13",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-16": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-17": {
+          "archived": false,
+          "parent": "TAG-16",
+          "status": "ready",
+          "tags": []
+        },
+        "TAG-18": {
+          "archived": false,
+          "parent": "TAG-16",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-19": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-2": {
+          "archived": false,
+          "parent": "TAG-1",
+          "status": "ready",
+          "tags": []
+        },
+        "TAG-20": {
+          "archived": false,
+          "parent": "TAG-19",
+          "status": "ready",
+          "tags": []
+        },
+        "TAG-21": {
+          "archived": false,
+          "parent": "TAG-19",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-3": {
+          "archived": false,
+          "parent": "TAG-1",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-4": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-5": {
+          "archived": false,
+          "parent": "TAG-4",
+          "status": "ready",
+          "tags": []
+        },
+        "TAG-6": {
+          "archived": false,
+          "parent": "TAG-4",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-7": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAG-8": {
+          "archived": false,
+          "parent": "TAG-7",
+          "status": "ready",
+          "tags": []
+        },
+        "TAG-9": {
+          "archived": false,
+          "parent": "TAG-7",
+          "status": "backlog",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAG-1": [],
+        "TAG-10": [],
+        "TAG-11": [],
+        "TAG-12": [],
+        "TAG-13": [],
+        "TAG-14": [],
+        "TAG-15": [
+          "TAG-14"
+        ],
+        "TAG-16": [],
+        "TAG-17": [],
+        "TAG-18": [
+          "TAG-17"
+        ],
+        "TAG-19": [],
+        "TAG-2": [],
+        "TAG-20": [],
+        "TAG-21": [
+          "TAG-20"
+        ],
+        "TAG-3": [
+          "TAG-2"
+        ],
+        "TAG-4": [],
+        "TAG-5": [],
+        "TAG-6": [],
+        "TAG-7": [],
+        "TAG-8": [],
+        "TAG-9": []
+      }
+    }
+  },
+  "seed": null,
+  "source": "no Python unit test; the stack rule of satisfied_dependencies in core/services/tasks.py",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "pending_item_open_stack parent"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-1",
+      "status": "ready",
+      "tags": [],
+      "title": "pending_item_open_stack first"
+    },
+    {
+      "depends_on": [
+        "TAG-2"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-1",
+      "status": null,
+      "tags": [],
+      "title": "pending_item_open_stack second"
+    },
+    {
+      "items": [
+        [
+          "TAG-2",
+          "pending"
+        ],
+        [
+          "TAG-3",
+          "pending"
+        ]
+      ],
+      "op": "add_stack",
+      "outcome": "ok",
+      "parent": "TAG-1",
+      "status": "open"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "ready_item_open_stack parent"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-4",
+      "status": "ready",
+      "tags": [],
+      "title": "ready_item_open_stack first"
+    },
+    {
+      "depends_on": [
+        "TAG-5"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-4",
+      "status": null,
+      "tags": [],
+      "title": "ready_item_open_stack second"
+    },
+    {
+      "items": [
+        [
+          "TAG-5",
+          "ready"
+        ],
+        [
+          "TAG-6",
+          "pending"
+        ]
+      ],
+      "op": "add_stack",
+      "outcome": "ok",
+      "parent": "TAG-4",
+      "status": "open"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "verified_item_verifying_stack parent"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-7",
+      "status": "ready",
+      "tags": [],
+      "title": "verified_item_verifying_stack first"
+    },
+    {
+      "depends_on": [
+        "TAG-8"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-7",
+      "status": null,
+      "tags": [],
+      "title": "verified_item_verifying_stack second"
+    },
+    {
+      "items": [
+        [
+          "TAG-8",
+          "verified"
+        ],
+        [
+          "TAG-9",
+          "pending"
+        ]
+      ],
+      "op": "add_stack",
+      "outcome": "ok",
+      "parent": "TAG-7",
+      "status": "verifying"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "merged_item_open_stack parent"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-10",
+      "status": "ready",
+      "tags": [],
+      "title": "merged_item_open_stack first"
+    },
+    {
+      "depends_on": [
+        "TAG-11"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-10",
+      "status": null,
+      "tags": [],
+      "title": "merged_item_open_stack second"
+    },
+    {
+      "items": [
+        [
+          "TAG-11",
+          "merged"
+        ],
+        [
+          "TAG-12",
+          "pending"
+        ]
+      ],
+      "op": "add_stack",
+      "outcome": "ok",
+      "parent": "TAG-10",
+      "status": "open"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "conflict_item_open_stack parent"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-13",
+      "status": "ready",
+      "tags": [],
+      "title": "conflict_item_open_stack first"
+    },
+    {
+      "depends_on": [
+        "TAG-14"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-13",
+      "status": null,
+      "tags": [],
+      "title": "conflict_item_open_stack second"
+    },
+    {
+      "items": [
+        [
+          "TAG-14",
+          "conflict"
+        ],
+        [
+          "TAG-15",
+          "pending"
+        ]
+      ],
+      "op": "add_stack",
+      "outcome": "ok",
+      "parent": "TAG-13",
+      "status": "open"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "ready_item_landed_stack parent"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-16",
+      "status": "ready",
+      "tags": [],
+      "title": "ready_item_landed_stack first"
+    },
+    {
+      "depends_on": [
+        "TAG-17"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-16",
+      "status": null,
+      "tags": [],
+      "title": "ready_item_landed_stack second"
+    },
+    {
+      "items": [
+        [
+          "TAG-17",
+          "ready"
+        ],
+        [
+          "TAG-18",
+          "pending"
+        ]
+      ],
+      "op": "add_stack",
+      "outcome": "ok",
+      "parent": "TAG-16",
+      "status": "landed"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "ready_item_abandoned_stack parent"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-19",
+      "status": "ready",
+      "tags": [],
+      "title": "ready_item_abandoned_stack first"
+    },
+    {
+      "depends_on": [
+        "TAG-20"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAG-19",
+      "status": null,
+      "tags": [],
+      "title": "ready_item_abandoned_stack second"
+    },
+    {
+      "items": [
+        [
+          "TAG-20",
+          "ready"
+        ],
+        [
+          "TAG-21",
+          "pending"
+        ]
+      ],
+      "op": "add_stack",
+      "outcome": "ok",
+      "parent": "TAG-19",
+      "status": "abandoned"
+    }
+  ]
+}

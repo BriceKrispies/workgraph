@@ -1,0 +1,2627 @@
+{
+  "case": "generated_04",
+  "observations": {
+    "after_promotion": {
+      "dependency_edges": [
+        [
+          "TAK-1",
+          "TAK-6"
+        ],
+        [
+          "TAK-2",
+          "TAK-5"
+        ],
+        [
+          "TAK-3",
+          "TAK-1"
+        ],
+        [
+          "TAK-5",
+          "TAK-1"
+        ],
+        [
+          "TAK-5",
+          "TAK-3"
+        ],
+        [
+          "TAK-5",
+          "TAK-4"
+        ],
+        [
+          "TAK-7",
+          "TAK-2"
+        ],
+        [
+          "TAK-7",
+          "TAK-3"
+        ],
+        [
+          "TAK-7",
+          "TAK-4"
+        ],
+        [
+          "TAK-8",
+          "TAK-3"
+        ],
+        [
+          "TAK-8",
+          "TAK-5"
+        ],
+        [
+          "TAK-8",
+          "TAK-6"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-2>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-6>",
+              "target": "<task:TAK-1>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-6>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-6>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-7>",
+              "target": "<task:TAK-9>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-1>",
+              "key": "TAK-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-2>",
+              "key": "TAK-2",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-3>",
+              "key": "TAK-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-4>",
+              "key": "TAK-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-5>",
+              "key": "TAK-5",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-6>",
+              "key": "TAK-6",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-7>",
+              "key": "TAK-7",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-8>",
+              "key": "TAK-8",
+              "parent_id": "<task:TAK-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-9>",
+              "key": "TAK-9",
+              "parent_id": "<task:TAK-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-2>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-7>",
+              "target": "<task:TAK-9>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-1>",
+              "key": "TAK-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-2>",
+              "key": "TAK-2",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-3>",
+              "key": "TAK-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-4>",
+              "key": "TAK-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-5>",
+              "key": "TAK-5",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-7>",
+              "key": "TAK-7",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-8>",
+              "key": "TAK-8",
+              "parent_id": "<task:TAK-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-9>",
+              "key": "TAK-9",
+              "parent_id": "<task:TAK-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-2>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-6>",
+              "target": "<task:TAK-1>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-6>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-6>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-1>",
+              "key": "TAK-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-2>",
+              "key": "TAK-2",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-3>",
+              "key": "TAK-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-5>",
+              "key": "TAK-5",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-6>",
+              "key": "TAK-6",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-7>",
+              "key": "TAK-7",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-8>",
+              "key": "TAK-8",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 7"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAK-1>TAK-1": true,
+        "TAK-1>TAK-2": true,
+        "TAK-1>TAK-3": false,
+        "TAK-1>TAK-4": false,
+        "TAK-1>TAK-5": false,
+        "TAK-1>TAK-6": true,
+        "TAK-1>TAK-7": false,
+        "TAK-1>TAK-8": false,
+        "TAK-1>TAK-9": false,
+        "TAK-2>TAK-1": false,
+        "TAK-2>TAK-2": true,
+        "TAK-2>TAK-3": false,
+        "TAK-2>TAK-4": false,
+        "TAK-2>TAK-5": false,
+        "TAK-2>TAK-6": false,
+        "TAK-2>TAK-7": false,
+        "TAK-2>TAK-8": false,
+        "TAK-2>TAK-9": false,
+        "TAK-3>TAK-1": false,
+        "TAK-3>TAK-2": false,
+        "TAK-3>TAK-3": true,
+        "TAK-3>TAK-4": false,
+        "TAK-3>TAK-5": true,
+        "TAK-3>TAK-6": false,
+        "TAK-3>TAK-7": true,
+        "TAK-3>TAK-8": false,
+        "TAK-3>TAK-9": true,
+        "TAK-4>TAK-1": false,
+        "TAK-4>TAK-2": false,
+        "TAK-4>TAK-3": false,
+        "TAK-4>TAK-4": true,
+        "TAK-4>TAK-5": false,
+        "TAK-4>TAK-6": false,
+        "TAK-4>TAK-7": false,
+        "TAK-4>TAK-8": true,
+        "TAK-4>TAK-9": false,
+        "TAK-5>TAK-1": false,
+        "TAK-5>TAK-2": false,
+        "TAK-5>TAK-3": false,
+        "TAK-5>TAK-4": false,
+        "TAK-5>TAK-5": true,
+        "TAK-5>TAK-6": false,
+        "TAK-5>TAK-7": false,
+        "TAK-5>TAK-8": false,
+        "TAK-5>TAK-9": false,
+        "TAK-6>TAK-1": false,
+        "TAK-6>TAK-2": false,
+        "TAK-6>TAK-3": false,
+        "TAK-6>TAK-4": false,
+        "TAK-6>TAK-5": false,
+        "TAK-6>TAK-6": true,
+        "TAK-6>TAK-7": false,
+        "TAK-6>TAK-8": false,
+        "TAK-6>TAK-9": false,
+        "TAK-7>TAK-1": false,
+        "TAK-7>TAK-2": false,
+        "TAK-7>TAK-3": false,
+        "TAK-7>TAK-4": false,
+        "TAK-7>TAK-5": false,
+        "TAK-7>TAK-6": false,
+        "TAK-7>TAK-7": true,
+        "TAK-7>TAK-8": false,
+        "TAK-7>TAK-9": true,
+        "TAK-8>TAK-1": false,
+        "TAK-8>TAK-2": false,
+        "TAK-8>TAK-3": false,
+        "TAK-8>TAK-4": false,
+        "TAK-8>TAK-5": false,
+        "TAK-8>TAK-6": false,
+        "TAK-8>TAK-7": false,
+        "TAK-8>TAK-8": true,
+        "TAK-8>TAK-9": false,
+        "TAK-9>TAK-1": false,
+        "TAK-9>TAK-2": false,
+        "TAK-9>TAK-3": false,
+        "TAK-9>TAK-4": false,
+        "TAK-9>TAK-5": false,
+        "TAK-9>TAK-6": false,
+        "TAK-9>TAK-7": false,
+        "TAK-9>TAK-8": false,
+        "TAK-9>TAK-9": true
+      },
+      "reachable_path": {
+        "TAK-1>TAK-1": [
+          "TAK-1"
+        ],
+        "TAK-1>TAK-2": null,
+        "TAK-1>TAK-3": null,
+        "TAK-1>TAK-4": null,
+        "TAK-1>TAK-5": null,
+        "TAK-1>TAK-6": [
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-1>TAK-7": null,
+        "TAK-1>TAK-8": null,
+        "TAK-1>TAK-9": null,
+        "TAK-2>TAK-1": [
+          "TAK-2",
+          "TAK-5",
+          "TAK-1"
+        ],
+        "TAK-2>TAK-2": [
+          "TAK-2"
+        ],
+        "TAK-2>TAK-3": [
+          "TAK-2",
+          "TAK-5",
+          "TAK-3"
+        ],
+        "TAK-2>TAK-4": [
+          "TAK-2",
+          "TAK-5",
+          "TAK-4"
+        ],
+        "TAK-2>TAK-5": [
+          "TAK-2",
+          "TAK-5"
+        ],
+        "TAK-2>TAK-6": [
+          "TAK-2",
+          "TAK-5",
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-2>TAK-7": null,
+        "TAK-2>TAK-8": null,
+        "TAK-2>TAK-9": null,
+        "TAK-3>TAK-1": [
+          "TAK-3",
+          "TAK-1"
+        ],
+        "TAK-3>TAK-2": null,
+        "TAK-3>TAK-3": [
+          "TAK-3"
+        ],
+        "TAK-3>TAK-4": null,
+        "TAK-3>TAK-5": null,
+        "TAK-3>TAK-6": [
+          "TAK-3",
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-3>TAK-7": null,
+        "TAK-3>TAK-8": null,
+        "TAK-3>TAK-9": null,
+        "TAK-4>TAK-1": null,
+        "TAK-4>TAK-2": null,
+        "TAK-4>TAK-3": null,
+        "TAK-4>TAK-4": [
+          "TAK-4"
+        ],
+        "TAK-4>TAK-5": null,
+        "TAK-4>TAK-6": null,
+        "TAK-4>TAK-7": null,
+        "TAK-4>TAK-8": null,
+        "TAK-4>TAK-9": null,
+        "TAK-5>TAK-1": [
+          "TAK-5",
+          "TAK-1"
+        ],
+        "TAK-5>TAK-2": null,
+        "TAK-5>TAK-3": [
+          "TAK-5",
+          "TAK-3"
+        ],
+        "TAK-5>TAK-4": [
+          "TAK-5",
+          "TAK-4"
+        ],
+        "TAK-5>TAK-5": [
+          "TAK-5"
+        ],
+        "TAK-5>TAK-6": [
+          "TAK-5",
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-5>TAK-7": null,
+        "TAK-5>TAK-8": null,
+        "TAK-5>TAK-9": null,
+        "TAK-6>TAK-1": null,
+        "TAK-6>TAK-2": null,
+        "TAK-6>TAK-3": null,
+        "TAK-6>TAK-4": null,
+        "TAK-6>TAK-5": null,
+        "TAK-6>TAK-6": [
+          "TAK-6"
+        ],
+        "TAK-6>TAK-7": null,
+        "TAK-6>TAK-8": null,
+        "TAK-6>TAK-9": null,
+        "TAK-7>TAK-1": [
+          "TAK-7",
+          "TAK-3",
+          "TAK-1"
+        ],
+        "TAK-7>TAK-2": [
+          "TAK-7",
+          "TAK-2"
+        ],
+        "TAK-7>TAK-3": [
+          "TAK-7",
+          "TAK-3"
+        ],
+        "TAK-7>TAK-4": [
+          "TAK-7",
+          "TAK-4"
+        ],
+        "TAK-7>TAK-5": [
+          "TAK-7",
+          "TAK-2",
+          "TAK-5"
+        ],
+        "TAK-7>TAK-6": [
+          "TAK-7",
+          "TAK-3",
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-7>TAK-7": [
+          "TAK-7"
+        ],
+        "TAK-7>TAK-8": null,
+        "TAK-7>TAK-9": null,
+        "TAK-8>TAK-1": [
+          "TAK-8",
+          "TAK-3",
+          "TAK-1"
+        ],
+        "TAK-8>TAK-2": null,
+        "TAK-8>TAK-3": [
+          "TAK-8",
+          "TAK-3"
+        ],
+        "TAK-8>TAK-4": [
+          "TAK-8",
+          "TAK-5",
+          "TAK-4"
+        ],
+        "TAK-8>TAK-5": [
+          "TAK-8",
+          "TAK-5"
+        ],
+        "TAK-8>TAK-6": [
+          "TAK-8",
+          "TAK-6"
+        ],
+        "TAK-8>TAK-7": null,
+        "TAK-8>TAK-8": [
+          "TAK-8"
+        ],
+        "TAK-8>TAK-9": null,
+        "TAK-9>TAK-1": null,
+        "TAK-9>TAK-2": null,
+        "TAK-9>TAK-3": null,
+        "TAK-9>TAK-4": null,
+        "TAK-9>TAK-5": null,
+        "TAK-9>TAK-6": null,
+        "TAK-9>TAK-7": null,
+        "TAK-9>TAK-8": null,
+        "TAK-9>TAK-9": [
+          "TAK-9"
+        ]
+      },
+      "ready": [
+        "TAK-4",
+        "TAK-9"
+      ],
+      "rollup": {
+        "TAK-1": {
+          "accepted": 1,
+          "by_status": {
+            "accepted": 1,
+            "backlog": 1
+          },
+          "progress": 0.5,
+          "total_descendants": 2
+        },
+        "TAK-2": null,
+        "TAK-3": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "blocked": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 3
+        },
+        "TAK-4": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAK-5": null,
+        "TAK-6": null,
+        "TAK-7": {
+          "accepted": 0,
+          "by_status": {
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAK-8": null,
+        "TAK-9": null
+      },
+      "satisfied": [
+        [
+          "TAK-1",
+          "TAK-6",
+          true
+        ],
+        [
+          "TAK-2",
+          "TAK-5",
+          false
+        ],
+        [
+          "TAK-3",
+          "TAK-1",
+          false
+        ],
+        [
+          "TAK-5",
+          "TAK-1",
+          false
+        ],
+        [
+          "TAK-5",
+          "TAK-3",
+          false
+        ],
+        [
+          "TAK-5",
+          "TAK-4",
+          false
+        ],
+        [
+          "TAK-7",
+          "TAK-2",
+          false
+        ],
+        [
+          "TAK-7",
+          "TAK-3",
+          false
+        ],
+        [
+          "TAK-7",
+          "TAK-4",
+          false
+        ],
+        [
+          "TAK-8",
+          "TAK-3",
+          false
+        ],
+        [
+          "TAK-8",
+          "TAK-5",
+          false
+        ],
+        [
+          "TAK-8",
+          "TAK-6",
+          true
+        ]
+      ],
+      "tasks": {
+        "TAK-1": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "parked",
+            "rho"
+          ]
+        },
+        "TAK-2": {
+          "archived": false,
+          "parent": "TAK-1",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAK-3": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAK-4": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": [
+            "parked"
+          ]
+        },
+        "TAK-5": {
+          "archived": false,
+          "parent": "TAK-3",
+          "status": "blocked",
+          "tags": [
+            "parked",
+            "rho"
+          ]
+        },
+        "TAK-6": {
+          "archived": false,
+          "parent": "TAK-1",
+          "status": "accepted",
+          "tags": []
+        },
+        "TAK-7": {
+          "archived": false,
+          "parent": "TAK-3",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAK-8": {
+          "archived": false,
+          "parent": "TAK-4",
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAK-9": {
+          "archived": false,
+          "parent": "TAK-7",
+          "status": "ready",
+          "tags": [
+            "rho"
+          ]
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAK-1": [],
+        "TAK-2": [
+          "TAK-5"
+        ],
+        "TAK-3": [
+          "TAK-1"
+        ],
+        "TAK-4": [],
+        "TAK-5": [
+          "TAK-1",
+          "TAK-3",
+          "TAK-4"
+        ],
+        "TAK-6": [],
+        "TAK-7": [
+          "TAK-2",
+          "TAK-3",
+          "TAK-4"
+        ],
+        "TAK-8": [
+          "TAK-3",
+          "TAK-5"
+        ],
+        "TAK-9": []
+      }
+    },
+    "before_promotion": {
+      "dependency_edges": [
+        [
+          "TAK-1",
+          "TAK-6"
+        ],
+        [
+          "TAK-2",
+          "TAK-5"
+        ],
+        [
+          "TAK-3",
+          "TAK-1"
+        ],
+        [
+          "TAK-5",
+          "TAK-1"
+        ],
+        [
+          "TAK-5",
+          "TAK-3"
+        ],
+        [
+          "TAK-5",
+          "TAK-4"
+        ],
+        [
+          "TAK-7",
+          "TAK-2"
+        ],
+        [
+          "TAK-7",
+          "TAK-3"
+        ],
+        [
+          "TAK-7",
+          "TAK-4"
+        ],
+        [
+          "TAK-8",
+          "TAK-3"
+        ],
+        [
+          "TAK-8",
+          "TAK-5"
+        ],
+        [
+          "TAK-8",
+          "TAK-6"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-2>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-6>",
+              "target": "<task:TAK-1>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-6>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-6>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-7>",
+              "target": "<task:TAK-9>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-1>",
+              "key": "TAK-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-2>",
+              "key": "TAK-2",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-3>",
+              "key": "TAK-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-4>",
+              "key": "TAK-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-5>",
+              "key": "TAK-5",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-6>",
+              "key": "TAK-6",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-7>",
+              "key": "TAK-7",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-8>",
+              "key": "TAK-8",
+              "parent_id": "<task:TAK-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-9>",
+              "key": "TAK-9",
+              "parent_id": "<task:TAK-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-2>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-4>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-7>",
+              "target": "<task:TAK-9>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-1>",
+              "key": "TAK-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-2>",
+              "key": "TAK-2",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-3>",
+              "key": "TAK-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-4>",
+              "key": "TAK-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-5>",
+              "key": "TAK-5",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-7>",
+              "key": "TAK-7",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-8>",
+              "key": "TAK-8",
+              "parent_id": "<task:TAK-4>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 7"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-9>",
+              "key": "TAK-9",
+              "parent_id": "<task:TAK-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-2>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-5>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-6>",
+              "target": "<task:TAK-1>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAK-6>",
+              "target": "<task:TAK-8>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-1>",
+              "target": "<task:TAK-6>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-5>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAK-3>",
+              "target": "<task:TAK-7>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-1>",
+              "key": "TAK-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-2>",
+              "key": "TAK-2",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-3>",
+              "key": "TAK-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-5>",
+              "key": "TAK-5",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "parked",
+                "rho"
+              ],
+              "title": "Task 4"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAK-6>",
+              "key": "TAK-6",
+              "parent_id": "<task:TAK-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-7>",
+              "key": "TAK-7",
+              "parent_id": "<task:TAK-3>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAK-8>",
+              "key": "TAK-8",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 7"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAK-1>TAK-1": true,
+        "TAK-1>TAK-2": true,
+        "TAK-1>TAK-3": false,
+        "TAK-1>TAK-4": false,
+        "TAK-1>TAK-5": false,
+        "TAK-1>TAK-6": true,
+        "TAK-1>TAK-7": false,
+        "TAK-1>TAK-8": false,
+        "TAK-1>TAK-9": false,
+        "TAK-2>TAK-1": false,
+        "TAK-2>TAK-2": true,
+        "TAK-2>TAK-3": false,
+        "TAK-2>TAK-4": false,
+        "TAK-2>TAK-5": false,
+        "TAK-2>TAK-6": false,
+        "TAK-2>TAK-7": false,
+        "TAK-2>TAK-8": false,
+        "TAK-2>TAK-9": false,
+        "TAK-3>TAK-1": false,
+        "TAK-3>TAK-2": false,
+        "TAK-3>TAK-3": true,
+        "TAK-3>TAK-4": false,
+        "TAK-3>TAK-5": true,
+        "TAK-3>TAK-6": false,
+        "TAK-3>TAK-7": true,
+        "TAK-3>TAK-8": false,
+        "TAK-3>TAK-9": true,
+        "TAK-4>TAK-1": false,
+        "TAK-4>TAK-2": false,
+        "TAK-4>TAK-3": false,
+        "TAK-4>TAK-4": true,
+        "TAK-4>TAK-5": false,
+        "TAK-4>TAK-6": false,
+        "TAK-4>TAK-7": false,
+        "TAK-4>TAK-8": true,
+        "TAK-4>TAK-9": false,
+        "TAK-5>TAK-1": false,
+        "TAK-5>TAK-2": false,
+        "TAK-5>TAK-3": false,
+        "TAK-5>TAK-4": false,
+        "TAK-5>TAK-5": true,
+        "TAK-5>TAK-6": false,
+        "TAK-5>TAK-7": false,
+        "TAK-5>TAK-8": false,
+        "TAK-5>TAK-9": false,
+        "TAK-6>TAK-1": false,
+        "TAK-6>TAK-2": false,
+        "TAK-6>TAK-3": false,
+        "TAK-6>TAK-4": false,
+        "TAK-6>TAK-5": false,
+        "TAK-6>TAK-6": true,
+        "TAK-6>TAK-7": false,
+        "TAK-6>TAK-8": false,
+        "TAK-6>TAK-9": false,
+        "TAK-7>TAK-1": false,
+        "TAK-7>TAK-2": false,
+        "TAK-7>TAK-3": false,
+        "TAK-7>TAK-4": false,
+        "TAK-7>TAK-5": false,
+        "TAK-7>TAK-6": false,
+        "TAK-7>TAK-7": true,
+        "TAK-7>TAK-8": false,
+        "TAK-7>TAK-9": true,
+        "TAK-8>TAK-1": false,
+        "TAK-8>TAK-2": false,
+        "TAK-8>TAK-3": false,
+        "TAK-8>TAK-4": false,
+        "TAK-8>TAK-5": false,
+        "TAK-8>TAK-6": false,
+        "TAK-8>TAK-7": false,
+        "TAK-8>TAK-8": true,
+        "TAK-8>TAK-9": false,
+        "TAK-9>TAK-1": false,
+        "TAK-9>TAK-2": false,
+        "TAK-9>TAK-3": false,
+        "TAK-9>TAK-4": false,
+        "TAK-9>TAK-5": false,
+        "TAK-9>TAK-6": false,
+        "TAK-9>TAK-7": false,
+        "TAK-9>TAK-8": false,
+        "TAK-9>TAK-9": true
+      },
+      "reachable_path": {
+        "TAK-1>TAK-1": [
+          "TAK-1"
+        ],
+        "TAK-1>TAK-2": null,
+        "TAK-1>TAK-3": null,
+        "TAK-1>TAK-4": null,
+        "TAK-1>TAK-5": null,
+        "TAK-1>TAK-6": [
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-1>TAK-7": null,
+        "TAK-1>TAK-8": null,
+        "TAK-1>TAK-9": null,
+        "TAK-2>TAK-1": [
+          "TAK-2",
+          "TAK-5",
+          "TAK-1"
+        ],
+        "TAK-2>TAK-2": [
+          "TAK-2"
+        ],
+        "TAK-2>TAK-3": [
+          "TAK-2",
+          "TAK-5",
+          "TAK-3"
+        ],
+        "TAK-2>TAK-4": [
+          "TAK-2",
+          "TAK-5",
+          "TAK-4"
+        ],
+        "TAK-2>TAK-5": [
+          "TAK-2",
+          "TAK-5"
+        ],
+        "TAK-2>TAK-6": [
+          "TAK-2",
+          "TAK-5",
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-2>TAK-7": null,
+        "TAK-2>TAK-8": null,
+        "TAK-2>TAK-9": null,
+        "TAK-3>TAK-1": [
+          "TAK-3",
+          "TAK-1"
+        ],
+        "TAK-3>TAK-2": null,
+        "TAK-3>TAK-3": [
+          "TAK-3"
+        ],
+        "TAK-3>TAK-4": null,
+        "TAK-3>TAK-5": null,
+        "TAK-3>TAK-6": [
+          "TAK-3",
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-3>TAK-7": null,
+        "TAK-3>TAK-8": null,
+        "TAK-3>TAK-9": null,
+        "TAK-4>TAK-1": null,
+        "TAK-4>TAK-2": null,
+        "TAK-4>TAK-3": null,
+        "TAK-4>TAK-4": [
+          "TAK-4"
+        ],
+        "TAK-4>TAK-5": null,
+        "TAK-4>TAK-6": null,
+        "TAK-4>TAK-7": null,
+        "TAK-4>TAK-8": null,
+        "TAK-4>TAK-9": null,
+        "TAK-5>TAK-1": [
+          "TAK-5",
+          "TAK-1"
+        ],
+        "TAK-5>TAK-2": null,
+        "TAK-5>TAK-3": [
+          "TAK-5",
+          "TAK-3"
+        ],
+        "TAK-5>TAK-4": [
+          "TAK-5",
+          "TAK-4"
+        ],
+        "TAK-5>TAK-5": [
+          "TAK-5"
+        ],
+        "TAK-5>TAK-6": [
+          "TAK-5",
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-5>TAK-7": null,
+        "TAK-5>TAK-8": null,
+        "TAK-5>TAK-9": null,
+        "TAK-6>TAK-1": null,
+        "TAK-6>TAK-2": null,
+        "TAK-6>TAK-3": null,
+        "TAK-6>TAK-4": null,
+        "TAK-6>TAK-5": null,
+        "TAK-6>TAK-6": [
+          "TAK-6"
+        ],
+        "TAK-6>TAK-7": null,
+        "TAK-6>TAK-8": null,
+        "TAK-6>TAK-9": null,
+        "TAK-7>TAK-1": [
+          "TAK-7",
+          "TAK-3",
+          "TAK-1"
+        ],
+        "TAK-7>TAK-2": [
+          "TAK-7",
+          "TAK-2"
+        ],
+        "TAK-7>TAK-3": [
+          "TAK-7",
+          "TAK-3"
+        ],
+        "TAK-7>TAK-4": [
+          "TAK-7",
+          "TAK-4"
+        ],
+        "TAK-7>TAK-5": [
+          "TAK-7",
+          "TAK-2",
+          "TAK-5"
+        ],
+        "TAK-7>TAK-6": [
+          "TAK-7",
+          "TAK-3",
+          "TAK-1",
+          "TAK-6"
+        ],
+        "TAK-7>TAK-7": [
+          "TAK-7"
+        ],
+        "TAK-7>TAK-8": null,
+        "TAK-7>TAK-9": null,
+        "TAK-8>TAK-1": [
+          "TAK-8",
+          "TAK-3",
+          "TAK-1"
+        ],
+        "TAK-8>TAK-2": null,
+        "TAK-8>TAK-3": [
+          "TAK-8",
+          "TAK-3"
+        ],
+        "TAK-8>TAK-4": [
+          "TAK-8",
+          "TAK-5",
+          "TAK-4"
+        ],
+        "TAK-8>TAK-5": [
+          "TAK-8",
+          "TAK-5"
+        ],
+        "TAK-8>TAK-6": [
+          "TAK-8",
+          "TAK-6"
+        ],
+        "TAK-8>TAK-7": null,
+        "TAK-8>TAK-8": [
+          "TAK-8"
+        ],
+        "TAK-8>TAK-9": null,
+        "TAK-9>TAK-1": null,
+        "TAK-9>TAK-2": null,
+        "TAK-9>TAK-3": null,
+        "TAK-9>TAK-4": null,
+        "TAK-9>TAK-5": null,
+        "TAK-9>TAK-6": null,
+        "TAK-9>TAK-7": null,
+        "TAK-9>TAK-8": null,
+        "TAK-9>TAK-9": [
+          "TAK-9"
+        ]
+      },
+      "ready": [
+        "TAK-4",
+        "TAK-9"
+      ],
+      "rollup": {
+        "TAK-1": {
+          "accepted": 1,
+          "by_status": {
+            "accepted": 1,
+            "backlog": 1
+          },
+          "progress": 0.5,
+          "total_descendants": 2
+        },
+        "TAK-2": null,
+        "TAK-3": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "blocked": 1,
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 3
+        },
+        "TAK-4": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAK-5": null,
+        "TAK-6": null,
+        "TAK-7": {
+          "accepted": 0,
+          "by_status": {
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAK-8": null,
+        "TAK-9": null
+      },
+      "satisfied": [
+        [
+          "TAK-1",
+          "TAK-6",
+          true
+        ],
+        [
+          "TAK-2",
+          "TAK-5",
+          false
+        ],
+        [
+          "TAK-3",
+          "TAK-1",
+          false
+        ],
+        [
+          "TAK-5",
+          "TAK-1",
+          false
+        ],
+        [
+          "TAK-5",
+          "TAK-3",
+          false
+        ],
+        [
+          "TAK-5",
+          "TAK-4",
+          false
+        ],
+        [
+          "TAK-7",
+          "TAK-2",
+          false
+        ],
+        [
+          "TAK-7",
+          "TAK-3",
+          false
+        ],
+        [
+          "TAK-7",
+          "TAK-4",
+          false
+        ],
+        [
+          "TAK-8",
+          "TAK-3",
+          false
+        ],
+        [
+          "TAK-8",
+          "TAK-5",
+          false
+        ],
+        [
+          "TAK-8",
+          "TAK-6",
+          true
+        ]
+      ],
+      "tasks": {
+        "TAK-1": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "parked",
+            "rho"
+          ]
+        },
+        "TAK-2": {
+          "archived": false,
+          "parent": "TAK-1",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAK-3": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAK-4": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": [
+            "parked"
+          ]
+        },
+        "TAK-5": {
+          "archived": false,
+          "parent": "TAK-3",
+          "status": "blocked",
+          "tags": [
+            "parked",
+            "rho"
+          ]
+        },
+        "TAK-6": {
+          "archived": false,
+          "parent": "TAK-1",
+          "status": "accepted",
+          "tags": []
+        },
+        "TAK-7": {
+          "archived": false,
+          "parent": "TAK-3",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAK-8": {
+          "archived": false,
+          "parent": "TAK-4",
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAK-9": {
+          "archived": false,
+          "parent": "TAK-7",
+          "status": "ready",
+          "tags": [
+            "rho"
+          ]
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAK-1": [],
+        "TAK-2": [
+          "TAK-5"
+        ],
+        "TAK-3": [
+          "TAK-1"
+        ],
+        "TAK-4": [],
+        "TAK-5": [
+          "TAK-1",
+          "TAK-3",
+          "TAK-4"
+        ],
+        "TAK-6": [],
+        "TAK-7": [
+          "TAK-2",
+          "TAK-3",
+          "TAK-4"
+        ],
+        "TAK-8": [
+          "TAK-3",
+          "TAK-5"
+        ],
+        "TAK-9": []
+      }
+    },
+    "dry_run": [],
+    "promoted": []
+  },
+  "seed": 4,
+  "source": "generated: random task graph",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "parked",
+        "rho"
+      ],
+      "title": "Task 0"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAK-1",
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 1"
+    },
+    {
+      "depends_on": [
+        "TAK-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 2"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "parked"
+      ],
+      "title": "Task 3"
+    },
+    {
+      "depends_on": [
+        "TAK-4",
+        "TAK-3",
+        "TAK-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAK-3",
+      "status": "ready",
+      "tags": [
+        "parked",
+        "rho"
+      ],
+      "title": "Task 4"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 5"
+    },
+    {
+      "depends_on": [
+        "TAK-3",
+        "TAK-4"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAK-4",
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 6"
+    },
+    {
+      "depends_on": [
+        "TAK-3",
+        "TAK-5",
+        "TAK-6"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAK-4",
+      "status": "ready",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 7"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAK-7",
+      "status": "ready",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 8"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAK-2 is backlog; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAK-2"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAK-5 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAK-5"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAK-5 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAK-5"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAK-5 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAK-5"
+    },
+    {
+      "op": "claim",
+      "outcome": "ok",
+      "task": "TAK-6"
+    },
+    {
+      "op": "complete",
+      "outcome": "ok",
+      "summary": "done",
+      "task": "TAK-6"
+    },
+    {
+      "op": "accept",
+      "outcome": "ok",
+      "task": "TAK-6"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAK-7 is backlog; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAK-7"
+    },
+    {
+      "depends_on": "TAK-6",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAK-1"
+    },
+    {
+      "depends_on": "TAK-5",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAK-2"
+    },
+    {
+      "depends_on": "TAK-1",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAK-6 -> TAK-1 would create a cycle: TAK-6 -> TAK-1 -> TAK-6"
+      },
+      "task": "TAK-6"
+    },
+    {
+      "depends_on": "TAK-5",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAK-6 -> TAK-5 would create a cycle: TAK-6 -> TAK-5 -> TAK-1 -> TAK-6"
+      },
+      "task": "TAK-6"
+    },
+    {
+      "depends_on": "TAK-3",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAK-6 -> TAK-3 would create a cycle: TAK-6 -> TAK-3 -> TAK-1 -> TAK-6"
+      },
+      "task": "TAK-6"
+    },
+    {
+      "depends_on": "TAK-2",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAK-7"
+    },
+    {
+      "depends_on": "TAK-4",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAK-5"
+    },
+    {
+      "depends_on": "TAK-5",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAK-8"
+    },
+    {
+      "op": "set_parent",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "setting TAK-5 as parent of TAK-3 would create a hierarchy cycle"
+      },
+      "parent": "TAK-5",
+      "task": "TAK-3"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAK-3",
+      "task": "TAK-7"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAK-1",
+      "task": "TAK-6"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAK-1",
+      "task": "TAK-6"
+    },
+    {
+      "depends_on": "TAK-1",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "a task cannot depend on itself"
+      },
+      "task": "TAK-1"
+    },
+    {
+      "dry_run": true,
+      "op": "promote_ready",
+      "outcome": "ok"
+    },
+    {
+      "dry_run": false,
+      "op": "promote_ready",
+      "outcome": "ok"
+    }
+  ]
+}

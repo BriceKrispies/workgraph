@@ -1,0 +1,2796 @@
+{
+  "case": "generated_03",
+  "observations": {
+    "after_promotion": {
+      "dependency_edges": [
+        [
+          "TAJ-2",
+          "TAJ-1"
+        ],
+        [
+          "TAJ-3",
+          "TAJ-1"
+        ],
+        [
+          "TAJ-3",
+          "TAJ-2"
+        ],
+        [
+          "TAJ-4",
+          "TAJ-1"
+        ],
+        [
+          "TAJ-4",
+          "TAJ-2"
+        ],
+        [
+          "TAJ-5",
+          "TAJ-4"
+        ],
+        [
+          "TAJ-5",
+          "TAJ-7"
+        ],
+        [
+          "TAJ-6",
+          "TAJ-2"
+        ],
+        [
+          "TAJ-6",
+          "TAJ-4"
+        ],
+        [
+          "TAJ-7",
+          "TAJ-2"
+        ],
+        [
+          "TAJ-7",
+          "TAJ-3"
+        ],
+        [
+          "TAJ-7",
+          "TAJ-4"
+        ],
+        [
+          "TAJ-7",
+          "TAJ-6"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-3"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-4"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-5"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-6"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-8"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-5>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-8>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-1>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-9>",
+              "target": "<task:TAJ-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-1>",
+              "key": "TAJ-1",
+              "parent_id": "<task:TAJ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-2>",
+              "key": "TAJ-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-3>",
+              "key": "TAJ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-4>",
+              "key": "TAJ-4",
+              "parent_id": "<task:TAJ-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-5>",
+              "key": "TAJ-5",
+              "parent_id": "<task:TAJ-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-6>",
+              "key": "TAJ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-7>",
+              "key": "TAJ-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-8>",
+              "key": "TAJ-8",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-9>",
+              "key": "TAJ-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-5>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-8>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-1>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-9>",
+              "target": "<task:TAJ-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-1>",
+              "key": "TAJ-1",
+              "parent_id": "<task:TAJ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-2>",
+              "key": "TAJ-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-3>",
+              "key": "TAJ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-4>",
+              "key": "TAJ-4",
+              "parent_id": "<task:TAJ-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-5>",
+              "key": "TAJ-5",
+              "parent_id": "<task:TAJ-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-6>",
+              "key": "TAJ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-7>",
+              "key": "TAJ-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-8>",
+              "key": "TAJ-8",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-9>",
+              "key": "TAJ-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-1>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-4>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-1>",
+              "key": "TAJ-1",
+              "parent_id": "<task:TAJ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-2>",
+              "key": "TAJ-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-3>",
+              "key": "TAJ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-4>",
+              "key": "TAJ-4",
+              "parent_id": "<task:TAJ-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-6>",
+              "key": "TAJ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-7>",
+              "key": "TAJ-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAJ-1>TAJ-1": true,
+        "TAJ-1>TAJ-2": false,
+        "TAJ-1>TAJ-3": false,
+        "TAJ-1>TAJ-4": false,
+        "TAJ-1>TAJ-5": false,
+        "TAJ-1>TAJ-6": false,
+        "TAJ-1>TAJ-7": false,
+        "TAJ-1>TAJ-8": false,
+        "TAJ-1>TAJ-9": false,
+        "TAJ-2>TAJ-1": true,
+        "TAJ-2>TAJ-2": true,
+        "TAJ-2>TAJ-3": false,
+        "TAJ-2>TAJ-4": false,
+        "TAJ-2>TAJ-5": false,
+        "TAJ-2>TAJ-6": false,
+        "TAJ-2>TAJ-7": false,
+        "TAJ-2>TAJ-8": false,
+        "TAJ-2>TAJ-9": false,
+        "TAJ-3>TAJ-1": false,
+        "TAJ-3>TAJ-2": false,
+        "TAJ-3>TAJ-3": true,
+        "TAJ-3>TAJ-4": false,
+        "TAJ-3>TAJ-5": false,
+        "TAJ-3>TAJ-6": false,
+        "TAJ-3>TAJ-7": false,
+        "TAJ-3>TAJ-8": false,
+        "TAJ-3>TAJ-9": false,
+        "TAJ-4>TAJ-1": false,
+        "TAJ-4>TAJ-2": false,
+        "TAJ-4>TAJ-3": false,
+        "TAJ-4>TAJ-4": true,
+        "TAJ-4>TAJ-5": false,
+        "TAJ-4>TAJ-6": false,
+        "TAJ-4>TAJ-7": false,
+        "TAJ-4>TAJ-8": false,
+        "TAJ-4>TAJ-9": false,
+        "TAJ-5>TAJ-1": false,
+        "TAJ-5>TAJ-2": false,
+        "TAJ-5>TAJ-3": false,
+        "TAJ-5>TAJ-4": false,
+        "TAJ-5>TAJ-5": true,
+        "TAJ-5>TAJ-6": false,
+        "TAJ-5>TAJ-7": false,
+        "TAJ-5>TAJ-8": false,
+        "TAJ-5>TAJ-9": false,
+        "TAJ-6>TAJ-1": false,
+        "TAJ-6>TAJ-2": false,
+        "TAJ-6>TAJ-3": false,
+        "TAJ-6>TAJ-4": false,
+        "TAJ-6>TAJ-5": false,
+        "TAJ-6>TAJ-6": true,
+        "TAJ-6>TAJ-7": false,
+        "TAJ-6>TAJ-8": false,
+        "TAJ-6>TAJ-9": false,
+        "TAJ-7>TAJ-1": false,
+        "TAJ-7>TAJ-2": false,
+        "TAJ-7>TAJ-3": false,
+        "TAJ-7>TAJ-4": true,
+        "TAJ-7>TAJ-5": false,
+        "TAJ-7>TAJ-6": false,
+        "TAJ-7>TAJ-7": true,
+        "TAJ-7>TAJ-8": false,
+        "TAJ-7>TAJ-9": false,
+        "TAJ-8>TAJ-1": false,
+        "TAJ-8>TAJ-2": false,
+        "TAJ-8>TAJ-3": false,
+        "TAJ-8>TAJ-4": false,
+        "TAJ-8>TAJ-5": false,
+        "TAJ-8>TAJ-6": false,
+        "TAJ-8>TAJ-7": false,
+        "TAJ-8>TAJ-8": true,
+        "TAJ-8>TAJ-9": false,
+        "TAJ-9>TAJ-1": false,
+        "TAJ-9>TAJ-2": false,
+        "TAJ-9>TAJ-3": false,
+        "TAJ-9>TAJ-4": false,
+        "TAJ-9>TAJ-5": true,
+        "TAJ-9>TAJ-6": false,
+        "TAJ-9>TAJ-7": false,
+        "TAJ-9>TAJ-8": false,
+        "TAJ-9>TAJ-9": true
+      },
+      "reachable_path": {
+        "TAJ-1>TAJ-1": [
+          "TAJ-1"
+        ],
+        "TAJ-1>TAJ-2": null,
+        "TAJ-1>TAJ-3": null,
+        "TAJ-1>TAJ-4": null,
+        "TAJ-1>TAJ-5": null,
+        "TAJ-1>TAJ-6": null,
+        "TAJ-1>TAJ-7": null,
+        "TAJ-1>TAJ-8": null,
+        "TAJ-1>TAJ-9": null,
+        "TAJ-2>TAJ-1": [
+          "TAJ-2",
+          "TAJ-1"
+        ],
+        "TAJ-2>TAJ-2": [
+          "TAJ-2"
+        ],
+        "TAJ-2>TAJ-3": null,
+        "TAJ-2>TAJ-4": null,
+        "TAJ-2>TAJ-5": null,
+        "TAJ-2>TAJ-6": null,
+        "TAJ-2>TAJ-7": null,
+        "TAJ-2>TAJ-8": null,
+        "TAJ-2>TAJ-9": null,
+        "TAJ-3>TAJ-1": [
+          "TAJ-3",
+          "TAJ-1"
+        ],
+        "TAJ-3>TAJ-2": [
+          "TAJ-3",
+          "TAJ-2"
+        ],
+        "TAJ-3>TAJ-3": [
+          "TAJ-3"
+        ],
+        "TAJ-3>TAJ-4": null,
+        "TAJ-3>TAJ-5": null,
+        "TAJ-3>TAJ-6": null,
+        "TAJ-3>TAJ-7": null,
+        "TAJ-3>TAJ-8": null,
+        "TAJ-3>TAJ-9": null,
+        "TAJ-4>TAJ-1": [
+          "TAJ-4",
+          "TAJ-1"
+        ],
+        "TAJ-4>TAJ-2": [
+          "TAJ-4",
+          "TAJ-2"
+        ],
+        "TAJ-4>TAJ-3": null,
+        "TAJ-4>TAJ-4": [
+          "TAJ-4"
+        ],
+        "TAJ-4>TAJ-5": null,
+        "TAJ-4>TAJ-6": null,
+        "TAJ-4>TAJ-7": null,
+        "TAJ-4>TAJ-8": null,
+        "TAJ-4>TAJ-9": null,
+        "TAJ-5>TAJ-1": [
+          "TAJ-5",
+          "TAJ-4",
+          "TAJ-1"
+        ],
+        "TAJ-5>TAJ-2": [
+          "TAJ-5",
+          "TAJ-4",
+          "TAJ-2"
+        ],
+        "TAJ-5>TAJ-3": [
+          "TAJ-5",
+          "TAJ-7",
+          "TAJ-3"
+        ],
+        "TAJ-5>TAJ-4": [
+          "TAJ-5",
+          "TAJ-4"
+        ],
+        "TAJ-5>TAJ-5": [
+          "TAJ-5"
+        ],
+        "TAJ-5>TAJ-6": [
+          "TAJ-5",
+          "TAJ-7",
+          "TAJ-6"
+        ],
+        "TAJ-5>TAJ-7": [
+          "TAJ-5",
+          "TAJ-7"
+        ],
+        "TAJ-5>TAJ-8": null,
+        "TAJ-5>TAJ-9": null,
+        "TAJ-6>TAJ-1": [
+          "TAJ-6",
+          "TAJ-2",
+          "TAJ-1"
+        ],
+        "TAJ-6>TAJ-2": [
+          "TAJ-6",
+          "TAJ-2"
+        ],
+        "TAJ-6>TAJ-3": null,
+        "TAJ-6>TAJ-4": [
+          "TAJ-6",
+          "TAJ-4"
+        ],
+        "TAJ-6>TAJ-5": null,
+        "TAJ-6>TAJ-6": [
+          "TAJ-6"
+        ],
+        "TAJ-6>TAJ-7": null,
+        "TAJ-6>TAJ-8": null,
+        "TAJ-6>TAJ-9": null,
+        "TAJ-7>TAJ-1": [
+          "TAJ-7",
+          "TAJ-2",
+          "TAJ-1"
+        ],
+        "TAJ-7>TAJ-2": [
+          "TAJ-7",
+          "TAJ-2"
+        ],
+        "TAJ-7>TAJ-3": [
+          "TAJ-7",
+          "TAJ-3"
+        ],
+        "TAJ-7>TAJ-4": [
+          "TAJ-7",
+          "TAJ-4"
+        ],
+        "TAJ-7>TAJ-5": null,
+        "TAJ-7>TAJ-6": [
+          "TAJ-7",
+          "TAJ-6"
+        ],
+        "TAJ-7>TAJ-7": [
+          "TAJ-7"
+        ],
+        "TAJ-7>TAJ-8": null,
+        "TAJ-7>TAJ-9": null,
+        "TAJ-8>TAJ-1": null,
+        "TAJ-8>TAJ-2": null,
+        "TAJ-8>TAJ-3": null,
+        "TAJ-8>TAJ-4": null,
+        "TAJ-8>TAJ-5": null,
+        "TAJ-8>TAJ-6": null,
+        "TAJ-8>TAJ-7": null,
+        "TAJ-8>TAJ-8": [
+          "TAJ-8"
+        ],
+        "TAJ-8>TAJ-9": null,
+        "TAJ-9>TAJ-1": [
+          "TAJ-9",
+          "TAJ-3",
+          "TAJ-1"
+        ],
+        "TAJ-9>TAJ-2": [
+          "TAJ-9",
+          "TAJ-3",
+          "TAJ-2"
+        ],
+        "TAJ-9>TAJ-3": [
+          "TAJ-9",
+          "TAJ-3"
+        ],
+        "TAJ-9>TAJ-4": [
+          "TAJ-9",
+          "TAJ-4"
+        ],
+        "TAJ-9>TAJ-5": [
+          "TAJ-9",
+          "TAJ-5"
+        ],
+        "TAJ-9>TAJ-6": [
+          "TAJ-9",
+          "TAJ-6"
+        ],
+        "TAJ-9>TAJ-7": [
+          "TAJ-9",
+          "TAJ-5",
+          "TAJ-7"
+        ],
+        "TAJ-9>TAJ-8": [
+          "TAJ-9",
+          "TAJ-8"
+        ],
+        "TAJ-9>TAJ-9": [
+          "TAJ-9"
+        ]
+      },
+      "ready": [
+        "TAJ-1",
+        "TAJ-8"
+      ],
+      "rollup": {
+        "TAJ-1": null,
+        "TAJ-2": {
+          "accepted": 0,
+          "by_status": {
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAJ-3": null,
+        "TAJ-4": null,
+        "TAJ-5": null,
+        "TAJ-6": null,
+        "TAJ-7": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAJ-8": null,
+        "TAJ-9": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        }
+      },
+      "satisfied": [
+        [
+          "TAJ-2",
+          "TAJ-1",
+          false
+        ],
+        [
+          "TAJ-3",
+          "TAJ-1",
+          false
+        ],
+        [
+          "TAJ-3",
+          "TAJ-2",
+          false
+        ],
+        [
+          "TAJ-4",
+          "TAJ-1",
+          false
+        ],
+        [
+          "TAJ-4",
+          "TAJ-2",
+          false
+        ],
+        [
+          "TAJ-5",
+          "TAJ-4",
+          false
+        ],
+        [
+          "TAJ-5",
+          "TAJ-7",
+          false
+        ],
+        [
+          "TAJ-6",
+          "TAJ-2",
+          false
+        ],
+        [
+          "TAJ-6",
+          "TAJ-4",
+          false
+        ],
+        [
+          "TAJ-7",
+          "TAJ-2",
+          false
+        ],
+        [
+          "TAJ-7",
+          "TAJ-3",
+          false
+        ],
+        [
+          "TAJ-7",
+          "TAJ-4",
+          false
+        ],
+        [
+          "TAJ-7",
+          "TAJ-6",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-3",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-4",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-5",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-6",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-8",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAJ-1": {
+          "archived": false,
+          "parent": "TAJ-2",
+          "status": "ready",
+          "tags": []
+        },
+        "TAJ-2": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAJ-3": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAJ-4": {
+          "archived": false,
+          "parent": "TAJ-7",
+          "status": "blocked",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAJ-5": {
+          "archived": false,
+          "parent": "TAJ-9",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAJ-6": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "area:x",
+            "rho"
+          ]
+        },
+        "TAJ-7": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        },
+        "TAJ-8": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": []
+        },
+        "TAJ-9": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAJ-1": [],
+        "TAJ-2": [
+          "TAJ-1"
+        ],
+        "TAJ-3": [
+          "TAJ-1",
+          "TAJ-2"
+        ],
+        "TAJ-4": [
+          "TAJ-1",
+          "TAJ-2"
+        ],
+        "TAJ-5": [
+          "TAJ-4",
+          "TAJ-7"
+        ],
+        "TAJ-6": [
+          "TAJ-2",
+          "TAJ-4"
+        ],
+        "TAJ-7": [
+          "TAJ-2",
+          "TAJ-3",
+          "TAJ-4",
+          "TAJ-6"
+        ],
+        "TAJ-8": [],
+        "TAJ-9": [
+          "TAJ-3",
+          "TAJ-4",
+          "TAJ-5",
+          "TAJ-6",
+          "TAJ-8"
+        ]
+      }
+    },
+    "before_promotion": {
+      "dependency_edges": [
+        [
+          "TAJ-2",
+          "TAJ-1"
+        ],
+        [
+          "TAJ-3",
+          "TAJ-1"
+        ],
+        [
+          "TAJ-3",
+          "TAJ-2"
+        ],
+        [
+          "TAJ-4",
+          "TAJ-1"
+        ],
+        [
+          "TAJ-4",
+          "TAJ-2"
+        ],
+        [
+          "TAJ-5",
+          "TAJ-4"
+        ],
+        [
+          "TAJ-5",
+          "TAJ-7"
+        ],
+        [
+          "TAJ-6",
+          "TAJ-2"
+        ],
+        [
+          "TAJ-6",
+          "TAJ-4"
+        ],
+        [
+          "TAJ-7",
+          "TAJ-2"
+        ],
+        [
+          "TAJ-7",
+          "TAJ-3"
+        ],
+        [
+          "TAJ-7",
+          "TAJ-4"
+        ],
+        [
+          "TAJ-7",
+          "TAJ-6"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-3"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-4"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-5"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-6"
+        ],
+        [
+          "TAJ-9",
+          "TAJ-8"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-5>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-8>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-1>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-9>",
+              "target": "<task:TAJ-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-1>",
+              "key": "TAJ-1",
+              "parent_id": "<task:TAJ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-2>",
+              "key": "TAJ-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-3>",
+              "key": "TAJ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-4>",
+              "key": "TAJ-4",
+              "parent_id": "<task:TAJ-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-5>",
+              "key": "TAJ-5",
+              "parent_id": "<task:TAJ-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-6>",
+              "key": "TAJ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-7>",
+              "key": "TAJ-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-8>",
+              "key": "TAJ-8",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-9>",
+              "key": "TAJ-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-5>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-8>",
+              "target": "<task:TAJ-9>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-1>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-9>",
+              "target": "<task:TAJ-5>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-1>",
+              "key": "TAJ-1",
+              "parent_id": "<task:TAJ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-2>",
+              "key": "TAJ-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-3>",
+              "key": "TAJ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-4>",
+              "key": "TAJ-4",
+              "parent_id": "<task:TAJ-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-5>",
+              "key": "TAJ-5",
+              "parent_id": "<task:TAJ-9>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-6>",
+              "key": "TAJ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-7>",
+              "key": "TAJ-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-8>",
+              "key": "TAJ-8",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 7"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-9>",
+              "key": "TAJ-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-1>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-3>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-4>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAJ-6>",
+              "target": "<task:TAJ-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-2>",
+              "target": "<task:TAJ-1>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAJ-7>",
+              "target": "<task:TAJ-4>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAJ-1>",
+              "key": "TAJ-1",
+              "parent_id": "<task:TAJ-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-2>",
+              "key": "TAJ-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-3>",
+              "key": "TAJ-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-4>",
+              "key": "TAJ-4",
+              "parent_id": "<task:TAJ-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-6>",
+              "key": "TAJ-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAJ-7>",
+              "key": "TAJ-7",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAJ-1>TAJ-1": true,
+        "TAJ-1>TAJ-2": false,
+        "TAJ-1>TAJ-3": false,
+        "TAJ-1>TAJ-4": false,
+        "TAJ-1>TAJ-5": false,
+        "TAJ-1>TAJ-6": false,
+        "TAJ-1>TAJ-7": false,
+        "TAJ-1>TAJ-8": false,
+        "TAJ-1>TAJ-9": false,
+        "TAJ-2>TAJ-1": true,
+        "TAJ-2>TAJ-2": true,
+        "TAJ-2>TAJ-3": false,
+        "TAJ-2>TAJ-4": false,
+        "TAJ-2>TAJ-5": false,
+        "TAJ-2>TAJ-6": false,
+        "TAJ-2>TAJ-7": false,
+        "TAJ-2>TAJ-8": false,
+        "TAJ-2>TAJ-9": false,
+        "TAJ-3>TAJ-1": false,
+        "TAJ-3>TAJ-2": false,
+        "TAJ-3>TAJ-3": true,
+        "TAJ-3>TAJ-4": false,
+        "TAJ-3>TAJ-5": false,
+        "TAJ-3>TAJ-6": false,
+        "TAJ-3>TAJ-7": false,
+        "TAJ-3>TAJ-8": false,
+        "TAJ-3>TAJ-9": false,
+        "TAJ-4>TAJ-1": false,
+        "TAJ-4>TAJ-2": false,
+        "TAJ-4>TAJ-3": false,
+        "TAJ-4>TAJ-4": true,
+        "TAJ-4>TAJ-5": false,
+        "TAJ-4>TAJ-6": false,
+        "TAJ-4>TAJ-7": false,
+        "TAJ-4>TAJ-8": false,
+        "TAJ-4>TAJ-9": false,
+        "TAJ-5>TAJ-1": false,
+        "TAJ-5>TAJ-2": false,
+        "TAJ-5>TAJ-3": false,
+        "TAJ-5>TAJ-4": false,
+        "TAJ-5>TAJ-5": true,
+        "TAJ-5>TAJ-6": false,
+        "TAJ-5>TAJ-7": false,
+        "TAJ-5>TAJ-8": false,
+        "TAJ-5>TAJ-9": false,
+        "TAJ-6>TAJ-1": false,
+        "TAJ-6>TAJ-2": false,
+        "TAJ-6>TAJ-3": false,
+        "TAJ-6>TAJ-4": false,
+        "TAJ-6>TAJ-5": false,
+        "TAJ-6>TAJ-6": true,
+        "TAJ-6>TAJ-7": false,
+        "TAJ-6>TAJ-8": false,
+        "TAJ-6>TAJ-9": false,
+        "TAJ-7>TAJ-1": false,
+        "TAJ-7>TAJ-2": false,
+        "TAJ-7>TAJ-3": false,
+        "TAJ-7>TAJ-4": true,
+        "TAJ-7>TAJ-5": false,
+        "TAJ-7>TAJ-6": false,
+        "TAJ-7>TAJ-7": true,
+        "TAJ-7>TAJ-8": false,
+        "TAJ-7>TAJ-9": false,
+        "TAJ-8>TAJ-1": false,
+        "TAJ-8>TAJ-2": false,
+        "TAJ-8>TAJ-3": false,
+        "TAJ-8>TAJ-4": false,
+        "TAJ-8>TAJ-5": false,
+        "TAJ-8>TAJ-6": false,
+        "TAJ-8>TAJ-7": false,
+        "TAJ-8>TAJ-8": true,
+        "TAJ-8>TAJ-9": false,
+        "TAJ-9>TAJ-1": false,
+        "TAJ-9>TAJ-2": false,
+        "TAJ-9>TAJ-3": false,
+        "TAJ-9>TAJ-4": false,
+        "TAJ-9>TAJ-5": true,
+        "TAJ-9>TAJ-6": false,
+        "TAJ-9>TAJ-7": false,
+        "TAJ-9>TAJ-8": false,
+        "TAJ-9>TAJ-9": true
+      },
+      "reachable_path": {
+        "TAJ-1>TAJ-1": [
+          "TAJ-1"
+        ],
+        "TAJ-1>TAJ-2": null,
+        "TAJ-1>TAJ-3": null,
+        "TAJ-1>TAJ-4": null,
+        "TAJ-1>TAJ-5": null,
+        "TAJ-1>TAJ-6": null,
+        "TAJ-1>TAJ-7": null,
+        "TAJ-1>TAJ-8": null,
+        "TAJ-1>TAJ-9": null,
+        "TAJ-2>TAJ-1": [
+          "TAJ-2",
+          "TAJ-1"
+        ],
+        "TAJ-2>TAJ-2": [
+          "TAJ-2"
+        ],
+        "TAJ-2>TAJ-3": null,
+        "TAJ-2>TAJ-4": null,
+        "TAJ-2>TAJ-5": null,
+        "TAJ-2>TAJ-6": null,
+        "TAJ-2>TAJ-7": null,
+        "TAJ-2>TAJ-8": null,
+        "TAJ-2>TAJ-9": null,
+        "TAJ-3>TAJ-1": [
+          "TAJ-3",
+          "TAJ-1"
+        ],
+        "TAJ-3>TAJ-2": [
+          "TAJ-3",
+          "TAJ-2"
+        ],
+        "TAJ-3>TAJ-3": [
+          "TAJ-3"
+        ],
+        "TAJ-3>TAJ-4": null,
+        "TAJ-3>TAJ-5": null,
+        "TAJ-3>TAJ-6": null,
+        "TAJ-3>TAJ-7": null,
+        "TAJ-3>TAJ-8": null,
+        "TAJ-3>TAJ-9": null,
+        "TAJ-4>TAJ-1": [
+          "TAJ-4",
+          "TAJ-1"
+        ],
+        "TAJ-4>TAJ-2": [
+          "TAJ-4",
+          "TAJ-2"
+        ],
+        "TAJ-4>TAJ-3": null,
+        "TAJ-4>TAJ-4": [
+          "TAJ-4"
+        ],
+        "TAJ-4>TAJ-5": null,
+        "TAJ-4>TAJ-6": null,
+        "TAJ-4>TAJ-7": null,
+        "TAJ-4>TAJ-8": null,
+        "TAJ-4>TAJ-9": null,
+        "TAJ-5>TAJ-1": [
+          "TAJ-5",
+          "TAJ-4",
+          "TAJ-1"
+        ],
+        "TAJ-5>TAJ-2": [
+          "TAJ-5",
+          "TAJ-4",
+          "TAJ-2"
+        ],
+        "TAJ-5>TAJ-3": [
+          "TAJ-5",
+          "TAJ-7",
+          "TAJ-3"
+        ],
+        "TAJ-5>TAJ-4": [
+          "TAJ-5",
+          "TAJ-4"
+        ],
+        "TAJ-5>TAJ-5": [
+          "TAJ-5"
+        ],
+        "TAJ-5>TAJ-6": [
+          "TAJ-5",
+          "TAJ-7",
+          "TAJ-6"
+        ],
+        "TAJ-5>TAJ-7": [
+          "TAJ-5",
+          "TAJ-7"
+        ],
+        "TAJ-5>TAJ-8": null,
+        "TAJ-5>TAJ-9": null,
+        "TAJ-6>TAJ-1": [
+          "TAJ-6",
+          "TAJ-2",
+          "TAJ-1"
+        ],
+        "TAJ-6>TAJ-2": [
+          "TAJ-6",
+          "TAJ-2"
+        ],
+        "TAJ-6>TAJ-3": null,
+        "TAJ-6>TAJ-4": [
+          "TAJ-6",
+          "TAJ-4"
+        ],
+        "TAJ-6>TAJ-5": null,
+        "TAJ-6>TAJ-6": [
+          "TAJ-6"
+        ],
+        "TAJ-6>TAJ-7": null,
+        "TAJ-6>TAJ-8": null,
+        "TAJ-6>TAJ-9": null,
+        "TAJ-7>TAJ-1": [
+          "TAJ-7",
+          "TAJ-2",
+          "TAJ-1"
+        ],
+        "TAJ-7>TAJ-2": [
+          "TAJ-7",
+          "TAJ-2"
+        ],
+        "TAJ-7>TAJ-3": [
+          "TAJ-7",
+          "TAJ-3"
+        ],
+        "TAJ-7>TAJ-4": [
+          "TAJ-7",
+          "TAJ-4"
+        ],
+        "TAJ-7>TAJ-5": null,
+        "TAJ-7>TAJ-6": [
+          "TAJ-7",
+          "TAJ-6"
+        ],
+        "TAJ-7>TAJ-7": [
+          "TAJ-7"
+        ],
+        "TAJ-7>TAJ-8": null,
+        "TAJ-7>TAJ-9": null,
+        "TAJ-8>TAJ-1": null,
+        "TAJ-8>TAJ-2": null,
+        "TAJ-8>TAJ-3": null,
+        "TAJ-8>TAJ-4": null,
+        "TAJ-8>TAJ-5": null,
+        "TAJ-8>TAJ-6": null,
+        "TAJ-8>TAJ-7": null,
+        "TAJ-8>TAJ-8": [
+          "TAJ-8"
+        ],
+        "TAJ-8>TAJ-9": null,
+        "TAJ-9>TAJ-1": [
+          "TAJ-9",
+          "TAJ-3",
+          "TAJ-1"
+        ],
+        "TAJ-9>TAJ-2": [
+          "TAJ-9",
+          "TAJ-3",
+          "TAJ-2"
+        ],
+        "TAJ-9>TAJ-3": [
+          "TAJ-9",
+          "TAJ-3"
+        ],
+        "TAJ-9>TAJ-4": [
+          "TAJ-9",
+          "TAJ-4"
+        ],
+        "TAJ-9>TAJ-5": [
+          "TAJ-9",
+          "TAJ-5"
+        ],
+        "TAJ-9>TAJ-6": [
+          "TAJ-9",
+          "TAJ-6"
+        ],
+        "TAJ-9>TAJ-7": [
+          "TAJ-9",
+          "TAJ-5",
+          "TAJ-7"
+        ],
+        "TAJ-9>TAJ-8": [
+          "TAJ-9",
+          "TAJ-8"
+        ],
+        "TAJ-9>TAJ-9": [
+          "TAJ-9"
+        ]
+      },
+      "ready": [
+        "TAJ-1",
+        "TAJ-8"
+      ],
+      "rollup": {
+        "TAJ-1": null,
+        "TAJ-2": {
+          "accepted": 0,
+          "by_status": {
+            "ready": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAJ-3": null,
+        "TAJ-4": null,
+        "TAJ-5": null,
+        "TAJ-6": null,
+        "TAJ-7": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAJ-8": null,
+        "TAJ-9": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        }
+      },
+      "satisfied": [
+        [
+          "TAJ-2",
+          "TAJ-1",
+          false
+        ],
+        [
+          "TAJ-3",
+          "TAJ-1",
+          false
+        ],
+        [
+          "TAJ-3",
+          "TAJ-2",
+          false
+        ],
+        [
+          "TAJ-4",
+          "TAJ-1",
+          false
+        ],
+        [
+          "TAJ-4",
+          "TAJ-2",
+          false
+        ],
+        [
+          "TAJ-5",
+          "TAJ-4",
+          false
+        ],
+        [
+          "TAJ-5",
+          "TAJ-7",
+          false
+        ],
+        [
+          "TAJ-6",
+          "TAJ-2",
+          false
+        ],
+        [
+          "TAJ-6",
+          "TAJ-4",
+          false
+        ],
+        [
+          "TAJ-7",
+          "TAJ-2",
+          false
+        ],
+        [
+          "TAJ-7",
+          "TAJ-3",
+          false
+        ],
+        [
+          "TAJ-7",
+          "TAJ-4",
+          false
+        ],
+        [
+          "TAJ-7",
+          "TAJ-6",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-3",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-4",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-5",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-6",
+          false
+        ],
+        [
+          "TAJ-9",
+          "TAJ-8",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAJ-1": {
+          "archived": false,
+          "parent": "TAJ-2",
+          "status": "ready",
+          "tags": []
+        },
+        "TAJ-2": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAJ-3": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAJ-4": {
+          "archived": false,
+          "parent": "TAJ-7",
+          "status": "blocked",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAJ-5": {
+          "archived": false,
+          "parent": "TAJ-9",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAJ-6": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "area:x",
+            "rho"
+          ]
+        },
+        "TAJ-7": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        },
+        "TAJ-8": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": []
+        },
+        "TAJ-9": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAJ-1": [],
+        "TAJ-2": [
+          "TAJ-1"
+        ],
+        "TAJ-3": [
+          "TAJ-1",
+          "TAJ-2"
+        ],
+        "TAJ-4": [
+          "TAJ-1",
+          "TAJ-2"
+        ],
+        "TAJ-5": [
+          "TAJ-4",
+          "TAJ-7"
+        ],
+        "TAJ-6": [
+          "TAJ-2",
+          "TAJ-4"
+        ],
+        "TAJ-7": [
+          "TAJ-2",
+          "TAJ-3",
+          "TAJ-4",
+          "TAJ-6"
+        ],
+        "TAJ-8": [],
+        "TAJ-9": [
+          "TAJ-3",
+          "TAJ-4",
+          "TAJ-5",
+          "TAJ-6",
+          "TAJ-8"
+        ]
+      }
+    },
+    "dry_run": [],
+    "promoted": []
+  },
+  "seed": 3,
+  "source": "generated: random task graph",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 0"
+    },
+    {
+      "depends_on": [
+        "TAJ-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 1"
+    },
+    {
+      "depends_on": [
+        "TAJ-2"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 2"
+    },
+    {
+      "depends_on": [
+        "TAJ-2",
+        "TAJ-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 3"
+    },
+    {
+      "depends_on": [
+        "TAJ-4"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAJ-1",
+      "status": "ready",
+      "tags": [],
+      "title": "Task 4"
+    },
+    {
+      "depends_on": [
+        "TAJ-4",
+        "TAJ-2"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "area:x",
+        "rho"
+      ],
+      "title": "Task 5"
+    },
+    {
+      "depends_on": [
+        "TAJ-4",
+        "TAJ-3",
+        "TAJ-6"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 6"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 7"
+    },
+    {
+      "depends_on": [
+        "TAJ-3",
+        "TAJ-6",
+        "TAJ-8"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 8"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAJ-4 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAJ-4"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAJ-4 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAJ-4"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAJ-4 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAJ-4"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAJ-5 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAJ-5"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAJ-5 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAJ-5"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAJ-5 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAJ-5"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAJ-9 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAJ-9"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAJ-9 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAJ-9"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAJ-9 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAJ-9"
+    },
+    {
+      "depends_on": "TAJ-1",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAJ-3"
+    },
+    {
+      "depends_on": "TAJ-7",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAJ-5"
+    },
+    {
+      "depends_on": "TAJ-2",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAJ-7"
+    },
+    {
+      "depends_on": "TAJ-9",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAJ-1 -> TAJ-9 would create a cycle: TAJ-1 -> TAJ-9 -> TAJ-3 -> TAJ-1"
+      },
+      "task": "TAJ-1"
+    },
+    {
+      "depends_on": "TAJ-6",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAJ-7"
+    },
+    {
+      "depends_on": "TAJ-5",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAJ-9"
+    },
+    {
+      "depends_on": "TAJ-4",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAJ-9"
+    },
+    {
+      "depends_on": "TAJ-5",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAJ-1 -> TAJ-5 would create a cycle: TAJ-1 -> TAJ-5 -> TAJ-4 -> TAJ-1"
+      },
+      "task": "TAJ-1"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAJ-2",
+      "task": "TAJ-1"
+    },
+    {
+      "op": "set_parent",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "setting TAJ-1 as parent of TAJ-2 would create a hierarchy cycle"
+      },
+      "parent": "TAJ-1",
+      "task": "TAJ-2"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAJ-7",
+      "task": "TAJ-4"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAJ-9",
+      "task": "TAJ-5"
+    },
+    {
+      "depends_on": "TAJ-1",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "a task cannot depend on itself"
+      },
+      "task": "TAJ-1"
+    },
+    {
+      "dry_run": true,
+      "op": "promote_ready",
+      "outcome": "ok"
+    },
+    {
+      "dry_run": false,
+      "op": "promote_ready",
+      "outcome": "ok"
+    }
+  ]
+}

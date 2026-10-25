@@ -1,0 +1,246 @@
+{
+  "case": "graph_basic",
+  "observations": {
+    "observed": {
+      "dependency_edges": [
+        [
+          "TAF-2",
+          "TAF-1"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAF-1>",
+              "target": "<task:TAF-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAF-1>",
+              "target": "<task:TAF-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAF-1>",
+              "key": "TAF-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAF-2>",
+              "key": "TAF-2",
+              "parent_id": "<task:TAF-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "B"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAF-1>",
+              "target": "<task:TAF-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAF-1>",
+              "target": "<task:TAF-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAF-1>",
+              "key": "TAF-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAF-2>",
+              "key": "TAF-2",
+              "parent_id": "<task:TAF-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "B"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAF-1>",
+              "target": "<task:TAF-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAF-1>",
+              "target": "<task:TAF-2>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAF-1>",
+              "key": "TAF-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "ready",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAF-2>",
+              "key": "TAF-2",
+              "parent_id": "<task:TAF-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "area:x",
+                "rho"
+              ],
+              "title": "B"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAF-1>TAF-1": true,
+        "TAF-1>TAF-2": true,
+        "TAF-2>TAF-1": false,
+        "TAF-2>TAF-2": true
+      },
+      "reachable_path": {
+        "TAF-1>TAF-1": [
+          "TAF-1"
+        ],
+        "TAF-1>TAF-2": null,
+        "TAF-2>TAF-1": [
+          "TAF-2",
+          "TAF-1"
+        ],
+        "TAF-2>TAF-2": [
+          "TAF-2"
+        ]
+      },
+      "ready": [
+        "TAF-1"
+      ],
+      "rollup": {
+        "TAF-1": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAF-2": null
+      },
+      "satisfied": [
+        [
+          "TAF-2",
+          "TAF-1",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAF-1": {
+          "archived": false,
+          "parent": null,
+          "status": "ready",
+          "tags": []
+        },
+        "TAF-2": {
+          "archived": false,
+          "parent": "TAF-1",
+          "status": "blocked",
+          "tags": [
+            "area:x",
+            "rho"
+          ]
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAF-1": [],
+        "TAF-2": [
+          "TAF-1"
+        ]
+      }
+    }
+  },
+  "seed": null,
+  "source": "tests/unit/test_tasks_core.py::test_graph",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "A"
+    },
+    {
+      "depends_on": [
+        "TAF-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAF-1",
+      "status": "ready",
+      "tags": [
+        "area:x",
+        "rho"
+      ],
+      "title": "B"
+    }
+  ]
+}

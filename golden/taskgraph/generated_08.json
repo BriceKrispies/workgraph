@@ -1,0 +1,2643 @@
+{
+  "case": "generated_08",
+  "observations": {
+    "after_promotion": {
+      "dependency_edges": [
+        [
+          "TAO-2",
+          "TAO-1"
+        ],
+        [
+          "TAO-3",
+          "TAO-1"
+        ],
+        [
+          "TAO-4",
+          "TAO-3"
+        ],
+        [
+          "TAO-5",
+          "TAO-1"
+        ],
+        [
+          "TAO-5",
+          "TAO-2"
+        ],
+        [
+          "TAO-6",
+          "TAO-2"
+        ],
+        [
+          "TAO-6",
+          "TAO-3"
+        ],
+        [
+          "TAO-6",
+          "TAO-5"
+        ],
+        [
+          "TAO-7",
+          "TAO-2"
+        ],
+        [
+          "TAO-7",
+          "TAO-4"
+        ],
+        [
+          "TAO-7",
+          "TAO-6"
+        ],
+        [
+          "TAO-8",
+          "TAO-1"
+        ],
+        [
+          "TAO-8",
+          "TAO-5"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-4>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-6>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-7>",
+              "target": "<task:TAO-8>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAO-1>",
+              "key": "TAO-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-2>",
+              "key": "TAO-2",
+              "parent_id": "<task:TAO-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-3>",
+              "key": "TAO-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-4>",
+              "key": "TAO-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-5>",
+              "key": "TAO-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-6>",
+              "key": "TAO-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-7>",
+              "key": "TAO-7",
+              "parent_id": "<task:TAO-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-8>",
+              "key": "TAO-8",
+              "parent_id": "<task:TAO-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 7"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAO-9>",
+              "key": "TAO-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-4>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-6>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-7>",
+              "target": "<task:TAO-8>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAO-1>",
+              "key": "TAO-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-2>",
+              "key": "TAO-2",
+              "parent_id": "<task:TAO-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-3>",
+              "key": "TAO-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-4>",
+              "key": "TAO-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-5>",
+              "key": "TAO-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-6>",
+              "key": "TAO-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-7>",
+              "key": "TAO-7",
+              "parent_id": "<task:TAO-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-8>",
+              "key": "TAO-8",
+              "parent_id": "<task:TAO-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 7"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-4>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-6>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-7>",
+              "target": "<task:TAO-8>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAO-1>",
+              "key": "TAO-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-2>",
+              "key": "TAO-2",
+              "parent_id": "<task:TAO-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-3>",
+              "key": "TAO-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-4>",
+              "key": "TAO-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-5>",
+              "key": "TAO-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-6>",
+              "key": "TAO-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-7>",
+              "key": "TAO-7",
+              "parent_id": "<task:TAO-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-8>",
+              "key": "TAO-8",
+              "parent_id": "<task:TAO-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 7"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAO-1>TAO-1": true,
+        "TAO-1>TAO-2": true,
+        "TAO-1>TAO-3": false,
+        "TAO-1>TAO-4": false,
+        "TAO-1>TAO-5": false,
+        "TAO-1>TAO-6": false,
+        "TAO-1>TAO-7": true,
+        "TAO-1>TAO-8": true,
+        "TAO-1>TAO-9": false,
+        "TAO-2>TAO-1": false,
+        "TAO-2>TAO-2": true,
+        "TAO-2>TAO-3": false,
+        "TAO-2>TAO-4": false,
+        "TAO-2>TAO-5": false,
+        "TAO-2>TAO-6": false,
+        "TAO-2>TAO-7": true,
+        "TAO-2>TAO-8": true,
+        "TAO-2>TAO-9": false,
+        "TAO-3>TAO-1": false,
+        "TAO-3>TAO-2": false,
+        "TAO-3>TAO-3": true,
+        "TAO-3>TAO-4": false,
+        "TAO-3>TAO-5": false,
+        "TAO-3>TAO-6": false,
+        "TAO-3>TAO-7": false,
+        "TAO-3>TAO-8": false,
+        "TAO-3>TAO-9": false,
+        "TAO-4>TAO-1": false,
+        "TAO-4>TAO-2": false,
+        "TAO-4>TAO-3": false,
+        "TAO-4>TAO-4": true,
+        "TAO-4>TAO-5": false,
+        "TAO-4>TAO-6": false,
+        "TAO-4>TAO-7": false,
+        "TAO-4>TAO-8": false,
+        "TAO-4>TAO-9": false,
+        "TAO-5>TAO-1": false,
+        "TAO-5>TAO-2": false,
+        "TAO-5>TAO-3": false,
+        "TAO-5>TAO-4": false,
+        "TAO-5>TAO-5": true,
+        "TAO-5>TAO-6": false,
+        "TAO-5>TAO-7": false,
+        "TAO-5>TAO-8": false,
+        "TAO-5>TAO-9": false,
+        "TAO-6>TAO-1": false,
+        "TAO-6>TAO-2": false,
+        "TAO-6>TAO-3": false,
+        "TAO-6>TAO-4": false,
+        "TAO-6>TAO-5": false,
+        "TAO-6>TAO-6": true,
+        "TAO-6>TAO-7": false,
+        "TAO-6>TAO-8": false,
+        "TAO-6>TAO-9": false,
+        "TAO-7>TAO-1": false,
+        "TAO-7>TAO-2": false,
+        "TAO-7>TAO-3": false,
+        "TAO-7>TAO-4": false,
+        "TAO-7>TAO-5": false,
+        "TAO-7>TAO-6": false,
+        "TAO-7>TAO-7": true,
+        "TAO-7>TAO-8": true,
+        "TAO-7>TAO-9": false,
+        "TAO-8>TAO-1": false,
+        "TAO-8>TAO-2": false,
+        "TAO-8>TAO-3": false,
+        "TAO-8>TAO-4": false,
+        "TAO-8>TAO-5": false,
+        "TAO-8>TAO-6": false,
+        "TAO-8>TAO-7": false,
+        "TAO-8>TAO-8": true,
+        "TAO-8>TAO-9": false,
+        "TAO-9>TAO-1": false,
+        "TAO-9>TAO-2": false,
+        "TAO-9>TAO-3": false,
+        "TAO-9>TAO-4": false,
+        "TAO-9>TAO-5": false,
+        "TAO-9>TAO-6": false,
+        "TAO-9>TAO-7": false,
+        "TAO-9>TAO-8": false,
+        "TAO-9>TAO-9": true
+      },
+      "reachable_path": {
+        "TAO-1>TAO-1": [
+          "TAO-1"
+        ],
+        "TAO-1>TAO-2": null,
+        "TAO-1>TAO-3": null,
+        "TAO-1>TAO-4": null,
+        "TAO-1>TAO-5": null,
+        "TAO-1>TAO-6": null,
+        "TAO-1>TAO-7": null,
+        "TAO-1>TAO-8": null,
+        "TAO-1>TAO-9": null,
+        "TAO-2>TAO-1": [
+          "TAO-2",
+          "TAO-1"
+        ],
+        "TAO-2>TAO-2": [
+          "TAO-2"
+        ],
+        "TAO-2>TAO-3": null,
+        "TAO-2>TAO-4": null,
+        "TAO-2>TAO-5": null,
+        "TAO-2>TAO-6": null,
+        "TAO-2>TAO-7": null,
+        "TAO-2>TAO-8": null,
+        "TAO-2>TAO-9": null,
+        "TAO-3>TAO-1": [
+          "TAO-3",
+          "TAO-1"
+        ],
+        "TAO-3>TAO-2": null,
+        "TAO-3>TAO-3": [
+          "TAO-3"
+        ],
+        "TAO-3>TAO-4": null,
+        "TAO-3>TAO-5": null,
+        "TAO-3>TAO-6": null,
+        "TAO-3>TAO-7": null,
+        "TAO-3>TAO-8": null,
+        "TAO-3>TAO-9": null,
+        "TAO-4>TAO-1": [
+          "TAO-4",
+          "TAO-3",
+          "TAO-1"
+        ],
+        "TAO-4>TAO-2": null,
+        "TAO-4>TAO-3": [
+          "TAO-4",
+          "TAO-3"
+        ],
+        "TAO-4>TAO-4": [
+          "TAO-4"
+        ],
+        "TAO-4>TAO-5": null,
+        "TAO-4>TAO-6": null,
+        "TAO-4>TAO-7": null,
+        "TAO-4>TAO-8": null,
+        "TAO-4>TAO-9": null,
+        "TAO-5>TAO-1": [
+          "TAO-5",
+          "TAO-1"
+        ],
+        "TAO-5>TAO-2": [
+          "TAO-5",
+          "TAO-2"
+        ],
+        "TAO-5>TAO-3": null,
+        "TAO-5>TAO-4": null,
+        "TAO-5>TAO-5": [
+          "TAO-5"
+        ],
+        "TAO-5>TAO-6": null,
+        "TAO-5>TAO-7": null,
+        "TAO-5>TAO-8": null,
+        "TAO-5>TAO-9": null,
+        "TAO-6>TAO-1": [
+          "TAO-6",
+          "TAO-2",
+          "TAO-1"
+        ],
+        "TAO-6>TAO-2": [
+          "TAO-6",
+          "TAO-2"
+        ],
+        "TAO-6>TAO-3": [
+          "TAO-6",
+          "TAO-3"
+        ],
+        "TAO-6>TAO-4": null,
+        "TAO-6>TAO-5": [
+          "TAO-6",
+          "TAO-5"
+        ],
+        "TAO-6>TAO-6": [
+          "TAO-6"
+        ],
+        "TAO-6>TAO-7": null,
+        "TAO-6>TAO-8": null,
+        "TAO-6>TAO-9": null,
+        "TAO-7>TAO-1": [
+          "TAO-7",
+          "TAO-2",
+          "TAO-1"
+        ],
+        "TAO-7>TAO-2": [
+          "TAO-7",
+          "TAO-2"
+        ],
+        "TAO-7>TAO-3": [
+          "TAO-7",
+          "TAO-4",
+          "TAO-3"
+        ],
+        "TAO-7>TAO-4": [
+          "TAO-7",
+          "TAO-4"
+        ],
+        "TAO-7>TAO-5": [
+          "TAO-7",
+          "TAO-6",
+          "TAO-5"
+        ],
+        "TAO-7>TAO-6": [
+          "TAO-7",
+          "TAO-6"
+        ],
+        "TAO-7>TAO-7": [
+          "TAO-7"
+        ],
+        "TAO-7>TAO-8": null,
+        "TAO-7>TAO-9": null,
+        "TAO-8>TAO-1": [
+          "TAO-8",
+          "TAO-1"
+        ],
+        "TAO-8>TAO-2": [
+          "TAO-8",
+          "TAO-5",
+          "TAO-2"
+        ],
+        "TAO-8>TAO-3": null,
+        "TAO-8>TAO-4": null,
+        "TAO-8>TAO-5": [
+          "TAO-8",
+          "TAO-5"
+        ],
+        "TAO-8>TAO-6": null,
+        "TAO-8>TAO-7": null,
+        "TAO-8>TAO-8": [
+          "TAO-8"
+        ],
+        "TAO-8>TAO-9": null,
+        "TAO-9>TAO-1": null,
+        "TAO-9>TAO-2": null,
+        "TAO-9>TAO-3": null,
+        "TAO-9>TAO-4": null,
+        "TAO-9>TAO-5": null,
+        "TAO-9>TAO-6": null,
+        "TAO-9>TAO-7": null,
+        "TAO-9>TAO-8": null,
+        "TAO-9>TAO-9": [
+          "TAO-9"
+        ]
+      },
+      "ready": [],
+      "rollup": {
+        "TAO-1": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "blocked": 2
+          },
+          "progress": 0.0,
+          "total_descendants": 3
+        },
+        "TAO-2": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 2
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAO-3": null,
+        "TAO-4": null,
+        "TAO-5": null,
+        "TAO-6": null,
+        "TAO-7": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAO-8": null,
+        "TAO-9": null
+      },
+      "satisfied": [
+        [
+          "TAO-2",
+          "TAO-1",
+          false
+        ],
+        [
+          "TAO-3",
+          "TAO-1",
+          false
+        ],
+        [
+          "TAO-4",
+          "TAO-3",
+          false
+        ],
+        [
+          "TAO-5",
+          "TAO-1",
+          false
+        ],
+        [
+          "TAO-5",
+          "TAO-2",
+          false
+        ],
+        [
+          "TAO-6",
+          "TAO-2",
+          false
+        ],
+        [
+          "TAO-6",
+          "TAO-3",
+          false
+        ],
+        [
+          "TAO-6",
+          "TAO-5",
+          false
+        ],
+        [
+          "TAO-7",
+          "TAO-2",
+          false
+        ],
+        [
+          "TAO-7",
+          "TAO-4",
+          false
+        ],
+        [
+          "TAO-7",
+          "TAO-6",
+          false
+        ],
+        [
+          "TAO-8",
+          "TAO-1",
+          false
+        ],
+        [
+          "TAO-8",
+          "TAO-5",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAO-1": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAO-2": {
+          "archived": false,
+          "parent": "TAO-1",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAO-3": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        },
+        "TAO-4": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "parked"
+          ]
+        },
+        "TAO-5": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        },
+        "TAO-6": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAO-7": {
+          "archived": false,
+          "parent": "TAO-2",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAO-8": {
+          "archived": false,
+          "parent": "TAO-7",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAO-9": {
+          "archived": false,
+          "parent": null,
+          "status": "accepted",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAO-1": [],
+        "TAO-2": [
+          "TAO-1"
+        ],
+        "TAO-3": [
+          "TAO-1"
+        ],
+        "TAO-4": [
+          "TAO-3"
+        ],
+        "TAO-5": [
+          "TAO-1",
+          "TAO-2"
+        ],
+        "TAO-6": [
+          "TAO-2",
+          "TAO-3",
+          "TAO-5"
+        ],
+        "TAO-7": [
+          "TAO-2",
+          "TAO-4",
+          "TAO-6"
+        ],
+        "TAO-8": [
+          "TAO-1",
+          "TAO-5"
+        ],
+        "TAO-9": []
+      }
+    },
+    "before_promotion": {
+      "dependency_edges": [
+        [
+          "TAO-2",
+          "TAO-1"
+        ],
+        [
+          "TAO-3",
+          "TAO-1"
+        ],
+        [
+          "TAO-4",
+          "TAO-3"
+        ],
+        [
+          "TAO-5",
+          "TAO-1"
+        ],
+        [
+          "TAO-5",
+          "TAO-2"
+        ],
+        [
+          "TAO-6",
+          "TAO-2"
+        ],
+        [
+          "TAO-6",
+          "TAO-3"
+        ],
+        [
+          "TAO-6",
+          "TAO-5"
+        ],
+        [
+          "TAO-7",
+          "TAO-2"
+        ],
+        [
+          "TAO-7",
+          "TAO-4"
+        ],
+        [
+          "TAO-7",
+          "TAO-6"
+        ],
+        [
+          "TAO-8",
+          "TAO-1"
+        ],
+        [
+          "TAO-8",
+          "TAO-5"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-4>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-6>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-7>",
+              "target": "<task:TAO-8>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAO-1>",
+              "key": "TAO-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-2>",
+              "key": "TAO-2",
+              "parent_id": "<task:TAO-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-3>",
+              "key": "TAO-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-4>",
+              "key": "TAO-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-5>",
+              "key": "TAO-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-6>",
+              "key": "TAO-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-7>",
+              "key": "TAO-7",
+              "parent_id": "<task:TAO-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-8>",
+              "key": "TAO-8",
+              "parent_id": "<task:TAO-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 7"
+            },
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAO-9>",
+              "key": "TAO-9",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "accepted",
+              "tags": [],
+              "title": "Task 8"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-4>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-6>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-7>",
+              "target": "<task:TAO-8>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAO-1>",
+              "key": "TAO-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-2>",
+              "key": "TAO-2",
+              "parent_id": "<task:TAO-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-3>",
+              "key": "TAO-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-4>",
+              "key": "TAO-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-5>",
+              "key": "TAO-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-6>",
+              "key": "TAO-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-7>",
+              "key": "TAO-7",
+              "parent_id": "<task:TAO-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-8>",
+              "key": "TAO-8",
+              "parent_id": "<task:TAO-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 7"
+            }
+          ]
+        },
+        "root_first_parent": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-3>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-5>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-4>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-3>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-4>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-6>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-5>",
+              "target": "<task:TAO-8>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAO-6>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-1>",
+              "target": "<task:TAO-2>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-2>",
+              "target": "<task:TAO-7>"
+            },
+            {
+              "kind": "parent",
+              "relation_type": null,
+              "source": "<task:TAO-7>",
+              "target": "<task:TAO-8>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAO-1>",
+              "key": "TAO-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "area:x"
+              ],
+              "title": "Task 0"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-2>",
+              "key": "TAO-2",
+              "parent_id": "<task:TAO-1>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "Task 1"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-3>",
+              "key": "TAO-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 2"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-4>",
+              "key": "TAO-4",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [
+                "parked"
+              ],
+              "title": "Task 3"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-5>",
+              "key": "TAO-5",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 4"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-6>",
+              "key": "TAO-6",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [
+                "rho"
+              ],
+              "title": "Task 5"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-7>",
+              "key": "TAO-7",
+              "parent_id": "<task:TAO-2>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 6"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAO-8>",
+              "key": "TAO-8",
+              "parent_id": "<task:TAO-7>",
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "blocked",
+              "tags": [],
+              "title": "Task 7"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAO-1>TAO-1": true,
+        "TAO-1>TAO-2": true,
+        "TAO-1>TAO-3": false,
+        "TAO-1>TAO-4": false,
+        "TAO-1>TAO-5": false,
+        "TAO-1>TAO-6": false,
+        "TAO-1>TAO-7": true,
+        "TAO-1>TAO-8": true,
+        "TAO-1>TAO-9": false,
+        "TAO-2>TAO-1": false,
+        "TAO-2>TAO-2": true,
+        "TAO-2>TAO-3": false,
+        "TAO-2>TAO-4": false,
+        "TAO-2>TAO-5": false,
+        "TAO-2>TAO-6": false,
+        "TAO-2>TAO-7": true,
+        "TAO-2>TAO-8": true,
+        "TAO-2>TAO-9": false,
+        "TAO-3>TAO-1": false,
+        "TAO-3>TAO-2": false,
+        "TAO-3>TAO-3": true,
+        "TAO-3>TAO-4": false,
+        "TAO-3>TAO-5": false,
+        "TAO-3>TAO-6": false,
+        "TAO-3>TAO-7": false,
+        "TAO-3>TAO-8": false,
+        "TAO-3>TAO-9": false,
+        "TAO-4>TAO-1": false,
+        "TAO-4>TAO-2": false,
+        "TAO-4>TAO-3": false,
+        "TAO-4>TAO-4": true,
+        "TAO-4>TAO-5": false,
+        "TAO-4>TAO-6": false,
+        "TAO-4>TAO-7": false,
+        "TAO-4>TAO-8": false,
+        "TAO-4>TAO-9": false,
+        "TAO-5>TAO-1": false,
+        "TAO-5>TAO-2": false,
+        "TAO-5>TAO-3": false,
+        "TAO-5>TAO-4": false,
+        "TAO-5>TAO-5": true,
+        "TAO-5>TAO-6": false,
+        "TAO-5>TAO-7": false,
+        "TAO-5>TAO-8": false,
+        "TAO-5>TAO-9": false,
+        "TAO-6>TAO-1": false,
+        "TAO-6>TAO-2": false,
+        "TAO-6>TAO-3": false,
+        "TAO-6>TAO-4": false,
+        "TAO-6>TAO-5": false,
+        "TAO-6>TAO-6": true,
+        "TAO-6>TAO-7": false,
+        "TAO-6>TAO-8": false,
+        "TAO-6>TAO-9": false,
+        "TAO-7>TAO-1": false,
+        "TAO-7>TAO-2": false,
+        "TAO-7>TAO-3": false,
+        "TAO-7>TAO-4": false,
+        "TAO-7>TAO-5": false,
+        "TAO-7>TAO-6": false,
+        "TAO-7>TAO-7": true,
+        "TAO-7>TAO-8": true,
+        "TAO-7>TAO-9": false,
+        "TAO-8>TAO-1": false,
+        "TAO-8>TAO-2": false,
+        "TAO-8>TAO-3": false,
+        "TAO-8>TAO-4": false,
+        "TAO-8>TAO-5": false,
+        "TAO-8>TAO-6": false,
+        "TAO-8>TAO-7": false,
+        "TAO-8>TAO-8": true,
+        "TAO-8>TAO-9": false,
+        "TAO-9>TAO-1": false,
+        "TAO-9>TAO-2": false,
+        "TAO-9>TAO-3": false,
+        "TAO-9>TAO-4": false,
+        "TAO-9>TAO-5": false,
+        "TAO-9>TAO-6": false,
+        "TAO-9>TAO-7": false,
+        "TAO-9>TAO-8": false,
+        "TAO-9>TAO-9": true
+      },
+      "reachable_path": {
+        "TAO-1>TAO-1": [
+          "TAO-1"
+        ],
+        "TAO-1>TAO-2": null,
+        "TAO-1>TAO-3": null,
+        "TAO-1>TAO-4": null,
+        "TAO-1>TAO-5": null,
+        "TAO-1>TAO-6": null,
+        "TAO-1>TAO-7": null,
+        "TAO-1>TAO-8": null,
+        "TAO-1>TAO-9": null,
+        "TAO-2>TAO-1": [
+          "TAO-2",
+          "TAO-1"
+        ],
+        "TAO-2>TAO-2": [
+          "TAO-2"
+        ],
+        "TAO-2>TAO-3": null,
+        "TAO-2>TAO-4": null,
+        "TAO-2>TAO-5": null,
+        "TAO-2>TAO-6": null,
+        "TAO-2>TAO-7": null,
+        "TAO-2>TAO-8": null,
+        "TAO-2>TAO-9": null,
+        "TAO-3>TAO-1": [
+          "TAO-3",
+          "TAO-1"
+        ],
+        "TAO-3>TAO-2": null,
+        "TAO-3>TAO-3": [
+          "TAO-3"
+        ],
+        "TAO-3>TAO-4": null,
+        "TAO-3>TAO-5": null,
+        "TAO-3>TAO-6": null,
+        "TAO-3>TAO-7": null,
+        "TAO-3>TAO-8": null,
+        "TAO-3>TAO-9": null,
+        "TAO-4>TAO-1": [
+          "TAO-4",
+          "TAO-3",
+          "TAO-1"
+        ],
+        "TAO-4>TAO-2": null,
+        "TAO-4>TAO-3": [
+          "TAO-4",
+          "TAO-3"
+        ],
+        "TAO-4>TAO-4": [
+          "TAO-4"
+        ],
+        "TAO-4>TAO-5": null,
+        "TAO-4>TAO-6": null,
+        "TAO-4>TAO-7": null,
+        "TAO-4>TAO-8": null,
+        "TAO-4>TAO-9": null,
+        "TAO-5>TAO-1": [
+          "TAO-5",
+          "TAO-1"
+        ],
+        "TAO-5>TAO-2": [
+          "TAO-5",
+          "TAO-2"
+        ],
+        "TAO-5>TAO-3": null,
+        "TAO-5>TAO-4": null,
+        "TAO-5>TAO-5": [
+          "TAO-5"
+        ],
+        "TAO-5>TAO-6": null,
+        "TAO-5>TAO-7": null,
+        "TAO-5>TAO-8": null,
+        "TAO-5>TAO-9": null,
+        "TAO-6>TAO-1": [
+          "TAO-6",
+          "TAO-2",
+          "TAO-1"
+        ],
+        "TAO-6>TAO-2": [
+          "TAO-6",
+          "TAO-2"
+        ],
+        "TAO-6>TAO-3": [
+          "TAO-6",
+          "TAO-3"
+        ],
+        "TAO-6>TAO-4": null,
+        "TAO-6>TAO-5": [
+          "TAO-6",
+          "TAO-5"
+        ],
+        "TAO-6>TAO-6": [
+          "TAO-6"
+        ],
+        "TAO-6>TAO-7": null,
+        "TAO-6>TAO-8": null,
+        "TAO-6>TAO-9": null,
+        "TAO-7>TAO-1": [
+          "TAO-7",
+          "TAO-2",
+          "TAO-1"
+        ],
+        "TAO-7>TAO-2": [
+          "TAO-7",
+          "TAO-2"
+        ],
+        "TAO-7>TAO-3": [
+          "TAO-7",
+          "TAO-4",
+          "TAO-3"
+        ],
+        "TAO-7>TAO-4": [
+          "TAO-7",
+          "TAO-4"
+        ],
+        "TAO-7>TAO-5": [
+          "TAO-7",
+          "TAO-6",
+          "TAO-5"
+        ],
+        "TAO-7>TAO-6": [
+          "TAO-7",
+          "TAO-6"
+        ],
+        "TAO-7>TAO-7": [
+          "TAO-7"
+        ],
+        "TAO-7>TAO-8": null,
+        "TAO-7>TAO-9": null,
+        "TAO-8>TAO-1": [
+          "TAO-8",
+          "TAO-1"
+        ],
+        "TAO-8>TAO-2": [
+          "TAO-8",
+          "TAO-5",
+          "TAO-2"
+        ],
+        "TAO-8>TAO-3": null,
+        "TAO-8>TAO-4": null,
+        "TAO-8>TAO-5": [
+          "TAO-8",
+          "TAO-5"
+        ],
+        "TAO-8>TAO-6": null,
+        "TAO-8>TAO-7": null,
+        "TAO-8>TAO-8": [
+          "TAO-8"
+        ],
+        "TAO-8>TAO-9": null,
+        "TAO-9>TAO-1": null,
+        "TAO-9>TAO-2": null,
+        "TAO-9>TAO-3": null,
+        "TAO-9>TAO-4": null,
+        "TAO-9>TAO-5": null,
+        "TAO-9>TAO-6": null,
+        "TAO-9>TAO-7": null,
+        "TAO-9>TAO-8": null,
+        "TAO-9>TAO-9": [
+          "TAO-9"
+        ]
+      },
+      "ready": [],
+      "rollup": {
+        "TAO-1": {
+          "accepted": 0,
+          "by_status": {
+            "backlog": 1,
+            "blocked": 2
+          },
+          "progress": 0.0,
+          "total_descendants": 3
+        },
+        "TAO-2": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 2
+          },
+          "progress": 0.0,
+          "total_descendants": 2
+        },
+        "TAO-3": null,
+        "TAO-4": null,
+        "TAO-5": null,
+        "TAO-6": null,
+        "TAO-7": {
+          "accepted": 0,
+          "by_status": {
+            "blocked": 1
+          },
+          "progress": 0.0,
+          "total_descendants": 1
+        },
+        "TAO-8": null,
+        "TAO-9": null
+      },
+      "satisfied": [
+        [
+          "TAO-2",
+          "TAO-1",
+          false
+        ],
+        [
+          "TAO-3",
+          "TAO-1",
+          false
+        ],
+        [
+          "TAO-4",
+          "TAO-3",
+          false
+        ],
+        [
+          "TAO-5",
+          "TAO-1",
+          false
+        ],
+        [
+          "TAO-5",
+          "TAO-2",
+          false
+        ],
+        [
+          "TAO-6",
+          "TAO-2",
+          false
+        ],
+        [
+          "TAO-6",
+          "TAO-3",
+          false
+        ],
+        [
+          "TAO-6",
+          "TAO-5",
+          false
+        ],
+        [
+          "TAO-7",
+          "TAO-2",
+          false
+        ],
+        [
+          "TAO-7",
+          "TAO-4",
+          false
+        ],
+        [
+          "TAO-7",
+          "TAO-6",
+          false
+        ],
+        [
+          "TAO-8",
+          "TAO-1",
+          false
+        ],
+        [
+          "TAO-8",
+          "TAO-5",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAO-1": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "area:x"
+          ]
+        },
+        "TAO-2": {
+          "archived": false,
+          "parent": "TAO-1",
+          "status": "backlog",
+          "tags": []
+        },
+        "TAO-3": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        },
+        "TAO-4": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": [
+            "parked"
+          ]
+        },
+        "TAO-5": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": []
+        },
+        "TAO-6": {
+          "archived": false,
+          "parent": null,
+          "status": "blocked",
+          "tags": [
+            "rho"
+          ]
+        },
+        "TAO-7": {
+          "archived": false,
+          "parent": "TAO-2",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAO-8": {
+          "archived": false,
+          "parent": "TAO-7",
+          "status": "blocked",
+          "tags": []
+        },
+        "TAO-9": {
+          "archived": false,
+          "parent": null,
+          "status": "accepted",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAO-1": [],
+        "TAO-2": [
+          "TAO-1"
+        ],
+        "TAO-3": [
+          "TAO-1"
+        ],
+        "TAO-4": [
+          "TAO-3"
+        ],
+        "TAO-5": [
+          "TAO-1",
+          "TAO-2"
+        ],
+        "TAO-6": [
+          "TAO-2",
+          "TAO-3",
+          "TAO-5"
+        ],
+        "TAO-7": [
+          "TAO-2",
+          "TAO-4",
+          "TAO-6"
+        ],
+        "TAO-8": [
+          "TAO-1",
+          "TAO-5"
+        ],
+        "TAO-9": []
+      }
+    },
+    "dry_run": [],
+    "promoted": []
+  },
+  "seed": 8,
+  "source": "generated: random task graph",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "area:x"
+      ],
+      "title": "Task 0"
+    },
+    {
+      "depends_on": [
+        "TAO-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAO-1",
+      "status": "backlog",
+      "tags": [],
+      "title": "Task 1"
+    },
+    {
+      "depends_on": [
+        "TAO-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 2"
+    },
+    {
+      "depends_on": [
+        "TAO-3"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "backlog",
+      "tags": [
+        "parked"
+      ],
+      "title": "Task 3"
+    },
+    {
+      "depends_on": [
+        "TAO-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 4"
+    },
+    {
+      "depends_on": [
+        "TAO-2",
+        "TAO-5"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [
+        "rho"
+      ],
+      "title": "Task 5"
+    },
+    {
+      "depends_on": [
+        "TAO-6"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAO-5",
+      "status": "ready",
+      "tags": [],
+      "title": "Task 6"
+    },
+    {
+      "depends_on": [
+        "TAO-1",
+        "TAO-5"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": "TAO-7",
+      "status": "ready",
+      "tags": [],
+      "title": "Task 7"
+    },
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": "ready",
+      "tags": [],
+      "title": "Task 8"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAO-1 is backlog; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAO-1"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAO-5 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAO-5"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAO-5 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAO-5"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAO-5 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAO-5"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAO-6 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAO-6"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAO-6 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAO-6"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAO-6 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAO-6"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAO-7 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAO-7"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAO-7 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAO-7"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAO-7 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAO-7"
+    },
+    {
+      "op": "claim",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAO-8 is blocked; only ready (or failed) tasks can be claimed"
+      },
+      "task": "TAO-8"
+    },
+    {
+      "op": "complete",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "task TAO-8 is blocked; claim it before completing"
+      },
+      "summary": "done",
+      "task": "TAO-8"
+    },
+    {
+      "op": "accept",
+      "outcome": {
+        "error": "InvalidTransitionError",
+        "message": "TAO-8 is blocked; only completed work awaiting verification or review can be accepted"
+      },
+      "task": "TAO-8"
+    },
+    {
+      "op": "claim",
+      "outcome": "ok",
+      "task": "TAO-9"
+    },
+    {
+      "op": "complete",
+      "outcome": "ok",
+      "summary": "done",
+      "task": "TAO-9"
+    },
+    {
+      "op": "accept",
+      "outcome": "ok",
+      "task": "TAO-9"
+    },
+    {
+      "items": [
+        [
+          "TAO-8",
+          "conflict"
+        ]
+      ],
+      "op": "add_stack",
+      "outcome": "ok",
+      "parent": "TAO-7",
+      "status": "open"
+    },
+    {
+      "depends_on": "TAO-2",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAO-7"
+    },
+    {
+      "depends_on": "TAO-1",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAO-3"
+    },
+    {
+      "depends_on": "TAO-3",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAO-4"
+    },
+    {
+      "depends_on": "TAO-2",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAO-5"
+    },
+    {
+      "depends_on": "TAO-7",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAO-1 -> TAO-7 would create a cycle: TAO-1 -> TAO-7 -> TAO-2 -> TAO-1"
+      },
+      "task": "TAO-1"
+    },
+    {
+      "depends_on": "TAO-3",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAO-6"
+    },
+    {
+      "depends_on": "TAO-4",
+      "op": "add_dependency",
+      "outcome": "ok",
+      "task": "TAO-7"
+    },
+    {
+      "depends_on": "TAO-7",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAO-3 -> TAO-7 would create a cycle: TAO-3 -> TAO-7 -> TAO-4 -> TAO-3"
+      },
+      "task": "TAO-3"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAO-7",
+      "task": "TAO-8"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAO-2",
+      "task": "TAO-7"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAO-5",
+      "task": "TAO-2"
+    },
+    {
+      "op": "set_parent",
+      "outcome": "ok",
+      "parent": "TAO-1",
+      "task": "TAO-2"
+    },
+    {
+      "depends_on": "TAO-1",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "a task cannot depend on itself"
+      },
+      "task": "TAO-1"
+    },
+    {
+      "dry_run": true,
+      "op": "promote_ready",
+      "outcome": "ok"
+    },
+    {
+      "dry_run": false,
+      "op": "promote_ready",
+      "outcome": "ok"
+    }
+  ]
+}

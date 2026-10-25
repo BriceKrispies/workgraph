@@ -1,0 +1,271 @@
+{
+  "case": "cycle_detection",
+  "observations": {
+    "observed": {
+      "dependency_edges": [
+        [
+          "TAB-2",
+          "TAB-1"
+        ],
+        [
+          "TAB-3",
+          "TAB-2"
+        ]
+      ],
+      "graph": {
+        "all": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAB-1>",
+              "target": "<task:TAB-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAB-2>",
+              "target": "<task:TAB-3>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAB-1>",
+              "key": "TAB-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAB-2>",
+              "key": "TAB-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "B"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAB-3>",
+              "key": "TAB-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "C"
+            }
+          ]
+        },
+        "open_only": {
+          "edges": [
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAB-1>",
+              "target": "<task:TAB-2>"
+            },
+            {
+              "kind": "depends_on",
+              "relation_type": null,
+              "source": "<task:TAB-2>",
+              "target": "<task:TAB-3>"
+            }
+          ],
+          "nodes": [
+            {
+              "blocked": false,
+              "category": null,
+              "id": "<task:TAB-1>",
+              "key": "TAB-1",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "A"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAB-2>",
+              "key": "TAB-2",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "B"
+            },
+            {
+              "blocked": true,
+              "category": null,
+              "id": "<task:TAB-3>",
+              "key": "TAB-3",
+              "parent_id": null,
+              "priority": "medium",
+              "project_ids": [],
+              "repository_ids": [],
+              "status": "backlog",
+              "tags": [],
+              "title": "C"
+            }
+          ]
+        }
+      },
+      "is_ancestor": {
+        "TAB-1>TAB-1": true,
+        "TAB-1>TAB-2": false,
+        "TAB-1>TAB-3": false,
+        "TAB-2>TAB-1": false,
+        "TAB-2>TAB-2": true,
+        "TAB-2>TAB-3": false,
+        "TAB-3>TAB-1": false,
+        "TAB-3>TAB-2": false,
+        "TAB-3>TAB-3": true
+      },
+      "reachable_path": {
+        "TAB-1>TAB-1": [
+          "TAB-1"
+        ],
+        "TAB-1>TAB-2": null,
+        "TAB-1>TAB-3": null,
+        "TAB-2>TAB-1": [
+          "TAB-2",
+          "TAB-1"
+        ],
+        "TAB-2>TAB-2": [
+          "TAB-2"
+        ],
+        "TAB-2>TAB-3": null,
+        "TAB-3>TAB-1": [
+          "TAB-3",
+          "TAB-2",
+          "TAB-1"
+        ],
+        "TAB-3>TAB-2": [
+          "TAB-3",
+          "TAB-2"
+        ],
+        "TAB-3>TAB-3": [
+          "TAB-3"
+        ]
+      },
+      "ready": [],
+      "rollup": {
+        "TAB-1": null,
+        "TAB-2": null,
+        "TAB-3": null
+      },
+      "satisfied": [
+        [
+          "TAB-2",
+          "TAB-1",
+          false
+        ],
+        [
+          "TAB-3",
+          "TAB-2",
+          false
+        ]
+      ],
+      "tasks": {
+        "TAB-1": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAB-2": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        },
+        "TAB-3": {
+          "archived": false,
+          "parent": null,
+          "status": "backlog",
+          "tags": []
+        }
+      },
+      "unsatisfied_blockers": {
+        "TAB-1": [],
+        "TAB-2": [
+          "TAB-1"
+        ],
+        "TAB-3": [
+          "TAB-2"
+        ]
+      }
+    }
+  },
+  "seed": null,
+  "source": "tests/unit/test_tasks_core.py::test_cycle_detection",
+  "steps": [
+    {
+      "depends_on": [],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "A"
+    },
+    {
+      "depends_on": [
+        "TAB-1"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "B"
+    },
+    {
+      "depends_on": [
+        "TAB-2"
+      ],
+      "op": "create",
+      "outcome": "ok",
+      "parent": null,
+      "status": null,
+      "tags": [],
+      "title": "C"
+    },
+    {
+      "depends_on": "TAB-3",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "adding TAB-1 -> TAB-3 would create a cycle: TAB-1 -> TAB-3 -> TAB-2 -> TAB-1"
+      },
+      "task": "TAB-1"
+    },
+    {
+      "depends_on": "TAB-1",
+      "op": "add_dependency",
+      "outcome": {
+        "error": "DependencyCycleError",
+        "message": "a task cannot depend on itself"
+      },
+      "task": "TAB-1"
+    }
+  ]
+}

@@ -1,0 +1,464 @@
+{
+  "base": {},
+  "cases": [
+    {
+      "id": "base",
+      "input": {},
+      "output": {
+        "ok": {
+          "note": null,
+          "option_id": null,
+          "other_text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:option_id:none",
+      "input": {
+        "option_id": null
+      },
+      "output": {
+        "ok": {
+          "note": null,
+          "option_id": null,
+          "other_text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:option_id:int",
+      "input": {
+        "option_id": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "option_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:option_id:float",
+      "input": {
+        "option_id": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "option_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:option_id:bool",
+      "input": {
+        "option_id": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "option_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:option_id:str",
+      "input": {
+        "option_id": "x"
+      },
+      "output": {
+        "ok": {
+          "note": null,
+          "option_id": "x",
+          "other_text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:option_id:list",
+      "input": {
+        "option_id": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "option_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:option_id:dict",
+      "input": {
+        "option_id": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "option_id"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:option_id",
+      "input": {
+        "option_id": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "note": null,
+          "option_id": "Not valid!",
+          "other_text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:other_text:none",
+      "input": {
+        "other_text": null
+      },
+      "output": {
+        "ok": {
+          "note": null,
+          "option_id": null,
+          "other_text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:other_text:int",
+      "input": {
+        "other_text": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "other_text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:other_text:float",
+      "input": {
+        "other_text": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "other_text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:other_text:bool",
+      "input": {
+        "other_text": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "other_text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:other_text:str",
+      "input": {
+        "other_text": "x"
+      },
+      "output": {
+        "ok": {
+          "note": null,
+          "option_id": null,
+          "other_text": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:other_text:list",
+      "input": {
+        "other_text": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "other_text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:other_text:dict",
+      "input": {
+        "other_text": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "other_text"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:other_text",
+      "input": {
+        "other_text": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "note": null,
+          "option_id": null,
+          "other_text": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "wrong:note:none",
+      "input": {
+        "note": null
+      },
+      "output": {
+        "ok": {
+          "note": null,
+          "option_id": null,
+          "other_text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:note:int",
+      "input": {
+        "note": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:float",
+      "input": {
+        "note": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:bool",
+      "input": {
+        "note": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:str",
+      "input": {
+        "note": "x"
+      },
+      "output": {
+        "ok": {
+          "note": "x",
+          "option_id": null,
+          "other_text": null
+        }
+      }
+    },
+    {
+      "id": "wrong:note:list",
+      "input": {
+        "note": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:note:dict",
+      "input": {
+        "note": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "note"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:note",
+      "input": {
+        "note": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "note": "Not valid!",
+          "option_id": null,
+          "other_text": null
+        }
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "DecisionChoose"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of DecisionChoose",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "DecisionChoose"
+}

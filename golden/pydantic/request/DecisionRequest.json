@@ -1,0 +1,482 @@
+{
+  "base": {
+    "question": "example"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "question": "example"
+      },
+      "output": {
+        "ok": {
+          "options": [],
+          "question": "example"
+        }
+      }
+    },
+    {
+      "id": "missing:question",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "question"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:question:none",
+      "input": {
+        "question": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "question"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:question:int",
+      "input": {
+        "question": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "question"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:question:float",
+      "input": {
+        "question": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "question"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:question:bool",
+      "input": {
+        "question": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "question"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:question:str",
+      "input": {
+        "question": "x"
+      },
+      "output": {
+        "ok": {
+          "options": [],
+          "question": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:question:list",
+      "input": {
+        "question": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "question"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:question:dict",
+      "input": {
+        "question": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "question"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:question",
+      "input": {
+        "question": "Not valid!"
+      },
+      "output": {
+        "ok": {
+          "options": [],
+          "question": "Not valid!"
+        }
+      }
+    },
+    {
+      "id": "min_length:question",
+      "input": {
+        "question": ""
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "min_length": 1
+            },
+            "input": "",
+            "loc": [
+              "question"
+            ],
+            "msg": "String should have at least 1 character",
+            "type": "string_too_short"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:options:none",
+      "input": {
+        "options": null,
+        "question": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "options"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:options:int",
+      "input": {
+        "options": 12,
+        "question": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "options"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:options:float",
+      "input": {
+        "options": 1.5,
+        "question": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "options"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:options:bool",
+      "input": {
+        "options": true,
+        "question": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "options"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:options:str",
+      "input": {
+        "options": "x",
+        "question": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "options"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:options:list",
+      "input": {
+        "options": [
+          "a"
+        ],
+        "question": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "DecisionOptionIn"
+            },
+            "input": "a",
+            "loc": [
+              "options",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of DecisionOptionIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:options:dict",
+      "input": {
+        "options": {
+          "k": 1
+        },
+        "question": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "options"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid:options",
+      "input": {
+        "options": [
+          "Not valid!"
+        ],
+        "question": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "DecisionOptionIn"
+            },
+            "input": "Not valid!",
+            "loc": [
+              "options",
+              0
+            ],
+            "msg": "Input should be a valid dictionary or instance of DecisionOptionIn",
+            "type": "model_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "max_length:options",
+      "input": {
+        "options": [
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a"
+        ],
+        "question": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "actual_length": 27,
+              "field_type": "List",
+              "max_length": 26
+            },
+            "input": [
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a",
+              "a"
+            ],
+            "loc": [
+              "options"
+            ],
+            "msg": "List should have at most 26 items after validation, not 27",
+            "type": "too_long"
+          }
+        ]
+      }
+    },
+    {
+      "id": "extra:unknown_key",
+      "input": {
+        "question": "example",
+        "unknown_key": 1
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1,
+            "loc": [
+              "unknown_key"
+            ],
+            "msg": "Extra inputs are not permitted",
+            "type": "extra_forbidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "body:not_object",
+      "input": [],
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "class_name": "DecisionRequest"
+            },
+            "input": [],
+            "loc": [],
+            "msg": "Input should be a valid dictionary or instance of DecisionRequest",
+            "type": "model_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "request",
+  "model": "DecisionRequest"
+}

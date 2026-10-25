@@ -518,7 +518,7 @@ def gen_landing_case(rng: random.Random, index: int) -> dict[str, Any]:
 
 
 def write_group(name: str, cases: list[dict[str, Any]]) -> dict[str, Any]:
-    body = dumps({"group": name, "generator": "tools/golden/stackplan.py", "seed": SEED, "cases": cases})
+    body = dumps({"group": name, "generator": "tools/golden/gen_stackplan.py", "seed": SEED, "cases": cases})
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / f"{name}.json").write_bytes(body.encode("utf-8"))
     return {"file": f"golden/stackplan/{name}.json", "cases": len(cases), "bytes": len(body.encode("utf-8"))}

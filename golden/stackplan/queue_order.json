@@ -11396,7 +11396,7 @@
       "sequence": []
     }
   ],
-  "generator": "tools/golden/stackplan.py",
+  "generator": "tools/golden/gen_stackplan.py",
   "group": "queue_order",
   "seed": 21
 }

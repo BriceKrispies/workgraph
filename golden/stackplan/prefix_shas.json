@@ -14201,7 +14201,7 @@
       ]
     }
   ],
-  "generator": "tools/golden/stackplan.py",
+  "generator": "tools/golden/gen_stackplan.py",
   "group": "prefix_shas",
   "seed": 21
 }

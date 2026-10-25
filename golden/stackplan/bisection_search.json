@@ -17165,7 +17165,7 @@
       ]
     }
   ],
-  "generator": "tools/golden/stackplan.py",
+  "generator": "tools/golden/gen_stackplan.py",
   "group": "bisection_search",
   "seed": 21
 }

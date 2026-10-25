@@ -22078,7 +22078,7 @@
       }
     }
   ],
-  "generator": "tools/golden/stackplan.py",
+  "generator": "tools/golden/gen_stackplan.py",
   "group": "landing_preconditions",
   "seed": 21
 }

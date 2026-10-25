@@ -23356,7 +23356,7 @@
       }
     }
   ],
-  "generator": "tools/golden/stackplan.py",
+  "generator": "tools/golden/gen_stackplan.py",
   "group": "regression_judgement",
   "seed": 21
 }

@@ -12478,7 +12478,7 @@
       ]
     }
   ],
-  "generator": "tools/golden/stackplan.py",
+  "generator": "tools/golden/gen_stackplan.py",
   "group": "builds_on_others",
   "seed": 21
 }

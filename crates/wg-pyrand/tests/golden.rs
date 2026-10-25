@@ -63,7 +63,8 @@ fn random_matches_cpython() {
     for (path, v) in load_all() {
         let mut rng = Random::new(v.seed);
         for (i, expected) in v.random.iter().enumerate() {
-            let got = rng.random();
+            let (got, next) = rng.random();
+            rng = next;
             assert_eq!(got, *expected, "{} random() draw {i}", path.display());
         }
     }
@@ -75,13 +76,11 @@ fn getrandbits_matches_cpython() {
         let mut rng = Random::new(v.seed);
         for (k, expected) in &v.getrandbits {
             for (i, value) in expected.iter().enumerate() {
-                let got = rng.getrandbits(*k);
-                assert_eq!(
-                    got,
-                    Some(*value),
-                    "{} getrandbits({k}) draw {i}",
-                    path.display()
-                );
+                let Some((got, next)) = rng.getrandbits(*k) else {
+                    panic!("getrandbits({k}) refused a valid width");
+                };
+                rng = next;
+                assert_eq!(got, *value, "{} getrandbits({k}) draw {i}", path.display());
             }
         }
     }
@@ -94,10 +93,13 @@ fn choice_matches_cpython() {
         for (n, expected) in &v.choice {
             let population: Vec<usize> = (0..*n).collect();
             for (i, value) in expected.iter().enumerate() {
-                let got = rng.choice(&population).copied();
+                let Some((got, next)) = rng.choice(&population) else {
+                    panic!("choice(range({n})) returned nothing");
+                };
+                rng = next;
                 assert_eq!(
-                    got,
-                    Some(*value),
+                    *got,
+                    *value,
                     "{} choice(range({n})) draw {i}",
                     path.display()
                 );
@@ -111,7 +113,7 @@ fn choices_matches_cpython() {
     for (path, v) in load_all() {
         let mut rng = Random::new(v.seed);
         for case in &v.choices {
-            let got = rng
+            let (got, next) = rng
                 .choices(
                     &case.population,
                     case.weights.as_deref(),
@@ -119,6 +121,7 @@ fn choices_matches_cpython() {
                     case.k,
                 )
                 .unwrap_or_else(|err| panic!("{} {}: {err:?}", path.display(), case.name));
+            rng = next;
             let got: Vec<i64> = got.into_iter().copied().collect();
             assert_eq!(got, case.result, "{} choices {}", path.display(), case.name);
         }

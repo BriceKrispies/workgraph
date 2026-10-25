@@ -141,19 +141,52 @@ impl Random {
         y
     }
 
-    /// `random.random()`: a float in `[0, 1)` with 53 random bits.
+    /// `random.random()`: a float in `[0, 1)` with 53 random bits, and the advanced generator.
     #[must_use]
-    pub fn random(&mut self) -> f64 {
+    pub fn random(self) -> (f64, Self) {
+        let mut s = self;
+        let value = s.draw_random();
+        (value, s)
+    }
+
+    /// `random.getrandbits(k)` for `0 <= k <= 64`, and the advanced generator. Returns `None`
+    /// for larger `k`.
+    ///
+    /// Words are drawn least significant first; the final partial word keeps its top bits.
+    #[must_use]
+    pub fn getrandbits(self, k: u32) -> Option<(u64, Self)> {
+        let mut s = self;
+        let value = s.draw_getrandbits(k)?;
+        Some((value, s))
+    }
+
+    /// CPython's `_randbelow`: a uniform integer in `[0, n)`, and the advanced generator.
+    /// Returns `None` when `n == 0`.
+    #[must_use]
+    pub fn randbelow(self, n: u64) -> Option<(u64, Self)> {
+        let mut s = self;
+        let value = s.draw_randbelow(n)?;
+        Some((value, s))
+    }
+
+    /// `random.choice(seq)`: the chosen element and the advanced generator. Returns `None` for
+    /// an empty sequence.
+    #[must_use]
+    pub fn choice<T>(self, seq: &[T]) -> Option<(&T, Self)> {
+        let mut s = self;
+        let n = u64::try_from(seq.len()).ok()?;
+        let index = s.draw_randbelow(n)?;
+        let item = seq.get(usize::try_from(index).ok()?)?;
+        Some((item, s))
+    }
+
+    fn draw_random(&mut self) -> f64 {
         let a = f64::from(self.next_u32() >> 5);
         let b = f64::from(self.next_u32() >> 6);
         (a * 67_108_864.0 + b) * (1.0 / 9_007_199_254_740_992.0)
     }
 
-    /// `random.getrandbits(k)` for `0 <= k <= 64`. Returns `None` for larger `k`.
-    ///
-    /// Words are drawn least significant first; the final partial word keeps its top bits.
-    #[must_use]
-    pub fn getrandbits(&mut self, k: u32) -> Option<u64> {
+    fn draw_getrandbits(&mut self, k: u32) -> Option<u64> {
         if k > 64 {
             return None;
         }
@@ -178,30 +211,21 @@ impl Random {
         Some(out)
     }
 
-    /// CPython's `_randbelow`: a uniform integer in `[0, n)`. Returns `None` when `n == 0`.
-    #[must_use]
-    pub fn randbelow(&mut self, n: u64) -> Option<u64> {
+    fn draw_randbelow(&mut self, n: u64) -> Option<u64> {
         if n == 0 {
             return None;
         }
         let bits = 64 - n.leading_zeros();
         loop {
-            let r = self.getrandbits(bits)?;
+            let r = self.draw_getrandbits(bits)?;
             if r < n {
                 return Some(r);
             }
         }
     }
 
-    /// `random.choice(seq)`. Returns `None` for an empty sequence.
-    #[must_use]
-    pub fn choice<'a, T>(&mut self, seq: &'a [T]) -> Option<&'a T> {
-        let n = u64::try_from(seq.len()).ok()?;
-        let index = self.randbelow(n)?;
-        seq.get(usize::try_from(index).ok()?)
-    }
-
-    /// `random.choices(population, weights=..., cum_weights=..., k=...)`.
+    /// `random.choices(population, weights=..., cum_weights=..., k=...)`, and the advanced
+    /// generator.
     ///
     /// With neither weight argument every draw is `population[floor(random() * n)]`. With
     /// `weights` the cumulative sums are built first, as CPython does. Draws use bisection over
@@ -211,12 +235,13 @@ impl Random {
     ///
     /// Returns a [`ChoicesError`] when the arguments are inconsistent, as CPython raises.
     pub fn choices<'a, T>(
-        &mut self,
+        self,
         population: &'a [T],
         weights: Option<&[f64]>,
         cum_weights: Option<&[f64]>,
         k: usize,
-    ) -> Result<Vec<&'a T>, ChoicesError> {
+    ) -> Result<(Vec<&'a T>, Self), ChoicesError> {
+        let mut s = self;
         if weights.is_some() && cum_weights.is_some() {
             return Err(ChoicesError::BothWeights);
         }
@@ -228,10 +253,10 @@ impl Random {
             let scale = n as f64;
             let mut out = Vec::with_capacity(k);
             for _ in 0..k {
-                let index = (self.random() * scale).floor() as usize;
+                let index = (s.draw_random() * scale).floor() as usize;
                 out.push(&population[index.min(n - 1)]);
             }
-            return Ok(out);
+            return Ok((out, s));
         }
         let cum: Vec<f64> = match (weights, cum_weights) {
             (Some(w), _) => {
@@ -259,10 +284,10 @@ impl Random {
         let hi = n - 1;
         let mut out = Vec::with_capacity(k);
         for _ in 0..k {
-            let x = self.random() * total;
+            let x = s.draw_random() * total;
             out.push(&population[bisect_right(&cum, x, hi)]);
         }
-        Ok(out)
+        Ok((out, s))
     }
 }
 

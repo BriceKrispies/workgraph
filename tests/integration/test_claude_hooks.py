@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import io
 import json
-import subprocess
 import sys
 from pathlib import Path
 
 from sqlalchemy import select
 
+from tests.helpers import run_cli_process
 from workgraph.core.models.enums import AttemptStatus
 from workgraph.core.models.schemas import TaskCreate
 from workgraph.core.services import resolve
@@ -201,28 +201,12 @@ def test_spooling_and_replay(app, home, monkeypatch):
 def test_hook_command_end_to_end_subprocess(app, home):
     """The real CLI entrypoint ingests directly and exits 0 with no stdout."""
     payload = base("SessionStart", session="proc-1", source="startup")
-    env = {**__import__("os").environ, "WORKGRAPH_HOME": str(home)}
-    proc = subprocess.run(
-        [sys.executable, "-m", "workgraph", "claude", "hook"],
-        input=json.dumps(payload),
-        capture_output=True,
-        text=True,
-        env=env,
-        timeout=60,
-        check=False,
-    )
-    assert proc.returncode == 0 and proc.stdout == ""
+    env = {"WORKGRAPH_HOME": str(home)}
+    proc = run_cli_process(["claude", "hook"], env, input=json.dumps(payload), text=True, timeout=60)
+    assert proc.exit_code == 0 and proc.stdout == ""
     assert any(s["external_session_id"] == "proc-1" for s in app.hooks.sessions())
-    bad = subprocess.run(
-        [sys.executable, "-m", "workgraph", "claude", "hook"],
-        input="{not json",
-        capture_output=True,
-        text=True,
-        env=env,
-        timeout=60,
-        check=False,
-    )
-    assert bad.returncode == 0
+    bad = run_cli_process(["claude", "hook"], env, input="{not json", text=True, timeout=60)
+    assert bad.exit_code == 0
 
 
 def test_installer_merges_and_uninstalls_only_its_entries(tmp_path, monkeypatch):

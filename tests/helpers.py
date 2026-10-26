@@ -16,12 +16,14 @@ import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 from collections.abc import Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
+from urllib.parse import urlsplit
 
 import httpx
 from mcp.client.stdio import StdioServerParameters
@@ -33,6 +35,8 @@ from workgraph.jobs.worker import Worker
 
 if TYPE_CHECKING:
     from starlette.testclient import TestClient
+
+    from workgraph.api.security import LanAccess
 
 FAKE_AGENT = str(Path(scripted_agent.__file__))
 
@@ -80,12 +84,16 @@ def _merged_env(env: Mapping[str, str | None] | None) -> dict[str, str]:
     return merged
 
 
-def run_cli(args: Sequence[str], env: Mapping[str, str] | None = None) -> CliResult:
+def run_cli(
+    args: Sequence[str], env: Mapping[str, str] | None = None, *, catch_exceptions: bool = False
+) -> CliResult:
     """Run one CLI invocation with extra environment variables and capture its result.
 
     Pass ``--json`` in ``args`` where a test wants machine-readable output. In python mode the
     flag is handled the way ``main()`` handles it (stripped from argv, sets ``STATE.json``), since
-    ``CliRunner`` does not go through ``main()``.
+    ``CliRunner`` does not go through ``main()``. ``catch_exceptions`` is passed to ``CliRunner``
+    in python mode; the default ``False`` lets an uncaught exception propagate with its traceback.
+    Rust mode has no in-process equivalent, so the flag does not apply there.
     """
     if impl_mode() == "rust":
         proc = subprocess.run(
@@ -109,7 +117,7 @@ def run_cli(args: Sequence[str], env: Mapping[str, str] | None = None) -> CliRes
     STATE.json = len(argv) != len(args)
     STATE.home = None
     try:
-        result = CliRunner().invoke(cli, argv, env=dict(env or {}), catch_exceptions=False)
+        result = CliRunner().invoke(cli, argv, env=dict(env or {}), catch_exceptions=catch_exceptions)
     finally:
         STATE.close()
         STATE.json = False
@@ -118,25 +126,31 @@ def run_cli(args: Sequence[str], env: Mapping[str, str] | None = None) -> CliRes
 
 
 def run_cli_process(
-    args: Sequence[str], env: Mapping[str, str | None] | None = None, **popen_kwargs: object
+    args: Sequence[str],
+    env: Mapping[str, str | None] | None = None,
+    *,
+    input: str | bytes | None = None,
+    **popen_kwargs: object,
 ) -> CliResult:
     """Spawn the selected implementation as a real process and capture its raw output.
 
     Python mode runs ``python -m workgraph``; Rust mode runs the ``WORKGRAPH_RUST_BIN`` executable.
-    ``env`` is applied on top of ``os.environ``; a ``None`` value unsets that variable. Extra keyword
-    arguments go to ``subprocess.run``. Without ``text``/``encoding`` the streams are bytes.
+    ``env`` is applied on top of ``os.environ``; a ``None`` value unsets that variable. ``input`` is
+    written to the process's stdin; without it stdin is the null device. Extra keyword arguments go
+    to ``subprocess.run``. Without ``text``/``encoding`` the streams are bytes.
     """
     if impl_mode() == "rust":
         command = [str(rust_binary()), *args]
     else:
         command = [sys.executable, "-m", "workgraph", *args]
     popen_kwargs.setdefault("timeout", CLI_TIMEOUT_SECONDS)
+    stdin: dict[str, object] = {"input": input} if input is not None else {"stdin": subprocess.DEVNULL}
     proc = subprocess.run(
         command,
         capture_output=True,
-        stdin=subprocess.DEVNULL,
         env=_merged_env(env),
         check=False,
+        **stdin,
         **popen_kwargs,
     )
     return CliResult(proc.returncode, proc.stdout, proc.stderr, proc.stdout + proc.stderr)
@@ -159,18 +173,45 @@ def mcp_stdio_params(
     return StdioServerParameters(command=sys.executable, args=["-m", "workgraph", *args], env=merged)
 
 
+DEFAULT_API_BASE_URL = "http://testserver"
+API_PORT = 8765  # the port the app is created for; Host headers naming it pass the host check
+DEFAULT_CLIENT_ADDRESS = ("testclient", 50000)
+
+
 @contextmanager
-def api_client(app: Workgraph) -> Iterator[httpx.Client | TestClient]:
+def api_client(
+    app: Workgraph,
+    *,
+    base_url: str = DEFAULT_API_BASE_URL,
+    with_mcp: bool = True,
+    lan: LanAccess | None = None,
+    client_address: tuple[str, int] | None = None,
+) -> Iterator[httpx.Client | TestClient]:
     """An HTTP client for the API of ``app``'s home directory.
 
-    Python mode yields a Starlette ``TestClient`` (base ``http://testserver``). Rust mode starts
-    ``workgraph serve --no-worker --local`` on a free loopback port and yields an ``httpx.Client``
-    for it. Both forms take relative paths. Callers add the bearer token from ``app.api_token()``.
+    Python mode yields a Starlette ``TestClient`` built on ``create_app(app, port=8765)``. Rust mode
+    starts ``workgraph serve --no-worker --local`` on a free loopback port and yields an
+    ``httpx.Client`` for it. Both forms take relative paths and do not follow redirects. Callers add
+    the bearer token from ``app.api_token()``.
+
+    ``base_url`` sets the request Host (python mode: the TestClient base; rust mode: a ``Host``
+    header on the client, so the server sees the same name). ``lan`` enables LAN mode on the app, and
+    ``client_address`` is the peer ``(ip, port)`` the requests come from. ``with_mcp=False`` leaves
+    the MCP endpoint out. Rust mode serves none of ``lan``, ``client_address`` or ``with_mcp=False``
+    yet and raises for them.
     """
     # Create the token file before any server reads it, so both implementations share one token.
     app.api_token()
     if impl_mode() == "rust":
-        with _rust_server(app) as base_url, httpx.Client(base_url=base_url, timeout=60) as client:
+        if lan is not None or client_address is not None or not with_mcp:
+            raise RuntimeError(
+                "LAN mode, client addresses and no-MCP servers are not served by the Rust binary yet"
+            )
+        headers = {} if base_url == DEFAULT_API_BASE_URL else {"Host": urlsplit(base_url).netloc}
+        with (
+            _rust_server(app) as server_url,
+            httpx.Client(base_url=server_url, headers=headers, timeout=60, follow_redirects=False) as client,
+        ):
             yield client
         return
 
@@ -181,14 +222,62 @@ def api_client(app: Workgraph) -> Iterator[httpx.Client | TestClient]:
     previous = os.environ.get("WORKGRAPH_ALLOWED_HOSTS")
     os.environ["WORKGRAPH_ALLOWED_HOSTS"] = "testserver"
     try:
-        asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=True)
-        with TestClient(asgi, base_url="http://testserver") as client:
+        asgi = create_app(app, host="127.0.0.1", port=API_PORT, with_mcp=with_mcp, lan=lan)
+        with TestClient(
+            asgi,
+            base_url=base_url,
+            client=client_address or DEFAULT_CLIENT_ADDRESS,
+            follow_redirects=False,
+        ) as client:
             yield client
     finally:
         if previous is None:
             os.environ.pop("WORKGRAPH_ALLOWED_HOSTS", None)
         else:
             os.environ["WORKGRAPH_ALLOWED_HOSTS"] = previous
+
+
+@contextmanager
+def api_server(app: Workgraph, *, with_mcp: bool = True) -> Iterator[str]:
+    """A running HTTP server for the API of ``app``; yields its base URL (``http://127.0.0.1:<port>``).
+
+    Python mode serves the ASGI app with uvicorn on a background thread; Rust mode runs
+    ``workgraph serve --no-worker --local``. Callers reach the MCP endpoint at ``<base>/mcp/`` and add
+    the bearer token from ``app.api_token()``. Rust mode does not take ``with_mcp=False`` yet.
+    """
+    app.api_token()
+    if impl_mode() == "rust":
+        if not with_mcp:
+            raise RuntimeError("no-MCP servers are not served by the Rust binary yet")
+        with _rust_server(app) as base_url:
+            yield base_url
+        return
+
+    import uvicorn
+
+    from workgraph.api.app import create_app
+
+    port = _free_port()
+    asgi = create_app(app, host="127.0.0.1", port=port, with_mcp=with_mcp)
+    server = uvicorn.Server(uvicorn.Config(asgi, host="127.0.0.1", port=port, log_level="warning"))
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    base_url = f"http://127.0.0.1:{port}"
+    try:
+        deadline = time.monotonic() + 30
+        while True:
+            try:
+                if httpx.get(f"{base_url}/api/v1/health", timeout=1).status_code == 200:
+                    break
+            except httpx.HTTPError:
+                pass
+            if time.monotonic() > deadline:
+                raise RuntimeError(f"API server did not become healthy on port {port}")
+            time.sleep(0.1)
+        yield base_url
+    finally:
+        server.should_exit = True
+        thread.join(timeout=30)
 
 
 def _free_port() -> int:

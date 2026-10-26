@@ -17,6 +17,7 @@ mod agg;
 pub mod attempts;
 pub mod commits;
 pub mod common;
+pub mod core;
 pub mod source;
 pub mod subagents;
 pub mod tasks;

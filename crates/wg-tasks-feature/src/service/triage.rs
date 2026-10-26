@@ -78,7 +78,8 @@ fn load_entries(path: &str) -> Result<Json, WgError> {
         )
     };
     let text = std::fs::read_to_string(path).map_err(|err| unreadable(err.to_string()))?;
-    serde_json::from_str(&text).map_err(|err| unreadable(err.to_string()))
+    // `json.loads(text)`: the message is `str(JSONDecodeError)`, as CPython words it.
+    wg_validate::pyjson::parse_message(&text).map_err(unreadable)
 }
 
 /// The report rows planning produced before anything was written: skipped verdicts and the

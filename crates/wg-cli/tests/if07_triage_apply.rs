@@ -178,3 +178,49 @@ fn an_open_verdict_creates_its_follow_up_and_supersedes_the_original() {
     assert_eq!(original["status"], "cancelled");
     assert_eq!(original["tags"], serde_json::json!(["triage:superseded"]));
 }
+
+// covers: C166, O02
+#[test]
+fn a_missing_file_is_a_click_usage_error_before_anything_runs() {
+    let home = home_with_workspace("missing-file");
+    let missing = home.join("nope.json");
+    let missing = missing.to_str().expect("a UTF-8 path");
+    let (code, stdout, stderr) = run(&home, &["task", "triage-apply", missing]);
+    assert_eq!(code, 2, "{stdout}{stderr}");
+    assert!(stdout.is_empty(), "{stdout}");
+    assert!(
+        stderr.starts_with("Usage: workgraph task triage-apply [OPTIONS] PATH\n"),
+        "{stderr}"
+    );
+    // The panel wraps the message at spaces, so the check reads the words back.
+    let words: Vec<&str> = stderr
+        .split(|c: char| c.is_whitespace() || c == '|')
+        .filter(|word| !word.is_empty())
+        .collect();
+    let joined = words.join(" ");
+    assert!(
+        joined.contains(&format!(
+            "Invalid value for 'PATH': File {} does not exist.",
+            wg_model::py_repr_str(missing)
+        )),
+        "{stderr}"
+    );
+}
+
+// covers: C166, O02
+#[test]
+fn a_file_that_is_not_json_reports_the_json_decoder_message() {
+    let home = home_with_workspace("bad-json");
+    let path = home.join("triage.json");
+    std::fs::create_dir_all(&home).expect("the home exists");
+    std::fs::write(&path, "[{\"key\": }]").expect("the file is written");
+    let path = path.to_str().expect("a UTF-8 path");
+    let (code, stdout, _) = run(&home, &["task", "triage-apply", path]);
+    assert_eq!(code, 2, "{stdout}");
+    let error: Value = serde_json::from_str(&stdout).expect("the error is JSON");
+    assert_eq!(error["error"]["code"], "validation_failed");
+    assert_eq!(
+        error["error"]["message"],
+        format!("cannot read triage file {path}: Expecting value: line 1 column 10 (char 9)")
+    );
+}

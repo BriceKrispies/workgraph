@@ -10,10 +10,19 @@ use wg_json::Value;
 use wg_model::py_repr_str;
 use wg_render::{Console, escape};
 
-use crate::CliFailure;
-use crate::Snapshot;
 use crate::task::{get, items, many, number, one, opt, s, truncate, when};
 use crate::tree::{SNAPSHOT_JSON, placeholder};
+use crate::{CliFailure, Snapshot, Usage};
+
+/// The usage of `decision list` and `decision request`, as Click prints them in a usage error.
+const LIST: Usage = Usage {
+    usage: "workgraph decision list [OPTIONS]",
+    command: "workgraph decision list",
+};
+const REQUEST: Usage = Usage {
+    usage: "workgraph decision request [OPTIONS] {task}",
+    command: "workgraph decision request",
+};
 
 /// The statuses `decision list --status` takes.
 const STATUSES: [&str; 4] = ["open", "decided", "withdrawn", "all"];
@@ -42,7 +51,7 @@ pub fn list_args(m: &ArgMatches) -> Result<(String, i64), CliFailure> {
             2,
         ));
     }
-    Ok((status, number(m, "--limit", 50)?))
+    Ok((status, number(m, "--limit", 50, LIST)?))
 }
 
 /// `_parse_option`: `label` or `label::detail`, as the request option it makes.
@@ -55,7 +64,7 @@ fn parse_option(spec: &str, recommended: bool) -> Json {
 pub fn request_args(m: &ArgMatches) -> Result<(String, String, Vec<Json>), CliFailure> {
     let specs = many(m, "--option");
     let recommend = one(m, "--recommend")
-        .map(|_| number(m, "--recommend", 0))
+        .map(|_| number(m, "--recommend", 0, REQUEST))
         .transpose()?;
     let count = i64::try_from(specs.len()).unwrap_or(i64::MAX);
     if recommend.is_some_and(|position| !(1..=count).contains(&position)) {

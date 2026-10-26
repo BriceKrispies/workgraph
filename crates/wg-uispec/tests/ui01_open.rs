@@ -6,7 +6,7 @@ use serde_json::{Map, Value as Json, json};
 use wg_json::Value;
 use wg_uispec::{Platform, Start, Wait};
 
-fn open_matches(args: &[&str]) -> Result<wg_uispec::OpenRequest, String> {
+fn open_matches(args: &[&str]) -> Result<wg_uispec::OpenRequest, wg_clispec::CliFailure> {
     let mut argv = vec!["ui", "open"];
     argv.extend_from_slice(args);
     let matches = wg_uispec::command()
@@ -37,7 +37,10 @@ fn open_arguments_read_page_url_flags_and_timeout() {
 #[test]
 fn a_timeout_that_is_not_a_number_is_a_usage_message() {
     let err = open_matches(&["--timeout", "soon"]).expect_err("rejected");
-    assert!(err.contains("--timeout") && err.contains("soon"), "{err}");
+    assert!(
+        matches!(&err, wg_clispec::CliFailure::Usage { message, .. } if message == "Invalid value for '--timeout': 'soon' is not a valid float."),
+        "{err:?}"
+    );
     assert!(open_matches(&["--timeout", "nan"]).is_err());
 }
 

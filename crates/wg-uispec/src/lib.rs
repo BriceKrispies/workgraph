@@ -8,8 +8,9 @@
 
 use clap::{ArgMatches, Command};
 use serde_json::{Map, Value as Json};
-use wg_clispec::Snapshot;
+use wg_clispec::failure::python_number_text;
 use wg_clispec::tree::{SNAPSHOT_JSON, command as bare_command, placeholder};
+use wg_clispec::{CliFailure, Snapshot, Usage};
 use wg_json::{PyStr, Value};
 
 /// The health endpoint of a Workgraph server, relative to its base URL.
@@ -51,19 +52,25 @@ pub struct OpenRequest {
     pub timeout: f64,
 }
 
-/// Reads the `ui open` matches. A `--timeout` that is not a finite number is a usage error,
-/// returned as its message.
-pub fn open_request(m: &ArgMatches) -> Result<OpenRequest, String> {
+/// The usage of `ui open`, as Click prints it in a usage error.
+const OPEN: Usage = Usage {
+    usage: "workgraph ui open [OPTIONS] [page]",
+    command: "workgraph ui open",
+};
+
+/// Reads the `ui open` matches. A `--timeout` that is not a finite float is a Click usage error
+/// (exit 2). Python also takes `nan` and `inf`; a non-finite wait cannot be a `Duration`, so
+/// those stay a usage error here.
+///
+/// # Errors
+/// A usage failure for a `--timeout` that is not a finite number.
+pub fn open_request(m: &ArgMatches) -> Result<OpenRequest, CliFailure> {
     let timeout = match text(m, "--timeout") {
         None => DEFAULT_TIMEOUT,
-        Some(raw) => raw
-            .trim()
-            .parse::<f64>()
-            .ok()
+        Some(raw) => python_number_text(&raw)
+            .and_then(|digits| digits.parse::<f64>().ok())
             .filter(|value| value.is_finite())
-            .ok_or_else(|| {
-                format!("invalid value for '--timeout': '{raw}' is not a valid float.")
-            })?,
+            .ok_or_else(|| OPEN.invalid_value("--timeout", &raw, "float"))?,
     };
     Ok(OpenRequest {
         page: text(m, "page").unwrap_or_default(),

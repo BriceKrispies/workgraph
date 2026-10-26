@@ -13,7 +13,7 @@ use clap::ArgMatches;
 use wg_browser::{CaptureOptions, screenshot};
 use wg_clispec::task::{option_flag, option_text};
 use wg_clispec::ui::{
-    Shot, base_url, health_url, no_server_message, number, target_url, wait_selector,
+    SCREENSHOT, Shot, base_url, health_url, no_server_message, number, target_url, wait_selector,
 };
 use wg_clispec::{CliFailure, not_implemented_message};
 use wg_serverspec::serve::Settings;
@@ -29,9 +29,6 @@ pub const GROUP: Group = Group {
     run,
 };
 
-/// Exit code of a usage error (the one clap uses).
-const EXIT_USAGE: u8 = 2;
-
 /// How often a started server is probed while waiting for it.
 const POLL_INTERVAL: Duration = Duration::from_millis(250);
 
@@ -44,8 +41,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
 }
 
 fn open(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
-    let request =
-        wg_uispec::open_request(m).map_err(|message| CliFailure::fail(message, EXIT_USAGE))?;
+    let request = wg_uispec::open_request(m)?;
     let base = match request.url.as_deref() {
         Some(url) if !url.is_empty() => wg_uispec::normalize_base(url),
         _ => {
@@ -191,6 +187,14 @@ fn health(url: &str) -> Result<(), String> {
 }
 
 fn capture(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
+    // Click checks the numeric options before the command runs: a bad one fails before any
+    // server is probed or any config is read.
+    let defaults = CaptureOptions::default();
+    let width = number(m, "--width", defaults.width, SCREENSHOT, "int")?;
+    let height = number(m, "--height", defaults.height, SCREENSHOT, "int")?;
+    let scale = number(m, "--scale", defaults.scale, SCREENSHOT, "float")?;
+    let settle = number(m, "--settle", defaults.settle, SCREENSHOT, "float")?;
+    let timeout = number(m, "--timeout", defaults.timeout, SCREENSHOT, "float")?;
     let settings = Settings::from_config(&state.app()?.config()?);
     let base = base_url(
         option_text(m, "--url").as_deref(),
@@ -201,17 +205,16 @@ fn capture(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
         .map_err(|reason| CliFailure::fail(no_server_message(&base, &reason), 1))?;
     let page = option_text(m, "page").unwrap_or_else(|| "/".to_owned());
     let target = target_url(&base, &page);
-    let defaults = CaptureOptions::default();
     let options = CaptureOptions {
-        width: number(m, "--width", defaults.width)?,
-        height: number(m, "--height", defaults.height)?,
-        scale: number(m, "--scale", defaults.scale)?,
+        width,
+        height,
+        scale,
         wait_for: Some(wait_selector(
             &page,
             option_text(m, "--wait-for").as_deref(),
         )),
-        settle: number(m, "--settle", defaults.settle)?,
-        timeout: number(m, "--timeout", defaults.timeout)?,
+        settle,
+        timeout,
         theme: option_text(m, "--theme"),
         mobile: option_flag(m, "--mobile"),
         ..defaults

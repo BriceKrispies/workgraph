@@ -21,7 +21,10 @@ pub mod tree;
 pub mod ui;
 
 pub use argv::{Argv, is_hook_invocation, split_json};
-pub use failure::{CliFailure, EXIT_INTERRUPTED, EXIT_UNEXPECTED, EXIT_USAGE, Report, report};
+pub use failure::{
+    CliFailure, EXIT_INTERRUPTED, EXIT_UNEXPECTED, EXIT_USAGE, Report, Usage, python_number_text,
+    report,
+};
 pub use snapshot::{
     CommandSpec, Kind, ParamSpec, Snapshot, SnapshotError, diff_commands, display_path,
     not_implemented_message,

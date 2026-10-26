@@ -4,26 +4,33 @@
 use clap::ArgMatches;
 use wg_json::{PyStr, Value, py_float_repr};
 
-use crate::CliFailure;
+use crate::failure::python_number_text;
 use crate::task::option_text;
+use crate::{CliFailure, Usage};
 
-/// The numeric option `key`: the typed text, else `default`; a bad number is a usage failure.
+/// The usage of `ui screenshot`, as Click prints it in a usage error.
+pub const SCREENSHOT: Usage = Usage {
+    usage: "workgraph ui screenshot [OPTIONS] [page]",
+    command: "workgraph ui screenshot",
+};
+
+/// The numeric option `key`: the typed text, else `default`. Click's `kind` check (`int` or
+/// `float`): a value Python cannot read is a usage error reported under `at`.
 ///
 /// # Errors
-/// A usage failure (exit 2) for text that is not a number.
+/// A usage failure (exit 2) for text that is not a number of that kind.
 pub fn number<T: std::str::FromStr>(
     m: &ArgMatches,
     key: &str,
     default: T,
+    at: Usage,
+    kind: &str,
 ) -> Result<T, CliFailure> {
     match option_text(m, key) {
         None => Ok(default),
-        Some(text) => text.parse().map_err(|_| {
-            CliFailure::fail(
-                format!("Invalid value for '{key}': '{text}' is not a valid number"),
-                2,
-            )
-        }),
+        Some(text) => python_number_text(&text)
+            .and_then(|digits| digits.parse().ok())
+            .ok_or_else(|| at.invalid_value(key, &text, kind)),
     }
 }
 

@@ -1,0 +1,22 @@
+{
+  "id": "repo-managed-worktrees-are-not-user-checkouts",
+  "covers": ["C117", "C118", "C121"],
+  "setup": [
+    {"git": "init", "repo": "managed"},
+    {"git": "commit", "repo": "managed", "files": {"README.md": "managed\n"}, "message": "initial"},
+    {"git": "branch", "repo": "managed", "args": ["managed-wt"]},
+    {"git": "worktree", "repo": "managed", "args": ["../../home/data/worktrees/managed-wt", "managed-wt"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:managed}"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/path", "equals": "{repo:managed}"}}},
+    {"assert": {"json": {"path": "/checkouts/0/kind", "equals": "clone"}}},
+    {"assert": {"json": {"path": "/health_detail/skipped_worktrees", "equals": []}}},
+    {"cli": ["repo", "refresh", "managed"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/path", "equals": "{repo:managed}"}}},
+    {"cli": ["repo", "show", "managed"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/path", "equals": "{repo:managed}"}}}
+  ],
+  "not_observable": []
+}

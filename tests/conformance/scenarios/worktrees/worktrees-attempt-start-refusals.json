@@ -1,0 +1,29 @@
+{
+  "id": "worktrees-attempt-start-refusals",
+  "covers": ["C020", "C023", "C152", "C165"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["task", "create", "Not yet", "-r", "api"], "json": true},
+    {"cli": ["attempt", "start", "WG-1"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"stdout_contains": "backlog"}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}},
+    {"cli": ["attempt", "list", "--task", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 0}}},
+    {"cli": ["task", "create", "Ready", "-r", "api", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-2", "--isolation", "snapshot"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"stdout_contains": "isolation"}},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}},
+    {"cli": ["attempt", "list", "--task", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 0}}}
+  ],
+  "not_observable": []
+}

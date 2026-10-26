@@ -1,0 +1,31 @@
+{
+  "id": "worktrees-attempt-abandon-frees-worktree",
+  "covers": ["C016", "C022", "C023", "C097", "C152", "C165"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["task", "create", "Abandoned work", "-r", "api", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true, "save": {"attempt": "/attempt_id", "checkout": "/repositories/0/checkout_path"}},
+    {"cli": ["attempt", "abandon", "{var:attempt}", "--reason", "subagent stopped without submitting"], "json": true},
+    {"assert": {"json": {"path": "/attempt_status", "equals": "abandoned"}}},
+    {"assert": {"json": {"path": "/task_status", "equals": "ready"}}},
+    {"cli": ["attempt", "show", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "abandoned"}}},
+    {"assert": {"json": {"path": "/error", "equals": "subagent stopped without submitting"}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}},
+    {"assert": {"json": {"path": "/claimed_by", "equals": null}}},
+    {"cli": ["git", "worktrees", "--status", "active", "-w", "default"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}},
+    {"cli": ["attempt", "abandon", "{var:attempt}", "--reason", "again"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"stdout_contains": "only a running attempt"}},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true},
+    {"assert": {"json": {"path": "/attempt_number", "equals": 2}}}
+  ],
+  "not_observable": []
+}

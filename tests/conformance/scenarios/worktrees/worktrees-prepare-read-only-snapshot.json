@@ -1,0 +1,32 @@
+{
+  "id": "worktrees-prepare-read-only-snapshot",
+  "covers": ["C016", "C023", "C097", "C118", "C152", "C165"],
+  "setup": [
+    {"git": "init", "repo": "docs"},
+    {"git": "commit", "repo": "docs", "files": {"README.md": "docs\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:docs}", "--read-only"], "json": true},
+    {"cli": ["task", "create", "Read only", "-r", "docs", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true, "save": {"attempt": "/attempt_id", "checkout": "/repositories/0/checkout_path"}},
+    {"assert": {"json": {"path": "/repositories/0/repository", "equals": "docs"}}},
+    {"assert": {"json": {"path": "/repositories/0/branch", "equals": null}}},
+    {"assert": {"file": "{var:checkout}/README.md", "exists": true}},
+    {"cli": ["attempt", "abandon", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/attempt_status", "equals": "abandoned"}}},
+    {"assert": {"file": "{var:checkout}/README.md", "exists": true}},
+    {"cli": ["git", "worktrees", "--status", "active", "-w", "default"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}},
+    {"cli": ["git", "cleanup-worktrees"], "json": true},
+    {"assert": {"json": {"path": "/0/path", "equals": "{var:checkout}"}}},
+    {"cli": ["git", "cleanup-worktrees", "--apply"], "json": true},
+    {"assert": {"file": "{var:checkout}/README.md", "exists": false}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktrees.py::test_prepare_worktrees_manifest_and_change_set: the agent's commit in the api worktree, the partially applied change set and its items, the violation for a file written into the read-only docs snapshot, the attempt attribution of the commit, and release keeping the dirty docs checkout. No step can write or commit inside a managed checkout",
+      "covered_by": "CORE-13"
+    }
+  ]
+}

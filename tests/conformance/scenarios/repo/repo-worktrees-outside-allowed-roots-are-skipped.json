@@ -1,0 +1,22 @@
+{
+  "id": "repo-worktrees-outside-allowed-roots-are-skipped",
+  "covers": ["C117", "C118", "C183"],
+  "setup": [
+    {"git": "init", "repo": "bounded"},
+    {"git": "commit", "repo": "bounded", "files": {"README.md": "bounded\n"}, "message": "initial"},
+    {"git": "branch", "repo": "bounded", "args": ["second"]},
+    {"git": "worktree", "repo": "bounded", "args": ["../elsewhere-wt", "second"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["workspace", "set", "default", "--allowed-root", "{repo:bounded}"], "json": true},
+    {"assert": {"json": {"path": "/settings/allowed_roots", "equals": ["{repo:bounded}"]}}},
+    {"cli": ["repo", "register", "{repo:bounded}"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/path", "equals": "{repo:bounded}"}}},
+    {"assert": {"json": {"path": "/health_detail/skipped_worktrees/0/path", "equals": "{repo:elsewhere-wt}"}}},
+    {"cli": ["repo", "refresh", "bounded"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/path", "equals": "{repo:bounded}"}}},
+    {"assert": {"json": {"path": "/health_detail/skipped_worktrees/0/path", "equals": "{repo:elsewhere-wt}"}}}
+  ],
+  "not_observable": []
+}

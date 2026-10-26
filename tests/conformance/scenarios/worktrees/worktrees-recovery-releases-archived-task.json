@@ -1,0 +1,24 @@
+{
+  "id": "worktrees-recovery-releases-archived-task",
+  "covers": ["C023", "C097", "C088", "C146", "C152", "C178"],
+  "setup": [
+    {"git": "init", "repo": "stale"},
+    {"git": "commit", "repo": "stale", "files": {"README.md": "stale\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:stale}"], "json": true},
+    {"cli": ["task", "create", "Stale work", "-r", "stale", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true, "save": {"checkout": "/repositories/0/checkout_path"}},
+    {"cli": ["worker", "recover"], "json": true},
+    {"assert": {"json": {"path": "/worktrees/released", "equals": []}}},
+    {"cli": ["git", "worktrees", "-w", "default"], "json": true},
+    {"assert": {"json": {"path": "/0/status", "equals": "active"}}},
+    {"cli": ["task", "archive", "WG-1"], "json": true},
+    {"cli": ["worker", "recover"], "json": true},
+    {"assert": {"json": {"path": "/worktrees/released/0", "equals": "{var:checkout}"}}},
+    {"cli": ["git", "cleanup-worktrees"], "json": true},
+    {"assert": {"json": {"path": "/0/path", "equals": "{var:checkout}"}}}
+  ],
+  "not_observable": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "http-repository-sync-commits",
+  "covers": ["H019", "H020", "H021", "H022"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"},
+    {"git": "commit", "repo": "svc", "files": {"src/lib.txt": "one\n"}, "message": "add library"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"http": "POST", "path": "/api/v1/ws/default/repositories/svc/sync?mode=incremental"},
+    {"http": "POST", "path": "/api/v1/ws/default/repositories/svc/sync?mode=full"},
+    {"http": "GET", "path": "/api/v1/ws/default/repositories/svc/commits?limit=10&offset=0&linked_only=false&include_unreachable=false", "save": {"sha": "/items/0/sha"}},
+    {"http": "GET", "path": "/api/v1/ws/default/repositories/svc/commits/{var:sha}"},
+    {"http": "GET", "path": "/api/v1/ws/default/repositories/svc/commits/0000000000000000000000000000000000000000"},
+    {"http": "GET", "path": "/api/v1/ws/default/worktrees"},
+    {"http": "GET", "path": "/api/v1/ws/default/worktrees?status=active"},
+    {"cli": ["repo", "status", "svc"], "json": true},
+    {"assert": {"json": {"path": "/name", "equals": "svc"}}}
+  ],
+  "not_observable": []
+}

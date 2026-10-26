@@ -13,6 +13,7 @@ wg-automation Core
 wg-browser Shell
 wg-browserspec Pure
 wg-cli Shell
+wg-clispec Pure
 wg-codeanalysis Pure
 wg-codeparse Shell
 wg-config Pure

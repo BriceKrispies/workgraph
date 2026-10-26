@@ -15,7 +15,6 @@
 mod acceptance;
 pub use acceptance::{integration_busy, latest_succeeded};
 mod app;
-mod automation;
 mod bus;
 mod cli_state;
 mod cycle;
@@ -51,7 +50,6 @@ pub use queue::Queue;
 pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
-pub use wg_runtimespec::automation::catalog as automation_catalog;
 pub use wg_runtimespec::jobs::{unknown_job_kind, worker_summary_out};
 pub use wg_runtimespec::{Level, RequestContext};
 pub use wg_tasks::rename::Term;

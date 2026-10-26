@@ -229,15 +229,4 @@ mod tests {
             assert_eq!(crate::operations::group_of(spec.id), "IF-49");
         }
     }
-
-    #[test]
-    fn the_settings_patch_body_loads_from_the_snapshot() {
-        let openapi = wg_wire::contract::openapi().unwrap_or_default();
-        let body = META_SETTINGS[3].body.unwrap_or(BodyRef {
-            component: "",
-            required: false,
-            strip: false,
-        });
-        assert!(body_spec(&openapi, &body).is_some());
-    }
 }

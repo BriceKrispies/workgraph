@@ -6,7 +6,6 @@
 //! statements are values ([`sql::Statement`]); `wg-store` binds them to its driver and runs them.
 
 pub mod analytics_sql;
-pub mod automation_sql;
 pub mod classify_sql;
 pub mod codec;
 pub mod events;

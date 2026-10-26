@@ -5,7 +5,9 @@ use wg_json::{PyStr, Value};
 use wg_model::entity::automation::{AutomationRule, AutomationRun};
 use wg_types::Id;
 
-use crate::convention::{TimeFormat, id, json_object, model, optional_timestamp, text, timestamp};
+use wg_wire::convention::{
+    TimeFormat, id, json_object, model, optional_timestamp, text, timestamp,
+};
 
 /// The Python class of a rule (`RuleOut`); not an OpenAPI component schema.
 pub const RULE_NAME: &str = "RuleOut";

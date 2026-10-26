@@ -76,13 +76,16 @@ fn tool_output(record: &Json) -> Option<(String, Json)> {
     Some((tool, serde_json::from_str(body).ok()?))
 }
 
-/// The decision and registry tools: their output shapes are the features' (`wg_decisions::spec::
-/// shapes`, `wg_registry_feature::spec::shapes`), not this catalog's, so the catalog checks leave
-/// them out (docs/rust-rewrite.md 4.16).
-const FEATURE_SHAPED: [&str; 11] = [
+/// The decision, automation and registry tools: their output shapes are the features'
+/// (`wg_decisions::spec::shapes`, `wg_automation_feature::spec::shapes`,
+/// `wg_registry_feature::spec::shapes`), not this catalog's, so the catalog checks leave them
+/// out (docs/rust-rewrite.md 4.16).
+const FEATURE_SHAPED: [&str; 13] = [
     "task_request_decision",
     "decision_list",
     "task_decisions",
+    "automation_list",
+    "automation_trigger",
     "workspace_list",
     "workspace_get",
     "project_list",

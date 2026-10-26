@@ -2,21 +2,21 @@
 //! notifications, catalog, process` (C025-C036): the declarative rules, their dry runs and history.
 //!
 //! The clap command is the snapshot's own tree, so help and parameters match `contracts/cli.json`;
-//! each handler reads its matches, calls one `App` entry point and prints the result.
+//! each handler reads its matches with [`crate::spec::args`], calls one [`crate::service`] entry
+//! point and prints the result with [`crate::spec::view`].
 
 use clap::ArgMatches;
 use wg_clispec::CliFailure;
 use wg_clispec::args::option_text;
-use wg_clispec::automation as view;
-use wg_runtime::{human_context, system_context};
+use wg_runtime::{CliState, human_context, system_context};
 
-use super::Group;
-use crate::CliState;
+use crate::service;
+use crate::spec::{args, catalog, view};
 
 /// The `automation` group.
-pub const GROUP: Group = Group {
+pub const GROUP: wg_runtime::CliGroup = wg_runtime::CliGroup {
     name: "automation",
-    command: view::command,
+    command: args::command,
     run,
 };
 
@@ -31,52 +31,49 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
     match path.get(1).map(String::as_str) {
         Some("list") => {
             let context = human_context(None)?;
-            let out = state.app()?.automation_list(&context, ws)?;
+            let out = service::list(state.app()?, &context, ws)?;
             state.emit(&out, Some(&|c| view::list_view(c, &out)))
         }
         Some("create") => {
             let context = human_context(None)?;
-            let spec = view::rule_document(m, "spec", &read_file)?;
-            let out = state.app()?.automation_create(&context, ws, &spec)?;
+            let spec = args::rule_document(m, "spec", &read_file)?;
+            let out = service::create(state.app()?, &context, ws, &spec)?;
             state.emit(&out, Some(&|c| view::created_line(c, &out)))
         }
         Some("update") => {
             let context = human_context(None)?;
-            let name = view::name_arg(m);
-            let spec = view::rule_document(m, "spec", &read_file)?;
-            let out = state.app()?.automation_update(&context, ws, &name, &spec)?;
+            let name = args::name_arg(m);
+            let spec = args::rule_document(m, "spec", &read_file)?;
+            let out = service::update(state.app()?, &context, ws, &name, &spec)?;
             state.emit(&out, Some(&|c| view::updated_line(c, &out)))
         }
         Some("show") => {
             let context = human_context(None)?;
-            let name = view::name_arg(m);
-            let out = state.app()?.automation_get(&context, ws, &name)?;
+            let name = args::name_arg(m);
+            let out = service::get(state.app()?, &context, ws, &name)?;
             state.emit(&out, Some(&|c| view::show_view(c, &out)))
         }
         Some(action @ ("enable" | "disable")) => {
             let context = human_context(None)?;
-            let name = view::name_arg(m);
+            let name = args::name_arg(m);
             let enabled = action == "enable";
-            let out = state
-                .app()?
-                .automation_set_enabled(&context, ws, &name, enabled)?;
+            let out = service::set_enabled(state.app()?, &context, ws, &name, enabled)?;
             state.emit(&out, Some(&|c| view::toggled_line(c, &out, enabled)))
         }
         Some("trigger") => {
             let context = human_context(None)?;
-            let name = view::name_arg(m);
-            let inputs = view::trigger_inputs(m, &read_file)?;
-            let out = state
-                .app()?
-                .automation_trigger(&context, ws, &name, &inputs)?;
+            let name = args::name_arg(m);
+            let inputs = args::trigger_inputs(m, &read_file)?;
+            let out = service::trigger(state.app()?, &context, ws, &name, &inputs)?;
             state.emit(&out, Some(&|c| view::trigger_line(c, &out)))
         }
         Some("preview") => {
             let context = human_context(None)?;
-            let (rule, event) = view::preview_targets(m);
-            let spec = view::preview_spec(m, &read_file)?;
-            let inputs = view::preview_inputs(m);
-            let out = state.app()?.automation_preview(
+            let (rule, event) = args::preview_targets(m);
+            let spec = args::preview_spec(m, &read_file)?;
+            let inputs = args::preview_inputs(m);
+            let out = service::preview(
+                state.app()?,
                 &context,
                 ws,
                 rule.as_deref(),
@@ -88,8 +85,9 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("runs") => {
             let context = human_context(None)?;
-            let (rule, status, limit) = view::runs_args(m)?;
-            let out = state.app()?.automation_runs(
+            let (rule, status, limit) = args::runs_args(m)?;
+            let out = service::runs(
+                state.app()?,
                 &context,
                 ws,
                 rule.as_deref(),
@@ -100,19 +98,17 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("notifications") => {
             let context = human_context(None)?;
-            let out = state
-                .app()?
-                .automation_notifications(&context, ws, view::unread_only(m))?;
+            let out = service::notifications(state.app()?, &context, ws, args::unread_only(m))?;
             state.emit(&out, Some(&|c| view::notifications_view(c, &out)))
         }
         Some("catalog") => {
             state.app()?;
-            let out = wg_runtime::automation_catalog();
+            let out = catalog();
             state.emit(&out, Some(&|c| view::catalog_view(c, &out)))
         }
         Some("process") => {
             let context = system_context("cli")?;
-            let out = state.app()?.automation_process(&context)?;
+            let out = service::process(state.app()?, &context)?;
             state.emit(&out, Some(&|c| view::process_view(c, &out)))
         }
         _ => Err(CliFailure::fail(

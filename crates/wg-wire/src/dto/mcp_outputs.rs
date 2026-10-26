@@ -18,7 +18,7 @@ use serde_json::Value as Json;
 use wg_json::{PyStr, Value};
 
 use super::{
-    agent_time_out, analytics_overview, analytics_query, analytics_query_out, attempt, automation,
+    agent_time_out, analytics_overview, analytics_query, analytics_query_out, attempt,
     classification_job, classification_out, classification_task, comment, commit_link,
     coupling_out, dependency_state, estimate_out, event, experiment, failures_out,
     metric_definition, page, predictor, relation, search_result, stack, stack_item,
@@ -511,18 +511,7 @@ static SHAPES: &[(&str, Shape)] = &[
             ],
         },
     ),
-    // M64-M65: automation.
-    (
-        "automation_list",
-        Shape::Dto {
-            fields: &automation::LIST_FIELDS,
-            nested: &[
-                ("rules", list(&dto(&automation::RULE_FIELDS))),
-                ("recent_runs", list(&dto(&automation::RUN_FIELDS))),
-            ],
-        },
-    ),
-    ("automation_trigger", dto(&automation::RUN_FIELDS)),
+    // M64-M65 (automation) are the feature's shapes: `wg_automation_feature::spec::shapes`.
 ];
 
 /// The output shape of a tool, by tool name. `None` for a name that is not a tool.

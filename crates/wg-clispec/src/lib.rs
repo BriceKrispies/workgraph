@@ -8,7 +8,6 @@
 
 pub mod args;
 pub mod argv;
-pub mod automation;
 pub mod datetime;
 pub mod failure;
 pub mod git;

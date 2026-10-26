@@ -1,0 +1,349 @@
+{
+  "id": "stack-integration-15-absolute-base-failure-ejects-nothing",
+  "covers": [
+    "C001",
+    "C060",
+    "C099",
+    "C118",
+    "C127",
+    "C131",
+    "C136",
+    "C138",
+    "C143",
+    "C152",
+    "C172"
+  ],
+  "setup": [
+    {
+      "git": "init",
+      "repo": "svc"
+    },
+    {
+      "git": "commit",
+      "repo": "svc",
+      "files": {
+        "base.txt": "base\n"
+      },
+      "message": "initial"
+    },
+    {
+      "git": "commit",
+      "repo": "svc",
+      "files": {
+        "bad_a.txt": "known\n"
+      },
+      "message": "record a known failure"
+    }
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "execution.enabled",
+        "true"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "agent",
+        "add-command",
+        "fake-a",
+        "workgraph-demo-agent",
+        "--arg=--mode",
+        "--arg=success",
+        "--arg=--file",
+        "--arg=a.txt",
+        "--arg={manifest}",
+        "--supports-usage"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "agent",
+        "add-command",
+        "fake-b",
+        "workgraph-demo-agent",
+        "--arg=--mode",
+        "--arg=success",
+        "--arg=--file",
+        "--arg=c.txt",
+        "--arg={manifest}",
+        "--supports-usage"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "agent",
+        "add-command",
+        "fake-c",
+        "workgraph-demo-agent",
+        "--arg=--mode",
+        "--arg=success",
+        "--arg=--file",
+        "--arg=bad_b.txt",
+        "--arg={manifest}",
+        "--supports-usage"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "repo",
+        "register",
+        "{repo:svc}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Parent work",
+        "--repo",
+        "svc"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "stacks.auto_accept",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "verify",
+        "config",
+        "gate",
+        "--scope-type",
+        "repository",
+        "--scope",
+        "svc",
+        "--check",
+        "{\"name\":\"types\",\"kind\":\"typecheck\",\"tier\":\"fast\",\"command\":[\"git\",\"rev-parse\",\"--is-inside-work-tree\"]}",
+        "--check",
+        "{\"name\":\"suite\",\"kind\":\"test\",\"command\":[\"sh\",\"-c\",\"bad=0; for f in bad_*; do if [ -e $f ]; then echo test $f ... FAILED; bad=1; fi; done; exit $bad\"],\"parser\":\"cargo\",\"baseline\":\"absolute\"}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "First change",
+        "--parent",
+        "WG-1",
+        "--repo",
+        "svc",
+        "--ready"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Second change",
+        "--parent",
+        "WG-1",
+        "--repo",
+        "svc",
+        "--ready"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Third change",
+        "--parent",
+        "WG-1",
+        "--repo",
+        "svc",
+        "--ready"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "stack",
+        "create",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "run",
+        "start",
+        "WG-2",
+        "--agent",
+        "fake-a",
+        "--no-wait"
+      ],
+      "json": true,
+      "save": {
+        "run_first": "/id"
+      }
+    },
+    {
+      "drain": {
+        "max_jobs": 20
+      }
+    },
+    {
+      "cli": [
+        "run",
+        "get",
+        "{var:run_first}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/attempt/status",
+          "equals": "succeeded"
+        }
+      }
+    },
+    {
+      "cli": [
+        "run",
+        "start",
+        "WG-3",
+        "--agent",
+        "fake-b",
+        "--no-wait"
+      ],
+      "json": true,
+      "save": {
+        "run_second": "/id"
+      }
+    },
+    {
+      "drain": {
+        "max_jobs": 20
+      }
+    },
+    {
+      "cli": [
+        "run",
+        "get",
+        "{var:run_second}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/attempt/status",
+          "equals": "succeeded"
+        }
+      }
+    },
+    {
+      "cli": [
+        "run",
+        "start",
+        "WG-4",
+        "--agent",
+        "fake-c",
+        "--no-wait"
+      ],
+      "json": true,
+      "save": {
+        "run_third": "/id"
+      }
+    },
+    {
+      "drain": {
+        "max_jobs": 20
+      }
+    },
+    {
+      "cli": [
+        "run",
+        "get",
+        "{var:run_third}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/attempt/status",
+          "equals": "succeeded"
+        }
+      }
+    },
+    {
+      "cli": [
+        "stack",
+        "show",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/state",
+          "equals": "merged"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/1/state",
+          "equals": "merged"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/2/state",
+          "equals": "merged"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "integrating"
+        }
+      }
+    },
+    {
+      "cli": [
+        "stack",
+        "history",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "stdout_contains": "stack.verification_failed_on_base"
+      }
+    }
+  ],
+  "not_observable": []
+}

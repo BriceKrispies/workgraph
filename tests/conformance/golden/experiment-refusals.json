@@ -1,0 +1,250 @@
+{
+  "scenario": "experiment-refusals",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"experiment slug 'Not A Slug' must be lowercase letters, digits and hyphens\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"experiment title must not be empty\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: arms[0].model is the alias 'haiku'; pin a full model id such as 'claude-haiku-5-5'\", \"details\": {\"problems\": [\"arms[0].model is the alias 'haiku'; pin a full model id such as 'claude-haiku-5-5'\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: setup must be a list of non-empty command lists of strings\", \"details\": {\"problems\": [\"setup must be a list of non-empty command lists of strings\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"cli_error\", \"message\": \"protocol is not valid JSON: Expecting value: line 1 column 1 (char 0)\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: clone must be one of: shared, isolated\", \"details\": {\"problems\": [\"clone must be one of: shared, isolated\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: missing keys: primary_size; unknown keys: frobnicate; arms[0].model is the alias 'sonnet'; pin a full model id such as 'claude-haiku-5-5'; arms[1].name 'a' is used by another arm; bands.min must not exceed bands.max; staircase.per_visit must be an integer >= 1; budget.trials must be an integer >= 1\", \"details\": {\"problems\": [\"missing keys: primary_size\", \"unknown keys: frobnicate\", \"arms[0].model is the alias 'sonnet'; pin a full model id such as 'claude-haiku-5-5'\", \"arms[1].name 'a' is used by another arm\", \"bands.min must not exceed bands.max\", \"staircase.per_visit must be an integer >= 1\", \"budget.trials must be an integer >= 1\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"exp-one\",\n  \"title\": \"Experiment one\",\n  \"question\": null,\n  \"status\": \"draft\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"name\": \"haiku\",\n        \"model\": \"claude-haiku-5-5\"\n      }\n    ],\n    \"brief_template\": \"replay-v1\",\n    \"primary_size\": \"src_lines\",\n    \"bands\": {\n      \"min\": 1,\n      \"max\": 4\n    },\n    \"staircase\": {\n      \"per_visit\": 2,\n      \"up\": 1,\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24\n    },\n    \"budget\": {\n      \"trials\": 40\n    }\n  },\n  \"frozen_at\": null,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"conflict\", \"message\": \"experiment 'exp-one' already exists in this workspace\", \"details\": {\"slug\": \"exp-one\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "cli",
+      "exit": 4,
+      "stdout": "{\"error\": {\"code\": \"not_found\", \"message\": \"experiment 'no-such-experiment' not found\", \"details\": {\"ref\": \"no-such-experiment\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"exp-one\",\n  \"title\": \"Experiment one\",\n  \"question\": null,\n  \"status\": \"running\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"model\": \"claude-haiku-5-5\",\n        \"name\": \"haiku\"\n      }\n    ],\n    \"bands\": {\n      \"max\": 4,\n      \"min\": 1\n    },\n    \"brief_template\": \"replay-v1\",\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"primary_size\": \"src_lines\",\n    \"staircase\": {\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24,\n      \"per_visit\": 2,\n      \"up\": 1\n    }\n  },\n  \"frozen_at\": \"<ts:2|Z>\",\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"conflict\", \"message\": \"exp-one is already running; only a draft can be frozen\", \"details\": {\"experiment\": \"exp-one\", \"status\": \"running\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"exp-one\",\n  \"title\": \"Experiment one\",\n  \"question\": null,\n  \"status\": \"closed\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"model\": \"claude-haiku-5-5\",\n        \"name\": \"haiku\"\n      }\n    ],\n    \"bands\": {\n      \"max\": 4,\n      \"min\": 1\n    },\n    \"brief_template\": \"replay-v1\",\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"primary_size\": \"src_lines\",\n    \"staircase\": {\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24,\n      \"per_visit\": 2,\n      \"up\": 1\n    }\n  },\n  \"frozen_at\": \"<ts:2|Z>\",\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:3|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"conflict\", \"message\": \"exp-one is closed; only a running experiment can be closed\", \"details\": {\"experiment\": \"exp-one\", \"status\": \"closed\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 33,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"experiment\": {\n    \"id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"slug\": \"exp-one\",\n    \"title\": \"Experiment one\",\n    \"question\": null,\n    \"status\": \"closed\",\n    \"protocol\": {\n      \"arms\": [\n        {\n          \"model\": \"claude-haiku-5-5\",\n          \"name\": \"haiku\"\n        }\n      ],\n      \"bands\": {\n        \"max\": 4,\n        \"min\": 1\n      },\n      \"brief_template\": \"replay-v1\",\n      \"budget\": {\n        \"trials\": 40\n      },\n      \"primary_size\": \"src_lines\",\n      \"staircase\": {\n        \"down\": 2,\n        \"max_reversals\": 6,\n        \"max_trials\": 24,\n        \"per_visit\": 2,\n        \"up\": 1\n      }\n    },\n    \"frozen_at\": \"<ts:2|Z>\",\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:3|Z>\"\n  },\n  \"trials\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 34,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

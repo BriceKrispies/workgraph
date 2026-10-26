@@ -1,0 +1,297 @@
+{
+  "id": "experiment-replay-scan",
+  "covers": [
+    "C076"
+  ],
+  "setup": [
+    {
+      "git": "init",
+      "repo": "lab"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pyproject.toml": "[project]\nname = \"demo\"\nversion = \"0.1.0\"\n",
+        ".gitignore": ".pytest_cache/\n__pycache__/\n",
+        "pkg/__init__.py": "",
+        "pkg/mod.py": "def f():\n    return 1\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n",
+        "flag.txt": "0\n"
+      },
+      "message": "add project"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants a"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "flag.txt": "0\n"
+      },
+      "message": "reset flag after a"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\nB2_0 = 0\nB2_1 = 1\nB2_2 = 2\nB2_3 = 3\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n\n\ndef test_b():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants b"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "flag.txt": "0\n"
+      },
+      "message": "reset flag after b"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\nB2_0 = 0\nB2_1 = 1\nB2_2 = 2\nB2_3 = 3\nC3_0 = 0\nC3_1 = 1\nC3_2 = 2\nC3_3 = 3\nC3_4 = 4\nC3_5 = 5\nC3_6 = 6\nC3_7 = 7\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n\n\ndef test_b():\n    assert True\n\n\ndef test_c():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants c"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "flag.txt": "0\n"
+      },
+      "message": "reset flag after c"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\nB2_0 = 0\nB2_1 = 1\nB2_2 = 2\nB2_3 = 3\nC3_0 = 0\nC3_1 = 1\nC3_2 = 2\nC3_3 = 3\nC3_4 = 4\nC3_5 = 5\nC3_6 = 6\nC3_7 = 7\nD4_0 = 0\nD4_1 = 1\nD4_2 = 2\nD4_3 = 3\nD4_4 = 4\nD4_5 = 5\nD4_6 = 6\nD4_7 = 7\nD4_8 = 8\nD4_9 = 9\nD4_10 = 10\nD4_11 = 11\nD4_12 = 12\nD4_13 = 13\nD4_14 = 14\nD4_15 = 15\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n\n\ndef test_b():\n    assert True\n\n\ndef test_c():\n    assert True\n\n\ndef test_d():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants d"
+    }
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "repo",
+        "register",
+        "{repo:lab}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "scan",
+        "--repo",
+        "lab"
+      ],
+      "json": true,
+      "save": {
+        "sha4": "/0/sha",
+        "sha3": "/1/sha",
+        "sha2": "/2/sha",
+        "sha1": "/3/sha"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/features/src_lines",
+          "equals": 16
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/features/band",
+          "equals": 4
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/3/features/src_lines",
+          "equals": 2
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/excluded",
+          "equals": []
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "scan",
+        "--repo",
+        "lab",
+        "--rev",
+        "{var:sha3}",
+        "--limit",
+        "2"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/sha",
+          "equals": "{var:sha3}"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/1/features/src_lines",
+          "equals": 4
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "scan",
+        "--repo",
+        "lab",
+        "--min-lines",
+        "5",
+        "--max-lines",
+        "10"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/features/src_lines",
+          "equals": 8
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/sha",
+          "equals": "{var:sha3}"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "scan",
+        "--repo",
+        "lab",
+        "--min-lines",
+        "0",
+        "--include-excluded"
+      ],
+      "json": true,
+      "save": {
+        "reset3": "/1/sha",
+        "reset2": "/3/sha"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/1/features/src_lines",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/1/excluded",
+          "equals": [
+            "no_tests",
+            "no_source",
+            "no_oracle"
+          ]
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "scan",
+        "--repo",
+        "lab",
+        "--rev",
+        "{var:reset2}",
+        "--min-lines",
+        "0",
+        "--include-excluded",
+        "--limit",
+        "1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/sha",
+          "equals": "{var:reset2}"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "scan",
+        "--repo",
+        "lab",
+        "--include-excluded",
+        "--limit",
+        "1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/sha",
+          "equals": "{var:sha4}"
+        }
+      }
+    }
+  ],
+  "not_observable": []
+}

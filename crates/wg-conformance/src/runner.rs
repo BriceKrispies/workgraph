@@ -4,6 +4,7 @@
 //! run gets a fresh `WORKGRAPH_HOME` and a fresh temporary directory that also
 //! holds the repositories the setup steps create.
 
+use crate::gitfix;
 use crate::scenario::{Assertion, Scenario, Setup, Step};
 use serde_json::{Map, Value, json};
 use std::collections::BTreeMap;
@@ -135,10 +136,10 @@ impl Sandbox {
     }
 }
 
-struct Outcome {
-    exit: i64,
-    stdout: String,
-    stderr: String,
+pub(crate) struct Outcome {
+    pub(crate) exit: i64,
+    pub(crate) stdout: String,
+    pub(crate) stderr: String,
 }
 
 struct Ctx<'a> {
@@ -148,7 +149,8 @@ struct Ctx<'a> {
     keys: Vec<String>,
     ids: Vec<String>,
     last: Option<Outcome>,
-    git_clock: u64,
+    /// Commit tick per repository name, so each repository's dates count from its own first commit.
+    git_ticks: BTreeMap<String, u64>,
 }
 
 fn display(p: &Path) -> String {
@@ -173,7 +175,7 @@ fn env_for(
     env
 }
 
-fn run_process(cmd: &mut Command, stdin: Option<&str>) -> Result<Outcome, String> {
+pub(crate) fn run_process(cmd: &mut Command, stdin: Option<&str>) -> Result<Outcome, String> {
     cmd.stdin(if stdin.is_some() {
         Stdio::piped()
     } else {
@@ -412,53 +414,25 @@ fn fail(mut r: StepRecord, note: String) -> StepRecord {
     r
 }
 
+/// Run one typed git setup operation (CR-03) in the named repository.
 fn git_step(ctx: &mut Ctx<'_>, s: &Setup) -> Result<Outcome, String> {
     let dir = ctx.sb.repos.join(&s.repo);
-    ctx.git_clock += 1;
-    let date = format!(
-        "2020-01-01T00:{:02}:{:02}Z",
-        ctx.git_clock / 60 % 60,
-        ctx.git_clock % 60
-    );
-    let git = |args: &[&str]| -> Result<Outcome, String> {
-        let mut cmd = Command::new("git");
-        cmd.args(["-c", "core.autocrlf=false", "-c", "init.defaultBranch=main"])
-            .args(args)
-            .current_dir(&dir)
-            .env("GIT_AUTHOR_NAME", "Conformance")
-            .env("GIT_AUTHOR_EMAIL", "conformance@example.invalid")
-            .env("GIT_COMMITTER_NAME", "Conformance")
-            .env("GIT_COMMITTER_EMAIL", "conformance@example.invalid")
-            .env("GIT_AUTHOR_DATE", &date)
-            .env("GIT_COMMITTER_DATE", &date);
-        run_process(&mut cmd, None)
-    };
-    match s.git.as_str() {
-        "init" => {
-            std::fs::create_dir_all(&dir).map_err(|e| format!("create {}: {e}", dir.display()))?;
-            git(&["init", "-q", "-b", "main"])
-        }
-        "commit" => {
-            for (name, content) in &s.files {
-                let path = dir.join(name);
-                if let Some(parent) = path.parent() {
-                    std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
-                }
-                std::fs::write(&path, content)
-                    .map_err(|e| format!("write {}: {e}", path.display()))?;
-            }
-            let added = git(&["add", "-A"])?;
-            if added.exit != 0 {
-                return Ok(added);
-            }
-            let message = s.message.clone().unwrap_or_else(|| "commit".to_owned());
-            git(&["commit", "-q", "--allow-empty", "-m", &message])
-        }
-        other => {
-            let mut args = vec![other];
-            args.extend(s.args.iter().map(String::as_str));
-            git(&args)
-        }
+    let tick = ctx.git_ticks.entry(s.repo.clone()).or_insert(0);
+    let mut repo = gitfix::Repo::new(dir, tick);
+    let message = s.message.as_deref().unwrap_or("commit");
+    match (s.git.as_str(), s.args.as_slice()) {
+        ("init", []) => repo.init(),
+        ("commit", []) => repo.commit(message, &s.files, true),
+        ("write", []) => repo.write(&s.files),
+        ("branch", [name]) => repo.branch(name),
+        ("checkout", [name]) => repo.checkout(name, false),
+        ("checkout", [flag, name]) if flag == "-b" => repo.checkout(name, true),
+        ("worktree", [path, branch]) => repo.worktree(path, branch),
+        ("merge", [branch]) => repo.merge(branch),
+        (op, args) => Err(format!(
+            "setup `{op}` does not take {} argument(s)",
+            args.len()
+        )),
     }
 }
 
@@ -668,7 +642,7 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
         keys: Vec::new(),
         ids: Vec::new(),
         last: None,
-        git_clock: 0,
+        git_ticks: BTreeMap::new(),
     };
     let mut steps = Vec::new();
     let mut setup_ok = true;
@@ -729,7 +703,7 @@ mod tests {
             keys: Vec::new(),
             ids: Vec::new(),
             last: None,
-            git_clock: 0,
+            git_ticks: BTreeMap::new(),
         }
     }
 

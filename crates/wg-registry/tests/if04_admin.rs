@@ -89,7 +89,7 @@ fn matched(checkouts: Vec<RepositoryCheckout>) -> Matched {
     }
 }
 
-fn updated_repository(decision: &Decision<Id>) -> Repository {
+fn updated_repository<R>(decision: &Decision<R>) -> Repository {
     decision
         .writes
         .iter()

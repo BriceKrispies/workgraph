@@ -8,14 +8,14 @@ use std::sync::Arc;
 
 use axum::Router;
 use axum::body::{Body, to_bytes};
-use axum::http::{HeaderValue, Method, Request, Response, StatusCode, header};
+use axum::http::{HeaderName, HeaderValue, Request, Response, StatusCode, header};
 use axum::middleware::{self, Next};
 use rmcp::ServiceExt;
 use rmcp::transport::common::server_side_http::session_id;
 use rmcp::transport::streamable_http_server::session::local::LocalSessionManager;
 use rmcp::transport::{StreamableHttpServerConfig, StreamableHttpService, stdio};
 use tokio_util::sync::CancellationToken;
-use wg_mcpspec::not_jsonrpc_reply;
+use wg_mcpspec::{Plan, plan, verb_of};
 use wg_types::{ErrorCode, WgError};
 
 use crate::backend::{Agent, ToolBackend};
@@ -62,8 +62,7 @@ pub fn http_service(
 }
 
 /// The router `wg-server` merges into its own: the MCP endpoint under `/mcp` (axum serves `/mcp/`
-/// too). A POST whose body is not a JSON-RPC message is answered `400` here, as the Python
-/// server does (X6), before the SDK's own request checks run.
+/// too), behind the Python endpoint's own checks in the order the Python transport makes them.
 pub fn http_router(
     agent: Agent,
     backend: Box<dyn ToolBackend>,
@@ -72,42 +71,58 @@ pub fn http_router(
     let service = http_service(agent, backend, cancel)?;
     Ok(Router::new()
         .nest_service("/mcp", service)
-        .layer(middleware::from_fn(reject_not_jsonrpc)))
+        .layer(middleware::from_fn(check_request)))
 }
 
-/// The X6 check: a POST body that is not a JSON-RPC message gets the `400` JSON-RPC error,
-/// carrying a session id as the Python transport does; every other request passes through.
-async fn reject_not_jsonrpc(request: Request<Body>, next: Next) -> Response<Body> {
-    if request.method() != Method::POST {
+/// The checks the Python endpoint makes before the SDK's own; `wg_mcpspec::plan` decides. The
+/// glue reads the request, applies the plan and passes every method but GET and POST through.
+async fn check_request(request: Request<Body>, next: Next) -> Response<Body> {
+    let Some(verb) = verb_of(request.method().as_str()) else {
         return next.run(request).await;
-    }
-    let (parts, body) = request.into_parts();
+    };
+    let (mut parts, body) = request.into_parts();
     let Ok(bytes) = to_bytes(body, BODY_LIMIT).await else {
-        return plain(StatusCode::PAYLOAD_TOO_LARGE, "request body too large");
+        let mut response = Response::new(Body::from("request body too large"));
+        *response.status_mut() = StatusCode::PAYLOAD_TOO_LARGE;
+        return response;
     };
-    let Some(reply) = not_jsonrpc_reply(&bytes) else {
-        return next
-            .run(Request::from_parts(parts, Body::from(bytes)))
-            .await;
-    };
-    let Ok(text) = serde_json::to_vec(&reply) else {
-        return plain(StatusCode::INTERNAL_SERVER_ERROR, "cannot encode the reply");
-    };
-    let mut response = Response::new(Body::from(text));
-    *response.status_mut() = StatusCode::BAD_REQUEST;
-    let headers = response.headers_mut();
-    headers.insert(
-        header::CONTENT_TYPE,
-        HeaderValue::from_static("application/json"),
-    );
-    if let Ok(id) = HeaderValue::from_str(&session_id()) {
-        headers.insert("mcp-session-id", id);
+    let headers: Vec<(String, String)> = parts
+        .headers
+        .iter()
+        .map(|(name, value)| {
+            let text = String::from_utf8_lossy(value.as_bytes()).into_owned();
+            (name.as_str().to_owned(), text)
+        })
+        .collect();
+    match plan(verb, &headers, &session_id(), &bytes) {
+        Plan::Reply {
+            status,
+            headers,
+            body,
+        } => reply(status, &headers, body),
+        Plan::Forward { accept } => {
+            *parts
+                .headers
+                .entry(header::ACCEPT)
+                .or_insert_with(|| HeaderValue::from_static(accept)) =
+                HeaderValue::from_static(accept);
+            next.run(Request::from_parts(parts, Body::from(bytes)))
+                .await
+        }
     }
-    response
 }
 
-fn plain(status: StatusCode, text: &'static str) -> Response<Body> {
-    let mut response = Response::new(Body::from(text));
-    *response.status_mut() = status;
+/// Writes a planned reply.
+fn reply(status: u16, headers: &[(String, String)], body: Vec<u8>) -> Response<Body> {
+    let mut response = Response::new(Body::from(body));
+    *response.status_mut() = StatusCode::from_u16(status).unwrap_or(StatusCode::BAD_REQUEST);
+    headers.iter().for_each(|(name, value)| {
+        if let (Ok(name), Ok(value)) = (
+            HeaderName::from_bytes(name.as_bytes()),
+            HeaderValue::from_str(value),
+        ) {
+            response.headers_mut().insert(name, value);
+        }
+    });
     response
 }

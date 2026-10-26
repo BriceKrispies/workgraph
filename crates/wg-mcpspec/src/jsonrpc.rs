@@ -2,8 +2,8 @@
 //!
 //! The Python SDK parses the body as `JSONRPCMessage`, a union of four Pydantic models, and
 //! answers `400` with a JSON-RPC error whose message is the union's `str(ValidationError)`. The
-//! Rust transport answers the same status and body before the SDK sees the request, so the
-//! status does not depend on the `Accept` header.
+//! Rust transport answers the same status and body before the SDK sees the request. It runs
+//! after the `Accept` check ([`crate::accept`]), which the Python transport also makes first.
 
 use serde_json::{Map, Value, json};
 use wg_validate::{Loc, ValidationError, pydantic::error_text};

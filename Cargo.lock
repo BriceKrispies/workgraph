@@ -619,6 +619,12 @@ version = "0.1.0"
 [[package]]
 name = "wg-wire"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-json",
+ "wg-model",
+ "wg-types",
+]
 
 [[package]]
 name = "windows-link"

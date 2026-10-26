@@ -9,3 +9,9 @@ description = "DTOs, error envelope, MCP descriptors, OpenAPI document"
 
 [lints]
 workspace = true
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-json = { path = "../wg-json" }
+wg-model = { path = "../wg-model" }
+wg-types = { path = "../wg-types" }

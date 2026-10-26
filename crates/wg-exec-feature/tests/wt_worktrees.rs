@@ -2,13 +2,13 @@
 //! decision, and the outputs of recovery and removal.
 
 use serde_json::json;
+use wg_exec_feature::spec::worktrees::{
+    RecoveryReport, Removal, recovery_report_out, release_decision, removal_out, stack_of,
+};
 use wg_json::cli_json;
 use wg_model::entity::{ManagedWorktree, ResourceLease};
 use wg_model::write::{RowKey, Write};
 use wg_runtimespec::context::timestamp_from_unix_nanos;
-use wg_runtimespec::worktrees::{
-    RecoveryReport, Removal, recovery_report_out, release_decision, removal_out, stack_of,
-};
 use wg_types::{Id, WorktreeStatus};
 
 const ROOT: &str = "/data/worktrees/stacks";

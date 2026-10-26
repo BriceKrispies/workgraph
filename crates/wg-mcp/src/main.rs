@@ -16,6 +16,7 @@ static FEATURES: &[&wg_runtime::Feature] = &[
     &wg_decisions::FEATURE,
     &wg_registry_feature::FEATURE,
     &wg_automation_feature::FEATURE,
+    &wg_exec_feature::FEATURE,
 ];
 
 const HTTP_REFUSED: &str = "the standalone wg-mcp serves stdio only; \

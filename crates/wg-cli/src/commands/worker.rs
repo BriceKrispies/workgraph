@@ -12,7 +12,8 @@ use clap::ArgMatches;
 use wg_clispec::job as view;
 use wg_clispec::{CliFailure, not_implemented_message};
 use wg_runtime::{
-    HandlerRegistry, RunOptions, Worker, WorkerOptions, human_context, worker_summary_out,
+    HandlerRegistry, RunOptions, Worker, WorkerOptions, human_context, system_context,
+    worker_summary_out,
 };
 
 use super::{FEATURES, Group};
@@ -34,7 +35,10 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("recover") => {
             let context = human_context(None)?;
-            let out = state.app()?.worker_recover(&context)?;
+            // The worktree pass is the exec feature's; it recovers as the system, as the CLI always has.
+            let out = state.app()?.worker_recover(&context, |app| {
+                wg_exec_feature::service::worktrees::recovery_out(app, &system_context("cli")?)
+            })?;
             state.emit(&out, Some(&|c| view::recovery_view(c, &out)))
         }
         _ => Err(CliFailure::fail(not_implemented_message(path), 1)),

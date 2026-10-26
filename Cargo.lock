@@ -2350,6 +2350,7 @@ dependencies = [
  "wg-clispec",
  "wg-codeparse",
  "wg-decisions",
+ "wg-exec-feature",
  "wg-git-feature",
  "wg-json",
  "wg-mcp",
@@ -2487,6 +2488,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-exec-feature"
+version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "time",
+ "wg-exec",
+ "wg-git",
+ "wg-json",
+ "wg-mcpspec",
+ "wg-model",
+ "wg-registry",
+ "wg-runtime",
+ "wg-runtimespec",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+ "wg-verify",
+ "wg-wire",
+]
+
+[[package]]
 name = "wg-experiments"
 version = "0.1.0"
 dependencies = [
@@ -2619,6 +2642,7 @@ dependencies = [
  "tokio-util",
  "wg-automation-feature",
  "wg-decisions",
+ "wg-exec-feature",
  "wg-git",
  "wg-json",
  "wg-mcpspec",

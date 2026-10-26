@@ -2,7 +2,7 @@
 //! `WorktreeManager.recover` in `integrations/git/worktrees.py` decides it, the stack a worktree
 //! path belongs to, and the outputs the worktree commands print.
 //!
-//! The shell (`wg-runtime`'s `worktrees` module) reads the rows, the attempts, tasks and stacks
+//! The shell (`service::worktrees`) reads the rows, the attempts, tasks and stacks
 //! they belong to, checks the checkouts on disk and lists the worktree directory. Everything here
 //! takes those facts as values.
 
@@ -10,8 +10,11 @@ use std::collections::BTreeSet;
 use std::path::Path;
 
 use rpds::VectorSync;
-use wg_exec::manifest::{ExecutionManifest, ManifestEntry, change_set_plan, expected_changes};
+use wg_exec::manifest::{
+    ExecutionManifest, ManifestEntry, PlanError, change_set_plan, expected_changes,
+};
 use wg_exec::recovery::{RecoveryAction, WorktreeFacts, recovery_action};
+use wg_git::GitError;
 use wg_json::Value;
 use wg_model::decision::Decision;
 use wg_model::entity::{
@@ -667,5 +670,48 @@ impl Removal {
             removed: false,
             reason: Some(reason.into()),
         }
+    }
+}
+
+/// `NotFoundError` for a worktree id.
+pub fn not_found(worktree_id: Id) -> WgError {
+    WgError::new(
+        ErrorCode::NotFound,
+        format!("managed worktree {worktree_id} not found"),
+    )
+}
+
+/// `NotFoundError` for an attempt id.
+pub fn not_found_attempt(attempt_id: Id) -> WgError {
+    WgError::new(
+        ErrorCode::NotFound,
+        format!("attempt {attempt_id} not found"),
+    )
+}
+
+/// A git failure that could not run at all, as a `GitError` of the API.
+pub fn git_failure(err: GitError) -> WgError {
+    WgError::new(ErrorCode::GitError, err.to_string())
+}
+
+/// A file-system failure on `path`.
+pub fn io_failure(path: &Path, err: &std::io::Error) -> WgError {
+    WgError::new(
+        ErrorCode::WorkgraphError,
+        format!("cannot remove {}: {err}", path.display()),
+    )
+}
+
+/// `workgraph.integrations.git.worktrees.plan_repo` failures as the API raises them.
+pub fn plan_failure(err: PlanError) -> WgError {
+    match err {
+        PlanError::ReadOnly { repository } => WgError::new(
+            ErrorCode::ValidationFailed,
+            format!("repository {repository} is read-only"),
+        ),
+        PlanError::NoCommits { repository } => WgError::new(
+            ErrorCode::GitError,
+            format!("repository {repository} has no commits to base an attempt on"),
+        ),
     }
 }

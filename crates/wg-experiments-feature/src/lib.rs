@@ -7,6 +7,7 @@
 //!
 //! The feature exports [`FEATURE`]. Nothing is served yet, so its tables are empty.
 
+pub mod cli;
 pub mod service;
 pub mod spec;
 

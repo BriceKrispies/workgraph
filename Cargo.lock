@@ -2501,14 +2501,21 @@ dependencies = [
 name = "wg-experiments-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rpds",
  "serde_json",
+ "wg-clispec",
  "wg-experiments",
+ "wg-json",
  "wg-model",
+ "wg-registry",
+ "wg-render",
  "wg-runtime",
+ "wg-runtimespec",
  "wg-store",
  "wg-storecodec",
  "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

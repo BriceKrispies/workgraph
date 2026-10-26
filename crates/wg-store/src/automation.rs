@@ -6,35 +6,12 @@
 //! [`Session::apply_write`] and [`Session::apply_decision`] like every other family.
 
 use wg_model::entity::{AutomationRule, AutomationRun, Finding, Notification, Report};
+use wg_storecodec::Raw;
 use wg_storecodec::automation_sql::{self, Page, RuleRun};
-use wg_storecodec::{Raw, Statement, TableRow};
 use wg_types::{ErrorCode, Id, Timestamp, WgError};
 
 use crate::Session;
-
-/// Runs `statement` and decodes the first row, if there is one.
-fn first_row<T: TableRow>(
-    session: &mut Session<'_>,
-    statement: &Statement,
-) -> Result<Option<T>, WgError> {
-    session
-        .rows(statement)?
-        .first()
-        .map(|values| T::from_raw(values))
-        .transpose()
-}
-
-/// Runs `statement` and decodes every row, in the order the query returns them.
-fn all_rows<T: TableRow>(
-    session: &mut Session<'_>,
-    statement: &Statement,
-) -> Result<Vec<T>, WgError> {
-    session
-        .rows(statement)?
-        .iter()
-        .map(|values| T::from_raw(values))
-        .collect()
-}
+use crate::query::{many, one};
 
 impl Session<'_> {
     /// The rule in `workspace_id` named `name`, if any.
@@ -43,12 +20,12 @@ impl Session<'_> {
         workspace_id: Id,
         name: &str,
     ) -> Result<Option<AutomationRule>, WgError> {
-        first_row(self, &automation_sql::rule_by_name(workspace_id, name))
+        one(self, &automation_sql::rule_by_name(workspace_id, name))
     }
 
     /// The rules of `workspace_id`, ordered by name.
     pub fn automation_rules(&mut self, workspace_id: Id) -> Result<Vec<AutomationRule>, WgError> {
-        all_rows(self, &automation_sql::rules(workspace_id))
+        many(self, &automation_sql::rules(workspace_id))
     }
 
     /// The enabled rules, in every workspace, whose trigger type is `trigger_type`.
@@ -56,7 +33,7 @@ impl Session<'_> {
         &mut self,
         trigger_type: &str,
     ) -> Result<Vec<AutomationRule>, WgError> {
-        all_rows(
+        many(
             self,
             &automation_sql::enabled_rules_of_trigger(trigger_type),
         )
@@ -68,7 +45,7 @@ impl Session<'_> {
         rule_id: Id,
         trigger_key: &str,
     ) -> Result<Option<AutomationRun>, WgError> {
-        first_row(self, &automation_sql::run_by_trigger(rule_id, trigger_key))
+        one(self, &automation_sql::run_by_trigger(rule_id, trigger_key))
     }
 
     /// The oldest run, in any rule, with `trigger_key`, if one exists.
@@ -76,7 +53,7 @@ impl Session<'_> {
         &mut self,
         trigger_key: &str,
     ) -> Result<Option<AutomationRun>, WgError> {
-        first_row(self, &automation_sql::run_by_trigger_key(trigger_key))
+        one(self, &automation_sql::run_by_trigger_key(trigger_key))
     }
 
     /// The runs of `workspace_id`, newest first, narrowed to `rule_id` and `status` when given.
@@ -87,7 +64,7 @@ impl Session<'_> {
         status: Option<&str>,
         page: Page,
     ) -> Result<Vec<AutomationRun>, WgError> {
-        all_rows(
+        many(
             self,
             &automation_sql::runs(workspace_id, rule_id, status, page),
         )
@@ -138,7 +115,7 @@ impl Session<'_> {
         unread_only: bool,
         page: Page,
     ) -> Result<Vec<Notification>, WgError> {
-        all_rows(
+        many(
             self,
             &automation_sql::notifications(workspace_id, unread_only, page),
         )
@@ -146,7 +123,7 @@ impl Session<'_> {
 
     /// The reports of `workspace_id`, newest first.
     pub fn reports(&mut self, workspace_id: Id, page: Page) -> Result<Vec<Report>, WgError> {
-        all_rows(self, &automation_sql::reports(workspace_id, page))
+        many(self, &automation_sql::reports(workspace_id, page))
     }
 
     /// The finding of `workspace_id` with `fingerprint`, if one exists.
@@ -155,7 +132,7 @@ impl Session<'_> {
         workspace_id: Id,
         fingerprint: &str,
     ) -> Result<Option<Finding>, WgError> {
-        first_row(
+        one(
             self,
             &automation_sql::finding_by_fingerprint(workspace_id, fingerprint),
         )

@@ -10,23 +10,10 @@ use wg_model::Table;
 use wg_types::Id;
 
 use crate::codec::{id_sql, text_sql};
-use crate::rows::columns;
-use crate::sql::Statement;
+use crate::sql::{Statement, select_list};
 
 /// The kind a task link has when it is a GitHub pull request (Python `PULL_REQUEST_KIND`).
 pub const PULL_REQUEST_KIND: &str = "pull_request";
-
-/// The table's columns, quoted and qualified by `alias` when one is given.
-fn select_list(table: Table, alias: Option<&str>) -> String {
-    columns(table)
-        .iter()
-        .map(|column| match alias {
-            Some(alias) => format!("{alias}.\"{column}\""),
-            None => format!("\"{column}\""),
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
 
 /// The external item of `task_id` (unique per task), if the task is tracked.
 pub fn external_item_by_task(task_id: Id) -> Statement {

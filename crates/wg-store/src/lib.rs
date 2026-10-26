@@ -21,6 +21,7 @@ mod external;
 mod git;
 mod jobs;
 mod migrate;
+mod query;
 mod repos;
 mod run;
 mod search;

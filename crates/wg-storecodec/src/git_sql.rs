@@ -14,24 +14,7 @@ use wg_types::{ErrorCode, Id, Timestamp, WgError};
 
 use crate::codec::{Cols, Raw, bool_sql, id_sql, opt_ts_sql, text_sql};
 use crate::rows::{TableRow, columns};
-use crate::sql::Statement;
-
-/// Quotes an identifier (`key` is a keyword-adjacent column name).
-fn quote(name: &str) -> String {
-    format!("\"{name}\"")
-}
-
-/// The table's columns as a select list, qualified by `alias` when one is given.
-fn select_list(table: Table, alias: Option<&str>) -> String {
-    columns(table)
-        .iter()
-        .map(|column| match alias {
-            Some(alias) => format!("{alias}.\"{column}\""),
-            None => quote(column),
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
+use crate::sql::{Statement, select_list};
 
 /// `?first, ..., ?(first + count - 1)`, or `NULL` when there are none: an `IN (NULL)` list
 /// matches nothing, which is what an empty id list should match.

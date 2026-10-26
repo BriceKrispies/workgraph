@@ -13,12 +13,7 @@ use wg_types::{AttemptStatus, ErrorCode, Id, Timestamp, WgError, WorktreeStatus}
 
 use crate::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
 use crate::rows::{TableRow, columns};
-use crate::sql::Statement;
-
-/// Quotes an identifier.
-fn quote(name: &str) -> String {
-    format!("\"{name}\"")
-}
+use crate::sql::{Statement, quote};
 
 /// `SELECT <columns of table> FROM <table> WHERE <clause> ORDER BY <order>`, or without the
 /// `WHERE` when `clause` is `None`.

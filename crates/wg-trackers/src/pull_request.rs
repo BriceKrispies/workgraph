@@ -1,6 +1,8 @@
 //! Pull request references: URL parsing and the URLs named in free text.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
+
+use rpds::RedBlackTreeMap;
 
 /// Source of a pull request found in a configured custom field.
 pub const SOURCE_CUSTOM_FIELD: &str = "custom_field";
@@ -56,11 +58,13 @@ pub fn parse_pull_request_url(url: &str) -> Option<PullRequestRef> {
         return None;
     }
 
-    let mut segments: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
-    if segments.len() == 5 && PULL_SUFFIXES.contains(&segments[4]) {
-        segments.truncate(4);
-    }
-    let (org, repo, number_text) = match segments.as_slice() {
+    let all_segments: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
+    let segments: &[&str] = if all_segments.len() == 5 && PULL_SUFFIXES.contains(&all_segments[4]) {
+        &all_segments[..4]
+    } else {
+        &all_segments
+    };
+    let (org, repo, number_text) = match segments {
         [org, repo, "pull", number] => (*org, *repo, *number),
         _ => return None,
     };
@@ -91,62 +95,73 @@ pub fn parse_pull_request_url(url: &str) -> Option<PullRequestRef> {
 /// bracket, quote, square bracket or parenthesis; trailing punctuation is the caller's concern.
 #[must_use]
 pub fn urls_in(text: &str) -> Vec<&str> {
-    let mut found = Vec::new();
-    let mut from = 0;
-    while let Some((begin, scheme_len)) = next_scheme(text, from) {
+    std::iter::successors(url_span(text, 0), |&(_, end)| url_span(text, end))
+        .map(|(begin, end)| &text[begin..end])
+        .collect()
+}
+
+/// The first URL at or after `from`, as its byte span. A scheme with an empty body is skipped.
+fn url_span(text: &str, from: usize) -> Option<(usize, usize)> {
+    std::iter::successors(next_scheme(text, from), |&(begin, _)| {
+        next_scheme(text, begin + 1)
+    })
+    .filter_map(|(begin, scheme_len)| {
         let body = begin + scheme_len;
         let end = text[body..]
             .find(|c: char| c.is_whitespace() || "<>\"'[]()".contains(c))
             .map_or(text.len(), |offset| body + offset);
-        if end > body {
-            found.push(&text[begin..end]);
-            from = end;
-        } else {
-            from = begin + 1;
-        }
-    }
-    found
+        (end > body).then_some((begin, end))
+    })
+    .next()
 }
 
 /// The next `http://` or `https://` at or after `from`: its start and the length of its scheme.
 fn next_scheme(text: &str, from: usize) -> Option<(usize, usize)> {
-    let mut at = from;
-    while let Some(offset) = text.get(at..)?.find("http") {
-        let begin = at + offset;
-        let tail = &text[begin + 4..];
-        if tail.starts_with("://") {
-            return Some((begin, 7));
-        }
-        if tail.starts_with("s://") {
-            return Some((begin, 8));
-        }
-        at = begin + 1;
-    }
-    None
+    text.get(from..)?
+        .match_indices("http")
+        .map(|(offset, _)| from + offset)
+        .find_map(|begin| {
+            let tail = &text[begin + 4..];
+            if tail.starts_with("://") {
+                Some((begin, 7))
+            } else if tail.starts_with("s://") {
+                Some((begin, 8))
+            } else {
+                None
+            }
+        })
 }
 
 /// Merges references to the same pull request: one entry per normalised URL, sources united,
 /// the first non-empty title kept, sorted by normalised URL.
 pub(crate) fn merge(found: Vec<PullRequestRef>) -> Vec<PullRequestRef> {
-    let mut merged: BTreeMap<String, PullRequestRef> = BTreeMap::new();
-    for reference in found {
-        match merged.get_mut(&reference.normalized_url) {
-            None => {
-                merged.insert(reference.normalized_url.clone(), reference);
-            }
-            Some(current) => {
-                let sources: BTreeSet<&'static str> = current
-                    .sources
-                    .iter()
-                    .chain(reference.sources.iter())
-                    .copied()
-                    .collect();
-                current.sources = sources.into_iter().collect();
-                if current.title.is_empty() {
-                    current.title = reference.title;
+    found
+        .into_iter()
+        .fold(RedBlackTreeMap::new(), |merged, reference| {
+            match merged.get(&reference.normalized_url) {
+                None => merged.insert(reference.normalized_url.clone(), reference),
+                Some(current) => {
+                    let sources: BTreeSet<&'static str> = current
+                        .sources
+                        .iter()
+                        .chain(reference.sources.iter())
+                        .copied()
+                        .collect();
+                    let title = if current.title.is_empty() {
+                        reference.title.clone()
+                    } else {
+                        current.title.clone()
+                    };
+                    let updated = PullRequestRef {
+                        sources: sources.into_iter().collect(),
+                        title,
+                        ..current.clone()
+                    };
+                    merged.insert(reference.normalized_url.clone(), updated)
                 }
             }
-        }
-    }
-    merged.into_values().collect()
+        })
+        .values()
+        .cloned()
+        .collect()
 }

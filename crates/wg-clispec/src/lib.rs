@@ -8,9 +8,11 @@
 
 pub mod argv;
 pub mod failure;
+pub mod servers;
 pub mod snapshot;
 pub mod task;
 pub mod tree;
+pub mod ui;
 
 pub use argv::{Argv, is_hook_invocation, split_json};
 pub use failure::{CliFailure, EXIT_INTERRUPTED, EXIT_UNEXPECTED, Report, report};

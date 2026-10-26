@@ -76,6 +76,13 @@ pub fn local_network_notice(address: &str, port: u16, code: &str) -> String {
     )
 }
 
+/// [`local_network_notice`] as console markup: the code in bold, as `serve` prints it.
+pub fn local_network_markup(address: &str, port: u16, code: &str) -> String {
+    format!(
+        "Local network: http://{address}:{port}/  pairing code [bold]{code}[/] (enter it once per device)"
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -76,7 +76,7 @@ fn enrichment_jobs(stamp: &Stamp, task: &Task, caused_by: Id, enrich: Enrichment
         job.resource_keys = vec!["gpu".to_owned()];
         job.max_attempts = 4;
         job.backoff_base_seconds = 15.0;
-        job.correlation_id = Some(stamp.correlation);
+        job.correlation_id = Some(stamp.correlation.clone());
         job.causation_id = Some(caused_by);
         job.created_by = stamp.actor.to_string();
         salt += 1;

@@ -14,12 +14,14 @@
 
 mod dispatch;
 pub mod groups;
+mod listen;
 mod route;
 mod server;
 mod sse;
 mod ui;
 
 pub use dispatch::router;
+pub use listen::{bind_listeners, detect_lan_address, detect_lan_address_with, host_name};
 pub use route::{Answer, ApiRequest, ApiRoute, Handler, HandlerFuture, handler};
 pub use server::{LanOptions, Server, ServerOptions, serve};
 pub use sse::event_stream;

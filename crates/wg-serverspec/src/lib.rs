@@ -20,6 +20,7 @@
 pub mod coverage;
 pub mod form;
 pub mod groups;
+pub mod lan;
 pub mod net;
 pub mod operations;
 pub mod pages;

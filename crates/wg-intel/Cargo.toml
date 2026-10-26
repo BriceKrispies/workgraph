@@ -7,5 +7,11 @@ license.workspace = true
 publish.workspace = true
 description = "classification, taxonomy, evaluation metrics, search ranking"
 
+[dependencies]
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl"] }
+rpds = "1"
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+wg-hash = { path = "../wg-hash" }
+
 [lints]
 workspace = true

@@ -11,7 +11,9 @@ description = "differential runner, normaliser, drivers and coverage report"
 workspace = true
 
 [dependencies]
+rusqlite = { version = "0.41.0", features = ["bundled"] }
 serde_json = "1"
+wg-json = { path = "../wg-json" }
 toml = { version = "0.9", default-features = false, features = ["parse", "serde", "std"] }
 
 [[bin]]

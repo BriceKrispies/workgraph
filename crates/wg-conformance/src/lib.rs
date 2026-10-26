@@ -9,6 +9,7 @@
 //! plugs in through [`compare::Normaliser`].
 
 pub mod compare;
+pub mod dbdump;
 pub mod gitfix;
 pub mod modes;
 pub mod normalise;

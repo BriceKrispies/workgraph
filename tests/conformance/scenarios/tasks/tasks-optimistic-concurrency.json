@@ -1,0 +1,16 @@
+{
+  "id": "tasks-optimistic-concurrency",
+  "covers": ["B02", "C152", "C167", "O05"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "T"], "json": true},
+    {"assert": {"json": {"path": "/version", "equals": 1}}},
+    {"cli": ["task", "update", "WG-1", "--expected-version", "1", "--title", "T2"], "json": true},
+    {"assert": {"json": {"path": "/version", "equals": 2}}},
+    {"assert": {"json": {"path": "/title", "equals": "T2"}}},
+    {"cli": ["task", "update", "WG-1", "--expected-version", "1", "--title", "stale"], "json": true, "expect_exit": 3},
+    {"assert": {"json": {"path": "/error/code", "equals": "version_conflict"}}}
+  ],
+  "not_observable": []
+}

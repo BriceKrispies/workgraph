@@ -1,0 +1,29 @@
+{
+  "id": "tasks-promote-ready-report-per-project",
+  "covers": ["C109", "C152", "C159"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["project", "create", "core", "--name", "Core"], "json": true},
+    {"cli": ["project", "create", "ops", "--name", "Ops"], "json": true},
+    {"cli": ["task", "create", "Both", "--project", "core", "--project", "ops"], "json": true},
+    {"cli": ["task", "create", "Core", "--project", "core"], "json": true},
+    {"cli": ["task", "create", "Unfiled"], "json": true},
+    {"cli": ["task", "promote-ready", "--all", "--dry-run"], "json": true},
+    {"assert": {"json": {"path": "/promoted", "equals": ["WG-1", "WG-2", "WG-3"]}}},
+    {"assert": {"json": {"path": "/by_project/(none)", "equals": 1}}},
+    {"assert": {"json": {"path": "/by_project/core", "equals": 2}}},
+    {"assert": {"json": {"path": "/by_project/ops", "equals": 1}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}},
+    {"cli": ["task", "promote-ready", "--project", "core"], "json": true},
+    {"assert": {"json": {"path": "/promoted", "equals": ["WG-1", "WG-2"]}}},
+    {"assert": {"json": {"path": "/by_project/core", "equals": 2}}},
+    {"assert": {"json": {"path": "/by_project/ops", "equals": 1}}},
+    {"cli": ["task", "show", "WG-3"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}}
+  ],
+  "not_observable": []
+}

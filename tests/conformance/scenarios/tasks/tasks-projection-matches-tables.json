@@ -1,0 +1,18 @@
+{
+  "id": "tasks-projection-matches-tables",
+  "covers": ["C067", "C146", "C152", "C153", "C162", "C167"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "A", "--tag", "one"], "json": true},
+    {"cli": ["task", "create", "B", "--ready", "--parent", "WG-1"], "json": true},
+    {"cli": ["task", "depend", "WG-2", "WG-1"], "json": true},
+    {"cli": ["task", "update", "WG-1", "--title", "A2", "--remove-tag", "one", "--add-tag", "two", "--priority", "low"], "json": true},
+    {"cli": ["task", "archive", "WG-1"], "json": true},
+    {"cli": ["task", "relate", "WG-1", "WG-2"], "json": true},
+    {"cli": ["events", "verify"], "json": true},
+    {"assert": {"json": {"path": "/consistent", "equals": true}}},
+    {"assert": {"json": {"path": "/tasks", "equals": 2}}}
+  ],
+  "not_observable": []
+}

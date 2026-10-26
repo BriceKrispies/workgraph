@@ -1,0 +1,19 @@
+{
+  "id": "tasks-promote-ready-skips-parent-and-parked",
+  "covers": ["C152", "C159", "C165"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Parent"], "json": true},
+    {"cli": ["task", "create", "Child", "--parent", "WG-1"], "json": true},
+    {"cli": ["task", "create", "Parked", "--tag", "parked"], "json": true},
+    {"cli": ["task", "create", "Plain"], "json": true},
+    {"cli": ["task", "promote-ready", "--all"], "json": true},
+    {"assert": {"json": {"path": "/promoted", "equals": ["WG-2", "WG-4"]}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}},
+    {"cli": ["task", "show", "WG-3"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}}
+  ],
+  "not_observable": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "tasks-promote-ready-dry-run",
+  "covers": ["C145", "C148", "C150", "C152", "C159", "C165"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "A", "--ready"], "json": true},
+    {"cli": ["task", "create", "B", "--depends-on", "WG-1"], "json": true},
+    {"cli": ["task", "claim", "WG-1"], "json": true},
+    {"cli": ["task", "complete", "WG-1", "--summary", "done"], "json": true},
+    {"cli": ["task", "accept", "WG-1", "--manual", "--reason", "reviewed by hand"], "json": true},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/version", "equals": 1}}},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}},
+    {"cli": ["task", "promote-ready", "--all", "--dry-run"], "json": true},
+    {"assert": {"json": {"path": "/promoted", "equals": ["WG-2"]}}},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}},
+    {"assert": {"json": {"path": "/version", "equals": 1}}},
+    {"cli": ["task", "promote-ready", "--all"], "json": true},
+    {"assert": {"json": {"path": "/promoted", "equals": ["WG-2"]}}},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}}
+  ],
+  "not_observable": []
+}

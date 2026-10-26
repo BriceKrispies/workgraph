@@ -1,0 +1,17 @@
+{
+  "id": "tasks-multi-workspace-isolation",
+  "covers": ["C152", "C153", "C157", "C165", "C181"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["workspace", "create", "other", "--name", "Other", "--prefix", "OT"], "json": true},
+    {"cli": ["task", "create", "Main task"], "json": true},
+    {"cli": ["task", "create", "Other task", "--workspace", "other"], "json": true, "save": {"oid": "/id"}},
+    {"assert": {"json": {"path": "/key", "equals": "OT-1"}}},
+    {"cli": ["task", "show", "WG-1", "--workspace", "other"], "json": true, "expect_exit": 4},
+    {"cli": ["task", "depend", "WG-1", "{var:oid}"], "json": true, "expect_exit": 4},
+    {"cli": ["task", "list", "--workspace", "other", "--limit", "100"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 1}}}
+  ],
+  "not_observable": []
+}

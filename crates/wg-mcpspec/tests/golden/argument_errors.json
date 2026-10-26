@@ -1,0 +1,418 @@
+[
+ {
+  "tool": "task_get",
+  "arguments": {
+   "task": 5
+  },
+  "text": "1 validation error for task_getArguments\ntask\n  Input should be a valid string [type=string_type, input_value=5, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type"
+ },
+ {
+  "tool": "task_get",
+  "arguments": {},
+  "text": "1 validation error for task_getArguments\ntask\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing"
+ },
+ {
+  "tool": "task_get",
+  "arguments": {
+   "task": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "text": null
+ },
+ {
+  "tool": "task_get",
+  "arguments": {
+   "task": "éééééééééééééééééééééééééééééé"
+  },
+  "text": null
+ },
+ {
+  "tool": "task_get",
+  "arguments": {
+   "task": "日日日日日日日日日日日日日日日日日日日日"
+  },
+  "text": null
+ },
+ {
+  "tool": "task_get",
+  "arguments": {
+   "task": [
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   ]
+  },
+  "text": "1 validation error for task_getArguments\ntask\n  Input should be a valid string [type=string_type, input_value=['aaaaaaaaaaaaaaaaaaaaaaa...bbbbbbbbbbbbbbbbbbbbbb'], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type"
+ },
+ {
+  "tool": "task_get",
+  "arguments": {
+   "task": {
+    "key": "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
+   }
+  },
+  "text": "1 validation error for task_getArguments\ntask\n  Input should be a valid string [type=string_type, input_value={'key': 'vvvvvvvvvvvvvvvv...vvvvvvvvvvvvvvvvvvvvvv'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "éééééééééééééééééééééééé"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='éééééééééééééééééééééééé', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "ééééééééééééééééééééééééé"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='éééééééééééé...ééééééééééé', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "日日日日日日日日日日日日日日日日"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='日日日日日日日日日日日日日日日日', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "日日日日日日日日日日日日日日日日日"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='日日日日日日日日...日日日日日日日', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "😀😀😀😀😀😀😀😀😀😀😀😀"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='😀😀😀😀😀😀😀😀😀😀😀😀', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "😀😀😀😀😀😀😀😀😀😀😀😀😀"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='😀😀😀😀😀😀...😀😀😀😀😀', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "abéééééééééééééééééééééééééééééééééééééééécd"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='abééééééééééé...éééééééééécd', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='aaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaa', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29
+   ]
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer [type=int_type, input_value=[0, 1, 2, 3, 4, 5, 6, 7, ... 24, 25, 26, 27, 28, 29], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_type"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": {
+    "k0": 0,
+    "k1": 1,
+    "k2": 2,
+    "k3": 3,
+    "k4": 4,
+    "k5": 5,
+    "k6": 6,
+    "k7": 7,
+    "k8": 8,
+    "k9": 9,
+    "k10": 10,
+    "k11": 11,
+    "k12": 12,
+    "k13": 13,
+    "k14": 14,
+    "k15": 15,
+    "k16": 16,
+    "k17": 17,
+    "k18": 18,
+    "k19": 19
+   }
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer [type=int_type, input_value={'k0': 0, 'k1': 1, 'k2': ...7, 'k18': 18, 'k19': 19}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_type"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "it's it's it's it's it's it's it's it's it's it's it's it's it's it's it's it's it's it's it's it's "
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value=\"it's it's it's it's it's...'s it's it's it's it's \", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+  },
+  "text": "1 validation error for task_listArguments\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n...n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_get",
+  "arguments": {
+   "task": 5,
+   "workspace": 7
+  },
+  "text": "2 validation errors for task_getArguments\ntask\n  Input should be a valid string [type=string_type, input_value=5, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type\nworkspace\n  Input should be a valid string [type=string_type, input_value=7, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type"
+ },
+ {
+  "tool": "task_get",
+  "arguments": {
+   "workspace": 7,
+   "task": 5
+  },
+  "text": "2 validation errors for task_getArguments\ntask\n  Input should be a valid string [type=string_type, input_value=5, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type\nworkspace\n  Input should be a valid string [type=string_type, input_value=7, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type"
+ },
+ {
+  "tool": "task_get",
+  "arguments": {
+   "workspace": 7
+  },
+  "text": "2 validation errors for task_getArguments\ntask\n  Field required [type=missing, input_value={'workspace': 7}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nworkspace\n  Input should be a valid string [type=string_type, input_value=7, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": 500,
+   "offset": -1
+  },
+  "text": "2 validation errors for task_listArguments\nlimit\n  Input should be less than or equal to 200 [type=less_than_equal, input_value=500, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal\noffset\n  Input should be greater than or equal to 0 [type=greater_than_equal, input_value=-1, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "offset": -1,
+   "limit": 500
+  },
+  "text": "2 validation errors for task_listArguments\nlimit\n  Input should be less than or equal to 200 [type=less_than_equal, input_value=500, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal\noffset\n  Input should be greater than or equal to 0 [type=greater_than_equal, input_value=-1, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "limit": "many",
+   "descending": "perhaps",
+   "text": 5
+  },
+  "text": "3 validation errors for task_listArguments\ntext\n  Input should be a valid string [type=string_type, input_value=5, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type\ndescending\n  Input should be a valid boolean, unable to interpret input [type=bool_parsing, input_value='perhaps', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/bool_parsing\nlimit\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='many', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "statuses": [
+    "backlog",
+    "nope"
+   ],
+   "sort": "bogus"
+  },
+  "text": "2 validation errors for task_listArguments\nstatuses.1\n  Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled' [type=enum, input_value='nope', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/enum\nsort\n  Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at' [type=literal_error, input_value='bogus', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "statuses": "backlog"
+  },
+  "text": "1 validation error for task_listArguments\nstatuses\n  Input should be a valid list [type=list_type, input_value='backlog', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/list_type"
+ },
+ {
+  "tool": "task_list",
+  "arguments": {
+   "tags": [
+    1,
+    2,
+    3
+   ],
+   "file": 5
+  },
+  "text": "4 validation errors for task_listArguments\ntags.0\n  Input should be a valid string [type=string_type, input_value=1, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type\ntags.1\n  Input should be a valid string [type=string_type, input_value=2, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type\ntags.2\n  Input should be a valid string [type=string_type, input_value=3, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type\nfile\n  Input should be a valid string [type=string_type, input_value=5, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type"
+ },
+ {
+  "tool": "task_create",
+  "arguments": {},
+  "text": "1 validation error for task_createArguments\ntitle\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing"
+ },
+ {
+  "tool": "task_create",
+  "arguments": {
+   "title": "",
+   "priority": "urgent",
+   "ready": "x",
+   "files": [
+    {
+     "path": 1
+    }
+   ]
+  },
+  "text": "4 validation errors for task_createArguments\ntitle\n  String should have at least 1 character [type=string_too_short, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_too_short\npriority\n  Input should be 'critical', 'high', 'medium' or 'low' [type=enum, input_value='urgent', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/enum\nready\n  Input should be a valid boolean, unable to interpret input [type=bool_parsing, input_value='x', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/bool_parsing\nfiles.0.path\n  Input should be a valid string [type=string_type, input_value=1, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type"
+ },
+ {
+  "tool": "task_create",
+  "arguments": {
+   "title": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "depends_on": "WG-1"
+  },
+  "text": "2 validation errors for task_createArguments\ntitle\n  String should have at most 500 characters [type=string_too_long, input_value='xxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxxxxxx', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_too_long\ndepends_on\n  Input should be a valid list [type=list_type, input_value='WG-1', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/list_type"
+ },
+ {
+  "tool": "task_search",
+  "arguments": {
+   "query": "",
+   "mode": "fuzzy",
+   "limit": 0
+  },
+  "text": "3 validation errors for task_searchArguments\nquery\n  String should have at least 1 character [type=string_too_short, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_too_short\nmode\n  Input should be 'hybrid', 'lexical' or 'semantic' [type=literal_error, input_value='fuzzy', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error\nlimit\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+ },
+ {
+  "tool": "task_claim",
+  "arguments": {
+   "task": "WG-1",
+   "lease_minutes": 0
+  },
+  "text": "1 validation error for task_claimArguments\nlease_minutes\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+ },
+ {
+  "tool": "task_claim",
+  "arguments": {
+   "task": "WG-1",
+   "lease_minutes": 99999
+  },
+  "text": "1 validation error for task_claimArguments\nlease_minutes\n  Input should be less than or equal to 10080 [type=less_than_equal, input_value=99999, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+ },
+ {
+  "tool": "task_claim",
+  "arguments": {
+   "task": "WG-1",
+   "lease_minutes": 1.5
+  },
+  "text": "1 validation error for task_claimArguments\nlease_minutes\n  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=1.5, input_type=float]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_from_float"
+ },
+ {
+  "tool": "task_report_progress",
+  "arguments": {
+   "task": "WG-1",
+   "message": "",
+   "percent": 101
+  },
+  "text": "2 validation errors for task_report_progressArguments\nmessage\n  String should have at least 1 character [type=string_too_short, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_too_short\npercent\n  Input should be less than or equal to 100 [type=less_than_equal, input_value=101, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+ },
+ {
+  "tool": "task_report_progress",
+  "arguments": {
+   "task": "WG-1",
+   "message": "m",
+   "percent": "high"
+  },
+  "text": "1 validation error for task_report_progressArguments\npercent\n  Input should be a valid number, unable to parse string as a number [type=float_parsing, input_value='high', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/float_parsing"
+ },
+ {
+  "tool": "analytics_query",
+  "arguments": {
+   "metric": 1,
+   "group_by": [
+    "period",
+    "bogus"
+   ],
+   "period": "decade"
+  },
+  "text": "3 validation errors for analytics_queryArguments\nmetric\n  Input should be a valid string [type=string_type, input_value=1, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_type\ngroup_by.1\n  Input should be 'period', 'project', 'repository', 'category', 'priority', 'status', 'provider', 'model', 'agent', 'kind', 'check_name', 'module', 'file_class' or 'relation_type' [type=literal_error, input_value='bogus', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error\nperiod\n  Input should be 'day', 'week', 'month', 'quarter' or 'year' [type=literal_error, input_value='decade', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
+ },
+ {
+  "tool": "attempt_start",
+  "arguments": {
+   "task": "WG-1",
+   "isolation": "docker"
+  },
+  "text": "1 validation error for attempt_startArguments\nisolation\n  String should match pattern '^(worktree|in_place)$' [type=string_pattern_mismatch, input_value='docker', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_pattern_mismatch"
+ },
+ {
+  "tool": "attempt_submit",
+  "arguments": {
+   "attempt": "a",
+   "status": "maybe"
+  },
+  "text": "1 validation error for attempt_submitArguments\nstatus\n  String should match pattern '^(succeeded|failed)$' [type=string_pattern_mismatch, input_value='maybe', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_pattern_mismatch"
+ },
+ {
+  "tool": "git_get_changes",
+  "arguments": {
+   "task": "WG-1",
+   "min_confidence": 2
+  },
+  "text": "1 validation error for git_get_changesArguments\nmin_confidence\n  Input should be less than or equal to 1 [type=less_than_equal, input_value=2, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+ },
+ {
+  "tool": "git_get_task_diff",
+  "arguments": {
+   "task": "WG-1",
+   "max_bytes": 10
+  },
+  "text": "1 validation error for git_get_task_diffArguments\nmax_bytes\n  Input should be greater than or equal to 1000 [type=greater_than_equal, input_value=10, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+ },
+ {
+  "tool": "task_link_commit",
+  "arguments": {
+   "task": "WG-1",
+   "sha": "ab"
+  },
+  "text": "1 validation error for task_link_commitArguments\nsha\n  String should have at least 4 characters [type=string_too_short, input_value='ab', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_too_short"
+ },
+ {
+  "tool": "experiment_predict",
+  "arguments": {},
+  "text": "1 validation error for experiment_predictArguments\nmodel\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing"
+ },
+ {
+  "tool": "decision_list",
+  "arguments": {
+   "status": "all",
+   "limit": 1000
+  },
+  "text": "1 validation error for decision_listArguments\nlimit\n  Input should be less than or equal to 200 [type=less_than_equal, input_value=1000, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+ }
+]

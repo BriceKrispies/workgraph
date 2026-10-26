@@ -8,11 +8,9 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from typer.testing import CliRunner
 
 from tests.conftest import GitRepo
-from workgraph.cli.common import STATE
-from workgraph.cli.main import app as cli
+from tests.helpers import run_cli
 from workgraph.core.clock import utcnow
 from workgraph.core.errors import ConflictError, ValidationFailed
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
@@ -279,16 +277,9 @@ def test_start_requires_planned_and_grade_requires_worktree(app, human, ws, proj
 def test_cli_start_and_grade(home, monkeypatch, tmp_path, app, human, ws, project, replay_task, running):
     monkeypatch.setenv("WORKGRAPH_HOME", str(home))
     monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "claude-config"))
-    runner = CliRunner()
 
     def invoke(*args: str) -> Any:
-        STATE.json = True
-        STATE.home = None
-        try:
-            result = runner.invoke(cli, list(args), catch_exceptions=False)
-        finally:
-            STATE.close()
-            STATE.json = False
+        result = run_cli(["--json", *args])
         assert result.exit_code == 0, f"{args}: exit {result.exit_code}\n{result.output}"
         return json.loads(result.output.strip())
 

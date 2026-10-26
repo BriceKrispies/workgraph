@@ -6,11 +6,9 @@ from dataclasses import replace
 from typing import Any
 
 import pytest
-from typer.testing import CliRunner
 
 from tests.conftest import GitRepo
-from workgraph.cli.common import STATE
-from workgraph.cli.main import app as cli
+from tests.helpers import run_cli
 from workgraph.core.models.schemas import RepositoryRegister, TaskFilter
 from workgraph.experiments import replay
 
@@ -146,16 +144,9 @@ def test_cli_scan_and_create(home, monkeypatch, tmp_path, project):
     repo, shas = project
     monkeypatch.setenv("WORKGRAPH_HOME", str(home))
     monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "claude-config"))
-    runner = CliRunner()
 
     def invoke(*args: str) -> Any:
-        STATE.json = True
-        STATE.home = None
-        try:
-            result = runner.invoke(cli, list(args), catch_exceptions=False)
-        finally:
-            STATE.close()
-            STATE.json = False
+        result = run_cli(["--json", *args])
         assert result.exit_code == 0, f"{args}: exit {result.exit_code}\n{result.output}"
         return json.loads(result.output.strip())
 

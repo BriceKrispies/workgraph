@@ -1,0 +1,90 @@
+{
+  "exchanges": [
+    {
+      "case": "built UI, root",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Workgraph fixture UI</title>\n<link rel=\"stylesheet\" href=\"/assets/app.css\">\n<meta name=\"workgraph-token\" content=\"<token>\"></head>\n<body>\n<div id=\"app\">fixture</div>\n<script src=\"/assets/app.js\"></script>\n</body>\n</html>\n",
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "loopback, web UI built (fixture)"
+    },
+    {
+      "case": "built UI, static asset",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/assets/app.js"
+      },
+      "response": {
+        "body": "document.getElementById(\"app\").textContent = \"fixture\";\n",
+        "headers": {
+          "content-type": "application/javascript",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "loopback, web UI built (fixture)"
+    },
+    {
+      "case": "built UI, deep path",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/tasks/WG-1"
+      },
+      "response": {
+        "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Workgraph fixture UI</title>\n<link rel=\"stylesheet\" href=\"/assets/app.css\">\n<meta name=\"workgraph-token\" content=\"<token>\"></head>\n<body>\n<div id=\"app\">fixture</div>\n<script src=\"/assets/app.js\"></script>\n</body>\n</html>\n",
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "loopback, web UI built (fixture)"
+    },
+    {
+      "case": "loopback client, built UI",
+      "id": "X4",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "",
+        "headers": {
+          "location": "/",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 303
+      },
+      "state": "loopback, web UI built (fixture)"
+    }
+  ]
+}

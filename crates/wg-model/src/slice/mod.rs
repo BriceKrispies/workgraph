@@ -6,17 +6,29 @@
 //! key, so iteration is in key order and identical on every run (a hash map's order would depend
 //! on its hasher).
 
+mod automation;
+mod experiment;
+mod intel;
 mod queue;
 mod registry;
 mod run;
 mod stack;
 mod task;
+mod telemetry;
+mod tracker;
+mod verify;
 
+pub use automation::AutomationSlice;
+pub use experiment::ExperimentSlice;
+pub use intel::IntelSlice;
 pub use queue::QueueSlice;
 pub use registry::RegistrySlice;
 pub use run::{RunSlice, RunState};
 pub use stack::{StackFlow, StackSlice};
 pub use task::TaskSlice;
+pub use telemetry::TelemetrySlice;
+pub use tracker::TrackerSlice;
+pub use verify::VerifySlice;
 
 use rpds::RedBlackTreeMapSync;
 use wg_types::Id;

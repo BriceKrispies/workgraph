@@ -9,3 +9,8 @@ description = "attempt state machine, run flow, worktree and branch planning"
 
 [lints]
 workspace = true
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-tasks = { path = "../wg-tasks" }
+wg-types = { path = "../wg-types" }

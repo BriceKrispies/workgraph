@@ -13,3 +13,9 @@ impl PartialEq for Real {
 }
 
 impl Eq for Real {}
+
+impl serde::Serialize for Real {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_f64(self.0)
+    }
+}

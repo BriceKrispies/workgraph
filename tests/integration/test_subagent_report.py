@@ -4,11 +4,8 @@ import json
 from datetime import UTC, datetime
 from typing import Any
 
-from typer.testing import CliRunner
-
+from tests.helpers import run_cli
 from workgraph.app import Workgraph
-from workgraph.cli.common import STATE
-from workgraph.cli.main import app as cli
 from workgraph.core.context import RequestContext
 from workgraph.core.models.schemas import TaskCreate, WorkspaceCreate
 from workgraph.core.services import resolve
@@ -285,16 +282,9 @@ def test_report_is_json_serialisable(app, human, ws):
 
 def test_cli_json_and_human_output(app, human, ws):
     _seed(app, human, ws)
-    runner = CliRunner()
 
     def invoke(*args: str, json_mode: bool) -> str:
-        STATE.json = json_mode
-        STATE.home = None
-        try:
-            result = runner.invoke(cli, list(args), catch_exceptions=False)
-        finally:
-            STATE.close()
-            STATE.json = False
+        result = run_cli(["--json", *args] if json_mode else list(args))
         assert result.exit_code == 0, result.output
         return result.output
 

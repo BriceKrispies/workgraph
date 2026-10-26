@@ -5,10 +5,8 @@ from pathlib import Path
 
 import pytest
 from sqlalchemy import func, select
-from typer.testing import CliRunner
 
-from workgraph.cli.common import STATE
-from workgraph.cli.main import app as cli
+from tests.helpers import run_cli
 from workgraph.core.errors import ConflictError
 from workgraph.core.models.schemas import (
     ClaimRequest,
@@ -151,16 +149,9 @@ def test_a_renamed_slug_or_repository_name_must_be_free(app, human, ws, world, m
 @pytest.fixture
 def cli_run(home, monkeypatch):
     monkeypatch.setenv("WORKGRAPH_HOME", str(home))
-    runner = CliRunner()
 
     def invoke(*args: str, expect: int = 0) -> str:
-        STATE.json = True
-        STATE.home = None
-        try:
-            result = runner.invoke(cli, list(args), catch_exceptions=False)
-        finally:
-            STATE.close()
-            STATE.json = False
+        result = run_cli(["--json", *args])
         assert result.exit_code == expect, f"{args}: exit {result.exit_code}\n{result.output}"
         return result.output
 

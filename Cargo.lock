@@ -710,6 +710,19 @@ dependencies = [
 [[package]]
 name = "wg-demo-agent"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-demoproto",
+ "wg-proc",
+]
+
+[[package]]
+name = "wg-demoproto"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-procspec",
+]
 
 [[package]]
 name = "wg-events"
@@ -718,6 +731,11 @@ version = "0.1.0"
 [[package]]
 name = "wg-exec"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-tasks",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-experiments"

@@ -1,0 +1,481 @@
+{
+  "exchanges": [
+    {
+      "case": "root redirects to /pair",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": "",
+        "headers": {
+          "location": "/pair",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 303
+      },
+      "state": "LAN device, not paired"
+    },
+    {
+      "case": "pairing form",
+      "id": "X4",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "LAN device, not paired"
+    },
+    {
+      "case": "wrong code",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device, not paired"
+    },
+    {
+      "case": "correct code sets the device cookie",
+      "id": "X5",
+      "request": {
+        "body": "code=ABCD-EFGH",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "",
+        "headers": {
+          "location": "/",
+          "referrer-policy": "no-referrer",
+          "set-cookie": "workgraph_device=<device-cookie>; HttpOnly; Max-Age=34560000; Path=/; SameSite=strict",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 303
+      },
+      "state": "LAN device, not paired"
+    },
+    {
+      "case": "paired device, root",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": "<!doctype html><html><head><meta charset='utf-8'><title>Workgraph</title></head><body><h1>Workgraph API is running</h1><p>The web UI has not been built. Run <code>bun install --cwd web</code> and <code>bun run --cwd web build</code>, then reload.</p><p>API: <code>/api/v1</code></p></body></html>",
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "LAN device, paired"
+    },
+    {
+      "case": "paired device, /pair",
+      "id": "X4",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "",
+        "headers": {
+          "location": "/",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 303
+      },
+      "state": "LAN device, paired"
+    },
+    {
+      "case": "paired device, no API token",
+      "id": "X1",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/api/openapi.json"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "unauthorized",
+            "message": "missing or invalid API token"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer"
+        },
+        "status": 401
+      },
+      "state": "LAN device, paired"
+    },
+    {
+      "case": "device on the LAN, MCP",
+      "id": "X6",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "POST",
+        "path": "/mcp/"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "forbidden_client",
+            "message": "MCP is only served on loopback"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 403
+      },
+      "state": "LAN device, paired"
+    },
+    {
+      "case": "public address refused",
+      "id": "X4",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/pair"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "forbidden_client",
+            "message": "client network not allowed"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 403
+      },
+      "state": "client outside the private networks"
+    },
+    {
+      "case": "trusted",
+      "id": "X4",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "",
+        "headers": {
+          "location": "/",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 303
+      },
+      "state": "loopback client on a LAN-enabled server"
+    },
+    {
+      "case": "wrong code 1 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "wrong code 2 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "wrong code 3 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "wrong code 4 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "wrong code 5 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "wrong code 6 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "wrong code 7 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "wrong code 8 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "wrong code 9 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "wrong code 10 of 10",
+      "id": "X5",
+      "request": {
+        "body": "code=AAAA-AAAA",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">That code is not right.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 403
+      },
+      "state": "LAN device after ten wrong codes"
+    },
+    {
+      "case": "correct code after the lock",
+      "id": "X5",
+      "request": {
+        "body": "code=ABCD-EFGH",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><meta name='color-scheme' content='light dark'><title>Pair device - Workgraph</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px 16px;display:flex;justify-content:center}main{width:100%;max-width:360px}h1{font-size:1.4rem}input,button{font-size:1.2rem;padding:12px;width:100%;box-sizing:border-box;margin-top:12px;border-radius:8px;border:1px solid #888}input{letter-spacing:.15em;text-transform:uppercase}button{cursor:pointer;background:#2563eb;color:#fff;border-color:#2563eb}.error{color:#dc2626}</style></head><body><main><h1>Pair this device</h1><p>Enter the pairing code that <code>workgraph serve</code> printed on the computer running Workgraph.</p><p class=\"error\">Too many wrong codes. Restart workgraph serve to pair again.</p><form method='post' action='/pair'><input name='code' autocomplete='one-time-code' autocapitalize='characters' placeholder='XXXX-XXXX' required autofocus><button type='submit'>Pair</button></form></main></body></html>",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 429
+      },
+      "state": "LAN device after ten wrong codes"
+    }
+  ]
+}

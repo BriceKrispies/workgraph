@@ -7,10 +7,16 @@
 //! [`task::TaskKeyed`]); [`EventPayload`] has one variant per event type, named after it.
 
 pub mod attempt;
+pub mod automation;
+pub mod classification;
+pub mod experiment;
+pub mod git;
 pub mod project;
 pub mod repository;
+pub mod session;
 pub mod stack;
 pub mod task;
+pub mod verification;
 pub mod workspace;
 pub mod worktree;
 
@@ -27,6 +33,21 @@ pub use attempt::{
     AttemptOutcomeCaptured, AttemptProgress, AttemptResult, AttemptStatusChanged,
     AttemptSubagentBound, AttemptUsage, AttemptWorkspacePrepared,
 };
+pub use automation::{
+    AutomationRuleCreated, AutomationRuleToggled, AutomationRuleUpdated, AutomationRunCompleted,
+    NotificationCreated, ReportGenerated,
+};
+pub use classification::{
+    ClassificationCompleted, ClassificationConfirmed, ClassificationDisagreement,
+    ClassificationEvaluated, ClassificationFailed, ClassificationPromoted,
+    ClassificationSuperseded,
+};
+pub use experiment::{
+    ExperimentClosed, ExperimentCreated, ExperimentFrozen, ExperimentProtocolUpdated,
+    ExperimentTrialAdded, ExperimentTrialClassified, ExperimentTrialGraded,
+    ExperimentTrialInvalidated, ExperimentTrialLinked, ExperimentTrialStarted, PredictorFitted,
+};
+pub use git::{GitCommitIngested, GitCommitsAttributed, GitSyncCompleted};
 pub use project::{
     ProjectCreated, ProjectRepositoryAdded, ProjectRepositoryRemoved, ProjectUpdated,
 };
@@ -34,6 +55,10 @@ pub use repository::{
     RepositoryAttached, RepositoryChangesDetected, RepositoryCheckoutDiscovered,
     RepositoryCheckoutLost, RepositoryCheckoutRemoved, RepositoryDependencyDeclared,
     RepositoryHealthChanged, RepositoryRemoved, RepositoryUpdated,
+};
+pub use session::{
+    AgentInternalTaskChanged, AgentSessionBound, AgentSessionEnded, AgentSessionStarted,
+    AgentSubagentChanged,
 };
 pub use stack::{
     StackBisectProbe, StackCreated, StackIntegrationConflict, StackIntegrationMerged,
@@ -49,6 +74,10 @@ pub use task::{
     TaskEscalated, TaskKeyed, TaskRejected, TaskRelationAdded, TaskReleased, TaskReopened,
     TaskRepositoryLinked, TaskRepositoryUnlinked, TaskStatusChanged, TaskSynced, TaskUpdated,
 };
+pub use verification::{
+    VerificationCompleted, VerificationConfigToggled, VerificationConfigWritten,
+    VerificationStarted,
+};
 pub use workspace::{WorkspaceArchived, WorkspaceCreated, WorkspaceSettingsChanged};
 pub use worktree::{WorktreeCreated, WorktreeRecovered, WorktreeRemoved};
 
@@ -59,6 +88,17 @@ pub enum EntityType {
     Project,
     Repository,
     Task,
+    AgentSession,
+    AutomationRule,
+    AutomationRun,
+    Commit,
+    Experiment,
+    ExperimentTrial,
+    Notification,
+    PredictorFit,
+    Report,
+    VerificationConfig,
+    VerificationRun,
     Attempt,
     Stack,
     Worktree,
@@ -72,6 +112,17 @@ impl EntityType {
             EntityType::Project => "project",
             EntityType::Repository => "repository",
             EntityType::Task => "task",
+            EntityType::AgentSession => "agent_session",
+            EntityType::AutomationRule => "automation_rule",
+            EntityType::AutomationRun => "automation_run",
+            EntityType::Commit => "commit",
+            EntityType::Experiment => "experiment",
+            EntityType::ExperimentTrial => "experiment_trial",
+            EntityType::Notification => "notification",
+            EntityType::PredictorFit => "predictor_fit",
+            EntityType::Report => "report",
+            EntityType::VerificationConfig => "verification_config",
+            EntityType::VerificationRun => "verification_run",
             EntityType::Attempt => "attempt",
             EntityType::Stack => "stack",
             EntityType::Worktree => "worktree",
@@ -174,6 +225,52 @@ event_payloads! {
     TaskCommitUnlinked(TaskCommitUnlinked) = "task.commit_unlinked", Task, version 1;
     TaskChangeSurfaceComputed(TaskChangeSurfaceComputed) = "task.change_surface_computed", Task, version 1;
 
+    AgentSessionBound(AgentSessionBound) = "agent_session.bound", Task, version 1;
+    AgentSessionStarted(AgentSessionStarted) = "agent_session.started", AgentSession, version 1;
+    AgentSessionEnded(AgentSessionEnded) = "agent_session.ended", AgentSession, version 1;
+    AgentSessionInternalTaskCreated(AgentInternalTaskChanged) = "agent_session.internal_task_created", AgentSession, version 1;
+    AgentSessionInternalTaskCompleted(AgentInternalTaskChanged) = "agent_session.internal_task_completed", AgentSession, version 1;
+    AgentSessionSubagentStarted(AgentSubagentChanged) = "agent_session.subagent_started", AgentSession, version 1;
+    AgentSessionSubagentStopped(AgentSubagentChanged) = "agent_session.subagent_stopped", AgentSession, version 1;
+
+    AutomationRuleCreated(AutomationRuleCreated) = "automation.rule_created", AutomationRule, version 1;
+    AutomationRuleUpdated(AutomationRuleUpdated) = "automation.rule_updated", AutomationRule, version 1;
+    AutomationRuleEnabled(AutomationRuleToggled) = "automation.rule_enabled", AutomationRule, version 1;
+    AutomationRuleDisabled(AutomationRuleToggled) = "automation.rule_disabled", AutomationRule, version 1;
+    AutomationRunCompleted(AutomationRunCompleted) = "automation.run_completed", AutomationRun, version 1;
+    NotificationCreated(NotificationCreated) = "notification.created", Notification, version 1;
+    ReportGenerated(ReportGenerated) = "report.generated", Report, version 1;
+
+    ClassificationCompleted(ClassificationCompleted) = "classification.completed", Task, version 1;
+    ClassificationConfirmed(ClassificationConfirmed) = "classification.confirmed", Task, version 1;
+    ClassificationDisagreement(ClassificationDisagreement) = "classification.disagreement", Task, version 1;
+    ClassificationEvaluated(ClassificationEvaluated) = "classification.evaluated", Workspace, version 1;
+    ClassificationFailed(ClassificationFailed) = "classification.failed", Task, version 1;
+    ClassificationPromoted(ClassificationPromoted) = "classification.promoted", Task, version 1;
+    ClassificationSuperseded(ClassificationSuperseded) = "classification.superseded", Task, version 1;
+
+    ExperimentCreated(ExperimentCreated) = "experiment.created", Experiment, version 1;
+    ExperimentFrozen(ExperimentFrozen) = "experiment.frozen", Experiment, version 1;
+    ExperimentProtocolUpdated(ExperimentProtocolUpdated) = "experiment.protocol_updated", Experiment, version 1;
+    ExperimentClosed(ExperimentClosed) = "experiment.closed", Experiment, version 1;
+    ExperimentTrialAdded(ExperimentTrialAdded) = "experiment_trial.added", ExperimentTrial, version 1;
+    ExperimentTrialStarted(ExperimentTrialStarted) = "experiment_trial.started", ExperimentTrial, version 1;
+    ExperimentTrialLinked(ExperimentTrialLinked) = "experiment_trial.linked", ExperimentTrial, version 1;
+    ExperimentTrialGraded(ExperimentTrialGraded) = "experiment_trial.graded", ExperimentTrial, version 1;
+    ExperimentTrialClassified(ExperimentTrialClassified) = "experiment_trial.classified", ExperimentTrial, version 1;
+    ExperimentTrialInvalidated(ExperimentTrialInvalidated) = "experiment_trial.invalidated", ExperimentTrial, version 1;
+    PredictorFitted(PredictorFitted) = "predictor.fitted", PredictorFit, version 1;
+
+    GitCommitIngested(GitCommitIngested) = "git.commit_ingested", Commit, version 1;
+    GitCommitsAttributed(GitCommitsAttributed) = "git.commits_attributed", Repository, version 1;
+    GitSyncCompleted(GitSyncCompleted) = "git.sync_completed", Repository, version 1;
+
+    VerificationConfigCreated(VerificationConfigWritten) = "verification.config_created", VerificationConfig, version 1;
+    VerificationConfigUpdated(VerificationConfigWritten) = "verification.config_updated", VerificationConfig, version 1;
+    VerificationConfigEnabled(VerificationConfigToggled) = "verification.config_enabled", VerificationConfig, version 1;
+    VerificationConfigDisabled(VerificationConfigToggled) = "verification.config_disabled", VerificationConfig, version 1;
+    VerificationStarted(VerificationStarted) = "verification.started", VerificationRun, version 1;
+    VerificationCompleted(VerificationCompleted) = "verification.completed", VerificationRun, version 1;
     AttemptCreated(AttemptCreated) = "attempt.created", Attempt, version 1;
     AttemptStatusChanged(AttemptStatusChanged) = "attempt.status_changed", Attempt, version 1;
     AttemptCancelRequested(AttemptCancelRequested) = "attempt.cancel_requested", Attempt, version 1;

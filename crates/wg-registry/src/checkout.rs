@@ -8,9 +8,10 @@
 
 use std::iter::once;
 
-use serde_json::Value;
-use wg_model::RepositoryCheckout;
-use wg_types::{ErrorCode, WgError};
+use serde_json::{Value, json};
+use wg_model::event::RepositoryCheckoutDiscovered;
+use wg_model::{EventDraft, EventPayload, RepositoryCheckout, RepositoryRemote, Row, Stamp, Write};
+use wg_types::{ErrorCode, Id, Timestamp, WgError};
 
 use crate::remote::normalize_remote_url;
 
@@ -191,6 +192,145 @@ pub fn plan_remote_writes(
             url: url.clone(),
             normalized_url: normalize_remote_url(url),
             update: existing_names.contains(&name.as_str()),
+        })
+        .collect()
+}
+
+/// What `git worktree list` says about one record, beyond its path (for the discovery event).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WorktreeDetail {
+    pub branch: Option<String>,
+    pub detached: bool,
+    pub locked: bool,
+}
+
+/// The `skipped_worktrees` entries of the health detail: the paths a discovery left out.
+pub fn skipped_entries(decisions: &[Discovery]) -> Vec<Value> {
+    decisions
+        .iter()
+        .filter_map(|decision| match decision {
+            Discovery::Skip { path, reason } => Some(json!({"path": path, "reason": reason})),
+            Discovery::Add { .. } => None,
+        })
+        .collect()
+}
+
+/// A new, available checkout row at `path`.
+pub fn new_checkout(
+    id: Id,
+    repository_id: Id,
+    path: &str,
+    kind: &str,
+    is_primary: bool,
+    at: Timestamp,
+) -> RepositoryCheckout {
+    RepositoryCheckout {
+        id,
+        repository_id,
+        path: path.to_owned(),
+        kind: kind.to_owned(),
+        is_primary,
+        access_mode: None,
+        available: true,
+        last_seen_at: Some(at),
+        created_at: at,
+        updated_at: at,
+    }
+}
+
+/// Where a decision's discovered rows take their ids: checkout `i` gets `checkout_slot + i`, its
+/// event `event_slot + i`.
+#[derive(Debug, Clone, Copy)]
+pub struct DiscoverySlots {
+    pub checkout: u32,
+    pub event: u32,
+}
+
+/// The checkouts a discovery adds, each with its `repository.checkout_discovered` event
+/// (`source` names the command: `register` or `refresh`).
+pub fn discovered_rows(
+    decisions: &[Discovery],
+    details: &[(WorktreeRecord, WorktreeDetail)],
+    stamp: &Stamp,
+    scope: (Id, Id),
+    source: &str,
+    slots: DiscoverySlots,
+) -> Vec<(RepositoryCheckout, EventDraft)> {
+    let (workspace_id, repository_id) = scope;
+    decisions
+        .iter()
+        .filter_map(|decision| match decision {
+            Discovery::Add { path, kind } => Some((path, *kind)),
+            Discovery::Skip { .. } => None,
+        })
+        .enumerate()
+        .map(|(index, (path, kind))| {
+            let detail = details
+                .iter()
+                .find(|(record, _)| &record.path == path)
+                .map(|(_, detail)| detail);
+            let offset = u32::try_from(index).unwrap_or(u32::MAX);
+            let checkout = new_checkout(
+                stamp.id(slots.checkout + offset),
+                repository_id,
+                path,
+                kind,
+                false,
+                stamp.at,
+            );
+            let payload = RepositoryCheckoutDiscovered {
+                path: path.clone(),
+                kind: kind.to_owned(),
+                branch: detail.map(|d| d.branch.clone()),
+                detached: detail.map(|d| d.detached),
+                locked: detail.map(|d| d.locked),
+                source: Some(source.to_owned()),
+                reason: None,
+            };
+            let event = EventDraft::new(
+                stamp,
+                stamp.id(slots.event + offset),
+                Some(workspace_id),
+                repository_id,
+                EventPayload::RepositoryCheckoutDiscovered(payload),
+            );
+            (checkout, event)
+        })
+        .collect()
+}
+
+/// The writes that bring a repository's remotes in line with `remotes` (`_sync_remotes`):
+/// known names are updated, new ones inserted with ids from `slot` upward.
+pub fn remote_writes(
+    remotes: &[(String, String)],
+    known: &[RepositoryRemote],
+    repository_id: Id,
+    stamp: &Stamp,
+    slot: u32,
+) -> Vec<Write> {
+    let names: Vec<&str> = known.iter().map(|r| r.name.as_str()).collect();
+    plan_remote_writes(remotes, &names)
+        .into_iter()
+        .enumerate()
+        .map(|(index, planned)| {
+            let existing = known.iter().find(|r| r.name == planned.name);
+            match (planned.update, existing) {
+                (true, Some(remote)) => Write::update(Row::RepositoryRemote(RepositoryRemote {
+                    url: planned.url.clone(),
+                    normalized_url: planned.normalized_url.clone(),
+                    updated_at: stamp.at,
+                    ..remote.clone()
+                })),
+                _ => Write::insert(Row::RepositoryRemote(RepositoryRemote {
+                    id: stamp.id(slot + u32::try_from(index).unwrap_or(u32::MAX)),
+                    repository_id,
+                    name: planned.name.clone(),
+                    url: planned.url.clone(),
+                    normalized_url: planned.normalized_url.clone(),
+                    created_at: stamp.at,
+                    updated_at: stamp.at,
+                })),
+            }
         })
         .collect()
 }

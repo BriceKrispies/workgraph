@@ -22,6 +22,7 @@ pub mod events;
 pub mod jobs;
 pub mod logs;
 pub mod registry;
+pub mod repos;
 pub mod settings;
 pub mod setup;
 pub mod stacks;

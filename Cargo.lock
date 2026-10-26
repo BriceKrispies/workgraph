@@ -2335,7 +2335,9 @@ dependencies = [
  "wg-config",
  "wg-json",
  "wg-model",
+ "wg-registry",
  "wg-render",
+ "wg-runtimespec",
  "wg-types",
  "wg-validate",
  "wg-wire",
@@ -2493,13 +2495,11 @@ dependencies = [
  "serde_json",
  "tokio",
  "tokio-util",
- "wg-git",
  "wg-json",
  "wg-mcpspec",
  "wg-model",
  "wg-registry",
  "wg-runtime",
- "wg-runtimespec",
  "wg-store",
  "wg-types",
  "wg-wire",
@@ -2620,6 +2620,7 @@ dependencies = [
  "wg-telemetry",
  "wg-telemetryspec",
  "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

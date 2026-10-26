@@ -8,6 +8,7 @@
 pub mod decision;
 pub mod job;
 pub mod registry;
+pub mod repo;
 pub mod serve;
 pub mod setup;
 pub mod task;
@@ -35,6 +36,7 @@ pub struct Group {
 
 /// The implemented groups.
 pub const GROUPS: &[Group] = &[
+    repo::GROUP,
     setup::CONFIG,
     setup::DOCTOR,
     setup::INIT,

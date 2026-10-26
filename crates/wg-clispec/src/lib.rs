@@ -12,6 +12,7 @@ pub mod decision;
 pub mod failure;
 pub mod job;
 pub mod registry;
+pub mod repo;
 pub mod servers;
 pub mod setup;
 pub mod snapshot;

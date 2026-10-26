@@ -33,3 +33,4 @@ wg-tasks = { path = "../wg-tasks" }
 wg-telemetry = { path = "../wg-telemetry" }
 wg-telemetryspec = { path = "../wg-telemetryspec" }
 wg-types = { path = "../wg-types" }
+wg-wire = { path = "../wg-wire" }

@@ -13,6 +13,7 @@ const IMPLEMENTED: &[&str] = &[
     "config",
     "doctor",
     "init",
+    "repo",
     "task",
     "decision",
     "ui",

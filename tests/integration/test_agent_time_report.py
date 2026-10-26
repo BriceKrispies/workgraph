@@ -5,11 +5,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from typer.testing import CliRunner
-
+from tests.helpers import run_cli
 from workgraph.app import Workgraph
-from workgraph.cli.common import STATE
-from workgraph.cli.main import app as cli
 from workgraph.core.context import RequestContext
 from workgraph.core.models.schemas import TaskCreate
 from workgraph.core.services import resolve
@@ -209,15 +206,8 @@ def test_reports_are_json_serialisable(app, human, ws):
 
 def test_cli_time_and_bottlenecks(app, human, ws):
     _seed(app, human, ws)
-    runner = CliRunner()
     for args in (["analytics", "time"], ["analytics", "time", "--by", "task"], ["analytics", "bottlenecks"]):
-        STATE.json = True
-        STATE.home = None
-        try:
-            result = runner.invoke(cli, list(args), catch_exceptions=False)
-        finally:
-            STATE.close()
-            STATE.json = False
+        result = run_cli(["--json", *args])
         assert result.exit_code == 0, result.output
         assert json.loads(result.output)
 

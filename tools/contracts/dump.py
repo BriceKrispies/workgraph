@@ -177,9 +177,23 @@ def _openapi_snapshot(app: Any) -> dict[str, Any]:
 
 
 def _config_snapshot() -> dict[str, Any]:
+    from pydantic.json_schema import GenerateJsonSchema
+
     from workgraph.config.settings import GlobalConfig
 
-    return GlobalConfig.model_json_schema()
+    class _FactoryDefaults(GenerateJsonSchema):
+        """Also emit defaults produced by ``default_factory``, which pydantic leaves out of the schema.
+
+        The factory is called once at schema time, so the default is what a fresh config holds.
+        """
+
+        def get_default_value(self, schema: Any) -> Any:
+            factory = schema.get("default_factory")
+            if factory is not None:
+                return factory()
+            return super().get_default_value(schema)
+
+    return GlobalConfig.model_json_schema(schema_generator=_FactoryDefaults)
 
 
 # ---------------------------------------------------------------- database

@@ -1,0 +1,30 @@
+{
+  "id": "stack-base-standalone-default",
+  "covers": ["C021", "C023", "C066"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Standalone", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["git", "sync", "svc"], "json": true},
+    {"cli": ["git", "log", "svc"], "json": true, "save": {"head": "/items/0/sha"}},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true, "save": {"attempt": "/attempt_id"}},
+    {"assert": {"json": {"path": "/repositories/0/base_sha", "equals": "{var:head}"}}},
+    {"assert": {"json": {"path": "/repositories/0/base", "equals": null}}},
+    {"cli": ["attempt", "manifests", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/0/kind", "equals": "baseline"}}},
+    {"assert": {"json": {"path": "/0/entries/0/target_ref", "equals": "main"}}},
+    {"assert": {"json": {"path": "/0/entries/0/sha", "equals": "{var:head}"}}},
+    {"cli": ["events", "list", "--prefix", "attempt.workspace_prepared"], "json": true},
+    {"assert": {"json": {"path": "/0/data/bases", "equals": {}}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stack_bases.py::test_task_outside_any_stack_keeps_default_base: the repository's main moves on before the attempt starts, so the default base is compared with a head that changed; steps cannot create commits after setup, so the default base is asserted against the current head only",
+      "covered_by": "CORE-13"
+    }
+  ]
+}

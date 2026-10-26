@@ -1,0 +1,40 @@
+{
+  "id": "stack-agent-reads-but-cannot-mutate",
+  "covers": ["M09", "M10", "M12", "M13", "M14"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"mcp": "stack_get", "args": {"parent": "WG-1"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/parent_key", "equals": "WG-1"}}},
+    {"assert": {"json": {"path": "/items/0/state", "equals": "pending"}}},
+    {"mcp": "stack_list", "args": {}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/stacks/0/parent_key", "equals": "WG-1"}}},
+    {"mcp": "stack_create", "args": {"parent": "WG-1"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "permission"}},
+    {"mcp": "stack_add_item", "args": {"parent": "WG-1", "task": "WG-2"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "permission"}},
+    {"mcp": "stack_remove_item", "args": {"parent": "WG-1", "task": "WG-2"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "permission"}},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/items/0/task_key", "equals": "WG-2"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stacks.py::test_agents_can_read_but_not_mutate: an agent is refused set_item_state, and a context without task:read is refused get; no MCP tool sets an item state, and the MCP server always runs with the default agent permissions",
+      "covered_by": "CORE-14"
+    }
+  ]
+}

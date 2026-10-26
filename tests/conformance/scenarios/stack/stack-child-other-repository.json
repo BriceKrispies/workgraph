@@ -1,0 +1,24 @@
+{
+  "id": "stack-child-other-repository",
+  "covers": ["C135", "C136", "C118"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"},
+    {"git": "init", "repo": "other"},
+    {"git": "commit", "repo": "other", "files": {"base.txt": "other\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["repo", "register", "{repo:other}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["task", "create", "Elsewhere", "--parent", "WG-1", "--repo", "other"], "json": true},
+    {"cli": ["stack", "add", "WG-1", "WG-3"], "json": true, "expect_exit": 2},
+    {"assert": {"json": {"path": "/error/details/repositories/0", "equals": "other"}}},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/items/0/task_key", "equals": "WG-2"}}}
+  ],
+  "not_observable": []
+}

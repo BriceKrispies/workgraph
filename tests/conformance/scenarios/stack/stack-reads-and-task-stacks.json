@@ -1,0 +1,29 @@
+{
+  "id": "stack-reads-and-task-stacks",
+  "covers": ["C140", "C143", "H068"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["stack", "list"], "json": true},
+    {"assert": {"json": {"path": "/0/parent_key", "equals": "WG-1"}}},
+    {"assert": {"json": {"path": "/0/status", "equals": "open"}}},
+    {"cli": ["stack", "list", "--all"], "json": true},
+    {"assert": {"json": {"path": "/0/parent_key", "equals": "WG-1"}}},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/items/0/state", "equals": "pending"}}},
+    {"assert": {"json": {"path": "/items/1/state", "equals": "pending"}}},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-2/stacks"},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-1/stacks"},
+    {"cli": ["stack", "show", "WG-2"], "json": true, "expect_exit": 4},
+    {"cli": ["stack", "show", "WG-99"], "json": true, "expect_exit": 4}
+  ],
+  "not_observable": []
+}

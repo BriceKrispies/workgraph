@@ -5,6 +5,7 @@
 //! holds the repositories the setup steps create.
 
 use crate::gitfix;
+use crate::http;
 use crate::scenario::{Assertion, Scenario, Setup, Step};
 use serde_json::{Map, Value, json};
 use std::collections::BTreeMap;
@@ -109,15 +110,15 @@ impl RunResult {
 
 static RUN_COUNTER: AtomicU64 = AtomicU64::new(0);
 
-struct Sandbox {
-    root: PathBuf,
-    home: PathBuf,
-    tmp: PathBuf,
-    repos: PathBuf,
+pub(crate) struct Sandbox {
+    pub(crate) root: PathBuf,
+    pub(crate) home: PathBuf,
+    pub(crate) tmp: PathBuf,
+    pub(crate) repos: PathBuf,
 }
 
 impl Sandbox {
-    fn create() -> Result<Self, String> {
+    pub(crate) fn create() -> Result<Self, String> {
         let n = RUN_COUNTER.fetch_add(1, Ordering::Relaxed);
         let nanos = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -151,13 +152,15 @@ struct Ctx<'a> {
     last: Option<Outcome>,
     /// Commit tick per repository name, so each repository's dates count from its own first commit.
     git_ticks: BTreeMap<String, u64>,
+    /// The `serve` process, started by the first `http` step and killed when the run ends.
+    server: Option<http::Server>,
 }
 
 fn display(p: &Path) -> String {
     p.display().to_string()
 }
 
-fn env_for(
+pub(crate) fn env_for(
     imp: &Implementation,
     sb: &Sandbox,
     extra: &[(String, String)],
@@ -369,18 +372,31 @@ impl Ctx<'_> {
         stdin: Option<&str>,
         extra: &[(String, String)],
     ) -> Result<Outcome, String> {
-        let mut cmd = Command::new(&self.imp.program);
-        cmd.args(&self.imp.args);
-        if json_mode {
-            cmd.arg("--json");
-        }
-        cmd.args(args).current_dir(&self.sb.repos);
-        for (k, _) in std::env::vars().filter(|(k, _)| k.starts_with("WORKGRAPH_")) {
-            cmd.env_remove(k);
-        }
-        cmd.envs(env_for(self.imp, self.sb, extra));
-        run_process(&mut cmd, stdin)
+        run_cli(self.imp, self.sb, args, json_mode, stdin, extra)
     }
+}
+
+/// Run one CLI command of `imp` in `sb`: the implementation's arguments, `--json` when asked,
+/// then `args`, with the sandbox environment and no inherited `WORKGRAPH_*` variables.
+pub(crate) fn run_cli(
+    imp: &Implementation,
+    sb: &Sandbox,
+    args: &[String],
+    json_mode: bool,
+    stdin: Option<&str>,
+    extra: &[(String, String)],
+) -> Result<Outcome, String> {
+    let mut cmd = Command::new(&imp.program);
+    cmd.args(&imp.args);
+    if json_mode {
+        cmd.arg("--json");
+    }
+    cmd.args(args).current_dir(&sb.repos);
+    for (k, _) in std::env::vars().filter(|(k, _)| k.starts_with("WORKGRAPH_")) {
+        cmd.env_remove(k);
+    }
+    cmd.envs(env_for(imp, sb, extra));
+    run_process(&mut cmd, stdin)
 }
 
 fn pointer_text(stdout: &str, ptr: &str) -> Result<String, String> {
@@ -569,12 +585,13 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
             tool.clone(),
             "the MCP driver is not part of the runner skeleton",
         ),
-        Step::Http { method, path, .. } => skipped(
-            index,
-            "http",
-            format!("{method} {path}"),
-            "the HTTP driver is not part of the runner skeleton",
-        ),
+        Step::Http {
+            method,
+            path,
+            body,
+            max_events,
+            save,
+        } => http_step(ctx, index, method, path, body.as_ref(), *max_events, save),
         Step::Drain { max_jobs } => {
             let mut rec = record(index, "drain", format!("max_jobs {max_jobs}"));
             let (mut done, mut failed) = (0u64, 0u64);
@@ -624,6 +641,98 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
     }
 }
 
+/// Run one `http` step against the sandbox's `serve`, which starts on first use. The bearer
+/// token is sent on every step. The exit field holds the HTTP status; the output is the body,
+/// or with `max_events` the captured events, one JSON object per line.
+fn http_step(
+    ctx: &mut Ctx<'_>,
+    index: usize,
+    method: &str,
+    path: &str,
+    body: Option<&Value>,
+    max_events: Option<usize>,
+    save: &[(String, String)],
+) -> StepRecord {
+    let rec = record(index, "http", format!("{method} {path}"));
+    let path = match ctx.resolve(path) {
+        Ok(p) => p,
+        Err(e) => return fail(rec, e),
+    };
+    let body = match body.map(|b| ctx.resolve_value(b)).transpose() {
+        Ok(b) => b,
+        Err(e) => return fail(rec, e),
+    };
+    let (payload, mut headers): (Option<Vec<u8>>, Vec<(String, String)>) = match body {
+        None => (None, Vec::new()),
+        Some(Value::String(text)) => (Some(text.into_bytes()), Vec::new()),
+        Some(json) => (
+            Some(json.to_string().into_bytes()),
+            vec![("content-type".to_owned(), "application/json".to_owned())],
+        ),
+    };
+    if ctx.server.is_none() {
+        match http::Server::start(ctx.imp, ctx.sb) {
+            Ok(s) => ctx.server = Some(s),
+            Err(e) => return fail(rec, e),
+        }
+    }
+    let Some(server) = ctx.server.as_ref() else {
+        return fail(rec, "serve did not start".to_owned());
+    };
+    headers.insert(
+        0,
+        (
+            "authorization".to_owned(),
+            format!("Bearer {}", server.token),
+        ),
+    );
+    let req = http::Request {
+        method,
+        path: &path,
+        headers: &headers,
+        body: payload.as_deref(),
+    };
+    let exchange = match http::send(server.port, &req, max_events) {
+        Ok(e) => e,
+        Err(e) => return fail(rec, e),
+    };
+    let text = String::from_utf8_lossy(&exchange.body).replace("\r\n", "\n");
+    let stdout = if max_events.is_some() {
+        exchange
+            .events
+            .iter()
+            .map(|e| format!("{e}\n"))
+            .collect::<String>()
+    } else {
+        text.clone()
+    };
+    scan_keys(&text, &mut ctx.keys);
+    scan_ids(&text, &mut ctx.ids);
+    for (name, ptr) in save {
+        match pointer_text(&text, ptr) {
+            Ok(v) => {
+                ctx.vars.insert(name.clone(), v);
+            }
+            Err(e) => {
+                return fail(
+                    StepRecord {
+                        exit: Some(i64::from(exchange.status)),
+                        stdout,
+                        ..rec
+                    },
+                    format!("save {name}: {e}"),
+                );
+            }
+        }
+    }
+    StepRecord {
+        exit: Some(i64::from(exchange.status)),
+        stdout,
+        status: Status::Passed,
+        ..rec
+    }
+}
+
 fn skipped(index: usize, kind: &'static str, label: String, why: &str) -> StepRecord {
     StepRecord {
         status: Status::Skipped,
@@ -643,6 +752,7 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
         ids: Vec::new(),
         last: None,
         git_ticks: BTreeMap::new(),
+        server: None,
     };
     let mut steps = Vec::new();
     let mut setup_ok = true;
@@ -676,6 +786,7 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
             steps.push(run_step(&mut ctx, i, step));
         }
     }
+    drop(ctx);
     let roots = vec![
         (display(&sb.repos), "<tmp>/repos"),
         (display(&sb.home), "<home>"),
@@ -704,6 +815,7 @@ mod tests {
             ids: Vec::new(),
             last: None,
             git_ticks: BTreeMap::new(),
+            server: None,
         }
     }
 

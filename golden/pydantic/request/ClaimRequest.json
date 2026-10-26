@@ -274,6 +274,99 @@
       }
     },
     {
+      "id": "float:lease_minutes:huge",
+      "input": {
+        "lease_minutes": 1.5e+300
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:lease_minutes:edge",
+      "input": {
+        "lease_minutes": 9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:lease_minutes:min_edge",
+      "input": {
+        "lease_minutes": -9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": -9.223372036854776e+18,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:lease_minutes:above_i64",
+      "input": {
+        "lease_minutes": 9.3e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.3e+18,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:lease_minutes:large",
+      "input": {
+        "lease_minutes": 9.2e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 10080
+            },
+            "input": 9.2e+18,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be less than or equal to 10080",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
       "id": "bigint:lease_minutes:above_i64",
       "input": {
         "lease_minutes": 9223372036854775808
@@ -353,63 +446,6 @@
             ],
             "msg": "Input should be greater than or equal to 1",
             "type": "greater_than_equal"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:lease_minutes:float_in_i64",
-      "input": {
-        "lease_minutes": 9.2e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "ctx": {
-              "le": 10080
-            },
-            "input": 9.2e+18,
-            "loc": [
-              "lease_minutes"
-            ],
-            "msg": "Input should be less than or equal to 10080",
-            "type": "less_than_equal"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:lease_minutes:float_above_i64",
-      "input": {
-        "lease_minutes": 9.3e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": 9.3e+18,
-            "loc": [
-              "lease_minutes"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:lease_minutes:float_min_i64",
-      "input": {
-        "lease_minutes": -9.223372036854776e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": -9.223372036854776e+18,
-            "loc": [
-              "lease_minutes"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
           }
         ]
       }
@@ -863,6 +899,91 @@
       }
     },
     {
+      "id": "float:expected_version:huge",
+      "input": {
+        "expected_version": 1.5e+300
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:edge",
+      "input": {
+        "expected_version": 9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:min_edge",
+      "input": {
+        "expected_version": -9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": -9.223372036854776e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:above_i64",
+      "input": {
+        "expected_version": 9.3e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.3e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:large",
+      "input": {
+        "expected_version": 9.2e+18
+      },
+      "output": {
+        "ok": {
+          "agent": null,
+          "expected_version": 9200000000000000000,
+          "lease_minutes": 120
+        }
+      }
+    },
+    {
       "id": "bigint:expected_version:above_i64",
       "input": {
         "expected_version": 9223372036854775808
@@ -912,55 +1033,6 @@
           "expected_version": -170141183460469231731687303715884105728,
           "lease_minutes": 120
         }
-      }
-    },
-    {
-      "id": "intfloat:expected_version:float_in_i64",
-      "input": {
-        "expected_version": 9.2e+18
-      },
-      "output": {
-        "ok": {
-          "agent": null,
-          "expected_version": 9200000000000000000,
-          "lease_minutes": 120
-        }
-      }
-    },
-    {
-      "id": "intfloat:expected_version:float_above_i64",
-      "input": {
-        "expected_version": 9.3e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": 9.3e+18,
-            "loc": [
-              "expected_version"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:expected_version:float_min_i64",
-      "input": {
-        "expected_version": -9.223372036854776e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": -9.223372036854776e+18,
-            "loc": [
-              "expected_version"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
       }
     },
     {

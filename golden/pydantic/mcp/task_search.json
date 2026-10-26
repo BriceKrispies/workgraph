@@ -516,6 +516,104 @@
       }
     },
     {
+      "id": "float:limit:huge",
+      "input": {
+        "limit": 1.5e+300,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:limit:edge",
+      "input": {
+        "limit": 9.223372036854776e+18,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:limit:min_edge",
+      "input": {
+        "limit": -9.223372036854776e+18,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": -9.223372036854776e+18,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:limit:above_i64",
+      "input": {
+        "limit": 9.3e+18,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.3e+18,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:limit:large",
+      "input": {
+        "limit": 9.2e+18,
+        "query": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 200
+            },
+            "input": 9.2e+18,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be less than or equal to 200",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
       "id": "bigint:limit:above_i64",
       "input": {
         "limit": 9223372036854775808,
@@ -599,66 +697,6 @@
             ],
             "msg": "Input should be greater than or equal to 1",
             "type": "greater_than_equal"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:limit:float_in_i64",
-      "input": {
-        "limit": 9.2e+18,
-        "query": "example"
-      },
-      "output": {
-        "errors": [
-          {
-            "ctx": {
-              "le": 200
-            },
-            "input": 9.2e+18,
-            "loc": [
-              "limit"
-            ],
-            "msg": "Input should be less than or equal to 200",
-            "type": "less_than_equal"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:limit:float_above_i64",
-      "input": {
-        "limit": 9.3e+18,
-        "query": "example"
-      },
-      "output": {
-        "errors": [
-          {
-            "input": 9.3e+18,
-            "loc": [
-              "limit"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:limit:float_min_i64",
-      "input": {
-        "limit": -9.223372036854776e+18,
-        "query": "example"
-      },
-      "output": {
-        "errors": [
-          {
-            "input": -9.223372036854776e+18,
-            "loc": [
-              "limit"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
           }
         ]
       }

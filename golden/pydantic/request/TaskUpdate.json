@@ -208,6 +208,110 @@
       }
     },
     {
+      "id": "float:expected_version:huge",
+      "input": {
+        "expected_version": 1.5e+300
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:edge",
+      "input": {
+        "expected_version": 9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:min_edge",
+      "input": {
+        "expected_version": -9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": -9.223372036854776e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:above_i64",
+      "input": {
+        "expected_version": 9.3e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.3e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:large",
+      "input": {
+        "expected_version": 9.2e+18
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 9200000000000000000,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
       "id": "bigint:expected_version:above_i64",
       "input": {
         "expected_version": 9223372036854775808
@@ -333,74 +437,6 @@
           "tags": null,
           "title": null
         }
-      }
-    },
-    {
-      "id": "intfloat:expected_version:float_in_i64",
-      "input": {
-        "expected_version": 9.2e+18
-      },
-      "output": {
-        "ok": {
-          "acceptance_criteria": null,
-          "add_files": null,
-          "add_tags": null,
-          "assigned_agent": null,
-          "assignee": null,
-          "auto_execute": null,
-          "clear_parent": false,
-          "description": null,
-          "due_at": null,
-          "estimated_effort": null,
-          "expected_version": 9200000000000000000,
-          "files": null,
-          "metadata": null,
-          "parent": null,
-          "priority": null,
-          "projects": null,
-          "reason": null,
-          "remove_tags": null,
-          "scheduled_at": null,
-          "status": null,
-          "tags": null,
-          "title": null
-        }
-      }
-    },
-    {
-      "id": "intfloat:expected_version:float_above_i64",
-      "input": {
-        "expected_version": 9.3e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": 9.3e+18,
-            "loc": [
-              "expected_version"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:expected_version:float_min_i64",
-      "input": {
-        "expected_version": -9.223372036854776e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": -9.223372036854776e+18,
-            "loc": [
-              "expected_version"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
       }
     },
     {

@@ -473,6 +473,104 @@
       }
     },
     {
+      "id": "float:max_bytes:huge",
+      "input": {
+        "max_bytes": 1.5e+300,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:max_bytes:edge",
+      "input": {
+        "max_bytes": 9.223372036854776e+18,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:max_bytes:min_edge",
+      "input": {
+        "max_bytes": -9.223372036854776e+18,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": -9.223372036854776e+18,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:max_bytes:above_i64",
+      "input": {
+        "max_bytes": 9.3e+18,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.3e+18,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:max_bytes:large",
+      "input": {
+        "max_bytes": 9.2e+18,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 2000000
+            },
+            "input": 9.2e+18,
+            "loc": [
+              "max_bytes"
+            ],
+            "msg": "Input should be less than or equal to 2000000",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
       "id": "bigint:max_bytes:above_i64",
       "input": {
         "max_bytes": 9223372036854775808,
@@ -556,66 +654,6 @@
             ],
             "msg": "Input should be greater than or equal to 1000",
             "type": "greater_than_equal"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:max_bytes:float_in_i64",
-      "input": {
-        "max_bytes": 9.2e+18,
-        "task": "example"
-      },
-      "output": {
-        "errors": [
-          {
-            "ctx": {
-              "le": 2000000
-            },
-            "input": 9.2e+18,
-            "loc": [
-              "max_bytes"
-            ],
-            "msg": "Input should be less than or equal to 2000000",
-            "type": "less_than_equal"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:max_bytes:float_above_i64",
-      "input": {
-        "max_bytes": 9.3e+18,
-        "task": "example"
-      },
-      "output": {
-        "errors": [
-          {
-            "input": 9.3e+18,
-            "loc": [
-              "max_bytes"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:max_bytes:float_min_i64",
-      "input": {
-        "max_bytes": -9.223372036854776e+18,
-        "task": "example"
-      },
-      "output": {
-        "errors": [
-          {
-            "input": -9.223372036854776e+18,
-            "loc": [
-              "max_bytes"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
           }
         ]
       }

@@ -635,6 +635,104 @@
       }
     },
     {
+      "id": "float:samples:huge",
+      "input": {
+        "model": "example",
+        "samples": 1.5e+300
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "samples"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:samples:edge",
+      "input": {
+        "model": "example",
+        "samples": 9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "samples"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:samples:min_edge",
+      "input": {
+        "model": "example",
+        "samples": -9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": -9.223372036854776e+18,
+            "loc": [
+              "samples"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:samples:above_i64",
+      "input": {
+        "model": "example",
+        "samples": 9.3e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.3e+18,
+            "loc": [
+              "samples"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:samples:large",
+      "input": {
+        "model": "example",
+        "samples": 9.2e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 5000
+            },
+            "input": 9.2e+18,
+            "loc": [
+              "samples"
+            ],
+            "msg": "Input should be less than or equal to 5000",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
       "id": "bigint:samples:above_i64",
       "input": {
         "model": "example",
@@ -718,66 +816,6 @@
             ],
             "msg": "Input should be greater than or equal to 0",
             "type": "greater_than_equal"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:samples:float_in_i64",
-      "input": {
-        "model": "example",
-        "samples": 9.2e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "ctx": {
-              "le": 5000
-            },
-            "input": 9.2e+18,
-            "loc": [
-              "samples"
-            ],
-            "msg": "Input should be less than or equal to 5000",
-            "type": "less_than_equal"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:samples:float_above_i64",
-      "input": {
-        "model": "example",
-        "samples": 9.3e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": 9.3e+18,
-            "loc": [
-              "samples"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:samples:float_min_i64",
-      "input": {
-        "model": "example",
-        "samples": -9.223372036854776e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": -9.223372036854776e+18,
-            "loc": [
-              "samples"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
           }
         ]
       }
@@ -1283,6 +1321,99 @@
       }
     },
     {
+      "id": "float:seed:huge",
+      "input": {
+        "model": "example",
+        "seed": 1.5e+300
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "seed"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:seed:edge",
+      "input": {
+        "model": "example",
+        "seed": 9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "seed"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:seed:min_edge",
+      "input": {
+        "model": "example",
+        "seed": -9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": -9.223372036854776e+18,
+            "loc": [
+              "seed"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:seed:above_i64",
+      "input": {
+        "model": "example",
+        "seed": 9.3e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.3e+18,
+            "loc": [
+              "seed"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:seed:large",
+      "input": {
+        "model": "example",
+        "seed": 9.2e+18
+      },
+      "output": {
+        "ok": {
+          "feature_penalty": 0.01,
+          "model": "example",
+          "repo_penalty": 1.0,
+          "samples": 200,
+          "seed": 9200000000000000000,
+          "workspace": null
+        }
+      }
+    },
+    {
       "id": "bigint:seed:above_i64",
       "input": {
         "model": "example",
@@ -1348,61 +1479,6 @@
           "seed": -170141183460469231731687303715884105728,
           "workspace": null
         }
-      }
-    },
-    {
-      "id": "intfloat:seed:float_in_i64",
-      "input": {
-        "model": "example",
-        "seed": 9.2e+18
-      },
-      "output": {
-        "ok": {
-          "feature_penalty": 0.01,
-          "model": "example",
-          "repo_penalty": 1.0,
-          "samples": 200,
-          "seed": 9200000000000000000,
-          "workspace": null
-        }
-      }
-    },
-    {
-      "id": "intfloat:seed:float_above_i64",
-      "input": {
-        "model": "example",
-        "seed": 9.3e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": 9.3e+18,
-            "loc": [
-              "seed"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
-      }
-    },
-    {
-      "id": "intfloat:seed:float_min_i64",
-      "input": {
-        "model": "example",
-        "seed": -9.223372036854776e+18
-      },
-      "output": {
-        "errors": [
-          {
-            "input": -9.223372036854776e+18,
-            "loc": [
-              "seed"
-            ],
-            "msg": "Unable to parse input string as an integer, exceeded maximum size",
-            "type": "int_parsing_size"
-          }
-        ]
       }
     },
     {

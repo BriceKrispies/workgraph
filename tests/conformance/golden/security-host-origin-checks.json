@@ -1,0 +1,54 @@
+{
+  "scenario": "security-host-origin-checks",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "http",
+      "exit": 421,
+      "stdout": "{\"error\":{\"code\":\"forbidden_host\",\"message\":\"host 'evil.example.com' not allowed\"}}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 403,
+      "stdout": "{\"error\":{\"code\":\"forbidden_origin\",\"message\":\"origin https://attacker.example not allowed\"}}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 201,
+      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-1\",\"number\":1,\"title\":\"x\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"backlog\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":null,\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":1,\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:1|Z>\",\"started_at\":null,\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

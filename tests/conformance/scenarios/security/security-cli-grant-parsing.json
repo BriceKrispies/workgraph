@@ -1,0 +1,16 @@
+{
+  "id": "security-cli-grant-parsing",
+  "covers": [],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["mcp", "--grant", "root:everything"], "expect_exit": 5},
+    {"assert": {"stderr_contains": "unknown permission"}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/unit/test_foundations.py::test_permissions: the positive parse of run:start into the permission set has no command that reports the parsed set; the default set's exclusion of run:start and task:accept is observed through the refused run_start in security-mcp-default-agent-denied",
+      "covered_by": "LIB-01"
+    }
+  ]
+}

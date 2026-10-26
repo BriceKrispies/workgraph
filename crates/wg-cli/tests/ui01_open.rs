@@ -154,9 +154,9 @@ fn a_timeout_that_is_not_a_number_is_a_usage_error() {
 
 // covers: C192
 #[test]
-fn the_screenshot_subcommand_is_still_a_placeholder() {
+fn the_screenshot_subcommand_needs_a_running_server() {
     let home = temp_home("shot");
-    let out = ui(&home, &["ui", "screenshot"]);
+    let out = ui(&home, &["ui", "screenshot", "--url", "http://127.0.0.1:1"]);
     assert_eq!(out.status.code(), Some(1));
-    assert!(text(&out.stderr).contains("not implemented"));
+    assert!(text(&out.stderr).contains("no Workgraph server at"));
 }

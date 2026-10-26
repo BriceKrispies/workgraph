@@ -31,6 +31,7 @@ pub mod reply;
 pub mod request;
 pub mod routes;
 pub mod security;
+pub mod serve;
 pub mod spa;
 pub mod sse;
 pub mod text;

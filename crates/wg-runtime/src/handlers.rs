@@ -16,7 +16,7 @@ use wg_jobs::queue::ClaimedJob;
 use wg_model::entity::JsonObject;
 use wg_types::WgError;
 
-use crate::feature::Feature;
+use crate::feature::{Feature, JobKind};
 use crate::queue::Queue;
 
 /// Why a handler did not finish normally.
@@ -93,12 +93,14 @@ pub struct HandlerRegistry {
 }
 
 impl HandlerRegistry {
-    /// The handlers this build wires: `noop` and `compact_telemetry`.
+    /// The handlers this build wires: [`RUNTIME_JOBS`], the runtime's own kinds.
     pub fn standard() -> HandlerRegistry {
-        let mut registry = HandlerRegistry::default();
-        registry.register("noop", noop);
-        registry.register("compact_telemetry", compact_telemetry);
-        registry
+        RUNTIME_JOBS
+            .iter()
+            .fold(HandlerRegistry::default(), |mut registry, job| {
+                registry.register(job.kind, job.handler);
+                registry
+            })
     }
 
     /// [`HandlerRegistry::standard`] plus the job kinds of `features`, in order; a later feature
@@ -118,6 +120,20 @@ impl HandlerRegistry {
         self.handlers.insert(kind.to_owned(), Arc::new(handler));
     }
 }
+
+/// The job kinds owned by the runtime itself rather than a feature: the `noop` diagnostic and the
+/// `compact_telemetry` retention pass. Both stay here until a feature crate owns them (4.16, FC-09),
+/// and a move is a cut of its entry and its function into that feature's `jobs` table.
+pub static RUNTIME_JOBS: &[JobKind] = &[
+    JobKind {
+        kind: "noop",
+        handler: noop,
+    },
+    JobKind {
+        kind: "compact_telemetry",
+        handler: compact_telemetry,
+    },
+];
 
 /// `noop`: the diagnostic job that checks workers are alive. `sleep` seconds are spent in slices,
 /// watching for cancellation; `fail` makes the job raise.

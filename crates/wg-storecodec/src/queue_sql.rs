@@ -14,20 +14,7 @@ use wg_model::Table;
 use wg_types::{ErrorCode, Id, JobStatus, Timestamp, WgError};
 
 use crate::codec::{Raw, bool_sql, id_sql, text_sql, ts_sql};
-use crate::rows::columns;
-use crate::sql::Statement;
-
-/// The table's columns, quoted and qualified by `alias` when one is given.
-fn select_list(table: Table, alias: Option<&str>) -> String {
-    columns(table)
-        .iter()
-        .map(|column| match alias {
-            Some(alias) => format!("{alias}.\"{column}\""),
-            None => format!("\"{column}\""),
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
+use crate::sql::{Statement, select_list};
 
 /// `?first, ?first+1, ...` for `count` placeholders, or `NULL` when there are none.
 fn placeholders(first: usize, count: usize) -> String {

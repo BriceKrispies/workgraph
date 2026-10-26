@@ -1,0 +1,276 @@
+{
+  "id": "stack-auto-accept-lands-on-verify",
+  "covers": [
+    "C099",
+    "C060",
+    "C001",
+    "C118",
+    "C152",
+    "C172",
+    "C136",
+    "C131",
+    "C143",
+    "C145",
+    "C165",
+    "C155",
+    "B04",
+    "B05"
+  ],
+  "setup": [
+    {
+      "git": "init",
+      "repo": "svc"
+    },
+    {
+      "git": "commit",
+      "repo": "svc",
+      "files": {
+        "base.txt": "base\n"
+      },
+      "message": "initial"
+    }
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "execution.enabled",
+        "true"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "stacks.auto_accept",
+        "true"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "agent",
+        "add-command",
+        "fake-a",
+        "C:/dev/workgraph/.claude/worktrees/agent-a5745bdc83ae3bbd9/.venv/Scripts/python.exe",
+        "--arg=-m",
+        "--arg=workgraph.demo.scripted_agent",
+        "--arg=--mode",
+        "--arg=success",
+        "--arg=--file",
+        "--arg=a.py",
+        "--arg={manifest}",
+        "--timeout",
+        "120",
+        "--supports-usage"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "agent",
+        "add-command",
+        "fake-b",
+        "C:/dev/workgraph/.claude/worktrees/agent-a5745bdc83ae3bbd9/.venv/Scripts/python.exe",
+        "--arg=-m",
+        "--arg=workgraph.demo.scripted_agent",
+        "--arg=--mode",
+        "--arg=success",
+        "--arg=--file",
+        "--arg=b.py",
+        "--arg={manifest}",
+        "--timeout",
+        "120",
+        "--supports-usage"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "repo",
+        "register",
+        "{repo:svc}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Parent work",
+        "--repo",
+        "svc"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "verify",
+        "config",
+        "gate",
+        "--scope-type",
+        "repository",
+        "--scope",
+        "svc",
+        "--check",
+        "{\"name\":\"types\",\"kind\":\"typecheck\",\"tier\":\"fast\",\"command\":[\"python\",\"-c\",\"print('1 passed')\"]}",
+        "--check",
+        "{\"name\":\"suite\",\"kind\":\"test\",\"command\":[\"python\",\"-c\",\"print('1 passed')\"]}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "First change",
+        "--parent",
+        "WG-1",
+        "--repo",
+        "svc",
+        "--ready"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Second change",
+        "--parent",
+        "WG-1",
+        "--repo",
+        "svc",
+        "--ready"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "stack",
+        "create",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "run",
+        "start",
+        "WG-2",
+        "--agent",
+        "fake-a",
+        "--no-wait"
+      ],
+      "json": true
+    },
+    {
+      "drain": {
+        "max_jobs": 50
+      }
+    },
+    {
+      "cli": [
+        "run",
+        "start",
+        "WG-3",
+        "--agent",
+        "fake-b",
+        "--no-wait"
+      ],
+      "json": true
+    },
+    {
+      "drain": {
+        "max_jobs": 50
+      }
+    },
+    {
+      "cli": [
+        "stack",
+        "show",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "landed"
+        }
+      }
+    },
+    {
+      "cli": [
+        "task",
+        "show",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "accepted"
+        }
+      }
+    },
+    {
+      "cli": [
+        "task",
+        "show",
+        "WG-2"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "accepted"
+        }
+      }
+    },
+    {
+      "assert": {
+        "file": "{repo:svc}/a.py",
+        "exists": true
+      }
+    },
+    {
+      "assert": {
+        "file": "{repo:svc}/b.py",
+        "exists": true
+      }
+    },
+    {
+      "cli": [
+        "task",
+        "history",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "stdout_contains": "stack.auto_accept"
+      }
+    }
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stack_integration.py::test_auto_accept_lands_the_stack_as_soon_as_it_verifies: the main ref equal to the landed tip (rev-parse) is not a CLI read; the automated acceptance row (mode and reason) is a database read",
+      "covered_by": "CR-06"
+    }
+  ]
+}

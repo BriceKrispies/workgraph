@@ -1,0 +1,247 @@
+{
+  "id": "stack-main-moves-before-acceptance",
+  "covers": [
+    "C099",
+    "C060",
+    "C001",
+    "C118",
+    "C152",
+    "C172",
+    "C136",
+    "C131",
+    "C143",
+    "C138",
+    "C145",
+    "B04",
+    "B05"
+  ],
+  "setup": [
+    {
+      "git": "init",
+      "repo": "svc"
+    },
+    {
+      "git": "commit",
+      "repo": "svc",
+      "files": {
+        "base.txt": "base\n"
+      },
+      "message": "initial"
+    }
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "execution.enabled",
+        "true"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "stacks.auto_accept",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "agent",
+        "add-command",
+        "fake-a",
+        "C:/dev/workgraph/.claude/worktrees/agent-a5745bdc83ae3bbd9/.venv/Scripts/python.exe",
+        "--arg=-m",
+        "--arg=workgraph.demo.scripted_agent",
+        "--arg=--mode",
+        "--arg=success",
+        "--arg=--file",
+        "--arg=a.py",
+        "--arg={manifest}",
+        "--timeout",
+        "120",
+        "--supports-usage"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "agent",
+        "add-command",
+        "fake-b",
+        "C:/dev/workgraph/.claude/worktrees/agent-a5745bdc83ae3bbd9/.venv/Scripts/python.exe",
+        "--arg=-m",
+        "--arg=workgraph.demo.scripted_agent",
+        "--arg=--mode",
+        "--arg=success",
+        "--arg=--file",
+        "--arg=b.py",
+        "--arg={manifest}",
+        "--timeout",
+        "120",
+        "--supports-usage"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "repo",
+        "register",
+        "{repo:svc}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Parent work",
+        "--repo",
+        "svc"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "verify",
+        "config",
+        "gate",
+        "--scope-type",
+        "repository",
+        "--scope",
+        "svc",
+        "--check",
+        "{\"name\":\"types\",\"kind\":\"typecheck\",\"tier\":\"fast\",\"command\":[\"python\",\"-c\",\"print('1 passed')\"]}",
+        "--check",
+        "{\"name\":\"suite\",\"kind\":\"test\",\"command\":[\"python\",\"-c\",\"print('1 passed')\"]}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "First change",
+        "--parent",
+        "WG-1",
+        "--repo",
+        "svc",
+        "--ready"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Second change",
+        "--parent",
+        "WG-1",
+        "--repo",
+        "svc",
+        "--ready"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "stack",
+        "create",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "run",
+        "start",
+        "WG-2",
+        "--agent",
+        "fake-a",
+        "--no-wait"
+      ],
+      "json": true
+    },
+    {
+      "drain": {
+        "max_jobs": 50
+      }
+    },
+    {
+      "cli": [
+        "run",
+        "start",
+        "WG-3",
+        "--agent",
+        "fake-b",
+        "--no-wait"
+      ],
+      "json": true
+    },
+    {
+      "drain": {
+        "max_jobs": 50
+      }
+    },
+    {
+      "cli": [
+        "task",
+        "show",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "awaiting_review"
+        }
+      }
+    },
+    {
+      "cli": [
+        "stack",
+        "show",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "verified"
+        }
+      }
+    },
+    {
+      "cli": [
+        "stack",
+        "history",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "stdout_contains": "stack.verified"
+      }
+    }
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stack_integration.py::test_main_moving_before_acceptance_rebuilds_and_lands_after_reverification: the default branch must move after verification and before acceptance; no step creates a commit after setup, so the deferred acceptance (ConflictError with landing deferred), the rebase onto the moved base, the second stack.verified and the final landing are not reachable",
+      "covered_by": "CR-03"
+    }
+  ]
+}

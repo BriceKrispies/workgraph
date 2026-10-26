@@ -258,6 +258,8 @@ needs a browser and is covered by its Python test only on machines that have one
 | DV5 | Texts that only exist because the implementation is Python: exception class names in `spool_reason` and in the message of an unexpected error (exit 1), traceback text in logs, logger names | not contracts; the error envelope and codes are unchanged |
 | DV6 | Parquet export bytes | compared by reading both files back (schema, row values) |
 | DV7 | Last-ulp differences in statistics computed through `exp`/`log` | CPython and Rust may reach different libm implementations; tolerance `1e-12` relative, only for the listed fields (Q9) |
+| DV8 | `doctor` check `python` reports `not required (native binary)` and always passes. Python runs the check `sys.version_info >= (3, 12)` and prints the interpreter version. Proposed, needs user confirmation | the Rust binary has no Python runtime to version-check; the check keeps its name and position in the list |
+| DV9 | `doctor` has no `web frontend build` check. Python warns when `static/index.html` is missing. Proposed, needs user confirmation | the web UI is embedded in the binary at build time, so there is no static directory that can be missing |
 
 ---
 

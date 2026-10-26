@@ -44,11 +44,17 @@ pub fn error_text(title: &str, errors: &[ValidationError]) -> String {
             type_name(&error.input),
         ));
         out.push_str(&format!(
-            "\n    For further information visit {PYDANTIC_DOCS}/{}",
-            error.kind
+            "\n    For further information visit {}",
+            error_url(&error.kind)
         ));
     }
     out
+}
+
+/// The documentation link Pydantic attaches to an error of this type: the `url` key of
+/// `ValidationError.errors()`.
+pub fn error_url(kind: &str) -> String {
+    format!("{PYDANTIC_DOCS}/{kind}")
 }
 
 /// Python's type name of a JSON value, as `input_type=` shows it.

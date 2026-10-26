@@ -8,6 +8,7 @@ use wg_config::ConfigError;
 use wg_storecodec::{Raw, Statement};
 use wg_types::{ErrorCode, Id, WgError, parse_id};
 use wg_validate::ValidationError;
+use wg_validate::pydantic::error_url;
 
 /// `secrets.token_urlsafe(32)`: the bytes as unpadded URL-safe base64 (43 characters for 32).
 pub fn token_urlsafe(bytes: &[u8]) -> String {
@@ -57,8 +58,21 @@ pub fn merged_config_failure(slug: &str, err: ConfigError) -> WgError {
     }
 }
 
+/// `ValidationError.errors()` as the `config_error` details carry it: each error object followed by
+/// its `url`, the documentation link Pydantic adds to every entry.
 fn validation_details(errors: &[ValidationError]) -> Value {
-    Value::Array(errors.iter().map(ValidationError::to_json).collect())
+    Value::Array(
+        errors
+            .iter()
+            .map(|error| {
+                let mut json = error.to_json();
+                if let Value::Object(map) = &mut json {
+                    map.insert("url".into(), Value::String(error_url(&error.kind)));
+                }
+                json
+            })
+            .collect(),
+    )
 }
 
 /// `session.get(Workspace, ref)`: the workspace whose id is the reference text exactly.
@@ -185,6 +199,22 @@ mod tests {
             bad.details.get("schema_version"),
             Some(&serde_json::Value::from("two"))
         );
+        let invalid = config_failure(
+            "C:\\wg\\config.toml",
+            ConfigError::Validation(vec![ValidationError {
+                kind: "less_than_equal".to_owned(),
+                loc: Vec::new(),
+                msg: "Input should be less than or equal to 65535".to_owned(),
+                input: Value::from(99999),
+                ctx: None,
+            }]),
+        );
+        let entry = &invalid.details["errors"][0];
+        assert_eq!(
+            entry["url"],
+            Value::from("https://errors.pydantic.dev/2.14/v/less_than_equal")
+        );
+        assert_eq!(entry["input"], Value::from(99999));
         let merged = merged_config_failure("ops", ConfigError::Validation(Vec::new()));
         assert_eq!(
             merged.message,

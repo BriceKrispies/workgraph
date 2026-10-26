@@ -104,7 +104,10 @@ fn samples() -> Vec<EventPayload> {
         EventPayload::AttemptCancelled(finished(task_id)),
         EventPayload::AttemptWorkspacePrepared(AttemptWorkspacePrepared {
             repositories: list(&["repo".to_owned()]),
-            bases: strmap(&[("repo", "abc")]),
+            bases: JsonObject::from_iter([(
+                "repo".to_owned(),
+                serde_json::json!({"ref": "main", "sha": "abc"}),
+            )]),
             isolation: "worktree".to_owned(),
             baseline_manifest_id: id(4),
             change_set_id: None,

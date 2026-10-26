@@ -2611,6 +2611,7 @@ dependencies = [
  "wg-codeanalysis",
  "wg-codeparse",
  "wg-config",
+ "wg-exec",
  "wg-git",
  "wg-gitcore",
  "wg-jobs",
@@ -2627,6 +2628,7 @@ dependencies = [
  "wg-telemetry",
  "wg-telemetryspec",
  "wg-types",
+ "wg-verify",
  "wg-wire",
 ]
 

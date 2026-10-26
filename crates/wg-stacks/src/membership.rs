@@ -2,6 +2,8 @@
 //! `remove_item` and `readmit_item` in `core/services/stacks.py`. The database lookups that feed
 //! these checks (parent link, existing rows, repository links) stay in the shell.
 
+use std::collections::BTreeSet;
+
 use wg_types::{ErrorCode, Id, StackItemState, TaskStatus, WgError};
 
 use crate::item::is_removable;
@@ -15,13 +17,16 @@ pub fn outside_repositories(
     stack_repos: &[Id],
     names: &[(Id, String)],
 ) -> Vec<String> {
-    let mut outside: Vec<String> = names
+    // Paired with the position so a repeated name is kept through the sort.
+    names
         .iter()
-        .filter(|(id, _)| child_repos.contains(id) && !stack_repos.contains(id))
-        .map(|(_, name)| name.clone())
-        .collect();
-    outside.sort();
-    outside
+        .enumerate()
+        .filter(|(_, (id, _))| child_repos.contains(id) && !stack_repos.contains(id))
+        .map(|(index, (_, name))| (name.clone(), index))
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .map(|(name, _)| name)
+        .collect()
 }
 
 /// Checks adding a child to a stack, in the order the service checks it.

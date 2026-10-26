@@ -11,6 +11,7 @@ description = "stack membership, integration queue, verification, landing"
 workspace = true
 
 [dependencies]
+rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-types = { path = "../wg-types" }
 

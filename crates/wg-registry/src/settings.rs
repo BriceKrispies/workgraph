@@ -4,6 +4,8 @@
 //! loads the workspace, calls [`validate_update`] and [`merge`], and writes the result together
 //! with the `workspace.settings_changed` event, whose data is the `before` and `after` objects.
 
+use std::collections::BTreeSet;
+
 use serde_json::Value;
 use wg_model::{JsonObject, py_repr_str};
 use wg_types::{ErrorCode, WgError};
@@ -19,13 +21,12 @@ pub const ALLOWED_SETTINGS: [&str; 3] = [
 /// are listed sorted, as Python's `sorted(set)` prints them), and `allowed_roots`, when present,
 /// must be a list of strings.
 pub fn validate_update(update: &JsonObject) -> Result<(), WgError> {
-    let mut unknown: Vec<&str> = update
+    let unknown: BTreeSet<&str> = update
         .keys()
         .map(String::as_str)
         .filter(|key| !ALLOWED_SETTINGS.contains(key))
         .collect();
     if !unknown.is_empty() {
-        unknown.sort_unstable();
         let listed: Vec<String> = unknown.iter().map(|key| py_repr_str(key)).collect();
         return Err(WgError::new(
             ErrorCode::ValidationFailed,
@@ -49,9 +50,16 @@ pub fn validate_update(update: &JsonObject) -> Result<(), WgError> {
 /// The stored settings after an update: the update's keys overwrite the existing ones and the
 /// other keys are kept (Python's `{**before, **settings}`).
 pub fn merge(before: &JsonObject, update: &JsonObject) -> JsonObject {
-    let mut after = before.clone();
-    for (key, value) in update {
-        after.insert(key.clone(), value.clone());
-    }
-    after
+    // Existing keys keep their position and take the update's value; new keys follow in the
+    // update's order, as an insert loop over a clone would leave them.
+    before
+        .iter()
+        .map(|(key, value)| (key.clone(), update.get(key).unwrap_or(value).clone()))
+        .chain(
+            update
+                .iter()
+                .filter(|(key, _)| !before.contains_key(*key))
+                .map(|(key, value)| (key.clone(), value.clone())),
+        )
+        .collect()
 }

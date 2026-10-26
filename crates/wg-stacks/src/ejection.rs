@@ -2,6 +2,8 @@
 //! leaves on the child. Mirrors `StackVerifier._eject`, `eject` and `_apply_ejection` in
 //! `integrations/git/stack_verification.py`. Marking rows and returning tasks stay in the shell.
 
+use std::collections::BTreeSet;
+
 use serde_json::{Map, Value, json};
 use wg_types::{ErrorCode, StackItemState, TaskStatus, WgError};
 
@@ -24,10 +26,10 @@ pub fn bisected_ejection(
     run_id: &str,
     signatures: &[(String, Vec<String>)],
 ) -> Value {
-    let mut by_name = Map::new();
-    for (name, found) in signatures {
-        by_name.insert(name.clone(), json!(found));
-    }
+    let by_name: Map<String, Value> = signatures
+        .iter()
+        .map(|(name, found)| (name.clone(), json!(found)))
+        .collect();
     json!({
         "position": position,
         "verification_run_id": run_id,
@@ -119,10 +121,17 @@ pub fn manual_comment(parent_key: &str, actor: &str, reason: &str) -> String {
     format!("Ejected from stack {parent_key} by {actor}: {reason}")
 }
 
+/// The check names in sorted order. Each name is paired with its position so a repeated name is
+/// kept, as a sort of the list would keep it.
 fn sorted_names(signatures: &[(String, Vec<String>)]) -> Vec<&str> {
-    let mut names: Vec<&str> = signatures.iter().map(|(name, _)| name.as_str()).collect();
-    names.sort_unstable();
-    names
+    signatures
+        .iter()
+        .enumerate()
+        .map(|(index, (name, _))| (name.as_str(), index))
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .map(|(name, _)| name)
+        .collect()
 }
 
 fn joined_or_none(found: &[String]) -> String {

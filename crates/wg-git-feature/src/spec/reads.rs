@@ -10,7 +10,7 @@ use wg_model::entity::git::{
     TaskChangeSurface,
 };
 
-use wg_storecodec::git_sql::TaskCommitLink as TaskCommitLinkRow;
+use crate::spec::sql::TaskCommitLink as TaskCommitLinkRow;
 use wg_types::Id;
 use wg_wire::convention::{
     TimeFormat, dict, id, int, json_object, optional_text, optional_timestamp, text,

@@ -20,8 +20,6 @@ mod cli_state;
 mod cycle;
 mod effects;
 mod feature;
-mod git;
-mod git_sync;
 mod handlers;
 mod jobs;
 mod logging;

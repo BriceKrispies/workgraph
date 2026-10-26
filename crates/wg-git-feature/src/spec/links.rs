@@ -4,7 +4,8 @@
 
 use serde_json::Value as Json;
 use wg_gitcore::{
-    Candidate, CandidateSource, Evidence, Trailer, message_candidates, trailer_candidates,
+    Candidate, CandidateSource, CarriedLink, Evidence, Trailer, message_candidates,
+    trailer_candidates,
 };
 use wg_json::Value;
 use wg_model::entity::JsonObject;
@@ -12,7 +13,7 @@ use wg_model::entity::git::{Commit, CommitTaskLink};
 use wg_model::entity::task::TaskRepository;
 use wg_model::event::{EventPayload, TaskCommitLinked, TaskCommitUnlinked};
 use wg_model::{Row, RowKey, Write};
-use wg_types::{Id, Timestamp};
+use wg_types::{Id, Timestamp, parse_id};
 use wg_wire::dto::commit_link;
 
 use super::ingest::offset_time;
@@ -299,4 +300,34 @@ pub fn link_outputs(links: &[CommitTaskLink], commit: &Commit, task_id: Id) -> V
             .map(|link| commit_link::from_model(link, &commit.sha, commit.repository_id))
             .collect(),
     )
+}
+
+/// The `commit_task_links` row of a carried link on the rewritten commit.
+pub fn carried_link_row(
+    id: Id,
+    commit_id: Id,
+    link: &CarriedLink,
+    now: wg_types::Timestamp,
+) -> CommitTaskLink {
+    let mut evidence = serde_json::Map::new();
+    evidence.insert("from_commit".to_owned(), link.from_commit.clone().into());
+    evidence.insert(
+        "original_source".to_owned(),
+        link.original_source.clone().into(),
+    );
+    LinkDraft {
+        id,
+        commit_id,
+        task_id: parse_id(&link.task_id).unwrap_or(commit_id),
+        source: "rewrite_reconciliation".to_owned(),
+        confidence: link.confidence,
+        evidence,
+        attempt_id: link
+            .attempt_id
+            .as_deref()
+            .and_then(|text| parse_id(text).ok()),
+        created_by: "system:git-reconciliation".to_owned(),
+        created_at: now,
+    }
+    .row()
 }

@@ -2350,6 +2350,7 @@ dependencies = [
  "wg-clispec",
  "wg-codeparse",
  "wg-decisions",
+ "wg-git-feature",
  "wg-json",
  "wg-mcp",
  "wg-mcpspec",
@@ -2521,6 +2522,31 @@ dependencies = [
  "wg-proc",
  "wg-procspec",
  "wg-runtimespec",
+]
+
+[[package]]
+name = "wg-git-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "rpds",
+ "serde_json",
+ "time",
+ "wg-clispec",
+ "wg-codeanalysis",
+ "wg-codeparse",
+ "wg-git",
+ "wg-gitcore",
+ "wg-json",
+ "wg-model",
+ "wg-registry",
+ "wg-render",
+ "wg-runtime",
+ "wg-runtimespec",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

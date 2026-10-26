@@ -31,7 +31,7 @@ pub fn many<T: TableRow>(
 }
 
 /// Runs `statement` and decodes every row with `decode`, in the order the query returns them.
-pub(crate) fn many_with<T>(
+pub fn many_with<T>(
     session: &mut Session<'_>,
     statement: &Statement,
     decode: impl Fn(&[Raw]) -> Result<T, WgError>,

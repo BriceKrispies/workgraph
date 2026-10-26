@@ -311,7 +311,8 @@ fn number(id: &str) -> u32 {
 /// 9.9), or `decisions` for H125-H130, which no group task lists yet.
 pub fn group_of(id: &str) -> &'static str {
     match number(id) {
-        1..=5 | 117..=121 => "IF-42",
+        1..=2 | 117..=118 => "meta-settings",
+        3..=5 | 119..=121 => "IF-42",
         6..=22 => "IF-43",
         33..=35 => "IF-24",
         23..=46 => "IF-44",
@@ -327,7 +328,8 @@ pub fn group_of(id: &str) -> &'static str {
 }
 
 /// Every group name, in order.
-pub const GROUPS: [&str; 11] = [
+pub const GROUPS: [&str; 12] = [
+    "meta-settings",
     "IF-42",
     "IF-43",
     "IF-44",
@@ -376,5 +378,9 @@ mod tests {
         assert_eq!(count, in_snapshot);
         assert_eq!(group_of("H034"), "IF-24");
         assert_eq!(group_of("H036"), "IF-44");
+        assert_eq!(group_of("H001"), "meta-settings");
+        assert_eq!(group_of("H118"), "meta-settings");
+        assert_eq!(group_of("H003"), "IF-42");
+        assert_eq!(group_of("H121"), "IF-42");
     }
 }

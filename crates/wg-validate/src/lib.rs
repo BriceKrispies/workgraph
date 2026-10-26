@@ -17,6 +17,7 @@ mod checks;
 mod datetime;
 mod error;
 mod json_schema;
+pub mod pydantic;
 mod schema;
 mod validate;
 

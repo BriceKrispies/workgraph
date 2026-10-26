@@ -298,7 +298,7 @@ fn settings_meta_and_health_documents() {
 
     let meta = health::meta(
         "0.1.0",
-        "default",
+        Some("default"),
         true,
         false,
         &["claude".to_string()],

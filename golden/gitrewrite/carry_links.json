@@ -1,0 +1,1437 @@
+{
+  "cases": [
+    {
+      "id": "carry_confidence_capped",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "hand-written: a trailer link (0.95) is capped at the rewrite confidence",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t1"
+        }
+      ]
+    },
+    {
+      "id": "carry_low_confidence_kept",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "hand-written: a lower link keeps its own confidence",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t1"
+        }
+      ]
+    },
+    {
+      "id": "carry_skips_task_already_reconciled",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t1"
+        ]
+      },
+      "origin": "hand-written: the rewritten commit already carries that task",
+      "output": []
+    },
+    {
+      "id": "carry_one_task_two_sources",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "hand-written: a task linked twice on the original is carried once",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t1"
+        }
+      ]
+    },
+    {
+      "id": "carry_no_links",
+      "input": {
+        "original_links": [],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "hand-written: nothing to carry",
+      "output": []
+    },
+    {
+      "id": "generated:carry:000",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t4"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "explicit",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:001",
+      "input": {
+        "original_links": [],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:002",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t4"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t3"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:003",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t3"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t3"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:004",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t1"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:005",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t4"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "explicit",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:006",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t4"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t1"
+        },
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "explicit",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:007",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t2"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t2"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "explicit",
+          "task_id": "t2"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:008",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t1"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "explicit",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:009",
+      "input": {
+        "original_links": [],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:010",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t4"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t1",
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:011",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t3"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t2",
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t1"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:012",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t2"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t4"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t2"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t1"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t3"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "explicit",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:013",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t2"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t3"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t2"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "explicit",
+          "task_id": "t3"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:014",
+      "input": {
+        "original_links": [],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t1",
+          "t2"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:015",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t2"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t2"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t2"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t3"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "explicit",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:016",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t3"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t1"
+        },
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t3"
+        },
+        {
+          "attempt_id": null,
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:017",
+      "input": {
+        "original_links": [],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t4"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:018",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t2"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t1"
+        },
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t2"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:019",
+      "input": {
+        "original_links": [],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t1"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:020",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t2"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t2"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t3"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:021",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t1"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:022",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t2"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t1"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:023",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t2"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t2"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t3"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t2"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t3"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:024",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t3"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t1",
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:025",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t3"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t2",
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:026",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t3"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t1"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t3"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:027",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t2"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t1"
+        },
+        {
+          "attempt_id": null,
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t2"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:028",
+      "input": {
+        "original_links": [],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t2",
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:029",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t4"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:030",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t1"
+        },
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:031",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t1",
+          "t2"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:032",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t1"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t1"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:033",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t2"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t1"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t2"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:034",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t2"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t2"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": null,
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t2"
+        },
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "trailer",
+          "task_id": "t4"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:035",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.35,
+            "source": "message_inference",
+            "task_id": "t2"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": []
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.35,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "message_inference",
+          "task_id": "t2"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:036",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.9,
+            "source": "worktree",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t4"
+          },
+          {
+            "attempt_id": null,
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t4"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t4"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "worktree",
+          "task_id": "t3"
+        }
+      ]
+    },
+    {
+      "id": "generated:carry:037",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": null,
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t2"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t1",
+          "t2"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:038",
+      "input": {
+        "original_links": [],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": []
+    },
+    {
+      "id": "generated:carry:039",
+      "input": {
+        "original_links": [
+          {
+            "attempt_id": "att-1",
+            "confidence": 1.0,
+            "source": "explicit",
+            "task_id": "t1"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t3"
+          },
+          {
+            "attempt_id": "att-1",
+            "confidence": 0.95,
+            "source": "trailer",
+            "task_id": "t4"
+          }
+        ],
+        "original_sha": "0000000000000000000000000000000000000007",
+        "rewritten_tasks": [
+          "t3",
+          "t4"
+        ]
+      },
+      "origin": "generated (seed 20251026)",
+      "output": [
+        {
+          "attempt_id": "att-1",
+          "confidence": 0.85,
+          "from_commit": "0000000000000000000000000000000000000007",
+          "original_source": "explicit",
+          "task_id": "t1"
+        }
+      ]
+    }
+  ],
+  "function": "_carry_links",
+  "origin": "GitService._carry_links run against an in-memory database (real Python code)"
+}

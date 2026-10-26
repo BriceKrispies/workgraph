@@ -13,8 +13,9 @@ mod stream;
 use wg_proc::Cancel;
 
 pub use wg_agentspec::{
-    AgentCapabilities, AgentError, AgentEvent, AgentRunRequest, AgentRunResult, ClaudeCodeProvider,
-    ClaudeConfig, CommandAgentProvider, CommandConfig, EventKind, RunStatus,
+    AdapterDescription, AgentCapabilities, AgentError, AgentEvent, AgentRunRequest, AgentRunResult,
+    ClaudeCodeProvider, ClaudeConfig, CommandAgentProvider, CommandConfig, EventKind, RunStatus,
+    describe_adapter,
 };
 
 /// What a provider does with a process: availability and one attempt.

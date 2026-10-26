@@ -1,9 +1,10 @@
 //! The settings routes of the registry feature (`api/routes/ops.py`): `GET /api/v1/settings`
-//! (H117) and `PATCH /api/v1/settings` (H118). The health and meta routes stay in the server's
-//! base group.
+//! (H117) and `PATCH /api/v1/settings` (H118), and the provider routes `GET /api/v1/agents` (H119)
+//! and `GET /api/v1/llm/health` (H120). The health and meta routes stay in the server's base group.
 //!
-//! [`SPECS`] is the table of operations; the server binds each one to [`run`], which reads the
-//! validated request and calls the rules of [`crate::spec::settings`] on the application.
+//! [`SPECS`] and [`PROVIDER_SPECS`] are the tables of operations; the server binds each one to
+//! [`run`] or [`run_providers`], which read the validated request and call the rules of
+//! [`crate::spec::settings`] or [`crate::service::setup`] on the application.
 
 use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
@@ -11,6 +12,7 @@ use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::{ErrorCode, Permission, WgError};
 use wg_wire::convention::json_object;
 
+use crate::service::setup::{agents_document, llm_health_document};
 use crate::spec::dto::settings as settings_dto;
 use crate::spec::settings::{patch_values, patched_config, settings_workspace};
 
@@ -40,6 +42,52 @@ pub const SPECS: [RouteSpec; 2] = [
 
 /// The group as the feature descriptor takes it.
 pub const GROUP: RouteGroup = RouteGroup { specs: &SPECS, run };
+
+/// The provider routes of the registry feature (`api/routes/ops.py`): `GET /api/v1/agents`
+/// (H119) and `GET /api/v1/llm/health` (H120).
+pub const PROVIDER_SPECS: [RouteSpec; 2] = [
+    RouteSpec {
+        id: "H119",
+        method: "GET",
+        path: "/api/v1/agents",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
+        id: "H120",
+        method: "GET",
+        path: "/api/v1/llm/health",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+];
+
+/// The provider group as the feature descriptor takes it.
+pub const PROVIDER_GROUP: RouteGroup = RouteGroup {
+    specs: &PROVIDER_SPECS,
+    run: run_providers,
+};
+
+/// The provider operations: both read the workspace permission, then the adapters or providers
+/// of the configuration.
+fn run_providers(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {
+    match id {
+        "H119" => {
+            request.context.require(&[Permission::WorkspaceRead])?;
+            agents_document(app)
+        }
+        "H120" => {
+            request.context.require(&[Permission::WorkspaceRead])?;
+            llm_health_document(app)
+        }
+        other => Err(WgError::new(
+            ErrorCode::WorkgraphError,
+            format!("route {other} has no handler"),
+        )),
+    }
+}
 
 /// One operation on the application context: the request in, the document out. The permission
 /// checks come first, as the Python routes make them.
@@ -83,6 +131,17 @@ mod tests {
                 wg_serverspec::operations::group_of(spec.id),
                 "meta-settings"
             );
+        }
+    }
+
+    #[test]
+    fn the_provider_table_has_the_agent_and_llm_health_routes() {
+        let ids: Vec<&str> = PROVIDER_SPECS.iter().map(|spec| spec.id).collect();
+        assert_eq!(ids, ["H119", "H120"]);
+        for spec in &PROVIDER_SPECS {
+            assert_eq!(wg_serverspec::operations::group_of(spec.id), "IF-42");
+            assert_eq!(spec.method, "GET");
+            assert!(spec.body.is_none() && spec.query.is_empty());
         }
     }
 

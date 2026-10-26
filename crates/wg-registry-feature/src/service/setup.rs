@@ -14,6 +14,7 @@ use crate::spec::setup::{
 use serde_json::{Map, Value as Json};
 use wg_agents::{
     AgentRunner, ClaudeCodeProvider, ClaudeConfig, CommandAgentProvider, CommandConfig,
+    describe_adapter,
 };
 use wg_config::ConfigFiles;
 use wg_events::{task_states, verify_task_projection};
@@ -28,6 +29,8 @@ use wg_runtimespec::app::{config_failure, io_error};
 use wg_store::head_revision;
 use wg_storecodec::EventQuery;
 use wg_types::{ErrorCode, WgError};
+use wg_wire::convention::json_value;
+use wg_wire::dto::{agents as agents_dto, llm as llm_dto};
 
 use wg_runtime::App;
 use wg_runtime::write_atomic;
@@ -355,11 +358,14 @@ impl HealthProbe for LiveProbe {
 /// adapters.
 pub type ProviderRows = (Vec<(String, ProviderHealth)>, Vec<(String, ProviderHealth)>);
 
-/// `LLMRegistry.health` and `AgentRegistry.health` over a dumped configuration: each LLM provider
-/// and each agent adapter with its health, both in configuration order. The probes are made here
-/// and the decisions over their answers are `wg-registry`'s.
-pub fn provider_health<P: HealthProbe>(config: &Map<String, Json>, probe: &mut P) -> ProviderRows {
-    let llm = llm_providers(config)
+/// `LLMRegistry.health` over a dumped configuration: each LLM provider with its health, in
+/// configuration order. The probes are made here and the decisions over their answers are
+/// `wg-registry`'s.
+pub fn llm_rows<P: HealthProbe>(
+    config: &Map<String, Json>,
+    probe: &mut P,
+) -> Vec<(String, ProviderHealth)> {
+    llm_providers(config)
         .into_iter()
         .map(|(name, entry)| {
             let wanted = wanted_models(config, name);
@@ -370,15 +376,75 @@ pub fn provider_health<P: HealthProbe>(config: &Map<String, Json>, probe: &mut P
                 .collect();
             (name.to_owned(), llm_health(listing, &checks))
         })
-        .collect();
-    let agents = agent_adapters(config)
+        .collect()
+}
+
+/// `AgentRegistry.health` over a dumped configuration: each agent adapter with its availability,
+/// in configuration order.
+pub fn agent_rows<P: HealthProbe>(
+    config: &Map<String, Json>,
+    probe: &mut P,
+) -> Vec<(String, ProviderHealth)> {
+    agent_adapters(config)
         .into_iter()
         .map(|(name, entry)| {
             let (available, detail) = probe.agent(name, entry);
             (name.to_owned(), ProviderHealth { available, detail })
         })
-        .collect();
-    (llm, agents)
+        .collect()
+}
+
+/// `LLMRegistry.health` and `AgentRegistry.health` over a dumped configuration: each LLM provider
+/// and each agent adapter with its health, both in configuration order.
+pub fn provider_health<P: HealthProbe>(config: &Map<String, Json>, probe: &mut P) -> ProviderRows {
+    (llm_rows(config, probe), agent_rows(config, probe))
+}
+
+/// The body of `GET /api/v1/llm/health` (`LLMRegistry.health`): a dict keyed by provider name,
+/// each value `{available, detail}`.
+pub fn llm_report<P: HealthProbe>(config: &Map<String, Json>, probe: &mut P) -> Value {
+    let rows = llm_rows(config, probe);
+    llm_dto::health(
+        rows.iter()
+            .map(|(name, row)| (name.as_str(), row.available, row.detail.as_str())),
+    )
+}
+
+/// The body of `GET /api/v1/agents` (`AgentRegistry.describe`): one entry per agent adapter in
+/// configuration order, with the probe's availability and detail, the provider's capabilities and
+/// its non-secret configuration snapshot. An invalid argument template fails the listing, as
+/// `CommandAgentProvider.__init__` raises in Python.
+pub fn agent_listing<P: HealthProbe>(
+    config: &Map<String, Json>,
+    probe: &mut P,
+) -> Result<Value, WgError> {
+    agent_adapters(config)
+        .into_iter()
+        .map(|(name, entry)| {
+            let (available, detail) = probe.agent(name, entry);
+            let described = describe_adapter(entry)
+                .map_err(|error| WgError::new(ErrorCode::ConfigError, error.to_string()))?;
+            Ok(agents_dto::agent(
+                name,
+                described.adapter,
+                available,
+                &detail,
+                json_value(&described.capabilities),
+                json_value(&described.config),
+            ))
+        })
+        .collect::<Result<Vec<Value>, WgError>>()
+        .map(agents_dto::agents)
+}
+
+/// `GET /api/v1/agents` against the live adapters and the configuration of the application.
+pub fn agents_document(app: &App) -> Result<Value, WgError> {
+    agent_listing(&app.config()?, &mut LiveProbe)
+}
+
+/// `GET /api/v1/llm/health` against the live providers and the configuration of the application.
+pub fn llm_health_document(app: &App) -> Result<Value, WgError> {
+    Ok(llm_report(&app.config()?, &mut LiveProbe))
 }
 
 /// `doctor`: the checks the native build can run, with the live probes of the providers and

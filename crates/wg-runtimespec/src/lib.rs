@@ -15,7 +15,6 @@
 //!   resolution of the application context (`app.py`).
 
 pub mod app;
-pub mod automation;
 pub mod context;
 pub mod effects;
 pub mod events;

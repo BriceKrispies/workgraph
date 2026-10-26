@@ -17,6 +17,7 @@ serde = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 tokio = { version = "1", features = ["rt-multi-thread", "net", "io-std", "macros"] }
 tokio-util = "0.7"
+wg-automation-feature = { path = "../wg-automation-feature" }
 wg-decisions = { path = "../wg-decisions" }
 wg-git = { path = "../wg-git" }
 wg-json = { path = "../wg-json" }

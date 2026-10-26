@@ -16,6 +16,10 @@ wg-analytics Core
 wg-archive Shell
 wg-archivespec Pure
 wg-automation Core
+wg-automation-feature Shell
+wg-automation-feature::spec Pure
+wg-automation-feature::service Shell
+wg-automation-feature::cli Shell
 wg-browser Shell
 wg-browserspec Pure
 wg-cli Shell

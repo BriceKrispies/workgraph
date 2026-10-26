@@ -8,12 +8,13 @@ use std::error::Error;
 use std::path::PathBuf;
 
 use rpds::VectorSync;
+use wg_automation_feature::service::reads;
+use wg_automation_feature::spec::sql::Page;
 use wg_model::entity::{
     AutomationRule, AutomationRun, Finding, JsonObject, Notification, Real, Report, Workspace,
 };
 use wg_model::{Row, Write, derive_id};
 use wg_store::{Location, Store};
-use wg_storecodec::automation_sql::Page;
 use wg_types::{Id, Timestamp, WgError};
 
 type TestResult = Result<(), Box<dyn Error>>;
@@ -226,11 +227,11 @@ fn ids<T>(items: &[T], key: impl Fn(&T) -> Id) -> Vec<Id> {
 fn rule_lookup_is_per_workspace() -> TestResult {
     let mut store = seeded()?;
     store.read(|session| {
-        let first = session.automation_rule_by_name(id(1), "nightly")?;
+        let first = reads::rule_by_name(session, id(1), "nightly")?;
         assert_eq!(first.map(|r| r.id), Some(id(10)));
-        let second = session.automation_rule_by_name(id(2), "nightly")?;
+        let second = reads::rule_by_name(session, id(2), "nightly")?;
         assert_eq!(second.map(|r| r.id), Some(id(13)));
-        assert!(session.automation_rule_by_name(id(1), "missing")?.is_none());
+        assert!(reads::rule_by_name(session, id(1), "missing")?.is_none());
         Ok(())
     })?;
     Ok(())
@@ -240,7 +241,7 @@ fn rule_lookup_is_per_workspace() -> TestResult {
 fn rules_are_listed_by_name() -> TestResult {
     let mut store = seeded()?;
     store.read(|session| {
-        let rules = session.automation_rules(id(1))?;
+        let rules = reads::rules(session, id(1))?;
         let names: Vec<&str> = rules.iter().map(|r| r.name.as_str()).collect();
         assert_eq!(names, ["nightly", "on-done", "paused"]);
         Ok(())
@@ -254,15 +255,15 @@ fn enabled_rules_are_filtered_by_trigger_type() -> TestResult {
     store.read(|session| {
         // Disabled rules are left out. Both enabled event rules are returned, one per workspace;
         // the order between workspaces follows the workspace id, so compare as sets.
-        let event = session.enabled_automation_rules("event")?;
+        let event = reads::enabled_rules(session, "event")?;
         let mut event_ids = ids(&event, |r| r.id);
         event_ids.sort();
         let mut expected = vec![id(11), id(13)];
         expected.sort();
         assert_eq!(event_ids, expected);
-        let schedule = session.enabled_automation_rules("schedule")?;
+        let schedule = reads::enabled_rules(session, "schedule")?;
         assert_eq!(ids(&schedule, |r| r.id), vec![id(10)]);
-        assert!(session.enabled_automation_rules("manual")?.is_empty());
+        assert!(reads::enabled_rules(session, "manual")?.is_empty());
         Ok(())
     })?;
     Ok(())
@@ -272,18 +273,14 @@ fn enabled_rules_are_filtered_by_trigger_type() -> TestResult {
 fn trigger_key_lookups() -> TestResult {
     let mut store = seeded()?;
     store.read(|session| {
-        let hit = session.automation_run_by_trigger(id(11), "evt:2")?;
+        let hit = reads::run_by_trigger(session, id(11), "evt:2")?;
         assert_eq!(hit.map(|r| r.id), Some(id(21)));
         // The same key under another rule is not this rule's run.
-        assert!(
-            session
-                .automation_run_by_trigger(id(13), "evt:2")?
-                .is_none()
-        );
+        assert!(reads::run_by_trigger(session, id(13), "evt:2")?.is_none());
         // Across rules the oldest run with the key is the one returned (run 20, not run 30).
-        let oldest = session.automation_run_by_trigger_key("evt:1")?;
+        let oldest = reads::run_by_trigger_key(session, "evt:1")?;
         assert_eq!(oldest.map(|r| r.id), Some(id(20)));
-        assert!(session.automation_run_by_trigger_key("evt:9")?.is_none());
+        assert!(reads::run_by_trigger_key(session, "evt:9")?.is_none());
         Ok(())
     })?;
     Ok(())
@@ -293,9 +290,10 @@ fn trigger_key_lookups() -> TestResult {
 fn runs_are_newest_first_and_paged() -> TestResult {
     let mut store = seeded()?;
     store.read(|session| {
-        let first = session.automation_runs(id(1), None, None, Page::first(2))?;
+        let first = reads::runs(session, id(1), None, None, Page::first(2))?;
         assert_eq!(ids(&first, |r| r.id), vec![id(24), id(23)]);
-        let middle = session.automation_runs(
+        let middle = reads::runs(
+            session,
             id(1),
             None,
             None,
@@ -305,7 +303,8 @@ fn runs_are_newest_first_and_paged() -> TestResult {
             },
         )?;
         assert_eq!(ids(&middle, |r| r.id), vec![id(22), id(21)]);
-        let last = session.automation_runs(
+        let last = reads::runs(
+            session,
             id(1),
             None,
             None,
@@ -316,7 +315,7 @@ fn runs_are_newest_first_and_paged() -> TestResult {
         )?;
         assert_eq!(ids(&last, |r| r.id), vec![id(20)]);
         // Workspace 2 sees only its own run.
-        let other = session.automation_runs(id(2), None, None, Page::first(10))?;
+        let other = reads::runs(session, id(2), None, None, Page::first(10))?;
         assert_eq!(ids(&other, |r| r.id), vec![id(30)]);
         Ok(())
     })?;
@@ -327,10 +326,15 @@ fn runs_are_newest_first_and_paged() -> TestResult {
 fn runs_narrow_by_rule_and_status() -> TestResult {
     let mut store = seeded()?;
     store.read(|session| {
-        let failed =
-            session.automation_runs(id(1), Some(id(11)), Some("failed"), Page::first(10))?;
+        let failed = reads::runs(
+            session,
+            id(1),
+            Some(id(11)),
+            Some("failed"),
+            Page::first(10),
+        )?;
         assert_eq!(ids(&failed, |r| r.id), vec![id(21)]);
-        let none = session.automation_runs(id(1), Some(id(10)), None, Page::first(10))?;
+        let none = reads::runs(session, id(1), Some(id(10)), None, Page::first(10))?;
         assert!(none.is_empty());
         Ok(())
     })?;
@@ -341,13 +345,13 @@ fn runs_narrow_by_rule_and_status() -> TestResult {
 fn runs_joined_to_their_rule() -> TestResult {
     let mut store = seeded()?;
     store.read(|session| {
-        let rows = session.automation_runs_with_rule(id(1), Some(id(11)), None, Page::first(1))?;
+        let rows = reads::runs_with_rule(session, id(1), Some(id(11)), None, Page::first(1))?;
         assert_eq!(rows.len(), 1);
         assert_eq!(rows[0].run.id, id(24));
         assert_eq!(rows[0].run.trigger_key, "evt:5");
         assert_eq!(rows[0].rule_name, "on-done");
 
-        let all = session.automation_runs_with_rule(id(1), None, None, Page::first(10))?;
+        let all = reads::runs_with_rule(session, id(1), None, None, Page::first(10))?;
         assert_eq!(all.len(), 5);
         assert!(all.iter().all(|row| row.rule_name == "on-done"));
         Ok(())
@@ -360,10 +364,10 @@ fn live_run_count_follows_the_rate_limit_rule() -> TestResult {
     let mut store = seeded()?;
     store.read(|session| {
         // Live and not dry: runs 20, 21 and 24. Run 22 is a dry run and run 23 is `skipped`.
-        assert_eq!(session.automation_live_run_count(id(11), at(0))?, 3);
+        assert_eq!(reads::live_run_count(session, id(11), at(0))?, 3);
         // Only runs created strictly after the window start: 21 (minute 20) and 24 (minute 50).
-        assert_eq!(session.automation_live_run_count(id(11), at(15))?, 2);
-        assert_eq!(session.automation_live_run_count(id(10), at(0))?, 0);
+        assert_eq!(reads::live_run_count(session, id(11), at(15))?, 2);
+        assert_eq!(reads::live_run_count(session, id(10), at(0))?, 0);
         Ok(())
     })?;
     Ok(())
@@ -382,11 +386,12 @@ fn notifications_filter_and_page() -> TestResult {
         ],
     )?;
     store.read(|session| {
-        let all = session.notifications(id(1), false, Page::first(10))?;
+        let all = reads::notifications(session, id(1), false, Page::first(10))?;
         assert_eq!(ids(&all, |n| n.id), vec![id(42), id(41), id(40)]);
-        let unread = session.notifications(id(1), true, Page::first(10))?;
+        let unread = reads::notifications(session, id(1), true, Page::first(10))?;
         assert_eq!(ids(&unread, |n| n.id), vec![id(42), id(40)]);
-        let second_unread = session.notifications(
+        let second_unread = reads::notifications(
+            session,
             id(1),
             true,
             Page {
@@ -414,9 +419,9 @@ fn reports_are_listed_newest_first() -> TestResult {
         ],
     )?;
     store.read(|session| {
-        let listed = session.reports(id(1), Page::first(20))?;
+        let listed = reads::reports(session, id(1), Page::first(20))?;
         assert_eq!(ids(&listed, |r| r.id), vec![id(51), id(50)]);
-        let latest = session.reports(id(1), Page::first(1))?;
+        let latest = reads::reports(session, id(1), Page::first(1))?;
         assert_eq!(ids(&latest, |r| r.id), vec![id(51)]);
         Ok(())
     })?;
@@ -435,10 +440,10 @@ fn findings_are_found_by_fingerprint_per_workspace() -> TestResult {
         ],
     )?;
     store.read(|session| {
-        let hit = session.finding_by_fingerprint(id(1), "abc")?;
+        let hit = reads::finding_by_fingerprint(session, id(1), "abc")?;
         assert_eq!(hit.map(|f| f.id), Some(id(60)));
-        assert!(session.finding_by_fingerprint(id(2), "abc")?.is_none());
-        assert!(session.finding_by_fingerprint(id(1), "zzz")?.is_none());
+        assert!(reads::finding_by_fingerprint(session, id(2), "abc")?.is_none());
+        assert!(reads::finding_by_fingerprint(session, id(1), "zzz")?.is_none());
         Ok(())
     })?;
     // The fingerprint is unique within a workspace: the upsert in failures.py relies on it.

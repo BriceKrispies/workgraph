@@ -67,7 +67,7 @@ pub fn many(m: &ArgMatches, id: &str) -> Vec<String> {
         .unwrap_or_default()
 }
 
-pub(crate) fn flag(m: &ArgMatches, id: &str) -> bool {
+pub fn flag(m: &ArgMatches, id: &str) -> bool {
     m.try_get_one::<bool>(id)
         .ok()
         .flatten()
@@ -429,7 +429,7 @@ pub fn items(value: Option<&Value>) -> &[Value] {
 }
 
 /// Python `str()` of a scalar output value.
-pub(crate) fn python(value: &Value) -> String {
+pub fn python(value: &Value) -> String {
     match value {
         Value::Null => "None".to_owned(),
         Value::Bool(true) => "True".to_owned(),

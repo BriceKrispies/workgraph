@@ -4,7 +4,7 @@
 use wg_json::{PyStr, Value};
 use wg_model::entity::automation::Notification;
 
-use crate::convention::{TimeFormat, id, json_object, optional_timestamp, text, timestamp};
+use wg_wire::convention::{TimeFormat, id, json_object, optional_timestamp, text, timestamp};
 
 /// The keys of the notification dict, in the order the handler builds it.
 pub const FIELDS: [&str; 8] = [

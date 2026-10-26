@@ -2279,6 +2279,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-automation-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "rpds",
+ "serde_json",
+ "wg-automation",
+ "wg-clispec",
+ "wg-jobs",
+ "wg-json",
+ "wg-model",
+ "wg-render",
+ "wg-runtime",
+ "wg-runtimespec",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+ "wg-wire",
+]
+
+[[package]]
 name = "wg-browser"
 version = "0.1.0"
 dependencies = [
@@ -2309,6 +2330,7 @@ dependencies = [
  "tokio",
  "tokio-util",
  "ureq",
+ "wg-automation-feature",
  "wg-browser",
  "wg-clispec",
  "wg-codeparse",
@@ -2521,6 +2543,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tokio-util",
+ "wg-automation-feature",
  "wg-decisions",
  "wg-git",
  "wg-json",
@@ -2635,7 +2658,6 @@ dependencies = [
  "tracing",
  "tracing-core",
  "tracing-subscriber",
- "wg-automation",
  "wg-clispec",
  "wg-codeanalysis",
  "wg-codeparse",
@@ -2674,7 +2696,6 @@ dependencies = [
  "serde_json",
  "time",
  "tracing-core",
- "wg-automation",
  "wg-codeanalysis",
  "wg-config",
  "wg-exec",

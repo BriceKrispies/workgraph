@@ -76,9 +76,16 @@ fn tool_output(record: &Json) -> Option<(String, Json)> {
     Some((tool, serde_json::from_str(body).ok()?))
 }
 
-/// The decision tools: their output shapes are the feature's (`wg_decisions::spec::shapes`), not
-/// this catalog's, so the catalog checks leave them out (docs/rust-rewrite.md 4.16).
-const FEATURE_SHAPED: [&str; 3] = ["task_request_decision", "decision_list", "task_decisions"];
+/// The decision and automation tools: their output shapes are the features' (`wg_decisions::spec::
+/// shapes`, `wg_automation_feature::spec::shapes`), not this catalog's, so the catalog checks leave
+/// them out (docs/rust-rewrite.md 4.16).
+const FEATURE_SHAPED: [&str; 5] = [
+    "task_request_decision",
+    "decision_list",
+    "task_decisions",
+    "automation_list",
+    "automation_trigger",
+];
 
 #[test]
 fn every_tool_has_exactly_one_output_shape() {

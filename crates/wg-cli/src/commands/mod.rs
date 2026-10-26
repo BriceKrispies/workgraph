@@ -5,7 +5,6 @@
 //! group's clap command against `contracts/cli.json`. A top-level command or group that is not
 //! implemented is a placeholder built from the snapshot (see `wg_clispec::tree`).
 
-pub mod automation;
 pub mod git;
 pub mod job;
 pub mod registry;
@@ -27,7 +26,7 @@ pub type Group = CliGroup;
 
 /// The features of this binary, in the order their command groups are dispatched and listed as
 /// implemented. A feature task adds its crate's `Feature` here.
-pub const FEATURES: &[&Feature] = &[&wg_decisions::FEATURE];
+pub const FEATURES: &[&Feature] = &[&wg_decisions::FEATURE, &wg_automation_feature::FEATURE];
 
 /// The implemented groups that predate the feature descriptor, in CLI help order.
 pub const GROUPS: &[Group] = &[
@@ -39,7 +38,6 @@ pub const GROUPS: &[Group] = &[
     serve::SERVE,
     job::GROUP,
     git::GROUP,
-    automation::GROUP,
     task::GROUP,
     ui::GROUP,
     registry::PROJECT,

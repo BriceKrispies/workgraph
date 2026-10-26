@@ -1,0 +1,103 @@
+{
+  "scenario": "jobs-worker-runs-handlers-retries-dead-letters",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:1>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:2>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"cli_error\", \"message\": \"unknown job kind 'does_not_exist'; known: agent_run, analyze_commits, automation_action, classify_task, compact_telemetry, compute_change_surface, decompose_task, embed_task, evaluate_classifier, failure_analysis, generate_report, git_sync, noop, stack_integrate, stack_verify, tracker_sync, verify\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "worker DESKTOP-1IULO99-9252-1209b5 started (concurrency 4)\n{\n  \"worker\": \"DESKTOP-1IULO99-9252-1209b5\",\n  \"completed\": 1,\n  \"failed\": 1\n}\n",
+      "stderr": "{\"ts\": \"<ts:4|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker started\", \"worker\": \"DESKTOP-1IULO99-9252-1209b5\", \"concurrency\": 4}\n{\"ts\": \"<ts:8|db>\", \"level\": \"error\", \"logger\": \"workgraph.worker\", \"msg\": \"job failed\", \"job\": \"<id:2>\", \"kind\": \"noop\", \"exc\": \"Traceback (most recent call last):\\n  File \\\"C:\\\\dev\\\\workgraph\\\\.claude\\\\worktrees\\\\agent-aacb121650295b13b\\\\src\\\\workgraph\\\\jobs\\\\worker.py\\\", line 239, in _execute\\n    result = handler(self.app, ctx)\\n             ^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"C:\\\\dev\\\\workgraph\\\\.claude\\\\worktrees\\\\agent-aacb121650295b13b\\\\src\\\\workgraph\\\\jobs\\\\handlers.py\\\", line 154, in noop\\n    raise RuntimeError(str(job.job.payload[\\\"fail\\\"]))\\nRuntimeError: always\"}\n{\"ts\": \"<ts:11|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker stopped\", \"worker\": \"DESKTOP-1IULO99-9252-1209b5\", \"completed\": 1, \"failed\": 1}\n"
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"kind\": \"noop\",\n  \"status\": \"succeeded\",\n  \"payload\": {\n    \"sleep\": 0\n  },\n  \"result\": {\n    \"attempt\": 1,\n    \"ok\": true\n  },\n  \"attempts\": 1,\n  \"max_attempts\": 5,\n  \"run_at\": \"<ts:1|db>\",\n  \"lease_owner\": null,\n  \"lease_expires_at\": null,\n  \"last_error\": null,\n  \"error_kind\": null,\n  \"resource_keys\": [],\n  \"cancel_requested\": false,\n  \"created_at\": \"<ts:2|db>\",\n  \"finished_at\": \"<ts:6|db>\",\n  \"runs\": [\n    {\n      \"attempt\": 1,\n      \"worker\": \"DESKTOP-1IULO99-9252-1209b5\",\n      \"status\": \"succeeded\",\n      \"error\": null,\n      \"started_at\": \"<ts:5|db>\",\n      \"finished_at\": \"<ts:7|db>\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:2>\",\n  \"kind\": \"noop\",\n  \"status\": \"queued\",\n  \"payload\": {\n    \"fail\": \"always\"\n  },\n  \"result\": null,\n  \"attempts\": 1,\n  \"max_attempts\": 5,\n  \"run_at\": \"<ts:12|db>\",\n  \"lease_owner\": null,\n  \"lease_expires_at\": null,\n  \"last_error\": \"RuntimeError: always\",\n  \"error_kind\": \"exception\",\n  \"resource_keys\": [],\n  \"cancel_requested\": false,\n  \"created_at\": \"<ts:3|db>\",\n  \"finished_at\": null,\n  \"runs\": [\n    {\n      \"attempt\": 1,\n      \"worker\": \"DESKTOP-1IULO99-9252-1209b5\",\n      \"status\": \"failed\",\n      \"error\": \"RuntimeError: always\",\n      \"started_at\": \"<ts:8|db>\",\n      \"finished_at\": \"<ts:10|db>\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"DESKTOP-1IULO99-9252-1209b5\",\n    \"status\": \"stopped\",\n    \"pid\": <pid>,\n    \"concurrency\": 4,\n    \"current\": [],\n    \"completed\": 1,\n    \"failed\": 1,\n    \"heartbeat_at\": \"<ts:9|db>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

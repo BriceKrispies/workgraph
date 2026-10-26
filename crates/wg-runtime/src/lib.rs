@@ -30,6 +30,7 @@ mod stacks;
 mod stamp;
 mod tasks;
 mod worker;
+mod worktrees;
 
 pub use app::{App, environment};
 pub use bus::Bus;

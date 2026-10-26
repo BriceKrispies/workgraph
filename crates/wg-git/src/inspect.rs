@@ -14,7 +14,7 @@ use crate::runner::{Git, git_version};
 
 /// Resolves a path the way Python's `Path.resolve()` does: absolute, symlinks followed, and the
 /// Windows verbatim prefix left out. A path that cannot be resolved is returned unchanged.
-pub(crate) fn resolve(path: &Path) -> PathBuf {
+pub fn resolve(path: &Path) -> PathBuf {
     match std::fs::canonicalize(path) {
         Ok(resolved) => PathBuf::from(strip_verbatim_prefix(&resolved.display().to_string())),
         Err(_) => path.to_path_buf(),

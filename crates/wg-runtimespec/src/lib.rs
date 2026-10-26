@@ -20,6 +20,7 @@ pub mod decisions;
 pub mod effects;
 pub mod events;
 pub mod logs;
+pub mod registry;
 pub mod settings;
 pub mod setup;
 pub mod tasks;

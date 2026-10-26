@@ -53,7 +53,7 @@ fn check_for(model: &str, field: &str) -> Option<Check> {
         }
         ("TaskCreate", "files") | ("TaskUpdate", "files" | "add_files") => Some(Check::Files),
         ("TaskFileIn", "anchor") => Some(Check::EmptyToNone),
-        ("WorkspaceCreate", "slug") => Some(Check::Slug),
+        ("WorkspaceCreate" | "ProjectCreate" | "ProjectUpdate", "slug") => Some(Check::Slug),
         ("WorkspaceCreate", "key_prefix") => Some(Check::KeyPrefix),
         _ => None,
     }

@@ -9,6 +9,7 @@
 pub mod argv;
 pub mod decision;
 pub mod failure;
+pub mod registry;
 pub mod servers;
 pub mod setup;
 pub mod snapshot;

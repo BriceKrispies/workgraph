@@ -7,12 +7,11 @@
 use serde_json::{Map, Value as Json, json};
 use wg_json::Value;
 use wg_model::entity::Workspace;
-use wg_model::event::WorkspaceCreated;
-use wg_model::{Decision, EventDraft, EventPayload, Stamp, Write};
+use wg_model::{Decision, Stamp};
 use wg_types::{Permission, WgError};
 use wg_wire::convention::{dict, optional_text, text};
 
-use crate::tasks::requests::{component, run};
+use crate::registry::validate_workspace_create;
 
 /// What `workgraph init` was asked for.
 #[derive(Clone, Copy, Debug)]
@@ -21,17 +20,6 @@ pub struct InitRequest<'a> {
     pub name: Option<&'a str>,
     pub prefix: &'a str,
     pub no_workspace: bool,
-}
-
-/// `WorkspaceCreate`, validated: the dump in declaration order.
-fn validate_workspace_create(body: &Json) -> Result<Map<String, Json>, WgError> {
-    run(
-        &component(
-            "WorkspaceCreate",
-            &["slug", "name", "description", "key_prefix"],
-        )?,
-        body,
-    )
 }
 
 /// `str.title()`: the first letter of every run of letters upper case, the rest lower case.
@@ -74,43 +62,15 @@ pub fn init_workspace(
     dump: &Map<String, Json>,
 ) -> Result<Decision<Option<String>>, WgError> {
     stamp.require(&[Permission::WorkspaceAdmin])?;
-    let field = |key: &str| {
-        dump.get(key)
-            .and_then(Json::as_str)
-            .unwrap_or_default()
-            .to_owned()
-    };
-    let slug = field("slug");
+    let slug = dump
+        .get("slug")
+        .and_then(Json::as_str)
+        .unwrap_or_default()
+        .to_owned();
     if existing.iter().any(|workspace| workspace.slug == slug) {
         return Ok(Decision::new(None));
     }
-    let ([workspace_id, event_id], _) = stamp.ids().take::<2>();
-    let row = Workspace {
-        id: workspace_id,
-        slug: slug.clone(),
-        name: field("name"),
-        description: field("description"),
-        key_prefix: field("key_prefix"),
-        next_task_number: 1,
-        settings: Default::default(),
-        archived_at: None,
-        created_at: stamp.at,
-        updated_at: stamp.at,
-    };
-    let event = EventDraft::new(
-        stamp,
-        event_id,
-        Some(workspace_id),
-        workspace_id,
-        EventPayload::WorkspaceCreated(WorkspaceCreated {
-            slug: row.slug.clone(),
-            name: row.name.clone(),
-            key_prefix: row.key_prefix.clone(),
-        }),
-    );
-    Ok(Decision::new(Some(slug))
-        .write(Write::insert(row))
-        .event(event))
+    Ok(wg_registry::workspaces::insert(stamp, dump).map(|row| Some(row.slug)))
 }
 
 /// Where `init` put things.

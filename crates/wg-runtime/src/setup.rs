@@ -204,7 +204,7 @@ impl App {
                 )?
                 .reply;
             if let Some(slug) = &created {
-                self.adopt_workspace(slug)?;
+                self.adopt_workspace(slug, true)?;
             }
             created
         };
@@ -220,12 +220,29 @@ impl App {
         }))
     }
 
-    /// What `WorkspaceService.create(..., make_default=True)` does after the row is written: the
-    /// workspace's override file, and the workspace as the configured default.
-    fn adopt_workspace(&mut self, slug: &str) -> Result<(), WgError> {
+    /// What `WorkspaceService.create` does after the row is written: the workspace's override
+    /// file, and the workspace as the configured default when `make_default` is set or none is.
+    pub(crate) fn adopt_workspace(
+        &mut self,
+        slug: &str,
+        make_default: bool,
+    ) -> Result<(), WgError> {
         if !PathBuf::from(workspace_file(&self.paths, slug)).exists() {
             self.save_workspace_overrides(slug, &wg_config::default_overrides())?;
         }
+        if make_default
+            || self
+                .config()?
+                .get("default_workspace")
+                .is_none_or(Json::is_null)
+        {
+            self.save_default_workspace(slug)?;
+        }
+        Ok(())
+    }
+
+    /// `WorkspaceService.set_default`'s write: `slug` as the configured default workspace.
+    pub(crate) fn save_default_workspace(&mut self, slug: &str) -> Result<(), WgError> {
         let mut config = self.config()?;
         config.insert(
             "default_workspace".to_owned(),

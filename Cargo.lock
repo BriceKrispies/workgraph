@@ -2157,6 +2157,7 @@ dependencies = [
  "serde_json",
  "wg-procspec",
  "wg-types",
+ "wg-validate",
 ]
 
 [[package]]

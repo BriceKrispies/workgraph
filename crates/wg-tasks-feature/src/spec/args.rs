@@ -254,8 +254,9 @@ fn parse_json_arg(value: &str, what: &str, read_file: ReadFile<'_>) -> Result<Js
         Some(path) => read_file(path).map_err(|why| CliFailure::fail(why, 1))?,
         None => value.to_owned(),
     };
-    serde_json::from_str(&source)
-        .map_err(|err| CliFailure::fail(format!("{what} is not valid JSON: {err}"), 2))
+    // `json.loads` as CPython words its `JSONDecodeError`, so the message matches the Python CLI.
+    wg_validate::pyjson::parse_message(&source)
+        .map_err(|why| CliFailure::fail(format!("{what} is not valid JSON: {why}"), 2))
 }
 
 /// The `TaskUpdate` body of `task update`.

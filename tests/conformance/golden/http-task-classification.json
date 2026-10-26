@@ -1,0 +1,89 @@
+{
+  "scenario": "http-task-classification",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "http",
+      "exit": 201,
+      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-1\",\"number\":1,\"title\":\"Fix token crash in the login flow\",\"description\":\"Users are logged out on refresh.\",\"acceptance_criteria\":[],\"status\":\"backlog\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":null,\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":1,\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:1|Z>\",\"started_at\":null,\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"task_id\":\"<id:1>\",\"task_key\":\"WG-1\",\"current\":null,\"history\":[],\"disagreement\":false,\"note\":\"Model classifications are inferences, not objective facts.\"}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"job_id\":\"<id:3>\",\"task_id\":\"<id:1>\",\"task_key\":\"WG-1\",\"status\":\"queued\"}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"job_id\":\"<id:4>\",\"task_id\":\"<id:1>\",\"task_key\":\"WG-1\",\"status\":\"queued\"}",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"task_id\":\"<id:1>\",\"task_key\":\"WG-1\",\"current\":null,\"history\":[],\"disagreement\":false,\"note\":\"Model classifications are inferences, not objective facts.\"}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "http",
+      "exit": 422,
+      "stdout": "{\"error\":{\"code\":\"validation_failed\",\"message\":\"unknown category 'bug'\",\"details\":{\"categories\":[\"bug_fix\",\"feature\",\"refactor\",\"maintenance\",\"infrastructure\",\"performance\",\"security\",\"testing\",\"documentation\",\"research\",\"architecture\",\"other\"]}}}",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:5>\",\"task_id\":\"<id:1>\",\"source\":\"manual\",\"status\":\"succeeded\",\"provider\":null,\"model\":null,\"prompt_version\":null,\"taxonomy_version\":\"2026.1\",\"input_hash\":\"a24b240301167be88d7c2cc55ec301cd42b64064798fc49d96b85fe2bed3f0bc\",\"category\":\"bug_fix\",\"subtype\":null,\"domain\":null,\"affected_systems\":[],\"complexity\":\"small\",\"tags\":[],\"confidence\":1.0,\"rationale\":\"confirmed by the reviewer\",\"validation_status\":\"manual\",\"error\":null,\"duration_ms\":null,\"is_current\":true,\"confirmed_by\":\"human:Brice\",\"batch_id\":null,\"created_by\":\"human:Brice\",\"created_at\":\"<ts:2|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "http",
+      "exit": 422,
+      "stdout": "{\"error\":{\"code\":\"validation_failed\",\"message\":\"invalid request\",\"details\":{\"errors\":[{\"type\":\"missing\",\"loc\":[\"body\",\"category\"],\"msg\":\"Field required\",\"input\":{\"note\":\"no category\"}}]}}}",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"task_id\":\"<id:1>\",\"task_key\":\"WG-1\",\"current\":{\"id\":\"<id:5>\",\"task_id\":\"<id:1>\",\"source\":\"manual\",\"status\":\"succeeded\",\"provider\":null,\"model\":null,\"prompt_version\":null,\"taxonomy_version\":\"2026.1\",\"input_hash\":\"a24b240301167be88d7c2cc55ec301cd42b64064798fc49d96b85fe2bed3f0bc\",\"category\":\"bug_fix\",\"subtype\":null,\"domain\":null,\"affected_systems\":[],\"complexity\":\"small\",\"tags\":[],\"confidence\":1.0,\"rationale\":\"confirmed by the reviewer\",\"validation_status\":\"manual\",\"error\":null,\"duration_ms\":null,\"is_current\":true,\"confirmed_by\":\"human:Brice\",\"batch_id\":null,\"created_by\":\"human:Brice\",\"created_at\":\"<ts:2|Z>\"},\"history\":[{\"id\":\"<id:5>\",\"task_id\":\"<id:1>\",\"source\":\"manual\",\"status\":\"succeeded\",\"provider\":null,\"model\":null,\"prompt_version\":null,\"taxonomy_version\":\"2026.1\",\"input_hash\":\"a24b240301167be88d7c2cc55ec301cd42b64064798fc49d96b85fe2bed3f0bc\",\"category\":\"bug_fix\",\"subtype\":null,\"domain\":null,\"affected_systems\":[],\"complexity\":\"small\",\"tags\":[],\"confidence\":1.0,\"rationale\":\"confirmed by the reviewer\",\"validation_status\":\"manual\",\"error\":null,\"duration_ms\":null,\"is_current\":true,\"confirmed_by\":\"human:Brice\",\"batch_id\":null,\"created_by\":\"human:Brice\",\"created_at\":\"<ts:2|Z>\"}],\"disagreement\":false,\"note\":\"Model classifications are inferences, not objective facts.\"}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Fix token crash in the login flow\",\n  \"description\": \"Users are logged out on refresh.\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": \"bug_fix\",\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": \"<id:5>\",\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

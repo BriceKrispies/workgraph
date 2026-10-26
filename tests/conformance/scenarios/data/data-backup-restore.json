@@ -1,0 +1,26 @@
+{
+  "id": "data-backup-restore",
+  "covers": ["C037", "C124"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Keep me", "--description", "important"], "json": true},
+    {"cli": ["backup", "--output", "{tmp}/b.zip"], "json": true, "save": {"schema": "/schema_revision"}},
+    {"assert": {"json": {"path": "/schema_revision", "equals": "0011"}}},
+    {"assert": {"file": "{tmp}/b.zip", "exists": true}},
+    {"cli": ["task", "create", "Created after backup"], "json": true},
+    {"cli": ["task", "list"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 2}}},
+    {"cli": ["restore", "{tmp}/b.zip"], "json": true, "save": {"safety": "/safety_copy"}},
+    {"assert": {"file": "{var:safety}", "exists": true}},
+    {"cli": ["task", "list"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 1}}},
+    {"assert": {"json": {"path": "/items/0/title", "equals": "Keep me"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_cli.py::test_cli_backup_restore_export_import: the backup zip members and the manifest.json content (the archive is deflated and the file assertion only checks existence and substring, so the member list and manifest fields are not compared)",
+      "covered_by": "SH-20"
+    }
+  ]
+}

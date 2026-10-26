@@ -246,7 +246,7 @@ const ATTRIBUTES: [(&str, &[&str]); 13] = [
     ("overline", &["overline", "o"]),
 ];
 
-fn attribute_index(word: &str) -> Option<usize> {
+pub(crate) fn attribute_index(word: &str) -> Option<usize> {
     ATTRIBUTES
         .iter()
         .position(|(_, words)| words.contains(&word))
@@ -278,7 +278,7 @@ fn is_color(word: &str) -> bool {
 }
 
 /// `str(Style.parse(definition))`, or `None` where rich raises `StyleSyntaxError`.
-fn parse_style(definition: &str) -> Option<String> {
+pub(crate) fn parse_style(definition: &str) -> Option<String> {
     if definition.trim_matches(py_is_space) == "none" || definition.is_empty() {
         return Some("none".to_owned());
     }

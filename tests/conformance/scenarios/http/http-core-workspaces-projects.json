@@ -1,0 +1,32 @@
+{
+  "id": "http-core-workspaces-projects",
+  "covers": ["H003", "H004", "H005", "H006", "H007", "H008", "H009", "H010", "H011"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"http": "GET", "path": "/api/v1/workspaces"},
+    {"http": "POST", "path": "/api/v1/workspaces", "body": {"slug": "side", "name": "Side project"}},
+    {"http": "POST", "path": "/api/v1/workspaces", "body": {"slug": "empty", "name": ""}},
+    {"http": "GET", "path": "/api/v1/workspaces/default"},
+    {"http": "GET", "path": "/api/v1/workspaces/missing"},
+    {"cli": ["workspace", "list"], "json": true},
+    {"assert": {"json": {"path": "/1/slug", "equals": "side"}}},
+    {"http": "POST", "path": "/api/v1/ws/default/projects", "body": {"slug": "core", "name": "Core", "repositories": ["svc"]}},
+    {"http": "POST", "path": "/api/v1/ws/default/projects", "body": {"slug": "bad", "name": ""}},
+    {"http": "GET", "path": "/api/v1/ws/default/projects"},
+    {"http": "GET", "path": "/api/v1/ws/default/projects/core"},
+    {"http": "GET", "path": "/api/v1/ws/default/projects/missing"},
+    {"http": "PATCH", "path": "/api/v1/ws/default/projects/core", "body": {"name": "Core platform", "description": "Shared core"}},
+    {"cli": ["project", "show", "core", "--workspace", "default"], "json": true},
+    {"assert": {"json": {"path": "/project/name", "equals": "Core platform"}}},
+    {"cli": ["project", "create", "docs", "--workspace", "default"], "json": true},
+    {"http": "POST", "path": "/api/v1/ws/default/projects/docs/repositories", "body": {"repository": "svc", "role": "member"}},
+    {"http": "DELETE", "path": "/api/v1/ws/default/projects/docs/repositories/svc"},
+    {"http": "GET", "path": "/api/v1/ws/default/projects?include_archived=true"}
+  ],
+  "not_observable": []
+}

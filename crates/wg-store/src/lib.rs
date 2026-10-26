@@ -41,6 +41,7 @@ use wg_types::{ErrorCode, WgError};
 use session::db;
 
 pub use analytics::AnalyticsSource;
+pub use query::{many, one};
 pub use run::AttemptPage;
 pub use session::{Applied, Session};
 pub use verify::{FailureFilter, FailureRow, Page, RunFilter};

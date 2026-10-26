@@ -3,22 +3,27 @@
 //! Reimplements the part of Python `rich` that `workgraph.cli.common` uses (`table`, `kv`,
 //! `fail`, the error report): markup parsing, word wrapping with cell widths, and the heavy-head
 //! table layout. Every function returns the text the Python code would have written, so callers
-//! decide where it goes. Output is always plain text: styles (bold, colours) are parsed so tags
-//! match and vanish exactly as in rich, but no escape sequences are produced, whether or not
-//! [`Console::color`] is set. Emoji shortcodes such as `:rocket:` are replaced before the markup is
+//! decide where it goes. Markup styles (bold, colours) are parsed so tags match and vanish exactly
+//! as in rich; they are not drawn, so markup output is plain text. The one exception is
+//! [`Console::print_json`], which draws its JSON theme with SGR sequences on a colour console
+//! (see [`render_spans`]). Emoji shortcodes such as `:rocket:` are replaced before the markup is
 //! parsed, as rich does.
 
 mod cells;
 mod emoji;
 mod emoji_data;
+mod json_highlight;
 mod markup;
 mod rich_data;
+mod sgr;
 mod table;
 mod text;
 
 pub use cells::{cell_len, char_cells};
 pub use markup::{MarkupError, escape};
+pub use sgr::{Span, render_spans};
 
+use json_highlight::highlight_json;
 use text::{Justify, crop, wrap};
 
 /// Console width when nothing says otherwise.
@@ -31,6 +36,8 @@ pub struct ConsoleEnv<'a> {
     pub columns: Option<&'a str>,
     /// The `TERM` variable.
     pub term: Option<&'a str>,
+    /// The `NO_COLOR` variable. rich turns colour off when it is set to anything but `""`.
+    pub no_color: Option<&'a str>,
     /// Whether output goes to a terminal (see [`terminal_detected`]).
     pub is_terminal: bool,
     /// Width reported by the operating system for the terminal, if there is one.
@@ -81,6 +88,8 @@ pub struct Console {
     /// The width of rich's plain `Console`, which typer's usage panels are drawn at.
     plain_width: usize,
     color: bool,
+    /// `NO_COLOR` is set: attributes such as bold still draw, colours do not.
+    no_color: bool,
 }
 
 impl Console {
@@ -91,6 +100,7 @@ impl Console {
             width,
             plain_width: width,
             color: false,
+            no_color: false,
         }
     }
 
@@ -136,6 +146,7 @@ impl Console {
             width,
             plain_width,
             color: env.is_terminal,
+            no_color: env.no_color.is_some_and(|value| !value.is_empty()),
         }
     }
 
@@ -156,6 +167,18 @@ impl Console {
     #[must_use]
     pub fn color(&self) -> bool {
         self.color
+    }
+
+    /// `console.print_json(text)`: the JSON text as it is, or with rich's JSON theme drawn in SGR
+    /// sequences when this console colours. Plain output is the input unchanged, so callers add
+    /// the trailing newline themselves.
+    #[must_use]
+    pub fn print_json(&self, json: &str) -> String {
+        if self.color {
+            render_spans(&highlight_json(json), self.no_color)
+        } else {
+            json.to_owned()
+        }
     }
 
     /// `console.print(markup)`: one wrapped paragraph per call, each line ending in a newline.

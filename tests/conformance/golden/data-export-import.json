@@ -1,0 +1,103 @@
+{
+  "scenario": "data-export-import",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Keep me\",\n  \"description\": \"important\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"path\": \"<tmp>\\\\ws.jsonl\",\n  \"tables\": {\n    \"events\": 2,\n    \"jobs\": 2,\n    \"workspaces\": 1,\n    \"tasks\": 1\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<tmp>\\\\other-home\\\\config\",\n  \"data_dir\": \"<tmp>\\\\other-home\\\\data\",\n  \"database\": \"<tmp>\\\\other-home\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": null,\n  \"default_workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"workspace_id\": \"<id:2>\",\n  \"tables\": {\n    \"events\": 2,\n    \"jobs\": 2,\n    \"workspaces\": 1,\n    \"tasks\": 1\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"items\": [\n    {\n      \"id\": \"<id:1>\",\n      \"workspace_id\": \"<id:2>\",\n      \"key\": \"WG-1\",\n      \"number\": 1,\n      \"title\": \"Keep me\",\n      \"description\": \"important\",\n      \"acceptance_criteria\": [],\n      \"status\": \"backlog\",\n      \"priority\": \"medium\",\n      \"category\": null,\n      \"tags\": [],\n      \"files\": [],\n      \"project_ids\": [],\n      \"repository_ids\": [],\n      \"parent_id\": null,\n      \"child_ids\": [],\n      \"depends_on\": [],\n      \"blocks\": [],\n      \"assignee\": null,\n      \"assigned_agent\": null,\n      \"claimed_by\": null,\n      \"claim_expires_at\": null,\n      \"auto_execute\": false,\n      \"estimated_effort\": null,\n      \"links\": [],\n      \"metadata\": {},\n      \"due_at\": null,\n      \"scheduled_at\": null,\n      \"created_by\": \"human:Brice\",\n      \"version\": 1,\n      \"created_at\": \"<ts:1|Z>\",\n      \"updated_at\": \"<ts:1|Z>\",\n      \"started_at\": null,\n      \"completed_at\": null,\n      \"accepted_at\": null,\n      \"archived_at\": null,\n      \"current_classification_id\": null\n    }\n  ],\n  \"total\": 1,\n  \"limit\": 50,\n  \"offset\": 0,\n  \"next_offset\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"query\": \"important\",\n  \"mode\": \"lexical\",\n  \"semantic_available\": false,\n  \"embedding_model\": null,\n  \"hits\": [\n    {\n      \"task_id\": \"<id:1>\",\n      \"key\": \"WG-1\",\n      \"title\": \"Keep me\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.0,\n      \"lexical_rank\": 1,\n      \"semantic_rank\": null,\n      \"similarity\": null,\n      \"snippet\": \"[important]\"\n    }\n  ],\n  \"note\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"conflict\", \"message\": \"this workspace already exists in the target database; nothing was imported\", \"details\": {}}}\n",
+      "stderr": ""
+    }
+  ]
+}

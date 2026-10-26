@@ -5,6 +5,7 @@
 //! feature's `cli`, `http` and `mcp` tables.
 
 pub mod acceptance;
+pub mod rename;
 
 use crate::spec::bodies::{
     read_claim, read_comment, read_complete, read_dependency, read_progress, read_reason,

@@ -1,0 +1,117 @@
+{
+  "scenario": "http-task-similar-estimate-verify",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"svc\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:1|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\svc\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:1|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "http",
+      "exit": 201,
+      "stdout": "{\"id\":\"<id:4>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-1\",\"number\":1,\"title\":\"Fix token crash\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"ready\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[\"<id:1>\"],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":null,\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts:3|Z>\",\"updated_at\":\"<ts:4|Z>\",\"started_at\":null,\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 201,
+      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-2\",\"number\":2,\"title\":\"Fix token refresh crash\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"blocked\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[\"<id:1>\"],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[\"<id:4>\"],\"blocks\":[],\"assignee\":null,\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{\"blocked_reason\":\"dependencies\"},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts:5|Z>\",\"updated_at\":\"<ts:6|Z>\",\"started_at\":null,\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"task_id\":\"<id:4>\",\"method\":\"lexical\",\"embedding_model\":null,\"similar\":[{\"task_id\":\"<id:5>\",\"key\":\"WG-2\",\"title\":\"Fix token refresh crash\",\"status\":\"blocked\",\"category\":null,\"score\":0.6,\"similarity\":0.5,\"same_category\":false,\"repository_overlap\":1.0,\"implementation\":[],\"attempts\":0}]}",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"status\":\"insufficient_data\",\"message\":\"only 0 comparable accepted task(s) found; at least 3 are required\",\"comparable_tasks\":[],\"min_sample\":3}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[]",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[]",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"job_id\":\"<id:6>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "http",
+      "exit": 503,
+      "stdout": "{\"error\":{\"code\":\"provider_unavailable\",\"message\":\"ollama at http://127.0.0.1:<port> is unreachable after 3 attempt(s): [WinError 10061] No connection could be made because the target machine actively refused it\",\"details\":{\"provider\":\"ollama at http://127.0.0.1:<port>\",\"attempts\":3}}}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"task\":\"WG-2\",\"eligible\":false,\"reasons\":[\"agent execution is disabled\",\"status is blocked\",\"auto_execute is off\",\"dependencies unsatisfied\"]}",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"task 'WG-999' not found\",\"details\":{\"ref\":\"WG-999\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Fix token refresh crash\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"blocked\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [\n    \"<id:4>\"\n  ],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {\n    \"blocked_reason\": \"dependencies\"\n  },\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:6|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": false,\n    \"unsatisfied\": [\n      {\n        \"id\": \"<id:4>\",\n        \"key\": \"WG-1\",\n        \"title\": \"Fix token crash\",\n        \"status\": \"ready\",\n        \"priority\": \"medium\",\n        \"category\": null\n      }\n    ]\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

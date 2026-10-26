@@ -1,0 +1,103 @@
+{
+  "scenario": "http-repository-sync-commits",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"svc\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:3|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\svc\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:4|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:4|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"repository_id\":\"<id:1>\",\"repository\":\"svc\",\"mode\":\"incremental\",\"new_commits\":2,\"refs_changed\":1,\"marked_unreachable\":0,\"restored_reachable\":0,\"equivalences\":0,\"links_created\":0,\"shallow\":false,\"head_refs\":1}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"repository_id\":\"<id:1>\",\"repository\":\"svc\",\"mode\":\"full\",\"new_commits\":0,\"refs_changed\":0,\"marked_unreachable\":0,\"restored_reachable\":0,\"equivalences\":0,\"links_created\":0,\"shallow\":false,\"head_refs\":1}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"repository_id\":\"<id:1>\",\"total\":2,\"items\":[{\"id\":\"<id:4>\",\"sha\":\"<sha:2>\",\"subject\":\"add library\",\"author\":\"Test Author\",\"author_email\":\"author@example.com\",\"committed_at\":\"<ts:2|+00:00>\",\"insertions\":1,\"deletions\":0,\"files_changed\":1,\"is_merge\":false,\"reachable\":true,\"branches\":[\"main\"],\"trailers\":[],\"tasks\":[]},{\"id\":\"<id:5>\",\"sha\":\"<sha:1>\",\"subject\":\"initial\",\"author\":\"Test Author\",\"author_email\":\"author@example.com\",\"committed_at\":\"<ts:1|+00:00>\",\"insertions\":1,\"deletions\":0,\"files_changed\":1,\"is_merge\":false,\"reachable\":true,\"branches\":[\"main\"],\"trailers\":[],\"tasks\":[]}]}",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:4>\",\"sha\":\"<sha:2>\",\"repository_id\":\"<id:1>\",\"parents\":[\"<sha:1>\"],\"subject\":\"add library\",\"message\":\"add library\",\"trailers\":[],\"author\":{\"name\":\"Test Author\",\"email\":\"author@example.com\",\"at\":\"<ts:2|+00:00>\"},\"committer\":{\"name\":\"Test Committer\",\"email\":\"committer@example.com\",\"at\":\"<ts:2|+00:00>\"},\"is_merge\":false,\"patch_id\":\"<sha:3>\",\"reachable\":true,\"object_available\":true,\"branches\":[\"main\"],\"insertions\":1,\"deletions\":0,\"files\":[{\"path\":\"src/lib.txt\",\"old_path\":null,\"change_type\":\"A\",\"insertions\":1,\"deletions\":0,\"binary\":false,\"language\":null,\"file_class\":\"docs\",\"module\":\"src\",\"symbols\":[]}],\"analysis\":null,\"equivalences\":[],\"tasks\":[]}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"commit <sha:4> has not been ingested for svc\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[]",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[]",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"repository_id\": \"<id:1>\",\n  \"name\": \"svc\",\n  \"checkout_path\": \"<tmp>/repos\\\\svc\",\n  \"available\": true,\n  \"branch\": \"main\",\n  \"head\": \"<sha:2>\",\n  \"detached\": false,\n  \"staged\": [],\n  \"unstaged\": [],\n  \"untracked\": [],\n  \"ahead\": null,\n  \"behind\": null,\n  \"is_shallow\": false,\n  \"error\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

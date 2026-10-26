@@ -16,10 +16,9 @@ pub trait ToolBackend: Send + 'static {
     fn read_resource(&mut self, agent: &Agent, uri: &str) -> Result<String, WgError>;
 }
 
-/// The backend over `wg_runtime::App`. The workspace, project and repository tools (M01 to M08)
-/// are answered by [`crate::tools`]; the tools and resources of `features` are asked after them,
-/// in feature order; the rest are refused until their interface tasks land. A caller with no
-/// features passes `features: &[]`.
+/// The backend over `wg_runtime::App`. The tools and resources of `features` are asked in feature
+/// order, after the attempt and run tools; the rest are refused until their interface tasks land.
+/// A caller with no features passes `features: &[]`.
 pub struct AppBackend {
     pub app: App,
     pub features: &'static [&'static Feature],
@@ -28,13 +27,9 @@ pub struct AppBackend {
 impl ToolBackend for AppBackend {
     fn call_tool(&mut self, agent: &Agent, name: &str, arguments: Value) -> Result<Value, WgError> {
         // Dispatch: each tool group answers the names it owns. The IF-33 attempt, run and git
-        // tools come first (M47 to M56), then the workspace, project and repository tools, then
-        // the features' tools.
+        // tools come first (M47 to M56), then the features' tools.
         if let Some(result) = crate::run_tools::call(&mut self.app, agent, name, &arguments) {
             return result;
-        }
-        if let Some(answer) = crate::tools::call(&mut self.app, agent, name, &arguments) {
-            return answer;
         }
         let feature_tools = self
             .features

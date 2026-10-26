@@ -10,6 +10,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
 
+use wg_clispec::CliFailure;
 use wg_codeanalysis::{FileStructure, analyze_file, parse_hunks};
 use wg_codeparse::extract_symbols;
 use wg_git::{Git, RunOptions};
@@ -1129,7 +1130,7 @@ impl App {
         context: &RequestContext,
         workspace: Option<&str>,
         repository: &str,
-    ) -> Result<Value, WgError> {
+    ) -> Result<Value, CliFailure> {
         let _ = context;
         let workspace_id = self.workspace_or_default(workspace)?;
         let repo = self.repository_row(workspace_id, repository, true)?;
@@ -1141,8 +1142,9 @@ impl App {
                 .find(|checkout| checkout.available && checkout.kind != "managed_worktree")
                 .map(|checkout| checkout.path))
         })?;
+        // Python: `fail("no available checkout", 4)`, a `cli_error` rather than `not_found`.
         let Some(path) = checkout_path else {
-            return Err(not_found("no available checkout"));
+            return Err(CliFailure::fail("no available checkout", 4));
         };
         let git = Git {
             path: PathBuf::from(&path),
@@ -1152,14 +1154,15 @@ impl App {
             Ok(wg_git::HookOutcome::Installed(hook)) => {
                 Ok(dict(vec![("hook", text(&hook.display().to_string()))]))
             }
-            Ok(wg_git::HookOutcome::Refused(hook)) => Err(WgError::new(
-                ErrorCode::Conflict,
+            // Python: `fail(f"{hook} already exists ...", 3)`, a `cli_error` with no details.
+            Ok(wg_git::HookOutcome::Refused(hook)) => Err(CliFailure::fail(
                 format!(
                     "{} already exists and is not managed by Workgraph; not overwriting",
                     hook.display()
                 ),
+                3,
             )),
-            Err(err) => Err(WgError::new(ErrorCode::GitError, err.to_string())),
+            Err(err) => Err(WgError::new(ErrorCode::GitError, err.to_string()).into()),
         }
     }
 }

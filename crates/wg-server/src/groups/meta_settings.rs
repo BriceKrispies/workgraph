@@ -15,7 +15,8 @@ use wg_wire::convention::{json_object, json_value};
 use wg_wire::dto::{health, settings as settings_dto};
 
 use super::bind;
-use crate::route::{ApiRequest, ApiRoute};
+use crate::route::ApiRoute;
+use wg_runtime::RouteRequest;
 
 /// The version the documents report (`workgraph.__version__`).
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -27,7 +28,7 @@ pub fn register(table: &mut Vec<ApiRoute>) {
 
 /// One operation on the application context: the request in, the document out. The
 /// permission checks come first, as the Python routes make them.
-fn run(app: &mut App, id: &str, request: ApiRequest) -> Result<Value, WgError> {
+fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {
     match id {
         "H001" => Ok(health::health(VERSION)),
         "H002" => {

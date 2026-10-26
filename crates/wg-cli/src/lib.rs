@@ -15,8 +15,7 @@
 pub mod commands;
 mod output;
 mod run;
-mod state;
 
 pub use output::{console, write_stderr, write_stdout};
 pub use run::{run, run_with};
-pub use state::CliState;
+pub use wg_runtime::CliState;

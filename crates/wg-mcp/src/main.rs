@@ -18,7 +18,7 @@ fn run(args: &[String]) -> Result<(), WgError> {
         return Err(WgError::new(ErrorCode::WorkgraphError, HTTP_REFUSED));
     }
     let app = wg_runtime::App::open(None)?;
-    let backend = Box::new(AppBackend(app));
+    let backend = Box::new(AppBackend { app, features: &[] });
     let agent = options.agent();
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()

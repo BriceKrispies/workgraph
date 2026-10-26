@@ -33,7 +33,15 @@ pub fn run() -> u8 {
 #[must_use]
 pub fn run_with(args: Vec<String>, stdout: Box<dyn Write>, stderr: Box<dyn Write>) -> u8 {
     let argv = split_json(args);
-    let mut state = CliState::new(argv.json, stdout, stderr);
+    let mut state = CliState {
+        json: argv.json,
+        home: None,
+        workspace: None,
+        app: None,
+        stdout,
+        stderr,
+        console: console(false),
+    };
     let snapshot = match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => snapshot,
         Err(err) => return fail(&mut state, &CliFailure::fail(err.to_string(), 1)),
@@ -41,6 +49,11 @@ pub fn run_with(args: Vec<String>, stdout: Box<dyn Write>, stderr: Box<dyn Write
     let implemented = |name: &str| {
         commands::GROUPS
             .iter()
+            .chain(
+                commands::FEATURES
+                    .iter()
+                    .flat_map(|feature| feature.cli.iter()),
+            )
             .find(|group| group.name == name)
             .map(|group| (group.command)())
     };
@@ -98,9 +111,16 @@ fn dispatch(state: &mut CliState, matches: &ArgMatches) -> Result<(), CliFailure
         path.push(name.to_owned());
         leaf = sub;
     }
-    let group = commands::GROUPS
-        .iter()
-        .find(|group| path.first().is_some_and(|name| group.name == name));
+    let group = path.first().and_then(|name| {
+        commands::GROUPS
+            .iter()
+            .chain(
+                commands::FEATURES
+                    .iter()
+                    .flat_map(|feature| feature.cli.iter()),
+            )
+            .find(|group| group.name == name)
+    });
     match group {
         Some(group) => (group.run)(state, &path, leaf),
         None => Err(CliFailure::fail(not_implemented_message(&path), 1)),

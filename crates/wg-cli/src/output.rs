@@ -77,8 +77,3 @@ pub fn write_stdout(text: &str) {
 pub fn write_stderr(text: &str) {
     write_all(&mut std::io::stderr().lock(), text);
 }
-
-/// Writes `text` to `stream`, ignoring a closed pipe.
-pub(crate) fn write_to(stream: &mut dyn Write, text: &str) {
-    write_all(stream, text);
-}

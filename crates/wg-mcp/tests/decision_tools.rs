@@ -39,7 +39,7 @@ fn backend(name: &str) -> Result<AppBackend, Box<dyn Error>> {
         Some("main"),
         &json!({"title": "Pick a store"}),
     )?;
-    Ok(AppBackend(app))
+    Ok(AppBackend { app, features: &[] })
 }
 
 /// Calls `name` as the server does: argument checks, then the backend. Returns the result value.

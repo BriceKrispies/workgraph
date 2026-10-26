@@ -1,16 +1,17 @@
 //! The route-table test (plan 4.8, 5.5): every API route the server registers is in the OpenAPI
 //! snapshot with the same method, path and query parameters, body and success status, and every
-//! operation of each group in `wg_server::groups::IMPLEMENTED` is registered. Groups not listed
-//! yet are reported on stderr, never failed.
+//! operation of each implemented group is registered. A group is implemented once one of its routes
+//! is registered (derived from the registered routes, not kept by hand). Groups not implemented yet
+//! are reported on stderr, never failed.
 
-use wg_server::groups::{IMPLEMENTED, routes};
+use wg_server::groups::routes_with;
 use wg_serverspec::coverage::{RouteDecl, coverage, route_problems};
 
 // covers: X1
 #[test]
 fn registered_routes_match_the_openapi_snapshot() {
     let openapi = wg_wire::contract::openapi().unwrap();
-    let registered = routes();
+    let registered = routes_with(&[]);
     let problems: Vec<String> = registered
         .iter()
         .flat_map(|route| {
@@ -30,7 +31,13 @@ fn registered_routes_match_the_openapi_snapshot() {
     assert!(problems.is_empty(), "{}", problems.join("\n"));
 
     let ids: Vec<&str> = registered.iter().map(|route| route.id).collect();
-    let report = coverage(&ids, IMPLEMENTED);
+    let mut implemented: Vec<&str> = registered
+        .iter()
+        .map(|route| wg_serverspec::operations::group_of(route.id))
+        .collect();
+    implemented.sort_unstable();
+    implemented.dedup();
+    let report = coverage(&ids, &implemented);
     for (group, count) in &report.pending {
         eprintln!("route group {group}: not implemented yet ({count} operations)");
     }

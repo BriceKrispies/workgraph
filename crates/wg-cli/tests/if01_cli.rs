@@ -8,29 +8,19 @@ use std::process::{Command, Output};
 
 use wg_clispec::{Snapshot, diff_commands};
 
-/// Top-level groups whose clap tree must equal the snapshot. Each group task adds its name.
-const IMPLEMENTED: &[&str] = &[
-    "config",
-    "doctor",
-    "init",
-    "repo",
-    "task",
-    "decision",
-    "automation",
-    "ui",
-    "serve",
-    "mcp",
-    "project",
-    "workspace",
-    "job",
-    "worker",
-    "git",
-];
+/// The implemented groups: the groups of `GROUPS`, then the features' groups in feature order.
+/// The coverage test below derives its list from these, so no name is kept by hand.
+fn all_groups() -> impl Iterator<Item = &'static wg_cli::commands::Group> {
+    wg_cli::commands::GROUPS.iter().chain(
+        wg_cli::commands::FEATURES
+            .iter()
+            .flat_map(|feature| feature.cli.iter()),
+    )
+}
 
 /// The hand-written command of an implemented group.
 fn implemented(name: &str) -> Option<clap::Command> {
-    wg_cli::commands::GROUPS
-        .iter()
+    all_groups()
         .find(|group| group.name == name)
         .map(|group| (group.command)())
 }
@@ -60,12 +50,13 @@ fn clap_tree_matches_the_snapshot_for_implemented_groups() {
         .map(|c| c.get_name().to_owned())
         .collect();
     assert_eq!(names, snapshot.top_level, "top-level commands and order");
+    let implemented_names: Vec<&str> = all_groups().map(|group| group.name).collect();
     let mut reported = Vec::new();
     for sub in root.get_subcommands() {
         let expected = snapshot.group(sub.get_name());
         let actual = wg_clispec::tree::extract_group(sub);
         let diff = diff_commands(&expected, &actual);
-        if IMPLEMENTED.contains(&sub.get_name()) {
+        if implemented_names.contains(&sub.get_name()) {
             assert!(diff.is_empty(), "{}: {diff:#?}", sub.get_name());
         } else {
             reported.push(sub.get_name().to_owned());

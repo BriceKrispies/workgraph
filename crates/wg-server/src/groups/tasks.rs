@@ -11,39 +11,23 @@ use wg_runtime::App;
 use wg_runtimespec::tasks::query::{
     addressed, filter_body, first_shown, flag, graph_request, number, text,
 };
-use wg_serverspec::groups::{TASKS, body_spec};
+use wg_serverspec::groups::TASKS;
 use wg_types::{ErrorCode, WgError};
 
-use crate::route::{Answer, ApiRequest, ApiRoute, handler};
+use wg_runtime::RouteRequest;
+
+use super::bind;
+use crate::route::ApiRoute;
 
 /// Registers the group's routes into `table`, in the group's order.
 pub fn register(table: &mut Vec<ApiRoute>) {
-    let openapi = wg_wire::contract::openapi().ok();
-    for spec in &TASKS {
-        let body = spec
-            .body
-            .as_ref()
-            .and_then(|body| openapi.as_ref().and_then(|doc| body_spec(doc, body)));
-        let id = spec.id;
-        table.push(ApiRoute {
-            id,
-            method: spec.method,
-            path: spec.path,
-            status: spec.status,
-            query: spec.query,
-            body,
-            handler: handler(move |server, request| async move {
-                let value = server.blocking(move |app| run(app, id, request)).await?;
-                Ok(Answer::Json(value))
-            }),
-        });
-    }
+    bind(table, &TASKS, run);
 }
 
 /// One operation on the application context: the request in, the document out. The permission
 /// checks are the application's, made before anything is looked up as the Python services do.
-fn run(app: &mut App, id: &str, request: ApiRequest) -> Result<Value, WgError> {
-    let ApiRequest {
+fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {
+    let RouteRequest {
         params,
         given,
         context,

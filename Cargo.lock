@@ -860,7 +860,10 @@ dependencies = [
 name = "wg-tasks"
 version = "0.1.0"
 dependencies = [
+ "rpds",
  "serde_json",
+ "uuid",
+ "wg-model",
  "wg-types",
 ]
 

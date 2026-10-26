@@ -5,6 +5,8 @@
 //! * [`attempts`]: the attempt reads (`AttemptService.list`, `get`, `manifests`, `compare`).
 //! * [`resolve`]: the task and attempt reference resolvers the attempt tools and commands share.
 
+pub mod agents;
+pub mod attempt_runs;
 pub mod attempts;
 pub mod resolve;
 pub mod worktrees;

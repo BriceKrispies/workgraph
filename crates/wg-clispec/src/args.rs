@@ -89,7 +89,7 @@ pub fn python(value: &Value) -> String {
         Value::Bool(true) => "True".to_owned(),
         Value::Bool(false) => "False".to_owned(),
         Value::Int(number) => number.to_string(),
-        Value::Float(number) => number.to_string(),
+        Value::Float(number) => wg_json::py_float_repr(*number),
         Value::Str(text) => text
             .code_points()
             .iter()

@@ -4,7 +4,7 @@
 
 use clap::Command;
 use wg_clispec::Snapshot;
-use wg_clispec::args::{get, items, python, when};
+use wg_clispec::args::{get, items, python, s, when};
 use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_json::Value;
 use wg_render::Console;
@@ -200,4 +200,135 @@ pub fn compare_view(console: &Console, compared: &Value) -> String {
         _ => Vec::new(),
     };
     console.table(&rows, &["field", "a", "b", ""], None).text
+}
+
+/// The human view of `attempt create`: `attempt <id> (#<n>) <status>`.
+#[must_use]
+pub fn create_line(console: &Console, attempt: &Value) -> String {
+    console
+        .print(&format!(
+            "attempt {} (#{}) {}",
+            cell(get(attempt, "id")),
+            cell(get(attempt, "number")),
+            cell(get(attempt, "status"))
+        ))
+        .text
+}
+
+/// The human view of `attempt finish`: `attempt <short id> <status>`.
+#[must_use]
+pub fn finish_line(console: &Console, attempt: &Value) -> String {
+    console
+        .print(&format!(
+            "attempt {} {}",
+            short(get(attempt, "id")),
+            cell(get(attempt, "status"))
+        ))
+        .text
+}
+
+/// The human view of `attempt abandon`.
+#[must_use]
+pub fn abandon_line(console: &Console, out: &Value) -> String {
+    console
+        .print(&format!(
+            "attempt {} abandoned; task {} {}",
+            short(get(out, "attempt_id")),
+            cell(get(out, "task")),
+            cell(get(out, "task_status"))
+        ))
+        .text
+}
+
+/// The human view of `attempt start` (`_print_attempt_start`): the attempt, each checkout and the
+/// fast checks.
+#[must_use]
+pub fn start_view(console: &Console, out: &Value) -> String {
+    let head = console
+        .print(&format!(
+            "attempt {} (#{}) running on {}",
+            short(get(out, "attempt_id")),
+            cell(get(out, "attempt_number")),
+            cell(get(out, "task_key"))
+        ))
+        .text;
+    let repositories: String = items(get(out, "repositories"))
+        .iter()
+        .map(|repo| {
+            let base = match get(repo, "base_sha") {
+                Some(Value::Str(_)) => cell(get(repo, "base_sha")).chars().take(12).collect(),
+                _ => "?".to_owned(),
+            };
+            console
+                .print(&format!(
+                    "  {}: {} on {} (base {})",
+                    s(get(repo, "repository")),
+                    s(get(repo, "checkout_path")),
+                    python_text(get(repo, "branch")),
+                    base
+                ))
+                .text
+        })
+        .collect();
+    let checks = items(get(out, "agent_checks"));
+    let fast = if checks.is_empty() {
+        String::new()
+    } else {
+        let names: Vec<String> = checks.iter().map(|check| s(get(check, "name"))).collect();
+        console
+            .print(&format!("fast checks: {}", names.join(", ")))
+            .text
+    };
+    format!("{head}{repositories}{fast}")
+}
+
+/// A value's Python `str()`, with a missing value as `None`.
+fn python_text(value: Option<&Value>) -> String {
+    value.map_or_else(|| "None".to_owned(), python)
+}
+
+/// The human view of `attempt submit` (`_print_attempt_submit`).
+#[must_use]
+pub fn submit_view(console: &Console, reference: &str, out: &Value) -> String {
+    let status = cell(get(out, "status"));
+    let suffix = if status == "succeeded" {
+        String::new()
+    } else {
+        format!(" ({status})")
+    };
+    let head = console
+        .print(&format!(
+            "attempt {} {}; task {}{}",
+            reference.chars().take(8).collect::<String>(),
+            cell(get(out, "attempt_status")),
+            cell(get(out, "task_status")),
+            suffix
+        ))
+        .text;
+    let verification = match get(out, "verification") {
+        Some(value) if truthy(value) => {
+            console
+                .print(&format!("verification: {}", python(value)))
+                .text
+        }
+        _ => String::new(),
+    };
+    let error = match get(out, "error") {
+        Some(value) if truthy(value) => console.print(&format!("error: {}", python(value))).text,
+        _ => String::new(),
+    };
+    format!("{head}{verification}{error}")
+}
+
+/// Python truthiness of an output value.
+fn truthy(value: &Value) -> bool {
+    match value {
+        Value::Null => false,
+        Value::Bool(flag) => *flag,
+        Value::Int(number) => *number != 0,
+        Value::Float(number) => *number != 0.0,
+        Value::List(members) => !members.is_empty(),
+        Value::Dict(entries) => !entries.is_empty(),
+        other => !python(other).is_empty(),
+    }
 }

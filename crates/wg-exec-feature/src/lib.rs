@@ -24,7 +24,7 @@ use wg_runtime::{CliGroup, Feature};
 
 /// The exec feature's command groups: `attempt` (the read commands; the write commands are not
 /// ported yet).
-pub const CLI: &[CliGroup] = &[cli::attempt::GROUP];
+pub const CLI: &[CliGroup] = &[cli::attempt::GROUP, cli::agent::GROUP];
 
 /// The exec feature: its command groups and tools. It has no routes, resources or jobs yet.
 pub static FEATURE: Feature = Feature {

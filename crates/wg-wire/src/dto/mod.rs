@@ -5,6 +5,9 @@
 //! [`implemented`].
 
 pub mod project;
+pub mod task_changes;
+pub mod task_diff;
+pub mod verification;
 pub mod workspace;
 
 /// The DTOs that exist: the OpenAPI component schema name and the field names in order.

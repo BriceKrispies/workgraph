@@ -9,3 +9,10 @@ description = "check configs, check selection, outcomes, acceptance"
 
 [lints]
 workspace = true
+
+[dependencies]
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
+rpds = { version = "1", features = ["serde"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-model = { path = "../wg-model" }
+wg-types = { path = "../wg-types" }

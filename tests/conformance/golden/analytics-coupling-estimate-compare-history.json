@@ -1,0 +1,481 @@
+{
+  "scenario": "analytics-coupling-estimate-compare-history",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.auto_classify\",\n  \"value\": false,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"auth-service\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:6|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\auth-service\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:6|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:6|Z>\",\n  \"updated_at\": \"<ts:6|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"shared-sdk\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:2>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:7|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:5>\",\n      \"path\": \"<tmp>/repos\\\\shared-sdk\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:8|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:8|Z>\",\n  \"updated_at\": \"<ts:8|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"platform\",\n  \"name\": \"Platform\",\n  \"description\": \"\",\n  \"status\": \"active\",\n  \"settings\": {},\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"created_at\": \"<ts:9|Z>\",\n  \"updated_at\": \"<ts:9|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Token refresh part 0\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:10|Z>\",\n  \"updated_at\": \"<ts:11|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Token refresh part 1\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:12|Z>\",\n  \"updated_at\": \"<ts:13|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Token refresh part 2\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:14|Z>\",\n  \"updated_at\": \"<ts:15|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Token refresh part 3\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:16|Z>\",\n  \"updated_at\": \"<ts:17|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:11>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-5\",\n  \"number\": 5,\n  \"title\": \"Token refresh part 9\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:18|Z>\",\n  \"updated_at\": \"<ts:19|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"repository_id\": \"<id:1>\",\n    \"repository\": \"auth-service\",\n    \"mode\": \"incremental\",\n    \"new_commits\": 5,\n    \"refs_changed\": 1,\n    \"marked_unreachable\": 0,\n    \"restored_reachable\": 0,\n    \"equivalences\": 0,\n    \"links_created\": 4,\n    \"shallow\": false,\n    \"head_refs\": 1\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"repository_id\": \"<id:4>\",\n    \"repository\": \"shared-sdk\",\n    \"mode\": \"incremental\",\n    \"new_commits\": 4,\n    \"refs_changed\": 1,\n    \"marked_unreachable\": 0,\n    \"restored_reachable\": 0,\n    \"equivalences\": 0,\n    \"links_created\": 4,\n    \"shallow\": false,\n    \"head_refs\": 1\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"repository_id\": \"<id:1>\",\n  \"total\": 5,\n  \"items\": [\n    {\n      \"id\": \"<id:12>\",\n      \"sha\": \"<sha:3>\",\n      \"subject\": \"shared fix\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:5|+00:00>\",\n      \"insertions\": 3,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [],\n      \"tasks\": []\n    },\n    {\n      \"id\": \"<id:13>\",\n      \"sha\": \"<sha:4>\",\n      \"subject\": \"work 3\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:4|+00:00>\",\n      \"insertions\": 4,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [\n        {\n          \"key\": \"Task-ID\",\n          \"value\": \"WG-4\"\n        }\n      ],\n      \"tasks\": [\n        {\n          \"task_id\": \"<id:10>\",\n          \"task_key\": \"WG-4\",\n          \"source\": \"trailer\",\n          \"confidence\": 0.95\n        }\n      ]\n    },\n    {\n      \"id\": \"<id:14>\",\n      \"sha\": \"<sha:5>\",\n      \"subject\": \"work 2\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:3|+00:00>\",\n      \"insertions\": 3,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [\n        {\n          \"key\": \"Task-ID\",\n          \"value\": \"WG-3\"\n        }\n      ],\n      \"tasks\": [\n        {\n          \"task_id\": \"<id:9>\",\n          \"task_key\": \"WG-3\",\n          \"source\": \"trailer\",\n          \"confidence\": 0.95\n        }\n      ]\n    },\n    {\n      \"id\": \"<id:15>\",\n      \"sha\": \"<sha:6>\",\n      \"subject\": \"work 1\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:2|+00:00>\",\n      \"insertions\": 2,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [\n        {\n          \"key\": \"Task-ID\",\n          \"value\": \"WG-2\"\n        }\n      ],\n      \"tasks\": [\n        {\n          \"task_id\": \"<id:8>\",\n          \"task_key\": \"WG-2\",\n          \"source\": \"trailer\",\n          \"confidence\": 0.95\n        }\n      ]\n    },\n    {\n      \"id\": \"<id:16>\",\n      \"sha\": \"<sha:1>\",\n      \"subject\": \"work 0\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:1|+00:00>\",\n      \"insertions\": 1,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [\n        {\n          \"key\": \"Task-ID\",\n          \"value\": \"WG-1\"\n        }\n      ],\n      \"tasks\": [\n        {\n          \"task_id\": \"<id:7>\",\n          \"task_key\": \"WG-1\",\n          \"source\": \"trailer\",\n          \"confidence\": 0.95\n        }\n      ]\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:17>\",\n    \"commit_id\": \"<id:12>\",\n    \"sha\": \"<sha:3>\",\n    \"repository_id\": \"<id:1>\",\n    \"task_id\": \"<id:7>\",\n    \"source\": \"explicit\",\n    \"confidence\": 1.0,\n    \"evidence\": {\n      \"linked_by\": \"human:Brice\",\n      \"note\": \"\"\n    },\n    \"attempt_id\": null,\n    \"created_at\": \"<ts:21|Z>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:18>\",\n    \"commit_id\": \"<id:12>\",\n    \"sha\": \"<sha:3>\",\n    \"repository_id\": \"<id:1>\",\n    \"task_id\": \"<id:8>\",\n    \"source\": \"explicit\",\n    \"confidence\": 1.0,\n    \"evidence\": {\n      \"linked_by\": \"human:Brice\",\n      \"note\": \"\"\n    },\n    \"attempt_id\": null,\n    \"created_at\": \"<ts:22|Z>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"tasks_created\",\n    \"family\": \"throughput\",\n    \"title\": \"Tasks created\",\n    \"definition\": \"Number of tasks created in the period.\",\n    \"unit\": \"tasks\",\n    \"statistic\": \"count\",\n    \"time_column\": \"created_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"statistic\": \"value\",\n  \"period_a\": [\n    \"2000-01-01T00:00:00\",\n    \"2100-01-01T00:00:00\"\n  ],\n  \"period_b\": [\n    \"2000-01-01T00:00:00\",\n    \"2000-01-02T00:00:00\"\n  ],\n  \"rows\": [\n    {\n      \"a\": 5,\n      \"b\": 0,\n      \"delta\": -5,\n      \"relative_change\": -1.0,\n      \"n_a\": 5,\n      \"n_b\": 0\n    }\n  ],\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"tasks_created\",\n    \"family\": \"throughput\",\n    \"title\": \"Tasks created\",\n    \"definition\": \"Number of tasks created in the period.\",\n    \"unit\": \"tasks\",\n    \"statistic\": \"count\",\n    \"time_column\": \"created_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"statistic\": \"value\",\n  \"period_a\": [\n    \"2000-01-01T00:00:00\",\n    \"2100-01-01T00:00:00\"\n  ],\n  \"period_b\": [\n    \"2000-01-01T00:00:00\",\n    \"2000-01-02T00:00:00\"\n  ],\n  \"rows\": [\n    {\n      \"repository\": \"<id:4>\",\n      \"a\": 4,\n      \"b\": null,\n      \"delta\": null,\n      \"relative_change\": null,\n      \"n_a\": 4,\n      \"n_b\": 0\n    },\n    {\n      \"repository\": \"<id:1>\",\n      \"a\": 5,\n      \"b\": null,\n      \"delta\": null,\n      \"relative_change\": null,\n      \"n_a\": 5,\n      \"n_b\": 0\n    }\n  ],\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Token refresh part 0\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:alice\",\n  \"claim_expires_at\": \"<ts:41|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:10|Z>\",\n  \"updated_at\": \"<ts:24|Z>\",\n  \"started_at\": \"<ts:23|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Token refresh part 0\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:10|Z>\",\n  \"updated_at\": \"<ts:25|Z>\",\n  \"started_at\": \"<ts:23|Z>\",\n  \"completed_at\": \"<ts:25|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:19>\",\n  \"task_id\": \"<id:7>\",\n  \"attempt_id\": null,\n  \"verification_run_id\": null,\n  \"decision\": \"accepted\",\n  \"mode\": \"manual\",\n  \"reason\": \"ok\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:26|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Token refresh part 1\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:alice\",\n  \"claim_expires_at\": \"<ts:42|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:12|Z>\",\n  \"updated_at\": \"<ts:28|Z>\",\n  \"started_at\": \"<ts:27|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Token refresh part 1\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:12|Z>\",\n  \"updated_at\": \"<ts:29|Z>\",\n  \"started_at\": \"<ts:27|Z>\",\n  \"completed_at\": \"<ts:29|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:20>\",\n  \"task_id\": \"<id:8>\",\n  \"attempt_id\": null,\n  \"verification_run_id\": null,\n  \"decision\": \"accepted\",\n  \"mode\": \"manual\",\n  \"reason\": \"ok\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:30|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Token refresh part 2\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:alice\",\n  \"claim_expires_at\": \"<ts:43|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:14|Z>\",\n  \"updated_at\": \"<ts:31|Z>\",\n  \"started_at\": \"<ts:31|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Token refresh part 2\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:14|Z>\",\n  \"updated_at\": \"<ts:32|Z>\",\n  \"started_at\": \"<ts:31|Z>\",\n  \"completed_at\": \"<ts:32|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:21>\",\n  \"task_id\": \"<id:9>\",\n  \"attempt_id\": null,\n  \"verification_run_id\": null,\n  \"decision\": \"accepted\",\n  \"mode\": \"manual\",\n  \"reason\": \"ok\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:33|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Token refresh part 3\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:alice\",\n  \"claim_expires_at\": \"<ts:44|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:16|Z>\",\n  \"updated_at\": \"<ts:35|Z>\",\n  \"started_at\": \"<ts:34|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Token refresh part 3\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:4>\",\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:16|Z>\",\n  \"updated_at\": \"<ts:36|Z>\",\n  \"started_at\": \"<ts:34|Z>\",\n  \"completed_at\": \"<ts:36|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:22>\",\n  \"task_id\": \"<id:10>\",\n  \"attempt_id\": null,\n  \"verification_run_id\": null,\n  \"decision\": \"accepted\",\n  \"mode\": \"manual\",\n  \"reason\": \"ok\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:37|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"repository_change_volume\",\n    \"family\": \"code\",\n    \"title\": \"Repository change volume\",\n    \"definition\": \"Lines changed by distinct task-linked commits per repository (a commit shared by several tasks counts once).\",\n    \"unit\": \"lines\",\n    \"statistic\": \"sum\",\n    \"time_column\": \"committed_at\",\n    \"dimensions\": [\n      \"period\",\n      \"repository\"\n    ],\n    \"caveats\": []\n  },\n  \"query\": {\n    \"metric\": \"repository_change_volume\",\n    \"group_by\": [\n      \"repository\"\n    ],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"repository\": \"<id:4>\",\n      \"value\": 10,\n      \"n\": 4,\n      \"repository_label\": \"shared-sdk\"\n    },\n    {\n      \"repository\": \"<id:1>\",\n      \"value\": 13,\n      \"n\": 5,\n      \"repository_label\": \"auth-service\"\n    }\n  ],\n  \"sample_size\": 9,\n  \"provenance\": {\n    \"sql\": \"SELECT repository, SUM(insertions + deletions) AS value, COUNT(*) AS n FROM (\\n        SELECT DISTINCT c.id, c.repository_id AS repository, c.insertions, c.deletions, c.committed_at,\\n               c.is_merge, r.workspace_id AS ws\\n        FROM task_commits c JOIN repositories r ON r.id = c.repository_id\\n    ) WHERE ws = ? AND (NOT is_merge) GROUP BY repository ORDER BY repository LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:38|db>\"\n  },\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"cumulative_churn\",\n    \"family\": \"code\",\n    \"title\": \"Cumulative churn\",\n    \"definition\": \"Lines added + removed across a task's distinct linked non-merge commits (confidence >= 0.5; cherry-picked or rewritten duplicates counted once).\",\n    \"unit\": \"lines\",\n    \"statistic\": \"distribution\",\n    \"time_column\": \"created_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": [\n      \"Lines changed do not measure difficulty or necessity.\"\n    ]\n  },\n  \"query\": {\n    \"metric\": \"cumulative_churn\",\n    \"group_by\": [],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"n\": 4,\n      \"mean\": 6.5,\n      \"median\": 6.5,\n      \"p75\": 7.25,\n      \"p90\": 7.7,\n      \"p95\": 7.85,\n      \"min\": 5,\n      \"max\": 8,\n      \"sum\": 26\n    }\n  ],\n  \"sample_size\": 4,\n  \"provenance\": {\n    \"sql\": \"SELECT COUNT(churn_insertions + churn_deletions) AS n, AVG(churn_insertions + churn_deletions) AS mean, quantile_cont(churn_insertions + churn_deletions, 0.5) AS median, quantile_cont(churn_insertions + churn_deletions, 0.75) AS p75, quantile_cont(churn_insertions + churn_deletions, 0.9) AS p90, quantile_cont(churn_insertions + churn_deletions, 0.95) AS p95, MIN(churn_insertions + churn_deletions) AS min, MAX(churn_insertions + churn_deletions) AS max, SUM(churn_insertions + churn_deletions) AS sum FROM (\\n        SELECT tf.*, tf.workspace_id AS ws, tf.project_id AS project, tf.category AS category,\\n               tf.priority AS priority, tf.status AS status, tf.assigned_agent AS agent\\n        FROM task_facts tf WHERE tf.archived_at IS NULL\\n    ) WHERE ws = ? AND (commits > 0) LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:39|db>\"\n  },\n  \"notes\": [\n    \"Lines changed do not measure difficulty or necessity.\",\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"tasks_created\",\n    \"family\": \"throughput\",\n    \"title\": \"Tasks created\",\n    \"definition\": \"Number of tasks created in the period.\",\n    \"unit\": \"tasks\",\n    \"statistic\": \"count\",\n    \"time_column\": \"created_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"query\": {\n    \"metric\": \"tasks_created\",\n    \"group_by\": [\n      \"repository\"\n    ],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"repository\": \"<id:4>\",\n      \"value\": 4,\n      \"n\": 4,\n      \"repository_label\": \"shared-sdk\"\n    },\n    {\n      \"repository\": \"<id:1>\",\n      \"value\": 5,\n      \"n\": 5,\n      \"repository_label\": \"auth-service\"\n    }\n  ],\n  \"sample_size\": 9,\n  \"provenance\": {\n    \"sql\": \"SELECT repository, COUNT(*) AS value, COUNT(*) AS n FROM (SELECT b.*, tr.repository_id AS repository FROM (\\n        SELECT tf.*, tf.workspace_id AS ws, tf.project_id AS project, tf.category AS category,\\n               tf.priority AS priority, tf.status AS status, tf.assigned_agent AS agent\\n        FROM task_facts tf WHERE tf.archived_at IS NULL\\n    ) b JOIN task_repositories tr ON tr.task_id = b.id) WHERE ws = ? AND (TRUE) GROUP BY repository ORDER BY repository LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:40|db>\"\n  },\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 33,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"repositories\": [\n    {\n      \"id\": \"<id:1>\",\n      \"name\": \"auth-service\",\n      \"tasks_touching\": 4\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"name\": \"shared-sdk\",\n      \"tasks_touching\": 4\n    }\n  ],\n  \"edges\": [\n    {\n      \"source\": \"<id:4>\",\n      \"target\": \"<id:1>\",\n      \"source_name\": \"shared-sdk\",\n      \"target_name\": \"auth-service\",\n      \"co_changes\": 4,\n      \"jaccard\": 1.0,\n      \"declared\": false,\n      \"relationship\": \"observed\",\n      \"evidence\": [\n        {\n          \"task_id\": \"<id:10>\",\n          \"task_key\": \"WG-4\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:7>\"\n            ],\n            \"auth-service\": [\n              \"<sha:4>\"\n            ]\n          }\n        },\n        {\n          \"task_id\": \"<id:7>\",\n          \"task_key\": \"WG-1\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:2>\"\n            ],\n            \"auth-service\": [\n              \"<sha:1>\",\n              \"<sha:3>\"\n            ]\n          }\n        },\n        {\n          \"task_id\": \"<id:8>\",\n          \"task_key\": \"WG-2\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:8>\"\n            ],\n            \"auth-service\": [\n              \"<sha:6>\",\n              \"<sha:3>\"\n            ]\n          }\n        },\n        {\n          \"task_id\": \"<id:9>\",\n          \"task_key\": \"WG-3\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:9>\"\n            ],\n            \"auth-service\": [\n              \"<sha:5>\"\n            ]\n          }\n        }\n      ]\n    }\n  ],\n  \"declared_only\": [],\n  \"matrix\": {\n    \"auth-service\": {\n      \"auth-service\": 4,\n      \"shared-sdk\": 4\n    },\n    \"shared-sdk\": {\n      \"auth-service\": 4,\n      \"shared-sdk\": 4\n    }\n  },\n  \"summary\": {\n    \"tasks_with_code\": 4,\n    \"cross_repository_tasks\": 4,\n    \"average_repositories_per_task\": 2.0,\n    \"median_elapsed_ms_cross_repo\": 235841.5,\n    \"median_elapsed_ms_single_repo\": null,\n    \"integration_checks\": 0,\n    \"integration_failure_rate\": null\n  },\n  \"commonly_changed_pairs\": [\n    {\n      \"pair\": [\n        \"shared-sdk\",\n        \"auth-service\"\n      ],\n      \"co_changes\": 4\n    }\n  ],\n  \"modules_with_cross_repo_impact\": [\n    {\n      \"module\": \"shared-sdk:src\",\n      \"cross_repo_tasks\": 4,\n      \"tasks\": [\n        \"WG-4\",\n        \"WG-1\",\n        \"WG-2\",\n        \"WG-3\"\n      ]\n    },\n    {\n      \"module\": \"auth-service:src\",\n      \"cross_repo_tasks\": 4,\n      \"tasks\": [\n        \"WG-4\",\n        \"WG-1\",\n        \"WG-2\",\n        \"WG-3\"\n      ]\n    }\n  ],\n  \"coupling_candidates\": [\n    {\n      \"source\": \"<id:4>\",\n      \"target\": \"<id:1>\",\n      \"source_name\": \"shared-sdk\",\n      \"target_name\": \"auth-service\",\n      \"co_changes\": 4,\n      \"jaccard\": 1.0,\n      \"declared\": false,\n      \"relationship\": \"observed\",\n      \"evidence\": [\n        {\n          \"task_id\": \"<id:10>\",\n          \"task_key\": \"WG-4\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:7>\"\n            ],\n            \"auth-service\": [\n              \"<sha:4>\"\n            ]\n          }\n        },\n        {\n          \"task_id\": \"<id:7>\",\n          \"task_key\": \"WG-1\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:2>\"\n            ],\n            \"auth-service\": [\n              \"<sha:1>\",\n              \"<sha:3>\"\n            ]\n          }\n        },\n        {\n          \"task_id\": \"<id:8>\",\n          \"task_key\": \"WG-2\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:8>\"\n            ],\n            \"auth-service\": [\n              \"<sha:6>\",\n              \"<sha:3>\"\n            ]\n          }\n        },\n        {\n          \"task_id\": \"<id:9>\",\n          \"task_key\": \"WG-3\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:9>\"\n            ],\n            \"auth-service\": [\n              \"<sha:5>\"\n            ]\n          }\n        }\n      ],\n      \"observation\": \"shared-sdk and auth-service changed together in 4 task(s) without a declared dependency\"\n    }\n  ],\n  \"notes\": [\n    \"Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.\",\n    \"Coordination durations compare medians of different task populations and do not imply causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 34,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 35,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 36,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 37,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"repositories\": [\n    {\n      \"id\": \"<id:1>\",\n      \"name\": \"auth-service\",\n      \"tasks_touching\": 0\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"name\": \"shared-sdk\",\n      \"tasks_touching\": 0\n    }\n  ],\n  \"edges\": [],\n  \"declared_only\": [],\n  \"matrix\": {\n    \"auth-service\": {\n      \"auth-service\": 0,\n      \"shared-sdk\": 0\n    },\n    \"shared-sdk\": {\n      \"auth-service\": 0,\n      \"shared-sdk\": 0\n    }\n  },\n  \"summary\": {\n    \"tasks_with_code\": 0,\n    \"cross_repository_tasks\": 0,\n    \"average_repositories_per_task\": null,\n    \"median_elapsed_ms_cross_repo\": null,\n    \"median_elapsed_ms_single_repo\": null,\n    \"integration_checks\": 0,\n    \"integration_failure_rate\": null\n  },\n  \"commonly_changed_pairs\": [],\n  \"modules_with_cross_repo_impact\": [],\n  \"coupling_candidates\": [],\n  \"notes\": [\n    \"Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.\",\n    \"Coordination durations compare medians of different task populations and do not imply causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 38,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"repositories\": [\n    {\n      \"id\": \"<id:1>\",\n      \"name\": \"auth-service\",\n      \"tasks_touching\": 4\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"name\": \"shared-sdk\",\n      \"tasks_touching\": 4\n    }\n  ],\n  \"edges\": [],\n  \"declared_only\": [],\n  \"matrix\": {\n    \"auth-service\": {\n      \"auth-service\": 4,\n      \"shared-sdk\": 4\n    },\n    \"shared-sdk\": {\n      \"auth-service\": 4,\n      \"shared-sdk\": 4\n    }\n  },\n  \"summary\": {\n    \"tasks_with_code\": 4,\n    \"cross_repository_tasks\": 4,\n    \"average_repositories_per_task\": 2.0,\n    \"median_elapsed_ms_cross_repo\": 235841.5,\n    \"median_elapsed_ms_single_repo\": null,\n    \"integration_checks\": 0,\n    \"integration_failure_rate\": null\n  },\n  \"commonly_changed_pairs\": [],\n  \"modules_with_cross_repo_impact\": [\n    {\n      \"module\": \"auth-service:src\",\n      \"cross_repo_tasks\": 4,\n      \"tasks\": [\n        \"WG-4\",\n        \"WG-3\",\n        \"WG-1\",\n        \"WG-2\"\n      ]\n    },\n    {\n      \"module\": \"shared-sdk:src\",\n      \"cross_repo_tasks\": 4,\n      \"tasks\": [\n        \"WG-4\",\n        \"WG-3\",\n        \"WG-1\",\n        \"WG-2\"\n      ]\n    }\n  ],\n  \"coupling_candidates\": [],\n  \"notes\": [\n    \"Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.\",\n    \"Coordination durations compare medians of different task populations and do not imply causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 39,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 40,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"auth-service\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:6|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": \"<ts:20|Z>\",\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\auth-service\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:6|Z>\"\n    }\n  ],\n  \"project_ids\": [\n    \"<id:6>\"\n  ],\n  \"depends_on\": [\n    \"<id:4>\"\n  ],\n  \"created_at\": \"<ts:6|Z>\",\n  \"updated_at\": \"<ts:20|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 41,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"repositories\": [\n    {\n      \"id\": \"<id:1>\",\n      \"name\": \"auth-service\",\n      \"tasks_touching\": 4\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"name\": \"shared-sdk\",\n      \"tasks_touching\": 4\n    }\n  ],\n  \"edges\": [\n    {\n      \"source\": \"<id:4>\",\n      \"target\": \"<id:1>\",\n      \"source_name\": \"shared-sdk\",\n      \"target_name\": \"auth-service\",\n      \"co_changes\": 4,\n      \"jaccard\": 1.0,\n      \"declared\": true,\n      \"relationship\": \"declared+observed\",\n      \"evidence\": [\n        {\n          \"task_id\": \"<id:10>\",\n          \"task_key\": \"WG-4\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:7>\"\n            ],\n            \"auth-service\": [\n              \"<sha:4>\"\n            ]\n          }\n        },\n        {\n          \"task_id\": \"<id:9>\",\n          \"task_key\": \"WG-3\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:9>\"\n            ],\n            \"auth-service\": [\n              \"<sha:5>\"\n            ]\n          }\n        },\n        {\n          \"task_id\": \"<id:7>\",\n          \"task_key\": \"WG-1\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:2>\"\n            ],\n            \"auth-service\": [\n              \"<sha:1>\",\n              \"<sha:3>\"\n            ]\n          }\n        },\n        {\n          \"task_id\": \"<id:8>\",\n          \"task_key\": \"WG-2\",\n          \"commits\": {\n            \"shared-sdk\": [\n              \"<sha:8>\"\n            ],\n            \"auth-service\": [\n              \"<sha:6>\",\n              \"<sha:3>\"\n            ]\n          }\n        }\n      ]\n    }\n  ],\n  \"declared_only\": [],\n  \"matrix\": {\n    \"auth-service\": {\n      \"auth-service\": 4,\n      \"shared-sdk\": 4\n    },\n    \"shared-sdk\": {\n      \"auth-service\": 4,\n      \"shared-sdk\": 4\n    }\n  },\n  \"summary\": {\n    \"tasks_with_code\": 4,\n    \"cross_repository_tasks\": 4,\n    \"average_repositories_per_task\": 2.0,\n    \"median_elapsed_ms_cross_repo\": 235841.5,\n    \"median_elapsed_ms_single_repo\": null,\n    \"integration_checks\": 0,\n    \"integration_failure_rate\": null\n  },\n  \"commonly_changed_pairs\": [\n    {\n      \"pair\": [\n        \"shared-sdk\",\n        \"auth-service\"\n      ],\n      \"co_changes\": 4\n    }\n  ],\n  \"modules_with_cross_repo_impact\": [\n    {\n      \"module\": \"shared-sdk:src\",\n      \"cross_repo_tasks\": 4,\n      \"tasks\": [\n        \"WG-4\",\n        \"WG-3\",\n        \"WG-1\",\n        \"WG-2\"\n      ]\n    },\n    {\n      \"module\": \"auth-service:src\",\n      \"cross_repo_tasks\": 4,\n      \"tasks\": [\n        \"WG-4\",\n        \"WG-3\",\n        \"WG-1\",\n        \"WG-2\"\n      ]\n    }\n  ],\n  \"coupling_candidates\": [],\n  \"notes\": [\n    \"Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.\",\n    \"Coordination durations compare medians of different task populations and do not imply causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 42,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 43,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"status\": \"ok\",\n  \"basis\": [\n    {\n      \"task_id\": \"<id:7>\",\n      \"key\": \"WG-1\",\n      \"title\": \"Token refresh part 0\",\n      \"score\": 0.3,\n      \"reasons\": [\n        \"lexical text similarity 0.50\",\n        \"repository overlap 0.50\"\n      ]\n    },\n    {\n      \"task_id\": \"<id:8>\",\n      \"key\": \"WG-2\",\n      \"title\": \"Token refresh part 1\",\n      \"score\": 0.233,\n      \"reasons\": [\n        \"lexical text similarity 0.33\",\n        \"repository overlap 0.50\"\n      ]\n    },\n    {\n      \"task_id\": \"<id:9>\",\n      \"key\": \"WG-3\",\n      \"title\": \"Token refresh part 2\",\n      \"score\": 0.2,\n      \"reasons\": [\n        \"lexical text similarity 0.25\",\n        \"repository overlap 0.50\"\n      ]\n    },\n    {\n      \"task_id\": \"<id:10>\",\n      \"key\": \"WG-4\",\n      \"title\": \"Token refresh part 3\",\n      \"score\": 0.18,\n      \"reasons\": [\n        \"lexical text similarity 0.20\",\n        \"repository overlap 0.50\"\n      ]\n    }\n  ],\n  \"sample_size\": 4,\n  \"method\": \"lexical\",\n  \"distributions\": {\n    \"execution_ms\": {\n      \"n\": 0,\n      \"p25\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"min\": null,\n      \"max\": null\n    },\n    \"queue_ms\": {\n      \"n\": 0,\n      \"p25\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"min\": null,\n      \"max\": null\n    },\n    \"elapsed_ms\": {\n      \"n\": 4,\n      \"p25\": 202733.0,\n      \"median\": 235841.5,\n      \"p75\": 264650.75,\n      \"p90\": 276530.3,\n      \"min\": 170036.0,\n      \"max\": 284450.0\n    },\n    \"attempts\": {\n      \"n\": 4,\n      \"p25\": 0.0,\n      \"median\": 0.0,\n      \"p75\": 0.0,\n      \"p90\": 0.0,\n      \"min\": 0.0,\n      \"max\": 0.0\n    },\n    \"files_changed\": {\n      \"n\": 4,\n      \"p25\": 1.0,\n      \"median\": 1.5,\n      \"p75\": 2.0,\n      \"p90\": 2.0,\n      \"min\": 1.0,\n      \"max\": 2.0\n    },\n    \"cumulative_churn\": {\n      \"n\": 4,\n      \"p25\": 5.75,\n      \"median\": 6.5,\n      \"p75\": 7.25,\n      \"p90\": 7.7,\n      \"min\": 5.0,\n      \"max\": 8.0\n    },\n    \"final_change_size\": {\n      \"n\": 0,\n      \"p25\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"min\": null,\n      \"max\": null\n    }\n  },\n  \"verification\": {\n    \"runs\": 0,\n    \"passed\": 0,\n    \"pass_rate\": null\n  },\n  \"agent_recommendations\": [],\n  \"uncertainty\": \"Ranges are the 25th-75th/90th percentiles of comparable tasks; small samples are volatile.\",\n  \"caveats\": [\n    \"Agent recommendations reflect which agents happened to be used on similar tasks (selection bias); they are evidence, not a controlled comparison.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 44,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 45,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"status\": \"ok\",\n  \"basis\": [\n    {\n      \"task_id\": \"<id:7>\",\n      \"key\": \"WG-1\",\n      \"title\": \"Token refresh part 0\",\n      \"score\": 0.3,\n      \"reasons\": [\n        \"lexical text similarity 0.50\",\n        \"repository overlap 0.50\"\n      ]\n    },\n    {\n      \"task_id\": \"<id:8>\",\n      \"key\": \"WG-2\",\n      \"title\": \"Token refresh part 1\",\n      \"score\": 0.233,\n      \"reasons\": [\n        \"lexical text similarity 0.33\",\n        \"repository overlap 0.50\"\n      ]\n    },\n    {\n      \"task_id\": \"<id:9>\",\n      \"key\": \"WG-3\",\n      \"title\": \"Token refresh part 2\",\n      \"score\": 0.2,\n      \"reasons\": [\n        \"lexical text similarity 0.25\",\n        \"repository overlap 0.50\"\n      ]\n    },\n    {\n      \"task_id\": \"<id:10>\",\n      \"key\": \"WG-4\",\n      \"title\": \"Token refresh part 3\",\n      \"score\": 0.18,\n      \"reasons\": [\n        \"lexical text similarity 0.20\",\n        \"repository overlap 0.50\"\n      ]\n    }\n  ],\n  \"sample_size\": 4,\n  \"method\": \"lexical\",\n  \"distributions\": {\n    \"execution_ms\": {\n      \"n\": 0,\n      \"p25\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"min\": null,\n      \"max\": null\n    },\n    \"queue_ms\": {\n      \"n\": 0,\n      \"p25\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"min\": null,\n      \"max\": null\n    },\n    \"elapsed_ms\": {\n      \"n\": 4,\n      \"p25\": 202733.0,\n      \"median\": 235841.5,\n      \"p75\": 264650.75,\n      \"p90\": 276530.3,\n      \"min\": 170036.0,\n      \"max\": 284450.0\n    },\n    \"attempts\": {\n      \"n\": 4,\n      \"p25\": 0.0,\n      \"median\": 0.0,\n      \"p75\": 0.0,\n      \"p90\": 0.0,\n      \"min\": 0.0,\n      \"max\": 0.0\n    },\n    \"files_changed\": {\n      \"n\": 4,\n      \"p25\": 1.0,\n      \"median\": 1.5,\n      \"p75\": 2.0,\n      \"p90\": 2.0,\n      \"min\": 1.0,\n      \"max\": 2.0\n    },\n    \"cumulative_churn\": {\n      \"n\": 4,\n      \"p25\": 5.75,\n      \"median\": 6.5,\n      \"p75\": 7.25,\n      \"p90\": 7.7,\n      \"min\": 5.0,\n      \"max\": 8.0\n    },\n    \"final_change_size\": {\n      \"n\": 0,\n      \"p25\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"min\": null,\n      \"max\": null\n    }\n  },\n  \"verification\": {\n    \"runs\": 0,\n    \"passed\": 0,\n    \"pass_rate\": null\n  },\n  \"agent_recommendations\": [],\n  \"uncertainty\": \"Ranges are the 25th-75th/90th percentiles of comparable tasks; small samples are volatile.\",\n  \"caveats\": [\n    \"Agent recommendations reflect which agents happened to be used on similar tasks (selection bias); they are evidence, not a controlled comparison.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 46,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"status\": \"insufficient_data\",\n  \"message\": \"only 0 comparable accepted task(s) found; at least 3 are required\",\n  \"comparable_tasks\": [],\n  \"min_sample\": 3\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 47,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 48,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"key\": \"WG-4\",\n    \"title\": \"Token refresh part 3\",\n    \"category\": null,\n    \"status\": \"accepted\",\n    \"attempts\": 0,\n    \"retries\": 0,\n    \"execution_ms\": null,\n    \"queue_wait_ms\": null,\n    \"elapsed_ms\": <dur>,\n    \"commits\": 2,\n    \"churn_insertions\": 8,\n    \"churn_deletions\": 0,\n    \"final_insertions\": null,\n    \"final_deletions\": null,\n    \"files_touched\": 1,\n    \"repositories_touched\": 2,\n    \"reopen_count\": 0,\n    \"accepted_at\": \"2026-10-26T16:21:41.262956\"\n  },\n  {\n    \"key\": \"WG-3\",\n    \"title\": \"Token refresh part 2\",\n    \"category\": null,\n    \"status\": \"accepted\",\n    \"attempts\": 0,\n    \"retries\": 0,\n    \"execution_ms\": null,\n    \"queue_wait_ms\": null,\n    \"elapsed_ms\": <dur>,\n    \"commits\": 2,\n    \"churn_insertions\": 6,\n    \"churn_deletions\": 0,\n    \"final_insertions\": null,\n    \"final_deletions\": null,\n    \"files_touched\": 1,\n    \"repositories_touched\": 2,\n    \"reopen_count\": 0,\n    \"accepted_at\": \"2026-10-26T16:20:57.823524\"\n  },\n  {\n    \"key\": \"WG-2\",\n    \"title\": \"Token refresh part 1\",\n    \"category\": null,\n    \"status\": \"accepted\",\n    \"attempts\": 0,\n    \"retries\": 0,\n    \"execution_ms\": null,\n    \"queue_wait_ms\": null,\n    \"elapsed_ms\": <dur>,\n    \"commits\": 3,\n    \"churn_insertions\": 7,\n    \"churn_deletions\": 0,\n    \"final_insertions\": null,\n    \"final_deletions\": null,\n    \"files_touched\": 2,\n    \"repositories_touched\": 2,\n    \"reopen_count\": 0,\n    \"accepted_at\": \"2026-10-26T16:20:03.960820\"\n  },\n  {\n    \"key\": \"WG-1\",\n    \"title\": \"Token refresh part 0\",\n    \"category\": null,\n    \"status\": \"accepted\",\n    \"attempts\": 0,\n    \"retries\": 0,\n    \"execution_ms\": null,\n    \"queue_wait_ms\": null,\n    \"elapsed_ms\": <dur>,\n    \"commits\": 3,\n    \"churn_insertions\": 5,\n    \"churn_deletions\": 0,\n    \"final_insertions\": null,\n    \"final_deletions\": null,\n    \"files_touched\": 2,\n    \"repositories_touched\": 2,\n    \"reopen_count\": 0,\n    \"accepted_at\": \"2026-10-26T16:19:12.242895\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 49,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 50,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    {
+      "index": 51,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"key\": \"WG-4\",\n    \"title\": \"Token refresh part 3\",\n    \"category\": null,\n    \"status\": \"accepted\",\n    \"attempts\": 0,\n    \"retries\": 0,\n    \"execution_ms\": null,\n    \"queue_wait_ms\": null,\n    \"elapsed_ms\": <dur>,\n    \"commits\": 2,\n    \"churn_insertions\": 8,\n    \"churn_deletions\": 0,\n    \"final_insertions\": null,\n    \"final_deletions\": null,\n    \"files_touched\": 1,\n    \"repositories_touched\": 2,\n    \"reopen_count\": 0,\n    \"accepted_at\": \"2026-10-26T16:21:41.262956\"\n  },\n  {\n    \"key\": \"WG-3\",\n    \"title\": \"Token refresh part 2\",\n    \"category\": null,\n    \"status\": \"accepted\",\n    \"attempts\": 0,\n    \"retries\": 0,\n    \"execution_ms\": null,\n    \"queue_wait_ms\": null,\n    \"elapsed_ms\": <dur>,\n    \"commits\": 2,\n    \"churn_insertions\": 6,\n    \"churn_deletions\": 0,\n    \"final_insertions\": null,\n    \"final_deletions\": null,\n    \"files_touched\": 1,\n    \"repositories_touched\": 2,\n    \"reopen_count\": 0,\n    \"accepted_at\": \"2026-10-26T16:20:57.823524\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 52,
+      "kind": "cli",
+      "exit": 4,
+      "stdout": "{\"error\": {\"code\": \"not_found\", \"message\": \"repository 'unknown-repo' not found in workspace\", \"details\": {\"ref\": \"unknown-repo\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 53,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"key\": \"WG-4\",\n    \"title\": \"Token refresh part 3\",\n    \"category\": null,\n    \"status\": \"accepted\",\n    \"attempts\": 0,\n    \"retries\": 0,\n    \"execution_ms\": null,\n    \"queue_wait_ms\": null,\n    \"elapsed_ms\": <dur>,\n    \"commits\": 2,\n    \"churn_insertions\": 8,\n    \"churn_deletions\": 0,\n    \"final_insertions\": null,\n    \"final_deletions\": null,\n    \"files_touched\": 1,\n    \"repositories_touched\": 2,\n    \"reopen_count\": 0,\n    \"accepted_at\": \"2026-10-26T16:21:41.262956\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 54,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"repositories\": [\n    {\n      \"id\": \"<id:1>\",\n      \"name\": \"auth-service\",\n      \"tasks_touching\": 0\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"name\": \"shared-sdk\",\n      \"tasks_touching\": 0\n    }\n  ],\n  \"edges\": [],\n  \"declared_only\": [\n    {\n      \"source_name\": \"shared-sdk\",\n      \"target_name\": \"auth-service\",\n      \"relationship\": \"declared_only\"\n    }\n  ],\n  \"matrix\": {\n    \"auth-service\": {\n      \"auth-service\": 0,\n      \"shared-sdk\": 0\n    },\n    \"shared-sdk\": {\n      \"auth-service\": 0,\n      \"shared-sdk\": 0\n    }\n  },\n  \"summary\": {\n    \"tasks_with_code\": 0,\n    \"cross_repository_tasks\": 0,\n    \"average_repositories_per_task\": null,\n    \"median_elapsed_ms_cross_repo\": null,\n    \"median_elapsed_ms_single_repo\": null,\n    \"integration_checks\": 0,\n    \"integration_failure_rate\": null\n  },\n  \"commonly_changed_pairs\": [],\n  \"modules_with_cross_repo_impact\": [],\n  \"coupling_candidates\": [],\n  \"notes\": [\n    \"Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.\",\n    \"Coordination durations compare medians of different task populations and do not imply causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 55,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"status\": \"ok\",\n  \"basis\": [\n    {\n      \"task_id\": \"<id:7>\",\n      \"key\": \"WG-1\",\n      \"title\": \"Token refresh part 0\",\n      \"score\": 0.3,\n      \"reasons\": [\n        \"lexical text similarity 0.50\",\n        \"repository overlap 0.50\"\n      ]\n    },\n    {\n      \"task_id\": \"<id:8>\",\n      \"key\": \"WG-2\",\n      \"title\": \"Token refresh part 1\",\n      \"score\": 0.233,\n      \"reasons\": [\n        \"lexical text similarity 0.33\",\n        \"repository overlap 0.50\"\n      ]\n    },\n    {\n      \"task_id\": \"<id:9>\",\n      \"key\": \"WG-3\",\n      \"title\": \"Token refresh part 2\",\n      \"score\": 0.2,\n      \"reasons\": [\n        \"lexical text similarity 0.25\",\n        \"repository overlap 0.50\"\n      ]\n    },\n    {\n      \"task_id\": \"<id:10>\",\n      \"key\": \"WG-4\",\n      \"title\": \"Token refresh part 3\",\n      \"score\": 0.18,\n      \"reasons\": [\n        \"lexical text similarity 0.20\",\n        \"repository overlap 0.50\"\n      ]\n    }\n  ],\n  \"sample_size\": 4,\n  \"method\": \"lexical\",\n  \"distributions\": {\n    \"execution_ms\": {\n      \"n\": 0,\n      \"p25\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"min\": null,\n      \"max\": null\n    },\n    \"queue_ms\": {\n      \"n\": 0,\n      \"p25\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"min\": null,\n      \"max\": null\n    },\n    \"elapsed_ms\": {\n      \"n\": 4,\n      \"p25\": 202733.0,\n      \"median\": 235841.5,\n      \"p75\": 264650.75,\n      \"p90\": 276530.3,\n      \"min\": 170036.0,\n      \"max\": 284450.0\n    },\n    \"attempts\": {\n      \"n\": 4,\n      \"p25\": 0.0,\n      \"median\": 0.0,\n      \"p75\": 0.0,\n      \"p90\": 0.0,\n      \"min\": 0.0,\n      \"max\": 0.0\n    },\n    \"files_changed\": {\n      \"n\": 4,\n      \"p25\": 1.0,\n      \"median\": 1.5,\n      \"p75\": 2.0,\n      \"p90\": 2.0,\n      \"min\": 1.0,\n      \"max\": 2.0\n    },\n    \"cumulative_churn\": {\n      \"n\": 4,\n      \"p25\": 5.75,\n      \"median\": 6.5,\n      \"p75\": 7.25,\n      \"p90\": 7.7,\n      \"min\": 5.0,\n      \"max\": 8.0\n    },\n    \"final_change_size\": {\n      \"n\": 0,\n      \"p25\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"min\": null,\n      \"max\": null\n    }\n  },\n  \"verification\": {\n    \"runs\": 0,\n    \"passed\": 0,\n    \"pass_rate\": null\n  },\n  \"agent_recommendations\": [],\n  \"uncertainty\": \"Ranges are the 25th-75th/90th percentiles of comparable tasks; small samples are volatile.\",\n  \"caveats\": [\n    \"Agent recommendations reflect which agents happened to be used on similar tasks (selection bias); they are evidence, not a controlled comparison.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 56,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"tasks_created\",\n    \"family\": \"throughput\",\n    \"title\": \"Tasks created\",\n    \"definition\": \"Number of tasks created in the period.\",\n    \"unit\": \"tasks\",\n    \"statistic\": \"count\",\n    \"time_column\": \"created_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"statistic\": \"value\",\n  \"period_a\": [\n    \"2000-01-01T00:00:00\",\n    \"2100-01-01T00:00:00\"\n  ],\n  \"period_b\": [\n    \"2000-01-01T00:00:00\",\n    \"2000-01-02T00:00:00\"\n  ],\n  \"rows\": [\n    {\n      \"repository\": \"<id:4>\",\n      \"a\": 4,\n      \"b\": null,\n      \"delta\": null,\n      \"relative_change\": null,\n      \"n_a\": 4,\n      \"n_b\": 0\n    },\n    {\n      \"repository\": \"<id:1>\",\n      \"a\": 5,\n      \"b\": null,\n      \"delta\": null,\n      \"relative_change\": null,\n      \"n_a\": 5,\n      \"n_b\": 0\n    }\n  ],\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    }
+  ]
+}

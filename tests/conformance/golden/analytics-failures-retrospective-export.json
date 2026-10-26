@@ -1,0 +1,299 @@
+{
+  "scenario": "analytics-failures-retrospective-export",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.auto_classify\",\n  \"value\": false,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"svc\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:4|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\svc\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:4|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:4|Z>\",\n  \"updated_at\": \"<ts:4|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"platform\",\n  \"name\": \"Platform\",\n  \"description\": \"\",\n  \"status\": \"active\",\n  \"settings\": {},\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:5|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Flaky login\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [\n    \"<id:4>\"\n  ],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:6|Z>\",\n  \"updated_at\": \"<ts:7|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Done thing\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:8|Z>\",\n  \"updated_at\": \"<ts:9|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Done thing\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:alice\",\n  \"claim_expires_at\": \"<ts:28|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:8|Z>\",\n  \"updated_at\": \"<ts:11|Z>\",\n  \"started_at\": \"<ts:10|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Done thing\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:8|Z>\",\n  \"updated_at\": \"<ts:12|Z>\",\n  \"started_at\": \"<ts:10|Z>\",\n  \"completed_at\": \"<ts:12|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"task_id\": \"<id:6>\",\n  \"attempt_id\": null,\n  \"verification_run_id\": null,\n  \"decision\": \"accepted\",\n  \"mode\": \"manual\",\n  \"reason\": \"ok\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:13|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:5>\",\n  \"number\": 1,\n  \"status\": \"running\",\n  \"provider\": \"external\",\n  \"adapter\": \"external\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": null,\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:14|Z>\",\n  \"queued_at\": \"<ts:14|Z>\",\n  \"started_at\": \"<ts:14|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:5>\",\n  \"number\": 2,\n  \"status\": \"running\",\n  \"provider\": \"external\",\n  \"adapter\": \"external\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": null,\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:16|Z>\",\n  \"queued_at\": \"<ts:15|Z>\",\n  \"started_at\": \"<ts:15|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:5>\",\n  \"number\": 3,\n  \"status\": \"running\",\n  \"provider\": \"external\",\n  \"adapter\": \"external\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": null,\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:18|Z>\",\n  \"queued_at\": \"<ts:17|Z>\",\n  \"started_at\": \"<ts:17|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"generated_at\": \"<ts:19|db>\",\n  \"findings\": [\n    {\n      \"kind\": \"retry_loop\",\n      \"title\": \"WG-1 needed 3 attempts\",\n      \"severity\": \"warning\",\n      \"metric_value\": 3,\n      \"sample_size\": 3,\n      \"evidence\": {\n        \"tasks\": [\n          \"WG-1\"\n        ],\n        \"attempts\": [\n          \"<id:8>\",\n          \"<id:9>\",\n          \"<id:10>\"\n        ]\n      },\n      \"fingerprint\": \"4ee9ca2fcf43e3f937c04abbaa5a1d1e\"\n    }\n  ],\n  \"note\": \"Findings are computed deterministically from recorded tasks, attempts, checks and commits.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"generated_at\": \"<ts:20|db>\",\n  \"findings\": [\n    {\n      \"kind\": \"retry_loop\",\n      \"title\": \"WG-1 needed 3 attempts\",\n      \"severity\": \"warning\",\n      \"metric_value\": 3,\n      \"sample_size\": 3,\n      \"evidence\": {\n        \"tasks\": [\n          \"WG-1\"\n        ],\n        \"attempts\": [\n          \"<id:8>\",\n          \"<id:9>\",\n          \"<id:10>\"\n        ]\n      },\n      \"fingerprint\": \"4ee9ca2fcf43e3f937c04abbaa5a1d1e\"\n    }\n  ],\n  \"note\": \"Findings are computed deterministically from recorded tasks, attempts, checks and commits.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"generated_at\": \"<ts:21|db>\",\n  \"findings\": [\n    {\n      \"kind\": \"retry_loop\",\n      \"title\": \"WG-1 needed 3 attempts\",\n      \"severity\": \"warning\",\n      \"metric_value\": 3,\n      \"sample_size\": 3,\n      \"evidence\": {\n        \"tasks\": [\n          \"WG-1\"\n        ],\n        \"attempts\": [\n          \"<id:8>\",\n          \"<id:9>\",\n          \"<id:10>\"\n        ]\n      },\n      \"fingerprint\": \"4ee9ca2fcf43e3f937c04abbaa5a1d1e\"\n    }\n  ],\n  \"note\": \"Findings are computed deterministically from recorded tasks, attempts, checks and commits.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.summarization.provider\",\n  \"value\": \"heuristic\",\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.summarization.model\",\n  \"value\": \"heuristic-v1\",\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:11>\",\n  \"title\": \"Retrospective 2026-10-19 - 2026-10-26\",\n  \"narrative_source\": \"deterministic\",\n  \"content\": \"# Retrospective: 2026-10-19 to 2026-10-26\\n\\n_All numbers are measured from Workgraph records; see the evidence references in brackets._\\n\\n## Work completed\\n\\n- Tasks created: **2**, completion reported: **1**, accepted: **1**.\\n- Median time from creation to acceptance: **39s** (n=1).\\n\\n## Category breakdown\\n\\n- unclassified: 1\\n\\n## Bottlenecks\\n\\n- Currently blocked tasks: 0.\\n\\n## Rework\\n\\n- Median rework ratio (churn / final change): None (n=0).\\n- WG-1 needed 3 attempts [WG-1]\\n\\n## Agent effectiveness\\n\\n- no agent attempts finished in the period\\n\\n## Cross-repository coordination\\n\\n- Cross-repository tasks: 0 of 0 with code; average repositories per task None.\\n\\n## Quality\\n\\n- Verification pass rate: 0/0 runs passed.\\n\\n## Significant changes\\n\\n- [WG-2] Done thing (0 final lines)\\n\\n## Potential improvement opportunities\\n\\n- Investigate: WG-1 needed 3 attempts\\n\",\n  \"facts\": {\n    \"period\": {\n      \"since\": \"<ts:2|db>\",\n      \"until\": \"<ts:22|db>\",\n      \"project\": null,\n      \"repository\": null\n    },\n    \"tasks\": {\n      \"created\": 2,\n      \"completed\": 1,\n      \"accepted\": 1,\n      \"blocked_now\": 0\n    },\n    \"categories\": {\n      \"unclassified\": 1\n    },\n    \"elapsed_ms\": {\n      \"n\": 1,\n      \"mean\": 38666.0,\n      \"median\": 38666.0,\n      \"p75\": 38666.0,\n      \"p90\": 38666.0,\n      \"p95\": 38666.0,\n      \"min\": 38666,\n      \"max\": 38666,\n      \"sum\": 38666\n    },\n    \"agents\": [],\n    \"code\": {\n      \"cumulative_churn\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      },\n      \"final_change\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      },\n      \"rework_ratio\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      }\n    },\n    \"verification\": {\n      \"numerator\": 0,\n      \"denominator\": 0,\n      \"value\": null,\n      \"n\": 0\n    },\n    \"top_failing_checks\": [],\n    \"coordination\": {\n      \"tasks_with_code\": 0,\n      \"cross_repository_tasks\": 0,\n      \"average_repositories_per_task\": null,\n      \"median_elapsed_ms_cross_repo\": null,\n      \"median_elapsed_ms_single_repo\": null,\n      \"integration_checks\": 0,\n      \"integration_failure_rate\": null\n    },\n    \"coupled_pairs\": [],\n    \"findings\": [\n      {\n        \"title\": \"WG-1 needed 3 attempts\",\n        \"kind\": \"retry_loop\",\n        \"evidence\": {\n          \"tasks\": [\n            \"WG-1\"\n          ],\n          \"attempts\": [\n            \"<id:8>\",\n            \"<id:9>\",\n            \"<id:10>\"\n          ]\n        }\n      }\n    ],\n    \"significant_changes\": [\n      {\n        \"task\": \"WG-2\",\n        \"title\": \"Done thing\",\n        \"final_lines\": 0\n      }\n    ]\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"metric agent_completion_rate cannot be filtered by repository\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:12>\",\n  \"title\": \"Retrospective 2026-10-25 - 2026-10-26\",\n  \"narrative_source\": \"deterministic\",\n  \"content\": \"# Retrospective: 2026-10-25 to 2026-10-26\\n\\n_All numbers are measured from Workgraph records; see the evidence references in brackets._\\n\\n## Work completed\\n\\n- Tasks created: **2**, completion reported: **1**, accepted: **1**.\\n- Median time from creation to acceptance: **39s** (n=1).\\n\\n## Category breakdown\\n\\n- unclassified: 1\\n\\n## Bottlenecks\\n\\n- Currently blocked tasks: 0.\\n\\n## Rework\\n\\n- Median rework ratio (churn / final change): None (n=0).\\n- WG-1 needed 3 attempts [WG-1]\\n\\n## Agent effectiveness\\n\\n- no agent attempts finished in the period\\n\\n## Cross-repository coordination\\n\\n- Cross-repository tasks: 0 of 0 with code; average repositories per task None.\\n\\n## Quality\\n\\n- Verification pass rate: 0/0 runs passed.\\n\\n## Significant changes\\n\\n- [WG-2] Done thing (0 final lines)\\n\\n## Potential improvement opportunities\\n\\n- Investigate: WG-1 needed 3 attempts\\n\",\n  \"facts\": {\n    \"period\": {\n      \"since\": \"<ts:3|db>\",\n      \"until\": \"<ts:23|db>\",\n      \"project\": null,\n      \"repository\": null\n    },\n    \"tasks\": {\n      \"created\": 2,\n      \"completed\": 1,\n      \"accepted\": 1,\n      \"blocked_now\": 0\n    },\n    \"categories\": {\n      \"unclassified\": 1\n    },\n    \"elapsed_ms\": {\n      \"n\": 1,\n      \"mean\": 38666.0,\n      \"median\": 38666.0,\n      \"p75\": 38666.0,\n      \"p90\": 38666.0,\n      \"p95\": 38666.0,\n      \"min\": 38666,\n      \"max\": 38666,\n      \"sum\": 38666\n    },\n    \"agents\": [],\n    \"code\": {\n      \"cumulative_churn\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      },\n      \"final_change\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      },\n      \"rework_ratio\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      }\n    },\n    \"verification\": {\n      \"numerator\": 0,\n      \"denominator\": 0,\n      \"value\": null,\n      \"n\": 0\n    },\n    \"top_failing_checks\": [],\n    \"coordination\": {\n      \"tasks_with_code\": 0,\n      \"cross_repository_tasks\": 0,\n      \"average_repositories_per_task\": null,\n      \"median_elapsed_ms_cross_repo\": null,\n      \"median_elapsed_ms_single_repo\": null,\n      \"integration_checks\": 0,\n      \"integration_failure_rate\": null\n    },\n    \"coupled_pairs\": [],\n    \"findings\": [\n      {\n        \"title\": \"WG-1 needed 3 attempts\",\n        \"kind\": \"retry_loop\",\n        \"evidence\": {\n          \"tasks\": [\n            \"WG-1\"\n          ],\n          \"attempts\": [\n            \"<id:8>\",\n            \"<id:9>\",\n            \"<id:10>\"\n          ]\n        }\n      }\n    ],\n    \"significant_changes\": [\n      {\n        \"task\": \"WG-2\",\n        \"title\": \"Done thing\",\n        \"final_lines\": 0\n      }\n    ]\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:13>\",\n  \"title\": \"Retrospective 2026-10-12 - 2026-10-26\",\n  \"narrative_source\": \"model:heuristic/heuristic-v1\",\n  \"content\": \"# Retrospective: 2026-10-12 to 2026-10-26\\n\\n_All numbers are measured from Workgraph records; see the evidence references in brackets._\\n\\n## Work completed\\n\\n- Tasks created: **2**, completion reported: **1**, accepted: **1**.\\n- Median time from creation to acceptance: **39s** (n=1).\\n\\n## Category breakdown\\n\\n- unclassified: 1\\n\\n## Bottlenecks\\n\\n- Currently blocked tasks: 0.\\n\\n## Rework\\n\\n- Median rework ratio (churn / final change): None (n=0).\\n- WG-1 needed 3 attempts [WG-1]\\n\\n## Agent effectiveness\\n\\n- no agent attempts finished in the period\\n\\n## Cross-repository coordination\\n\\n- Cross-repository tasks: 0 of 0 with code; average repositories per task None.\\n\\n## Quality\\n\\n- Verification pass rate: 0/0 runs passed.\\n\\n## Significant changes\\n\\n- [WG-2] Done thing (0 final lines)\\n\\n## Potential improvement opportunities\\n\\n- Investigate: WG-1 needed 3 attempts\\n\\n## Narrative (model-generated interpretation)\\n\\n_Written by heuristic/heuristic-v1 from the measured facts above._\\n\\n1 tasks accepted\\n\\n- - Tasks created: **2**, completion reported: **1**, accepted: **1**.\\n- - Median time from creation to acceptance: **39s** (n=1).\\n- \\n\",\n  \"facts\": {\n    \"period\": {\n      \"since\": \"<ts:1|db>\",\n      \"until\": \"<ts:24|db>\",\n      \"project\": null,\n      \"repository\": null\n    },\n    \"tasks\": {\n      \"created\": 2,\n      \"completed\": 1,\n      \"accepted\": 1,\n      \"blocked_now\": 0\n    },\n    \"categories\": {\n      \"unclassified\": 1\n    },\n    \"elapsed_ms\": {\n      \"n\": 1,\n      \"mean\": 38666.0,\n      \"median\": 38666.0,\n      \"p75\": 38666.0,\n      \"p90\": 38666.0,\n      \"p95\": 38666.0,\n      \"min\": 38666,\n      \"max\": 38666,\n      \"sum\": 38666\n    },\n    \"agents\": [],\n    \"code\": {\n      \"cumulative_churn\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      },\n      \"final_change\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      },\n      \"rework_ratio\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      }\n    },\n    \"verification\": {\n      \"numerator\": 0,\n      \"denominator\": 0,\n      \"value\": null,\n      \"n\": 0\n    },\n    \"top_failing_checks\": [],\n    \"coordination\": {\n      \"tasks_with_code\": 0,\n      \"cross_repository_tasks\": 0,\n      \"average_repositories_per_task\": null,\n      \"median_elapsed_ms_cross_repo\": null,\n      \"median_elapsed_ms_single_repo\": null,\n      \"integration_checks\": 0,\n      \"integration_failure_rate\": null\n    },\n    \"coupled_pairs\": [],\n    \"findings\": [\n      {\n        \"title\": \"WG-1 needed 3 attempts\",\n        \"kind\": \"retry_loop\",\n        \"evidence\": {\n          \"tasks\": [\n            \"WG-1\"\n          ],\n          \"attempts\": [\n            \"<id:8>\",\n            \"<id:9>\",\n            \"<id:10>\"\n          ]\n        }\n      }\n    ],\n    \"significant_changes\": [\n      {\n        \"task\": \"WG-2\",\n        \"title\": \"Done thing\",\n        \"final_lines\": 0\n      }\n    ]\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"path\": \"<home>\\\\facts.csv\",\n  \"format\": \"csv\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": 1192\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"path\": \"<home>\\\\facts.json\",\n  \"format\": \"json\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": 2120\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"path\": \"<home>\\\\facts.parquet\",\n  \"format\": \"parquet\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": 8910\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 33,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"path\": \"<home>\\\\tasks.csv\",\n  \"format\": \"csv\",\n  \"dataset\": \"tasks_created\",\n  \"bytes\": 38\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 34,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 35,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"format must be csv, json or parquet\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 36,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:14>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Fix login regression\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:25|Z>\",\n  \"updated_at\": \"<ts:25|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 37,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:15>\",\n  \"source_task_id\": \"<id:14>\",\n  \"target_task_id\": \"<id:6>\",\n  \"relation_type\": \"regression_of\",\n  \"created_at\": \"<ts:26|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 38,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"regressions\",\n    \"family\": \"quality\",\n    \"title\": \"Regressions linked to previous work\",\n    \"definition\": \"Tasks related to earlier work as regression_of.\",\n    \"unit\": \"relations\",\n    \"statistic\": \"count\",\n    \"time_column\": \"created_at\",\n    \"dimensions\": [\n      \"category\",\n      \"period\",\n      \"project\",\n      \"relation_type\"\n    ],\n    \"caveats\": []\n  },\n  \"query\": {\n    \"metric\": \"regressions\",\n    \"group_by\": [],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"value\": 1,\n      \"n\": 1\n    }\n  ],\n  \"sample_size\": 1,\n  \"provenance\": {\n    \"sql\": \"SELECT COUNT(*) AS value, COUNT(*) AS n FROM (\\n        SELECT rel.*, t.workspace_id AS ws, t.project_id AS project, t.category AS category,\\n               rel.relation_type AS relation_type\\n        FROM task_relations rel JOIN task_facts t ON t.id = rel.source_task_id\\n    ) WHERE ws = ? AND (relation_type = 'regression_of') LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:27|db>\"\n  },\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 39,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

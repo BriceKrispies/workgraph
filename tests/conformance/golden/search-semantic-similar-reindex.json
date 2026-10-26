@@ -1,0 +1,152 @@
+{
+  "scenario": "search-semantic-similar-reindex",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.auto_classify\",\n  \"value\": false,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.auto_embed\",\n  \"value\": false,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.embeddings.provider\",\n  \"value\": \"heuristic\",\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.embeddings.model\",\n  \"value\": \"hash-embed-256\",\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"auth\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:1|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\auth\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:1|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Login token refresh fails\",\n  \"description\": \"OAuth token expiry\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Token refresh race condition\",\n  \"description\": \"oauth token renew\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:3|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Dark mode colours\",\n  \"description\": \"css theme\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:4|Z>\",\n  \"updated_at\": \"<ts:4|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"query\": \"oauth token\",\n  \"mode\": \"lexical\",\n  \"semantic_available\": false,\n  \"embedding_model\": null,\n  \"hits\": [\n    {\n      \"task_id\": \"<id:4>\",\n      \"key\": \"WG-1\",\n      \"title\": \"Login token refresh fails\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.0,\n      \"lexical_rank\": 1,\n      \"semantic_rank\": null,\n      \"similarity\": null,\n      \"snippet\": \"[OAuth] [token] expiry\"\n    },\n    {\n      \"task_id\": \"<id:5>\",\n      \"key\": \"WG-2\",\n      \"title\": \"Token refresh race condition\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.0,\n      \"lexical_rank\": 2,\n      \"semantic_rank\": null,\n      \"similarity\": null,\n      \"snippet\": \"[oauth] [token] renew\"\n    }\n  ],\n  \"note\": \"semantic search unavailable: no embeddings stored for heuristic/hash-embed-256; run `workgraph search reindex`; lexical results only\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"enqueued\": 3,\n  \"provider\": null,\n  \"model\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "drain",
+      "exit": 0,
+      "stdout": "completed=0 failed=0\n",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"query\": \"oauth token\",\n  \"mode\": \"semantic\",\n  \"semantic_available\": true,\n  \"embedding_model\": \"heuristic/hash-embed-256\",\n  \"hits\": [\n    {\n      \"task_id\": \"<id:4>\",\n      \"key\": \"WG-1\",\n      \"title\": \"Login token refresh fails\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.6405,\n      \"lexical_rank\": null,\n      \"semantic_rank\": 1,\n      \"similarity\": 0.6405,\n      \"snippet\": null\n    },\n    {\n      \"task_id\": \"<id:5>\",\n      \"key\": \"WG-2\",\n      \"title\": \"Token refresh race condition\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.5963,\n      \"lexical_rank\": null,\n      \"semantic_rank\": 2,\n      \"similarity\": 0.5963,\n      \"snippet\": null\n    },\n    {\n      \"task_id\": \"<id:6>\",\n      \"key\": \"WG-3\",\n      \"title\": \"Dark mode colours\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.0,\n      \"lexical_rank\": null,\n      \"semantic_rank\": 3,\n      \"similarity\": 0.0,\n      \"snippet\": null\n    }\n  ],\n  \"note\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"query\": \"oauth token\",\n  \"mode\": \"hybrid\",\n  \"semantic_available\": true,\n  \"embedding_model\": \"heuristic/hash-embed-256\",\n  \"hits\": [\n    {\n      \"task_id\": \"<id:4>\",\n      \"key\": \"WG-1\",\n      \"title\": \"Login token refresh fails\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.032787,\n      \"lexical_rank\": 1,\n      \"semantic_rank\": 1,\n      \"similarity\": 0.6405,\n      \"snippet\": \"[OAuth] [token] expiry\"\n    },\n    {\n      \"task_id\": \"<id:5>\",\n      \"key\": \"WG-2\",\n      \"title\": \"Token refresh race condition\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.032258,\n      \"lexical_rank\": 2,\n      \"semantic_rank\": 2,\n      \"similarity\": 0.5963,\n      \"snippet\": \"[oauth] [token] renew\"\n    },\n    {\n      \"task_id\": \"<id:6>\",\n      \"key\": \"WG-3\",\n      \"title\": \"Dark mode colours\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.015873,\n      \"lexical_rank\": null,\n      \"semantic_rank\": 3,\n      \"similarity\": 0.0,\n      \"snippet\": null\n    }\n  ],\n  \"note\": \"score = reciprocal rank fusion of lexical (bm25) and semantic (cosine) rankings\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"query\": \"oauth token\",\n  \"mode\": \"lexical\",\n  \"semantic_available\": false,\n  \"embedding_model\": null,\n  \"hits\": [\n    {\n      \"task_id\": \"<id:4>\",\n      \"key\": \"WG-1\",\n      \"title\": \"Login token refresh fails\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.0,\n      \"lexical_rank\": 1,\n      \"semantic_rank\": null,\n      \"similarity\": null,\n      \"snippet\": \"[OAuth] [token] expiry\"\n    },\n    {\n      \"task_id\": \"<id:5>\",\n      \"key\": \"WG-2\",\n      \"title\": \"Token refresh race condition\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.0,\n      \"lexical_rank\": 2,\n      \"semantic_rank\": null,\n      \"similarity\": null,\n      \"snippet\": \"[oauth] [token] renew\"\n    }\n  ],\n  \"note\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"task_id\": \"<id:4>\",\n  \"method\": \"semantic\",\n  \"embedding_model\": \"heuristic/hash-embed-256\",\n  \"similar\": [\n    {\n      \"task_id\": \"<id:5>\",\n      \"key\": \"WG-2\",\n      \"title\": \"Token refresh race condition\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.6729,\n      \"similarity\": 0.5729,\n      \"same_category\": false,\n      \"repository_overlap\": 1.0,\n      \"implementation\": [],\n      \"attempts\": 0\n    },\n    {\n      \"task_id\": \"<id:6>\",\n      \"key\": \"WG-3\",\n      \"title\": \"Dark mode colours\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.0,\n      \"similarity\": 0.0,\n      \"same_category\": false,\n      \"repository_overlap\": 0.0,\n      \"implementation\": [],\n      \"attempts\": 0\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"task_id\": \"<id:4>\",\n  \"method\": \"semantic\",\n  \"embedding_model\": \"heuristic/hash-embed-256\",\n  \"similar\": [\n    {\n      \"task_id\": \"<id:5>\",\n      \"key\": \"WG-2\",\n      \"title\": \"Token refresh race condition\",\n      \"status\": \"backlog\",\n      \"category\": null,\n      \"score\": 0.6729,\n      \"similarity\": 0.5729,\n      \"same_category\": false,\n      \"repository_overlap\": 1.0,\n      \"implementation\": [],\n      \"attempts\": 0\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 4,
+      "stdout": "{\"error\": {\"code\": \"not_found\", \"message\": \"task 'WG-999' not found\", \"details\": {\"ref\": \"WG-999\"}}}\n",
+      "stderr": ""
+    }
+  ]
+}

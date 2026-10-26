@@ -874,7 +874,7 @@ pub fn hook_bind(
 }
 
 /// `str(Path(text).resolve())`: the absolute path, symlinks resolved when the path exists.
-fn resolved_path(text: &str) -> String {
+pub(crate) fn resolved_path(text: &str) -> String {
     let path = Path::new(text);
     let resolved = std::fs::canonicalize(path)
         .or_else(|_| std::path::absolute(path))

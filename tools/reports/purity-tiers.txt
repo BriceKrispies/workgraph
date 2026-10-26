@@ -131,6 +131,8 @@ wg-telemetry Core
 wg-telemetry-feature Shell
 wg-telemetry-feature::spec Pure
 wg-telemetry-feature::service Shell
+wg-telemetry-feature::cli Shell
+wg-telemetry-feature::http Shell
 wg-telemetryspec Pure
 wg-trackers Core
 wg-trackers-feature Shell

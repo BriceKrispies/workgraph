@@ -75,12 +75,25 @@ impl Runtime {
         load: impl FnOnce(&mut Session<'_>) -> Result<S, WgError>,
         decide: impl FnOnce(&S, &Stamp) -> Result<Decision<R>, WgError>,
     ) -> Result<Outcome<R>, WgError> {
+        self.decide_then(context, load, decide, |_, _| Ok(()))
+    }
+
+    /// [`decide`](Self::decide) with a step that runs in the same transaction after the
+    /// decision's writes and events are applied (index maintenance, for one).
+    pub fn decide_then<S, R>(
+        &mut self,
+        context: &RequestContext,
+        load: impl FnOnce(&mut Session<'_>) -> Result<S, WgError>,
+        decide: impl FnOnce(&S, &Stamp) -> Result<Decision<R>, WgError>,
+        after: impl FnOnce(&mut Session<'_>, &Decision<R>) -> Result<(), WgError>,
+    ) -> Result<Outcome<R>, WgError> {
         let stamps = &mut self.stamps;
         let (decision, stamp, applied) = self.store.write(|session| {
             let slice = load(session)?;
             let stamp = stamps.stamp(context)?;
             let decision = decide(&slice, &stamp)?;
             let applied = session.apply_decision(&decision)?;
+            after(session, &decision)?;
             Ok((decision, stamp, applied))
         })?;
         tracing::debug!(

@@ -18,6 +18,7 @@ mod cycle;
 mod effects;
 mod logging;
 mod stamp;
+mod tasks;
 
 pub use app::{App, environment};
 pub use bus::Bus;

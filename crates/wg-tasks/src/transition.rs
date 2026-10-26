@@ -30,6 +30,9 @@ pub struct Change<'a> {
     pub tracker: bool,
     /// The event that caused the change (`ctx.caused_by`).
     pub caused_by: Option<Id>,
+    /// The `attempt_id` key of the status event (`extra={"attempt_id": ...}`): absent, or written
+    /// as the id or as null.
+    pub attempt_id: Option<Option<Id>>,
 }
 
 /// What a status change produced: the changes, the ids still free and the slice afterwards.
@@ -198,7 +201,7 @@ pub fn transition(
             to: target,
             reason: gated.reason.clone(),
             version: next.version,
-            attempt_id: None,
+            attempt_id: change.attempt_id,
             run_id: None,
             extra: Map::new(),
         }),
@@ -266,29 +269,42 @@ fn refresh_dependents(
         .map(|task| task.id)
         .collect();
     waiting.into_iter().try_fold(start, |so_far, dependent| {
-        let Some(task) = so_far.tasks.task(dependent) else {
-            return Ok(so_far);
-        };
-        let Some(refresh) = refresh_blocked_state(&so_far.tasks, stacks, task) else {
-            return Ok(so_far);
-        };
-        let step = transition(
-            &so_far.tasks,
-            stacks,
-            stamp,
-            so_far.ids,
-            dependent,
-            refresh.target,
-            Change {
-                reason: Some(refresh.reason),
-                caused_by: Some(caused_by),
-                ..Change::default()
-            },
-        )?;
-        Ok(Applied {
-            decision: so_far.decision.then(step.decision),
-            ids: step.ids,
-            tasks: step.tasks,
-        })
+        refresh_one(so_far, stacks, stamp, dependent, caused_by)
+    })
+}
+
+/// Refreshes one task whose dependencies changed (`_refresh_blocked_state`): a blocked task
+/// parked by dependencies whose blockers are gone becomes ready, a ready task with blockers is
+/// blocked again, any other task is left alone.
+pub fn refresh_one(
+    start: Applied,
+    stacks: &StackSlice,
+    stamp: &Stamp,
+    task_id: Id,
+    caused_by: Id,
+) -> Result<Applied, WgError> {
+    let Some(task) = start.tasks.task(task_id) else {
+        return Ok(start);
+    };
+    let Some(refresh) = refresh_blocked_state(&start.tasks, stacks, task) else {
+        return Ok(start);
+    };
+    let step = transition(
+        &start.tasks,
+        stacks,
+        stamp,
+        start.ids,
+        task_id,
+        refresh.target,
+        Change {
+            reason: Some(refresh.reason),
+            caused_by: Some(caused_by),
+            ..Change::default()
+        },
+    )?;
+    Ok(Applied {
+        decision: start.decision.then(step.decision),
+        ids: step.ids,
+        tasks: step.tasks,
     })
 }

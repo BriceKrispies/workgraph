@@ -9,7 +9,11 @@
 //! The runtime loads a [`TaskWorld`](wg_storecodec::task_world_sql::TaskWorld), calls one of
 //! these and applies the decision it returns.
 
+pub mod bodies;
+pub mod claims;
+pub mod links;
 pub mod out;
+pub mod query;
 pub mod reads;
 pub mod requests;
 pub mod writes;

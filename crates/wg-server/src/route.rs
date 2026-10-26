@@ -64,6 +64,9 @@ pub struct ApiRequest {
     pub params: Map<String, Json>,
     /// The validated body, `null` when the route takes none or it was absent.
     pub body: Json,
+    /// The body as the client sent it (`null` when absent), for the routes that tell a field left
+    /// out from one set to null.
+    pub given: Json,
     /// `deps.get_ctx`: the local operator as `human:<name>`, named by `X-Workgraph-Actor` (else
     /// the login name), with `X-Correlation-Id` as its correlation text when that header is at
     /// most 64 bytes (a fresh UUID otherwise, as Python's `get_ctx`).

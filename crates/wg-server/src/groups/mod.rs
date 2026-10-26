@@ -13,6 +13,7 @@
 pub mod decisions;
 pub mod events;
 pub mod meta_settings;
+pub mod tasks;
 
 use wg_json::Value;
 use wg_runtime::App;
@@ -22,7 +23,7 @@ use wg_types::WgError;
 use crate::route::{Answer, ApiRequest, ApiRoute, handler};
 
 /// The groups whose routes are registered.
-pub const IMPLEMENTED: &[&str] = &["meta-settings", "IF-49", "decisions"];
+pub const IMPLEMENTED: &[&str] = &["meta-settings", "IF-44", "IF-49", "decisions"];
 
 /// What a group runs for one operation: the application context, the operation's inventory id
 /// and the validated request, in; the document, out.
@@ -60,5 +61,6 @@ pub fn routes() -> Vec<ApiRoute> {
     meta_settings::register(&mut table);
     events::register(&mut table);
     decisions::register(&mut table);
+    tasks::register(&mut table);
     table
 }

@@ -17,7 +17,7 @@ fn renamed(text: &str, keep: &[&str]) -> String {
         .0
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn every_spelling_of_the_word_moves() {
     assert_eq!(renamed("rho Rho RHO", &[]), "nyn Nyn NYN");
@@ -31,14 +31,14 @@ fn every_spelling_of_the_word_moves() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_word_that_only_contains_it_is_left_alone() {
     let text = "neighbourhood rhombus Rhodes RHOCAP01 librho";
     assert_eq!(renamed(text, &[]), text);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn newline_and_tab_escapes_are_boundaries() {
     assert_eq!(
@@ -47,7 +47,7 @@ fn newline_and_tab_escapes_are_boundaries() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn kept_tokens_survive_beside_renamed_ones() {
     assert_eq!(
@@ -59,14 +59,14 @@ fn kept_tokens_survive_beside_renamed_ones() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn the_count_is_the_number_of_sites() {
     let term = Term::new("Rho", "Nyn", &[]).unwrap_or_else(|e| panic!("term: {e}"));
     assert_eq!(term.apply("rho, Rho and rhombus").1, 2);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn json_strings_and_keys_are_renamed_and_nothing_else() {
     let value = json!({
@@ -89,7 +89,7 @@ fn json_strings_and_keys_are_renamed_and_nothing_else() {
     assert_eq!(sites, 2);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_name_must_be_one_new_ascii_word() {
     for (old, new) in [
@@ -142,7 +142,7 @@ fn term() -> Term {
     Term::new("Rho", "Nyn", &[]).unwrap_or_else(|e| panic!("term: {e}"))
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn open_tasks_have_text_and_files_rewritten_and_closed_tasks_keep_it() {
     let open = task(1, TaskStatus::Ready, false, &["rho", "keep"]);
@@ -179,7 +179,7 @@ fn open_tasks_have_text_and_files_rewritten_and_closed_tasks_keep_it() {
     assert_eq!(plan.tags_renamed, 2);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn archived_tasks_are_closed_even_when_open() {
     let archived = task(3, TaskStatus::Backlog, true, &[]);
@@ -188,7 +188,7 @@ fn archived_tasks_are_closed_even_when_open() {
     assert_eq!(plan.closed_kept, 1);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn project_repositories_and_scoped_configs_are_planned() {
     let repo = RepositoryRecord {
@@ -251,7 +251,7 @@ fn project_repositories_and_scoped_configs_are_planned() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_task_with_nothing_to_rename_is_not_planned() {
     let mut quiet = task(4, TaskStatus::Ready, false, &["other"]);
@@ -264,7 +264,7 @@ fn a_task_with_nothing_to_rename_is_not_planned() {
     assert_eq!(plan.tags_renamed, 0);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn repository_description_only_change_keeps_the_name() {
     let repo = RepositoryRecord {
@@ -281,7 +281,7 @@ fn repository_description_only_change_keeps_the_name() {
     assert_eq!(plan.repositories[0].description_sites, 1);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn path_rewrites_skip_relative_and_unchanged_strings() {
     let before: Value = json!(["relative/rho", "/abs/rho", "/abs/none"]);

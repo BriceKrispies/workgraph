@@ -13,6 +13,7 @@ pub mod repo_sql;
 pub mod rows;
 mod rows_more;
 pub mod sql;
+pub mod stack_sql;
 pub mod task_sql;
 
 pub use codec::{Cols, DbFailure, Raw, db_error};

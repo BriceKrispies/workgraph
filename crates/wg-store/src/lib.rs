@@ -15,6 +15,7 @@
 mod migrate;
 mod repos;
 mod session;
+mod stacks;
 mod tasks;
 
 use std::path::PathBuf;

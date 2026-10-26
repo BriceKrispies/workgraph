@@ -51,6 +51,13 @@ pub enum Step {
     Mcp {
         tool: String,
         args: Value,
+        /// Extra permissions for the server (`--grant`); a different list restarts the session.
+        grants: Vec<String>,
+        save: Vec<(String, String)>,
+    },
+    McpResource {
+        uri: String,
+        save: Vec<(String, String)>,
     },
     Http {
         method: String,
@@ -296,13 +303,13 @@ fn parse_assert(v: &Value, at: &str) -> Res<Assertion> {
 
 fn parse_step(v: &Value, at: &str) -> Res<Step> {
     let m = obj(v, at)?;
-    let kinds: Vec<&str> = ["cli", "mcp", "http", "drain", "assert"]
+    let kinds: Vec<&str> = ["cli", "mcp", "mcp_resource", "http", "drain", "assert"]
         .into_iter()
         .filter(|k| m.contains_key(*k))
         .collect();
     let [kind] = kinds.as_slice() else {
         return Err(format!(
-            "{at}: expected exactly one of cli, mcp, http, drain, assert"
+            "{at}: expected exactly one of cli, mcp, mcp_resource, http, drain, assert"
         ));
     };
     let save = |m: &Map<String, Value>| -> Res<Vec<(String, String)>> {
@@ -342,11 +349,23 @@ fn parse_step(v: &Value, at: &str) -> Res<Step> {
             })
         }
         "mcp" => {
-            only_keys(m, &["mcp", "args", "save"], at)?;
-            save(m)?;
+            only_keys(m, &["mcp", "args", "save", "grants"], at)?;
             Ok(Step::Mcp {
                 tool: string(&m["mcp"], &format!("{at}.mcp"))?,
                 args: m.get("args").cloned().unwrap_or(Value::Object(Map::new())),
+                grants: m
+                    .get("grants")
+                    .map(|g| strings(g, &format!("{at}.grants")))
+                    .transpose()?
+                    .unwrap_or_default(),
+                save: save(m)?,
+            })
+        }
+        "mcp_resource" => {
+            only_keys(m, &["mcp_resource", "save"], at)?;
+            Ok(Step::McpResource {
+                uri: string(&m["mcp_resource"], &format!("{at}.mcp_resource"))?,
+                save: save(m)?,
             })
         }
         "http" => {

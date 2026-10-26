@@ -1,0 +1,27 @@
+{
+  "id": "mcp-workspaces-projects",
+  "covers": ["M01", "M02", "M03", "M04"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["project", "create", "core"], "json": true},
+    {"mcp": "workspace_list", "args": {}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "default"}},
+    {"mcp": "workspace_get", "args": {"workspace": "default"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "workspace_get", "args": {"workspace": "no-such-workspace"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "project_list", "args": {}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "core"}},
+    {"mcp": "project_get", "args": {"project": "core"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "core"}},
+    {"mcp": "project_get", "args": {"project": "no-such-project"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}}
+  ],
+  "not_observable": []
+}

@@ -154,6 +154,8 @@ struct Ctx<'a> {
     git_ticks: BTreeMap<String, u64>,
     /// The stdio MCP session of `mcp` steps, started by the first one and dropped with the context.
     mcp: Option<crate::mcp::StdioClient>,
+    /// The `grants` the running MCP session was started with.
+    mcp_grants: Vec<String>,
     /// The `serve` process, started by the first `http` step and killed when the run ends.
     server: Option<http::Server>,
 }
@@ -587,16 +589,18 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
             rec.status = Status::Passed;
             rec
         }
-        Step::Mcp { tool, args } => {
+        Step::Mcp {
+            tool,
+            args,
+            grants,
+            save,
+        } => {
             let rec = record(index, "mcp", tool.clone());
             let args = match ctx.resolve_value(args) {
                 Ok(a) => a,
                 Err(e) => return fail(rec, e),
             };
-            let program = ctx.imp.program.clone();
-            let imp_args = crate::mcp::mcp_args(&ctx.imp.args, &[]);
-            let env = env_for(ctx.imp, ctx.sb, &[]);
-            let dir = ctx.sb.tmp.clone();
+            let (program, imp_args, env, dir) = mcp_launch(ctx, grants);
             let (rec, outcome) = crate::mcp::tool_step(
                 &mut ctx.mcp,
                 || crate::mcp::StdioClient::start(&program, &imp_args, &env, &dir),
@@ -604,10 +608,22 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
                 tool,
                 &args,
             );
-            if let Some(o) = outcome {
-                ctx.remember(o);
-            }
-            rec
+            finish_mcp_step(ctx, rec, outcome, save)
+        }
+        Step::McpResource { uri, save } => {
+            let rec = record(index, "mcp_resource", uri.clone());
+            let uri = match ctx.resolve(uri) {
+                Ok(u) => u,
+                Err(e) => return fail(rec, e),
+            };
+            let (program, imp_args, env, dir) = mcp_launch(ctx, &[]);
+            let (rec, outcome) = crate::mcp::resource_step(
+                &mut ctx.mcp,
+                || crate::mcp::StdioClient::start(&program, &imp_args, &env, &dir),
+                rec,
+                &uri,
+            );
+            finish_mcp_step(ctx, rec, outcome, save)
         }
         Step::Http {
             method,
@@ -757,6 +773,46 @@ fn http_step(
     }
 }
 
+/// How to start the implementation's MCP server: program, arguments, environment and directory.
+type McpLaunch = (String, Vec<String>, Vec<(String, String)>, PathBuf);
+
+/// The launch description for an `mcp` step with `grants`. A session started with other grants
+/// is dropped first, so the next call starts a server with the requested permissions.
+fn mcp_launch(ctx: &mut Ctx<'_>, grants: &[String]) -> McpLaunch {
+    if ctx.mcp_grants != grants {
+        ctx.mcp = None;
+        ctx.mcp_grants = grants.to_vec();
+    }
+    (
+        ctx.imp.program.clone(),
+        crate::mcp::mcp_args(&ctx.imp.args, grants),
+        env_for(ctx.imp, ctx.sb, &[]),
+        ctx.sb.tmp.clone(),
+    )
+}
+
+/// Remember an MCP reply the way a `cli` reply is remembered, then apply the step's `save`.
+fn finish_mcp_step(
+    ctx: &mut Ctx<'_>,
+    rec: StepRecord,
+    outcome: Option<Outcome>,
+    save: &[(String, String)],
+) -> StepRecord {
+    let Some(o) = outcome else {
+        return rec;
+    };
+    ctx.remember(o);
+    for (name, ptr) in save {
+        match ctx.last_pointer(ptr) {
+            Ok(v) => {
+                ctx.vars.insert(name.clone(), v);
+            }
+            Err(e) => return fail(rec, format!("save {name}: {e}")),
+        }
+    }
+    rec
+}
+
 fn skipped(index: usize, kind: &'static str, label: String, why: &str) -> StepRecord {
     StepRecord {
         status: Status::Skipped,
@@ -777,6 +833,7 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
         last: None,
         git_ticks: BTreeMap::new(),
         mcp: None,
+        mcp_grants: Vec::new(),
         server: None,
     };
     let mut steps = Vec::new();
@@ -842,6 +899,7 @@ mod tests {
             last: None,
             git_ticks: BTreeMap::new(),
             mcp: None,
+            mcp_grants: Vec::new(),
             server: None,
         }
     }

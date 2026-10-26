@@ -67,6 +67,16 @@
           "properties": {
             "mcp": { "type": "string" },
             "args": { "type": "object" },
+            "grants": { "type": "array", "items": { "type": "string" } },
+            "save": { "type": "object", "additionalProperties": { "type": "string" } }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["mcp_resource"],
+          "additionalProperties": false,
+          "properties": {
+            "mcp_resource": { "type": "string" },
             "save": { "type": "object", "additionalProperties": { "type": "string" } }
           }
         },

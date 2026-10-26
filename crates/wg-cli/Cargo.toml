@@ -45,8 +45,8 @@ wg-serverspec = { path = "../wg-serverspec" }
 ureq = "3.5"
 wg-net = { path = "../wg-net" }
 wg-uispec = { path = "../wg-uispec" }
+wg-types = { path = "../wg-types" }
 
 [dev-dependencies]
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-model = { path = "../wg-model" }
-wg-types = { path = "../wg-types" }

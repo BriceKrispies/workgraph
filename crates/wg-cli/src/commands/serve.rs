@@ -166,7 +166,15 @@ fn start_worker(home: Option<std::path::PathBuf>) -> Result<Background, CliFailu
 }
 
 fn run_mcp(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
-    let options = ServeOptions::parse(&mcp_arguments(m)).map_err(|err| failed(err.message))?;
+    let options = ServeOptions::parse(&mcp_arguments(m)).map_err(|err| {
+        // An unknown `--grant` is a domain `permission_denied` (exit 5), as in Python; the other
+        // flag mistakes stay usage errors (exit 2).
+        if err.code == wg_types::ErrorCode::PermissionDenied {
+            CliFailure::from(err)
+        } else {
+            failed(err.message)
+        }
+    })?;
     let token_file = state.app()?.paths.api_token_file().to_string();
     let home = state.home.clone();
     let agent = options.agent();

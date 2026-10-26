@@ -11,6 +11,7 @@ mod error;
 mod id;
 mod key;
 mod permission;
+mod repr;
 mod time;
 
 pub use actor::Actor;
@@ -22,4 +23,5 @@ pub use permission::{
     Permission, all_permissions, default_agent_permissions, human_permissions, parse_permissions,
     read_permissions, system_permissions,
 };
+pub use repr::py_repr_str;
 pub use time::Timestamp;

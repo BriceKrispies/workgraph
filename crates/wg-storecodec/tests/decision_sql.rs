@@ -222,7 +222,7 @@ fn brief_rows_decode_the_decision_then_the_task_brief() -> TestResult {
         Raw::Text("high".into()),
         Raw::Text("body".into()),
     ]);
-    let mut rows = vec![decode_decision_with_task(&values)?];
+    let rows = vec![decode_decision_with_task(&values)?];
     assert_eq!(rows[0].task.key.to_string(), "WG-7");
     assert_eq!(rows[0].task.status, wg_types::TaskStatus::Ready);
     assert_eq!(rows[0].task.priority, wg_types::TaskPriority::High);
@@ -233,7 +233,7 @@ fn brief_rows_decode_the_decision_then_the_task_brief() -> TestResult {
         Raw::Text("ops".into()),
     ];
     let tag = decode_task_tag(&tag_row)?;
-    attach_tags(&mut rows, &[tag]);
+    let rows = attach_tags(&rows, &[tag]);
     assert_eq!(rows[0].task.tags, vec!["ops".to_owned()]);
 
     let empty = task_tags_of(&[]);

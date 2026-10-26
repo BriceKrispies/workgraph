@@ -256,14 +256,18 @@ pub fn decode_task_tag(values: &[Raw]) -> Result<(Id, String), WgError> {
 
 /// Fills each decision's task tags from `tags` (rows of [`decode_task_tag`]). A task with no tag
 /// rows keeps an empty list.
-pub fn attach_tags(rows: &mut [DecisionWithTask], tags: &[(Id, String)]) {
-    for row in rows.iter_mut() {
-        row.task.tags = tags
-            .iter()
-            .filter(|(task_id, _)| *task_id == row.decision.task_id)
-            .map(|(_, tag)| tag.clone())
-            .collect();
-    }
+pub fn attach_tags(rows: &[DecisionWithTask], tags: &[(Id, String)]) -> Vec<DecisionWithTask> {
+    rows.iter()
+        .map(|row| {
+            let mut row = row.clone();
+            row.task.tags = tags
+                .iter()
+                .filter(|(task_id, _)| *task_id == row.decision.task_id)
+                .map(|(_, tag)| tag.clone())
+                .collect();
+            row
+        })
+        .collect()
 }
 
 /// How many of a task's decisions are open: a single integer row.

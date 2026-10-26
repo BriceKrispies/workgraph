@@ -163,9 +163,9 @@ fn conflict_record_and_comment() {
 
 #[test]
 fn merges_are_recorded_and_checked() {
-    let mut detail = ItemDetail::load(Some(r#"{"conflicts": {"alpha": {"x": 1}}}"#));
+    let detail = ItemDetail::load(Some(r#"{"conflicts": {"alpha": {"x": 1}}}"#));
     assert!(!fully_merged(&detail, &[("alpha".into(), "h".into())]));
-    record_merge(&mut detail, "alpha", "h", "m1");
+    let detail = record_merge(&detail, "alpha", "h", "m1");
     assert!(detail.conflicts.is_empty());
     assert!(fully_merged(&detail, &[("alpha".into(), "h".into())]));
     assert!(!fully_merged(&detail, &[("alpha".into(), "h2".into())]));

@@ -35,6 +35,8 @@ pub struct ConsoleEnv<'a> {
     pub is_terminal: bool,
     /// Width reported by the operating system for the terminal, if there is one.
     pub terminal_width: Option<usize>,
+    /// rich's `legacy_windows`: Windows, and the console does not take virtual-terminal output.
+    pub legacy_windows: bool,
 }
 
 /// `Console.is_terminal`: whether the output stream counts as a terminal.
@@ -76,6 +78,8 @@ impl Printed {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Console {
     width: usize,
+    /// The width of rich's plain `Console`, which typer's usage panels are drawn at.
+    plain_width: usize,
     color: bool,
 }
 
@@ -85,6 +89,7 @@ impl Console {
     pub fn new(width: usize) -> Self {
         Self {
             width,
+            plain_width: width,
             color: false,
         }
     }
@@ -92,6 +97,11 @@ impl Console {
     /// A console sized and coloured the way rich would for this environment: `COLUMNS` (digits
     /// only) beats the terminal's own width, and zero or no width means 80. A dumb terminal is 80
     /// wide with no colour; colour is on only for a terminal.
+    ///
+    /// On a legacy Windows console rich gives up one column (`Console.legacy_windows`). It takes
+    /// that column off `COLUMNS` when the console is built, always. It takes it off the terminal's
+    /// width when `size` is read, but only for a terminal, which is what `CliConsole` does; typer's
+    /// plain console takes it off every width, which is [`Console::plain_width`].
     #[must_use]
     pub fn from_env(env: &ConsoleEnv<'_>) -> Self {
         let dumb = env.is_terminal
@@ -101,13 +111,30 @@ impl Console {
         if dumb {
             return Self::new(DEFAULT_WIDTH);
         }
+        let legacy = usize::from(env.legacy_windows);
         let from_columns = env
             .columns
             .filter(|c| !c.is_empty() && c.chars().all(|ch| ch.is_ascii_digit()))
             .map(|c| c.parse::<usize>().unwrap_or(usize::MAX));
-        let width = from_columns.or(env.terminal_width).unwrap_or(0);
+        let (width, plain_width) = match from_columns {
+            Some(columns) => {
+                let width = columns.saturating_sub(legacy).max(1);
+                (width, width)
+            }
+            None => {
+                let base = env
+                    .terminal_width
+                    .filter(|width| *width > 0)
+                    .unwrap_or(DEFAULT_WIDTH);
+                (
+                    base.saturating_sub(usize::from(env.legacy_windows && env.is_terminal)),
+                    base.saturating_sub(legacy),
+                )
+            }
+        };
         Self {
-            width: if width == 0 { DEFAULT_WIDTH } else { width },
+            width,
+            plain_width,
             color: env.is_terminal,
         }
     }
@@ -116,6 +143,13 @@ impl Console {
     #[must_use]
     pub fn width(&self) -> usize {
         self.width
+    }
+
+    /// The width typer's usage panels are drawn at: rich's plain console, which takes the legacy
+    /// Windows column off every width, a terminal or not.
+    #[must_use]
+    pub fn plain_width(&self) -> usize {
+        self.plain_width
     }
 
     /// Whether the console would colour output: only when writing to a terminal.

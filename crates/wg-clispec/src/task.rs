@@ -16,8 +16,32 @@ use wg_wire::convention::{dict, text};
 use wg_wire::error::error_body;
 
 use crate::datetime;
+use crate::failure::python_number_text;
 use crate::tree::{SNAPSHOT_JSON, placeholder};
-use crate::{CliFailure, Snapshot};
+use crate::{CliFailure, Snapshot, Usage};
+
+/// The usage of `task list`, `task ready`, `task update`, `task claim` and `task progress`, as
+/// Click prints them in a usage error.
+const LIST: Usage = Usage {
+    usage: "workgraph task list [OPTIONS]",
+    command: "workgraph task list",
+};
+const READY: Usage = Usage {
+    usage: "workgraph task ready [OPTIONS]",
+    command: "workgraph task ready",
+};
+const UPDATE: Usage = Usage {
+    usage: "workgraph task update [OPTIONS] {ref}",
+    command: "workgraph task update",
+};
+const CLAIM: Usage = Usage {
+    usage: "workgraph task claim [OPTIONS] {ref}",
+    command: "workgraph task claim",
+};
+const PROGRESS: Usage = Usage {
+    usage: "workgraph task progress [OPTIONS] {ref} {message}",
+    command: "workgraph task progress",
+};
 
 /// The clap command of the `task` group: the snapshot's own tree.
 #[must_use]
@@ -51,15 +75,14 @@ pub(crate) fn flag(m: &ArgMatches, id: &str) -> bool {
         .unwrap_or(false)
 }
 
-pub(crate) fn number(m: &ArgMatches, id: &str, default: i64) -> Result<i64, CliFailure> {
+/// The `int` option `id`, else `default`. Click's `int` check: a value Python's `int()` cannot read
+/// is a usage error (`at` names the command it is reported under).
+pub(crate) fn number(m: &ArgMatches, id: &str, default: i64, at: Usage) -> Result<i64, CliFailure> {
     match one(m, id) {
         None => Ok(default),
-        Some(text) => text.trim().parse().map_err(|_| {
-            CliFailure::fail(
-                format!("Invalid value for '{id}': {text:?} is not a valid integer."),
-                2,
-            )
-        }),
+        Some(text) => python_number_text(&text)
+            .and_then(|digits| digits.parse().ok())
+            .ok_or_else(|| at.invalid_value(id, &text, "int")),
     }
 }
 
@@ -253,8 +276,8 @@ pub fn list_body(m: &ArgMatches) -> Result<Json, CliFailure> {
         json!(one(m, "--sort").unwrap_or_else(|| "created_at".to_owned())),
     );
     body.insert("descending".to_owned(), json!(!flag(m, "--asc")));
-    body.insert("limit".to_owned(), json!(number(m, "--limit", 50)?));
-    body.insert("offset".to_owned(), json!(number(m, "--offset", 0)?));
+    body.insert("limit".to_owned(), json!(number(m, "--limit", 50, LIST)?));
+    body.insert("offset".to_owned(), json!(number(m, "--offset", 0, LIST)?));
     Ok(Json::Object(body))
 }
 
@@ -314,17 +337,10 @@ pub fn update_body(m: &ArgMatches, read_file: ReadFile<'_>) -> Result<Json, CliF
             body.insert("metadata".to_owned(), parsed);
         }
     }
-    if let Some(raw) = one(m, "--expected-version") {
+    if one(m, "--expected-version").is_some() {
         body.insert(
             "expected_version".to_owned(),
-            json!(number(m, "--expected-version", 0).map_err(|_| {
-                CliFailure::fail(
-                    format!(
-                        "Invalid value for '--expected-version': {raw:?} is not a valid integer."
-                    ),
-                    2,
-                )
-            })?),
+            json!(number(m, "--expected-version", 0, UPDATE)?),
         );
     }
     put(&mut body, "reason", one(m, "--reason"));
@@ -368,7 +384,7 @@ pub fn promote_scope(m: &ArgMatches) -> Result<(Vec<String>, Option<String>, boo
 
 /// The `--limit` of `task ready`.
 pub fn ready_limit(m: &ArgMatches) -> Result<i64, CliFailure> {
-    number(m, "--limit", 20)
+    number(m, "--limit", 20, READY)
 }
 
 /// The option values `task ready`, `graph` and `history` read.
@@ -788,7 +804,7 @@ pub fn archived_line(console: &Console, task: &Value, undo: bool) -> String {
 pub fn claim_body(m: &ArgMatches) -> Result<Json, CliFailure> {
     Ok(json!({
         "agent": one(m, "--agent"),
-        "lease_minutes": number(m, "--lease-minutes", 120)?,
+        "lease_minutes": number(m, "--lease-minutes", 120, CLAIM)?,
     }))
 }
 
@@ -829,12 +845,9 @@ pub fn progress_body(m: &ArgMatches) -> Result<Json, CliFailure> {
     let percent = match one(m, "--percent") {
         None => Json::Null,
         Some(text) => {
-            let parsed: f64 = text.trim().parse().map_err(|_| {
-                CliFailure::fail(
-                    format!("Invalid value for '--percent': {text:?} is not a valid float."),
-                    2,
-                )
-            })?;
+            let parsed: f64 = python_number_text(&text)
+                .and_then(|digits| digits.parse().ok())
+                .ok_or_else(|| PROGRESS.invalid_value("--percent", &text, "float"))?;
             json!(parsed)
         }
     };

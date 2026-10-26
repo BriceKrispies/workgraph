@@ -3,9 +3,16 @@
 
 use clap::{ArgMatches, Command};
 
-use crate::CliFailure;
+use crate::failure::python_number_text;
 use crate::task::{option_flag, option_list, option_text};
 use crate::tree::snapshot_command;
+use crate::{CliFailure, Usage};
+
+/// The usage of `serve`, as Click prints it in a usage error.
+const SERVE: Usage = Usage {
+    usage: "workgraph serve [OPTIONS]",
+    command: "workgraph serve",
+};
 
 /// The clap command of `serve`.
 #[must_use]
@@ -26,12 +33,9 @@ pub fn mcp_command() -> Command {
 pub fn port_option(m: &ArgMatches) -> Result<Option<u16>, CliFailure> {
     option_text(m, "--port")
         .map(|text| {
-            text.parse::<u16>().map_err(|_| {
-                CliFailure::fail(
-                    format!("Invalid value for '--port': '{text}' is not a valid port"),
-                    2,
-                )
-            })
+            python_number_text(&text)
+                .and_then(|digits| digits.parse::<u16>().ok())
+                .ok_or_else(|| SERVE.invalid_value("--port", &text, "int"))
         })
         .transpose()
 }

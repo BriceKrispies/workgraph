@@ -6,7 +6,7 @@
 use wg_clispec::datetime::parse_click_datetime;
 use wg_clispec::task::create_body;
 use wg_clispec::{CliFailure, report};
-use wg_render::Console;
+use wg_render::{Console, ConsoleEnv};
 
 fn due(value: &str) -> Option<String> {
     parse_click_datetime(value)
@@ -91,7 +91,12 @@ fn the_usage_error_is_text_with_the_panel_and_exit_2() {
     };
     assert_eq!(failure.exit_code(), 2);
     // Click writes usage errors as text even under `--json`, and on stderr only.
-    let printed = report(&failure, true, &Console::new(80));
+    // The console of a legacy Windows terminal: 80 columns, typer draws its panel one narrower.
+    let legacy = Console::from_env(&ConsoleEnv {
+        legacy_windows: true,
+        ..ConsoleEnv::default()
+    });
+    let printed = report(&failure, true, &legacy);
     assert_eq!(printed.code, 2);
     assert_eq!(printed.stdout, "");
     // The text Python's CLI prints (typer on a legacy Windows console, 80 columns less one).

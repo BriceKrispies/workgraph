@@ -3,6 +3,7 @@
 
 use serde_json::{Map, Value as Json};
 use wg_json::{PyStr, Value, log_json, py_float_repr};
+use wg_model::py_repr_str;
 use wg_render::{Console, cell_len, char_cells};
 use wg_types::WgError;
 use wg_wire::error::{CLI_ERROR_CODE, error_body, error_envelope};
@@ -67,6 +68,53 @@ impl CliFailure {
     }
 }
 
+/// Where a Click usage error is reported: the usage line after `Usage: ` and the command named
+/// in the `Try ... --help` line, as Click prints them for the command that owns the option.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Usage {
+    pub usage: &'static str,
+    pub command: &'static str,
+}
+
+impl Usage {
+    /// Click's `BadParameter` for `option` given `value`, which its type `kind` (`int` or
+    /// `float`) cannot read: `Invalid value for '--x': 'v' is not a valid int.`
+    #[must_use]
+    pub fn invalid_value(self, option: &str, value: &str, kind: &str) -> CliFailure {
+        CliFailure::Usage {
+            usage: self.usage.to_owned(),
+            command: self.command.to_owned(),
+            message: format!(
+                "Invalid value for '{option}': {} is not a valid {kind}.",
+                py_repr_str(value)
+            ),
+        }
+    }
+}
+
+/// The text Python's `int()` and `float()` read: surrounding whitespace dropped, and an
+/// underscore allowed only between two digits. `None` when an underscore is misplaced.
+#[must_use]
+pub fn python_number_text(text: &str) -> Option<String> {
+    let chars: Vec<char> = text.trim().chars().collect();
+    let mut out = String::with_capacity(chars.len());
+    for (index, &c) in chars.iter().enumerate() {
+        if c != '_' {
+            out.push(c);
+            continue;
+        }
+        let digit_before = index
+            .checked_sub(1)
+            .and_then(|before| chars.get(before))
+            .is_some_and(char::is_ascii_digit);
+        let digit_after = chars.get(index + 1).is_some_and(char::is_ascii_digit);
+        if !(digit_before && digit_after) {
+            return None;
+        }
+    }
+    Some(out)
+}
+
 impl From<WgError> for CliFailure {
     fn from(error: WgError) -> Self {
         Self::Domain(error)
@@ -94,9 +142,9 @@ pub fn report(failure: &CliFailure, json: bool, console: &Console) -> Report {
             message,
         } => (
             String::new(),
-            // rich's console on a legacy Windows console reports one cell less than the width
-            // (`Console.size`), and that is the ASCII panel's width there.
-            usage_text(usage, command, message, console.width().saturating_sub(1)),
+            // typer draws its usage panel on rich's plain console, which on a legacy Windows
+            // console is one cell narrower than the width (see `Console::from_env`).
+            usage_text(usage, command, message, console.plain_width()),
         ),
         CliFailure::Domain(error) if json => (envelope_line(&error_envelope(error)), String::new()),
         CliFailure::Fail {

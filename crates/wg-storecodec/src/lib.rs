@@ -7,10 +7,13 @@
 
 pub mod classify_sql;
 pub mod automation_sql;
+pub mod analytics_sql;
 pub mod codec;
 pub mod decision_sql;
 pub mod events;
 pub mod git_sql;
+pub mod experiment_sql;
+pub mod external_sql;
 pub mod migrations;
 pub mod query;
 pub mod queue_sql;

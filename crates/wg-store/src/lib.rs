@@ -17,6 +17,9 @@ mod decisions;
 mod git;
 mod jobs;
 mod automation;
+mod analytics;
+mod experiments;
+mod external;
 mod migrate;
 mod repos;
 mod run;
@@ -36,6 +39,7 @@ use wg_types::{ErrorCode, WgError};
 
 use session::db;
 
+pub use analytics::AnalyticsSource;
 pub use run::AttemptPage;
 pub use session::{Applied, Session};
 pub use verify::{FailureFilter, FailureRow, Page, RunFilter};

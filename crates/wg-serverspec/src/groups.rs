@@ -287,6 +287,34 @@ const fn optional(component: &'static str, strip: bool) -> Option<BodyRef> {
     })
 }
 
+/// The acceptance group (IF-24): accept (H033), reject (H034) and the list of decisions (H035).
+pub const ACCEPTANCE: [RouteSpec; 3] = [
+    task_route(
+        "H033",
+        "POST",
+        "/api/v1/ws/{ws}/tasks/{ref}/accept",
+        200,
+        &[],
+        required("AcceptBody", false),
+    ),
+    task_route(
+        "H034",
+        "POST",
+        "/api/v1/ws/{ws}/tasks/{ref}/reject",
+        200,
+        &[],
+        required("RejectBody", false),
+    ),
+    task_route(
+        "H035",
+        "GET",
+        "/api/v1/ws/{ws}/tasks/{ref}/acceptances",
+        200,
+        &[],
+        None,
+    ),
+];
+
 /// The task reads, writes and lifecycle group (IF-44): H023 to H046 without the acceptance
 /// routes H033 to H035, which belong to IF-24.
 pub const TASKS: [RouteSpec; 21] = [

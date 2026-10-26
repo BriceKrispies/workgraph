@@ -10,6 +10,7 @@
 //! snapshot, and the body against the route's [`crate::BodySpec`]. It calls the runtime through
 //! [`crate::Server::blocking`] and returns an [`crate::Answer`].
 
+pub mod acceptance;
 pub mod decisions;
 pub mod events;
 pub mod meta_settings;
@@ -24,7 +25,14 @@ use wg_types::WgError;
 use crate::route::{Answer, ApiRequest, ApiRoute, handler};
 
 /// The groups whose routes are registered.
-pub const IMPLEMENTED: &[&str] = &["meta-settings", "IF-44", "IF-49", "decisions", "IF-53"];
+pub const IMPLEMENTED: &[&str] = &[
+    "meta-settings",
+    "IF-24",
+    "IF-44",
+    "IF-49",
+    "decisions",
+    "IF-53",
+];
 
 /// What a group runs for one operation: the application context, the operation's inventory id
 /// and the validated request, in; the document, out.
@@ -63,6 +71,7 @@ pub fn routes() -> Vec<ApiRoute> {
     events::register(&mut table);
     decisions::register(&mut table);
     tasks::register(&mut table);
+    acceptance::register(&mut table);
     stacks::register(&mut table);
     table
 }

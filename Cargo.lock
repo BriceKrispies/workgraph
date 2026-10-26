@@ -478,6 +478,10 @@ dependencies = [
 [[package]]
 name = "wg-demo-agent"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-proc",
+]
 
 [[package]]
 name = "wg-events"

@@ -6,25 +6,28 @@
 //!   outputs the worktree commands print;
 //! * [`service`] (Shell): the worktree service as free functions over `&mut App`, the load-decide-
 //!   apply glue;
-//! * [`mcp`] (Shell): the attempt and run tool table.
+//! * [`mcp`] (Shell): the attempt and run tool table;
+//! * [`cli`] (Shell): the `run` command group (`get` and `watch`), a handler table into [`service`].
 //!
 //! The git-facing worktree commands (`git worktrees`, `git cleanup-worktrees`) still belong to the
 //! git group and are answered by `wg-runtime`'s git service until the git feature moves (FC-06).
-//! The feature has no CLI group, routes or jobs yet: the attempt, run and worktree groups are not
-//! ported, and the worker's recovery pass reaches the worktree service through the caller.
+//! The feature has no routes or jobs yet: the attempt group is not ported, the `run` group's
+//! `start`, `cancel`, `retry`, `rerun`, `schedule` and `decompose` are not, and the worker's
+//! recovery pass reaches the worktree service through the caller.
 //!
 //! The feature exports [`FEATURE`]; the binary collects it into its ordered feature list.
 
+pub mod cli;
 pub mod mcp;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The exec feature: its tools. It has no CLI groups, routes, resources or jobs yet.
+/// The exec feature: its `run` command group and its tools. It has no routes or jobs yet.
 pub static FEATURE: Feature = Feature {
     name: "exec",
-    cli: &[],
+    cli: &[cli::GROUP],
     routes: &[],
     tools: mcp::TOOLS,
     resources: &[],

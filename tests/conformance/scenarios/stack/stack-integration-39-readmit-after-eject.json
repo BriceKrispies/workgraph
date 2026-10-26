@@ -1,0 +1,37 @@
+{
+  "id": "stack-integration-39-readmit-after-eject",
+  "covers": ["C001", "C060", "C099", "C118", "C131", "C136", "C137", "C141", "C143", "C152", "C172"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["config", "set", "stacks.auto_accept", "false"], "json": true},
+    {"cli": ["agent", "add-command", "fake-a", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg=--file", "--arg=a.py", "--arg={manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["agent", "add-command", "fake-b", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg=--file", "--arg=b.py", "--arg={manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["verify", "config", "gate", "--scope-type", "repository", "--scope", "svc", "--check", "{\"name\": \"types\", \"kind\": \"typecheck\", \"tier\": \"fast\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}", "--check", "{\"name\": \"suite\", \"kind\": \"test\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["run", "start", "WG-2", "--agent", "fake-a"], "json": true},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["run", "start", "WG-3", "--agent", "fake-b"], "json": true},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["stack", "eject", "WG-1", "WG-3", "--reason", "evidence names the second change"], "json": true},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/items/1/state", "equals": "ejected"}}},
+    {"cli": ["stack", "readmit", "WG-1", "WG-3"], "json": true},
+    {"assert": {"json": {"path": "/items/1/task_key", "equals": "WG-3"}}},
+    {"assert": {"json": {"path": "/items/1/state", "equals": "ready"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stack_integration.py::test_readmit_refuses_an_attempt_branch_that_moved_after_submit: the refusal when the attempt branch moved after the stack recorded its head; no setup or step can commit on a workgraph attempt branch, so only the readmission of an ejected child is asserted", 
+      "covered_by": "CORE-13"
+    }
+  ]
+}

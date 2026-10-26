@@ -1,0 +1,29 @@
+{
+  "id": "stack-integration-36-external-submit-gates-child",
+  "covers": ["C001", "C023", "C060", "C099", "C118", "C136", "C143", "C152", "C172"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["agent", "add-command", "fake-a", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg=--file", "--arg=a.py", "--arg={manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["agent", "add-command", "fake-b", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg=--file", "--arg=b.py", "--arg={manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["verify", "config", "gate", "--scope-type", "repository", "--scope", "svc", "--check", "{\"name\": \"types\", \"kind\": \"typecheck\", \"tier\": \"fast\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}"], "json": true},
+    {"cli": ["task", "create", "External change", "--parent", "WG-1", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["attempt", "start", "WG-2", "--agent-name", "tester", "--adapter", "claude_code_subagent", "--isolation", "worktree"], "json": true},
+    {"assert": {"json": {"path": "/task_key", "equals": "WG-2"}}},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/items/0/state", "equals": "pending"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stack_integration.py::test_external_submit_gates_a_stack_child_and_queues_its_integration: the test writes a file and commits it inside the external attempt's checkout before submitting; no step writes into or commits to a managed checkout, so only the external attempt start and the pending item are asserted; the submit, the ready item, the recorded head and the queued stack_integrate job are not reached", 
+      "covered_by": "CORE-11"
+    }
+  ]
+}

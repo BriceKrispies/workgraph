@@ -1,0 +1,41 @@
+{
+  "id": "stack-integration-31-auto-accept-default",
+  "covers": ["C001", "C060", "C061", "C099", "C118", "C131", "C136", "C143", "C152", "C155", "C165", "C172"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["agent", "add-command", "fake-a", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg=--file", "--arg=a.py", "--arg={manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["agent", "add-command", "fake-b", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg=--file", "--arg=b.py", "--arg={manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["verify", "config", "gate", "--scope-type", "repository", "--scope", "svc", "--check", "{\"name\": \"types\", \"kind\": \"typecheck\", \"tier\": \"fast\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}", "--check", "{\"name\": \"suite\", \"kind\": \"test\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["run", "start", "WG-2", "--agent", "fake-a"], "json": true},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["run", "start", "WG-3", "--agent", "fake-b"], "json": true},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["config", "show"], "json": true},
+    {"assert": {"json": {"path": "/config/stacks/auto_accept", "equals": true}}},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "landed"}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "accepted"}}},
+    {"cli": ["task", "history", "WG-1", "--type", "task.accepted"], "json": true},
+    {"assert": {"json": {"path": "/0/data/mode", "equals": "automated"}}},
+    {"assert": {"json": {"path": "/0/data/reason", "equals": "stack.auto_accept"}}},
+    {"assert": {"file": "{repo:svc}/a.py", "exists": true}},
+    {"assert": {"file": "{repo:svc}/b.py", "exists": true}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stack_integration.py::test_auto_accept_is_on_by_default: the assertion that the default branch equals the tip recorded in the stack.landed event (repo.git('rev-parse', 'main')); no step reads a git ref, so the landed files on the checkout are asserted instead", 
+      "covered_by": "CORE-18"
+    }
+  ]
+}

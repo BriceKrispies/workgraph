@@ -1,0 +1,51 @@
+{
+  "id": "stack-integration-32-accept-merged-child-alone",
+  "covers": ["C001", "C060", "C099", "C118", "C131", "C136", "C138", "C143", "C145", "C152", "C172"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["config", "set", "stacks.auto_accept", "false"], "json": true},
+    {"cli": ["agent", "add-command", "fake-a", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg=--file", "--arg=a.py", "--arg={manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["agent", "add-command", "fake-b", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg=--file", "--arg=b.py", "--arg={manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["verify", "config", "gate", "--scope-type", "repository", "--scope", "svc", "--check", "{\"name\": \"types\", \"kind\": \"typecheck\", \"tier\": \"fast\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}", "--check", "{\"name\": \"suite\", \"kind\": \"test\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["run", "start", "WG-2", "--agent", "fake-a"], "json": true},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["run", "start", "WG-3", "--agent", "fake-b"], "json": true},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["task", "accept", "WG-2", "--manual", "--reason", "reviewed on its own"], "json": true},
+    {"assert": {"exit": 0}},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "accepted"}}},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "integrating"}}},
+    {"assert": {"json": {"path": "/items/0/task_key", "equals": "WG-3"}}},
+    {"cli": ["stack", "history", "WG-1"], "json": true},
+    {"assert": {"stdout_contains": "stack.item_released"}},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "verified"}}},
+    {"assert": {"json": {"path": "/items/0/task_key", "equals": "WG-3"}}},
+    {"assert": {"json": {"path": "/items/0/state", "equals": "verified"}}},
+    {"cli": ["task", "show", "WG-3"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "awaiting_review"}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "awaiting_review"}}},
+    {"assert": {"file": "{repo:svc}/a.py", "exists": false}},
+    {"assert": {"file": "{repo:svc}/b.py", "exists": false}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stack_integration.py::test_accepting_a_merged_child_alone_removes_it_and_rebuilds_without_it: the integration branch holds b.py and not a.py; the only command that reads a stack shows its items and tip, never the files of the integration branch", 
+      "covered_by": "CORE-15"
+    }
+  ]
+}

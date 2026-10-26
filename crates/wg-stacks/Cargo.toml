@@ -9,3 +9,10 @@ description = "stack membership, integration queue, verification, landing"
 
 [lints]
 workspace = true
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-types = { path = "../wg-types" }
+
+[dev-dependencies]
+uuid = { version = "1", default-features = false, features = ["std", "serde"] }

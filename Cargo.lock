@@ -1209,6 +1209,11 @@ version = "0.1.0"
 [[package]]
 name = "wg-stacks"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "uuid",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-store"

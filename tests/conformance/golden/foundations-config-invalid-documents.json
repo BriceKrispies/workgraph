@@ -1,0 +1,96 @@
+{
+  "scenario": "foundations-config-invalid-documents",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 7,
+      "stdout": "{\"error\": {\"code\": \"config_error\", \"message\": \"<tmp>/repos\\\\cfg-port\\\\config\\\\config.toml failed validation\", \"details\": {\"errors\": [{\"type\": \"greater_than_equal\", \"loc\": [\"server\", \"port\"], \"msg\": \"Input should be greater than or equal to 1\", \"input\": 0, \"ctx\": {\"ge\": 1}, \"url\": \"https://errors.pydantic.dev/2.14/v/greater_than_equal\"}]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 7,
+      "stdout": "{\n  \"valid\": false,\n  \"problems\": [\n    \"<tmp>/repos\\\\cfg-port\\\\config\\\\config.toml failed validation: [{'type': 'greater_than_equal', 'loc': ('server', 'port'), 'msg': 'Input should be greater than or equal to 1', 'input': 0, 'ctx': {'ge': 1}, 'url': 'https://errors.pydantic.dev/2.14/v/greater_than_equal'}]\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 7,
+      "stdout": "{\"error\": {\"code\": \"config_error\", \"message\": \"<tmp>/repos\\\\cfg-toml\\\\config\\\\config.toml is not valid TOML: Invalid value (at line 1, column 8)\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 7,
+      "stdout": "{\n  \"valid\": false,\n  \"problems\": [\n    \"<tmp>/repos\\\\cfg-toml\\\\config\\\\config.toml is not valid TOML: Invalid value (at line 1, column 8): \"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

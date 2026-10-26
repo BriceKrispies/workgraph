@@ -1,0 +1,68 @@
+{
+  "scenario": "foundations-migrations-at-start",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": null,\n  \"default_workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

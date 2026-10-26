@@ -1,0 +1,15 @@
+{
+  "id": "foundations-workspace-config-overrides",
+  "covers": ["C061", "E01"],
+  "setup": [
+    {"git": "init", "repo": "ws-cfg"},
+    {"git": "write", "repo": "ws-cfg", "files": {"config/workspaces/team.toml": "[execution]\nmax_concurrent_runs = 7\n"}}
+  ],
+  "steps": [
+    {"cli": ["--home", "{repo:ws-cfg}", "config", "show", "--workspace", "team"], "json": true},
+    {"assert": {"json": {"path": "/config/execution/max_concurrent_runs", "equals": 7}}},
+    {"cli": ["--home", "{repo:ws-cfg}", "config", "show"], "json": true},
+    {"assert": {"json": {"path": "/config/execution/max_concurrent_runs", "equals": 2}}}
+  ],
+  "not_observable": []
+}

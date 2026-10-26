@@ -1,0 +1,37 @@
+{
+  "id": "foundations-migrations-at-start",
+  "covers": ["C099", "C182", "E01"],
+  "steps": [
+    {"cli": ["workspace", "list"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}},
+    {"assert": {"file": "data/workgraph.db", "exists": true}},
+    {"assert": {"file": "config/config.toml", "exists": false}},
+    {"cli": ["init", "--no-workspace"], "json": true},
+    {"assert": {"json": {"path": "/schema_revision", "equals": "0011"}}},
+    {"assert": {"json": {"path": "/workspace_created", "equals": null}}},
+    {"cli": ["workspace", "list", "--all"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/unit/test_foundations.py::test_schema_head_constant_matches_migrations: compares the SCHEMA_HEAD constant with the migration head; no command prints the constant, so only the head revision 0011 that init reports is observed",
+      "covered_by": "SH-02"
+    },
+    {
+      "case": "tests/unit/test_foundations.py::test_migrations_clean_downgrade_and_existing: the downgrade to 0001 and the row check after the re-upgrade have no command (no command performs a downgrade) and the runner cannot insert rows into a database directly; the upgrade to head is observed above",
+      "covered_by": "SH-03"
+    },
+    {
+      "case": "tests/unit/test_foundations.py::test_stacks_migration_upgrades_populated_0002, test_subagent_telemetry_migration_upgrades_populated_0004, test_experiments_migration_upgrades_populated_0004 and test_predictor_migration_upgrades_populated_0006: they upgrade databases populated at an older revision, and the runner has no step that writes a database file, so the populated fixtures are not reachable here (the CF-05 fixture databases cover them as a dump comparison)",
+      "covered_by": "SH-03"
+    },
+    {
+      "case": "tests/unit/test_foundations.py::test_foreign_keys_enforced_and_rollback: a foreign-key violation and a rolled-back session are issued through the database session API; no CLI command performs a rejected insert, so the rejection and the rollback are not observable",
+      "covered_by": "SH-01"
+    },
+    {
+      "case": "tests/unit/test_foundations.py::test_concurrent_writers_serialize: several threads write through one database; runner steps run one command at a time, so concurrent writers are not observable",
+      "covered_by": "SH-01"
+    }
+  ]
+}

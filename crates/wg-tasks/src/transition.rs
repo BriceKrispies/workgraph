@@ -254,7 +254,7 @@ pub fn transition(
 
 /// Refreshes every task that depends on `task_id` (`_refresh_dependents`), one after the other,
 /// each seeing the changes of the ones before it.
-fn refresh_dependents(
+pub fn refresh_dependents(
     start: Applied,
     stacks: &StackSlice,
     stamp: &Stamp,

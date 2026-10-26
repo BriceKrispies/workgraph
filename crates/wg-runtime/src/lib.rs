@@ -21,6 +21,7 @@ mod handlers;
 mod logging;
 mod queue;
 mod setup;
+mod stacks;
 mod stamp;
 mod tasks;
 mod worker;

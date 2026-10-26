@@ -12,6 +12,7 @@
 //!
 //! Later tasks add the migration runner and the per-entity queries on top of this base.
 
+mod repos;
 mod session;
 
 use std::path::PathBuf;

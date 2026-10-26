@@ -8,6 +8,7 @@
 pub mod codec;
 pub mod events;
 pub mod query;
+pub mod repo_sql;
 pub mod rows;
 mod rows_more;
 pub mod sql;

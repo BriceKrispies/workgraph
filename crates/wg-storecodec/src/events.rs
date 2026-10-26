@@ -6,11 +6,33 @@
 //! (migration `0001`), so the store only ever inserts.
 
 use serde_json::{Value, json};
-use wg_model::{EventDraft, JsonObject};
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_model::{EventDraft, JsonObject, StoredEvent};
+use wg_types::{Correlation, ErrorCode, Id, Timestamp, WgError};
 
-use crate::codec::{Cols, Raw, id_sql, json_text, opt_id_sql, ts_sql};
+use crate::codec::{Cols, Raw, correlation_sql, id_sql, json_text, opt_id_sql, ts_sql};
 use crate::sql::Statement;
+
+impl From<EventRecord> for StoredEvent {
+    /// The same row as the model's [`StoredEvent`]: every field carries over unchanged.
+    fn from(record: EventRecord) -> StoredEvent {
+        StoredEvent {
+            seq: record.seq,
+            id: record.id,
+            workspace_id: record.workspace_id,
+            event_type: record.event_type,
+            entity_type: record.entity_type,
+            entity_id: record.entity_id,
+            actor: record.actor,
+            actor_kind: record.actor_kind,
+            occurred_at: record.occurred_at,
+            correlation_id: record.correlation_id,
+            causation_id: record.causation_id,
+            attempt_id: record.attempt_id,
+            schema_version: record.schema_version,
+            data: record.data,
+        }
+    }
+}
 
 /// Python's `DEFAULT_SCHEMA_VERSION`.
 const DEFAULT_SCHEMA_VERSION: i64 = 1;
@@ -37,7 +59,7 @@ pub struct EventRecord {
     pub actor: String,
     pub actor_kind: String,
     pub occurred_at: Timestamp,
-    pub correlation_id: Id,
+    pub correlation_id: Correlation,
     pub causation_id: Option<Id>,
     pub attempt_id: Option<Id>,
     pub schema_version: i64,
@@ -124,7 +146,7 @@ pub fn decode_event(values: &[Raw]) -> Result<EventRecord, WgError> {
         actor: cols.text("actor")?,
         actor_kind: cols.text("actor_kind")?,
         occurred_at: cols.ts("occurred_at")?,
-        correlation_id: cols.id("correlation_id")?,
+        correlation_id: cols.correlation("correlation_id")?,
         causation_id: cols.opt_id("causation_id")?,
         attempt_id: cols.opt_id("attempt_id")?,
         schema_version,
@@ -168,7 +190,7 @@ pub fn append_statement(draft: &EventDraft) -> Result<Statement, WgError> {
             Raw::Text(draft.actor.to_string()),
             Raw::Text(draft.actor.kind().as_str().to_owned()),
             ts_sql(draft.occurred_at),
-            id_sql(draft.correlation_id),
+            correlation_sql(&draft.correlation_id),
             opt_id_sql(draft.causation_id),
             opt_id_sql(draft.attempt_id),
             Raw::Int(i64::from(draft.schema_version())),
@@ -188,7 +210,7 @@ pub struct EventQuery {
     pub event_type_prefix: Option<String>,
     pub actor: Option<String>,
     pub attempt_id: Option<Id>,
-    pub correlation_id: Option<Id>,
+    pub correlation_id: Option<Correlation>,
     pub after_seq: Option<i64>,
     pub since: Option<Timestamp>,
     pub until: Option<Timestamp>,

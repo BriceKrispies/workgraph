@@ -17,6 +17,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 sha2 = "0.10"
 subtle = "2"
 wg-json = { path = "../wg-json" }
+wg-model = { path = "../wg-model" }
 wg-runtimespec = { path = "../wg-runtimespec" }
 wg-types = { path = "../wg-types" }
 wg-validate = { path = "../wg-validate" }

@@ -14,7 +14,7 @@ use serde_json::Value;
 use wg_json::{DumpError, PyStr};
 use wg_model::JsonObject;
 use wg_model::entity::{DecisionOption, Real};
-use wg_types::{ErrorCode, Id, Timestamp, WgError, parse_id};
+use wg_types::{Correlation, ErrorCode, Id, Timestamp, WgError, parse_id};
 
 /// One database value, as the three storage classes the schema uses.
 #[derive(Debug, Clone, PartialEq)]
@@ -34,6 +34,16 @@ pub fn id_sql(id: Id) -> Raw {
 /// A nullable id column.
 pub fn opt_id_sql(id: Option<Id>) -> Raw {
     id.map_or(Raw::Null, id_sql)
+}
+
+/// A correlation column: the text of the correlation id, which Python stores as text.
+pub fn correlation_sql(correlation: &Correlation) -> Raw {
+    Raw::Text(correlation.to_string())
+}
+
+/// A nullable correlation column.
+pub fn opt_correlation_sql(correlation: Option<&Correlation>) -> Raw {
+    correlation.map_or(Raw::Null, correlation_sql)
 }
 
 /// A timestamp column.
@@ -143,10 +153,12 @@ pub fn objects_sql(items: &VectorSync<JsonObject>) -> Result<Raw, WgError> {
 }
 
 /// A NOT NULL JSON list of decision options, each `{id, label, detail, recommended}`.
-pub fn decision_options_sql(options: &[DecisionOption]) -> Result<Raw, WgError> {
+pub fn decision_options_sql<'a>(
+    options: impl IntoIterator<Item = &'a DecisionOption>,
+) -> Result<Raw, WgError> {
     let list = Value::Array(
         options
-            .iter()
+            .into_iter()
             .map(|option| {
                 let mut object = JsonObject::new();
                 object.insert("id".to_owned(), Value::String(option.id.clone()));
@@ -254,6 +266,14 @@ impl<'a> Cols<'a> {
         self.opt_text(name)?.map(|text| parse_id(&text)).transpose()
     }
 
+    pub fn correlation(&self, name: &str) -> Result<Correlation, WgError> {
+        self.text(name).map(Correlation::new)
+    }
+
+    pub fn opt_correlation(&self, name: &str) -> Result<Option<Correlation>, WgError> {
+        Ok(self.opt_text(name)?.map(Correlation::new))
+    }
+
     pub fn ts(&self, name: &str) -> Result<Timestamp, WgError> {
         Timestamp::parse_iso(&self.text(name)?)
     }
@@ -309,7 +329,7 @@ impl<'a> Cols<'a> {
     }
 
     /// A NOT NULL JSON list of decision options.
-    pub fn decision_options(&self, name: &str) -> Result<Vec<DecisionOption>, WgError> {
+    pub fn decision_options(&self, name: &str) -> Result<VectorSync<DecisionOption>, WgError> {
         self.list(name)?
             .into_iter()
             .map(|item| {

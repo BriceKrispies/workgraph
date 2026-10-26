@@ -13,8 +13,10 @@ workspace = true
 [dependencies]
 clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
 serde_json = { version = "1", features = ["preserve_order"] }
+wg-config = { path = "../wg-config" }
 wg-json = { path = "../wg-json" }
 wg-model = { path = "../wg-model" }
 wg-render = { path = "../wg-render" }
 wg-types = { path = "../wg-types" }
+wg-validate = { path = "../wg-validate" }
 wg-wire = { path = "../wg-wire" }

@@ -16,7 +16,7 @@ mod time;
 pub use actor::Actor;
 pub use enums::*;
 pub use error::{ErrorCode, WgError};
-pub use id::{Id, parse_id};
+pub use id::{Correlation, Id, parse_id};
 pub use key::TaskKey;
 pub use permission::{
     Permission, all_permissions, default_agent_permissions, human_permissions, parse_permissions,

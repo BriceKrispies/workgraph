@@ -24,7 +24,7 @@ fn stamp_for(text: &str) -> Stamp {
         entropy: [7; 32],
         actor: actor(text),
         permissions: rpds::RedBlackTreeSetSync::new_sync(),
-        correlation: id(9),
+        correlation: id(9).into(),
         causation: None,
         attempt: None,
         automation_depth: 0,

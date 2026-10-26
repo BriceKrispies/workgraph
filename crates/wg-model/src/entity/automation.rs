@@ -2,7 +2,7 @@
 //! `findings`.
 
 use rpds::VectorSync;
-use wg_types::{Id, Timestamp};
+use wg_types::{Correlation, Id, Timestamp};
 
 use crate::entity::{JsonObject, Real};
 use crate::write::{Row, RowKey};
@@ -51,7 +51,7 @@ pub struct AutomationRun {
     pub action_results: VectorSync<JsonObject>,
     pub error: Option<String>,
     pub attempts: i64,
-    pub correlation_id: Option<Id>,
+    pub correlation_id: Option<Correlation>,
     pub created_at: Timestamp,
     pub finished_at: Option<Timestamp>,
     pub inputs: JsonObject,

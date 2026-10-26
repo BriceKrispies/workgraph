@@ -33,6 +33,14 @@ impl Session<'_> {
         self.fetch(&RowKey::Job(job_id))
     }
 
+    /// The job holding idempotency key `key`, if any.
+    pub fn job_by_idempotency_key(&mut self, key: &str) -> Result<Option<Job>, WgError> {
+        Ok(self
+            .decode_all::<Job>(&queue_sql::job_by_idempotency_key(key))?
+            .into_iter()
+            .next())
+    }
+
     /// A page of jobs, newest first, with the number of jobs the filter matches before paging
     /// (`JobQueue.list`).
     pub fn list_jobs(&mut self, filter: &JobFilter<'_>) -> Result<(Vec<Job>, usize), WgError> {
@@ -104,6 +112,20 @@ impl Session<'_> {
             for job in self.decode_all::<Job>(&queue_sql::job_by_idempotency_key(key))? {
                 slice.jobs = slice.jobs.insert(job.id, job);
             }
+        }
+        Ok(slice)
+    }
+
+    /// The jobs that name `task_id`, of any status and kind: what an enrichment enqueue reads to
+    /// find a job already queued under the same idempotency key (`JobQueue.enqueue`).
+    pub fn task_jobs_slice(&mut self, task_id: Id) -> Result<QueueSlice, WgError> {
+        let mut slice = QueueSlice::default();
+        let filter = JobFilter {
+            task_id: Some(task_id),
+            ..JobFilter::default()
+        };
+        for job in self.list_jobs(&filter)?.0 {
+            slice.jobs = slice.jobs.insert(job.id, job);
         }
         Ok(slice)
     }

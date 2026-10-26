@@ -5,8 +5,10 @@
 //! assigned, and the `data` column is stored with sorted keys (`json.dumps(sort_keys=True)`), so
 //! it reads back sorted at every depth, not in the order the payload struct lists them.
 
+use std::collections::BTreeMap;
+
 use serde_json::Value;
-use wg_types::{Id, Timestamp, WgError};
+use wg_types::{Correlation, Id, Timestamp, WgError};
 
 use super::EventDraft;
 use crate::entity::JsonObject;
@@ -23,7 +25,7 @@ pub struct StoredEvent {
     pub actor: String,
     pub actor_kind: String,
     pub occurred_at: Timestamp,
-    pub correlation_id: Id,
+    pub correlation_id: Correlation,
     pub causation_id: Option<Id>,
     pub attempt_id: Option<Id>,
     pub schema_version: i64,
@@ -44,7 +46,7 @@ impl StoredEvent {
             actor: draft.actor.to_string(),
             actor_kind: draft.actor.kind().as_str().to_owned(),
             occurred_at: draft.occurred_at,
-            correlation_id: draft.correlation_id,
+            correlation_id: draft.correlation_id.clone(),
             causation_id: draft.causation_id,
             attempt_id: draft.attempt_id,
             schema_version: i64::from(draft.schema_version()),
@@ -64,9 +66,8 @@ pub fn sort_keys(value: &Value) -> Value {
 }
 
 fn sort_object(map: &JsonObject) -> JsonObject {
-    let mut entries: Vec<(&String, &Value)> = map.iter().collect();
-    entries.sort_by(|a, b| a.0.cmp(b.0));
-    entries
+    map.iter()
+        .collect::<BTreeMap<&String, &Value>>()
         .into_iter()
         .map(|(key, value)| (key.clone(), sort_keys(value)))
         .collect()

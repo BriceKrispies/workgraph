@@ -10,6 +10,8 @@ use wg_json::Value;
 use wg_model::py_repr_str;
 use wg_render::{Console, escape};
 use wg_types::WgError;
+use wg_validate::pydantic::error_text;
+use wg_validate::{Loc, ValidationError};
 use wg_wire::convention::{dict, text};
 use wg_wire::error::error_body;
 
@@ -71,8 +73,13 @@ fn tag_values(values: &[String]) -> Vec<String> {
         .collect()
 }
 
-/// `parse_task_file`: `PATH[:ANCHOR]`, where a drive letter belongs to the path.
-fn parse_task_file(spec: &str) -> Option<(String, Option<String>)> {
+/// `TaskFileIn` limits: a path of 1 to 1000 characters and an anchor of at most 300.
+const FILE_PATH_MAX_CHARS: usize = 1000;
+const FILE_ANCHOR_MAX_CHARS: usize = 300;
+
+/// `parse_task_file`: `PATH[:ANCHOR]`, where a drive letter belongs to the path. The path may be
+/// empty here: [`file_spec_errors`] says whether the pair is a valid `TaskFileIn`.
+fn parse_task_file(spec: &str) -> (String, Option<String>) {
     let trimmed = spec.trim();
     let mut chars = trimmed.chars();
     let drive = chars.next().is_some_and(|c| c.is_ascii_alphabetic()) && chars.next() == Some(':');
@@ -85,26 +92,72 @@ fn parse_task_file(spec: &str) -> Option<(String, Option<String>)> {
         Some((path, anchor)) => (path, Some(anchor.to_owned())),
         None => (rest, None),
     };
-    let path = format!("{head}{path}");
-    (!path.is_empty()).then_some((path, anchor))
+    (format!("{head}{path}"), anchor)
+}
+
+/// The pydantic errors of a `TaskFileIn` with this path and anchor, in field order.
+fn file_spec_errors(path: &str, anchor: Option<&str>) -> Vec<ValidationError> {
+    let path_error = match path.chars().count() {
+        0 => Some(length_error(
+            "path",
+            path,
+            "string_too_short",
+            "at least 1 character",
+        )),
+        n if n > FILE_PATH_MAX_CHARS => Some(length_error(
+            "path",
+            path,
+            "string_too_long",
+            "at most 1000 characters",
+        )),
+        _ => None,
+    };
+    let anchor_error = anchor
+        .filter(|anchor| anchor.chars().count() > FILE_ANCHOR_MAX_CHARS)
+        .map(|anchor| {
+            length_error(
+                "anchor",
+                anchor,
+                "string_too_long",
+                "at most 300 characters",
+            )
+        });
+    path_error.into_iter().chain(anchor_error).collect()
+}
+
+/// One pydantic string-length error on `field`.
+fn length_error(field: &str, input: &str, kind: &str, bound: &str) -> ValidationError {
+    ValidationError {
+        kind: kind.to_owned(),
+        loc: vec![Loc::Key(field.to_owned())],
+        msg: format!("String should have {bound}"),
+        input: Json::String(input.to_owned()),
+        ctx: None,
+    }
 }
 
 /// `_file_specs`: the `--file` options as request files, refusing the whole command on a bad one.
+/// The failure carries pydantic's text for the `TaskFileIn` that did not validate.
 fn file_specs(specs: &[String]) -> Result<Vec<Json>, CliFailure> {
     specs
         .iter()
         .map(|spec| {
-            parse_task_file(spec)
-                .map(|(path, anchor)| json!({"path": path, "anchor": anchor}))
-                .ok_or_else(|| {
-                    CliFailure::fail(
-                        format!(
-                            "invalid --file {}: a path is required before any ':ANCHOR'",
-                            py_repr_str(spec)
-                        ),
-                        1,
-                    )
-                })
+            let (path, anchor) = parse_task_file(spec);
+            let errors = file_spec_errors(&path, anchor.as_deref());
+            if errors.is_empty() {
+                return Ok(json!({"path": path, "anchor": anchor}));
+            }
+            Err(CliFailure::Fail {
+                message: format!(
+                    "invalid --file {}: a path is required before any ':ANCHOR'",
+                    py_repr_str(spec)
+                ),
+                code: 1,
+                details: Map::from_iter([(
+                    "error".to_owned(),
+                    Json::String(error_text("TaskFileIn", &errors)),
+                )]),
+            })
         })
         .collect()
 }

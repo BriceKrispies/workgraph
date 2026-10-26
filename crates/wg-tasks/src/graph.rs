@@ -1,14 +1,15 @@
 //! The task graph view (GV-19). Mirrors `TaskService.graph` in `core/services/tasks.py`: nodes
 //! for the live tasks of a workspace, edges for dependencies, parents and typed relations.
 //!
-//! Nodes are in task-number order. Edges are in a fixed order, by kind (`depends_on`, `parent`,
-//! `relation`), then source key, target key and relation type, so the view does not depend on
-//! storage order. A dependency edge runs from the task depended on to the dependent.
+//! Nodes are in task-number order. Edges are in database order: the dependency rows by (task,
+//! depended-on task), then the parent edges by child number, then the relation rows by (source,
+//! target, type), each as SQLite reads the table through its index (`TaskService.graph`). A
+//! dependency edge runs from the task depended on to the dependent.
 
 use std::collections::{BTreeMap, BTreeSet};
 
 use wg_model::slice::StackSlice;
-use wg_model::{Task, TaskSlice};
+use wg_model::{Task, TaskRelation, TaskSlice};
 use wg_types::{Id, RelationType, TaskPriority, TaskStatus};
 
 use crate::deps::satisfied_dependencies;
@@ -123,11 +124,21 @@ fn selected<'a>(tasks: &'a TaskSlice, query: &GraphQuery) -> BTreeMap<Id, &'a Ta
 /// The graph of the tasks the query selects.
 pub fn task_graph(tasks: &TaskSlice, stacks: &StackSlice, query: &GraphQuery) -> TaskGraph {
     let shown = selected(tasks, query);
+    // Database order: `task_dependencies` is read through its (task_id, depends_on_id) index.
     let dep_rows: Vec<(Id, Id)> = tasks
         .dependencies
         .values()
         .filter(|row| shown.contains_key(&row.task_id) && shown.contains_key(&row.depends_on_id))
         .map(|row| (row.task_id, row.depends_on_id))
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    // The tasks in number order, as the task query yields them (the index on (workspace, number)).
+    let by_number: Vec<&Task> = shown
+        .values()
+        .map(|task| (task.number, *task))
+        .collect::<BTreeMap<_, _>>()
+        .into_values()
         .collect();
     let satisfied = satisfied_dependencies(tasks, stacks, &dep_rows);
     let unsatisfied: BTreeSet<Id> = dep_rows
@@ -135,11 +146,8 @@ pub fn task_graph(tasks: &TaskSlice, stacks: &StackSlice, query: &GraphQuery) ->
         .filter(|edge| !satisfied.contains(edge))
         .map(|(task_id, _)| *task_id)
         .collect();
-    let nodes: Vec<GraphNode> = shown
-        .values()
-        .map(|task| (task.number, *task))
-        .collect::<BTreeMap<_, _>>()
-        .into_values()
+    let nodes: Vec<GraphNode> = by_number
+        .iter()
         .map(|task| GraphNode {
             id: task.id,
             key: task.key.to_string(),
@@ -171,7 +179,7 @@ pub fn task_graph(tasks: &TaskSlice, stacks: &StackSlice, query: &GraphQuery) ->
         kind: GraphEdgeKind::DependsOn,
         relation_type: None,
     });
-    let parent_edges = shown.values().filter_map(|task| {
+    let parent_edges = by_number.iter().filter_map(|task| {
         task.parent_id
             .filter(|parent| shown.contains_key(parent))
             .map(|parent| GraphEdge {
@@ -181,38 +189,35 @@ pub fn task_graph(tasks: &TaskSlice, stacks: &StackSlice, query: &GraphQuery) ->
                 relation_type: None,
             })
     });
-    let relation_edges = tasks
+    // Relations in the order `task_relations` is read through its (source, target, type) index.
+    let relation_rows: BTreeMap<(Id, Id, &str), &TaskRelation> = tasks
         .relations
         .values()
         .filter(|rel| {
             shown.contains_key(&rel.source_task_id) && shown.contains_key(&rel.target_task_id)
         })
-        .map(|rel| GraphEdge {
-            source: rel.source_task_id,
-            target: rel.target_task_id,
-            kind: GraphEdgeKind::Relation,
-            relation_type: Some(rel.relation_type),
-        });
-    let key_of = |id: Id| shown.get(&id).map(|task| task.key.to_string());
-    let sorted: BTreeMap<_, GraphEdge> = dependency_edges
-        .chain(parent_edges)
-        .chain(relation_edges)
-        .map(|edge| {
+        .map(|rel| {
             (
                 (
-                    edge.kind,
-                    key_of(edge.source),
-                    key_of(edge.target),
-                    edge.relation_type.map(RelationType::as_str),
-                    edge.source,
-                    edge.target,
+                    rel.source_task_id,
+                    rel.target_task_id,
+                    rel.relation_type.as_str(),
                 ),
-                edge,
+                rel,
             )
         })
         .collect();
+    let relation_edges = relation_rows.into_values().map(|rel| GraphEdge {
+        source: rel.source_task_id,
+        target: rel.target_task_id,
+        kind: GraphEdgeKind::Relation,
+        relation_type: Some(rel.relation_type),
+    });
     TaskGraph {
         nodes,
-        edges: sorted.into_values().collect(),
+        edges: dependency_edges
+            .chain(parent_edges)
+            .chain(relation_edges)
+            .collect(),
     }
 }

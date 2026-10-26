@@ -6,7 +6,10 @@
 //! built from the snapshot (see `wg_clispec::tree`).
 
 pub mod decision;
+pub mod serve;
+pub mod setup;
 pub mod task;
+pub mod ui;
 
 use clap::{ArgMatches, Command};
 use wg_clispec::CliFailure;
@@ -28,4 +31,13 @@ pub struct Group {
 }
 
 /// The implemented groups.
-pub const GROUPS: &[Group] = &[task::GROUP, decision::GROUP];
+pub const GROUPS: &[Group] = &[
+    setup::CONFIG,
+    setup::DOCTOR,
+    setup::INIT,
+    serve::MCP,
+    serve::SERVE,
+    decision::GROUP,
+    task::GROUP,
+    ui::GROUP,
+];

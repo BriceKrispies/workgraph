@@ -65,7 +65,8 @@ pub struct ApiRequest {
     /// The validated body, `null` when the route takes none or it was absent.
     pub body: Json,
     /// `deps.get_ctx`: the local operator as `human:<name>`, named by `X-Workgraph-Actor` (else
-    /// the login name), with `X-Correlation-Id` as its correlation id when that header is an id.
+    /// the login name), with `X-Correlation-Id` as its correlation text when that header is at
+    /// most 64 bytes (a fresh UUID otherwise, as Python's `get_ctx`).
     pub context: RequestContext,
     /// The peer address.
     pub client: Option<Ip>,

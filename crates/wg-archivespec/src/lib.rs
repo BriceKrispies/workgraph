@@ -83,9 +83,10 @@ pub struct ExportedIds {
 }
 
 impl ExportedIds {
-    /// Records the ids of one exported table.
-    pub fn record(&mut self, table: &'static str, ids: Vec<String>) {
+    /// Returns the ids with one more exported table recorded after the ones already held.
+    pub fn record(mut self, table: &'static str, ids: Vec<String>) -> Self {
         self.parents.push((table, ids));
+        self
     }
 
     fn of(&self, table: &str) -> Option<&[String]> {

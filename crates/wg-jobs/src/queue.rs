@@ -21,7 +21,7 @@ use wg_model::entity::{Job, JobResourceClaim, JobRun, JsonObject, Real};
 use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
 use wg_model::write::{RowKey, Write};
-use wg_types::{ErrorCode, Id, JobStatus, Timestamp, WgError};
+use wg_types::{Correlation, ErrorCode, Id, JobStatus, Timestamp, WgError};
 
 use crate::limits::LimitSettings;
 use crate::{shift, truncate_chars};
@@ -57,7 +57,7 @@ pub struct NewJob {
     pub timeout_seconds: Option<f64>,
     pub idempotency_key: Option<String>,
     pub resource_keys: Vec<String>,
-    pub correlation_id: Option<Id>,
+    pub correlation_id: Option<Correlation>,
     pub causation_id: Option<Id>,
     pub task_id: Option<Id>,
     pub attempt_id: Option<Id>,
@@ -99,7 +99,7 @@ pub struct ClaimedJob {
     pub workspace_id: Option<Id>,
     pub task_id: Option<Id>,
     pub attempt_id: Option<Id>,
-    pub correlation_id: Option<Id>,
+    pub correlation_id: Option<Correlation>,
     pub causation_id: Option<Id>,
     pub timeout_seconds: Option<f64>,
     pub lease_expires_at: Timestamp,
@@ -163,7 +163,7 @@ pub fn enqueue(slice: &QueueSlice, job: &NewJob, stamp: &Stamp) -> Decision<Id> 
                 resource_keys: sorted_unique(&job.resource_keys),
                 last_error: None,
                 error_kind: None,
-                correlation_id: job.correlation_id,
+                correlation_id: job.correlation_id.clone(),
                 causation_id: job.causation_id,
                 task_id: job.task_id,
                 attempt_id: job.attempt_id,
@@ -235,7 +235,7 @@ pub fn claim(
                 workspace_id: job.workspace_id,
                 task_id: job.task_id,
                 attempt_id: job.attempt_id,
-                correlation_id: job.correlation_id,
+                correlation_id: job.correlation_id.clone(),
                 causation_id: job.causation_id,
                 timeout_seconds: job.timeout_seconds.map(|real| real.0),
                 lease_expires_at,

@@ -385,7 +385,7 @@ pub fn event_out(event: &EventRecord) -> Value {
                 "occurred_at",
                 timestamp(event.occurred_at, TimeFormat::ModelZ),
             ),
-            ("correlation_id", id(event.correlation_id)),
+            ("correlation_id", text(event.correlation_id.as_str())),
             ("causation_id", optional_id(event.causation_id)),
             ("attempt_id", optional_id(event.attempt_id)),
             (

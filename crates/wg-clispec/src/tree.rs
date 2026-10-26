@@ -158,6 +158,16 @@ pub fn placeholder(snapshot: &Snapshot, name: &str) -> Command {
     node.command(name)
 }
 
+/// The command `name` as the snapshot declares it, for a command whose parameters need no
+/// hand-written shape (a snapshot that does not parse leaves a bare command).
+#[must_use]
+pub fn snapshot_command(name: &str) -> Command {
+    match Snapshot::parse(SNAPSHOT_JSON) {
+        Ok(snapshot) => placeholder(&snapshot, name),
+        Err(_) => command(name),
+    }
+}
+
 /// The root command: the global options of the snapshot, `--version`, and every top-level
 /// command: `implemented` gives the hand-written command of an implemented group, and every
 /// other name is built from the snapshot.

@@ -148,8 +148,7 @@ fn condition_case(case: &Value) -> Value {
             "trace": null,
         });
     }
-    let mut trace = Vec::new();
-    let result = evaluate(condition.as_ref(), context, &mut trace);
+    let (result, trace) = evaluate(condition.as_ref(), context);
     json!({
         "id": id,
         "condition": condition_json,

@@ -53,6 +53,8 @@ fn check_for(model: &str, field: &str) -> Option<Check> {
         }
         ("TaskCreate", "files") | ("TaskUpdate", "files" | "add_files") => Some(Check::Files),
         ("TaskFileIn", "anchor") => Some(Check::EmptyToNone),
+        ("WorkspaceCreate", "slug") => Some(Check::Slug),
+        ("WorkspaceCreate", "key_prefix") => Some(Check::KeyPrefix),
         _ => None,
     }
 }
@@ -316,6 +318,13 @@ fn object_of(dump: &Map<String, Value>, key: &str) -> Option<Map<String, Value>>
     dump.get(key).and_then(Value::as_object).cloned()
 }
 
+/// Whether a datetime field holds a naive value: text that only parses once `Z` is appended.
+fn is_naive(dump: &Map<String, Value>, key: &str) -> bool {
+    dump.get(key)
+        .and_then(Value::as_str)
+        .is_some_and(|text| Timestamp::parse_iso(text).is_err())
+}
+
 fn time_of(dump: &Map<String, Value>, key: &str) -> Result<Option<Timestamp>, WgError> {
     match dump.get(key).and_then(Value::as_str) {
         // A naive datetime counts as UTC (Python keeps it naive; the stored instant is the same).
@@ -359,6 +368,10 @@ pub struct CreateRead {
     pub auto_execute: bool,
     pub due_at: Option<Timestamp>,
     pub scheduled_at: Option<Timestamp>,
+    /// `due_at` was given without an offset (a naive datetime).
+    pub due_naive: bool,
+    /// `scheduled_at` was given without an offset (a naive datetime).
+    pub scheduled_naive: bool,
     pub estimated_effort: Option<Map<String, Value>>,
     pub metadata: Map<String, Value>,
 }
@@ -392,6 +405,8 @@ pub fn read_create(dump: &Map<String, Value>) -> Result<CreateRead, WgError> {
             .unwrap_or(false),
         due_at: time_of(dump, "due_at")?,
         scheduled_at: time_of(dump, "scheduled_at")?,
+        due_naive: is_naive(dump, "due_at"),
+        scheduled_naive: is_naive(dump, "scheduled_at"),
         estimated_effort: object_of(dump, "estimated_effort"),
         metadata: object_of(dump, "metadata").unwrap_or_default(),
     })

@@ -6,6 +6,8 @@
 //! Paths arrive already resolved (the shell calls `resolve()`); comparisons are component-wise on
 //! the text, with `/` and `\` both separators and no case folding.
 
+use std::iter::once;
+
 use serde_json::Value;
 use wg_model::RepositoryCheckout;
 use wg_types::{ErrorCode, WgError};
@@ -21,12 +23,11 @@ pub const KIND_MANAGED_WORKTREE: &str = "managed_worktree";
 
 /// The components of a resolved path. A leading separator is kept as a `/` component.
 fn components(path: &str) -> Vec<&str> {
-    let mut parts = Vec::new();
-    if path.starts_with(['/', '\\']) {
-        parts.push("/");
-    }
-    parts.extend(path.split(['/', '\\']).filter(|part| !part.is_empty()));
-    parts
+    path.starts_with(['/', '\\'])
+        .then_some("/")
+        .into_iter()
+        .chain(path.split(['/', '\\']).filter(|part| !part.is_empty()))
+        .collect()
 }
 
 /// Whether `child` is `parent` or lies below it (`Path.relative_to` succeeds).
@@ -87,42 +88,69 @@ pub fn discover_worktrees(
     allowed_roots: &[String],
     managed_roots: &[String],
 ) -> Vec<Discovery> {
-    let mut known: Vec<&str> = known.iter().map(String::as_str).collect();
-    let mut decisions = Vec::new();
-    for (index, record) in records.iter().enumerate() {
-        if record.bare {
-            continue;
-        }
-        let path = record.path.as_str();
-        if known.contains(&path) || managed_roots.iter().any(|root| is_within(path, root)) {
-            continue;
-        }
-        if record.prunable {
-            decisions.push(Discovery::Skip {
-                path: path.to_owned(),
-                reason: "worktree is prunable".to_owned(),
-            });
-            continue;
-        }
-        if let Err(err) = check_boundary(path, allowed_roots, managed_roots) {
-            decisions.push(Discovery::Skip {
-                path: path.to_owned(),
-                reason: err.message,
-            });
-            continue;
-        }
-        let kind = if index == 0 {
-            KIND_CLONE
-        } else {
-            KIND_WORKTREE
-        };
-        known.push(path);
-        decisions.push(Discovery::Add {
+    let initial: Vec<&str> = known.iter().map(String::as_str).collect();
+    records
+        .iter()
+        .enumerate()
+        .fold(
+            (initial, Vec::new()),
+            |(known, decisions), (index, record)| {
+                let Some(decision) =
+                    decide_worktree(index, record, &known, allowed_roots, managed_roots)
+                else {
+                    return (known, decisions);
+                };
+                let known: Vec<&str> = if matches!(decision, Discovery::Add { .. }) {
+                    known
+                        .into_iter()
+                        .chain(once(record.path.as_str()))
+                        .collect()
+                } else {
+                    known
+                };
+                (known, decisions.into_iter().chain(once(decision)).collect())
+            },
+        )
+        .1
+}
+
+/// The decision for one worktree record, or `None` when it is dropped silently. `known` holds the
+/// paths already recorded, including those added earlier in the same call.
+fn decide_worktree(
+    index: usize,
+    record: &WorktreeRecord,
+    known: &[&str],
+    allowed_roots: &[String],
+    managed_roots: &[String],
+) -> Option<Discovery> {
+    if record.bare {
+        return None;
+    }
+    let path = record.path.as_str();
+    if known.contains(&path) || managed_roots.iter().any(|root| is_within(path, root)) {
+        return None;
+    }
+    if record.prunable {
+        return Some(Discovery::Skip {
             path: path.to_owned(),
-            kind,
+            reason: "worktree is prunable".to_owned(),
         });
     }
-    decisions
+    if let Err(err) = check_boundary(path, allowed_roots, managed_roots) {
+        return Some(Discovery::Skip {
+            path: path.to_owned(),
+            reason: err.message,
+        });
+    }
+    let kind = if index == 0 {
+        KIND_CLONE
+    } else {
+        KIND_WORKTREE
+    };
+    Some(Discovery::Add {
+        path: path.to_owned(),
+        kind,
+    })
 }
 
 /// The checkout a repository is reported at: the first user checkout (not managed) that is
@@ -132,14 +160,12 @@ pub fn primary_checkout(
     checkouts: &[RepositoryCheckout],
     require_available: bool,
 ) -> Option<&RepositoryCheckout> {
-    let mut candidates: Vec<&RepositoryCheckout> = checkouts
+    // The first minimum of the sort key is the first element a stable sort would put first.
+    checkouts
         .iter()
         .filter(|checkout| checkout.kind != KIND_MANAGED_WORKTREE)
-        .collect();
-    candidates.sort_by_key(|checkout| (!checkout.is_primary, checkout.created_at));
-    candidates
-        .into_iter()
-        .find(|checkout| checkout.available || !require_available)
+        .filter(|checkout| checkout.available || !require_available)
+        .min_by_key(|checkout| (!checkout.is_primary, checkout.created_at))
 }
 
 /// The remote rows a registration writes: one per remote, with its normalised URL. `update` is

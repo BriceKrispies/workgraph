@@ -185,6 +185,18 @@ fn build(doc: &Value, snap: &Value, status_override: &BTreeMap<String, TaskStatu
 
 fn graph_json(world: &World, graph: &wg_tasks::graph::TaskGraph) -> Value {
     let name = |id: Id| format!("<task:{}>", world.key(id));
+    // The golden vectors fix the edges by (kind, source key, target key, relation): the generator
+    // sorts Python's edges because storage order is not part of its contract. `task_graph` returns
+    // database order instead, which `graph_edges_follow_database_order` pins on its own.
+    let mut edges: Vec<&wg_tasks::graph::GraphEdge> = graph.edges.iter().collect();
+    edges.sort_by_key(|e| {
+        (
+            e.kind,
+            world.key(e.source).to_string(),
+            world.key(e.target).to_string(),
+            e.relation_type.map(|r| r.as_str()),
+        )
+    });
     json!({
         "nodes": graph.nodes.iter().map(|n| json!({
             "blocked": n.blocked,
@@ -199,7 +211,7 @@ fn graph_json(world: &World, graph: &wg_tasks::graph::TaskGraph) -> Value {
             "tags": n.tags,
             "title": n.title,
         })).collect::<Vec<_>>(),
-        "edges": graph.edges.iter().map(|e| json!({
+        "edges": edges.into_iter().map(|e| json!({
             "kind": e.kind.as_str(),
             "relation_type": e.relation_type.map(|r| r.as_str()),
             "source": name(e.source),

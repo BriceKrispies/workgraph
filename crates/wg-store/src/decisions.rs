@@ -27,7 +27,7 @@ impl Session<'_> {
         &mut self,
         statement: &Statement,
     ) -> Result<Vec<DecisionWithTask>, WgError> {
-        let mut rows = self
+        let rows = self
             .rows(statement)?
             .iter()
             .map(|values| decode_decision_with_task(values))
@@ -43,8 +43,7 @@ impl Session<'_> {
             .iter()
             .map(|values| decode_task_tag(values))
             .collect::<Result<Vec<_>, _>>()?;
-        attach_tags(&mut rows, &tags);
-        Ok(rows)
+        Ok(attach_tags(&rows, &tags))
     }
 
     /// The decisions of a task, oldest first.

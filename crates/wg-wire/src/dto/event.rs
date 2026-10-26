@@ -63,7 +63,7 @@ fn fields(event: &StoredEvent, format: TimeFormat) -> Vec<(&'static str, Value)>
         ("actor", text(&event.actor)),
         ("actor_kind", text(&event.actor_kind)),
         ("occurred_at", timestamp(event.occurred_at, format)),
-        ("correlation_id", id(event.correlation_id)),
+        ("correlation_id", text(event.correlation_id.as_str())),
         ("causation_id", optional_id(event.causation_id)),
         ("attempt_id", optional_id(event.attempt_id)),
         ("schema_version", int(event.schema_version)),

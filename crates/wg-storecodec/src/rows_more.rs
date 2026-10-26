@@ -10,8 +10,8 @@ use wg_types::WgError;
 
 use crate::codec::{
     Cols, Raw, blob_sql, bool_sql, decision_options_sql, id_sql, object_sql, objects_sql,
-    opt_id_sql, opt_int_sql, opt_object_sql, opt_real_sql, opt_text_sql, opt_ts_sql, real_sql,
-    strings_sql, text_sql, ts_sql, values_sql,
+    opt_correlation_sql, opt_id_sql, opt_int_sql, opt_object_sql, opt_real_sql, opt_text_sql,
+    opt_ts_sql, real_sql, strings_sql, text_sql, ts_sql, values_sql,
 };
 use crate::rows::TableRow;
 
@@ -1572,7 +1572,7 @@ impl TableRow for AutomationRun {
             objects_sql(&self.action_results)?,
             opt_text_sql(&self.error),
             Raw::Int(self.attempts),
-            opt_id_sql(self.correlation_id),
+            opt_correlation_sql(self.correlation_id.as_ref()),
             ts_sql(self.created_at),
             opt_ts_sql(self.finished_at),
             object_sql(&self.inputs)?,
@@ -1596,7 +1596,7 @@ impl TableRow for AutomationRun {
             action_results: c.objects("action_results")?,
             error: c.opt_text("error")?,
             attempts: c.int("attempts")?,
-            correlation_id: c.opt_id("correlation_id")?,
+            correlation_id: c.opt_correlation("correlation_id")?,
             created_at: c.ts("created_at")?,
             finished_at: c.opt_ts("finished_at")?,
             inputs: c.object("inputs")?,
@@ -2503,7 +2503,7 @@ impl TableRow for Job {
             strings_sql(&self.resource_keys)?,
             opt_text_sql(&self.last_error),
             opt_text_sql(&self.error_kind),
-            opt_id_sql(self.correlation_id),
+            opt_correlation_sql(self.correlation_id.as_ref()),
             opt_id_sql(self.causation_id),
             opt_id_sql(self.task_id),
             opt_id_sql(self.attempt_id),
@@ -2537,7 +2537,7 @@ impl TableRow for Job {
             resource_keys: c.strings("resource_keys")?,
             last_error: c.opt_text("last_error")?,
             error_kind: c.opt_text("error_kind")?,
-            correlation_id: c.opt_id("correlation_id")?,
+            correlation_id: c.opt_correlation("correlation_id")?,
             causation_id: c.opt_id("causation_id")?,
             task_id: c.opt_id("task_id")?,
             attempt_id: c.opt_id("attempt_id")?,

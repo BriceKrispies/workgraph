@@ -2,7 +2,7 @@
 //! `merge_head`, `record_conflict`, `fully_merged`, `start_integrating` and `directory_name` in
 //! `integrations/git/stack_integration.py`. Running git and writing rows stay in the shell.
 
-use serde_json::{Value, json};
+use serde_json::{Map, Value, json};
 use wg_types::{StackStatus, TaskStatus};
 
 use crate::ejection::returns_to_ready;
@@ -121,12 +121,41 @@ impl MergeOutcome {
 }
 
 /// Records a successful merge in the item's detail and clears that repository's conflict.
-pub fn record_merge(detail: &mut ItemDetail, repository: &str, head: &str, merge_commit: &str) {
-    detail.merges.insert(
-        repository.into(),
-        json!({ "head": head, "merge_commit": merge_commit }),
-    );
-    detail.conflicts.remove(repository);
+pub fn record_merge(
+    detail: &ItemDetail,
+    repository: &str,
+    head: &str,
+    merge_commit: &str,
+) -> ItemDetail {
+    let entry = json!({ "head": head, "merge_commit": merge_commit });
+    // An insert: the repository keeps its place when it is already present, else is appended.
+    let merges: Map<String, Value> = detail
+        .merges
+        .iter()
+        .map(|(name, value)| {
+            let value = if name.as_str() == repository {
+                entry.clone()
+            } else {
+                value.clone()
+            };
+            (name.clone(), value)
+        })
+        .chain(
+            (!detail.merges.contains_key(repository))
+                .then(|| (repository.to_owned(), entry.clone())),
+        )
+        .collect();
+    let conflicts = detail
+        .conflicts
+        .iter()
+        .filter(|(name, _)| name.as_str() != repository)
+        .map(|(name, value)| (name.clone(), value.clone()))
+        .collect();
+    ItemDetail {
+        other: detail.other.clone(),
+        merges,
+        conflicts,
+    }
 }
 
 /// `fully_merged`: every repository the item changed has merged its current head. `heads` pairs

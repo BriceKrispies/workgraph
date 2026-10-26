@@ -11,6 +11,7 @@
 //! [`crate::Server::blocking`] and returns an [`crate::Answer`].
 
 pub mod decisions;
+pub mod events;
 pub mod meta_settings;
 
 use wg_json::Value;
@@ -21,7 +22,7 @@ use wg_types::WgError;
 use crate::route::{Answer, ApiRequest, ApiRoute, handler};
 
 /// The groups whose routes are registered.
-pub const IMPLEMENTED: &[&str] = &["meta-settings", "decisions"];
+pub const IMPLEMENTED: &[&str] = &["meta-settings", "IF-49", "decisions"];
 
 /// What a group runs for one operation: the application context, the operation's inventory id
 /// and the validated request, in; the document, out.
@@ -57,6 +58,7 @@ pub fn bind(table: &mut Vec<ApiRoute>, specs: &[RouteSpec], run: Run) {
 pub fn routes() -> Vec<ApiRoute> {
     let mut table = Vec::new();
     meta_settings::register(&mut table);
+    events::register(&mut table);
     decisions::register(&mut table);
     table
 }

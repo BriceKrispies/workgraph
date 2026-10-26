@@ -4,7 +4,7 @@
 //! attempt of it on one worker. A system cursor is a named counter the queue advances.
 
 use rpds::VectorSync;
-use wg_types::{Id, JobStatus, Timestamp};
+use wg_types::{Correlation, Id, JobStatus, Timestamp};
 
 use crate::entity::{JsonObject, Real};
 use crate::write::{Row, RowKey};
@@ -35,7 +35,7 @@ pub struct Job {
     pub resource_keys: VectorSync<String>,
     pub last_error: Option<String>,
     pub error_kind: Option<String>,
-    pub correlation_id: Option<Id>,
+    pub correlation_id: Option<Correlation>,
     pub causation_id: Option<Id>,
     pub task_id: Option<Id>,
     pub attempt_id: Option<Id>,

@@ -23,7 +23,7 @@ use wg_tasks::update::{TaskPatch, update_plan};
 use wg_types::{ErrorCode, Id, Permission, TaskKey, TaskStatus, WgError};
 use wg_wire::convention::{dict, text};
 
-use super::out::task_out;
+use super::out::{echo_naive, task_out};
 use super::requests::{CreateRead, UpdateRead};
 
 /// Whether a text change queues reclassification and re-embedding (`llm.auto_classify` and
@@ -62,9 +62,16 @@ fn substamp(stamp: &Stamp, salt: u32) -> Stamp {
     }
 }
 
-/// `TaskService._enqueue_enrichment`: the classify and embed jobs of a material change.
-fn enrichment_jobs(stamp: &Stamp, task: &Task, caused_by: Id, enrich: Enrichment) -> Decision<()> {
-    let queue = QueueSlice::default();
+/// `TaskService._enqueue_enrichment`: the classify and embed jobs of a material change. `queue`
+/// holds the jobs already stored for the task: an enqueue under an idempotency key that a stored
+/// job holds gives that job back and queues nothing (`JobQueue.enqueue`).
+fn enrichment_jobs(
+    stamp: &Stamp,
+    task: &Task,
+    caused_by: Id,
+    enrich: Enrichment,
+    queue: &QueueSlice,
+) -> Decision<()> {
     let mut decision = Decision::new(());
     let mut salt = 0;
     let mut add = |decision: Decision<()>, kind: &str, payload: Json, key: String| {
@@ -76,11 +83,11 @@ fn enrichment_jobs(stamp: &Stamp, task: &Task, caused_by: Id, enrich: Enrichment
         job.resource_keys = vec!["gpu".to_owned()];
         job.max_attempts = 4;
         job.backoff_base_seconds = 15.0;
-        job.correlation_id = Some(stamp.correlation);
+        job.correlation_id = Some(stamp.correlation.clone());
         job.causation_id = Some(caused_by);
         job.created_by = stamp.actor.to_string();
         salt += 1;
-        let queued = enqueue(&queue, &job, &substamp(stamp, salt));
+        let queued = enqueue(queue, &job, &substamp(stamp, salt));
         queued
             .writes
             .iter()
@@ -160,6 +167,7 @@ pub fn create_task(
         .map(|reference| resolve::task(tasks, Some(space.id), reference).map(|task| task.id))
         .collect::<Result<Vec<_>, _>>()?;
 
+    let (naive_due, naive_scheduled) = (read.due_naive, read.scheduled_naive);
     let plan = create_plan(
         stamp,
         Allocation {
@@ -247,11 +255,19 @@ pub fn create_task(
     let created = state
         .task(task_id)
         .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, "the created task vanished"))?;
+    // The task id was drawn just now, so no job can carry its idempotency keys yet.
     decision = absorb(
         decision,
-        enrichment_jobs(stamp, created, created_id, enrich),
+        enrichment_jobs(stamp, created, created_id, enrich, &QueueSlice::default()),
     );
     let out = task_out(&state, created, Some(&tag_order));
+    // A datetime the request gave without an offset is echoed naive, as Python does.
+    let out = echo_naive(out, "due_at", created.due_at.filter(|_| naive_due));
+    let out = echo_naive(
+        out,
+        "scheduled_at",
+        created.scheduled_at.filter(|_| naive_scheduled),
+    );
     Ok(decision.with_reply(out))
 }
 
@@ -301,9 +317,11 @@ fn project_writes(task: &Task, before: &[Id], after: &[Id]) -> Vec<Write> {
     removed.chain(added).collect()
 }
 
-/// `TaskService.update`: the update of one task, resolved from `reference`.
+/// `TaskService.update`: the update of one task, resolved from `reference`. `queue` holds the jobs
+/// stored for that task (see [`enrichment_jobs`]).
 pub fn update_task(
     world: &TaskWorld,
+    queue: &QueueSlice,
     stamp: &Stamp,
     workspace: Option<Id>,
     reference: &str,
@@ -421,7 +439,10 @@ pub fn update_task(
         enrich != Enrichment::default(),
         event_id,
     ) {
-        decision = absorb(decision, enrichment_jobs(stamp, after, cause, enrich));
+        decision = absorb(
+            decision,
+            enrichment_jobs(stamp, after, cause, enrich, queue),
+        );
     }
     let out = task_out(&state, after, tag_order.as_deref());
     Ok(decision.with_reply(out))

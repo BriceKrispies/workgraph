@@ -75,20 +75,26 @@ pub fn is_ancestor(
     ancestor: &str,
     descendant: &str,
 ) -> bool {
-    let mut seen: BTreeSet<&str> = BTreeSet::new();
-    let mut stack = vec![descendant];
-    while let Some(current) = stack.pop() {
-        if current == ancestor {
-            return true;
-        }
-        if !seen.insert(current) {
-            continue;
-        }
-        if let Some(next) = parents.get(current) {
-            stack.extend(next.iter().map(String::as_str));
-        }
-    }
-    false
+    // Breadth-first layers: each layer holds the commits reached for the first time at that depth.
+    std::iter::successors(
+        Some((vec![descendant], BTreeSet::<&str>::new())),
+        |(frontier, seen)| {
+            let fresh: BTreeSet<&str> = frontier
+                .iter()
+                .copied()
+                .filter(|commit| !seen.contains(commit))
+                .collect();
+            (!fresh.is_empty()).then(|| {
+                let next: Vec<&str> = fresh
+                    .iter()
+                    .filter_map(|commit| parents.get(*commit))
+                    .flat_map(|ids| ids.iter().map(String::as_str))
+                    .collect();
+                (next, seen.union(&fresh).copied().collect())
+            })
+        },
+    )
+    .any(|(frontier, _)| frontier.contains(&ancestor))
 }
 
 /// Chooses the sibling whose head the child starts from (`builds_on_others` ordering).
@@ -124,12 +130,17 @@ pub fn choose_sibling(
             .filter(|(other, other_head)| *other != key && is_ancestor(parents, other_head, head))
             .count()
     };
-    let mut scored: Vec<((&str, &str), usize)> = heads
+    // Descending by score; equal scores keep sibling order, as Python's sorted does.
+    let scored: Vec<((&str, &str), usize)> = heads
         .iter()
-        .map(|entry| (*entry, builds_on_others(entry)))
+        .enumerate()
+        .map(|(index, entry)| {
+            let score = builds_on_others(entry);
+            ((Reverse(score), index), (*entry, score))
+        })
+        .collect::<BTreeMap<_, _>>()
+        .into_values()
         .collect();
-    // Stable sort, descending by score: equal scores keep sibling order, as Python's sorted does.
-    scored.sort_by_key(|(_, score)| Reverse(*score));
     let ((latest, head), _) = scored[0];
     let superseded = scored[1..]
         .iter()

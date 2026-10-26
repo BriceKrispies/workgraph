@@ -193,6 +193,29 @@ fn decision_cycle_applies_then_performs_effects() -> TestResult {
 }
 
 #[test]
+fn request_correlation_text_is_stored_as_written() -> TestResult {
+    // A client's `X-Correlation-Id` need not be a UUID: Python stores the text, so the events do.
+    let dir = scratch("text-correlation")?;
+    let mut runtime = runtime(&dir)?;
+    let ctx = RequestContext::human(
+        Some("tester"),
+        None,
+        wg_types::Correlation::new("not a uuid"),
+    )?;
+    runtime.decide(
+        &ctx,
+        |session| count(session, "workspaces"),
+        |_existing, stamp| create_workspace("ops", stamp, &[]),
+    )?;
+    let events = runtime
+        .store
+        .read(|s| s.query_events(&EventQuery::default()))?;
+    assert_eq!(events.len(), 1);
+    assert_eq!(events[0].correlation_id.as_str(), "not a uuid");
+    Ok(())
+}
+
+#[test]
 fn failed_decision_rolls_back_and_performs_no_effect() -> TestResult {
     let dir = scratch("rollback")?;
     let mut runtime = runtime(&dir)?;

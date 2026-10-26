@@ -14,6 +14,7 @@
 
 mod decisions;
 mod jobs;
+mod git;
 mod migrate;
 mod repos;
 mod run;

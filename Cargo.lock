@@ -756,6 +756,13 @@ version = "0.1.0"
 [[package]]
 name = "wg-jobs"
 version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "time",
+ "wg-model",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-json"

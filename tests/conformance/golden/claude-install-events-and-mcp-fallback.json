@@ -1,0 +1,75 @@
+{
+  "scenario": "claude-install-events-and-mcp-fallback",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\local\\\\.claude\\\\settings.local.json\",\n  \"added\": [\n    \"PreToolUse\",\n    \"Stop\"\n  ],\n  \"backup\": null,\n  \"command\": \"workgraph\",\n  \"mcp\": \"claude CLI not found; add manually: {\\\"mcpServers\\\": {\\\"workgraph\\\": {\\\"type\\\": \\\"stdio\\\", \\\"command\\\": \\\"workgraph\\\", \\\"args\\\": [\\\"mcp\\\"]}}}\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\local\\\\.claude\\\\settings.local.json\",\n  \"removed\": [\n    \"PreToolUse\",\n    \"Stop\"\n  ],\n  \"backup\": \"<tmp>/repos\\\\local\\\\.claude\\\\settings.local.json.workgraph-backup-20261026T152405Z\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

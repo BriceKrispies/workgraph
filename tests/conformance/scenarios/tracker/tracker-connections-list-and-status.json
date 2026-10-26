@@ -1,0 +1,33 @@
+{
+  "id": "tracker-connections-list-and-status",
+  "covers": ["C168", "C169"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["tracker", "list"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}},
+    {"cli": ["config", "set", "trackers.work-jira", "{\"type\": \"jira\", \"flavour\": \"cloud\", \"base_url\": \"https://acme.atlassian.net\", \"workspace\": \"work\", \"projects\": [\"ABC\"], \"email_env\": \"WG_TEST_JIRA_EMAIL\", \"token_env\": \"WG_TEST_JIRA_TOKEN\"}"], "json": true},
+    {"assert": {"exit": 0}},
+    {"cli": ["tracker", "list"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "work-jira"}}},
+    {"assert": {"json": {"path": "/0/flavour", "equals": "cloud"}}},
+    {"assert": {"json": {"path": "/0/base_url", "equals": "https://acme.atlassian.net"}}},
+    {"assert": {"json": {"path": "/0/workspace", "equals": "work"}}},
+    {"assert": {"json": {"path": "/0/projects/0", "equals": "ABC"}}},
+    {"cli": ["tracker", "list"]},
+    {"assert": {"stdout_contains": "work-jira"}},
+    {"cli": ["tracker", "status", "work-jira"], "json": true},
+    {"assert": {"json": {"path": "/connection", "equals": "work-jira"}}},
+    {"assert": {"json": {"path": "/tracked_tasks", "equals": 0}}},
+    {"cli": ["tracker", "status"], "json": true},
+    {"assert": {"json": {"path": "/0/connection", "equals": "work-jira"}}},
+    {"cli": ["tracker", "status", "nope"], "json": true, "expect_exit": 4},
+    {"assert": {"exit": 4}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_tracker_cli.py::test_tracker_status and tests/integration/test_tracker_sync.py::test_status_reports_cursor_counts_and_unresolved_repositories: a status after a real sync shows a non-null cursor, synced task counts and unresolved pull request repositories, which needs the sync to reach a fake Jira that the runner cannot start",
+      "covered_by": "SC-14"
+    }
+  ]
+}

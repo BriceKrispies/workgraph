@@ -1,0 +1,20 @@
+{
+  "id": "claude-backfill-and-status",
+  "covers": ["C047", "C048", "C055"],
+  "setup": [
+    {"git": "init", "repo": "backfill"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["claude", "backfill-time", "--limit", "5"], "json": true},
+    {"assert": {"exit": 0}},
+    {"cli": ["claude", "backfill-transcripts", "--limit", "5"], "json": true},
+    {"assert": {"exit": 0}},
+    {"cli": ["claude", "backfill-transcripts"], "json": true},
+    {"assert": {"exit": 0}},
+    {"cli": ["claude", "status", "--scope", "project", "--project-dir", "{repo:backfill}"], "json": true},
+    {"assert": {"json": {"path": "/installation/installed_events", "equals": []}}},
+    {"assert": {"json": {"path": "/sessions", "equals": []}}}
+  ],
+  "not_observable": []
+}

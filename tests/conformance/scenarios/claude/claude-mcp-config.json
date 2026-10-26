@@ -1,0 +1,14 @@
+{
+  "id": "claude-mcp-config",
+  "covers": ["C052"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["claude", "mcp-config", "--command", "workgraph-test"], "json": true},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/mcpServers/workgraph/command", "equals": "workgraph-test"}}},
+    {"assert": {"json": {"path": "/mcpServers/workgraph/type", "equals": "stdio"}}},
+    {"assert": {"json": {"path": "/mcpServers/workgraph/args/0", "equals": "mcp"}}}
+  ],
+  "not_observable": []
+}

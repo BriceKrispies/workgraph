@@ -1,0 +1,117 @@
+{
+  "scenario": "tracker-sync-queue-and-unknown-connection",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"trackers.work-jira\",\n  \"value\": {\n    \"type\": \"jira\",\n    \"flavour\": \"cloud\",\n    \"base_url\": \"https://acme.atlassian.net\",\n    \"workspace\": \"work\",\n    \"projects\": [\n      \"ABC\"\n    ],\n    \"email_env\": \"WG_TEST_JIRA_EMAIL\",\n    \"token_env\": \"WG_TEST_JIRA_TOKEN\"\n  },\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:1>\",\n  \"connection\": \"work-jira\",\n  \"full\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:1>\",\n  \"connection\": \"work-jira\",\n  \"full\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:2>\",\n  \"connection\": \"work-jira\",\n  \"full\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 4,
+      "stdout": "{\"error\": {\"code\": \"not_found\", \"message\": \"tracker connection 'nope' is not configured\", \"details\": {\"connection\": \"nope\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 4,
+      "stdout": "{\"error\": {\"code\": \"not_found\", \"message\": \"tracker connection 'nope' is not configured\", \"details\": {\"connection\": \"nope\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -160,27 +160,5 @@ const fn mix64(value: u64) -> u64 {
     value ^ (value >> 31)
 }
 
-/// Python's `repr()` of a `str`: single quotes unless the text holds a single quote and no
-/// double quote; backslashes, the chosen quote and control characters escaped.
-pub fn py_repr_str(text: &str) -> String {
-    let quote = if text.contains('\'') && !text.contains('"') {
-        '"'
-    } else {
-        '\''
-    };
-    let body: String = text
-        .chars()
-        .map(|c| match c {
-            '\\' => "\\\\".to_owned(),
-            '\n' => "\\n".to_owned(),
-            '\r' => "\\r".to_owned(),
-            '\t' => "\\t".to_owned(),
-            c if c == quote => format!("\\{c}"),
-            c if u32::from(c) < 0x20 || (0x7f..=0xa0).contains(&u32::from(c)) => {
-                format!("\\x{:02x}", u32::from(c))
-            }
-            c => c.to_string(),
-        })
-        .collect();
-    format!("{quote}{body}{quote}")
-}
+/// Python's `repr()` of a `str`, now owned by `wg-types` so the permission errors can use it.
+pub use wg_types::py_repr_str;

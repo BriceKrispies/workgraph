@@ -2,6 +2,7 @@
 
 use std::collections::BTreeSet;
 
+use crate::repr::py_repr_str;
 use crate::{ErrorCode, WgError};
 
 string_enum! {
@@ -86,7 +87,8 @@ pub fn all_permissions() -> BTreeSet<Permission> {
     Permission::ALL.iter().copied().collect()
 }
 
-/// Parses permission strings; an unknown one is `permission_denied`, as in Python.
+/// Parses permission strings; an unknown one is `permission_denied` with Python's text,
+/// `unknown permission 'root:everything'` (`PermissionDenied(f"unknown permission {value!r}")`).
 pub fn parse_permissions<S: AsRef<str>>(values: &[S]) -> Result<BTreeSet<Permission>, WgError> {
     values
         .iter()
@@ -94,9 +96,27 @@ pub fn parse_permissions<S: AsRef<str>>(values: &[S]) -> Result<BTreeSet<Permiss
             Permission::parse(value.as_ref()).ok_or_else(|| {
                 WgError::new(
                     ErrorCode::PermissionDenied,
-                    format!("unknown permission {:?}", value.as_ref()),
+                    format!("unknown permission {}", py_repr_str(value.as_ref())),
                 )
             })
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn unknown_grant_error_text_matches_python() {
+        let error = parse_permissions(&["run:start", "root:everything"]).err();
+        assert_eq!(
+            error.as_ref().map(|e| e.code),
+            Some(ErrorCode::PermissionDenied)
+        );
+        assert_eq!(
+            error.map(|e| e.message),
+            Some("unknown permission 'root:everything'".to_owned())
+        );
+    }
 }

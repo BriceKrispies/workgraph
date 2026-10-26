@@ -11,17 +11,19 @@ use std::iter::once;
 use rpds::{RedBlackTreeMapSync, VectorSync};
 use serde_json::{Map, Value, json};
 use wg_jobs::queue::{NewJob, enqueue};
-use wg_model::entity::{Job, Repository, RepositoryCheckout, RepositoryRemote};
-use wg_model::event::{RepositoryAttached, RepositoryCheckoutDiscovered};
+use wg_model::entity::{Job, ProjectRepository, Repository, RepositoryCheckout, RepositoryRemote};
+use wg_model::event::RepositoryAttached;
 use wg_model::slice::QueueSlice;
-use wg_model::{Decision, EventDraft, EventPayload, Row, Stamp, StrMap, Write};
+use wg_model::{Decision, EventDraft, EventPayload, RegistrySlice, Row, Stamp, StrMap, Write};
 use wg_types::{AccessMode, Id, Permission, WgError};
 
+pub use crate::checkout::WorktreeDetail;
 use crate::checkout::{
-    Discovery, KIND_MANAGED_WORKTREE, WorktreeRecord, check_boundary, discover_worktrees,
-    plan_remote_writes,
+    DiscoverySlots, KIND_MANAGED_WORKTREE, WorktreeRecord, check_boundary, discover_worktrees,
+    discovered_rows, new_checkout, remote_writes, skipped_entries,
 };
 use crate::identity::{MatchedBy, matched_by, new_repository_name};
+use crate::resolve;
 
 /// Id slots: the repository, then one range per kind of row, offset by the row's position.
 const REPOSITORY_SLOT: u32 = 1;
@@ -29,14 +31,6 @@ const CHECKOUT_SLOT: u32 = 0x100;
 const REMOTE_SLOT: u32 = 0x1_0000;
 const DISCOVERED_EVENT_SLOT: u32 = 0x2_0000;
 const REGISTERED_EVENT_SLOT: u32 = 0x3_0000;
-
-/// What `git worktree list` says about one record, beyond its path (for the discovery event).
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct WorktreeDetail {
-    pub branch: Option<String>,
-    pub detached: bool,
-    pub locked: bool,
-}
 
 /// The registration request, as the shell read it from the path (Git facts already gathered).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -47,7 +41,13 @@ pub struct Request {
     /// The last component of `path`, the name a repository gets when none is requested.
     pub dir_name: String,
     pub requested_name: Option<String>,
+    /// The description of a new repository (an existing one keeps its own).
+    pub description: String,
     pub read_only: bool,
+    /// The branches to track; empty keeps the repository's (a new one tracks its default).
+    pub tracked_branches: Vec<String>,
+    /// Project references to add the repository to.
+    pub projects: Vec<String>,
     /// `identity::fingerprint` of the root commits, `None` for an empty history.
     pub fingerprint: Option<String>,
     /// Remote name and URL pairs, in `git remote -v` order.
@@ -83,6 +83,8 @@ pub struct Facts {
     pub taken_names: Vec<String>,
     /// The queued `git_sync` job of the matched repository, when one exists (see [`sync_key`]).
     pub sync_job: Option<Job>,
+    /// The workspace, its projects and their memberships, for the `projects` references.
+    pub registry: RegistrySlice,
 }
 
 /// The idempotency key of the `git_sync` job a registration queues for `repository_id`.
@@ -122,29 +124,6 @@ fn health_detail(old: &Map<String, Value>, skipped: Vec<Value>) -> Map<String, V
     replaced.chain(added).collect()
 }
 
-/// A new checkout row at `path`.
-fn new_checkout(
-    id: Id,
-    repository_id: Id,
-    path: &str,
-    kind: &str,
-    is_primary: bool,
-    at: wg_types::Timestamp,
-) -> RepositoryCheckout {
-    RepositoryCheckout {
-        id,
-        repository_id,
-        path: path.to_owned(),
-        kind: kind.to_owned(),
-        is_primary,
-        access_mode: None,
-        available: true,
-        last_seen_at: Some(at),
-        created_at: at,
-        updated_at: at,
-    }
-}
-
 /// The decision of a registration: writes, events and the `git_sync` job it queues.
 ///
 /// Errors: `permission_denied` without `repo:register`; a `validation_failed` for a path the
@@ -175,10 +154,14 @@ pub fn register(request: &Request, facts: &Facts, stamp: &Stamp) -> Result<Decis
                 id: stamp.id(REPOSITORY_SLOT),
                 workspace_id: ws,
                 name,
-                description: String::new(),
+                description: request.description.clone(),
                 identity_fingerprint: request.fingerprint.clone(),
                 default_branch: request.default_branch.clone(),
-                tracked_branches: request.default_branch.iter().cloned().collect(),
+                tracked_branches: if request.tracked_branches.is_empty() {
+                    request.default_branch.iter().cloned().collect()
+                } else {
+                    request.tracked_branches.iter().cloned().collect()
+                },
                 access_mode: if request.read_only {
                     AccessMode::ReadOnly
                 } else {
@@ -245,80 +228,55 @@ pub fn register(request: &Request, facts: &Facts, stamp: &Stamp) -> Result<Decis
         &request.allowed_roots,
         &request.managed_roots,
     );
-    let skipped: Vec<Value> = decisions
-        .iter()
-        .filter_map(|decision| match decision {
-            Discovery::Skip { path, reason } => Some(json!({"path": path, "reason": reason})),
-            Discovery::Add { .. } => None,
-        })
-        .collect();
-    let discovered: Vec<(RepositoryCheckout, EventDraft)> = decisions
-        .iter()
-        .filter_map(|decision| match decision {
-            Discovery::Add { path, kind } => Some((path, *kind)),
-            Discovery::Skip { .. } => None,
-        })
-        .enumerate()
-        .map(|(index, (path, kind))| {
-            let detail = request
-                .worktrees
-                .iter()
-                .find(|(record, _)| &record.path == path)
-                .map(|(_, detail)| detail);
-            let checkout = new_checkout(
-                stamp.id(CHECKOUT_SLOT + 1 + index as u32),
-                repo_id,
-                path,
-                kind,
-                false,
-                at,
-            );
-            let payload = RepositoryCheckoutDiscovered {
-                path: path.clone(),
-                kind: kind.to_owned(),
-                branch: detail.map(|d| d.branch.clone()),
-                detached: detail.map(|d| d.detached),
-                locked: detail.map(|d| d.locked),
-                source: Some("register".to_owned()),
-                reason: None,
-            };
-            let event = EventDraft::new(
-                stamp,
-                stamp.id(DISCOVERED_EVENT_SLOT + index as u32),
-                Some(ws),
-                repo_id,
-                EventPayload::RepositoryCheckoutDiscovered(payload),
-            );
-            (checkout, event)
-        })
-        .collect();
+    let skipped = skipped_entries(&decisions);
+    let discovered = discovered_rows(
+        &decisions,
+        &request.worktrees,
+        stamp,
+        (ws, repo_id),
+        "register",
+        DiscoverySlots {
+            checkout: CHECKOUT_SLOT + 1,
+            event: DISCOVERED_EVENT_SLOT,
+        },
+    );
 
     // The remotes: existing ones by name are updated, the others added.
-    let names: Vec<&str> = known_remotes.iter().map(|r| r.name.as_str()).collect();
-    let remote_writes: Vec<Write> = plan_remote_writes(&request.remotes, &names)
-        .into_iter()
-        .enumerate()
-        .map(|(index, planned)| {
-            let existing_remote = known_remotes.iter().find(|r| r.name == planned.name);
-            match (planned.update, existing_remote) {
-                (true, Some(remote)) => Write::update(Row::RepositoryRemote(RepositoryRemote {
-                    url: planned.url.clone(),
-                    normalized_url: planned.normalized_url.clone(),
-                    updated_at: at,
-                    ..remote.clone()
-                })),
-                _ => Write::insert(Row::RepositoryRemote(RepositoryRemote {
-                    id: stamp.id(REMOTE_SLOT + index as u32),
-                    repository_id: repo_id,
-                    name: planned.name.clone(),
-                    url: planned.url.clone(),
-                    normalized_url: planned.normalized_url.clone(),
-                    created_at: at,
-                    updated_at: at,
-                })),
-            }
-        })
-        .collect();
+    let remote_writes = remote_writes(
+        &request.remotes,
+        &known_remotes,
+        repo_id,
+        stamp,
+        REMOTE_SLOT,
+    );
+
+    // The projects the request names: new memberships only, each project once.
+    let memberships: Vec<ProjectRepository> =
+        request
+            .projects
+            .iter()
+            .try_fold(Vec::<ProjectRepository>::new(), |found, reference| {
+                let project = resolve::project(&facts.registry, ws, reference)?;
+                let member = facts
+                    .registry
+                    .project_repositories
+                    .contains_key(&(project.id, repo_id))
+                    || found.iter().any(|m| m.project_id == project.id);
+                Ok::<_, WgError>(if member {
+                    found
+                } else {
+                    found
+                        .into_iter()
+                        .chain(once(ProjectRepository {
+                            project_id: project.id,
+                            repository_id: repo_id,
+                            role: "member".to_owned(),
+                            access_mode: None,
+                            created_at: at,
+                        }))
+                        .collect()
+                })
+            })?;
 
     // The repository row, with the health detail that discovery's skips produced.
     let repository = Repository {
@@ -327,6 +285,11 @@ pub fn register(request: &Request, facts: &Facts, stamp: &Stamp) -> Result<Decis
             .identity_fingerprint
             .clone()
             .or_else(|| request.fingerprint.clone()),
+        tracked_branches: if matched.is_some() && !request.tracked_branches.is_empty() {
+            request.tracked_branches.iter().cloned().collect()
+        } else {
+            base.tracked_branches.clone()
+        },
         health_detail: health_detail(&base.health_detail, skipped),
         updated_at: at,
         ..base
@@ -368,8 +331,8 @@ pub fn register(request: &Request, facts: &Facts, stamp: &Stamp) -> Result<Decis
         workspace_id: Some(ws),
         idempotency_key: Some(sync_key(repo_id, &request.path)),
         resource_keys: vec![format!("repo:{repo_id}")],
-        correlation_id: Some(stamp.correlation.clone()),
-        causation_id: stamp.causation,
+        correlation_id: None,
+        causation_id: None,
         created_by: stamp.actor.to_string(),
         ..NewJob::new("git_sync")
     };
@@ -390,6 +353,11 @@ pub fn register(request: &Request, facts: &Facts, stamp: &Stamp) -> Result<Decis
                 .map(|(checkout, _)| Write::insert(Row::RepositoryCheckout(checkout.clone()))),
         )
         .chain(remote_writes)
+        .chain(
+            memberships
+                .into_iter()
+                .map(|member| Write::insert(Row::ProjectRepository(member))),
+        )
         .chain(queued.writes.iter().cloned())
         .collect();
     let events: Vec<EventDraft> = discovered

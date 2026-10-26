@@ -28,11 +28,11 @@ pub fn command() -> clap::Command {
 /// Reads a file named by an `@file` option: the text, or the reason it could not be read.
 pub type ReadFile<'a> = &'a dyn Fn(&str) -> Result<String, String>;
 
-fn one(m: &ArgMatches, id: &str) -> Option<String> {
+pub(crate) fn one(m: &ArgMatches, id: &str) -> Option<String> {
     m.try_get_one::<String>(id).ok().flatten().cloned()
 }
 
-fn many(m: &ArgMatches, id: &str) -> Vec<String> {
+pub(crate) fn many(m: &ArgMatches, id: &str) -> Vec<String> {
     m.try_get_many::<String>(id)
         .ok()
         .flatten()
@@ -40,7 +40,7 @@ fn many(m: &ArgMatches, id: &str) -> Vec<String> {
         .unwrap_or_default()
 }
 
-fn flag(m: &ArgMatches, id: &str) -> bool {
+pub(crate) fn flag(m: &ArgMatches, id: &str) -> bool {
     m.try_get_one::<bool>(id)
         .ok()
         .flatten()
@@ -402,7 +402,7 @@ pub(crate) fn opt(value: Option<&Value>) -> Option<String> {
 }
 
 /// `when()`: `YYYY-MM-DD HH:MM`, or nothing.
-fn when(value: Option<&Value>) -> String {
+pub(crate) fn when(value: Option<&Value>) -> String {
     match value {
         Some(Value::DateTime(at)) => at.format_display(),
         _ => String::new(),

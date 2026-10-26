@@ -5,6 +5,7 @@
 //! `contracts/cli.json`. A top-level command or group that is not listed here is a placeholder
 //! built from the snapshot (see `wg_clispec::tree`).
 
+pub mod repo;
 pub mod setup;
 pub mod task;
 pub mod ui;
@@ -30,6 +31,7 @@ pub struct Group {
 
 /// The implemented groups.
 pub const GROUPS: &[Group] = &[
+    repo::GROUP,
     setup::CONFIG,
     setup::DOCTOR,
     setup::INIT,

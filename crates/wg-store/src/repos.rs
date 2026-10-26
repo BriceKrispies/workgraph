@@ -5,14 +5,14 @@
 //! through the session and decodes the rows with the table codecs. Writes go through the generic
 //! [`Session::apply_write`] and [`Session::apply_decision`] like every other family.
 
-use wg_model::RowKey;
 use wg_model::entity::task::Task;
 use wg_model::entity::{
     Project, ProjectRepository, Repository, RepositoryCheckout, RepositoryDependency,
     RepositoryRef, RepositoryRemote, Workspace,
 };
+use wg_model::{RegistrySlice, Row, RowKey, Write};
 use wg_storecodec::{Statement, repo_sql};
-use wg_types::{Id, WgError};
+use wg_types::{ErrorCode, Id, WgError};
 
 use crate::Session;
 use crate::query::{many, one};
@@ -116,6 +116,39 @@ impl Session<'_> {
     /// The checkouts of `repository_id`, by path.
     pub fn checkouts(&mut self, repository_id: Id) -> Result<Vec<RepositoryCheckout>, WgError> {
         many(self, &repo_sql::checkouts(repository_id))
+    }
+
+    /// The checkouts of `repository_id` in the order of the Python relationship: by creation time,
+    /// then by path.
+    pub fn checkouts_by_creation(
+        &mut self,
+        repository_id: Id,
+    ) -> Result<Vec<RepositoryCheckout>, WgError> {
+        let mut found = self.checkouts(repository_id)?;
+        found.sort_by_key(|checkout| checkout.created_at);
+        Ok(found)
+    }
+
+    /// The rows references in `workspace_id` resolve against: the workspace, its projects and
+    /// their memberships, and its repositories, archived ones included.
+    pub fn registry_slice(&mut self, workspace_id: Id) -> Result<RegistrySlice, WgError> {
+        let workspace = self.workspace_by_id(workspace_id)?.ok_or_else(|| {
+            WgError::new(
+                ErrorCode::NotFound,
+                format!("workspace {workspace_id} not found"),
+            )
+        })?;
+        let mut writes = vec![Write::insert(Row::Workspace(workspace))];
+        for project in self.projects(workspace_id, true)? {
+            for link in self.project_repositories(project.id)? {
+                writes.push(Write::insert(Row::ProjectRepository(link)));
+            }
+            writes.push(Write::insert(Row::Project(project)));
+        }
+        for repository in self.repositories(workspace_id, None, true)? {
+            writes.push(Write::insert(Row::Repository(repository)));
+        }
+        Ok(RegistrySlice::default().apply_all(&writes))
     }
 
     /// The remotes of `repository_id`, by name.

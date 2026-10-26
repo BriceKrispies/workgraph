@@ -48,7 +48,7 @@ fn index_written<R>(
 
 impl App {
     /// `TaskService._workspace_id`: the named workspace, else the default one.
-    fn workspace_or_default(&mut self, workspace: Option<&str>) -> Result<Id, WgError> {
+    pub(crate) fn workspace_or_default(&mut self, workspace: Option<&str>) -> Result<Id, WgError> {
         match workspace {
             Some(reference) => self.workspace_id(reference),
             None => self.default_workspace_id(),

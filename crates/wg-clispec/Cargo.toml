@@ -16,6 +16,8 @@ serde_json = { version = "1", features = ["preserve_order"] }
 wg-config = { path = "../wg-config" }
 wg-json = { path = "../wg-json" }
 wg-model = { path = "../wg-model" }
+wg-registry = { path = "../wg-registry" }
 wg-render = { path = "../wg-render" }
+wg-runtimespec = { path = "../wg-runtimespec" }
 wg-types = { path = "../wg-types" }
 wg-wire = { path = "../wg-wire" }

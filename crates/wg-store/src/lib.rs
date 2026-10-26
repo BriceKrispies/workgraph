@@ -13,6 +13,7 @@
 //! The migration runner is [`Store::upgrade`]; later tasks add the per-entity queries on top of this base.
 
 mod migrate;
+mod repos;
 mod session;
 mod tasks;
 

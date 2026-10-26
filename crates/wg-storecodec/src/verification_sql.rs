@@ -15,19 +15,7 @@ use wg_types::{ErrorCode, Id, TaskKey, Timestamp, VerificationStatus, WgError};
 
 use crate::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
 use crate::rows::{TableRow, columns};
-use crate::sql::Statement;
-
-/// The table's columns, quoted and qualified by `alias` when one is given.
-fn select_list(table: Table, alias: Option<&str>) -> String {
-    columns(table)
-        .iter()
-        .map(|column| match alias {
-            Some(alias) => format!("{alias}.\"{column}\""),
-            None => format!("\"{column}\""),
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
+use crate::sql::{Statement, select_list};
 
 /// Appends a bound parameter and returns its `?N` placeholder.
 fn bind(params: &mut Vec<Raw>, value: Raw) -> String {

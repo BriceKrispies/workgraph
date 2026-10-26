@@ -14,19 +14,7 @@ use wg_types::{Id, WgError};
 
 use crate::codec::{DbFailure, Raw, db_error, id_sql, text_sql};
 use crate::rows::{TableRow, columns};
-use crate::sql::Statement;
-
-/// The table's columns, quoted and qualified by `alias` when one is given.
-fn select_list(table: Table, alias: Option<&str>) -> String {
-    columns(table)
-        .iter()
-        .map(|column| match alias {
-            Some(alias) => format!("{alias}.\"{column}\""),
-            None => format!("\"{column}\""),
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
+use crate::sql::{Statement, select_list};
 
 /// The experiment whose id is `experiment_id`.
 pub fn experiment_by_id(experiment_id: Id) -> Statement {

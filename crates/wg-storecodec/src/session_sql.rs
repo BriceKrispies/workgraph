@@ -14,7 +14,7 @@ use wg_types::{AttemptStatus, ErrorCode, Id, TaskStatus, Timestamp, WgError};
 
 use crate::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
 use crate::rows::columns;
-use crate::sql::Statement;
+use crate::sql::{Statement, quote};
 
 /// Attempt states that count as open for subagent binding (`OPEN_ATTEMPT_STATUSES` in
 /// `claude_code/ingest.py`).
@@ -23,11 +23,6 @@ pub const OPEN_ATTEMPT_STATUSES: [AttemptStatus; 3] = [
     AttemptStatus::Preparing,
     AttemptStatus::Running,
 ];
-
-/// Quotes an identifier.
-fn quote(name: &str) -> String {
-    format!("\"{name}\"")
-}
 
 /// The quoted, comma-separated column list.
 fn names_sql(names: &[&str]) -> String {

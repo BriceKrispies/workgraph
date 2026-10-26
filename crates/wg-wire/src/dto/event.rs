@@ -1,10 +1,20 @@
-//! `EventOut`: one row of the `events` table, as the event list and the SSE stream print it.
+//! `EventOut`: one row of the `events` table, as the history endpoints and the SSE stream print it.
+//!
+//! The row comes from the store as a [`StoredEvent`] (its `data` keys sorted, as stored). Two
+//! forms exist, as in Python:
+//!
+//! * [`from_stored`] is the `EventOut` model of the history endpoints (`occurred_at` in the `Z`
+//!   form).
+//! * [`dict_from_stored`] is `Event.to_dict()`, which `run_get` puts in `recent_events`: a plain
+//!   dict whose `occurred_at` is `isoformat()` text (`+00:00`).
 
 use wg_json::Value;
-use wg_model::event::EventDraft;
-use wg_types::{Id, WgError};
+use wg_model::event::{EventDraft, StoredEvent};
+use wg_types::WgError;
 
-use crate::convention::{TimeFormat, id, json_object, model, text, timestamp};
+use crate::convention::{
+    TimeFormat, dict, id, int, json_object, model, optional_id, text, timestamp,
+};
 
 /// The OpenAPI component schema this DTO mirrors.
 pub const NAME: &str = "EventOut";
@@ -27,37 +37,36 @@ pub const FIELDS: [&str; 14] = [
     "data",
 ];
 
-/// An event as stored. `seq` is the sequence number the store assigned on append; every other
-/// column comes from the draft the decision produced.
+/// An event as the store holds it right after appending `draft` with sequence number `seq`.
 pub fn from_model(seq: i64, draft: &EventDraft) -> Result<Value, WgError> {
-    Ok(model(
-        NAME,
-        vec![
-            ("seq", Value::Int(i128::from(seq))),
-            ("id", id(draft.id)),
-            ("workspace_id", optional_id(draft.workspace_id)),
-            ("event_type", text(draft.event_type())),
-            ("entity_type", text(draft.entity_type().as_str())),
-            ("entity_id", id(draft.entity_id)),
-            ("actor", text(&draft.actor.to_string())),
-            ("actor_kind", text(draft.actor.kind().as_str())),
-            (
-                "occurred_at",
-                timestamp(draft.occurred_at, TimeFormat::ModelZ),
-            ),
-            ("correlation_id", text(draft.correlation_id.as_str())),
-            ("causation_id", optional_id(draft.causation_id)),
-            ("attempt_id", optional_id(draft.attempt_id)),
-            (
-                "schema_version",
-                Value::Int(i128::from(draft.schema_version())),
-            ),
-            ("data", json_object(&draft.data()?)),
-        ],
-    ))
+    Ok(from_stored(&StoredEvent::from_draft(seq, draft)?))
 }
 
-/// An optional id field: `null` when absent.
-fn optional_id(value: Option<Id>) -> Value {
-    value.map_or(Value::Null, id)
+/// `EventOut`: the event as the history endpoints return it.
+pub fn from_stored(event: &StoredEvent) -> Value {
+    model(NAME, fields(event, TimeFormat::ModelZ))
+}
+
+/// `Event.to_dict()`: the same keys as a plain dict with `isoformat()` text for `occurred_at`.
+pub fn dict_from_stored(event: &StoredEvent) -> Value {
+    dict(fields(event, TimeFormat::Isoformat))
+}
+
+fn fields(event: &StoredEvent, format: TimeFormat) -> Vec<(&'static str, Value)> {
+    vec![
+        ("seq", int(event.seq)),
+        ("id", id(event.id)),
+        ("workspace_id", optional_id(event.workspace_id)),
+        ("event_type", text(&event.event_type)),
+        ("entity_type", text(&event.entity_type)),
+        ("entity_id", id(event.entity_id)),
+        ("actor", text(&event.actor)),
+        ("actor_kind", text(&event.actor_kind)),
+        ("occurred_at", timestamp(event.occurred_at, format)),
+        ("correlation_id", text(event.correlation_id.as_str())),
+        ("causation_id", optional_id(event.causation_id)),
+        ("attempt_id", optional_id(event.attempt_id)),
+        ("schema_version", int(event.schema_version)),
+        ("data", json_object(&event.data)),
+    ]
 }

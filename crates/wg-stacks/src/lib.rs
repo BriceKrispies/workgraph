@@ -5,8 +5,13 @@
 //! `integrations/git/stack_verification.py`. Database reads, git refs and job queues stay in the
 //! shell crates that call these functions.
 
+pub mod bisect;
 pub mod ejection;
 pub mod item;
 pub mod membership;
 pub mod merge;
+mod ordered;
 pub mod queue;
+pub mod rebuild;
+pub mod regression;
+pub mod verify;

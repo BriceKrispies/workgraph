@@ -1,7 +1,8 @@
 //! The job dicts of `GET /jobs` and `GET /jobs/{id}`.
 //!
 //! The routes return these as plain mappings (`_job` in `api/routes/ops.py`), not as Pydantic
-//! models, so the datetimes print in the isoformat form.
+//! models, but FastAPI encodes their datetimes like a model field, so they print in the `Z` form
+//! (checked against a live Python response: `"run_at":"2026-10-26T04:55:43.038933Z"`).
 
 use wg_json::Value;
 use wg_model::entity::queue::{Job, JobRun};
@@ -101,13 +102,10 @@ pub fn run_from_model(run: &JobRun) -> Value {
         ("worker", text(&run.worker_id)),
         ("status", text(&run.status)),
         ("error", optional_text(run.error.as_deref())),
-        (
-            "started_at",
-            timestamp(run.started_at, TimeFormat::Isoformat),
-        ),
+        ("started_at", timestamp(run.started_at, TimeFormat::Z)),
         (
             "finished_at",
-            optional_timestamp(run.finished_at, TimeFormat::Isoformat),
+            optional_timestamp(run.finished_at, TimeFormat::Z),
         ),
     ])
 }
@@ -124,25 +122,25 @@ fn job_fields(job: &Job) -> Vec<(&'static str, Value)> {
             "result",
             job.result.as_ref().map_or(Value::Null, json_object),
         ),
-        ("run_at", timestamp(job.run_at, TimeFormat::Isoformat)),
+        ("run_at", timestamp(job.run_at, TimeFormat::Z)),
         ("attempts", int(job.attempts)),
         ("max_attempts", int(job.max_attempts)),
         ("lease_owner", optional_text(job.lease_owner.as_deref())),
         (
             "lease_expires_at",
-            optional_timestamp(job.lease_expires_at, TimeFormat::Isoformat),
+            optional_timestamp(job.lease_expires_at, TimeFormat::Z),
         ),
         (
             "heartbeat_at",
-            optional_timestamp(job.heartbeat_at, TimeFormat::Isoformat),
+            optional_timestamp(job.heartbeat_at, TimeFormat::Z),
         ),
         (
             "started_at",
-            optional_timestamp(job.started_at, TimeFormat::Isoformat),
+            optional_timestamp(job.started_at, TimeFormat::Z),
         ),
         (
             "finished_at",
-            optional_timestamp(job.finished_at, TimeFormat::Isoformat),
+            optional_timestamp(job.finished_at, TimeFormat::Z),
         ),
         ("cancel_requested", Value::Bool(job.cancel_requested)),
         (
@@ -154,9 +152,6 @@ fn job_fields(job: &Job) -> Vec<(&'static str, Value)> {
         ("task_id", optional_id(job.task_id)),
         ("attempt_id", optional_id(job.attempt_id)),
         ("created_by", text(&job.created_by)),
-        (
-            "created_at",
-            timestamp(job.created_at, TimeFormat::Isoformat),
-        ),
+        ("created_at", timestamp(job.created_at, TimeFormat::Z)),
     ]
 }

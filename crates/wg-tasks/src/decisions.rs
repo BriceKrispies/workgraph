@@ -80,27 +80,29 @@ pub fn normalize_options(options: &[OptionInput]) -> Result<Vec<DecisionOption>,
             format!("a decision carries at most {MAX_OPTIONS} options"),
         ));
     }
-    let mut out: Vec<DecisionOption> = Vec::with_capacity(options.len());
-    for (position, option) in options.iter().enumerate() {
-        let id = option
-            .id
-            .as_deref()
-            .filter(|id| !id.is_empty())
-            .map_or_else(|| letter(position), str::to_owned);
-        if out.iter().any(|seen| seen.id == id) {
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("duplicate option id {}", py_repr_str(&id)),
-            ));
-        }
-        out.push(DecisionOption {
-            id,
-            label: option.label.clone(),
-            detail: option.detail.clone(),
-            recommended: option.recommended,
-        });
-    }
-    Ok(out)
+    options.iter().enumerate().try_fold(
+        Vec::with_capacity(options.len()),
+        |out: Vec<DecisionOption>, (position, option)| {
+            let id = option
+                .id
+                .as_deref()
+                .filter(|id| !id.is_empty())
+                .map_or_else(|| letter(position), str::to_owned);
+            if out.iter().any(|seen| seen.id == id) {
+                return Err(WgError::new(
+                    ErrorCode::ValidationFailed,
+                    format!("duplicate option id {}", py_repr_str(&id)),
+                ));
+            }
+            let row = DecisionOption {
+                id,
+                label: option.label.clone(),
+                detail: option.detail.clone(),
+                recommended: option.recommended,
+            };
+            Ok(out.into_iter().chain([row]).collect())
+        },
+    )
 }
 
 /// "a", "b", ... "z" by position.
@@ -218,34 +220,42 @@ pub fn plan_choose(
         .map(str::trim)
         .filter(|note| !note.is_empty())
         .map(str::to_owned);
-    let mut next = decision.clone();
-    next.status = "decided".to_owned();
-    next.chosen_option_id = answer.option_id.map(str::to_owned);
-    next.other_text = answer.other_text.map(|text| text.trim().to_owned());
-    next.note = note.clone();
-    next.decided_by = Some(stamp.actor.to_string());
-    next.decided_at = Some(stamp.at);
-    next.updated_at = stamp.at;
-    next.version += 1;
+    let next = TaskDecision {
+        status: "decided".to_owned(),
+        chosen_option_id: answer.option_id.map(str::to_owned),
+        other_text: answer.other_text.map(|text| text.trim().to_owned()),
+        note: note.clone(),
+        decided_by: Some(stamp.actor.to_string()),
+        decided_at: Some(stamp.at),
+        updated_at: stamp.at,
+        version: decision.version + 1,
+        ..decision.clone()
+    };
 
     let date = stamp.at.to_offset_datetime().date();
-    let mut body = format!(
-        "User decision {:04}-{:02}-{:02}: {} -> {}",
+    let body = format!(
+        "User decision {:04}-{:02}-{:02}: {} -> {}{}",
         date.year(),
         u8::from(date.month()),
         date.day(),
         next.question,
-        answer_text(&next)
+        answer_text(&next),
+        note.map(|note| format!(
+            "
+
+Note: {note}"
+        ))
+        .unwrap_or_default()
     );
-    if let Some(note) = &note {
-        body.push_str(&format!("\n\nNote: {note}"));
-    }
-    let (comment, mut events) = comment_plan(stamp, task, body);
-    events.push(decision_event(
-        EventPayload::TaskDecisionChosen,
-        task,
-        &next,
-    ));
+    let (comment, events) = comment_plan(stamp, task, body);
+    let events: Vec<PlannedEvent> = events
+        .into_iter()
+        .chain([decision_event(
+            EventPayload::TaskDecisionChosen,
+            task,
+            &next,
+        )])
+        .collect();
     let tags = release(stamp, tasks, task, decisions, &next)?;
     Ok(DecisionPlan {
         decision: next,
@@ -275,21 +285,34 @@ pub fn plan_withdraw(
             ),
         ));
     }
-    let mut next = decision.clone();
-    next.status = "withdrawn".to_owned();
-    next.updated_at = stamp.at;
-    next.version += 1;
+    let next = TaskDecision {
+        status: "withdrawn".to_owned(),
+        updated_at: stamp.at,
+        version: decision.version + 1,
+        ..decision.clone()
+    };
 
-    let mut body = format!("Decision withdrawn: {}", next.question);
-    if let Some(reason) = reason.filter(|reason| !reason.is_empty()) {
-        body.push_str(&format!("\n\nReason: {reason}"));
-    }
-    let (comment, mut events) = comment_plan(stamp, task, body);
-    events.push(decision_event(
-        EventPayload::TaskDecisionWithdrawn,
-        task,
-        &next,
-    ));
+    let body = format!(
+        "Decision withdrawn: {}{}",
+        next.question,
+        reason
+            .filter(|reason| !reason.is_empty())
+            .map(|reason| format!(
+                "
+
+Reason: {reason}"
+            ))
+            .unwrap_or_default()
+    );
+    let (comment, events) = comment_plan(stamp, task, body);
+    let events: Vec<PlannedEvent> = events
+        .into_iter()
+        .chain([decision_event(
+            EventPayload::TaskDecisionWithdrawn,
+            task,
+            &next,
+        )])
+        .collect();
     let tags = release(stamp, tasks, task, decisions, &next)?;
     Ok(DecisionPlan {
         decision: next,

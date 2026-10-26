@@ -156,40 +156,96 @@ fn bound_text(bound: f64) -> String {
     format!("{bound}")
 }
 
-fn int_value(input: &Value, loc: &[Loc]) -> Result<i64, Vec<ValidationError>> {
+/// 2**63: a float at or beyond this, either way, is not an integer Pydantic will take (the lower
+/// edge is exclusive too: `-2**63` is refused).
+const I64_LIMIT: f64 = 9_223_372_036_854_775_808.0;
+
+/// The most digits of an integer string Python converts (`sys.get_int_max_str_digits()`).
+const MAX_INT_DIGITS: usize = 4300;
+
+/// An integer as a JSON number. serde_json keeps the digits of an integer under
+/// `arbitrary_precision`, so every value of the 128-bit range is exact.
+fn int_json(int: i128) -> Value {
+    serde_json::from_str(&int.to_string()).unwrap_or(Value::Null)
+}
+
+/// Whether the text is an optional minus sign and ASCII digits, as serde_json writes an integer.
+fn is_integer_literal(text: &str) -> bool {
+    let digits = text.strip_prefix('-').unwrap_or(text);
+    !digits.is_empty() && digits.bytes().all(|b| b.is_ascii_digit())
+}
+
+/// The integer literal Pydantic's lax mode reads from a string, as `int(text)` would: an optional
+/// sign, ASCII digits in groups joined by single underscores, and an optional fraction of zeros
+/// only (`"5.00"`). Exponents, other fractions, and non-ASCII digits are refused.
+fn int_text(text: &str) -> Option<String> {
+    let (sign, rest) = match text.as_bytes().first() {
+        Some(b'-') => ("-", &text[1..]),
+        Some(b'+') => ("", &text[1..]),
+        _ => ("", text),
+    };
+    let (whole, fraction) = match rest.split_once('.') {
+        Some((whole, fraction)) => (whole, Some(fraction)),
+        None => (rest, None),
+    };
+    if fraction.is_some_and(|f| f.is_empty() || !f.bytes().all(|b| b == b'0')) {
+        return None;
+    }
+    let groups: Vec<&str> = whole.split('_').collect();
+    if groups
+        .iter()
+        .any(|group| group.is_empty() || !group.bytes().all(|b| b.is_ascii_digit()))
+    {
+        return None;
+    }
+    Some(format!("{sign}{}", groups.concat()))
+}
+
+fn int_value(input: &Value, loc: &[Loc]) -> Result<i128, Vec<ValidationError>> {
     let parsing = |msg: &str, kind: &str| one(error(kind, msg, loc, input, None));
+    // A value past 128 bits is not held. Pydantic keeps it, so this is a known gap, reported as
+    // Pydantic's size error.
+    let too_big = || {
+        one(error(
+            "int_parsing_size",
+            "Unable to parse input string as an integer, exceeded maximum size",
+            loc,
+            input,
+            None,
+        ))
+    };
     match input {
-        Value::Bool(flag) => Ok(i64::from(*flag)),
+        Value::Bool(flag) => Ok(i128::from(*flag)),
         Value::Number(number) => {
-            if let Some(int) = number.as_i64() {
-                return Ok(int);
+            let literal = number.to_string();
+            if is_integer_literal(&literal) {
+                return literal.parse::<i128>().map_err(|_| too_big());
             }
-            match number.as_f64() {
-                Some(float)
-                    if float.is_finite() && float.fract() == 0.0 && float.abs() < 9.2e18 =>
-                {
-                    Ok(float as i64)
-                }
-                _ => Err(parsing(
+            let float = number.as_f64().unwrap_or(f64::NAN);
+            if !float.is_finite() || float.fract() != 0.0 {
+                return Err(parsing(
                     "Input should be a valid integer, got a number with a fractional part",
                     "int_from_float",
-                )),
+                ));
+            }
+            if float > -I64_LIMIT && float < I64_LIMIT {
+                Ok(float as i128)
+            } else {
+                Err(too_big())
             }
         }
         Value::String(text) => {
-            let text = text.trim();
-            if let Ok(int) = text.parse::<i64>() {
-                return Ok(int);
-            }
-            match text.parse::<f64>() {
-                Ok(float) if float.is_finite() && float.fract() == 0.0 && float.abs() < 9.2e18 => {
-                    Ok(float as i64)
-                }
-                _ => Err(parsing(
+            let literal = int_text(text.trim()).ok_or_else(|| {
+                parsing(
                     "Input should be a valid integer, unable to parse string as an integer",
                     "int_parsing",
-                )),
+                )
+            })?;
+            let digits = literal.trim_start_matches(['-', '+']).len();
+            if digits > MAX_INT_DIGITS {
+                return Err(too_big());
             }
+            literal.parse::<i128>().map_err(|_| too_big())
         }
         _ => Err(parsing("Input should be a valid integer", "int_type")),
     }
@@ -197,29 +253,29 @@ fn int_value(input: &Value, loc: &[Loc]) -> Result<i64, Vec<ValidationError>> {
 
 fn integer(rules: &IntRules, input: &Value, loc: &[Loc]) -> Outcome {
     let int = int_value(input, loc)?;
-    let bounds: [(&str, Option<i64>, bool, &str); 4] = [
+    let bounds: [(&str, Option<i128>, bool, &str); 4] = [
         (
             "le",
             rules.le,
-            int > rules.le.unwrap_or(i64::MAX),
+            int > rules.le.unwrap_or(i128::MAX),
             "less_than_equal",
         ),
         (
             "lt",
             rules.lt,
-            int >= rules.lt.unwrap_or(i64::MAX),
+            int >= rules.lt.unwrap_or(i128::MAX),
             "less_than",
         ),
         (
             "ge",
             rules.ge,
-            int < rules.ge.unwrap_or(i64::MIN),
+            int < rules.ge.unwrap_or(i128::MIN),
             "greater_than_equal",
         ),
         (
             "gt",
             rules.gt,
-            int <= rules.gt.unwrap_or(i64::MIN),
+            int <= rules.gt.unwrap_or(i128::MIN),
             "greater_than",
         ),
     ];
@@ -230,11 +286,11 @@ fn integer(rules: &IntRules, input: &Value, loc: &[Loc]) -> Outcome {
                 bound_message(key, &bound.to_string()),
                 loc,
                 input,
-                ctx([(key, Value::from(bound))]),
+                ctx([(key, int_json(bound))]),
             )));
         }
     }
-    Ok(Value::from(int))
+    Ok(int_json(int))
 }
 
 fn bound_message(key: &str, bound: &str) -> String {

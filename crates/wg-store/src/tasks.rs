@@ -33,6 +33,11 @@ impl Session<'_> {
             .pop())
     }
 
+    /// Every task with `key` in any workspace, in workspace and number order.
+    pub fn tasks_by_key(&mut self, key: &TaskKey) -> Result<Vec<Task>, WgError> {
+        self.load_all(&task_sql::tasks_by_key(key))
+    }
+
     /// The tasks of a workspace in number order, optionally only those in `status`.
     pub fn tasks_in_workspace(
         &mut self,

@@ -8,10 +8,10 @@
 use std::collections::BTreeSet;
 
 use rpds::RedBlackTreeSetSync;
-use wg_model::Stamp;
+use wg_model::{Stamp, py_repr_str};
 use wg_types::{
-    Actor, ActorKind, Correlation, Id, Permission, Timestamp, WgError, default_agent_permissions,
-    human_permissions, system_permissions,
+    Actor, ActorKind, Correlation, ErrorCode, Id, Permission, Timestamp, WgError,
+    default_agent_permissions, human_permissions, system_permissions,
 };
 
 /// The environment variables `getpass.getuser()` reads, in its order.
@@ -127,6 +127,39 @@ impl RequestContext {
         }
     }
 
+    /// `security.permissions.require` for this request: fails with `permission_denied` naming
+    /// every missing permission, sorted by wire string, as [`Stamp::require`] does.
+    pub fn require(&self, permissions: &[Permission]) -> Result<(), WgError> {
+        let missing: BTreeSet<&'static str> = permissions
+            .iter()
+            .filter(|permission| !self.permissions.contains(*permission))
+            .map(|permission| permission.as_str())
+            .collect();
+        if missing.is_empty() {
+            return Ok(());
+        }
+        let names: Vec<&str> = missing.iter().copied().collect();
+        let actor = self.actor.to_string();
+        Err(WgError::new(
+            ErrorCode::PermissionDenied,
+            format!(
+                "actor {} lacks permission(s): {}",
+                py_repr_str(&actor),
+                names.join(", ")
+            ),
+        )
+        .with_detail("actor", serde_json::Value::String(actor))
+        .with_detail(
+            "missing",
+            serde_json::Value::Array(
+                names
+                    .iter()
+                    .map(|name| serde_json::Value::String((*name).to_owned()))
+                    .collect(),
+            ),
+        ))
+    }
+
     /// The stamp of one decision made for this request.
     pub fn stamp(&self, at: Timestamp, entropy: [u8; 32]) -> Stamp {
         Stamp {
@@ -170,6 +203,28 @@ mod tests {
 
     fn id(n: u32) -> Id {
         wg_model::derive_id(&[7; 32], n)
+    }
+
+    #[test]
+    fn require_names_every_missing_permission() {
+        let reader = BTreeSet::from([Permission::WorkspaceRead]);
+        let context = RequestContext::new(ActorKind::Human, "brice", reader, id(0)).unwrap();
+        assert!(context.require(&[Permission::WorkspaceRead]).is_ok());
+        let error = context
+            .require(&[
+                Permission::ConfigManage,
+                Permission::WorkspaceRead,
+                Permission::TaskAccept,
+            ])
+            .err();
+        assert_eq!(
+            error.as_ref().map(|e| e.code),
+            Some(ErrorCode::PermissionDenied)
+        );
+        assert_eq!(
+            error.map(|e| e.message),
+            Some("actor 'human:brice' lacks permission(s): config:manage, task:accept".to_owned())
+        );
     }
 
     #[test]

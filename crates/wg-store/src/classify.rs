@@ -6,19 +6,11 @@
 
 use wg_model::entity::{Classification, ClassificationEvaluation, ClassificationGoldLabel};
 use wg_storecodec::classify_sql::{self, ClassificationWithKey};
-use wg_storecodec::{Statement, TableRow, task_sql};
+use wg_storecodec::task_sql;
 use wg_types::{Id, WgError};
 
 use crate::Session;
-
-/// Runs `statement` and decodes every row through the table's codec, in the order returned.
-fn many<T: TableRow>(session: &mut Session<'_>, statement: &Statement) -> Result<Vec<T>, WgError> {
-    session
-        .rows(statement)?
-        .iter()
-        .map(|values| T::from_raw(values))
-        .collect()
-}
+use crate::query::many;
 
 impl Session<'_> {
     /// The classification with `id`, if there is one.

@@ -15,8 +15,20 @@ pub struct Statement {
 }
 
 /// Quotes an identifier (`key` is a keyword-adjacent column name).
-fn quote(name: &str) -> String {
+pub fn quote(name: &str) -> String {
     format!("\"{name}\"")
+}
+
+/// The table's columns for a `SELECT` list, quoted and qualified by `alias` when one is given.
+pub fn select_list(table: Table, alias: Option<&str>) -> String {
+    columns(table)
+        .iter()
+        .map(|column| match alias {
+            Some(alias) => format!("{alias}.{}", quote(column)),
+            None => quote(column),
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
 }
 
 /// `col1 = ?1 AND col2 = ?2`, numbering the placeholders from `first`.

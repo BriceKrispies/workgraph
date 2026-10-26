@@ -12,12 +12,7 @@ use wg_types::{Id, TaskKey, TaskStatus};
 
 use crate::codec::{Raw, id_sql, text_sql};
 use crate::rows::columns;
-use crate::sql::Statement;
-
-/// Quotes an identifier (as [`crate::sql`] does; `key` is a keyword-adjacent column name).
-fn quote(name: &str) -> String {
-    format!("\"{name}\"")
-}
+use crate::sql::{Statement, quote};
 
 /// `SELECT <columns of table> FROM <table> WHERE <clause> ORDER BY <order>`.
 fn select(table: Table, clause: &str, order: &str, params: Vec<Raw>) -> Statement {
@@ -39,6 +34,16 @@ pub fn task_by_key(workspace_id: Id, key: &TaskKey) -> Statement {
         "\"workspace_id\" = ?1 AND \"key\" = ?2",
         "\"number\"",
         vec![id_sql(workspace_id), Raw::Text(key.to_string())],
+    )
+}
+
+/// Every task with `key`, in any workspace, in number order (`resolve.task` without a workspace).
+pub fn tasks_by_key(key: &TaskKey) -> Statement {
+    select(
+        Table::Task,
+        "\"key\" = ?1",
+        "\"workspace_id\", \"number\"",
+        vec![Raw::Text(key.to_string())],
     )
 }
 

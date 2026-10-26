@@ -17,19 +17,7 @@ use wg_storecodec::{Raw, Statement, TableRow, git_sql};
 use wg_types::{Id, Timestamp, WgError};
 
 use crate::Session;
-
-/// Runs `statement` and decodes every row with `decode`, in the order the query returns them.
-fn many<T>(
-    session: &mut Session<'_>,
-    statement: &Statement,
-    decode: impl Fn(&[Raw]) -> Result<T, WgError>,
-) -> Result<Vec<T>, WgError> {
-    session
-        .rows(statement)?
-        .iter()
-        .map(|values| decode(values.as_slice()))
-        .collect()
-}
+use crate::query::many_with;
 
 /// Runs `statement` and decodes the first row, if there is one.
 fn first<T>(
@@ -37,7 +25,7 @@ fn first<T>(
     statement: &Statement,
     decode: impl Fn(&[Raw]) -> Result<T, WgError>,
 ) -> Result<Option<T>, WgError> {
-    Ok(many(session, statement, decode)?.into_iter().next())
+    Ok(many_with(session, statement, decode)?.into_iter().next())
 }
 
 impl Session<'_> {
@@ -60,7 +48,7 @@ impl Session<'_> {
         repository_id: Id,
         prefix: &str,
     ) -> Result<Vec<Commit>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::commits_by_sha_prefix(repository_id, prefix),
             Commit::from_raw,
@@ -69,7 +57,7 @@ impl Session<'_> {
 
     /// Every SHA the repository has a commit row for, in SHA order.
     pub fn commit_shas(&mut self, repository_id: Id) -> Result<Vec<String>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::commit_shas(repository_id),
             git_sql::commit_sha,
@@ -78,7 +66,7 @@ impl Session<'_> {
 
     /// The commits with the given ids, by id.
     pub fn commits_by_ids(&mut self, ids: &[Id]) -> Result<Vec<Commit>, WgError> {
-        many(self, &git_sql::commits_by_ids(ids), Commit::from_raw)
+        many_with(self, &git_sql::commits_by_ids(ids), Commit::from_raw)
     }
 
     /// How many commits the repository's commit list holds, under the same filter as
@@ -110,7 +98,7 @@ impl Session<'_> {
             limit,
             offset,
         );
-        many(self, &statement, Commit::from_raw)
+        many_with(self, &statement, Commit::from_raw)
     }
 
     /// The task links of `commit_ids`, each with its task's key, by commit then link order.
@@ -118,7 +106,7 @@ impl Session<'_> {
         &mut self,
         commit_ids: &[Id],
     ) -> Result<Vec<CommitTaskLinkWithKey>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::links_with_task_keys(commit_ids),
             CommitTaskLinkWithKey::from_raw,
@@ -133,7 +121,7 @@ impl Session<'_> {
         task_id: Id,
         source: Option<&str>,
     ) -> Result<Vec<CommitTaskLink>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::commit_task_links_between(commit_id, task_id, source),
             CommitTaskLink::from_raw,
@@ -147,7 +135,7 @@ impl Session<'_> {
         task_id: Id,
         min_confidence: f64,
     ) -> Result<Vec<TaskCommitLink>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::task_commit_links(task_id, min_confidence),
             TaskCommitLink::from_raw,
@@ -156,7 +144,7 @@ impl Session<'_> {
 
     /// The file changes of `commit_ids`, by commit then path.
     pub fn file_changes(&mut self, commit_ids: &[Id]) -> Result<Vec<CommitFileChange>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::file_changes(commit_ids),
             CommitFileChange::from_raw,
@@ -165,12 +153,12 @@ impl Session<'_> {
 
     /// The file changes of `commit_ids` summed per path, by path.
     pub fn path_totals(&mut self, commit_ids: &[Id]) -> Result<Vec<PathTotal>, WgError> {
-        many(self, &git_sql::path_totals(commit_ids), PathTotal::from_raw)
+        many_with(self, &git_sql::path_totals(commit_ids), PathTotal::from_raw)
     }
 
     /// The symbols of `file_change_ids`, by file change then id.
     pub fn commit_symbols(&mut self, file_change_ids: &[Id]) -> Result<Vec<CommitSymbol>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::symbols(file_change_ids),
             CommitSymbol::from_raw,
@@ -179,7 +167,7 @@ impl Session<'_> {
 
     /// The structure analyses of `commit_ids`, by commit.
     pub fn commit_analyses(&mut self, commit_ids: &[Id]) -> Result<Vec<CommitAnalysis>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::analyses(commit_ids),
             CommitAnalysis::from_raw,
@@ -191,7 +179,7 @@ impl Session<'_> {
         &mut self,
         commit_id: Id,
     ) -> Result<Vec<CommitEquivalence>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::equivalences_of_commit(commit_id),
             CommitEquivalence::from_raw,
@@ -218,7 +206,7 @@ impl Session<'_> {
         patch_id: &str,
         excluding: Id,
     ) -> Result<Vec<Commit>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::commits_with_patch_id(repository_id, patch_id, excluding),
             Commit::from_raw,
@@ -235,7 +223,7 @@ impl Session<'_> {
         subject: &str,
         excluding: Id,
     ) -> Result<Vec<Commit>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::unreachable_commits_matching(
                 repository_id,
@@ -263,7 +251,7 @@ impl Session<'_> {
 
     /// Every object gap of `repository_id`, in detection order.
     pub fn git_object_gaps(&mut self, repository_id: Id) -> Result<Vec<GitObjectGap>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::git_object_gaps(repository_id),
             GitObjectGap::from_raw,
@@ -275,7 +263,7 @@ impl Session<'_> {
         &mut self,
         repository_id: Id,
     ) -> Result<Vec<CommitReachability>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::commit_reachability(repository_id),
             CommitReachability::from_raw,
@@ -284,7 +272,7 @@ impl Session<'_> {
 
     /// The change surfaces of `task_id`, one per repository.
     pub fn task_change_surfaces(&mut self, task_id: Id) -> Result<Vec<TaskChangeSurface>, WgError> {
-        many(
+        many_with(
             self,
             &git_sql::task_change_surfaces(task_id),
             TaskChangeSurface::from_raw,

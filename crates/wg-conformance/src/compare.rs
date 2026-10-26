@@ -36,13 +36,34 @@ pub struct Divergence {
     pub step: Option<usize>,
     /// `stdout`, `stderr`, `exit`; all of them when empty.
     pub fields: Vec<String>,
+    /// Substrings, one of which must occur in the left or the right text of the difference.
+    /// Empty means any text. A divergence names the cases it allows through these, so an entry
+    /// for one kind of output does not hide differences in other output.
+    pub contains: Vec<String>,
+    /// When set, the left or the right text of the difference holds a non-ASCII character.
+    pub non_ascii: bool,
 }
 
 impl Divergence {
-    fn covers(&self, scenario: &str, step: Option<usize>, field: &str) -> bool {
+    fn covers(
+        &self,
+        scenario: &str,
+        step: Option<usize>,
+        field: &str,
+        left: &str,
+        right: &str,
+    ) -> bool {
+        let text_ok = self.contains.is_empty()
+            || self
+                .contains
+                .iter()
+                .any(|s| left.contains(s.as_str()) || right.contains(s.as_str()));
+        let encoding_ok = !self.non_ascii || !left.is_ascii() || !right.is_ascii();
         (self.scenario == "*" || self.scenario == scenario)
             && (self.step.is_none() || self.step == step)
             && (self.fields.is_empty() || self.fields.iter().any(|f| f == field))
+            && text_ok
+            && encoding_ok
     }
 }
 
@@ -80,9 +101,26 @@ pub fn parse_divergences(text: &str) -> Result<Vec<Divergence>, String> {
                             .collect()
                     })
                     .unwrap_or_default(),
+                contains: strings_of(t, "contains"),
+                non_ascii: t
+                    .get("non_ascii")
+                    .and_then(toml::Value::as_bool)
+                    .unwrap_or(false),
             })
         })
         .collect()
+}
+
+/// The string elements of an array-valued key, empty when the key is absent.
+fn strings_of(t: &toml::Table, key: &str) -> Vec<String> {
+    t.get(key)
+        .and_then(toml::Value::as_array)
+        .map(|a| {
+            a.iter()
+                .filter_map(|v| v.as_str().map(str::to_owned))
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 /// The comparable part of a step, after normalisation.
@@ -175,7 +213,7 @@ pub fn compare(
     let mut push = |step: Option<usize>, field: &'static str, l: String, r: String| {
         let allowed_by = allow
             .iter()
-            .find(|d| d.covers(scenario, step, field))
+            .find(|d| d.covers(scenario, step, field, &l, &r))
             .map(|d| d.id.clone());
         diffs.push(Diff {
             step,
@@ -373,6 +411,46 @@ mod tests {
                 .is_none()
         );
         assert!(compare("s", &obs("a"), &obs("a"), &allow).is_empty());
+    }
+
+    #[test]
+    fn allowlist_entries_match_only_the_text_they_name() {
+        let allow = parse_divergences(
+            "[[divergence]]\nid = \"DV1\"\ndecision = \"Q1\"\nfields = [\"stdout\"]\ncontains = [\"Usage:\"]\n\n\
+             [[divergence]]\nid = \"DV2\"\ndecision = \"Q2\"\nfields = [\"stdout\"]\nnon_ascii = true\n",
+        )
+        .unwrap();
+        // Help output is allowed by DV1, whichever side holds the text.
+        let help = compare(
+            "s",
+            &obs("Usage: wg [OPTIONS]\n"),
+            &obs("usage: wg\n"),
+            &allow,
+        );
+        assert_eq!(help[0].allowed_by.as_deref(), Some("DV1"));
+        // A difference in another output is not allowed by DV1.
+        let other = compare("s", &obs("task WG-1\n"), &obs("task WG-2\n"), &allow);
+        assert!(other[0].allowed_by.is_none());
+        // Raw attempt ids are not help output, so they are not hidden either.
+        let ids = compare(
+            "s",
+            &obs("wg/WG-1/attempt-1-1157221c\n"),
+            &obs("wg/WG-1/attempt-1-d3b95462\n"),
+            &allow,
+        );
+        assert!(ids[0].allowed_by.is_none());
+        // Encoding differences are allowed only when one side is not ASCII.
+        assert_eq!(
+            compare("s", &obs("é\n"), &obs("?\n"), &allow)[0]
+                .allowed_by
+                .as_deref(),
+            Some("DV2")
+        );
+        assert!(
+            compare("s", &obs("a\n"), &obs("b\n"), &allow)[0]
+                .allowed_by
+                .is_none()
+        );
     }
 
     #[test]

@@ -2,47 +2,56 @@
 # Each entry names the decision that allows it. `decision` refers to the open questions of
 # section 8 (Q1 to Q9) or to section 3.6 where no question was asked.
 # `scenario` is a scenario id or "*"; `fields` limits the entry to stdout, stderr or exit
-# (all of them when absent).
+# (all of them when absent). `contains` lists substrings, one of which must occur in the left or
+# right text of a difference before the entry allows it, and `non_ascii = true` allows only
+# differences where one side holds a non-ASCII character. An entry therefore allows the cases it
+# names and nothing else.
 
 [[divergence]]
 id = "DV1"
 decision = "Q1"
 scenario = "*"
-fields = ["stdout"]
-description = "--help and usage errors: same content, clap layout instead of Typer's rich boxes"
+fields = ["stdout", "stderr"]
+contains = ["Usage:"]
+description = "--help and usage errors: same content, clap layout instead of Typer's rich boxes (only help and usage text is allowed)"
 
 [[divergence]]
 id = "DV2"
 decision = "Q2"
 scenario = "*"
 fields = ["stdout"]
-description = "human output piped on Windows is UTF-8 (Python writes cp1252 with ? for unencodable characters)"
+non_ascii = true
+description = "human output piped on Windows is UTF-8 (Python writes cp1252 with ? for unencodable characters; only differences that involve a non-ASCII character are allowed)"
 
 [[divergence]]
 id = "DV3"
 decision = "D12"
 scenario = "*"
-description = "<data>/analytics.duckdb is not created (analytics run in Rust without DuckDB)"
+fields = ["file"]
+description = "<data>/analytics.duckdb is not created (analytics run in Rust without DuckDB). A file, not output text: no stdout, stderr or exit difference is allowed by this entry"
 
 [[divergence]]
 id = "DV4"
 decision = "Q8"
 scenario = "*"
 fields = ["stdout", "stderr"]
-description = "demo e2e and demo seed call workgraph-demo-agent instead of <python> scripted_agent.py"
+contains = ["workgraph-demo-agent", "scripted_agent.py"]
+description = "demo e2e and demo seed call workgraph-demo-agent instead of <python> scripted_agent.py (only differences that name the agent command are allowed)"
 
 [[divergence]]
 id = "DV5"
 decision = "3.6"
 scenario = "*"
 fields = ["stdout", "stderr"]
-description = "exception class names in spool_reason, unexpected-error message text, traceback text in logs, logger names"
+contains = ["Error", "Exception", "Traceback", "logging"]
+description = "exception class names in spool_reason, unexpected-error message text, traceback text in logs, logger names (only differences that name an exception, a traceback or a logger are allowed)"
 
 [[divergence]]
 id = "DV6"
 decision = "3.6"
 scenario = "*"
-description = "Parquet export bytes (compared by reading both files back; not a text comparison)"
+fields = ["file"]
+description = "Parquet export bytes (compared by reading both files back; not a text comparison). A file, not output text: no stdout, stderr or exit difference is allowed by this entry"
 
 [[divergence]]
 id = "DV7"

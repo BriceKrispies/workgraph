@@ -41,6 +41,9 @@ impl Normaliser for FullNormaliser {
         for (s, e, key) in scan(bytes, uuid_at) {
             spans.push((s, e, format!("<id:{}>", numbering.id(&key))));
         }
+        for (s, e, prefix) in scan(bytes, attempt_prefix_at) {
+            spans.push((s, e, format!("<id:{}>", numbering.attempt(&prefix))));
+        }
         for (s, e, key) in scan(bytes, sha_at) {
             spans.push((s, e, format!("<sha:{}>", numbering.sha(&key))));
         }
@@ -113,6 +116,33 @@ fn uuid_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
         _ => bytes[i + k].is_ascii_hexdigit(),
     });
     shape.then(|| (i, end, lower(&bytes[i..end])))
+}
+
+/// The 8-character prefix of an attempt id in a managed branch name, `attempt-<n>-<id8>`
+/// (`wg/<key>/attempt-<n>-<id8>`). Only the prefix is the span. It takes the placeholder of the
+/// full UUID it prefixes, so the branch name and the attempt's `id` agree.
+fn attempt_prefix_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
+    const HEAD: &[u8] = b"attempt-";
+    if !bytes[i..].starts_with(HEAD) || (i > 0 && !matches!(bytes[i - 1], b'/' | b'-' | b'_')) {
+        return None;
+    }
+    let mut p = i + HEAD.len();
+    let digits_from = p;
+    while bytes.get(p).is_some_and(u8::is_ascii_digit) {
+        p += 1;
+    }
+    if p == digits_from || bytes.get(p) != Some(&b'-') {
+        return None;
+    }
+    let start = p + 1;
+    let end = start + 8;
+    if end > bytes.len() || !bounded(bytes, start, end) {
+        return None;
+    }
+    bytes[start..end]
+        .iter()
+        .all(u8::is_ascii_hexdigit)
+        .then(|| (start, end, lower(&bytes[start..end])))
 }
 
 fn sha_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
@@ -300,28 +330,53 @@ fn local_port_at(bytes: &[u8], i: usize) -> Option<Span<()>> {
     (end > start).then_some((start, end, ()))
 }
 
+/// Instants closer than this are one instant for ranking. Python stamps `created_at` and
+/// `updated_at` in separate calls, and the clock sometimes gives both the same value, so without
+/// this a run can rank them equal and the next run different. Commit dates in the fixtures are a
+/// second apart, so they keep their order.
+const SAME_INSTANT_MICROS: i64 = 50_000;
+
 /// First-appearance numbers for UUIDs and SHAs, and timestamp ranks, for one run.
 #[derive(Default)]
 struct Numbering {
     ids: BTreeMap<String, usize>,
     shas: BTreeMap<String, usize>,
-    stamps: BTreeSet<i64>,
+    /// Rank of each distinct instant of the run (one-based), see `SAME_INSTANT_MICROS`.
+    ranks: BTreeMap<i64, usize>,
 }
 
 impl Numbering {
     fn from_outputs(outputs: &[&str]) -> Self {
         let mut n = Self::default();
         for text in outputs {
-            let bytes = text.as_bytes();
-            for (_, _, key) in scan(bytes, uuid_at) {
+            for (_, _, key) in scan(text.as_bytes(), uuid_at) {
                 n.id(&key);
             }
+        }
+        // Prefixes come after every full UUID of the run, so a prefix finds the UUID it abbreviates.
+        for text in outputs {
+            for (_, _, prefix) in scan(text.as_bytes(), attempt_prefix_at) {
+                n.attempt(&prefix);
+            }
+        }
+        let mut stamps = BTreeSet::new();
+        for text in outputs {
+            let bytes = text.as_bytes();
             for (_, _, key) in scan(bytes, sha_at) {
                 n.sha(&key);
             }
             for (_, _, stamp) in scan(bytes, timestamp_at) {
-                n.stamps.insert(stamp.micros);
+                stamps.insert(stamp.micros);
             }
+        }
+        let mut rank = 0;
+        let mut previous: Option<i64> = None;
+        for micros in stamps {
+            if previous.is_none_or(|p| micros - p > SAME_INSTANT_MICROS) {
+                rank += 1;
+            }
+            previous = Some(micros);
+            n.ranks.insert(micros, rank);
         }
         n
     }
@@ -331,15 +386,26 @@ impl Numbering {
         *self.ids.entry(key.to_owned()).or_insert(next)
     }
 
+    /// The number of the full UUID that `prefix` abbreviates, or a number of its own when the
+    /// run never shows that UUID.
+    fn attempt(&mut self, prefix: &str) -> usize {
+        let full = self
+            .ids
+            .iter()
+            .find(|(id, _)| id.starts_with(prefix))
+            .map(|(_, n)| *n);
+        full.unwrap_or_else(|| self.id(prefix))
+    }
+
     fn sha(&mut self, key: &str) -> usize {
         let next = self.shas.len() + 1;
         *self.shas.entry(key.to_owned()).or_insert(next)
     }
 
-    /// One-based rank of an instant among the distinct instants of the run.
-    fn rank(&mut self, micros: i64) -> usize {
-        self.stamps.insert(micros);
-        self.stamps.range(..micros).count() + 1
+    /// One-based rank of an instant among the distinct instants of the run. Every timestamp of
+    /// the text being normalised is in the run's outputs, so it has a rank.
+    fn rank(&self, micros: i64) -> usize {
+        self.ranks.get(&micros).copied().unwrap_or(1)
     }
 }
 
@@ -464,6 +530,22 @@ mod tests {
     }
 
     #[test]
+    fn stamps_a_clock_tick_apart_are_one_instant() {
+        // `created_at` and `updated_at` written in separate calls: equal in one run, a few
+        // milliseconds apart in the other. Both runs must normalise to the same text.
+        let n = FullNormaliser::default();
+        let same = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:41.462098Z";
+        let apart = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:41.466000Z";
+        let a = run("py", &[(same, "")]);
+        let b = run("rs", &[(apart, "")]);
+        assert!(compare("s", &observe(&a, &n), &observe(&b, &n), &[]).is_empty());
+        // A second apart is a different instant, and the order is kept across the whole run.
+        let later = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:42.462098Z";
+        let c = run("rs", &[(later, "")]);
+        assert!(!compare("s", &observe(&a, &n), &observe(&c, &n), &[]).is_empty());
+    }
+
+    #[test]
     fn json_durations_pids_and_ports_are_placeholders() {
         let r = run("py", &[("", "")]);
         let text = r#"{"duration_ms": 12.5, "queue_wait_ms": null, "duration_seconds": 3, "pid": 4242, "port": 8765, "count": 7}"#;
@@ -483,6 +565,33 @@ mod tests {
             "http://127.0.0.1:51234/api token s3cr3t-token at /tmp/abc/x",
         );
         assert_eq!(out, "http://127.0.0.1:<port>/api token <token> at <tmp>/x");
+    }
+
+    #[test]
+    fn attempt_prefixes_take_the_placeholder_of_their_full_uuid() {
+        let attempt = "wg/WG-1/attempt-1-3f2b8c1e";
+        let full_seen_later = format!("{attempt} {ID1}");
+        let r = run("py", &[(full_seen_later.as_str(), "")]);
+        let n = FullNormaliser::default();
+        assert_eq!(
+            n.normalise(&r, &full_seen_later),
+            "wg/WG-1/attempt-1-<id:1> <id:1>"
+        );
+        // The same prefix in another run, with another UUID, still matches its UUID.
+        let other = "11111111-2222-4333-8444-555555555555";
+        let text = format!("wg/WG-1/attempt-1-{} {other}", &other[..8]);
+        let rs = run("rs", &[(text.as_str(), "")]);
+        assert_eq!(n.normalise(&rs, &text), "wg/WG-1/attempt-1-<id:1> <id:1>");
+        // A prefix that no UUID of the run shows gets a number of its own.
+        assert_eq!(
+            n.normalise(&r, "wg/WG-2/attempt-2-abcdef12"),
+            "wg/WG-2/attempt-2-<id:2>"
+        );
+        // Words that merely contain `attempt-` and a short hex run are left alone.
+        assert_eq!(
+            n.normalise(&r, "myattempt-1-3f2b8c1e x attempt-x-3f2b8c1e"),
+            "myattempt-1-3f2b8c1e x attempt-x-3f2b8c1e"
+        );
     }
 
     #[test]

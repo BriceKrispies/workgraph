@@ -49,7 +49,8 @@ class AnalyticsQuery(BaseModel):
     @classmethod
     def _metric(cls, value: str) -> str:
         if value not in METRICS_BY_ID:
-            raise ValueError(f"unknown metric {value!r}")
+            known = ", ".join(sorted(METRICS_BY_ID))
+            raise ValueError(f"unknown metric {value!r}; known metrics: {known}")
         return value
 
 

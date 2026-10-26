@@ -18,6 +18,7 @@ from typing import Annotated, Any, Literal, ParamSpec, TypeVar
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ResourceError, ResourceNotFoundError, ToolError
 from pydantic import Field
+from pydantic import ValidationError as PydanticValidationError
 
 from workgraph import __version__
 from workgraph.analytics.service import AnalyticsFilters, AnalyticsQuery
@@ -918,18 +919,20 @@ def build_server(
         model: str | None = None,
         workspace: Workspace = None,
     ) -> dict[str, Any]:
-        return app.analytics.query(
-            ctx(),
-            workspace,
-            AnalyticsQuery(
+        try:
+            query = AnalyticsQuery(
                 metric=metric,
                 group_by=list(group_by or []),
                 period=period,
                 filters=AnalyticsFilters(
                     project=project, repository=repository, category=category, provider=provider, model=model
                 ),
-            ),
-        )
+            )
+        except PydanticValidationError as exc:
+            errors = exc.errors(include_url=False)
+            summary = "; ".join(str(err["msg"]) for err in errors)
+            raise ValidationFailed(f"invalid analytics query: {summary}", details={"errors": errors}) from exc
+        return app.analytics.query(ctx(), workspace, query)
 
     @tool(
         "analytics_report",

@@ -1,4 +1,5 @@
-//! The automation service as pure decisions (`automation/engine.py`, `AutomationService`): rule
+//! The automation feature's Pure spec (docs/rust-rewrite.md 4.16): the automation service as pure
+//! decisions (`automation/engine.py`, `AutomationService`): rule
 //! create, update and enable; the runs a manual trigger, a preview, an event pass and a schedule
 //! pass record; the condition context a run is evaluated against; and the outputs.
 //!
@@ -6,6 +7,14 @@
 //! counts of recent runs, the duplicate checks) and applies what the decision returns in one
 //! transaction. Ids come from the stamp and times from `stamp.at`; nothing here reads a clock.
 
+pub mod args;
+pub mod dto;
+pub mod shapes;
+pub mod sql;
+pub mod view;
+
+use self::dto::automation as wire;
+use self::dto::notification;
 use rpds::VectorSync;
 use serde_json::{Map, Value, json};
 use wg_automation::condition::OPERATORS;
@@ -26,14 +35,17 @@ use wg_model::{Decision, EventDraft, EventPayload, Write};
 use wg_storecodec::EventRecord;
 use wg_types::{ErrorCode, Id, Timestamp, WgError};
 use wg_wire::convention as wire_convention;
-use wg_wire::dto::automation as wire;
-use wg_wire::dto::notification;
 
 /// The name of the job that runs a queued run's actions.
 pub const ACTION_JOB: &str = "automation_action";
 
 /// The name of the cursor `process_events` keeps in `system_cursors`.
 pub const CURSOR: &str = "automation";
+
+/// `NotFoundError` for an event a preview names.
+pub fn event_not_found(id: &str) -> WgError {
+    WgError::new(ErrorCode::NotFound, format!("event {id} not found"))
+}
 
 /// The name a preview rule of `spec` carries.
 pub fn preview_name(name: &str) -> String {

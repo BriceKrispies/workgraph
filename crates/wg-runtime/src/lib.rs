@@ -14,7 +14,6 @@
 
 mod acceptance;
 mod app;
-mod automation;
 mod bus;
 mod cli_state;
 mod cycle;
@@ -56,7 +55,6 @@ pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
 pub use wg_registry::admin::Patch as RepositoryPatch;
-pub use wg_runtimespec::automation::catalog as automation_catalog;
 pub use wg_runtimespec::jobs::{unknown_job_kind, worker_summary_out};
 pub use wg_runtimespec::registry::{
     project_create_body, project_option_body, workspace_create_body,

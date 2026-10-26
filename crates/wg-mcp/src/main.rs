@@ -9,8 +9,10 @@ use wg_mcp::{AppBackend, serve_stdio};
 use wg_mcpspec::options::{ServeOptions, Transport};
 use wg_types::{ErrorCode, WgError};
 
-/// The features this program serves: the decisions feature, as the `workgraph` binary lists it.
-static FEATURES: &[&wg_runtime::Feature] = &[&wg_decisions::FEATURE];
+/// The features this program serves: the decisions and automation features, as the `workgraph`
+/// binary lists them.
+static FEATURES: &[&wg_runtime::Feature] =
+    &[&wg_decisions::FEATURE, &wg_automation_feature::FEATURE];
 
 const HTTP_REFUSED: &str = "the standalone wg-mcp serves stdio only; \
 `workgraph mcp --transport http` serves the endpoint behind the API token";

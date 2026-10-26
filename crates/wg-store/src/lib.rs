@@ -13,7 +13,6 @@
 //! The migration runner is [`Store::upgrade`]; later tasks add the per-entity queries on top of this base.
 
 mod analytics;
-mod automation;
 mod classify;
 mod experiments;
 mod external;
@@ -41,6 +40,7 @@ use wg_types::{ErrorCode, WgError};
 use session::db;
 
 pub use analytics::AnalyticsSource;
+pub use query::{many, one};
 pub use run::AttemptPage;
 pub use session::{Applied, Session};
 pub use verify::{FailureFilter, FailureRow, Page, RunFilter};

@@ -30,6 +30,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "net", "signal", "macros
 tokio-util = "0.7"
 wg-browser = { path = "../wg-browser" }
 wg-clispec = { path = "../wg-clispec" }
+wg-automation-feature = { path = "../wg-automation-feature" }
 wg-decisions = { path = "../wg-decisions" }
 wg-codeparse = { path = "../wg-codeparse" }
 wg-json = { path = "../wg-json" }

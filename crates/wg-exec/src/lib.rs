@@ -1,3 +1,7 @@
 //! wg-exec: attempt state machine, run flow, worktree and branch planning.
 
 pub mod attempt;
+pub mod branch;
+pub mod change_set;
+pub mod recovery;
+pub mod stack_base;

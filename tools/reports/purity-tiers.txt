@@ -30,6 +30,7 @@ wg-intel Core
 wg-jobs Core
 wg-json Pure
 wg-mcp Shell
+wg-mcpspec Pure
 wg-model Core
 wg-net Shell
 wg-proc Shell

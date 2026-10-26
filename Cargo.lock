@@ -2417,6 +2417,7 @@ dependencies = [
  "wg-runtimespec",
  "wg-serverspec",
  "wg-types",
+ "wg-validate",
  "wg-wire",
 ]
 
@@ -2515,6 +2516,7 @@ version = "0.1.0"
 dependencies = [
  "regex",
  "serde_json",
+ "wg-json",
 ]
 
 [[package]]

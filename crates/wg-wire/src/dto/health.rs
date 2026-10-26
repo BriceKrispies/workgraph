@@ -3,7 +3,7 @@
 
 use wg_json::{PyStr, Value};
 
-use crate::convention::text;
+use crate::convention::{optional_text, text};
 
 /// The keys of `GET /api/v1/health`.
 pub const HEALTH_FIELDS: [&str; 2] = ["status", "version"];
@@ -30,7 +30,7 @@ pub fn health(version: &str) -> Value {
 /// `embeddings` are the dumped LLM sections of the configuration.
 pub fn meta(
     version: &str,
-    default_workspace: &str,
+    default_workspace: Option<&str>,
     execution_enabled: bool,
     auto_schedule: bool,
     agents: &[String],
@@ -39,7 +39,7 @@ pub fn meta(
 ) -> Value {
     dict(vec![
         ("version", text(version)),
-        ("default_workspace", text(default_workspace)),
+        ("default_workspace", optional_text(default_workspace)),
         ("execution_enabled", Value::Bool(execution_enabled)),
         ("auto_schedule", Value::Bool(auto_schedule)),
         (

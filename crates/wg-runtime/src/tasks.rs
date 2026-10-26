@@ -9,7 +9,9 @@ use std::collections::BTreeSet;
 
 use serde_json::{Map, Value as Json};
 use wg_json::Value;
+use wg_model::slice::QueueSlice;
 use wg_model::{Row, Write};
+use wg_registry::resolve;
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::tasks::out::{bulk_result_out, key_of};
 use wg_runtimespec::tasks::reads::{self, GraphRequest, Shown};
@@ -119,9 +121,18 @@ impl App {
             .runtime
             .decide_then(
                 context,
-                |session| session.task_world(scope, &[]),
-                |world: &TaskWorld, stamp| {
-                    writes::update_task(world, stamp, scope, reference, read, enrich)
+                |session| {
+                    let world = session.task_world(scope, &[])?;
+                    // The jobs already stored for the task, which an enrichment enqueue dedupes
+                    // against. An unresolved reference is left to the decision to report.
+                    let queue = match resolve::task(&world.tasks, scope, reference) {
+                        Ok(task) => session.task_jobs_slice(task.id)?,
+                        Err(_) => QueueSlice::default(),
+                    };
+                    Ok((world, queue))
+                },
+                |(world, queue): &(TaskWorld, QueueSlice), stamp| {
+                    writes::update_task(world, queue, stamp, scope, reference, read, enrich)
                 },
                 index_written,
             )?

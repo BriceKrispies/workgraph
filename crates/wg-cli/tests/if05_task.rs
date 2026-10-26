@@ -110,6 +110,56 @@ fn create_show_list_and_update_a_task() {
     assert_eq!(found["items"][0]["key"], "AC-1");
 }
 
+// covers: C152, O01
+#[test]
+fn a_naive_due_is_echoed_naive_by_create_and_stored_as_utc() {
+    let home = home_with_workspace("naive-due");
+    let created = json(
+        &home,
+        &["task", "create", "Due", "--due", "2026-11-01T10:00:00"],
+        0,
+    );
+    assert_eq!(created["due_at"], "2026-11-01T10:00:00");
+    let shown = json(&home, &["task", "show", "AC-1"], 0);
+    assert_eq!(shown["due_at"], "2026-11-01T10:00:00Z");
+}
+
+// covers: C152, O02
+#[test]
+fn a_bad_file_spec_reports_the_pydantic_error_text() {
+    let home = home_with_workspace("file-error");
+    let (code, stdout, _) = run(&home, &["task", "create", "Files", "--file", ":x"]);
+    assert_eq!(code, 1, "{stdout}");
+    let error: Value = serde_json::from_str(&stdout).expect("the error is JSON");
+    assert_eq!(error["error"]["code"], "cli_error");
+    assert_eq!(
+        error["error"]["details"]["error"],
+        "1 validation error for TaskFileIn\npath\n  String should have at least 1 character [type=string_too_short, input_value='', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/string_too_short"
+    );
+}
+
+// covers: B03, C167
+#[test]
+fn an_enrichment_job_already_queued_under_its_key_is_not_queued_again() {
+    let home = home_with_workspace("enrich-dedupe");
+    let created = json(&home, &["task", "create", "Text", "-d", "first"], 0);
+    let id = created["id"].as_str().expect("the task id").to_owned();
+    json(&home, &["task", "update", "AC-1", "-d", "second"], 0);
+    // Back to the first text: its classify and embed keys were queued at create time.
+    json(&home, &["task", "update", "AC-1", "-d", "first"], 0);
+    let task_id: wg_types::Id = id.parse().expect("the id is a UUID");
+    let mut app = App::open(Some(&home)).expect("the app opens");
+    let jobs = app
+        .runtime
+        .store
+        .read(|session| session.task_jobs_slice(task_id))
+        .expect("the jobs are read");
+    for kind in ["classify_task", "embed_task"] {
+        let queued = jobs.jobs.values().filter(|job| job.kind == kind).count();
+        assert_eq!(queued, 2, "{kind}: one job per distinct description");
+    }
+}
+
 // covers: C165
 #[test]
 fn show_several_refs_reports_the_failures_and_exits_with_the_first() {

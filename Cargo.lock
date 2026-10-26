@@ -2162,6 +2162,7 @@ dependencies = [
  "wg-model",
  "wg-render",
  "wg-types",
+ "wg-validate",
  "wg-wire",
 ]
 

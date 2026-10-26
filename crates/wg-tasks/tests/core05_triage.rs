@@ -51,7 +51,7 @@ fn only_steps(plan: &TriagePlan) -> &[Step] {
     &plan.planned[0].steps
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn resolved_comments_tags_and_cancels() {
     let targets = [target("WG-1", TaskStatus::Backlog, &[])];
@@ -77,7 +77,7 @@ fn resolved_comments_tags_and_cancels() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn obsolete_cancels_with_obsolete_tag() {
     let targets = [target("WG-1", TaskStatus::Backlog, &[])];
@@ -96,7 +96,7 @@ fn obsolete_cancels_with_obsolete_tag() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn open_creates_follow_ups_and_supersedes_the_original() {
     let targets = [target(
@@ -178,7 +178,7 @@ fn open_creates_follow_ups_and_supersedes_the_original() {
     assert_eq!(steps.len(), 5);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn non_cancelling_verdicts_keep_the_status() {
     let targets = [target("WG-1", TaskStatus::Ready, &[])];
@@ -217,7 +217,7 @@ fn non_cancelling_verdicts_keep_the_status() {
     }
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_structured_decision_requests_a_decision_with_normalised_options() {
     let targets = [target("WG-1", TaskStatus::Ready, &[])];
@@ -251,7 +251,7 @@ fn a_structured_decision_requests_a_decision_with_normalised_options() {
     assert_eq!(steps.len(), 3);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_scope_size_maps_legacy_sizes_to_one_scope() {
     let targets = [target("WG-1", TaskStatus::Backlog, &[])];
@@ -277,7 +277,7 @@ fn a_scope_size_maps_legacy_sizes_to_one_scope() {
     }
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn open_work_tracked_elsewhere_duplicates_the_existing_task() {
     let targets = [target("WG-1", TaskStatus::Backlog, &[])];
@@ -306,7 +306,7 @@ fn open_work_tracked_elsewhere_duplicates_the_existing_task() {
     assert_eq!(steps.len(), 4);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn open_without_rewrites_or_duplicates_is_refused() {
     let targets = [target("WG-1", TaskStatus::Backlog, &[])];
@@ -320,7 +320,7 @@ fn open_without_rewrites_or_duplicates_is_refused() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn unknown_rewrite_size_is_refused() {
     let targets = [target("WG-1", TaskStatus::Backlog, &[])];
@@ -333,7 +333,7 @@ fn unknown_rewrite_size_is_refused() {
     assert_eq!(p.errors[0].error, "rewrite 0 has unknown size 'huge'");
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_rerun_is_a_skip_naming_the_first_triage_tag() {
     let targets = [target("WG-1", TaskStatus::Cancelled, &["triage:obsolete"])];
@@ -350,7 +350,7 @@ fn a_rerun_is_a_skip_naming_the_first_triage_tag() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_decision_replaces_a_pending_verdict_and_clears_its_tags() {
     let targets = [target(
@@ -386,7 +386,7 @@ fn a_decision_replaces_a_pending_verdict_and_clears_its_tags() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_hand_set_needs_decision_tag_survives_triage() {
     let targets = [target("WG-1", TaskStatus::Backlog, &["needs-decision"])];
@@ -398,7 +398,7 @@ fn a_hand_set_needs_decision_tag_survives_triage() {
     assert!(steps.iter().all(|s| !matches!(s, Step::RemoveTags(_))));
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_bad_element_does_not_block_the_others() {
     let targets = [
@@ -439,7 +439,7 @@ fn a_bad_element_does_not_block_the_others() {
     assert_eq!(p.planned[0].index, 7);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_duplicate_key_in_the_file_is_an_error() {
     let targets = [target("WG-1", TaskStatus::Backlog, &[])];
@@ -455,7 +455,7 @@ fn a_duplicate_key_in_the_file_is_an_error() {
     assert_eq!(p.errors[0].error, "duplicate key wg-1 in file");
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn follow_up_tags_keep_only_the_listed_tags() {
     let targets = [target(
@@ -477,7 +477,7 @@ fn follow_up_tags_keep_only_the_listed_tags() {
     assert_eq!(tags, ["keep", "triaged"]);
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_triage_file_must_be_an_array() {
     let error = match verdict_list(&json!({"key": "WG-1"})) {
@@ -493,7 +493,7 @@ fn a_triage_file_must_be_an_array() {
     assert_eq!(verdict_list(&empty).map(<[Value]>::len).ok(), Some(0));
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_decision_object_is_validated_like_a_decision_request() {
     let entry = |decision: Value| json!({"key": "WG-1", "verdict": "needs-decision", "summary": "s", "decision": decision});
@@ -528,14 +528,14 @@ fn a_decision_object_is_validated_like_a_decision_request() {
     assert!(parse(json!({"question": "q", "options": [{"label": "a", "id": "a-1"}]})).is_ok());
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn an_evidence_list_must_be_strings() {
     let error = parse_entry(&json!({"key": "WG-1", "verdict": "unclear", "evidence": "x"})).err();
     assert_eq!(error, Some("evidence must be a list of strings".to_owned()));
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn the_open_lists_and_rewrite_shapes_are_checked_in_order() {
     let open = |extra: Value| {
@@ -569,7 +569,7 @@ fn the_open_lists_and_rewrite_shapes_are_checked_in_order() {
     );
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_file_spec_splits_path_and_anchor_after_a_drive_letter() {
     assert_eq!(

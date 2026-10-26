@@ -319,13 +319,25 @@ fn float(value: Option<f64>) -> Value {
     value.map_or(Value::Null, |value| Value::from(round6(value)))
 }
 
+/// An aggregate of the values of a metric: `MIN`, `MAX` and `SUM` of an integer column stay
+/// integers in the Python service, every other aggregate is a float.
+fn aggregate_value(metric: &Metric, value: Option<f64>) -> Value {
+    match value {
+        Some(value) if metric.integer => int(value as i64),
+        value => float(value),
+    }
+}
+
 /// The statistic columns of one group, in the order of the Python service.
 fn statistics(metric: &Metric, acc: &Acc) -> Vec<(&'static str, Value)> {
     match metric.statistic {
         Statistic::Count => vec![("value", int(acc.rows)), ("n", int(acc.rows))],
         Statistic::Sum => {
             let values: Vec<f64> = acc.values.iter().copied().collect();
-            vec![("value", float(sum(&values))), ("n", int(acc.rows))]
+            vec![
+                ("value", aggregate_value(metric, sum(&values))),
+                ("n", int(acc.rows)),
+            ]
         }
         Statistic::Ratio => match metric.ratio {
             Some(Ratio::Hits(_)) => vec![
@@ -361,9 +373,9 @@ fn statistics(metric: &Metric, acc: &Acc) -> Vec<(&'static str, Value)> {
                 ("p75", float(quantile_cont(&values, 0.75))),
                 ("p90", float(quantile_cont(&values, 0.9))),
                 ("p95", float(quantile_cont(&values, 0.95))),
-                ("min", float(values.first().copied())),
-                ("max", float(values.last().copied())),
-                ("sum", float(sum(&values))),
+                ("min", aggregate_value(metric, values.first().copied())),
+                ("max", aggregate_value(metric, values.last().copied())),
+                ("sum", aggregate_value(metric, sum(&values))),
             ]
         }
     }

@@ -9,8 +9,8 @@ use std::path::PathBuf;
 use serde_json::{Map, Value};
 use wg_analytics::source::{
     Analysis, AnalyticsInput, AttemptRow, CheckResult, CommitLink, CommitRow, Event, FileChange,
-    ProjectRow, RepositoryRow, Surface, TaskProject, TaskRelation, TaskRepository, TaskRow,
-    VerificationRun,
+    ProjectRow, RepositoryDependency, RepositoryRow, Surface, TaskDependency, TaskProject,
+    TaskRelation, TaskRepository, TaskRow, VerificationRun,
 };
 use wg_types::Timestamp;
 
@@ -224,12 +224,14 @@ pub fn input(source: &Value) -> AnalyticsInput {
                 repository_id: text(row, "repository_id"),
                 status: text(row, "status"),
                 created_at: moment(row, "created_at"),
+                failure_signatures: text(row, "failure_signatures"),
             })
             .collect(),
         relations: records(source, "task_relations")
             .iter()
             .map(|row| TaskRelation {
                 source_task_id: text(row, "source_task_id"),
+                target_task_id: text(row, "target_task_id"),
                 relation_type: text(row, "relation_type"),
                 created_at: moment(row, "created_at"),
             })
@@ -257,6 +259,20 @@ pub fn input(source: &Value) -> AnalyticsInput {
                 entity_id: text(row, "entity_id"),
                 occurred_at: moment(row, "occurred_at"),
                 data: text(row, "data"),
+            })
+            .collect(),
+        task_dependencies: records(source, "task_dependencies")
+            .iter()
+            .map(|row| TaskDependency {
+                task_id: text(row, "task_id"),
+                depends_on_id: text(row, "depends_on_id"),
+            })
+            .collect(),
+        repository_dependencies: records(source, "repository_dependencies")
+            .iter()
+            .map(|row| RepositoryDependency {
+                from_repository_id: text(row, "from_repository_id"),
+                to_repository_id: text(row, "to_repository_id"),
             })
             .collect(),
         ..Default::default()

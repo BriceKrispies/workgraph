@@ -133,6 +133,13 @@ pub struct TaskRepository {
     pub repository_id: Option<String>,
 }
 
+/// A row of `repository_dependencies`: a declared dependency of one repository on another.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct RepositoryDependency {
+    pub from_repository_id: Option<String>,
+    pub to_repository_id: Option<String>,
+}
+
 /// A row of `projects`, the columns the metric labels and filters read.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct ProjectRow {
@@ -160,7 +167,7 @@ pub struct VerificationRun {
     pub created_at: Option<Timestamp>,
 }
 
-/// A row of `verification_check_results`, the columns the metrics read.
+/// A row of `verification_check_results`, the columns the metrics and the failure report read.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct CheckResult {
     pub run_id: Option<String>,
@@ -169,14 +176,24 @@ pub struct CheckResult {
     pub repository_id: Option<String>,
     pub status: Option<String>,
     pub created_at: Option<Timestamp>,
+    /// The JSON text of the list of failure signatures (`test:...`, ...).
+    pub failure_signatures: Option<String>,
 }
 
-/// A row of `task_relations`, the columns the metrics read.
+/// A row of `task_relations`, the columns the metrics and the failure report read.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct TaskRelation {
     pub source_task_id: Option<String>,
+    pub target_task_id: Option<String>,
     pub relation_type: Option<String>,
     pub created_at: Option<Timestamp>,
+}
+
+/// A row of `task_dependencies`: `task_id` is blocked by `depends_on_id`.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct TaskDependency {
+    pub task_id: Option<String>,
+    pub depends_on_id: Option<String>,
 }
 
 /// A row of `subagent_runs`, the columns the subagent and agent-time reports read.
@@ -233,4 +250,6 @@ pub struct AnalyticsInput {
     pub events: VectorSync<Event>,
     pub subagent_runs: VectorSync<SubagentRunRow>,
     pub acceptances: VectorSync<AcceptanceRow>,
+    pub repository_dependencies: VectorSync<RepositoryDependency>,
+    pub task_dependencies: VectorSync<TaskDependency>,
 }

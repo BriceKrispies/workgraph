@@ -51,8 +51,8 @@ pub use session::{
 };
 pub use stack::{Stack, StackItem, StackRepository};
 pub use task::{
-    ExternalItem, Task, TaskComment, TaskDependency, TaskFile, TaskLink, TaskProject, TaskRelation,
-    TaskRepository, TaskTag,
+    DecisionOption, ExternalItem, Task, TaskComment, TaskDecision, TaskDependency, TaskFile,
+    TaskLink, TaskProject, TaskRelation, TaskRepository, TaskTag,
 };
 pub use verification::{
     TaskAcceptance, VerificationCheckResult, VerificationConfig, VerificationRun,

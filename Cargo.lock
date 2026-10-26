@@ -879,6 +879,7 @@ version = "0.1.0"
 name = "wg-wire"
 version = "0.1.0"
 dependencies = [
+ "rpds",
  "serde_json",
  "wg-json",
  "wg-model",

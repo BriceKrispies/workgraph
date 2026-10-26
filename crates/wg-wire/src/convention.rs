@@ -37,6 +37,21 @@ pub fn text(text: &str) -> Value {
     Value::Str(PyStr::from(text))
 }
 
+/// An optional string field: `null` when absent.
+pub fn optional_text(text_value: Option<&str>) -> Value {
+    text_value.map_or(Value::Null, text)
+}
+
+/// An optional id field: `null` when absent.
+pub fn optional_id(id_value: Option<Id>) -> Value {
+    id_value.map_or(Value::Null, id)
+}
+
+/// An optional JSON object field: `null` when absent.
+pub fn optional_json_object(map: Option<&serde_json::Map<String, Json>>) -> Value {
+    map.map_or(Value::Null, json_object)
+}
+
 /// A list-of-ids field.
 pub fn ids(ids: impl IntoIterator<Item = Id>) -> Value {
     Value::List(ids.into_iter().map(id).collect())

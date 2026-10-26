@@ -23,37 +23,59 @@ fn root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
 
-/// Field names of every `class X(Schema)` of the Python source, in declaration order.
+type ClassRow = (String, Option<String>, Vec<String>);
+
+/// Field names of every class of the Python source, in declaration order. A subclass lists the
+/// fields of its base first, as Pydantic keeps them.
 fn python_fields() -> Option<Vec<(String, Vec<String>)>> {
     let text = fs::read_to_string(root().join("src/workgraph/core/models/schemas.py")).ok()?;
-    let classes =
-        text.lines().fold(
-            Vec::<(String, Vec<String>)>::new(),
-            |classes, line| match class_name(line) {
-                Some(name) => classes
-                    .into_iter()
-                    .chain(std::iter::once((name, Vec::new())))
-                    .collect(),
-                None => match (field_name(line), classes.split_last()) {
-                    (Some(field), Some((last, rest))) => rest
-                        .iter()
-                        .cloned()
-                        .chain(std::iter::once((
-                            last.0.clone(),
-                            last.1.iter().cloned().chain([field]).collect(),
-                        )))
-                        .collect(),
-                    _ => classes,
-                },
-            },
-        );
-    Some(classes)
+    let mut classes: Vec<ClassRow> = Vec::new();
+    // A top-level statement (a function, a decorator) ends the class body before it.
+    let mut in_body = false;
+    for line in text.lines() {
+        if let Some((name, base)) = class_header(line) {
+            classes.push((name, base, Vec::new()));
+            in_body = true;
+        } else if line.starts_with(|c: char| !c.is_whitespace()) {
+            in_body = false;
+        } else if let (true, Some(field), Some(last)) =
+            (in_body, field_name(line), classes.last_mut())
+        {
+            last.2.push(field);
+        }
+    }
+    Some(
+        classes
+            .iter()
+            .map(|(name, _, _)| (name.clone(), resolved_fields(&classes, name)))
+            .collect(),
+    )
 }
 
-fn class_name(line: &str) -> Option<String> {
+fn resolved_fields(classes: &[ClassRow], name: &str) -> Vec<String> {
+    let Some((_, base, own)) = classes.iter().find(|(class, _, _)| class == name) else {
+        return Vec::new();
+    };
+    let mut fields = base
+        .as_deref()
+        .map(|base| resolved_fields(classes, base))
+        .unwrap_or_default();
+    fields.extend(own.iter().cloned());
+    fields
+}
+
+/// The name and the single base of a `class` line. A generic class `Page[T](Schema)` is `Page`.
+fn class_header(line: &str) -> Option<(String, Option<String>)> {
     let rest = line.strip_prefix("class ")?;
-    let (name, _) = rest.split_once('(')?;
-    Some(name.to_string())
+    let (head, bases) = rest.split_once('(')?;
+    let name = head.split('[').next()?.to_string();
+    let base = bases
+        .split(')')
+        .next()
+        .map(str::trim)
+        .filter(|base| !base.is_empty() && !base.contains(','))
+        .map(str::to_string);
+    Some((name, base))
 }
 
 /// An annotated field of a class body: four spaces, an identifier, a colon.
@@ -113,9 +135,15 @@ fn implemented_dtos_match_the_openapi_component_schemas() {
         );
 
         if let Some(python) = &python {
+            // The generic `Page[T]` is the Python class behind every `Page_<T>_` component.
+            let python_class = if name.starts_with("Page_") {
+                "Page"
+            } else {
+                name
+            };
             let class = python
                 .iter()
-                .find(|(class, _)| class == name)
+                .find(|(class, _)| class == python_class)
                 .unwrap_or_else(|| panic!("{name} is not a class of schemas.py"));
             assert_eq!(dto_fields, class.1, "{name}: order differs from schemas.py");
         }

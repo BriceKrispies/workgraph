@@ -138,6 +138,37 @@ pub struct TaskRepository {
     pub created_at: Timestamp,
 }
 
+/// A row of `task_decisions`: a question the task waits on and its answer. `options` is a JSON
+/// list column; a decided question records one option id, or free text in `other_text`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TaskDecision {
+    pub id: Id,
+    pub workspace_id: Id,
+    pub task_id: Id,
+    pub question: String,
+    pub options: Vec<DecisionOption>,
+    pub status: String,
+    pub chosen_option_id: Option<String>,
+    pub other_text: Option<String>,
+    pub note: Option<String>,
+    pub decided_by: Option<String>,
+    pub decided_at: Option<Timestamp>,
+    pub created_by: String,
+    pub created_at: Timestamp,
+    pub updated_at: Timestamp,
+    /// Optimistic-concurrency counter: every change to the row increments it.
+    pub version: i64,
+}
+
+/// One entry of a decision's `options` list.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DecisionOption {
+    pub id: String,
+    pub label: String,
+    pub detail: String,
+    pub recommended: bool,
+}
+
 /// A row of `external_items`: the tracker issue a task mirrors (at most one per task). The
 /// tracker owns these fields; only the sync writes them.
 #[derive(Debug, Clone, PartialEq, Eq)]

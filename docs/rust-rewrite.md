@@ -585,8 +585,11 @@ edits (`GROUPS`, the `IMPLEMENTED` lists, route and tool tables, `wg-runtime` re
 most stack conflicts, and one feature was implemented twice in different layers (WG-3772's
 `land_stack` beside `acceptance.rs`).
 
-**Shape.** A feature is one crate that owns its whole vertical slice. The domain crates of 4.3 are
-the feature crates; they grow instead of new crates appearing. Inside a feature crate:
+**Shape.** A feature owns its whole vertical slice in at most two crates (amended 2026-10-26, see
+"Core crate and feature crate" below): its domain core crate from 4.3 (`wg-tasks`, `wg-registry`,
+...), which stays pure, and a feature crate `wg-<area>-feature` for everything that needs
+`wg-runtime`. A feature whose logic no other code uses keeps both in one crate (the pilot,
+`wg-decisions`). Inside a feature crate:
 
 | Module | Tier | Holds |
 | --- | --- | --- |
@@ -635,6 +638,33 @@ measured over the `Shell` modules. The pure/shell crate pairs then have no reaso
 functions; no cycles. Where Python reacts to another area through events or jobs, Rust does too.
 
 **What adding a feature touches.** Its own crate, one line in `FEATURES`, and `purity-tiers.txt`.
+
+**Core crate and feature crate (amended 2026-10-26).** The first moves after the pilot (FC-04
+tasks, FC-05 registry) showed that a domain crate cannot also be its feature crate. `wg-runtime`,
+`wg-runtimespec`, other features and base crates use the task and registry cores (`wg_tasks::
+transition`, `deps`, `rename`; `wg_registry::resolve`, `checkout`, `boundary`, `remote`,
+`identity`), and a feature crate must depend on `wg-runtime` for `Feature` and `App`, so putting
+the feature in the domain crate is a Cargo cycle. The rules:
+
+1. **Two crates at most.** The domain core crate (`wg-<area>`, Core tier, depends on no shell
+   crate) and the feature crate (`wg-<area>-feature`: `spec`, `service`, `cli`, `http`, `mcp`,
+   `jobs`, the `FEATURE` static; depends on the core crate and `wg-runtime`). Adding a feature is
+   still one new crate and one line in `FEATURES` when its core crate exists.
+2. **Shared code sits below the feature crates.** Anything that base code or another feature
+   uses goes in the owning core crate if it is pure (task acceptance and release decisions, which
+   stack landing uses, belong in `wg-tasks`; reference resolution stays in `wg-registry`), or stays
+   in base if it is not: row readers used by several features (`task_by_key`, `tasks_by_key`,
+   `task_files`, `index_task`, `task_world`, `fts_task_ids`) stay in `wg-store`, and the generic
+   clap argument readers of `wg-clispec::task` (`get`, `items`, `one`, `many`, `number`, `flag`,
+   `option_*`, ...) move to a base CLI helper module, not into a feature.
+3. **Base never depends on a feature crate.** Feature crates may depend on other feature crates
+   (a DAG: stacks on tasks, decisions on tasks), but `wg-runtime`, `wg-store`, the front ends'
+   base parts and every core crate do not. Only the binary's `FEATURES` list names them all.
+4. **Order of a move.** A feature's code leaves the layer crates once nothing left there needs it.
+   A move first lowers the shared pieces (rule 2), then moves the rest. Where base code still
+   holds another feature's code that uses this feature's impure parts (stack landing in
+   `wg-runtime/acceptance.rs` uses task services), that use is first rewritten against the core
+   crate or left in place and listed for the later move.
 
 **Pilot: `wg-decisions` (WG-3781).** The decisions feature is the first crate of this shape. What
 it changed from the text above:
@@ -1300,14 +1330,14 @@ feature passing unchanged (moved, not rewritten) plus the gates.
 | FC-01 | `Feature` descriptor in `wg-runtime` (CLI groups, routes, tools, resources, job handlers as `fn` tables); `wg-cli`, `wg-server`, `wg-mcp` and the worker collect from `&[&Feature]` beside today's tables; the `IMPLEMENTED` lists of the clap-tree, route and tool coverage tests derived from the list | none | mid |
 | FC-02 | arch-lint: `crate::module Tier` lines in `purity-tiers.txt`, unlisted modules of a listed feature crate fail, `Core` modules checked on `use` items and paths, shell ceiling measured over `Shell` modules | none | mid |
 | FC-03 | Pilot: `wg-decisions` from the decision code in `wg-runtimespec`, `wg-runtime`, `wg-storecodec`, `wg-store`, `wg-clispec`, `wg-serverspec`, `wg-server`, `wg-mcp` and `wg-wire`; Python `test_decisions.py` in Rust mode and the HTTP replay unchanged; 4.16 amended with anything the pilot changes | FC-01, FC-02 | mid |
-| FC-04 | Move `tasks` (including `acceptance.rs` task acceptance) into `wg-tasks` | FC-03 | mid |
-| FC-05 | Move `registry`, `repos`, `settings`, `setup` into `wg-registry` | FC-03 | haiku |
-| FC-06 | Move `git` and `git_sync` into the git feature crate (`wg-gitcore` grows) | FC-05 | haiku |
-| FC-07 | Move `worktrees` and the attempt/run modules into `wg-exec` | FC-04, FC-05 | haiku |
-| FC-08 | Move `stacks` and stack landing into `wg-stacks`, and reconcile WG-3772's executor with the landing in `acceptance.rs` into one implementation | FC-04, FC-07 | top |
+| FC-04 | Move `tasks` (including `acceptance.rs` task acceptance) into `wg-tasks-feature` (pure shared parts into `wg-tasks`) | FC-03 | mid |
+| FC-05 | Move `registry`, `repos`, `settings`, `setup` into `wg-registry-feature` (pure shared parts stay in `wg-registry`) | FC-03 | haiku |
+| FC-06 | Move `git` and `git_sync` into `wg-git-feature` (`wg-gitcore` stays the pure core) | FC-05 | haiku |
+| FC-07 | Move `worktrees` and the attempt/run modules into `wg-exec-feature` | FC-04, FC-05 | haiku |
+| FC-08 | Move `stacks` and stack landing into `wg-stacks-feature`, and reconcile WG-3772's executor with the landing in `acceptance.rs` into one implementation | FC-04, FC-07 | top |
 | FC-09 | Move job handlers out of `wg-runtime` into their features' `jobs` modules; `HandlerRegistry::standard()` assembled from `FEATURES` | FC-03 | mid |
-| FC-10 | Move `automation` into `wg-automation` | FC-09 | haiku |
-| FC-11 | Move the remaining per-area store modules (experiments, analytics, classify, search, sessions and hooks, external/trackers, verification) into their feature crates | FC-03 | haiku |
+| FC-10 | Move `automation` into `wg-automation-feature` | FC-09 | haiku |
+| FC-11 | Move the remaining per-area store modules (experiments, analytics, classify, search, sessions and hooks, external/trackers, verification) into their `wg-<area>-feature` crates | FC-03 | haiku |
 | FC-12 | Retire the per-layer crates: whatever is left of `wg-runtimespec`, `wg-storecodec`, `wg-clispec`, `wg-serverspec`, `wg-mcpspec` is base code and moves into the base crates or stays as a renamed base crate; 4.3's table rewritten to the final layout | FC-04 to FC-11 | mid |
 
 ## 11. Decisions from the user (2026-10-25)

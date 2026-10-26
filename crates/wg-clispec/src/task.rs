@@ -15,6 +15,7 @@ use wg_validate::{Loc, ValidationError};
 use wg_wire::convention::{dict, text};
 use wg_wire::error::error_body;
 
+use crate::datetime;
 use crate::tree::{SNAPSHOT_JSON, placeholder};
 use crate::{CliFailure, Snapshot};
 
@@ -174,8 +175,22 @@ fn put_list(body: &mut Map<String, Json>, key: &str, values: Vec<String>) {
     }
 }
 
+/// The `--due` option: Click's `datetime` check, which is a usage error (exit 2) on a value none
+/// of the formats parses. The value Python sends is the naive datetime's isoformat.
+fn due_text(value: &str) -> Result<String, CliFailure> {
+    datetime::parse_click_datetime(value)
+        .map(|due| wg_json::isoformat(&due))
+        .map_err(|why| CliFailure::Usage {
+            usage: "workgraph task create [OPTIONS] {title}".to_owned(),
+            command: "workgraph task create".to_owned(),
+            message: format!("Invalid value for '--due': {why}"),
+        })
+}
+
 /// The `TaskCreate` body of `task create`.
 pub fn create_body(m: &ArgMatches, read_file: ReadFile<'_>) -> Result<Json, CliFailure> {
+    // Click checks the options before the command runs, so `--due` fails before `@file` reads.
+    let due = one(m, "--due").map(|value| due_text(&value)).transpose()?;
     let mut description = one(m, "--description").unwrap_or_default();
     if let Some(path) = description.strip_prefix('@') {
         description = read_file(path).map_err(|why| CliFailure::fail(why, 1))?;
@@ -214,7 +229,7 @@ pub fn create_body(m: &ArgMatches, read_file: ReadFile<'_>) -> Result<Json, CliF
     put(&mut body, "assignee", one(m, "--assignee"));
     put(&mut body, "assigned_agent", one(m, "--agent"));
     body.insert("auto_execute".to_owned(), json!(flag(m, "--auto-execute")));
-    put(&mut body, "due_at", one(m, "--due"));
+    put(&mut body, "due_at", due);
     Ok(Json::Object(body))
 }
 

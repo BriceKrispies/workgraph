@@ -7,6 +7,7 @@
 //! clap tree built from it, the exit-code mapping and the text of error reports (contracts O02 and O05).
 
 pub mod argv;
+pub mod datetime;
 pub mod decision;
 pub mod failure;
 pub mod servers;
@@ -17,7 +18,7 @@ pub mod tree;
 pub mod ui;
 
 pub use argv::{Argv, is_hook_invocation, split_json};
-pub use failure::{CliFailure, EXIT_INTERRUPTED, EXIT_UNEXPECTED, Report, report};
+pub use failure::{CliFailure, EXIT_INTERRUPTED, EXIT_UNEXPECTED, EXIT_USAGE, Report, report};
 pub use snapshot::{
     CommandSpec, Kind, ParamSpec, Snapshot, SnapshotError, diff_commands, display_path,
     not_implemented_message,

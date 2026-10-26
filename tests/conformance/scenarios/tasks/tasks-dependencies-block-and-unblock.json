@@ -1,0 +1,23 @@
+{
+  "id": "tasks-dependencies-block-and-unblock",
+  "covers": ["B05", "C145", "C148", "C150", "C152", "C160", "C165"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "A", "--ready"], "json": true},
+    {"cli": ["task", "create", "B", "--ready", "--depends-on", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "blocked"}}},
+    {"cli": ["task", "ready"], "json": true},
+    {"assert": {"json": {"path": "/0/key", "equals": "WG-1"}}},
+    {"cli": ["task", "claim", "WG-1"], "json": true},
+    {"cli": ["task", "complete", "WG-1", "--summary", "done"], "json": true},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "blocked"}}},
+    {"cli": ["task", "accept", "WG-1", "--manual", "--reason", "reviewed by hand"], "json": true},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "accepted"}}},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}}
+  ],
+  "not_observable": []
+}

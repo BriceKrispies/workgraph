@@ -1,0 +1,12 @@
+{
+  "id": "tasks-graph-nodes-and-edges",
+  "covers": ["C152", "C154"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "A", "--ready"], "json": true},
+    {"cli": ["task", "create", "B", "--ready", "--depends-on", "WG-1", "--parent", "WG-1", "--tag", "area:x", "--tag", "rho"], "json": true},
+    {"cli": ["task", "graph"], "json": true}
+  ],
+  "not_observable": []
+}

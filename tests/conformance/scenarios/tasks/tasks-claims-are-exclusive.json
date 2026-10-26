@@ -1,0 +1,19 @@
+{
+  "id": "tasks-claims-are-exclusive",
+  "covers": ["C148", "C163", "M33", "O05"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "T", "--ready"], "json": true},
+    {"cli": ["task", "claim", "WG-1", "--agent", "one"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "claimed"}}},
+    {"assert": {"json": {"path": "/claimed_by", "equals": "agent:one"}}},
+    {"cli": ["task", "claim", "WG-1", "--agent", "two"], "json": true, "expect_exit": 3},
+    {"mcp": "task_release", "args": {"task": "WG-1"}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/claimed_by", "equals": "agent:one"}}},
+    {"cli": ["task", "release", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}}
+  ],
+  "not_observable": []
+}

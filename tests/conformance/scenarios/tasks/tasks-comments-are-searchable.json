@@ -1,0 +1,13 @@
+{
+  "id": "tasks-comments-are-searchable",
+  "covers": ["C149", "C152", "C157"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Plain"], "json": true},
+    {"cli": ["task", "comment", "WG-1", "mentions kubernetes"], "json": true},
+    {"cli": ["task", "list", "--search", "kubernetes", "--limit", "100"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 1}}}
+  ],
+  "not_observable": []
+}

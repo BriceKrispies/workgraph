@@ -333,12 +333,60 @@ def _json_mode_error() -> dict[str, Any]:
     return {"stdout": buf.getvalue(), "stderr": "", "exit_code": code}
 
 
+EMOJI_TEXTS: tuple[str, ...] = (
+    ":rocket: ship it",
+    "[bold]:rocket:[/bold] done",
+    ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+    ":ROCKET: and :Rocket:",
+    ":nope: stays as typed",
+    "::rocket: and ::",
+    ":rocket-emoji: :x-emoji:",
+    ":rocket",
+    "数据 :rocket: 完成 :flag_japan:",
+    "\\:rocket: and [:rocket:]",
+    "[red]:warning:[/red] :smile:",
+    ":keycap_#: and :a_button_(blood_type):",
+    "a :b c:d: e",
+    "::",
+)
+
+
+def emoji_cases() -> list[dict[str, Any]]:
+    cases: list[dict[str, Any]] = []
+    for width in WIDTHS:
+        for text in EMOJI_TEXTS:
+            rows = [[text, text, text]]
+            headers = ["emoji", "again", "third"]
+            cases.append(
+                {
+                    "id": f"emoji-table-w{width}-{len(cases)}",
+                    "width": width,
+                    "title": text,
+                    "headers": headers,
+                    "rows": rows,
+                    "output": render(width, common.table, rows, headers, text),
+                }
+            )
+            pairs = [("key", text)]
+            cases.append(
+                {
+                    "id": f"emoji-kv-w{width}-{len(cases)}",
+                    "width": width,
+                    "text": text,
+                    "pairs": [["key", text]],
+                    "output": render(width, common.kv, pairs),
+                }
+            )
+    return cases
+
+
 GROUPS: dict[str, Callable[[], Iterable[dict[str, Any]]]] = {
     "tables": table_cases,
     "empty_tables": empty_table_cases,
     "kv": kv_cases,
     "markup": markup_cases,
     "errors": error_cases,
+    "emoji": emoji_cases,
 }
 
 

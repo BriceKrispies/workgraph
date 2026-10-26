@@ -1,0 +1,2026 @@
+{
+  "cases": [
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-0",
+      "output": {
+        "stderr": "",
+        "stdout": "               🚀 ship it               \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ emoji      ┃ again      ┃ third      ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ 🚀 ship it │ 🚀 ship it │ 🚀 ship it │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket: ship it",
+          ":rocket: ship it",
+          ":rocket: ship it"
+        ]
+      ],
+      "title": ":rocket: ship it",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-1",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 ship it\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket: ship it"
+        ]
+      ],
+      "text": ":rocket: ship it",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-2",
+      "output": {
+        "stderr": "",
+        "stdout": "            🚀 done            \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┓\n┃ emoji   ┃ again   ┃ third   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━┩\n│ 🚀 done │ 🚀 done │ 🚀 done │\n└─────────┴─────────┴─────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]:rocket:[/bold] done",
+          "[bold]:rocket:[/bold] done",
+          "[bold]:rocket:[/bold] done"
+        ]
+      ],
+      "title": "[bold]:rocket:[/bold] done",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-3",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 done\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[bold]:rocket:[/bold] done"
+        ]
+      ],
+      "text": "[bold]:rocket:[/bold] done",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-4",
+      "output": {
+        "stderr": "",
+        "stdout": "             👍️ 👍︎ 👍             \n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓\n┃ emoji    ┃ again    ┃ third    ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩\n│ 👍️ 👍︎ 👍 │ 👍️ 👍︎ 👍 │ 👍️ 👍︎ 👍 │\n└──────────┴──────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:"
+        ]
+      ],
+      "title": ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-5",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 👍️ 👍︎ 👍\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:"
+        ]
+      ],
+      "text": ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-6",
+      "output": {
+        "stderr": "",
+        "stdout": "              🚀 and 🚀              \n┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓\n┃ emoji     ┃ again     ┃ third     ┃\n┡━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩\n│ 🚀 and 🚀 │ 🚀 and 🚀 │ 🚀 and 🚀 │\n└───────────┴───────────┴───────────┘\n"
+      },
+      "rows": [
+        [
+          ":ROCKET: and :Rocket:",
+          ":ROCKET: and :Rocket:",
+          ":ROCKET: and :Rocket:"
+        ]
+      ],
+      "title": ":ROCKET: and :Rocket:",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-7",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 and 🚀\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":ROCKET: and :Rocket:"
+        ]
+      ],
+      "text": ":ROCKET: and :Rocket:",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-8",
+      "output": {
+        "stderr": "",
+        "stdout": "         :nope: stays as typed          \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ emoji      ┃ again      ┃ third      ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ :nope:     │ :nope:     │ :nope:     │\n│ stays as   │ stays as   │ stays as   │\n│ typed      │ typed      │ typed      │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          ":nope: stays as typed",
+          ":nope: stays as typed",
+          ":nope: stays as typed"
+        ]
+      ],
+      "title": ":nope: stays as typed",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-9",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: :nope: stays as typed\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":nope: stays as typed"
+        ]
+      ],
+      "text": ":nope: stays as typed",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-10",
+      "output": {
+        "stderr": "",
+        "stdout": "            ::rocket: and ::            \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ emoji      ┃ again      ┃ third      ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ ::rocket:  │ ::rocket:  │ ::rocket:  │\n│ and ::     │ and ::     │ and ::     │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          "::rocket: and ::",
+          "::rocket: and ::",
+          "::rocket: and ::"
+        ]
+      ],
+      "title": "::rocket: and ::",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-11",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ::rocket: and ::\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "::rocket: and ::"
+        ]
+      ],
+      "text": "::rocket: and ::",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-12",
+      "output": {
+        "stderr": "",
+        "stdout": "          🚀️ ❌️          \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ 🚀️ ❌️ │ 🚀️ ❌️ │ 🚀️ ❌️ │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket-emoji: :x-emoji:",
+          ":rocket-emoji: :x-emoji:",
+          ":rocket-emoji: :x-emoji:"
+        ]
+      ],
+      "title": ":rocket-emoji: :x-emoji:",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-13",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀️ ❌️\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket-emoji: :x-emoji:"
+        ]
+      ],
+      "text": ":rocket-emoji: :x-emoji:",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-14",
+      "output": {
+        "stderr": "",
+        "stdout": "            :rocket            \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┓\n┃ emoji   ┃ again   ┃ third   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━┩\n│ :rocket │ :rocket │ :rocket │\n└─────────┴─────────┴─────────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket",
+          ":rocket",
+          ":rocket"
+        ]
+      ],
+      "title": ":rocket",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-15",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: :rocket\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket"
+        ]
+      ],
+      "text": ":rocket",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-16",
+      "output": {
+        "stderr": "",
+        "stdout": "       数据 🚀 完成 :flag_japan:        \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ emoji      ┃ again      ┃ third      ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ 数据 🚀    │ 数据 🚀    │ 数据 🚀    │\n│ 完成       │ 完成       │ 完成       │\n│ :flag_japa │ :flag_japa │ :flag_japa │\n│ n:         │ n:         │ n:         │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          "数据 :rocket: 完成 :flag_japan:",
+          "数据 :rocket: 完成 :flag_japan:",
+          "数据 :rocket: 完成 :flag_japan:"
+        ]
+      ],
+      "title": "数据 :rocket: 完成 :flag_japan:",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-17",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 数据 🚀 完成 :flag_japan:\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "数据 :rocket: 完成 :flag_japan:"
+        ]
+      ],
+      "text": "数据 :rocket: 完成 :flag_japan:",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-18",
+      "output": {
+        "stderr": "",
+        "stdout": "              \\🚀 and [🚀]              \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ emoji      ┃ again      ┃ third      ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ \\🚀 and    │ \\🚀 and    │ \\🚀 and    │\n│ [🚀]       │ [🚀]       │ [🚀]       │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          "\\:rocket: and [:rocket:]",
+          "\\:rocket: and [:rocket:]",
+          "\\:rocket: and [:rocket:]"
+        ]
+      ],
+      "title": "\\:rocket: and [:rocket:]",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-19",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: \\🚀 and [🚀]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "\\:rocket: and [:rocket:]"
+        ]
+      ],
+      "text": "\\:rocket: and [:rocket:]",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-20",
+      "output": {
+        "stderr": "",
+        "stdout": "          ⚠ 😄           \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ⚠ 😄  │ ⚠ 😄  │ ⚠ 😄  │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[red]:warning:[/red] :smile:",
+          "[red]:warning:[/red] :smile:",
+          "[red]:warning:[/red] :smile:"
+        ]
+      ],
+      "title": "[red]:warning:[/red] :smile:",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-21",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ⚠ 😄\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[red]:warning:[/red] :smile:"
+        ]
+      ],
+      "text": "[red]:warning:[/red] :smile:",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-22",
+      "output": {
+        "stderr": "",
+        "stdout": "             #️⃣ and 🅰             \n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓\n┃ emoji    ┃ again    ┃ third    ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩\n│ #️⃣ and 🅰 │ #️⃣ and 🅰 │ #️⃣ and 🅰 │\n└──────────┴──────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          ":keycap_#: and :a_button_(blood_type):",
+          ":keycap_#: and :a_button_(blood_type):",
+          ":keycap_#: and :a_button_(blood_type):"
+        ]
+      ],
+      "title": ":keycap_#: and :a_button_(blood_type):",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-23",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: #️⃣ and 🅰\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":keycap_#: and :a_button_(blood_type):"
+        ]
+      ],
+      "text": ":keycap_#: and :a_button_(blood_type):",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-24",
+      "output": {
+        "stderr": "",
+        "stdout": "              a :b c:d: e               \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ emoji      ┃ again      ┃ third      ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ a :b c:d:  │ a :b c:d:  │ a :b c:d:  │\n│ e          │ e          │ e          │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          "a :b c:d: e",
+          "a :b c:d: e",
+          "a :b c:d: e"
+        ]
+      ],
+      "title": "a :b c:d: e",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-25",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: a :b c:d: e\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "a :b c:d: e"
+        ]
+      ],
+      "text": "a :b c:d: e",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w40-26",
+      "output": {
+        "stderr": "",
+        "stdout": "           ::            \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ::    │ ::    │ ::    │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "::",
+          "::",
+          "::"
+        ]
+      ],
+      "title": "::",
+      "width": 40
+    },
+    {
+      "id": "emoji-kv-w40-27",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ::\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "::"
+        ]
+      ],
+      "text": "::",
+      "width": 40
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-28",
+      "output": {
+        "stderr": "",
+        "stdout": "               🚀 ship it               \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ emoji      ┃ again      ┃ third      ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ 🚀 ship it │ 🚀 ship it │ 🚀 ship it │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket: ship it",
+          ":rocket: ship it",
+          ":rocket: ship it"
+        ]
+      ],
+      "title": ":rocket: ship it",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-29",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 ship it\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket: ship it"
+        ]
+      ],
+      "text": ":rocket: ship it",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-30",
+      "output": {
+        "stderr": "",
+        "stdout": "            🚀 done            \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┓\n┃ emoji   ┃ again   ┃ third   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━┩\n│ 🚀 done │ 🚀 done │ 🚀 done │\n└─────────┴─────────┴─────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]:rocket:[/bold] done",
+          "[bold]:rocket:[/bold] done",
+          "[bold]:rocket:[/bold] done"
+        ]
+      ],
+      "title": "[bold]:rocket:[/bold] done",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-31",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 done\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[bold]:rocket:[/bold] done"
+        ]
+      ],
+      "text": "[bold]:rocket:[/bold] done",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-32",
+      "output": {
+        "stderr": "",
+        "stdout": "             👍️ 👍︎ 👍             \n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓\n┃ emoji    ┃ again    ┃ third    ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩\n│ 👍️ 👍︎ 👍 │ 👍️ 👍︎ 👍 │ 👍️ 👍︎ 👍 │\n└──────────┴──────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:"
+        ]
+      ],
+      "title": ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-33",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 👍️ 👍︎ 👍\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:"
+        ]
+      ],
+      "text": ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-34",
+      "output": {
+        "stderr": "",
+        "stdout": "              🚀 and 🚀              \n┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓\n┃ emoji     ┃ again     ┃ third     ┃\n┡━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩\n│ 🚀 and 🚀 │ 🚀 and 🚀 │ 🚀 and 🚀 │\n└───────────┴───────────┴───────────┘\n"
+      },
+      "rows": [
+        [
+          ":ROCKET: and :Rocket:",
+          ":ROCKET: and :Rocket:",
+          ":ROCKET: and :Rocket:"
+        ]
+      ],
+      "title": ":ROCKET: and :Rocket:",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-35",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 and 🚀\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":ROCKET: and :Rocket:"
+        ]
+      ],
+      "text": ":ROCKET: and :Rocket:",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-36",
+      "output": {
+        "stderr": "",
+        "stdout": "                          :nope: stays as typed                          \n┏━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ emoji                 ┃ again                 ┃ third                 ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩\n│ :nope: stays as typed │ :nope: stays as typed │ :nope: stays as typed │\n└───────────────────────┴───────────────────────┴───────────────────────┘\n"
+      },
+      "rows": [
+        [
+          ":nope: stays as typed",
+          ":nope: stays as typed",
+          ":nope: stays as typed"
+        ]
+      ],
+      "title": ":nope: stays as typed",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-37",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: :nope: stays as typed\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":nope: stays as typed"
+        ]
+      ],
+      "text": ":nope: stays as typed",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-38",
+      "output": {
+        "stderr": "",
+        "stdout": "                     ::rocket: and ::                     \n┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n┃ emoji            ┃ again            ┃ third            ┃\n┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩\n│ ::rocket: and :: │ ::rocket: and :: │ ::rocket: and :: │\n└──────────────────┴──────────────────┴──────────────────┘\n"
+      },
+      "rows": [
+        [
+          "::rocket: and ::",
+          "::rocket: and ::",
+          "::rocket: and ::"
+        ]
+      ],
+      "title": "::rocket: and ::",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-39",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ::rocket: and ::\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "::rocket: and ::"
+        ]
+      ],
+      "text": "::rocket: and ::",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-40",
+      "output": {
+        "stderr": "",
+        "stdout": "          🚀️ ❌️          \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ 🚀️ ❌️ │ 🚀️ ❌️ │ 🚀️ ❌️ │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket-emoji: :x-emoji:",
+          ":rocket-emoji: :x-emoji:",
+          ":rocket-emoji: :x-emoji:"
+        ]
+      ],
+      "title": ":rocket-emoji: :x-emoji:",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-41",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀️ ❌️\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket-emoji: :x-emoji:"
+        ]
+      ],
+      "text": ":rocket-emoji: :x-emoji:",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-42",
+      "output": {
+        "stderr": "",
+        "stdout": "            :rocket            \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┓\n┃ emoji   ┃ again   ┃ third   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━┩\n│ :rocket │ :rocket │ :rocket │\n└─────────┴─────────┴─────────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket",
+          ":rocket",
+          ":rocket"
+        ]
+      ],
+      "title": ":rocket",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-43",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: :rocket\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket"
+        ]
+      ],
+      "text": ":rocket",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-44",
+      "output": {
+        "stderr": "",
+        "stdout": "                           数据 🚀 完成 :flag_japan:                            \n┏━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ emoji                   ┃ again                   ┃ third                    ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ 数据 🚀 完成            │ 数据 🚀 完成            │ 数据 🚀 完成             │\n│ :flag_japan:            │ :flag_japan:            │ :flag_japan:             │\n└─────────────────────────┴─────────────────────────┴──────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "数据 :rocket: 完成 :flag_japan:",
+          "数据 :rocket: 完成 :flag_japan:",
+          "数据 :rocket: 完成 :flag_japan:"
+        ]
+      ],
+      "title": "数据 :rocket: 完成 :flag_japan:",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-45",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 数据 🚀 完成 :flag_japan:\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "数据 :rocket: 完成 :flag_japan:"
+        ]
+      ],
+      "text": "数据 :rocket: 完成 :flag_japan:",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-46",
+      "output": {
+        "stderr": "",
+        "stdout": "                 \\🚀 and [🚀]                 \n┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓\n┃ emoji        ┃ again        ┃ third        ┃\n┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩\n│ \\🚀 and [🚀] │ \\🚀 and [🚀] │ \\🚀 and [🚀] │\n└──────────────┴──────────────┴──────────────┘\n"
+      },
+      "rows": [
+        [
+          "\\:rocket: and [:rocket:]",
+          "\\:rocket: and [:rocket:]",
+          "\\:rocket: and [:rocket:]"
+        ]
+      ],
+      "title": "\\:rocket: and [:rocket:]",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-47",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: \\🚀 and [🚀]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "\\:rocket: and [:rocket:]"
+        ]
+      ],
+      "text": "\\:rocket: and [:rocket:]",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-48",
+      "output": {
+        "stderr": "",
+        "stdout": "          ⚠ 😄           \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ⚠ 😄  │ ⚠ 😄  │ ⚠ 😄  │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[red]:warning:[/red] :smile:",
+          "[red]:warning:[/red] :smile:",
+          "[red]:warning:[/red] :smile:"
+        ]
+      ],
+      "title": "[red]:warning:[/red] :smile:",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-49",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ⚠ 😄\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[red]:warning:[/red] :smile:"
+        ]
+      ],
+      "text": "[red]:warning:[/red] :smile:",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-50",
+      "output": {
+        "stderr": "",
+        "stdout": "             #️⃣ and 🅰             \n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓\n┃ emoji    ┃ again    ┃ third    ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩\n│ #️⃣ and 🅰 │ #️⃣ and 🅰 │ #️⃣ and 🅰 │\n└──────────┴──────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          ":keycap_#: and :a_button_(blood_type):",
+          ":keycap_#: and :a_button_(blood_type):",
+          ":keycap_#: and :a_button_(blood_type):"
+        ]
+      ],
+      "title": ":keycap_#: and :a_button_(blood_type):",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-51",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: #️⃣ and 🅰\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":keycap_#: and :a_button_(blood_type):"
+        ]
+      ],
+      "text": ":keycap_#: and :a_button_(blood_type):",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-52",
+      "output": {
+        "stderr": "",
+        "stdout": "                a :b c:d: e                \n┏━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓\n┃ emoji       ┃ again       ┃ third       ┃\n┡━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━┩\n│ a :b c:d: e │ a :b c:d: e │ a :b c:d: e │\n└─────────────┴─────────────┴─────────────┘\n"
+      },
+      "rows": [
+        [
+          "a :b c:d: e",
+          "a :b c:d: e",
+          "a :b c:d: e"
+        ]
+      ],
+      "title": "a :b c:d: e",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-53",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: a :b c:d: e\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "a :b c:d: e"
+        ]
+      ],
+      "text": "a :b c:d: e",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w80-54",
+      "output": {
+        "stderr": "",
+        "stdout": "           ::            \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ::    │ ::    │ ::    │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "::",
+          "::",
+          "::"
+        ]
+      ],
+      "title": "::",
+      "width": 80
+    },
+    {
+      "id": "emoji-kv-w80-55",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ::\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "::"
+        ]
+      ],
+      "text": "::",
+      "width": 80
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-56",
+      "output": {
+        "stderr": "",
+        "stdout": "               🚀 ship it               \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ emoji      ┃ again      ┃ third      ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ 🚀 ship it │ 🚀 ship it │ 🚀 ship it │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket: ship it",
+          ":rocket: ship it",
+          ":rocket: ship it"
+        ]
+      ],
+      "title": ":rocket: ship it",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-57",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 ship it\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket: ship it"
+        ]
+      ],
+      "text": ":rocket: ship it",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-58",
+      "output": {
+        "stderr": "",
+        "stdout": "            🚀 done            \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┓\n┃ emoji   ┃ again   ┃ third   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━┩\n│ 🚀 done │ 🚀 done │ 🚀 done │\n└─────────┴─────────┴─────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]:rocket:[/bold] done",
+          "[bold]:rocket:[/bold] done",
+          "[bold]:rocket:[/bold] done"
+        ]
+      ],
+      "title": "[bold]:rocket:[/bold] done",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-59",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 done\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[bold]:rocket:[/bold] done"
+        ]
+      ],
+      "text": "[bold]:rocket:[/bold] done",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-60",
+      "output": {
+        "stderr": "",
+        "stdout": "             👍️ 👍︎ 👍             \n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓\n┃ emoji    ┃ again    ┃ third    ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩\n│ 👍️ 👍︎ 👍 │ 👍️ 👍︎ 👍 │ 👍️ 👍︎ 👍 │\n└──────────┴──────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:"
+        ]
+      ],
+      "title": ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-61",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 👍️ 👍︎ 👍\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:"
+        ]
+      ],
+      "text": ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-62",
+      "output": {
+        "stderr": "",
+        "stdout": "              🚀 and 🚀              \n┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓\n┃ emoji     ┃ again     ┃ third     ┃\n┡━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩\n│ 🚀 and 🚀 │ 🚀 and 🚀 │ 🚀 and 🚀 │\n└───────────┴───────────┴───────────┘\n"
+      },
+      "rows": [
+        [
+          ":ROCKET: and :Rocket:",
+          ":ROCKET: and :Rocket:",
+          ":ROCKET: and :Rocket:"
+        ]
+      ],
+      "title": ":ROCKET: and :Rocket:",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-63",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 and 🚀\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":ROCKET: and :Rocket:"
+        ]
+      ],
+      "text": ":ROCKET: and :Rocket:",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-64",
+      "output": {
+        "stderr": "",
+        "stdout": "                          :nope: stays as typed                          \n┏━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ emoji                 ┃ again                 ┃ third                 ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩\n│ :nope: stays as typed │ :nope: stays as typed │ :nope: stays as typed │\n└───────────────────────┴───────────────────────┴───────────────────────┘\n"
+      },
+      "rows": [
+        [
+          ":nope: stays as typed",
+          ":nope: stays as typed",
+          ":nope: stays as typed"
+        ]
+      ],
+      "title": ":nope: stays as typed",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-65",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: :nope: stays as typed\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":nope: stays as typed"
+        ]
+      ],
+      "text": ":nope: stays as typed",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-66",
+      "output": {
+        "stderr": "",
+        "stdout": "                     ::rocket: and ::                     \n┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n┃ emoji            ┃ again            ┃ third            ┃\n┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩\n│ ::rocket: and :: │ ::rocket: and :: │ ::rocket: and :: │\n└──────────────────┴──────────────────┴──────────────────┘\n"
+      },
+      "rows": [
+        [
+          "::rocket: and ::",
+          "::rocket: and ::",
+          "::rocket: and ::"
+        ]
+      ],
+      "title": "::rocket: and ::",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-67",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ::rocket: and ::\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "::rocket: and ::"
+        ]
+      ],
+      "text": "::rocket: and ::",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-68",
+      "output": {
+        "stderr": "",
+        "stdout": "          🚀️ ❌️          \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ 🚀️ ❌️ │ 🚀️ ❌️ │ 🚀️ ❌️ │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket-emoji: :x-emoji:",
+          ":rocket-emoji: :x-emoji:",
+          ":rocket-emoji: :x-emoji:"
+        ]
+      ],
+      "title": ":rocket-emoji: :x-emoji:",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-69",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀️ ❌️\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket-emoji: :x-emoji:"
+        ]
+      ],
+      "text": ":rocket-emoji: :x-emoji:",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-70",
+      "output": {
+        "stderr": "",
+        "stdout": "            :rocket            \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┓\n┃ emoji   ┃ again   ┃ third   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━┩\n│ :rocket │ :rocket │ :rocket │\n└─────────┴─────────┴─────────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket",
+          ":rocket",
+          ":rocket"
+        ]
+      ],
+      "title": ":rocket",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-71",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: :rocket\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket"
+        ]
+      ],
+      "text": ":rocket",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-72",
+      "output": {
+        "stderr": "",
+        "stdout": "                              数据 🚀 完成 :flag_japan:                              \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ emoji                     ┃ again                     ┃ third                     ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ 数据 🚀 完成 :flag_japan: │ 数据 🚀 完成 :flag_japan: │ 数据 🚀 完成 :flag_japan: │\n└───────────────────────────┴───────────────────────────┴───────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "数据 :rocket: 完成 :flag_japan:",
+          "数据 :rocket: 完成 :flag_japan:",
+          "数据 :rocket: 完成 :flag_japan:"
+        ]
+      ],
+      "title": "数据 :rocket: 完成 :flag_japan:",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-73",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 数据 🚀 完成 :flag_japan:\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "数据 :rocket: 完成 :flag_japan:"
+        ]
+      ],
+      "text": "数据 :rocket: 完成 :flag_japan:",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-74",
+      "output": {
+        "stderr": "",
+        "stdout": "                 \\🚀 and [🚀]                 \n┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓\n┃ emoji        ┃ again        ┃ third        ┃\n┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩\n│ \\🚀 and [🚀] │ \\🚀 and [🚀] │ \\🚀 and [🚀] │\n└──────────────┴──────────────┴──────────────┘\n"
+      },
+      "rows": [
+        [
+          "\\:rocket: and [:rocket:]",
+          "\\:rocket: and [:rocket:]",
+          "\\:rocket: and [:rocket:]"
+        ]
+      ],
+      "title": "\\:rocket: and [:rocket:]",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-75",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: \\🚀 and [🚀]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "\\:rocket: and [:rocket:]"
+        ]
+      ],
+      "text": "\\:rocket: and [:rocket:]",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-76",
+      "output": {
+        "stderr": "",
+        "stdout": "          ⚠ 😄           \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ⚠ 😄  │ ⚠ 😄  │ ⚠ 😄  │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[red]:warning:[/red] :smile:",
+          "[red]:warning:[/red] :smile:",
+          "[red]:warning:[/red] :smile:"
+        ]
+      ],
+      "title": "[red]:warning:[/red] :smile:",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-77",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ⚠ 😄\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[red]:warning:[/red] :smile:"
+        ]
+      ],
+      "text": "[red]:warning:[/red] :smile:",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-78",
+      "output": {
+        "stderr": "",
+        "stdout": "             #️⃣ and 🅰             \n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓\n┃ emoji    ┃ again    ┃ third    ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩\n│ #️⃣ and 🅰 │ #️⃣ and 🅰 │ #️⃣ and 🅰 │\n└──────────┴──────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          ":keycap_#: and :a_button_(blood_type):",
+          ":keycap_#: and :a_button_(blood_type):",
+          ":keycap_#: and :a_button_(blood_type):"
+        ]
+      ],
+      "title": ":keycap_#: and :a_button_(blood_type):",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-79",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: #️⃣ and 🅰\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":keycap_#: and :a_button_(blood_type):"
+        ]
+      ],
+      "text": ":keycap_#: and :a_button_(blood_type):",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-80",
+      "output": {
+        "stderr": "",
+        "stdout": "                a :b c:d: e                \n┏━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓\n┃ emoji       ┃ again       ┃ third       ┃\n┡━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━┩\n│ a :b c:d: e │ a :b c:d: e │ a :b c:d: e │\n└─────────────┴─────────────┴─────────────┘\n"
+      },
+      "rows": [
+        [
+          "a :b c:d: e",
+          "a :b c:d: e",
+          "a :b c:d: e"
+        ]
+      ],
+      "title": "a :b c:d: e",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-81",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: a :b c:d: e\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "a :b c:d: e"
+        ]
+      ],
+      "text": "a :b c:d: e",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w120-82",
+      "output": {
+        "stderr": "",
+        "stdout": "           ::            \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ::    │ ::    │ ::    │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "::",
+          "::",
+          "::"
+        ]
+      ],
+      "title": "::",
+      "width": 120
+    },
+    {
+      "id": "emoji-kv-w120-83",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ::\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "::"
+        ]
+      ],
+      "text": "::",
+      "width": 120
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-84",
+      "output": {
+        "stderr": "",
+        "stdout": "               🚀 ship it               \n┏━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┓\n┃ emoji      ┃ again      ┃ third      ┃\n┡━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━┩\n│ 🚀 ship it │ 🚀 ship it │ 🚀 ship it │\n└────────────┴────────────┴────────────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket: ship it",
+          ":rocket: ship it",
+          ":rocket: ship it"
+        ]
+      ],
+      "title": ":rocket: ship it",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-85",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 ship it\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket: ship it"
+        ]
+      ],
+      "text": ":rocket: ship it",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-86",
+      "output": {
+        "stderr": "",
+        "stdout": "            🚀 done            \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┓\n┃ emoji   ┃ again   ┃ third   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━┩\n│ 🚀 done │ 🚀 done │ 🚀 done │\n└─────────┴─────────┴─────────┘\n"
+      },
+      "rows": [
+        [
+          "[bold]:rocket:[/bold] done",
+          "[bold]:rocket:[/bold] done",
+          "[bold]:rocket:[/bold] done"
+        ]
+      ],
+      "title": "[bold]:rocket:[/bold] done",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-87",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 done\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[bold]:rocket:[/bold] done"
+        ]
+      ],
+      "text": "[bold]:rocket:[/bold] done",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-88",
+      "output": {
+        "stderr": "",
+        "stdout": "             👍️ 👍︎ 👍             \n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓\n┃ emoji    ┃ again    ┃ third    ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩\n│ 👍️ 👍︎ 👍 │ 👍️ 👍︎ 👍 │ 👍️ 👍︎ 👍 │\n└──────────┴──────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:"
+        ]
+      ],
+      "title": ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-89",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 👍️ 👍︎ 👍\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:"
+        ]
+      ],
+      "text": ":thumbs_up-emoji: :thumbs_up-text: :thumbs_up:",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-90",
+      "output": {
+        "stderr": "",
+        "stdout": "              🚀 and 🚀              \n┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓\n┃ emoji     ┃ again     ┃ third     ┃\n┡━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩\n│ 🚀 and 🚀 │ 🚀 and 🚀 │ 🚀 and 🚀 │\n└───────────┴───────────┴───────────┘\n"
+      },
+      "rows": [
+        [
+          ":ROCKET: and :Rocket:",
+          ":ROCKET: and :Rocket:",
+          ":ROCKET: and :Rocket:"
+        ]
+      ],
+      "title": ":ROCKET: and :Rocket:",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-91",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀 and 🚀\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":ROCKET: and :Rocket:"
+        ]
+      ],
+      "text": ":ROCKET: and :Rocket:",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-92",
+      "output": {
+        "stderr": "",
+        "stdout": "                          :nope: stays as typed                          \n┏━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ emoji                 ┃ again                 ┃ third                 ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩\n│ :nope: stays as typed │ :nope: stays as typed │ :nope: stays as typed │\n└───────────────────────┴───────────────────────┴───────────────────────┘\n"
+      },
+      "rows": [
+        [
+          ":nope: stays as typed",
+          ":nope: stays as typed",
+          ":nope: stays as typed"
+        ]
+      ],
+      "title": ":nope: stays as typed",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-93",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: :nope: stays as typed\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":nope: stays as typed"
+        ]
+      ],
+      "text": ":nope: stays as typed",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-94",
+      "output": {
+        "stderr": "",
+        "stdout": "                     ::rocket: and ::                     \n┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓\n┃ emoji            ┃ again            ┃ third            ┃\n┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩\n│ ::rocket: and :: │ ::rocket: and :: │ ::rocket: and :: │\n└──────────────────┴──────────────────┴──────────────────┘\n"
+      },
+      "rows": [
+        [
+          "::rocket: and ::",
+          "::rocket: and ::",
+          "::rocket: and ::"
+        ]
+      ],
+      "title": "::rocket: and ::",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-95",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ::rocket: and ::\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "::rocket: and ::"
+        ]
+      ],
+      "text": "::rocket: and ::",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-96",
+      "output": {
+        "stderr": "",
+        "stdout": "          🚀️ ❌️          \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ 🚀️ ❌️ │ 🚀️ ❌️ │ 🚀️ ❌️ │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket-emoji: :x-emoji:",
+          ":rocket-emoji: :x-emoji:",
+          ":rocket-emoji: :x-emoji:"
+        ]
+      ],
+      "title": ":rocket-emoji: :x-emoji:",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-97",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 🚀️ ❌️\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket-emoji: :x-emoji:"
+        ]
+      ],
+      "text": ":rocket-emoji: :x-emoji:",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-98",
+      "output": {
+        "stderr": "",
+        "stdout": "            :rocket            \n┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┓\n┃ emoji   ┃ again   ┃ third   ┃\n┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━┩\n│ :rocket │ :rocket │ :rocket │\n└─────────┴─────────┴─────────┘\n"
+      },
+      "rows": [
+        [
+          ":rocket",
+          ":rocket",
+          ":rocket"
+        ]
+      ],
+      "title": ":rocket",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-99",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: :rocket\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":rocket"
+        ]
+      ],
+      "text": ":rocket",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-100",
+      "output": {
+        "stderr": "",
+        "stdout": "                              数据 🚀 完成 :flag_japan:                              \n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ emoji                     ┃ again                     ┃ third                     ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ 数据 🚀 完成 :flag_japan: │ 数据 🚀 完成 :flag_japan: │ 数据 🚀 完成 :flag_japan: │\n└───────────────────────────┴───────────────────────────┴───────────────────────────┘\n"
+      },
+      "rows": [
+        [
+          "数据 :rocket: 完成 :flag_japan:",
+          "数据 :rocket: 完成 :flag_japan:",
+          "数据 :rocket: 完成 :flag_japan:"
+        ]
+      ],
+      "title": "数据 :rocket: 完成 :flag_japan:",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-101",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: 数据 🚀 完成 :flag_japan:\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "数据 :rocket: 完成 :flag_japan:"
+        ]
+      ],
+      "text": "数据 :rocket: 完成 :flag_japan:",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-102",
+      "output": {
+        "stderr": "",
+        "stdout": "                 \\🚀 and [🚀]                 \n┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓\n┃ emoji        ┃ again        ┃ third        ┃\n┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━┩\n│ \\🚀 and [🚀] │ \\🚀 and [🚀] │ \\🚀 and [🚀] │\n└──────────────┴──────────────┴──────────────┘\n"
+      },
+      "rows": [
+        [
+          "\\:rocket: and [:rocket:]",
+          "\\:rocket: and [:rocket:]",
+          "\\:rocket: and [:rocket:]"
+        ]
+      ],
+      "title": "\\:rocket: and [:rocket:]",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-103",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: \\🚀 and [🚀]\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "\\:rocket: and [:rocket:]"
+        ]
+      ],
+      "text": "\\:rocket: and [:rocket:]",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-104",
+      "output": {
+        "stderr": "",
+        "stdout": "          ⚠ 😄           \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ⚠ 😄  │ ⚠ 😄  │ ⚠ 😄  │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "[red]:warning:[/red] :smile:",
+          "[red]:warning:[/red] :smile:",
+          "[red]:warning:[/red] :smile:"
+        ]
+      ],
+      "title": "[red]:warning:[/red] :smile:",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-105",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ⚠ 😄\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "[red]:warning:[/red] :smile:"
+        ]
+      ],
+      "text": "[red]:warning:[/red] :smile:",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-106",
+      "output": {
+        "stderr": "",
+        "stdout": "             #️⃣ and 🅰             \n┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┓\n┃ emoji    ┃ again    ┃ third    ┃\n┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━┩\n│ #️⃣ and 🅰 │ #️⃣ and 🅰 │ #️⃣ and 🅰 │\n└──────────┴──────────┴──────────┘\n"
+      },
+      "rows": [
+        [
+          ":keycap_#: and :a_button_(blood_type):",
+          ":keycap_#: and :a_button_(blood_type):",
+          ":keycap_#: and :a_button_(blood_type):"
+        ]
+      ],
+      "title": ":keycap_#: and :a_button_(blood_type):",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-107",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: #️⃣ and 🅰\n"
+      },
+      "pairs": [
+        [
+          "key",
+          ":keycap_#: and :a_button_(blood_type):"
+        ]
+      ],
+      "text": ":keycap_#: and :a_button_(blood_type):",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-108",
+      "output": {
+        "stderr": "",
+        "stdout": "                a :b c:d: e                \n┏━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓\n┃ emoji       ┃ again       ┃ third       ┃\n┡━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━┩\n│ a :b c:d: e │ a :b c:d: e │ a :b c:d: e │\n└─────────────┴─────────────┴─────────────┘\n"
+      },
+      "rows": [
+        [
+          "a :b c:d: e",
+          "a :b c:d: e",
+          "a :b c:d: e"
+        ]
+      ],
+      "title": "a :b c:d: e",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-109",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: a :b c:d: e\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "a :b c:d: e"
+        ]
+      ],
+      "text": "a :b c:d: e",
+      "width": 200
+    },
+    {
+      "headers": [
+        "emoji",
+        "again",
+        "third"
+      ],
+      "id": "emoji-table-w200-110",
+      "output": {
+        "stderr": "",
+        "stdout": "           ::            \n┏━━━━━━━┳━━━━━━━┳━━━━━━━┓\n┃ emoji ┃ again ┃ third ┃\n┡━━━━━━━╇━━━━━━━╇━━━━━━━┩\n│ ::    │ ::    │ ::    │\n└───────┴───────┴───────┘\n"
+      },
+      "rows": [
+        [
+          "::",
+          "::",
+          "::"
+        ]
+      ],
+      "title": "::",
+      "width": 200
+    },
+    {
+      "id": "emoji-kv-w200-111",
+      "output": {
+        "stderr": "",
+        "stdout": "  key: ::\n"
+      },
+      "pairs": [
+        [
+          "key",
+          "::"
+        ]
+      ],
+      "text": "::",
+      "width": 200
+    }
+  ],
+  "forced": {
+    "_environ": {},
+    "color_system": null,
+    "highlight": false,
+    "no_color": true
+  }
+}

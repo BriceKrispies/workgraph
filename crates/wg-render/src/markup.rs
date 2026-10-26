@@ -173,13 +173,13 @@ pub fn escape(markup: &str) -> String {
 
 /// Renders markup to its plain text, or fails as `rich.markup.render` does.
 ///
-/// Emoji codes (`:smile:`) are left as they are; rich would replace them.
+/// Emoji shortcodes are replaced first, over the whole string, as `rich.markup.render` does.
 ///
 /// # Errors
 ///
 /// A closing tag that matches no open tag, or `[/]` with nothing open.
 pub fn render_plain(markup: &str) -> Result<Vec<char>, MarkupError> {
-    let chars: Vec<char> = markup.chars().collect();
+    let chars: Vec<char> = crate::emoji::replace(markup).chars().collect();
     if !chars.contains(&'[') {
         return Ok(chars);
     }

@@ -2145,6 +2145,7 @@ dependencies = [
  "clap",
  "serde_json",
  "wg-clispec",
+ "wg-codeparse",
  "wg-json",
  "wg-model",
  "wg-net",
@@ -2160,6 +2161,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "serde_json",
+ "wg-config",
  "wg-json",
  "wg-model",
  "wg-render",

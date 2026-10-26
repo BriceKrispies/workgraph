@@ -323,7 +323,7 @@ pub fn option_flag(m: &ArgMatches, id: &str) -> bool {
 
 // ---------------------------------------------------------------- views
 
-fn get<'a>(value: &'a Value, name: &str) -> Option<&'a Value> {
+pub(crate) fn get<'a>(value: &'a Value, name: &str) -> Option<&'a Value> {
     match value {
         Value::Model { fields, .. } => fields
             .iter()
@@ -337,7 +337,7 @@ fn get<'a>(value: &'a Value, name: &str) -> Option<&'a Value> {
     }
 }
 
-fn items(value: Option<&Value>) -> &[Value] {
+pub(crate) fn items(value: Option<&Value>) -> &[Value] {
     match value {
         Some(Value::List(items)) => items,
         _ => &[],
@@ -345,7 +345,7 @@ fn items(value: Option<&Value>) -> &[Value] {
 }
 
 /// Python `str()` of a scalar output value.
-fn python(value: &Value) -> String {
+pub(crate) fn python(value: &Value) -> String {
     match value {
         Value::Null => "None".to_owned(),
         Value::Bool(true) => "True".to_owned(),
@@ -390,11 +390,11 @@ fn repr(value: &Value) -> String {
     }
 }
 
-fn s(value: Option<&Value>) -> String {
+pub(crate) fn s(value: Option<&Value>) -> String {
     value.map(python).unwrap_or_default()
 }
 
-fn opt(value: Option<&Value>) -> Option<String> {
+pub(crate) fn opt(value: Option<&Value>) -> Option<String> {
     match value {
         None | Some(Value::Null) => None,
         Some(other) => Some(python(other)),

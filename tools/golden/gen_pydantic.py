@@ -11,7 +11,7 @@ result Python produces: ``{"ok": <model_dump(mode="json")>}`` or ``{"errors": [.
 keeps Pydantic's ``type``, ``loc``, ``msg``, ``input`` and ``ctx`` (``url`` is dropped). Probes per field:
 missing, one wrong value per common JSON type, the field's own bounds just outside their limits, an
 invalid string or list of strings for validators such as slug and tag patterns, and for integer fields
-integral floats around the i64 range. Each model also gets an
+big integers, out-of-range floats and numeric strings. Each model also gets an
 unknown key and a non-object body.
 
 Output is deterministic: sorted keys, ``\\n`` line endings, UTF-8.
@@ -50,12 +50,43 @@ WRONG_TYPE_PROBES: list[tuple[str, Any]] = [
     ("list", ["a"]),
     ("dict", {"k": 1}),
 ]
-# Floats probed on integer fields: far outside the i64 range (Pydantic: int_parsing_size), exactly 2**63
-# (also int_parsing_size, the range is open), and a large integral float inside it (accepted as an int).
+# Integer fields: integers past i64 (Pydantic keeps them as Python ints), floats inside and past the
+# i64 range (Pydantic rejects a float outside it with ``int_parsing_size``), and numeric strings:
+# whitespace and sign, ASCII digits with single underscores, a zero-only fraction, and exponents or
+# non-ASCII digits, which are refused.
+INT_BIG_PROBES: list[tuple[str, Any]] = [
+    ("above_i64", 9223372036854775808),
+    ("below_i64", -9223372036854775809),
+    ("i128_max", 2**127 - 1),
+    ("i128_min", -(2**127)),
+]
+# Floats on integer fields: far outside the i64 range (int_parsing_size), exactly 2**63 and -2**63
+# (also int_parsing_size, the range is open), and integral floats strictly inside it (accepted).
 INT_FLOAT_PROBES: list[tuple[str, float]] = [
     ("huge", 1.5e300),
     ("edge", 9.223372036854776e18),
+    ("min_edge", -9.223372036854776e18),
+    ("above_i64", 9.3e18),
     ("large", 9.2e18),
+]
+INT_STRING_PROBES: list[tuple[str, Any]] = [
+    ("point_zero", "5.0"),
+    ("zeros_fraction", "5.00"),
+    ("sign", "+7"),
+    ("padded", " 12 "),
+    ("underscores", "1_000"),
+    ("exponent", "1e18"),
+    ("fraction", "5.5"),
+    ("trailing_point", "12."),
+    ("hex", "0x10"),
+    ("empty", ""),
+    ("sign_only", "-"),
+    ("big", "9223372036854775808"),
+    ("big_point_zero", "99999999999999999999.0"),
+    ("double_underscore", "1__0"),
+    ("fraction_underscore", "5.0_0"),
+    ("arabic_digits", "١٢"),
+    ("too_many_digits", "9" * 4301),
 ]
 INVALID_TEXT = "Not valid!"
 BASE_TEXT = "example"
@@ -219,6 +250,11 @@ def _cases(model: type[BaseModel], fields: dict[str, Any]) -> tuple[dict[str, An
             add(f"invalid:{name}", {**base, key: INVALID_TEXT})
         if isinstance(sample, list):
             add(f"invalid:{name}", {**base, key: [INVALID_TEXT]})
+        if isinstance(sample, int) and not isinstance(sample, bool):
+            for label, value in INT_BIG_PROBES:
+                add(f"bigint:{name}:{label}", {**base, key: value})
+            for label, value in INT_STRING_PROBES:
+                add(f"numstr:{name}:{label}", {**base, key: value})
         for case_id, value in _bounded_probes(name, field, sample):
             add(case_id, {**base, key: value})
     add("extra:unknown_key", {**base, "unknown_key": 1})

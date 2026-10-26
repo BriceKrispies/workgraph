@@ -1,0 +1,19 @@
+{
+  "id": "claude-install-events-and-mcp-fallback",
+  "covers": ["C051"],
+  "setup": [
+    {"git": "init", "repo": "local"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["claude", "install", "--scope", "local", "--project-dir", "{repo:local}", "--command", "workgraph", "--event", "PreToolUse", "--event", "Stop", "--mcp"], "json": true, "env": {"PATH": ""}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/added", "equals": ["PreToolUse", "Stop"]}}},
+    {"assert": {"json": {"path": "/command", "equals": "workgraph"}}},
+    {"assert": {"stdout_contains": "claude CLI not found"}},
+    {"assert": {"file": "{repo:local}/.claude/settings.local.json", "exists": true, "contains": "workgraph"}},
+    {"cli": ["claude", "uninstall", "--scope", "local", "--project-dir", "{repo:local}"], "json": true},
+    {"assert": {"exit": 0}}
+  ],
+  "not_observable": []
+}

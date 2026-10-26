@@ -1,0 +1,264 @@
+{
+  "scenario": "automation-rule-lifecycle-and-options",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"triggers\": {\n    \"task.created\": \"Task created\",\n    \"task.updated\": \"Task updated\",\n    \"task.became_ready\": \"Task becomes ready\",\n    \"task.completed\": \"Task completed\",\n    \"attempt.failed\": \"Attempt failed\",\n    \"verification.completed\": \"Verification completed\",\n    \"git.commit_ingested\": \"Git commit ingested\",\n    \"classification.completed\": \"Classification completed\",\n    \"repository.changes_detected\": \"Repository changes detected\",\n    \"task.accepted\": \"Task accepted\",\n    \"task.status_changed\": \"Task status changed\"\n  },\n  \"schedule\": [\n    \"cron\",\n    \"interval_seconds\"\n  ],\n  \"manual\": true,\n  \"actions\": [\n    \"add_tags\",\n    \"classify_task\",\n    \"create_child_tasks\",\n    \"create_dependency\",\n    \"enqueue_agent_run\",\n    \"generate_report\",\n    \"notify\",\n    \"run_verification\",\n    \"update_task\"\n  ],\n  \"operators\": [\n    \"eq\",\n    \"ne\",\n    \"in\",\n    \"not_in\",\n    \"contains\",\n    \"not_contains\",\n    \"gt\",\n    \"gte\",\n    \"lt\",\n    \"lte\",\n    \"exists\",\n    \"not_exists\",\n    \"matches\",\n    \"starts_with\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"ping\",\n  \"description\": \"\",\n  \"enabled\": true,\n  \"trigger\": {\n    \"type\": \"manual\",\n    \"event_types\": []\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"type\": \"notify\",\n      \"level\": \"info\",\n      \"title\": \"ping {{task.key}}\",\n      \"body\": \"\"\n    }\n  ],\n  \"retry_max_attempts\": 3,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"name\": \"ping\",\n    \"description\": \"\",\n    \"enabled\": true,\n    \"trigger\": {\n      \"event_types\": [],\n      \"type\": \"manual\"\n    },\n    \"conditions\": {},\n    \"actions\": [\n      {\n        \"body\": \"\",\n        \"level\": \"info\",\n        \"title\": \"ping {{task.key}}\",\n        \"type\": \"notify\"\n      }\n    ],\n    \"retry_max_attempts\": 3,\n    \"max_depth\": 3,\n    \"last_scheduled_at\": null,\n    \"next_run_at\": null,\n    \"created_by\": \"human:Brice\",\n    \"version\": 1,\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:1|Z>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"ping\",\n  \"description\": \"\",\n  \"enabled\": true,\n  \"trigger\": {\n    \"event_types\": [],\n    \"type\": \"manual\"\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"body\": \"\",\n      \"level\": \"info\",\n      \"title\": \"ping {{task.key}}\",\n      \"type\": \"notify\"\n    }\n  ],\n  \"retry_max_attempts\": 3,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"ping\",\n  \"description\": \"\",\n  \"enabled\": false,\n  \"trigger\": {\n    \"event_types\": [],\n    \"type\": \"manual\"\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"body\": \"\",\n      \"level\": \"info\",\n      \"title\": \"ping {{task.key}}\",\n      \"type\": \"notify\"\n    }\n  ],\n  \"retry_max_attempts\": 3,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"ping\",\n  \"description\": \"\",\n  \"enabled\": false,\n  \"trigger\": {\n    \"event_types\": [],\n    \"type\": \"manual\"\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"body\": \"\",\n      \"level\": \"info\",\n      \"title\": \"ping {{task.key}}\",\n      \"type\": \"notify\"\n    }\n  ],\n  \"retry_max_attempts\": 3,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"ping\",\n  \"description\": \"\",\n  \"enabled\": true,\n  \"trigger\": {\n    \"event_types\": [],\n    \"type\": \"manual\"\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"body\": \"\",\n      \"level\": \"info\",\n      \"title\": \"ping {{task.key}}\",\n      \"type\": \"notify\"\n    }\n  ],\n  \"retry_max_attempts\": 3,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:3|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"ping\",\n  \"description\": \"\",\n  \"enabled\": true,\n  \"trigger\": {\n    \"event_types\": [],\n    \"type\": \"manual\"\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"body\": \"\",\n      \"level\": \"info\",\n      \"title\": \"ping {{task.key}}\",\n      \"type\": \"notify\"\n    }\n  ],\n  \"retry_max_attempts\": 3,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:3|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"ping\",\n  \"description\": \"\",\n  \"enabled\": true,\n  \"trigger\": {\n    \"type\": \"manual\",\n    \"event_types\": []\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"type\": \"notify\",\n      \"level\": \"info\",\n      \"title\": \"pong {{task.key}}\",\n      \"body\": \"\"\n    }\n  ],\n  \"retry_max_attempts\": 3,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:4|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Trigger me\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:5|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"rule_id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"trigger_type\": \"manual\",\n  \"trigger_key\": \"manual:<id:5>\",\n  \"trigger_event_id\": null,\n  \"depth\": 1,\n  \"dry_run\": false,\n  \"status\": \"queued\",\n  \"matched\": true,\n  \"reason\": \"conditions matched\",\n  \"condition_trace\": [],\n  \"action_results\": [],\n  \"error\": null,\n  \"attempts\": 0,\n  \"created_at\": \"<ts:6|Z>\",\n  \"finished_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "drain",
+      "exit": 0,
+      "stdout": "completed=0 failed=0\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:4>\",\n    \"rule_id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"manual\",\n    \"trigger_key\": \"manual:<id:5>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": false,\n    \"status\": \"succeeded\",\n    \"matched\": true,\n    \"reason\": \"conditions matched\",\n    \"condition_trace\": [],\n    \"action_results\": [\n      {\n        \"index\": 0,\n        \"output\": {\n          \"notification_id\": \"<id:6>\"\n        },\n        \"status\": \"succeeded\",\n        \"type\": \"notify\"\n      }\n    ],\n    \"error\": null,\n    \"attempts\": 1,\n    \"created_at\": \"<ts:6|Z>\",\n    \"finished_at\": \"<ts:8|Z>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:6>\",\n    \"level\": \"info\",\n    \"title\": \"pong WG-1\",\n    \"body\": \"\",\n    \"source\": \"automation:ping\",\n    \"data\": {\n      \"task\": \"WG-1\"\n    },\n    \"read_at\": null,\n    \"created_at\": \"<ts:7|db>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:6>\",\n    \"level\": \"info\",\n    \"title\": \"pong WG-1\",\n    \"body\": \"\",\n    \"source\": \"automation:ping\",\n    \"data\": {\n      \"task\": \"WG-1\"\n    },\n    \"read_at\": null,\n    \"created_at\": \"<ts:7|db>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"rule_id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"trigger_type\": \"preview\",\n  \"trigger_key\": \"dry:<id:8>\",\n  \"trigger_event_id\": null,\n  \"depth\": 1,\n  \"dry_run\": true,\n  \"status\": \"previewed\",\n  \"matched\": true,\n  \"reason\": \"dry run: actions not executed\",\n  \"condition_trace\": [],\n  \"action_results\": [\n    {\n      \"action\": {\n        \"body\": \"\",\n        \"level\": \"info\",\n        \"title\": \"pong {{task.key}}\",\n        \"type\": \"notify\"\n      },\n      \"planned\": \"notify: pong WG-1\"\n    }\n  ],\n  \"error\": null,\n  \"attempts\": 0,\n  \"created_at\": \"<ts:10|Z>\",\n  \"finished_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"seq\": 9,\n    \"id\": \"<id:9>\",\n    \"workspace_id\": \"<id:2>\",\n    \"event_type\": \"classification.failed\",\n    \"entity_type\": \"task\",\n    \"entity_id\": \"<id:3>\",\n    \"actor\": \"system:classifier\",\n    \"actor_kind\": \"system\",\n    \"occurred_at\": \"<ts:9|Z>\",\n    \"correlation_id\": \"<id:10>\",\n    \"causation_id\": \"<id:11>\",\n    \"attempt_id\": null,\n    \"schema_version\": 1,\n    \"data\": {\n      \"classification_id\": \"<id:12>\",\n      \"error\": \"ollama at http://127.0.0.1:<port> is unreachable after 3 attempt(s): [WinError 10061] No connection could be made because the target machine actively refused it\",\n      \"model\": \"qwen2.5:7b-instruct\",\n      \"provider\": \"ollama\",\n      \"reason\": \"provider_unavailable\"\n    }\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 33,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:13>\",\n  \"rule_id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"trigger_type\": \"preview\",\n  \"trigger_key\": \"dry:<id:14>\",\n  \"trigger_event_id\": \"<id:9>\",\n  \"depth\": 1,\n  \"dry_run\": true,\n  \"status\": \"previewed\",\n  \"matched\": true,\n  \"reason\": \"dry run: actions not executed\",\n  \"condition_trace\": [],\n  \"action_results\": [\n    {\n      \"action\": {\n        \"body\": \"\",\n        \"level\": \"info\",\n        \"title\": \"pong {{task.key}}\",\n        \"type\": \"notify\"\n      },\n      \"planned\": \"notify: pong WG-1\"\n    }\n  ],\n  \"error\": null,\n  \"attempts\": 0,\n  \"created_at\": \"<ts:11|Z>\",\n  \"finished_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 34,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 35,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:15>\",\n  \"rule_id\": \"<id:16>\",\n  \"workspace_id\": \"<id:2>\",\n  \"trigger_type\": \"preview\",\n  \"trigger_key\": \"dry:<id:17>\",\n  \"trigger_event_id\": null,\n  \"depth\": 1,\n  \"dry_run\": true,\n  \"status\": \"previewed\",\n  \"matched\": true,\n  \"reason\": \"dry run: actions not executed\",\n  \"condition_trace\": [],\n  \"action_results\": [\n    {\n      \"action\": {\n        \"body\": \"\",\n        \"level\": \"info\",\n        \"title\": \"draft\",\n        \"type\": \"notify\"\n      },\n      \"planned\": \"notify: draft\"\n    }\n  ],\n  \"error\": null,\n  \"attempts\": 0,\n  \"created_at\": \"<ts:12|Z>\",\n  \"finished_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 36,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "scenario": "claude-backfill-and-status",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"parsed\": 0,\n  \"missing\": 0,\n  \"skipped\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"parsed\": 0,\n  \"missing\": 0,\n  \"linked\": 0,\n  \"attempts_created\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"parsed\": 0,\n  \"missing\": 0,\n  \"linked\": 0,\n  \"attempts_created\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"installation\": {\n    \"scope\": \"project\",\n    \"settings\": \"<tmp>/repos\\\\backfill\\\\.claude\\\\settings.json\",\n    \"exists\": false,\n    \"error\": null,\n    \"installed_events\": [],\n    \"missing_events\": [\n      \"PostToolUse\",\n      \"PostToolUseFailure\",\n      \"PreToolUse\",\n      \"SessionEnd\",\n      \"SessionStart\",\n      \"Stop\",\n      \"SubagentStart\",\n      \"SubagentStop\",\n      \"TaskCompleted\",\n      \"TaskCreated\"\n    ],\n    \"command_resolves\": false\n  },\n  \"ingestion\": {\n    \"hook_events\": 0,\n    \"last_received_at\": null,\n    \"by_event\": {},\n    \"spooled\": 0,\n    \"spool_failed\": 0\n  },\n  \"sessions\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "claude-install-project-scope",
+  "covers": ["C051", "C055", "C057"],
+  "setup": [
+    {"git": "init", "repo": "proj"},
+    {"git": "write", "repo": "proj", "files": {".claude/settings.json": "{\"model\": \"opus\", \"hooks\": {\"PreToolUse\": [{\"matcher\": \"Bash\", \"hooks\": [{\"type\": \"command\", \"command\": \"my-linter\"}]}]}}"}}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["claude", "status", "--scope", "project", "--project-dir", "{repo:proj}"], "json": true},
+    {"cli": ["claude", "install", "--scope", "project", "--project-dir", "{repo:proj}", "--command", "workgraph"], "json": true},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/command", "equals": "workgraph"}}},
+    {"assert": {"file": "{repo:proj}/.claude/settings.json", "exists": true, "contains": "my-linter"}},
+    {"cli": ["claude", "install", "--scope", "project", "--project-dir", "{repo:proj}", "--command", "workgraph"], "json": true},
+    {"assert": {"json": {"path": "/added", "equals": []}}},
+    {"cli": ["claude", "status", "--scope", "project", "--project-dir", "{repo:proj}"], "json": true},
+    {"assert": {"json": {"path": "/installation/missing_events", "equals": []}}},
+    {"cli": ["claude", "uninstall", "--scope", "project", "--project-dir", "{repo:proj}"], "json": true},
+    {"assert": {"exit": 0}},
+    {"cli": ["claude", "status", "--scope", "project", "--project-dir", "{repo:proj}"], "json": true},
+    {"assert": {"json": {"path": "/installation/installed_events", "equals": []}}},
+    {"assert": {"file": "{repo:proj}/.claude/settings.json", "exists": true, "contains": "my-linter"}},
+    {"cli": ["claude", "install", "--scope", "global", "--project-dir", "{repo:proj}"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}}
+  ],
+  "not_observable": []
+}

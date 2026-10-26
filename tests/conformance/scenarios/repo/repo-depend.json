@@ -1,0 +1,25 @@
+{
+  "id": "repo-depend",
+  "covers": ["C115", "C118"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"},
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true, "save": {"svc_id": "/id"}},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true, "save": {"api_id": "/id"}},
+    {"cli": ["repo", "depend", "api", "svc", "--description", "api imports svc"], "json": true},
+    {"assert": {"json": {"path": "/id", "equals": "{var:api_id}"}}},
+    {"assert": {"json": {"path": "/depends_on", "equals": ["{var:svc_id}"]}}},
+    {"cli": ["repo", "depend", "api", "svc", "--no-remove", "--description", "still needed"], "json": true},
+    {"assert": {"json": {"path": "/depends_on", "equals": ["{var:svc_id}"]}}},
+    {"cli": ["repo", "depend", "api", "svc", "--remove"], "json": true},
+    {"assert": {"json": {"path": "/depends_on", "equals": []}}},
+    {"cli": ["repo", "show", "api"], "json": true},
+    {"assert": {"json": {"path": "/depends_on", "equals": []}}}
+  ],
+  "not_observable": []
+}

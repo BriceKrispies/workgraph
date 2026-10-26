@@ -1,0 +1,20 @@
+{
+  "id": "init-workspace-options",
+  "covers": ["C099", "C184"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init", "--workspace", "acme", "--prefix", "AC", "--name", "Acme Corp"], "json": true},
+    {"assert": {"json": {"path": "/workspace_created", "equals": "acme"}}},
+    {"assert": {"json": {"path": "/default_workspace", "equals": "acme"}}},
+    {"assert": {"json": {"path": "/schema_revision", "equals": "0011"}}},
+    {"assert": {"file": "{home}/data/workgraph.db", "exists": true}},
+    {"cli": ["init", "--workspace", "acme", "--prefix", "AC", "--name", "Acme Corp"], "json": true},
+    {"assert": {"json": {"path": "/workspace_created", "equals": null}}},
+    {"cli": ["workspace", "show"], "json": true},
+    {"assert": {"json": {"path": "/workspace/slug", "equals": "acme"}}},
+    {"assert": {"json": {"path": "/workspace/name", "equals": "Acme Corp"}}},
+    {"cli": ["task", "create", "First task"], "json": true},
+    {"assert": {"json": {"path": "/key", "equals": "AC-1"}}}
+  ],
+  "not_observable": []
+}

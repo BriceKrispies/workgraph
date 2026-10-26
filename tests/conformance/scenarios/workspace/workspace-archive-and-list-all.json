@@ -1,0 +1,15 @@
+{
+  "id": "workspace-archive-and-list-all",
+  "covers": ["C180", "C182", "C181"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["workspace", "create", "old"], "json": true},
+    {"cli": ["workspace", "archive", "old"], "json": true},
+    {"assert": {"json": {"path": "/slug", "equals": "old"}}},
+    {"cli": ["workspace", "list", "--all"], "json": true},
+    {"assert": {"stdout_contains": "\"old\""}},
+    {"cli": ["workspace", "list"], "json": true}
+  ],
+  "not_observable": []
+}

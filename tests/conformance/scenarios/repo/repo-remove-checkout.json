@@ -1,0 +1,20 @@
+{
+  "id": "repo-remove-checkout",
+  "covers": ["C118", "C120"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"},
+    {"git": "branch", "repo": "svc", "args": ["second"]},
+    {"git": "worktree", "repo": "svc", "args": ["../svc-copy", "second"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc-copy}"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/1/path", "equals": "{repo:svc-copy}"}}},
+    {"cli": ["repo", "remove-checkout", "svc", "{repo:svc-copy}"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/path", "equals": "{repo:svc}"}}},
+    {"assert": {"file": "{repo:svc-copy}/README.md", "exists": true}}
+  ],
+  "not_observable": []
+}

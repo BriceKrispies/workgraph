@@ -1,0 +1,25 @@
+{
+  "id": "config-set-and-show",
+  "covers": ["C060", "C061", "C099"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "show"], "json": true},
+    {"assert": {"json": {"path": "/workspace", "equals": "default"}}},
+    {"assert": {"json": {"path": "/config/execution/max_concurrent_runs", "equals": 2}}},
+    {"cli": ["config", "set", "execution.max_concurrent_runs", "4"], "json": true},
+    {"assert": {"json": {"path": "/key", "equals": "execution.max_concurrent_runs"}}},
+    {"assert": {"json": {"path": "/value", "equals": 4}}},
+    {"cli": ["config", "show"], "json": true},
+    {"assert": {"json": {"path": "/config/execution/max_concurrent_runs", "equals": 4}}},
+    {"cli": ["config", "set", "execution.max_concurrent_runs", "\"lots\""], "json": true, "expect_exit": 7},
+    {"assert": {"exit": 7}},
+    {"cli": ["config", "show"], "json": true},
+    {"assert": {"json": {"path": "/config/execution/max_concurrent_runs", "equals": 4}}},
+    {"cli": ["config", "set", "llm.auto_embed", "false"], "json": true},
+    {"assert": {"json": {"path": "/value", "equals": false}}},
+    {"cli": ["config", "show"], "json": true},
+    {"assert": {"json": {"path": "/config/llm/auto_embed", "equals": false}}}
+  ],
+  "not_observable": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "data-events-verify",
+  "covers": ["C066", "C067"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "First", "--ready"], "json": true},
+    {"cli": ["task", "create", "Second", "--depends-on", "WG-1"], "json": true},
+    {"cli": ["task", "claim", "WG-1"], "json": true},
+    {"cli": ["task", "complete", "WG-1", "-m", "fixed"], "json": true},
+    {"cli": ["events", "verify"], "json": true},
+    {"assert": {"json": {"path": "/consistent", "equals": true}}},
+    {"cli": ["events", "list", "--prefix", "task.created"], "json": true},
+    {"assert": {"json": {"path": "/0/event_type", "equals": "task.created"}}},
+    {"cli": ["events", "list", "--limit", "5"], "json": true}
+  ],
+  "not_observable": []
+}

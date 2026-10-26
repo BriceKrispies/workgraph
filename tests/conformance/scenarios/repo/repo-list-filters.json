@@ -1,0 +1,28 @@
+{
+  "id": "repo-list-filters",
+  "covers": ["C109", "C116", "C118", "C119"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"},
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["project", "create", "core", "--repo", "svc"], "json": true},
+    {"cli": ["repo", "list", "--project", "core"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "svc"}}},
+    {"cli": ["repo", "list", "-p", "core", "--workspace", "default"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "svc"}}},
+    {"cli": ["repo", "list"], "json": true},
+    {"assert": {"stdout_contains": "api"}},
+    {"cli": ["repo", "remove", "api"], "json": true},
+    {"cli": ["repo", "list"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "svc"}}},
+    {"cli": ["repo", "list", "--all"], "json": true},
+    {"assert": {"stdout_contains": "api"}}
+  ],
+  "not_observable": []
+}

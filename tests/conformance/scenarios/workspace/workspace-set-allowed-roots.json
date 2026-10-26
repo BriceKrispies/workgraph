@@ -1,0 +1,14 @@
+{
+  "id": "workspace-set-allowed-roots",
+  "covers": ["C181", "C183"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["workspace", "create", "acme"], "json": true},
+    {"cli": ["workspace", "set", "acme", "--allowed-root", "{tmp}", "--allowed-root", "{home}"], "json": true},
+    {"assert": {"json": {"path": "/settings/allowed_roots", "equals": ["{tmp}", "{home}"]}}},
+    {"cli": ["workspace", "set", "acme"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}}
+  ],
+  "not_observable": []
+}

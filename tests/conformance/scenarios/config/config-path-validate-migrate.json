@@ -1,0 +1,27 @@
+{
+  "id": "config-path-validate-migrate",
+  "covers": ["C058", "C059", "C062"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "path"], "json": true},
+    {"assert": {"json": {"path": "/database", "equals": "{home}\\data\\workgraph.db"}}},
+    {"assert": {"json": {"path": "/data_dir", "equals": "{home}\\data"}}},
+    {"assert": {"json": {"path": "/config_dir", "equals": "{home}\\config"}}},
+    {"cli": ["config", "validate"], "json": true},
+    {"assert": {"json": {"path": "/valid", "equals": true}}},
+    {"assert": {"json": {"path": "/problems", "equals": []}}},
+    {"cli": ["config", "migrate"], "json": true},
+    {"assert": {"json": {"path": "/rewritten", "equals": []}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/unit/test_foundations.py::test_config_validation_and_migration: writing an old or invalid configuration file, then validating and migrating it. The runner has no step that writes a configuration file, and config set refuses invalid values before they are written",
+      "covered_by": "GV-11"
+    },
+    {
+      "case": "tests/unit/test_foundations.py::test_non_integer_schema_version_is_config_error: a schema_version that is not an integer is rejected by load and migrate. Needs a configuration file the runner cannot write",
+      "covered_by": "GV-11"
+    }
+  ]
+}

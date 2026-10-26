@@ -1,0 +1,14 @@
+{
+  "id": "doctor-verify-events",
+  "covers": ["C065"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Checked task"], "json": true},
+    {"cli": ["doctor", "--verify-events"], "json": true},
+    {"assert": {"json": {"path": "/healthy", "equals": true}}},
+    {"assert": {"stdout_contains": "event projection default"}},
+    {"assert": {"stdout_contains": "1 tasks"}}
+  ],
+  "not_observable": []
+}

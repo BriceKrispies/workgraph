@@ -1,0 +1,29 @@
+{
+  "id": "workspace-create-list-use",
+  "covers": ["C181", "C182", "C184", "C185"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["workspace", "create", "acme", "--name", "Acme Corp", "--prefix", "AC", "--description", "Shared work"], "json": true},
+    {"assert": {"json": {"path": "/slug", "equals": "acme"}}},
+    {"assert": {"json": {"path": "/name", "equals": "Acme Corp"}}},
+    {"assert": {"json": {"path": "/key_prefix", "equals": "AC"}}},
+    {"assert": {"json": {"path": "/description", "equals": "Shared work"}}},
+    {"cli": ["workspace", "create", "beta", "--default"], "json": true},
+    {"assert": {"json": {"path": "/slug", "equals": "beta"}}},
+    {"assert": {"json": {"path": "/name", "equals": "Beta"}}},
+    {"assert": {"json": {"path": "/key_prefix", "equals": "WG"}}},
+    {"cli": ["config", "show"], "json": true},
+    {"assert": {"json": {"path": "/workspace", "equals": "beta"}}},
+    {"cli": ["workspace", "list"], "json": true},
+    {"assert": {"stdout_contains": "acme"}},
+    {"assert": {"stdout_contains": "beta"}},
+    {"cli": ["workspace", "use", "acme"], "json": true},
+    {"assert": {"json": {"path": "/slug", "equals": "acme"}}},
+    {"cli": ["workspace", "show"], "json": true},
+    {"assert": {"json": {"path": "/workspace/slug", "equals": "acme"}}},
+    {"cli": ["workspace", "show", "beta"], "json": true},
+    {"assert": {"json": {"path": "/workspace/slug", "equals": "beta"}}}
+  ],
+  "not_observable": []
+}

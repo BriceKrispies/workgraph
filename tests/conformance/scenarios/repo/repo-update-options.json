@@ -1,0 +1,29 @@
+{
+  "id": "repo-update-options",
+  "covers": ["C118", "C121", "C123"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"},
+    {"git": "branch", "repo": "svc", "args": ["develop"]},
+    {"git": "branch", "repo": "svc", "args": ["feature"]},
+    {"git": "branch", "repo": "svc", "args": ["release"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}", "--branch", "release"], "json": true, "save": {"repo_id": "/id"}},
+    {"assert": {"json": {"path": "/tracked_branches", "equals": ["release"]}}},
+    {"cli": ["repo", "update", "svc", "--description", "Core service", "--access", "read_only"], "json": true},
+    {"assert": {"json": {"path": "/description", "equals": "Core service"}}},
+    {"assert": {"json": {"path": "/access_mode", "equals": "read_only"}}},
+    {"cli": ["repo", "update", "svc", "--access", "read_write"], "json": true},
+    {"assert": {"json": {"path": "/access_mode", "equals": "read_write"}}},
+    {"cli": ["repo", "update", "svc", "--track", "feature", "--track", "main", "--untrack", "release"], "json": true},
+    {"assert": {"json": {"path": "/tracked_branches", "equals": ["feature", "main"]}}},
+    {"cli": ["repo", "update", "svc", "--default-branch", "develop"], "json": true},
+    {"assert": {"json": {"path": "/default_branch", "equals": "develop"}}},
+    {"cli": ["repo", "show", "svc"], "json": true},
+    {"assert": {"json": {"path": "/id", "equals": "{var:repo_id}"}}},
+    {"assert": {"json": {"path": "/default_branch", "equals": "develop"}}}
+  ],
+  "not_observable": []
+}

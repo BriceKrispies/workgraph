@@ -1,0 +1,13 @@
+{
+  "id": "init-no-workspace",
+  "covers": ["C099", "C181"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init", "--no-workspace"], "json": true},
+    {"assert": {"json": {"path": "/workspace_created", "equals": null}}},
+    {"assert": {"file": "{home}/data/workgraph.db", "exists": true}},
+    {"cli": ["workspace", "create", "acme", "--prefix", "AC"], "json": true},
+    {"assert": {"json": {"path": "/slug", "equals": "acme"}}}
+  ],
+  "not_observable": []
+}

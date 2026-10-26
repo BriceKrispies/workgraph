@@ -1,0 +1,24 @@
+{
+  "id": "repo-register-options",
+  "covers": ["C109", "C118", "C121"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"},
+    {"git": "branch", "repo": "svc", "args": ["feature"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["project", "create", "core"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}", "--name", "core-svc", "--description", "Core service", "--read-only", "--branch", "main", "--branch", "feature", "--project", "core", "--workspace", "default"], "json": true, "save": {"repo_id": "/id"}},
+    {"assert": {"json": {"path": "/name", "equals": "core-svc"}}},
+    {"assert": {"json": {"path": "/description", "equals": "Core service"}}},
+    {"assert": {"json": {"path": "/access_mode", "equals": "read_only"}}},
+    {"assert": {"json": {"path": "/tracked_branches", "equals": ["main", "feature"]}}},
+    {"cli": ["repo", "show", "core-svc", "--workspace", "default"], "json": true},
+    {"assert": {"json": {"path": "/id", "equals": "{var:repo_id}"}}},
+    {"assert": {"json": {"path": "/access_mode", "equals": "read_only"}}},
+    {"cli": ["project", "show", "core"], "json": true},
+    {"assert": {"json": {"path": "/repositories/0/name", "equals": "core-svc"}}}
+  ],
+  "not_observable": []
+}

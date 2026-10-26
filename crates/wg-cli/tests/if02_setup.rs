@@ -202,3 +202,65 @@ fn doctor_fails_on_a_broken_configuration() {
     let (code, stdout, stderr) = run_args(&home, &["--json", "doctor"]);
     assert_eq!(code, 7, "{stdout}{stderr}");
 }
+
+/// Runs the binary with the colour variables under the test's control: `NO_COLOR` and
+/// `FORCE_COLOR` are removed first, then `envs` is applied.
+fn run_with_colour_env(home: &Path, args: &[&str], envs: &[(&str, &str)]) -> String {
+    let mut command = Command::new(env!("CARGO_BIN_EXE_workgraph"));
+    command
+        .arg("--home")
+        .arg(home)
+        .args(args)
+        .env("COLUMNS", "120")
+        .env_remove("NO_COLOR")
+        .env_remove("FORCE_COLOR")
+        .env_remove("TTY_COMPATIBLE");
+    for (key, value) in envs {
+        command.env(key, value);
+    }
+    let out = command.output().expect("the binary runs");
+    assert_eq!(out.status.code(), Some(0), "{args:?}");
+    String::from_utf8_lossy(&out.stdout).into_owned()
+}
+
+/// WG-3800: `config show` is coloured only when `FORCE_COLOR` is set (stdout is a pipe here), and
+/// `NO_COLOR` keeps the attributes but drops the colours. Stripping the escapes gives the plain text.
+#[test]
+fn config_show_colour_follows_force_color_and_no_color() {
+    let home = temp_home("colour");
+    let _ = run_args(&home, &["init"]);
+    let plain = run_with_colour_env(&home, &["config", "show"], &[]);
+    assert!(!plain.contains('\u{1b}'), "piped output has no escapes");
+
+    let forced = run_with_colour_env(&home, &["config", "show"], &[("FORCE_COLOR", "1")]);
+    assert!(
+        forced.contains("\u{1b}[1;34m\"workspace\"\u{1b}[0m"),
+        "{forced}"
+    );
+    assert!(forced.contains("\u{1b}[3;91mfalse\u{1b}[0m"), "{forced}");
+    let stripped: String = {
+        let mut out = String::new();
+        let mut rest = forced.as_str();
+        while let Some(start) = rest.find("\u{1b}[") {
+            out.push_str(&rest[..start]);
+            let end = rest[start..]
+                .find('m')
+                .map_or(rest.len(), |m| start + m + 1);
+            rest = &rest[end..];
+        }
+        out.push_str(rest);
+        out
+    };
+    assert_eq!(stripped, plain);
+
+    let no_colour = run_with_colour_env(
+        &home,
+        &["config", "show"],
+        &[("FORCE_COLOR", "1"), ("NO_COLOR", "1")],
+    );
+    assert!(
+        no_colour.contains("\u{1b}[1m\"workspace\"\u{1b}[0m"),
+        "{no_colour}"
+    );
+    assert!(!no_colour.contains("\u{1b}[1;34m"), "{no_colour}");
+}

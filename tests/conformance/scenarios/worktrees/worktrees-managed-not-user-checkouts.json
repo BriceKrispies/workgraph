@@ -1,0 +1,26 @@
+{
+  "id": "worktrees-managed-not-user-checkouts",
+  "covers": ["C117", "C118"],
+  "setup": [
+    {"git": "init", "repo": "managed"},
+    {"git": "commit", "repo": "managed", "files": {"README.md": "managed\n"}, "message": "initial"},
+    {"git": "branch", "repo": "managed", "args": ["managed-wt"]},
+    {"git": "worktree", "repo": "managed", "args": ["../home/data/worktrees/managed-wt", "managed-wt"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:managed}"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/kind", "equals": "clone"}}},
+    {"assert": {"json": {"path": "/checkouts/0/is_primary", "equals": true}}},
+    {"assert": {"json": {"path": "/health_detail/skipped_worktrees", "equals": []}}},
+    {"cli": ["repo", "refresh", "managed"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/kind", "equals": "clone"}}},
+    {"assert": {"json": {"path": "/health_status", "equals": "ok"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktree_discovery.py::test_managed_worktrees_are_not_registered_as_user_checkouts: the checkouts list is asserted to hold only the primary path after register and after refresh; the runner can assert equality of an existing pointer but cannot assert that a list has no further element, so the absence of the managed worktree is not checked.",
+      "covered_by": "CORE-08"
+    }
+  ]
+}

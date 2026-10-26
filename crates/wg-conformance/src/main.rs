@@ -8,11 +8,14 @@ use wg_conformance::coverage::{coverage, inventory_ids, marked_tests, parse_excl
 use wg_conformance::dbdump::canonical_dump;
 use wg_conformance::modes::{check, diff, load_scenarios, record};
 use wg_conformance::normalise::FullNormaliser;
+use wg_conformance::replay;
 use wg_conformance::runner::Implementation;
 
 const USAGE: &str = "usage: wg-conformance <validate|diff|record|check|coverage> [options]
        wg-conformance dbdump DATABASE [-o FILE]   canonical database dump (as dbdump.py dump)
        wg-conformance mcp-replay --command COMMAND [--transcript FILE]   replay the CF-03 stdio transcript
+       wg-conformance replay-http (--rust COMMAND | --python COMMAND) [--contracts DIR] [--file NAME]...
+                            replay the CF-04 HTTP recordings (default contracts/http)
   --scenarios PATH     scenario directory or file (default tests/conformance/scenarios)
   --contracts FILE     contract inventory for coverage (default docs/rust-rewrite-contracts.md)
   --allowlist FILE     coverage exclusions with reasons (default tests/conformance/coverage-allowlist.toml, optional)
@@ -271,6 +274,71 @@ fn dbdump(args: &[String]) -> ExitCode {
     }
 }
 
+/// `replay-http`: the CF-04 replay of `contracts/http/*.json` (see `wg_conformance::replay`).
+fn replay_http(args: &[String]) -> ExitCode {
+    let mut command = None;
+    let mut name = "rust";
+    let mut contracts = PathBuf::from("contracts/http");
+    let mut files: Vec<String> = Vec::new();
+    let mut it = args.iter();
+    while let Some(arg) = it.next() {
+        let mut value = || it.next().cloned();
+        let parsed = match arg.as_str() {
+            "--rust" => value().map(|v| {
+                name = "rust";
+                command = Some(v);
+            }),
+            "--python" => value().map(|v| {
+                name = "python";
+                command = Some(v);
+            }),
+            "--contracts" => value().map(|v| contracts = PathBuf::from(v)),
+            "--file" => value().map(|v| files.push(v)),
+            _ => None,
+        };
+        if parsed.is_none() {
+            eprintln!(
+                "error: bad or incomplete option `{arg}`
+{USAGE}"
+            );
+            return ExitCode::from(2);
+        }
+    }
+    let Some(command) = command else {
+        eprintln!(
+            "error: replay-http needs --rust or --python
+{USAGE}"
+        );
+        return ExitCode::from(2);
+    };
+    let imp = match Implementation::from_command(name, &command, Vec::new()) {
+        Ok(i) => i,
+        Err(e) => {
+            eprintln!("error: {e}");
+            return ExitCode::from(2);
+        }
+    };
+    if files.is_empty() {
+        files = replay::FILES.iter().map(|f| (*f).to_owned()).collect();
+    }
+    let mut reports = Vec::new();
+    for file in &files {
+        match replay::replay_file(&imp, &contracts, file) {
+            Ok(r) => reports.push(r),
+            Err(e) => {
+                eprintln!("error: {e}");
+                return ExitCode::from(2);
+            }
+        }
+    }
+    print!("{}", replay::report_text(&reports));
+    if replay::failed(&reports) == 0 {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::from(1)
+    }
+}
+
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.first().map(String::as_str) == Some("dbdump") {
@@ -278,6 +346,9 @@ fn main() -> ExitCode {
     }
     if args.first().map(String::as_str) == Some("mcp-replay") {
         return wg_conformance::mcp::replay_command(&args[1..]);
+    }
+    if args.first().map(String::as_str) == Some("replay-http") {
+        return replay_http(&args[1..]);
     }
     let options = match parse_args(args) {
         Ok(o) => o,

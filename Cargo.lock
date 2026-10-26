@@ -1008,6 +1008,12 @@ version = "0.1.0"
 [[package]]
 name = "wg-automation"
 version = "0.1.0"
+dependencies = [
+ "regex",
+ "serde_json",
+ "time",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-browser"
@@ -1113,6 +1119,11 @@ version = "0.1.0"
 [[package]]
 name = "wg-gitcore"
 version = "0.1.0"
+dependencies = [
+ "regex",
+ "serde_json",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-intel"
@@ -1125,6 +1136,7 @@ dependencies = [
  "rpds",
  "serde_json",
  "time",
+ "wg-automation",
  "wg-model",
  "wg-types",
 ]
@@ -1204,6 +1216,11 @@ version = "0.1.0"
 [[package]]
 name = "wg-stacks"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "uuid",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-store"
@@ -1234,6 +1251,7 @@ version = "0.1.0"
 dependencies = [
  "rpds",
  "serde_json",
+ "time",
  "uuid",
  "wg-model",
  "wg-types",
@@ -1268,11 +1286,19 @@ dependencies = [
 [[package]]
 name = "wg-verify"
 version = "0.1.0"
+dependencies = [
+ "regex",
+ "rpds",
+ "serde_json",
+ "wg-model",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-wire"
 version = "0.1.0"
 dependencies = [
+ "rpds",
  "serde_json",
  "wg-json",
  "wg-model",

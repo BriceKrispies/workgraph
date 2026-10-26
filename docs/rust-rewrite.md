@@ -373,7 +373,7 @@ need FFI or Windows APIs, `clippy::unwrap_used` and `expect_used` denied outside
 | `wg-browser` | Impure | locating Chrome/Edge/Chromium and taking CDP screenshots | `tungstenite` |
 | `wg-runtime` | Impure | the effect interpreter, stamping, the load-decide-apply cycle, flow drivers, worker threads, the maintenance leader, JSON logging | `tracing`, `tracing-subscriber` |
 | `wg-server` | Impure | axum HTTP API, security middleware (bearer token, Host and Origin checks, headers), LAN listener and pairing, SSE, static UI files, Swagger page, mounting `/mcp/` | `axum`, `tokio`, `rust-embed` |
-| `wg-mcp` | Impure | MCP server over stdio and Streamable HTTP, tools and resources registered from the snapshot descriptors | `rmcp`, `tokio` |
+| `wg-mcp` | Impure | MCP server over stdio and Streamable HTTP, tools and resources registered from the snapshot descriptors; `--grant` permissions apply to both transports (WG-3734) | `rmcp`, `tokio` |
 | `wg-cli` | Impure | the `workgraph` binary: hook fast path, `--json` stripping, clap command tree, one handler module per group | `clap` |
 | `wg-demo-agent` | Impure | the `workgraph-demo-agent` binary: the scripted `workgraph.agent.v1` agent and the demo checks (DV4) | `wg-proc` |
 | `arch-lint` | Tooling | purity tiers and the `Core` rules (copied from noether, section 4.6) | `syn` |

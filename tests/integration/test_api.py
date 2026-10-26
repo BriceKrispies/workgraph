@@ -3,10 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from starlette.testclient import TestClient
 
 from tests.helpers import api_client
-from workgraph.api.app import create_app
 from workgraph.api.security import DEVICE_COOKIE, PAIRING_MAX_FAILURES, LanAccess
 from workgraph.core.models.schemas import RepositoryRegister
 
@@ -22,7 +20,7 @@ def client(app, ws):
 
 
 def test_health_is_public_but_api_requires_token(app, ws):
-    with api_client(app) as c:
+    with api_client(app, with_mcp=False) as c:
         assert c.get("/api/v1/health").json()["status"] == "ok"
         r = c.get("/api/v1/workspaces")
         assert r.status_code == 401 and r.json()["error"]["code"] == "unauthorized"
@@ -31,12 +29,11 @@ def test_health_is_public_but_api_requires_token(app, ws):
 
 
 def test_dns_rebinding_and_origin_protection(app, ws):
-    asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=False)
     token = app.api_token()
-    with TestClient(asgi, base_url="http://evil.example.com") as c:
+    with api_client(app, base_url="http://evil.example.com", with_mcp=False) as c:
         r = c.get("/api/v1/workspaces", headers={"Authorization": f"Bearer {token}"})
         assert r.status_code == 421
-    with TestClient(asgi, base_url="http://127.0.0.1:8765") as c:
+    with api_client(app, base_url="http://127.0.0.1:8765", with_mcp=False) as c:
         headers = {"Authorization": f"Bearer {token}", "Origin": "https://attacker.example"}
         r = c.post("/api/v1/ws/main/tasks", json={"title": "x"}, headers=headers)
         assert r.status_code == 403
@@ -141,7 +138,7 @@ def test_automation_jobs_and_runs_endpoints(client, app, human, ws):
 
 def test_sse_stream_requires_token_and_streams(app, ws):
     token = app.api_token()
-    with api_client(app) as c:
+    with api_client(app, with_mcp=False) as c:
         assert c.get("/api/v1/ws/main/events/stream").status_code == 401
         with c.stream(
             "GET", "/api/v1/ws/main/events/stream", params={"token": token, "after_seq": 0, "max_events": 2}
@@ -218,8 +215,7 @@ def test_spa_fallback_serves_ui_shell(client):
     assert client.get("/api/v1/does-not-exist").status_code == 404
 
 
-def _lan_client(asgi, ip: str, base_url: str = "http://192.168.1.20:8765") -> TestClient:
-    return TestClient(asgi, base_url=base_url, client=(ip, 50000), follow_redirects=False)
+LAN_BASE_URL = "http://192.168.1.20:8765"
 
 
 def test_lan_mode_requires_pairing_before_handing_out_the_token(app, ws, tmp_path, monkeypatch):
@@ -230,12 +226,13 @@ def test_lan_mode_requires_pairing_before_handing_out_the_token(app, ws, tmp_pat
     (shell / "index.html").write_text("<!doctype html><html><head></head><body>UI</body></html>", "utf-8")
     monkeypatch.setattr("workgraph.api.app.static_dir", lambda: shell)
     lan = LanAccess.build("192.168.1.20")
-    asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=True, lan=lan)
     token = app.api_token()
-    # Not entered as a context manager: the MCP lifespan may only run once per app.
     if BUILT_UI:
-        assert token in _lan_client(asgi, "127.0.0.1", "http://127.0.0.1:8765").get("/").text
-    with _lan_client(asgi, "192.168.1.42") as phone:
+        with api_client(
+            app, lan=lan, base_url="http://127.0.0.1:8765", client_address=("127.0.0.1", 50000)
+        ) as local:
+            assert token in local.get("/").text
+    with api_client(app, lan=lan, base_url=LAN_BASE_URL, client_address=("192.168.1.42", 50000)) as phone:
         page = phone.get("/tasks")
         assert page.status_code == 303 and page.headers["location"] == "/pair"
         assert token not in phone.get("/pair").text
@@ -254,11 +251,14 @@ def test_lan_mode_requires_pairing_before_handing_out_the_token(app, ws, tmp_pat
 
 def test_lan_mode_rejects_public_clients_and_locks_pairing(app, ws):
     lan = LanAccess.build("192.168.1.20")
-    asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=False, lan=lan)
-    with _lan_client(asgi, "203.0.113.9") as outsider:
+    with api_client(
+        app, lan=lan, with_mcp=False, base_url=LAN_BASE_URL, client_address=("203.0.113.9", 50000)
+    ) as outsider:
         r = outsider.get("/")
         assert r.status_code == 403 and r.json()["error"]["code"] == "forbidden_client"
-    with _lan_client(asgi, "192.168.1.42") as phone:
+    with api_client(
+        app, lan=lan, with_mcp=False, base_url=LAN_BASE_URL, client_address=("192.168.1.42", 50000)
+    ) as phone:
         for _ in range(PAIRING_MAX_FAILURES):
             phone.post("/pair", data={"code": "WRONG"})
         assert phone.post("/pair", data={"code": lan.pairing_code}).status_code == 429

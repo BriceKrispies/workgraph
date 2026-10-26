@@ -124,7 +124,9 @@ def mcp_command(
 
     from workgraph.api.app import create_app
 
-    asgi = create_app(app, host=host, port=port, with_mcp=True, mcp_agent=agent_name)
+    asgi = create_app(
+        app, host=host, port=port, with_mcp=True, mcp_agent=agent_name, mcp_permissions=permissions
+    )
     err_console.print(
         f"MCP Streamable HTTP on http://{host}:{port}/mcp/ (bearer token in {app.paths.api_token_file})"
     )

@@ -72,7 +72,8 @@
             "http": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
             "path": { "type": "string" },
             "body": {},
-            "save": { "type": "object", "additionalProperties": { "type": "string" } }
+            "save": { "type": "object", "additionalProperties": { "type": "string" } },
+            "max_events": { "type": "integer", "minimum": 1 }
           }
         },
         {

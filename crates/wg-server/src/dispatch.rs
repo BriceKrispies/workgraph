@@ -153,10 +153,12 @@ async fn api(
         .iter()
         .map(|key| std::env::var(key).ok())
         .collect();
+    // The two headers are read as bytes: Python reads any byte, not only UTF-8 text.
+    let raw = |name: &str| headers.get(name).map(|value| value.as_bytes());
     let context = new_id().and_then(|fresh| {
         request_context(
-            header("x-workgraph-actor"),
-            header("x-correlation-id"),
+            raw("x-workgraph-actor"),
+            raw("x-correlation-id"),
             getuser(&logins),
             fresh,
         )

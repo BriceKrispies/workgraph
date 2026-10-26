@@ -74,7 +74,7 @@ fn stamp() -> Stamp {
         entropy: entropy(9),
         actor: ok(Actor::parse("human:brice")),
         permissions: Default::default(),
-        correlation: id(900),
+        correlation: id(900).into(),
         causation: None,
         attempt: None,
         automation_depth: 0,

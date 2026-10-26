@@ -118,7 +118,7 @@ impl Harness {
             entropy,
             actor: ok(Actor::parse("system:golden")),
             permissions: RedBlackTreeSetSync::new_sync(),
-            correlation: derive_id(&entropy, 0),
+            correlation: derive_id(&entropy, 0).into(),
             causation: None,
             attempt: None,
             automation_depth: 0,

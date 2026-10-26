@@ -1,6 +1,6 @@
 //! The SELECT for an [`EventQuery`] (Python's `query_events`) and `latest_seq`.
 
-use crate::codec::{Raw, id_sql, ts_sql};
+use crate::codec::{Raw, correlation_sql, id_sql, ts_sql};
 use crate::events::{EVENT_COLUMNS, EventQuery};
 use crate::sql::Statement;
 
@@ -49,8 +49,8 @@ impl EventQuery {
             let n = bind(&mut args, id_sql(id));
             clauses.push(format!("attempt_id = ?{n}"));
         }
-        if let Some(id) = self.correlation_id {
-            let n = bind(&mut args, id_sql(id));
+        if let Some(correlation) = &self.correlation_id {
+            let n = bind(&mut args, correlation_sql(correlation));
             clauses.push(format!("correlation_id = ?{n}"));
         }
         if let Some(seq) = self.after_seq {

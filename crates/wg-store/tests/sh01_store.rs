@@ -77,7 +77,7 @@ fn stamp(actor: &str, automation_depth: u32) -> Stamp {
         entropy: entropy(7),
         actor: ok(Actor::parse(actor)),
         permissions: Default::default(),
-        correlation: ok(wg_types::parse_id("33333333-3333-4333-8333-333333333333")),
+        correlation: ok(wg_types::parse_id("33333333-3333-4333-8333-333333333333")).into(),
         causation: None,
         attempt: None,
         automation_depth,

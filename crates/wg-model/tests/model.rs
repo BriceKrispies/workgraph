@@ -55,7 +55,7 @@ fn stamp(actor: &str, permissions: &[Permission]) -> Stamp {
         entropy: entropy(7),
         actor: ok(Actor::parse(actor)),
         permissions: permissions.iter().copied().collect(),
-        correlation: derive_id(&entropy(99), 0),
+        correlation: derive_id(&entropy(99), 0).into(),
         causation: None,
         attempt: None,
         automation_depth: 0,

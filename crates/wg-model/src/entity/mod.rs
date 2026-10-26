@@ -1,0 +1,27 @@
+//! Entity values: one struct per table, one module per table family.
+//!
+//! A family is a root table and the tables whose rows belong to it (their foreign key to the root
+//! cascades): `workspace`, `project` (with `project_repositories`), `repository` (checkouts,
+//! remotes, refs, declared dependencies) and `task` (files, tags, links, comments, dependencies,
+//! relations, project and repository memberships, the tracker's external item). Fields are the
+//! table's columns, in `contracts/schema-0010.sql` order; see the crate documentation for the
+//! column-type mapping.
+
+pub mod project;
+pub mod repository;
+pub mod task;
+pub mod workspace;
+
+/// A JSON object column (`settings`, `metadata`, `health_detail`, ...): stored as O10 text,
+/// carried as an ordered map. Opaque to the model; the core reads the keys it knows.
+pub type JsonObject = serde_json::Map<String, serde_json::Value>;
+
+pub use project::{Project, ProjectRepository};
+pub use repository::{
+    Repository, RepositoryCheckout, RepositoryDependency, RepositoryRef, RepositoryRemote,
+};
+pub use task::{
+    ExternalItem, Task, TaskComment, TaskDependency, TaskFile, TaskLink, TaskProject, TaskRelation,
+    TaskRepository, TaskTag,
+};
+pub use workspace::Workspace;

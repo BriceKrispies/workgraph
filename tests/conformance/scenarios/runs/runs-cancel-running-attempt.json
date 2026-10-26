@@ -1,0 +1,29 @@
+{
+  "id": "runs-cancel-running-attempt",
+  "covers": ["C001", "C022", "C125", "C131", "C152", "C165"],
+  "setup": [
+    {"git": "init", "repo": "cancel-me"},
+    {"git": "commit", "repo": "cancel-me", "files": {"README.md": "cancel-me\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["config", "set", "execution.default_agent", "\"fake\""], "json": true},
+    {"cli": ["agent", "add-command", "fake", "python", "--arg", "C:/dev/workgraph/.claude/worktrees/agent-adbe51c0d630f1176/src/workgraph/demo/scripted_agent.py", "--arg", "--mode", "--arg", "sleep", "--arg", "{manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["repo", "register", "{repo:cancel-me}"], "json": true},
+    {"cli": ["task", "create", "Implement login", "-r", "cancel-me", "--ready"], "json": true},
+    {"cli": ["run", "start", "WG-1"], "json": true, "save": {"attempt": "/id"}},
+    {"cli": ["run", "cancel", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "cancelled"}}},
+    {"cli": ["attempt", "show", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "cancelled"}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_runs.py::test_cancel_running_attempt: cancellation of an attempt that a worker thread is executing (the sleep agent is started, then cancelled mid-run); the runner executes steps sequentially with no concurrent worker, so only the queued path (runs-cancel-queued-attempt) is reached and the running-state cancel is not observed",
+      "covered_by": "CORE-12"
+    }
+  ]
+}

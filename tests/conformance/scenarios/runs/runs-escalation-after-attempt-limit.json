@@ -1,0 +1,26 @@
+{
+  "id": "runs-escalation-after-attempt-limit",
+  "covers": ["C001", "C060", "C118", "C129", "C131", "C152", "C155", "C165"],
+  "setup": [
+    {"git": "init", "repo": "esc"},
+    {"git": "commit", "repo": "esc", "files": {"README.md": "esc\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "execution.max_attempts_per_task", "2"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["config", "set", "execution.default_agent", "\"fake\""], "json": true},
+    {"cli": ["agent", "add-command", "fake", "python", "--arg", "C:/dev/workgraph/.claude/worktrees/agent-adbe51c0d630f1176/src/workgraph/demo/scripted_agent.py", "--arg", "--mode", "--arg", "fail", "--arg", "{manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["repo", "register", "{repo:esc}"], "json": true},
+    {"cli": ["task", "create", "Implement login", "-r", "esc", "--ready"], "json": true},
+    {"cli": ["run", "start", "WG-1"], "json": true, "save": {"first": "/id"}},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["run", "retry", "{var:first}"], "json": true},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/tags", "equals": ["needs-review"]}}},
+    {"cli": ["task", "history", "WG-1"], "json": true},
+    {"assert": {"stdout_contains": "task.escalated"}}
+  ],
+  "not_observable": []
+}

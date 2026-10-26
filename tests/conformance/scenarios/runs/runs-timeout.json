@@ -1,0 +1,23 @@
+{
+  "id": "runs-timeout",
+  "covers": ["C001", "C022", "C060", "C118", "C131", "C152", "C165"],
+  "setup": [
+    {"git": "init", "repo": "slow"},
+    {"git": "commit", "repo": "slow", "files": {"README.md": "slow\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["config", "set", "execution.default_agent", "\"fake\""], "json": true},
+    {"cli": ["agent", "add-command", "fake", "python", "--arg", "C:/dev/workgraph/.claude/worktrees/agent-adbe51c0d630f1176/src/workgraph/demo/scripted_agent.py", "--arg", "--mode", "--arg", "sleep", "--arg", "{manifest}", "--timeout", "2", "--supports-usage"], "json": true},
+    {"cli": ["repo", "register", "{repo:slow}"], "json": true},
+    {"cli": ["task", "create", "Implement login", "-r", "slow", "--ready"], "json": true},
+    {"cli": ["run", "start", "WG-1"], "json": true, "save": {"attempt": "/id"}},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["attempt", "show", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "timed_out"}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "failed"}}}
+  ],
+  "not_observable": []
+}

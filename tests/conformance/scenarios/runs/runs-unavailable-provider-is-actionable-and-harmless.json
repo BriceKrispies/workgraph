@@ -1,0 +1,24 @@
+{
+  "id": "runs-unavailable-provider-is-actionable-and-harmless",
+  "covers": ["C001", "C020", "C060", "C118", "C131", "C152", "C165"],
+  "setup": [
+    {"git": "init", "repo": "solo"},
+    {"git": "commit", "repo": "solo", "files": {"README.md": "solo\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["config", "set", "execution.default_agent", "\"fake\""], "json": true},
+    {"cli": ["agent", "add-command", "fake", "python", "--arg", "C:/dev/workgraph/.claude/worktrees/agent-adbe51c0d630f1176/src/workgraph/demo/scripted_agent.py", "--arg", "--mode", "--arg", "success", "--arg", "{manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["repo", "register", "{repo:solo}"], "json": true},
+    {"cli": ["agent", "add-command", "ghost", "definitely-not-installed-agent"], "json": true},
+    {"cli": ["task", "create", "Implement login", "-r", "solo", "--ready"], "json": true},
+    {"cli": ["run", "start", "WG-1", "--agent", "ghost"], "json": true, "expect_exit": 6},
+    {"assert": {"stdout_contains": "not found"}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}},
+    {"cli": ["attempt", "list", "--task", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 0}}}
+  ],
+  "not_observable": []
+}

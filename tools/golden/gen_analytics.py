@@ -443,7 +443,7 @@ def dump_source(db_file: Path, labels: dict[str, str]) -> dict[str, Any]:
     Tables the analytics never read (jobs, workers, ...) are left out; their timestamps depend on
     thread scheduling and would make two runs differ without changing any output.
     """
-    from workgraph.analytics.warehouse import TABLES
+    from workgraph.analytics.warehouse import EVENT_TYPES, TABLES
 
     con = sqlite3.connect(f"file:{db_file.as_posix()}?mode=ro", uri=True)
     try:
@@ -457,6 +457,14 @@ def dump_source(db_file: Path, labels: dict[str, str]) -> dict[str, Any]:
             for row in cursor.fetchall():
                 rows.append([base64.b64encode(v).decode("ascii") if isinstance(v, bytes) else v for v in row])
             tables[name] = {"columns": columns, "rows": rows}
+        # The warehouse's ``events`` copy: only the event types it reads (``EVENT_TYPES``).
+        event_columns = ["seq", "workspace_id", "event_type", "entity_id", "actor", "occurred_at", "data"]
+        placeholders = ",".join("?" for _ in EVENT_TYPES)
+        events = con.execute(
+            f"SELECT {', '.join(event_columns)} FROM events WHERE event_type IN ({placeholders}) ORDER BY seq",
+            EVENT_TYPES,
+        ).fetchall()
+        tables["events"] = {"columns": event_columns, "rows": [list(row) for row in events]}
         return tables
     finally:
         con.close()

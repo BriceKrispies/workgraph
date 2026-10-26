@@ -2350,6 +2350,7 @@ dependencies = [
  "wg-clispec",
  "wg-codeparse",
  "wg-decisions",
+ "wg-experiments-feature",
  "wg-json",
  "wg-mcp",
  "wg-mcpspec",

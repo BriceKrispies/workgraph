@@ -54,6 +54,24 @@ pub fn error_result(text: &str) -> Value {
     json!({"content": [{"type": "text", "text": text}], "isError": true})
 }
 
+/// The structured output of a tool, from a wire value (`wg-json` dialect) into the `serde_json`
+/// value the result carries. Key order is kept, so the indented text matches the Python dump.
+pub fn structured_output(value: &wg_json::Value) -> Result<Value, WgError> {
+    let text = wg_json::http_json(value)
+        .map_err(|err| WgError::new(wg_types::ErrorCode::WorkgraphError, err.to_string()))?;
+    serde_json::from_str(&text)
+        .map_err(|err| WgError::new(wg_types::ErrorCode::WorkgraphError, err.to_string()))
+}
+
+/// The string argument `key` of a call, when it is given and not empty (Python's
+/// `workspace or default`).
+pub fn text_argument<'a>(arguments: &'a Value, key: &str) -> Option<&'a str> {
+    arguments
+        .get(key)
+        .and_then(Value::as_str)
+        .filter(|text| !text.is_empty())
+}
+
 /// A successful call: the structured output, also as indented JSON text for clients that read
 /// `content`.
 pub fn success_result(structured: &Value) -> Value {

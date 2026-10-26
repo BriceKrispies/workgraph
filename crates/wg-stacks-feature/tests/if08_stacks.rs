@@ -10,8 +10,14 @@ fn stack_add_takes_parent_and_task() {
         .expect("parses");
     let (name, sub) = matches.subcommand().expect("a subcommand");
     assert_eq!(name, "add");
-    assert_eq!(sub.get_one::<String>("parent").map(String::as_str), Some("WG-1"));
-    assert_eq!(sub.get_one::<String>("task").map(String::as_str), Some("WG-2"));
+    assert_eq!(
+        sub.get_one::<String>("parent").map(String::as_str),
+        Some("WG-1")
+    );
+    assert_eq!(
+        sub.get_one::<String>("task").map(String::as_str),
+        Some("WG-2")
+    );
 }
 
 // covers: C136
@@ -32,7 +38,10 @@ fn stack_eject_needs_a_reason() {
         .try_get_matches_from(["stack", "eject", "WG-1", "WG-2", "-m", "fails"])
         .expect("parses");
     let (_, sub) = matches.subcommand().expect("a subcommand");
-    assert_eq!(sub.get_one::<String>("--reason").map(String::as_str), Some("fails"));
+    assert_eq!(
+        sub.get_one::<String>("--reason").map(String::as_str),
+        Some("fails")
+    );
     assert!(
         command()
             .try_get_matches_from(["stack", "eject", "WG-1", "WG-2"])
@@ -54,7 +63,10 @@ fn stack_commands_take_the_parent_and_the_workspace() {
             .expect("parses");
         let (found, sub) = matches.subcommand().expect("a subcommand");
         assert_eq!(found, name);
-        assert_eq!(sub.get_one::<String>("parent").map(String::as_str), Some("WG-1"));
+        assert_eq!(
+            sub.get_one::<String>("parent").map(String::as_str),
+            Some("WG-1")
+        );
     }
     for name in ["readmit", "remove"] {
         let matches = command()
@@ -88,7 +100,10 @@ fn detail_summary_names_conflicts_and_ejections() {
 #[test]
 fn detail_summary_reports_a_conflict_without_paths() {
     let detail = r#"{"conflicts": {"svc": {"paths": []}}}"#;
-    assert_eq!(detail_summary(Some(detail)), "conflict in svc: no paths reported");
+    assert_eq!(
+        detail_summary(Some(detail)),
+        "conflict in svc: no paths reported"
+    );
 }
 
 #[test]

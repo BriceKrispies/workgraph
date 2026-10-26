@@ -15,6 +15,19 @@ pub struct Setup {
     pub args: Vec<String>,
 }
 
+/// What a `json` assertion requires of the value at its pointer.
+#[derive(Debug, Clone, PartialEq)]
+pub enum JsonExpect {
+    /// The value is equal to this (placeholders resolved).
+    Equals(Value),
+    /// The value exists and is not equal to this.
+    NotEquals(Value),
+    /// No value exists at the pointer: the key is not present.
+    Absent,
+    /// The pointer is an array, and no element of it is equal to this.
+    Excludes(Value),
+}
+
 /// An assertion over the most recent `cli` result, or over files.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Assertion {
@@ -23,7 +36,7 @@ pub enum Assertion {
     StderrContains(String),
     Json {
         path: String,
-        equals: Value,
+        expect: JsonExpect,
     },
     File {
         path: String,
@@ -69,6 +82,20 @@ pub enum Step {
     },
     Drain {
         max_jobs: u64,
+    },
+    /// A typed git operation (the same set as `setup`) in the directory `cwd`, which may hold
+    /// placeholders such as `{repo:name}` or `{var:name}`. A relative `cwd` is taken from the
+    /// sandbox's repositories directory. Its output is not the "most recent cli output".
+    Git {
+        git: String,
+        cwd: String,
+        args: Vec<String>,
+        files: Vec<(String, String)>,
+        message: Option<String>,
+    },
+    /// Remove a directory tree. The path (placeholders allowed) must lie inside the sandbox home.
+    Rmtree {
+        path: String,
     },
     Assert(Assertion),
 }
@@ -261,17 +288,36 @@ fn parse_assert(v: &Value, at: &str) -> Res<Assertion> {
     }
     if let Some(j) = m.get("json") {
         let jm = obj(j, &key("json"))?;
-        only_keys(jm, &["path", "equals"], &key("json"))?;
+        only_keys(
+            jm,
+            &["path", "equals", "not_equals", "absent", "excludes"],
+            &key("json"),
+        )?;
         let path = string(
             jm.get("path")
                 .ok_or_else(|| format!("{at}.json: missing `path`"))?,
             &key("json.path"),
         )?;
-        let equals = jm
-            .get("equals")
-            .cloned()
-            .ok_or_else(|| format!("{at}.json: missing `equals`"))?;
-        return Ok(Assertion::Json { path, equals });
+        let forms: Vec<&str> = ["equals", "not_equals", "absent", "excludes"]
+            .into_iter()
+            .filter(|k| jm.contains_key(*k))
+            .collect();
+        let [form] = forms.as_slice() else {
+            return Err(format!(
+                "{at}.json: expected exactly one of equals, not_equals, absent, excludes"
+            ));
+        };
+        let value = |k: &str| jm[k].clone();
+        let expect = match *form {
+            "equals" => JsonExpect::Equals(value("equals")),
+            "not_equals" => JsonExpect::NotEquals(value("not_equals")),
+            "excludes" => JsonExpect::Excludes(value("excludes")),
+            _ => match jm["absent"].as_bool() {
+                Some(true) => JsonExpect::Absent,
+                _ => return Err(format!("{at}.json.absent: must be true")),
+            },
+        };
+        return Ok(Assertion::Json { path, expect });
     }
     if let Some(f) = m.get("file") {
         return Ok(Assertion::File {
@@ -303,13 +349,22 @@ fn parse_assert(v: &Value, at: &str) -> Res<Assertion> {
 
 fn parse_step(v: &Value, at: &str) -> Res<Step> {
     let m = obj(v, at)?;
-    let kinds: Vec<&str> = ["cli", "mcp", "mcp_resource", "http", "drain", "assert"]
+    let kinds: Vec<&str> = [
+        "cli",
+        "mcp",
+        "mcp_resource",
+        "http",
+        "drain",
+        "git",
+        "rmtree",
+        "assert",
+    ]
         .into_iter()
         .filter(|k| m.contains_key(*k))
         .collect();
     let [kind] = kinds.as_slice() else {
         return Err(format!(
-            "{at}: expected exactly one of cli, mcp, mcp_resource, http, drain, assert"
+            "{at}: expected exactly one of cli, mcp, mcp_resource, http, drain, git, rmtree, assert"
         ));
     };
     let save = |m: &Map<String, Value>| -> Res<Vec<(String, String)>> {
@@ -409,6 +464,45 @@ fn parse_step(v: &Value, at: &str) -> Res<Step> {
             };
             Ok(Step::Drain { max_jobs })
         }
+        "git" => {
+            only_keys(m, &["git", "cwd", "args", "files", "message"], at)?;
+            let git = string(&m["git"], &format!("{at}.git"))?;
+            let cwd = string(
+                m.get("cwd").ok_or_else(|| format!("{at}: missing `cwd`"))?,
+                &format!("{at}.cwd"),
+            )?;
+            if cwd.is_empty() {
+                return Err(format!("{at}.cwd: must not be empty"));
+            }
+            let args = m
+                .get("args")
+                .map(|a| strings(a, &format!("{at}.args")))
+                .transpose()?
+                .unwrap_or_default();
+            check_git_op(&git, &args).map_err(|e| format!("{at}.git: {e}"))?;
+            Ok(Step::Git {
+                git,
+                cwd,
+                args,
+                files: m
+                    .get("files")
+                    .map(|f| str_map(f, &format!("{at}.files")))
+                    .transpose()?
+                    .unwrap_or_default(),
+                message: m
+                    .get("message")
+                    .map(|s| string(s, &format!("{at}.message")))
+                    .transpose()?,
+            })
+        }
+        "rmtree" => {
+            only_keys(m, &["rmtree"], at)?;
+            let path = string(&m["rmtree"], &format!("{at}.rmtree"))?;
+            if path.is_empty() {
+                return Err(format!("{at}.rmtree: must not be empty"));
+            }
+            Ok(Step::Rmtree { path })
+        }
         _ => {
             only_keys(m, &["assert"], at)?;
             Ok(Step::Assert(parse_assert(
@@ -491,6 +585,7 @@ pub fn parse_scenario(text: &str) -> Result<Scenario, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_json::json;
 
     const SAMPLE: &str = r#"{
       "id": "stack-bisect-ejects-culprit",
@@ -589,6 +684,74 @@ mod tests {
                 "{op} {args:?} should be rejected"
             );
         }
+    }
+
+    fn one_step(step: &str) -> String {
+        format!(r#"{{"id":"a","covers":[],"steps":[{step}]}}"#)
+    }
+
+    #[test]
+    fn json_assertions_take_exactly_one_form() {
+        let json = |body: &str| {
+            one_step(&format!(
+                r#"{{"assert":{{"json":{{"path":"/k",{body}}}}}}}"#
+            ))
+        };
+        let ok = [
+            (r#""equals":1"#, JsonExpect::Equals(json!(1))),
+            (r#""not_equals":"x""#, JsonExpect::NotEquals(json!("x"))),
+            (r#""absent":true"#, JsonExpect::Absent),
+            (
+                r#""excludes":{"id":"a"}"#,
+                JsonExpect::Excludes(json!({"id": "a"})),
+            ),
+        ];
+        for (body, want) in ok {
+            let s = parse_scenario(&json(body)).unwrap_or_else(|e| panic!("{body}: {e}"));
+            assert_eq!(
+                s.steps[0],
+                Step::Assert(Assertion::Json {
+                    path: "/k".into(),
+                    expect: want,
+                })
+            );
+        }
+        assert!(parse_scenario(&json(r#""absent":false"#)).is_err());
+        assert!(parse_scenario(&json(r#""equals":1,"absent":true"#)).is_err());
+        assert!(parse_scenario(&json(r#""bogus":1"#)).is_err());
+        assert!(parse_scenario(&json("")).is_err());
+    }
+
+    #[test]
+    fn git_and_rmtree_steps_parse_with_placeholders() {
+        let text = one_step(
+            r#"{"git":"commit","cwd":"{var:wt}","files":{"x.txt":"x\n"},"message":"agent work"},
+               {"git":"checkout","cwd":"{repo:api}","args":["-b","feat"]},
+               {"rmtree":"{var:wt}"}"#,
+        );
+        let s = parse_scenario(&text).unwrap();
+        assert_eq!(
+            s.steps[0],
+            Step::Git {
+                git: "commit".into(),
+                cwd: "{var:wt}".into(),
+                args: Vec::new(),
+                files: vec![("x.txt".into(), "x\n".into())],
+                message: Some("agent work".into()),
+            }
+        );
+        assert_eq!(
+            s.steps[2],
+            Step::Rmtree {
+                path: "{var:wt}".into()
+            }
+        );
+        // A git step needs a cwd, a known operation, and the shape that operation takes.
+        assert!(parse_scenario(&one_step(r#"{"git":"commit","repo":"api"}"#)).is_err());
+        assert!(parse_scenario(&one_step(r#"{"git":"squash","cwd":"x"}"#)).is_err());
+        assert!(parse_scenario(&one_step(r#"{"git":"init","cwd":"x","args":["y"]}"#)).is_err());
+        assert!(parse_scenario(&one_step(r#"{"rmtree":""}"#)).is_err());
+        assert!(parse_scenario(&one_step(r#"{"rmtree":"x","save":{"a":"/b"}}"#)).is_err());
     }
 
     #[test]

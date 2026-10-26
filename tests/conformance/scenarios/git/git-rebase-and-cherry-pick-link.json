@@ -15,11 +15,24 @@
     {"cli": ["git", "log", "rewrite"], "json": true, "save": {"original_sha": "/items/0/sha"}},
     {"cli": ["git", "link", "WG-1", "{var:original_sha}"], "json": true},
     {"assert": {"json": {"path": "/0/source", "equals": "explicit"}}},
-    {"assert": {"json": {"path": "/0/confidence", "equals": 1.0}}}
+    {"assert": {"json": {"path": "/0/confidence", "equals": 1.0}}},
+    {"git": "checkout", "cwd": "{repo:rewrite}", "args": ["main"]},
+    {"git": "commit", "cwd": "{repo:rewrite}", "files": {"m.txt": "m\n"}, "message": "main moves"},
+    {"git": "checkout", "cwd": "{repo:rewrite}", "args": ["topic"]},
+    {"git": "rebase", "cwd": "{repo:rewrite}", "args": ["main"]},
+    {"cli": ["git", "sync", "rewrite", "--full"], "json": true},
+    {"assert": {"json": {"path": "/0/marked_unreachable", "equals": 1}}},
+    {"cli": ["git", "log", "rewrite", "--linked"], "json": true},
+    {"assert": {"stdout_contains": "rewrite_reconciliation"}},
+    {"cli": ["git", "log", "rewrite"], "json": true, "save": {"topic_sha": "/items/0/sha"}},
+    {"git": "checkout", "cwd": "{repo:rewrite}", "args": ["main"]},
+    {"git": "cherry-pick", "cwd": "{repo:rewrite}", "args": ["{var:topic_sha}"]},
+    {"cli": ["git", "sync", "rewrite"], "json": true},
+    {"assert": {"json": {"path": "/0/new_commits", "equals": 1}}}
   ],
   "not_observable": [
     {
-      "case": "tests/integration/test_git.py::test_rebase_reconciliation_and_cherry_pick: the rebase of topic onto a moved main, the full sync that marks the original commit unreachable, the rewrite equivalence and the rewrite_reconciliation carry-over link, and the cherry-pick equivalence. The runner's setup operations have no rebase, cherry-pick or reset, and no step creates commits",
+      "case": "tests/integration/test_git.py::test_rebase_reconciliation_and_cherry_pick: the reachability flag of the original commit (not reachable) and the equivalence kind rewrite are asserted on the database rows; no CLI command in this scenario prints them, so only the marked_unreachable count and the carried rewrite_reconciliation link are checked.",
       "covered_by": "CORE-10"
     }
   ]

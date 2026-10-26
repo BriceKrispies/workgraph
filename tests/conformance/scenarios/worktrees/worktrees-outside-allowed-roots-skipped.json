@@ -1,0 +1,23 @@
+{
+  "id": "worktrees-outside-allowed-roots-skipped",
+  "covers": ["C118", "C183"],
+  "setup": [
+    {"git": "init", "repo": "bounded"},
+    {"git": "commit", "repo": "bounded", "files": {"README.md": "bounded\n"}, "message": "initial"},
+    {"git": "branch", "repo": "bounded", "args": ["elsewhere-wt"]},
+    {"git": "worktree", "repo": "bounded", "args": ["../elsewhere/wt", "elsewhere-wt"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["workspace", "set", "default", "--allowed-root", "{repo:bounded}"], "json": true},
+    {"cli": ["repo", "register", "{repo:bounded}"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/kind", "equals": "clone"}}},
+    {"assert": {"stdout_contains": "elsewhere"}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktree_discovery.py::test_worktrees_outside_allowed_roots_are_skipped_and_reported: the skipped_worktrees path is asserted to equal the absolute outside path and the checkouts list is asserted to hold only the primary path; equality needs the sandbox-rooted absolute path, which no placeholder yields with the platform separators, and the runner cannot assert that a list has no further element, so the scenario checks the path fragment with stdout_contains.",
+      "covered_by": "CORE-07"
+    }
+  ]
+}

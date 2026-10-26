@@ -17,10 +17,17 @@ implementation in a fresh `WORKGRAPH_HOME` and a fresh temporary directory. The 
 
 ## Steps
 
-* `setup` runs before every step, in order. It is the only way to create commits and files:
-  `git init`, `commit` (with `files` and `message`), `branch`, `checkout` (`-b` allowed), `merge`
-  and `worktree`. There is no `rm`, `mv`, `rebase`, `cherry-pick` or `reset`, and no step creates
-  commits, so every commit a scenario needs must be in `setup`, in the order it is made.
+* `setup` runs before every step, in order. It names a typed git operation on a repository
+  (`{"git": "commit", "repo": "api", ...}`). The operations are `init`, `commit`, `write`, `branch`,
+  `checkout` (`-b` allowed), `worktree`, `merge`, `delete`, `move`, `rebase`, `cherry-pick` and
+  `reset`, with the argument shapes that `check_git_op` accepts.
+* A `git` step runs the same operations between steps, in the directory `cwd` instead of a repository
+  name: `{"git": "commit", "cwd": "{var:checkout}", "files": {...}, "message": "..."}`. Use
+  `{repo:<name>}` for a repository, or a saved path for a managed checkout. A git step does not
+  change the most recent `cli` output. A failed git step fails that step only.
+* An `rmtree` step removes a directory tree, for example a managed checkout removed out of band:
+  `{"rmtree": "{var:checkout}"}`. The path must lie inside the sandbox home and must not be the home
+  itself, and a `..` component is refused.
 * Task keys are allocated from the workspace counter, starting at `WG-1` in a fresh home. A setup
   commit message may therefore name a key that a later `task create` step will produce (for example
   `Task-ID: WG-1`), as long as the tasks are created in the same order. Keys are not normalised.
@@ -29,10 +36,15 @@ implementation in a fresh `WORKGRAPH_HOME` and a fresh temporary directory. The 
 * Use `save` with a JSON pointer (`"/items/0/sha"`) to carry a value into later steps as
   `{var:name}`. Placeholders `{repo:<name>}`, `{key:N}` and `{id:N}` resolve from earlier outputs.
 * `assert` steps carry the original Python test's assertions, so a scenario is meaningful without a
-  differential run. `json` equality values may use placeholders. Database assertions (`db`) are
-  skipped by the runner skeleton and must not be relied on yet.
+  differential run. A `json` assertion takes a JSON pointer and exactly one form: `equals`,
+  `not_equals` (the value exists and differs), `absent: true` (the key is not present) or `excludes`
+  (the array at the pointer has no element equal to the value). Values may use placeholders. Use
+  `excludes` for "the list has no such element". Database assertions (`db`) are skipped by the runner
+  skeleton and must not be relied on yet.
 * Assertions on a file path are relative to `{home}` when not absolute. Use `{repo:<name>}` for
   repository files.
+* `{sep}` is the platform path separator (`\` on Windows, `/` elsewhere). Build paths with it
+  (`{home}{sep}data`) rather than writing a separator, so a path assertion holds on every OS.
 
 ## Not observable
 
@@ -49,24 +61,23 @@ Never drop a case silently. If a sub-case can be expressed, assert it; the rest 
 
 ## Recording goldens
 
-* `wg-conformance record --scenarios <dir> --python "uv run --project <worktree> workgraph" --env COLUMNS=`
+* `wg-conformance record --scenarios <dir> --python "uv run --project <worktree> workgraph"`
   runs the Python implementation and writes `tests/conformance/golden/<id>.json`.
 * `record` writes the golden before it judges the run, so a scenario whose assertions fail still
   leaves a golden. Read the report, and fix the scenario or the Python behaviour, before committing.
-* `--env COLUMNS=` is a temporary workaround on Windows. With `COLUMNS=120` (the parity environment,
-  docs/rust-rewrite.md section 3.1) the Python CLI fails at import in `cli/common.py` (`CliConsole`
-  reads `self.file` before `_file` is set, when `legacy_windows` is evaluated). An empty value
-  avoids it. Only width-dependent human output differs, and scenarios here use `--json`, so the
-  goldens are unaffected. Remove the workaround once the Python console is fixed or the goldens are
-  recorded on a POSIX machine.
+* The runner sets `COLUMNS=120` and `NO_COLOR=1` (the parity environment, docs/rust-rewrite.md section
+  3.1) for every run. The Python console fix on `rust-integration` (`CliConsole` no longer reads
+  `self.file` before `_file` is set) makes that work on Windows, so no `--env` override is needed.
 * `wg-conformance check` against a Rust binary compares with the goldens; it is the cut-over gate.
 
 ## Runner gaps
 
 Gaps that block cases are listed in `not_observable`. Open runner gaps, for the owning tasks:
 
-* setup has no file deletion, move, rebase, cherry-pick or reset, and steps cannot create commits
-  between syncs (affects git scenarios that need history rewritten or commits made mid-run);
-* `load_scenarios` reads one directory level only, so `--scenarios tests/conformance/scenarios`
-  does not load the area subdirectories; pass the area directory until the loader recurses;
-* `db` assertions are skipped by `runner.rs` until the database driver lands.
+* `rmtree` removes only trees inside the sandbox home, so a linked worktree created beside the
+  home (`../wt/...` from a repository) cannot be removed by a step, and `git worktree remove` has
+  no step operation;
+* `worktree lock` and `worktree remove` have no setup or step operation;
+* `db` assertions are skipped by `runner.rs` until the database driver lands;
+* the change-set item of a submitted attempt (its `head_sha`) and the database-only fields of
+  rewrite equivalences have no CLI output to assert on.

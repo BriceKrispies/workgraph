@@ -1,7 +1,7 @@
 //! Refs, remotes, commit lists and version text that git prints, and the checks Workgraph applies
 //! before it passes a name to git.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
 /// `re.fullmatch`-style check of a commit id: 7 to 64 lowercase hexadecimal digits.
 pub fn is_sha(value: &str) -> bool {
@@ -59,18 +59,29 @@ pub fn parse_remotes(output: &str) -> Vec<(String, String)> {
 
 /// `for-each-ref` output with the format `%(refname)%00%(objectname)%00%(*objectname)`: each
 /// ref to its commit id, with annotated tags peeled. `HEAD` entries are skipped.
-pub fn parse_refs(output: &str) -> BTreeMap<String, String> {
-    let mut refs = BTreeMap::new();
+/// The pairs come back in git's output order, as the Python dict is built.
+pub fn parse_refs(output: &str) -> Vec<(String, String)> {
+    let mut refs = Vec::new();
     for line in output.lines() {
         let parts: Vec<&str> = line.split('\0').collect();
         if let [name, object, peeled] = parts.as_slice()
             && !name.ends_with("/HEAD")
         {
             let sha = if peeled.is_empty() { *object } else { *peeled };
-            refs.insert((*name).to_owned(), sha.to_owned());
+            refs.push(((*name).to_owned(), sha.to_owned()));
         }
     }
     refs
+}
+
+/// Output lines that are not empty, as written (no trimming): the paths `diff --name-only`
+/// and friends print, one per line.
+pub fn parse_path_lines(output: &str) -> Vec<String> {
+    output
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(str::to_owned)
+        .collect()
 }
 
 /// Commit ids in `output`, one per line: trimmed, non-empty, sorted and unique.
@@ -191,8 +202,9 @@ mod tests {
         let refs = parse_refs(
             "refs/heads/main\x001\x00\nrefs/tags/v1\x002\x003\nrefs/remotes/o/HEAD\x004\x00\n",
         );
-        assert_eq!(refs.get("refs/tags/v1").map(String::as_str), Some("3"));
-        assert!(!refs.contains_key("refs/remotes/o/HEAD"));
+        assert_eq!(refs[0], ("refs/heads/main".to_owned(), "1".to_owned()));
+        assert_eq!(refs[1], ("refs/tags/v1".to_owned(), "3".to_owned()));
+        assert_eq!(refs.len(), 2);
     }
 
     #[test]

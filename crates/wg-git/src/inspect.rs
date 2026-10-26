@@ -2,7 +2,6 @@
 //! branches, object existence and the working tree status. Each method runs git and hands the
 //! text to `wg-gitcore` for parsing.
 
-use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use wg_gitcore::{
@@ -204,7 +203,7 @@ impl Git {
     ///
     /// # Errors
     /// [`GitError::Run`] when git cannot run.
-    pub fn refs(&self) -> Result<BTreeMap<String, String>, GitError> {
+    pub fn refs(&self) -> Result<Vec<(String, String)>, GitError> {
         let output = self.run_with(
             &[
                 "for-each-ref",

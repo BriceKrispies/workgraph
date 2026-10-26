@@ -71,7 +71,6 @@ fn repo_with_commit(dir: &Path) -> String {
     fixture(dir, &["rev-parse", "HEAD"])
 }
 
-// covers: E24
 #[test]
 fn runs_git_with_the_repository_as_working_directory() {
     let dir = scratch("run");
@@ -139,11 +138,17 @@ fn refs_branches_and_commits() {
     fixture(&dir, &["branch", "feature"]);
     let git = repo(&dir);
 
+    // ordered as git prints them (for-each-ref sorts by name), annotated tags peeled
     let refs = git.refs().unwrap();
-    assert_eq!(refs.get("refs/heads/main"), Some(&first));
+    let names: Vec<&str> = refs.iter().map(|(name, _)| name.as_str()).collect();
     assert_eq!(
-        refs.get("refs/tags/v1"),
-        Some(&first),
+        names,
+        ["refs/heads/feature", "refs/heads/main", "refs/tags/v1"]
+    );
+    assert_eq!(refs[1], ("refs/heads/main".to_owned(), first.clone()));
+    assert_eq!(
+        refs[2],
+        ("refs/tags/v1".to_owned(), first.clone()),
         "annotated tags are peeled"
     );
 
@@ -313,4 +318,218 @@ fn post_commit_hook_is_installed_and_never_overwrites_a_foreign_hook() {
 #[test]
 fn git_version_is_read() {
     assert!(wg_git::git_version() >= (1, 0));
+}
+
+/// Two branches off `main` that both change `file.txt` (a conflict), and `other.txt` on `feature`
+/// only. Leaves `main` checked out.
+fn diverged_repo(dir: &Path) -> (String, String) {
+    let first = repo_with_commit(dir);
+    fixture(dir, &["checkout", "-q", "-b", "feature"]);
+    fs::write(dir.join("file.txt"), "feature\n").unwrap();
+    fs::write(dir.join("other.txt"), "other\n").unwrap();
+    fixture(dir, &["add", "."]);
+    fixture(dir, &["commit", "-q", "-m", "feature change"]);
+    fixture(dir, &["checkout", "-q", "main"]);
+    fs::write(dir.join("file.txt"), "main\n").unwrap();
+    fixture(dir, &["commit", "-q", "-am", "main change"]);
+    let main_head = fixture(dir, &["rev-parse", "HEAD"]);
+    (first, main_head)
+}
+
+#[test]
+fn merge_conflict_is_reported_and_aborted() {
+    let dir = scratch("merge-conflict");
+    let (_, main_head) = diverged_repo(&dir);
+    let git = repo(&dir);
+
+    let merged = git.merge_no_ff("Merge feature", "feature").unwrap();
+    assert_ne!(merged.returncode, 0);
+    assert_eq!(git.unmerged_paths().unwrap(), ["file.txt"]);
+    git.merge_abort(RunOptions::CHECKED).unwrap();
+    assert!(git.is_clean().unwrap());
+    assert_eq!(git.head().unwrap(), Some(main_head));
+    assert!(git.unmerged_paths().unwrap().is_empty());
+}
+
+#[test]
+fn merge_no_ff_uses_the_integration_identity_and_message() {
+    let dir = scratch("merge-ok");
+    let (first, _) = diverged_repo(&dir);
+    // a non-conflicting feature: only other.txt, so the merge is clean
+    fixture(&dir, &["checkout", "-q", "feature"]);
+    fixture(&dir, &["checkout", "-q", "-b", "clean", &first]);
+    fs::write(dir.join("clean.txt"), "clean\n").unwrap();
+    fixture(&dir, &["add", "clean.txt"]);
+    fixture(&dir, &["commit", "-q", "-m", "clean change"]);
+    fixture(&dir, &["checkout", "-q", "main"]);
+    fixture(&dir, &["reset", "-q", "--hard", &first]);
+    let git = repo(&dir);
+
+    let merged = git.merge_no_ff("Stack: merge clean", "clean").unwrap();
+    assert_eq!(merged.returncode, 0, "{}", merged.stderr);
+    assert_eq!(
+        merged.args,
+        [
+            "merge",
+            "--no-ff",
+            "--no-edit",
+            "-m",
+            "Stack: merge clean",
+            "clean"
+        ]
+    );
+    let log = fixture(&dir, &["log", "-1", "--format=%an <%ae>|%cn|%P|%s"]);
+    let parts: Vec<&str> = log.split('|').collect();
+    assert_eq!(
+        parts[0],
+        "Workgraph Stack Integration <integration@workgraph.local>"
+    );
+    assert_eq!(parts[1], "Workgraph Stack Integration");
+    assert_eq!(
+        parts[2].split(' ').count(),
+        2,
+        "a merge commit has two parents"
+    );
+    assert_eq!(parts[3], "Stack: merge clean");
+}
+
+#[test]
+fn merge_ff_only_moves_a_branch_that_is_ahead() {
+    let dir = scratch("merge-ff");
+    let first = repo_with_commit(&dir);
+    fixture(&dir, &["checkout", "-q", "-b", "ahead"]);
+    fs::write(dir.join("ahead.txt"), "x\n").unwrap();
+    fixture(&dir, &["add", "ahead.txt"]);
+    fixture(&dir, &["commit", "-q", "-m", "ahead"]);
+    let ahead = fixture(&dir, &["rev-parse", "HEAD"]);
+    fixture(&dir, &["checkout", "-q", "main"]);
+    let git = repo(&dir);
+
+    git.merge_ff_only(&ahead, RunOptions::CHECKED).unwrap();
+    assert_eq!(git.head().unwrap(), Some(ahead.clone()));
+    assert!(
+        git.merge_ff_only(&first, RunOptions::CHECKED).is_ok(),
+        "already contains"
+    );
+}
+
+#[test]
+fn update_ref_is_a_compare_and_swap() {
+    let dir = scratch("cas");
+    let first = repo_with_commit(&dir);
+    fs::write(dir.join("file.txt"), "two\n").unwrap();
+    fixture(&dir, &["commit", "-q", "-am", "second"]);
+    let second = fixture(&dir, &["rev-parse", "HEAD"]);
+    let git = repo(&dir);
+
+    // main is at `second`: moving it while expecting `first` must fail and leave it alone
+    let refused = git.update_ref("refs/heads/main", &first, &first, RunOptions::CHECKED);
+    assert!(
+        matches!(refused, Err(GitError::Failed { .. })),
+        "{refused:?}"
+    );
+    assert_eq!(git.resolve_commit("main").unwrap(), second);
+
+    git.update_ref("refs/heads/main", &first, &second, RunOptions::CHECKED)
+        .unwrap();
+    assert_eq!(git.resolve_commit("main").unwrap(), first);
+}
+
+#[test]
+fn worktree_add_and_remove_round_trip() {
+    let dir = scratch("worktree");
+    let (first, _) = diverged_repo(&dir);
+    fixture(&dir, &["branch", "wt-base", &first]);
+    let git = repo(&dir);
+    let existing = scratch("worktree-parent").join("existing");
+    let created = scratch("worktree-parent").join("created");
+    let detached = scratch("worktree-parent").join("detached");
+    let (existing_s, created_s, detached_s) = (
+        existing.display().to_string(),
+        created.display().to_string(),
+        detached.display().to_string(),
+    );
+
+    git.worktree_add_existing(&existing_s, "feature").unwrap();
+    git.worktree_add_branch("wt-new", &created_s, &first)
+        .unwrap();
+    git.worktree_add_detached(&detached_s, &first).unwrap();
+    let entries = git.worktrees().unwrap();
+    assert_eq!(entries.len(), 4, "main plus three linked worktrees");
+    assert!(
+        Git {
+            path: existing.clone(),
+            timeout_ms: 120_000
+        }
+        .is_worktree()
+        .unwrap()
+    );
+
+    // adding an existing branch a second time is refused
+    let again = git.worktree_add_existing(&created_s, "feature");
+    assert!(matches!(again, Err(GitError::Failed { .. })));
+
+    // a clean worktree is removed without force; the detached one is removed with force
+    git.worktree_remove(&existing_s, false, RunOptions::CHECKED)
+        .unwrap();
+    assert!(!existing.exists());
+    fs::write(detached.join("dirty.txt"), "x").unwrap();
+    let refused = git
+        .worktree_remove(&detached_s, false, RunOptions::UNCHECKED)
+        .unwrap();
+    assert_ne!(refused.returncode, 0, "a dirty worktree needs force");
+    let forced = git
+        .worktree_remove(&detached_s, true, RunOptions::CHECKED)
+        .unwrap();
+    assert_eq!(
+        forced.args,
+        ["worktree", "remove", "--force", detached_s.as_str()]
+    );
+    git.worktree_prune(RunOptions::CHECKED).unwrap();
+    assert_eq!(git.worktrees().unwrap().len(), 2);
+}
+
+#[test]
+fn reset_clean_checkout_and_branch_delete() {
+    let dir = scratch("reset");
+    let (first, _) = diverged_repo(&dir);
+    let git = repo(&dir);
+
+    fs::write(dir.join("loose.txt"), "x").unwrap();
+    git.clean_force(RunOptions::CHECKED).unwrap();
+    assert!(!dir.join("loose.txt").exists());
+
+    git.reset_hard(&first, RunOptions::CHECKED).unwrap();
+    assert_eq!(git.head().unwrap(), Some(first.clone()));
+    git.reset_keep(&first, RunOptions::CHECKED).unwrap();
+
+    git.checkout_detach_force(&first, RunOptions::CHECKED)
+        .unwrap();
+    assert_eq!(git.current_branch().unwrap(), None);
+
+    git.branch_delete("feature", RunOptions::CHECKED).unwrap();
+    assert!(
+        !git.local_branches()
+            .unwrap()
+            .contains(&"feature".to_owned())
+    );
+}
+
+#[test]
+fn a_call_past_its_timeout_is_a_run_error() {
+    let dir = scratch("timeout");
+    repo_with_commit(&dir);
+    let git = Git {
+        path: dir,
+        timeout_ms: 1,
+    };
+    match git.run(&["status", "--porcelain"]) {
+        Err(GitError::Run(message)) => {
+            assert!(
+                message.starts_with("git status --porcelain timed out after "),
+                "{message}"
+            );
+        }
+        other => panic!("expected a timeout, got {other:?}"),
+    }
 }

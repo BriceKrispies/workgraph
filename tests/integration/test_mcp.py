@@ -5,9 +5,8 @@ import pytest
 from mcp import Client
 from mcp.client.streamable_http import streamable_http_client
 
-from tests.helpers import mcp_stdio_params
+from tests.helpers import api_server, mcp_stdio_params
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
-from workgraph.demo.scenario import _free_port, _start_api
 
 REQUIRED_TOOLS = {
     "workspace_list",
@@ -217,11 +216,9 @@ async def test_stack_mutations_need_stack_write(app, human, ws, home, make_repo)
 
 @pytest.mark.slow
 async def test_streamable_http_transport(app, human, ws):
-    port = _free_port()
-    thread, server = _start_api(app, port)
-    try:
+    with api_server(app) as base_url:
         token = app.api_token()
-        url = f"http://127.0.0.1:{port}/mcp/"
+        url = f"{base_url}/mcp/"
         async with (
             httpx2.AsyncClient(headers={"Authorization": f"Bearer {token}"}, timeout=30) as http,
             Client(streamable_http_client(url, http_client=http), read_timeout_seconds=30) as client,
@@ -233,9 +230,6 @@ async def test_streamable_http_transport(app, human, ws):
         async with httpx2.AsyncClient(timeout=10) as anon:
             response = await anon.post(url, json={"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
             assert response.status_code == 401
-    finally:
-        server.should_exit = True
-        thread.join(timeout=30)
     assert app.tasks.get(human, ws, "WG-1").title == "Over HTTP"
 
 

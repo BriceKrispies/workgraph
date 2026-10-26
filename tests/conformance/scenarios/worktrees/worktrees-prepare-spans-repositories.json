@@ -1,0 +1,36 @@
+{
+  "id": "worktrees-prepare-spans-repositories",
+  "covers": ["C016", "C023", "C097", "C118", "C152"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"},
+    {"git": "init", "repo": "lib"},
+    {"git": "commit", "repo": "lib", "files": {"README.md": "lib\n"}, "message": "initial"},
+    {"git": "init", "repo": "docs"},
+    {"git": "commit", "repo": "docs", "files": {"README.md": "docs\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["repo", "register", "{repo:lib}"], "json": true},
+    {"cli": ["repo", "register", "{repo:docs}", "--read-only"], "json": true},
+    {"cli": ["task", "create", "Cross repo", "-r", "api", "-r", "lib", "-r", "docs", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true, "save": {"attempt": "/attempt_id"}},
+    {"assert": {"stdout_contains": "\"repository\": \"api\""}},
+    {"assert": {"stdout_contains": "\"repository\": \"lib\""}},
+    {"assert": {"stdout_contains": "\"repository\": \"docs\""}},
+    {"assert": {"stdout_contains": "\"branch\": null"}},
+    {"cli": ["repo", "status", "api"], "json": true},
+    {"assert": {"json": {"path": "/branch", "equals": "main"}}},
+    {"cli": ["attempt", "abandon", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/task_status", "equals": "ready"}}},
+    {"cli": ["git", "worktrees", "--status", "active", "-w", "default"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktrees.py::test_prepare_worktrees_manifest_and_change_set: the manifest's per-repository order and the change set created by the attempt are compared by position in the Python test, but the CLI lists manifest repositories in an order that varies between runs, so only membership is asserted here. The change set items and their partially applied status need an agent commit, which no step can make",
+      "covered_by": "CORE-13"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "worktrees-attempt-submit-without-commits",
+  "covers": ["C023", "C024", "C097", "C152", "C165"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["task", "create", "External work", "-r", "api", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true, "save": {"attempt": "/attempt_id", "checkout": "/repositories/0/checkout_path"}},
+    {"cli": ["attempt", "submit", "{var:attempt}", "--summary", "added the feature"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "succeeded"}}},
+    {"assert": {"json": {"path": "/verification", "equals": null}}},
+    {"assert": {"json": {"path": "/task_status", "equals": "awaiting_review"}}},
+    {"assert": {"json": {"path": "/attempt_status", "equals": "succeeded"}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "awaiting_review"}}},
+    {"cli": ["git", "worktrees", "--status", "active", "-w", "default"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}},
+    {"assert": {"file": "{var:checkout}/README.md", "exists": true}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktrees.py::test_attempt_submit_concludes_committed_work_for_review: the agent's commit in the managed checkout becomes the change set item head sha and appears in the task's commits. Setup creates commits only before any managed checkout exists, and no step commits inside one, so this scenario submits an attempt with no commits",
+      "covered_by": "CORE-13"
+    }
+  ]
+}

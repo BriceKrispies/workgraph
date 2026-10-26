@@ -1,0 +1,34 @@
+{
+  "id": "repo-discovers-user-worktrees",
+  "covers": ["C117", "C118", "C121", "C066"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"},
+    {"git": "branch", "repo": "svc", "args": ["feature-a"]},
+    {"git": "branch", "repo": "svc", "args": ["feature-b"]},
+    {"git": "worktree", "repo": "svc", "args": ["../wt-feature-a", "feature-a"]},
+    {"git": "worktree", "repo": "svc", "args": ["../wt-feature-b", "feature-b"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true, "save": {"repo_id": "/id"}},
+    {"assert": {"json": {"path": "/checkouts/0/kind", "equals": "clone"}}},
+    {"assert": {"json": {"path": "/checkouts/1/kind", "equals": "worktree"}}},
+    {"assert": {"json": {"path": "/checkouts/1/path", "equals": "{repo:wt-feature-a}"}}},
+    {"assert": {"json": {"path": "/checkouts/2/kind", "equals": "worktree"}}},
+    {"assert": {"json": {"path": "/checkouts/2/path", "equals": "{repo:wt-feature-b}"}}},
+    {"assert": {"json": {"path": "/health_detail/skipped_worktrees", "equals": []}}},
+    {"cli": ["events", "list", "--entity", "{var:repo_id}"], "json": true},
+    {"assert": {"stdout_contains": "repository.checkout_discovered"}},
+    {"cli": ["repo", "refresh", "svc"], "json": true},
+    {"assert": {"json": {"path": "/health_status", "equals": "ok"}}},
+    {"assert": {"json": {"path": "/checkouts/1/available", "equals": true}}},
+    {"assert": {"json": {"path": "/checkouts/2/available", "equals": true}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktree_discovery.py::test_register_and_refresh_discover_worktrees: a worktree created after registration appears on refresh, a removed worktree is reported lost and the repository degraded, and a detached and a locked worktree are discovered. Setup runs once before any step, so no worktree can be added or removed mid-run, and the worktree setup operation always checks out a branch, so detached and locked states cannot be built",
+      "covered_by": "CORE-08"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "worktrees-parallel-attempts-get-separate-checkouts",
+  "covers": ["C023", "C097", "C152", "C165"],
+  "setup": [
+    {"git": "init", "repo": "shared"},
+    {"git": "commit", "repo": "shared", "files": {"README.md": "shared\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:shared}"], "json": true},
+    {"cli": ["task", "create", "A", "-r", "shared", "--ready"], "json": true},
+    {"cli": ["task", "create", "B", "-r", "shared", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1"], "json": true, "save": {"checkout_a": "/repositories/0/checkout_path"}},
+    {"assert": {"file": "{var:checkout_a}/README.md", "exists": true}},
+    {"cli": ["attempt", "start", "WG-2"], "json": true, "save": {"checkout_b": "/repositories/0/checkout_path"}},
+    {"assert": {"file": "{var:checkout_b}/README.md", "exists": true}},
+    {"assert": {"file": "{var:checkout_a}/README.md", "exists": true}},
+    {"cli": ["git", "worktrees", "--status", "active", "-w", "default"], "json": true},
+    {"assert": {"json": {"path": "/1/status", "equals": "active"}}}
+  ],
+  "not_observable": []
+}

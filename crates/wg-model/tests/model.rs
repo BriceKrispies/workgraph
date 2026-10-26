@@ -491,11 +491,17 @@ fn every_family_event_of_the_contract_has_a_payload() -> TestResult {
         .map(String::as_str)
         .filter(|name| families.iter().any(|family| name.starts_with(family)))
         .collect();
-    let known: BTreeSet<&str> = EventPayload::EVENT_TYPES.iter().copied().collect();
+    // The knowledge families have their own checks in `lib11_knowledge.rs`.
+    let known: BTreeSet<&str> = EventPayload::EVENT_TYPES
+        .iter()
+        .copied()
+        .filter(|name| families.iter().any(|family| name.starts_with(family)))
+        .collect();
     assert_eq!(known, expected);
+    let every: BTreeSet<&str> = EventPayload::EVENT_TYPES.iter().copied().collect();
     assert_eq!(
+        every.len(),
         EventPayload::EVENT_TYPES.len(),
-        known.len(),
         "duplicate type"
     );
     assert_eq!(known.len(), 43);
@@ -758,8 +764,9 @@ fn table_names_are_schema_tables() -> TestResult {
     let names: BTreeSet<&str> = Table::ALL.iter().map(|table| table.name()).collect();
     assert_eq!(names.len(), Table::ALL.len());
     for name in names {
+        let quoted = format!("CREATE TABLE \"{name}\" (");
         assert!(
-            schema.contains(&format!("CREATE TABLE {name} (")),
+            schema.contains(&format!("CREATE TABLE {name} (")) || schema.contains(&quoted),
             "{name} is not a table of schema 0010"
         );
     }

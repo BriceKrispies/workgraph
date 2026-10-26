@@ -4,14 +4,17 @@ use std::io::Write as _;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use wg_conformance::compare::{FileReport, parse_divergences, report_json, report_text, tally};
+use wg_conformance::coverage::{coverage, inventory_ids, marked_tests, parse_exclusions};
 use wg_conformance::dbdump::canonical_dump;
 use wg_conformance::modes::{check, diff, load_scenarios, record};
 use wg_conformance::normalise::FullNormaliser;
 use wg_conformance::runner::Implementation;
 
-const USAGE: &str = "usage: wg-conformance <validate|diff|record|check> [options]
+const USAGE: &str = "usage: wg-conformance <validate|diff|record|check|coverage> [options]
        wg-conformance dbdump DATABASE [-o FILE]   canonical database dump (as dbdump.py dump)
   --scenarios PATH     scenario directory or file (default tests/conformance/scenarios)
+  --contracts FILE     contract inventory for coverage (default docs/rust-rewrite-contracts.md)
+  --allowlist FILE     coverage exclusions with reasons (default tests/conformance/coverage-allowlist.toml, optional)
   --python COMMAND     reference implementation command line (diff, record)
   --rust COMMAND       candidate implementation command line (diff, check)
   --golden DIR         golden directory (default tests/conformance/golden)
@@ -23,6 +26,8 @@ const USAGE: &str = "usage: wg-conformance <validate|diff|record|check> [options
 struct Options {
     mode: String,
     scenarios: PathBuf,
+    contracts: PathBuf,
+    allowlist: PathBuf,
     python: Option<String>,
     rust: Option<String>,
     golden: PathBuf,
@@ -38,6 +43,8 @@ fn parse_args(args: Vec<String>) -> Result<Options, String> {
     let mut o = Options {
         mode,
         scenarios: "tests/conformance/scenarios".into(),
+        contracts: "docs/rust-rewrite-contracts.md".into(),
+        allowlist: "tests/conformance/coverage-allowlist.toml".into(),
         python: None,
         rust: None,
         golden: "tests/conformance/golden".into(),
@@ -50,6 +57,8 @@ fn parse_args(args: Vec<String>) -> Result<Options, String> {
         let mut value = || it.next().ok_or_else(|| format!("{flag} needs a value"));
         match flag.as_str() {
             "--scenarios" => o.scenarios = value()?.into(),
+            "--contracts" => o.contracts = value()?.into(),
+            "--allowlist" => o.allowlist = value()?.into(),
             "--python" => o.python = Some(value()?),
             "--rust" => o.rust = Some(value()?),
             "--golden" => o.golden = value()?.into(),
@@ -123,6 +132,93 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
     })
 }
 
+/// `coverage`: which contract ids of the inventory the scenarios and tests cover, or exclude with
+/// a reason (CR-07). Returns whether the coverage sources are clean: every scenario loads, every
+/// marker names contract ids, and every name is in the inventory.
+fn coverage_mode(o: &Options) -> Result<bool, String> {
+    let markdown = std::fs::read_to_string(&o.contracts)
+        .map_err(|e| format!("read {}: {e}", o.contracts.display()))?;
+    let inventory = inventory_ids(&markdown);
+    let loaded = if o.scenarios.exists() {
+        load_scenarios(&o.scenarios)?
+    } else {
+        Vec::new()
+    };
+    let mut sources = Vec::new();
+    let mut invalid = Vec::new();
+    for item in &loaded {
+        match &item.scenario {
+            Ok(s) => sources.push((s.id.clone(), s.covers.clone())),
+            Err(e) => invalid.push(format!("{}: {e}", item.file)),
+        }
+    }
+    for file in marker_files()? {
+        let label = file.to_string_lossy().replace('\\', "/");
+        let text = std::fs::read_to_string(&file).map_err(|e| format!("read {label}: {e}"))?;
+        let (tests, problems) = marked_tests(&label, &text);
+        sources.extend(tests);
+        invalid.extend(problems);
+    }
+    let exclusions = match std::fs::read_to_string(&o.allowlist) {
+        Ok(t) => parse_exclusions(&t)?,
+        Err(_) => Vec::new(),
+    };
+    let joined = coverage(&inventory, &sources, &exclusions);
+    print!(
+        "{}",
+        wg_conformance::coverage::report_text(&joined, &invalid)
+    );
+    if let Some(path) = &o.report {
+        let mut text =
+            serde_json::to_string_pretty(&wg_conformance::coverage::report_json(&joined, &invalid))
+                .unwrap_or_default();
+        text.push('\n');
+        std::fs::write(path, text).map_err(|e| format!("write {}: {e}", path.display()))?;
+    }
+    Ok(invalid.is_empty() && joined.unknown.is_empty() && joined.unknown_exclusions.is_empty())
+}
+
+/// The files that may carry `covers` markers: the Rust sources and tests of every crate
+/// (`crates/*/src`, `crates/*/tests`) and the Python tests under `tests/`, relative to the working
+/// directory like the other paths. Sorted, so the report is stable.
+fn marker_files() -> Result<Vec<PathBuf>, String> {
+    let mut roots: Vec<(PathBuf, &str)> = Vec::new();
+    if let Ok(entries) = std::fs::read_dir("crates") {
+        for entry in entries.flatten() {
+            for sub in ["src", "tests"] {
+                let dir = entry.path().join(sub);
+                if dir.is_dir() {
+                    roots.push((dir, "rs"));
+                }
+            }
+        }
+    }
+    roots.push((PathBuf::from("tests"), "py"));
+    let mut files = Vec::new();
+    for (root, ext) in &roots {
+        if root.is_dir() {
+            collect_files(root, ext, &mut files)?;
+        }
+    }
+    files.sort();
+    Ok(files)
+}
+
+fn collect_files(dir: &std::path::Path, ext: &str, out: &mut Vec<PathBuf>) -> Result<(), String> {
+    let entries = std::fs::read_dir(dir).map_err(|e| format!("read {}: {e}", dir.display()))?;
+    for entry in entries {
+        let path = entry
+            .map_err(|e| format!("read {}: {e}", dir.display()))?
+            .path();
+        if path.is_dir() {
+            collect_files(&path, ext, out)?;
+        } else if path.extension().and_then(|e| e.to_str()) == Some(ext) {
+            out.push(path);
+        }
+    }
+    Ok(())
+}
+
 /// `dbdump DATABASE [-o FILE]`: the same output as `tools/contracts/dbdump.py dump`.
 fn dbdump(args: &[String]) -> ExitCode {
     let mut database = None;
@@ -186,6 +282,19 @@ fn main() -> ExitCode {
             return ExitCode::from(2);
         }
     };
+    if options.mode == "coverage" {
+        return match coverage_mode(&options) {
+            Ok(true) => ExitCode::SUCCESS,
+            Ok(false) => ExitCode::from(1),
+            Err(e) => {
+                eprintln!(
+                    "error: {e}
+{USAGE}"
+                );
+                ExitCode::from(2)
+            }
+        };
+    }
     match run(&options) {
         Ok(reports) => {
             print!("{}", report_text(&options.mode, &reports));

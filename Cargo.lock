@@ -1189,6 +1189,14 @@ version = "0.1.0"
 [[package]]
 name = "wg-git"
 version = "0.1.0"
+dependencies = [
+ "rpds",
+ "wg-gitcore",
+ "wg-model",
+ "wg-proc",
+ "wg-procspec",
+ "wg-runtimespec",
+]
 
 [[package]]
 name = "wg-gitcore"

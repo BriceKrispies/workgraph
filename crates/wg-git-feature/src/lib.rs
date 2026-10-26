@@ -27,4 +27,5 @@ pub static FEATURE: Feature = Feature {
     tools: &[],
     resources: &[],
     jobs: &[],
+    maintenance: &[],
 };

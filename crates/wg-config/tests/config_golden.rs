@@ -145,10 +145,39 @@ fn observed(golden_case: &Value, skip: &[&str]) -> Value {
 
 /// Compares each observed outcome with its golden case, collecting mismatches with their names.
 fn check(mismatches: &mut Vec<String>, name: &str, actual: &Value, expected: &Value) {
+    let (actual, expected) = (numeric(actual), numeric(expected));
     if actual != expected {
         mismatches.push(format!(
             "{name}:\n  expected {expected}\n  actual   {actual}"
         ));
+    }
+}
+
+/// A JSON value with its numbers in one canonical form, so that equality is numeric and does not
+/// depend on how `serde_json` stores a number. With `arbitrary_precision` (enabled by `wg-json` when
+/// the workspace is built together) a number keeps its source text, so `1e-07` and `1e-7` differ;
+/// Python writes `1e-07`, and both must compare equal. Integers stay integers (`120` is not
+/// `120.0`), floats compare by value, and `-0.0` is folded to `0.0`.
+fn numeric(value: &Value) -> Value {
+    match value {
+        Value::Number(number) => {
+            if let Some(int) = number.as_i64() {
+                Value::from(int)
+            } else if let Some(unsigned) = number.as_u64() {
+                Value::from(unsigned)
+            } else {
+                let float = number.as_f64().unwrap_or(f64::NAN);
+                Value::from(if float == 0.0 { 0.0 } else { float })
+            }
+        }
+        Value::Array(items) => Value::Array(items.iter().map(numeric).collect()),
+        Value::Object(members) => Value::Object(
+            members
+                .iter()
+                .map(|(key, value)| (key.clone(), numeric(value)))
+                .collect(),
+        ),
+        other => other.clone(),
     }
 }
 
@@ -175,8 +204,14 @@ fn document_with(key: &str, input: &Value) -> Result<Map<String, Value>, Box<dyn
 #[test]
 fn defaults_match_golden() -> TestResult {
     let golden = golden("defaults")?;
-    let model = Value::Object(default_global());
-    assert_eq!(model, golden["model_default"], "model defaults");
+    let mut mismatches = Vec::new();
+    check(
+        &mut mismatches,
+        "model defaults",
+        &Value::Object(default_global()),
+        &golden["model_default"],
+    );
+    assert!(mismatches.is_empty(), "{mismatches:?}");
     assert_eq!(
         render(&strip_none(&default_global())),
         golden["saved_toml"].as_str().unwrap_or_default(),

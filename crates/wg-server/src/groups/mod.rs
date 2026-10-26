@@ -10,16 +10,18 @@
 //! snapshot, and the body against the route's [`crate::BodySpec`]. It calls the runtime through
 //! [`crate::Server::blocking`] and returns an [`crate::Answer`].
 
+pub mod events;
 pub mod meta_settings;
 
 use crate::route::ApiRoute;
 
 /// The groups whose routes are registered.
-pub const IMPLEMENTED: &[&str] = &["meta-settings"];
+pub const IMPLEMENTED: &[&str] = &["meta-settings", "IF-49"];
 
 /// Every registered API route, from the implemented groups.
 pub fn routes() -> Vec<ApiRoute> {
     let mut table = Vec::new();
     meta_settings::register(&mut table);
+    events::register(&mut table);
     table
 }

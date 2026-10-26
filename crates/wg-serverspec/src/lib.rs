@@ -18,6 +18,7 @@
 //! * [`net`], [`form`] and [`text`]: `ipaddress`, `urllib.parse` and `repr`/`html.escape`.
 
 pub mod coverage;
+pub mod events;
 pub mod form;
 pub mod groups;
 pub mod lan;

@@ -17,6 +17,7 @@
 pub mod app;
 pub mod context;
 pub mod effects;
+pub mod events;
 pub mod logs;
 pub mod settings;
 pub mod tasks;

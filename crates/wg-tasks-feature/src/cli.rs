@@ -10,6 +10,7 @@ use crate::service;
 use crate::spec::args::*;
 use crate::spec::contract::contract_target;
 use crate::spec::reads::GraphRequest;
+use crate::spec::triage::{triage_failed, triage_view};
 use crate::spec::view::*;
 use clap::ArgMatches;
 use wg_clispec::args::*;
@@ -181,6 +182,24 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 target,
             )?;
             state.emit(&out, Some(&|c| contract_view(c, &out)))
+        }
+        Some("triage-apply") => {
+            let path = option_text(m, "path").unwrap_or_default();
+            let dry_run = option_flag(m, "--dry-run");
+            let source = option_text(m, "--source");
+            let out = service::triage::task_triage_apply(
+                state.app()?,
+                &context,
+                ws,
+                &path,
+                dry_run,
+                source.as_deref(),
+            )?;
+            state.emit(&out, Some(&|c| triage_view(c, &out, dry_run)))?;
+            if triage_failed(&out) {
+                return Err(CliFailure::Exit(1));
+            }
+            Ok(())
         }
         Some("depend") => {
             let reference = option_text(m, "ref").unwrap_or_default();

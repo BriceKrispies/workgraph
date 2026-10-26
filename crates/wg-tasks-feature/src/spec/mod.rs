@@ -23,5 +23,6 @@ pub mod query;
 pub mod reads;
 pub mod requests;
 pub mod routes;
+pub mod triage;
 pub mod view;
 pub mod writes;

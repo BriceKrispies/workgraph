@@ -2901,6 +2901,7 @@ dependencies = [
  "serde_json",
  "uuid",
  "wg-clispec",
+ "wg-decisions",
  "wg-exec",
  "wg-experiments",
  "wg-experiments-feature",

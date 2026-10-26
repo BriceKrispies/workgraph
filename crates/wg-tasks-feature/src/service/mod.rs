@@ -7,6 +7,7 @@
 pub mod acceptance;
 pub mod contract;
 pub mod rename;
+pub mod triage;
 
 use crate::spec::bodies::{
     read_claim, read_comment, read_complete, read_dependency, read_progress, read_reason,

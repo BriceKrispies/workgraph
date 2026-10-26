@@ -16,4 +16,5 @@ workspace = true
 
 [dependencies]
 serde_json = { version = "1", features = ["preserve_order"] }
+wg-demoproto = { path = "../wg-demoproto" }
 wg-proc = { path = "../wg-proc" }

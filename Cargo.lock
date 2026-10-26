@@ -712,7 +712,16 @@ name = "wg-demo-agent"
 version = "0.1.0"
 dependencies = [
  "serde_json",
+ "wg-demoproto",
  "wg-proc",
+]
+
+[[package]]
+name = "wg-demoproto"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-procspec",
 ]
 
 [[package]]

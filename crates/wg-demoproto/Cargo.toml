@@ -1,0 +1,15 @@
+[package]
+name = "wg-demoproto"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "the pure parts of the scripted demo agent: arguments, request parsing, errors"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-procspec = { path = "../wg-procspec" }

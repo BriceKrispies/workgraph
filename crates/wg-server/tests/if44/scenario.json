@@ -1,0 +1,1744 @@
+[
+ {
+  "name": "create alpha",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "Alpha",
+   "description": "first task",
+   "tags": [
+    "b",
+    "a"
+   ],
+   "priority": "high"
+  }
+ },
+ {
+  "name": "create beta blocked by alpha",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "Beta",
+   "status": "ready",
+   "projects": [
+    "proj"
+   ],
+   "repositories": [
+    "web"
+   ],
+   "depends_on": [
+    "WG-1"
+   ]
+  }
+ },
+ {
+  "name": "create gamma ready",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "Gamma",
+   "status": "ready",
+   "tags": [
+    "a"
+   ]
+  }
+ },
+ {
+  "name": "create delta child with files",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "Delta",
+   "parent": "WG-1",
+   "files": [
+    {
+     "path": "a.py",
+     "anchor": "f",
+     "note": "n"
+    }
+   ],
+   "acceptance_criteria": [
+    "it works"
+   ],
+   "metadata": {
+    "k": 1
+   },
+   "assignee": "someone",
+   "estimated_effort": {
+    "value": 2,
+    "unit": "hours"
+   }
+  }
+ },
+ {
+  "name": "create missing title",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {}
+ },
+ {
+  "name": "create extra field",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "x",
+   "bogus": 1
+  }
+ },
+ {
+  "name": "create blank title",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "   "
+  }
+ },
+ {
+  "name": "create bad status",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "x",
+   "status": "nope"
+  }
+ },
+ {
+  "name": "create unknown parent",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "x",
+   "parent": "WG-99"
+  }
+ },
+ {
+  "name": "create unknown project",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "x",
+   "projects": [
+    "nope"
+   ]
+  }
+ },
+ {
+  "name": "create duplicate key",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "x",
+   "key": "WG-1"
+  }
+ },
+ {
+  "name": "create not an object",
+  "method": "POST",
+  "path": "/tasks",
+  "body": [
+   1,
+   2
+  ]
+ },
+ {
+  "name": "list all",
+  "method": "GET",
+  "path": "/tasks"
+ },
+ {
+  "name": "list ready",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "status",
+    "ready"
+   ]
+  ]
+ },
+ {
+  "name": "list ready or backlog",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "status",
+    "ready"
+   ],
+   [
+    "status",
+    "backlog"
+   ]
+  ]
+ },
+ {
+  "name": "list by tag",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "tag",
+    "a"
+   ]
+  ]
+ },
+ {
+  "name": "list by two tags",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "tag",
+    "a"
+   ],
+   [
+    "tag",
+    "b"
+   ]
+  ]
+ },
+ {
+  "name": "list by priority",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "priority",
+    "high"
+   ]
+  ]
+ },
+ {
+  "name": "list by project",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "project",
+    "proj"
+   ]
+  ]
+ },
+ {
+  "name": "list by repository",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "repository",
+    "web"
+   ]
+  ]
+ },
+ {
+  "name": "list by assignee",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "assignee",
+    "someone"
+   ]
+  ]
+ },
+ {
+  "name": "list by parent",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "parent",
+    "WG-1"
+   ]
+  ]
+ },
+ {
+  "name": "list roots",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "roots",
+    "true"
+   ]
+  ]
+ },
+ {
+  "name": "list text",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "q",
+    "Alpha"
+   ]
+  ]
+ },
+ {
+  "name": "list text no match",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "q",
+    "zzzzqqq"
+   ]
+  ]
+ },
+ {
+  "name": "list sorted by title ascending",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "sort",
+    "title"
+   ],
+   [
+    "descending",
+    "false"
+   ]
+  ]
+ },
+ {
+  "name": "list sorted by priority",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "sort",
+    "priority"
+   ]
+  ]
+ },
+ {
+  "name": "list page",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "limit",
+    "2"
+   ],
+   [
+    "offset",
+    "1"
+   ],
+   [
+    "sort",
+    "key"
+   ],
+   [
+    "descending",
+    "false"
+   ]
+  ]
+ },
+ {
+  "name": "list last page",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "limit",
+    "3"
+   ],
+   [
+    "offset",
+    "3"
+   ],
+   [
+    "sort",
+    "key"
+   ],
+   [
+    "descending",
+    "false"
+   ]
+  ]
+ },
+ {
+  "name": "list archived",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "archived",
+    "true"
+   ]
+  ]
+ },
+ {
+  "name": "list created after",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "created_after",
+    "2020-01-01T00:00:00"
+   ]
+  ]
+ },
+ {
+  "name": "list created before",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "created_before",
+    "2020-01-01T00:00:00"
+   ]
+  ]
+ },
+ {
+  "name": "list bad limit",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "limit",
+    "0"
+   ]
+  ]
+ },
+ {
+  "name": "list too large",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "limit",
+    "501"
+   ]
+  ]
+ },
+ {
+  "name": "list bad status",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "status",
+    "nope"
+   ]
+  ]
+ },
+ {
+  "name": "list unknown workspace",
+  "method": "GET",
+  "path": "/api/v1/ws/nope/tasks"
+ },
+ {
+  "name": "list unknown project",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "project",
+    "nope"
+   ]
+  ]
+ },
+ {
+  "name": "early ready list",
+  "method": "GET",
+  "path": "/ready"
+ },
+ {
+  "name": "early ready list for project",
+  "method": "GET",
+  "path": "/ready",
+  "query": [
+   [
+    "project",
+    "proj"
+   ]
+  ]
+ },
+ {
+  "name": "early graph",
+  "method": "GET",
+  "path": "/graph"
+ },
+ {
+  "name": "detail alpha",
+  "method": "GET",
+  "path": "/tasks/WG-1"
+ },
+ {
+  "name": "detail beta with dependency state",
+  "method": "GET",
+  "path": "/tasks/WG-2"
+ },
+ {
+  "name": "detail lowercase ref",
+  "method": "GET",
+  "path": "/tasks/wg-1"
+ },
+ {
+  "name": "detail missing",
+  "method": "GET",
+  "path": "/tasks/WG-99"
+ },
+ {
+  "name": "detail delta",
+  "method": "GET",
+  "path": "/tasks/WG-4"
+ },
+ {
+  "name": "update title and add tags",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {
+   "title": "Alpha 2",
+   "add_tags": [
+    "c"
+   ],
+   "remove_tags": [
+    "b"
+   ]
+  }
+ },
+ {
+  "name": "update description and acceptance",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {
+   "description": "changed",
+   "acceptance_criteria": [
+    "x",
+    "y"
+   ]
+  }
+ },
+ {
+  "name": "update priority",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {
+   "priority": "low",
+   "expected_version": 3
+  }
+ },
+ {
+  "name": "update stale version",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {
+   "title": "Alpha 3",
+   "expected_version": 1
+  }
+ },
+ {
+  "name": "update assignee null clears",
+  "method": "PATCH",
+  "path": "/tasks/WG-4",
+  "body": {
+   "assignee": null
+  }
+ },
+ {
+  "name": "update tags replace",
+  "method": "PATCH",
+  "path": "/tasks/WG-3",
+  "body": {
+   "tags": [
+    "z",
+    "y"
+   ]
+  }
+ },
+ {
+  "name": "update add files",
+  "method": "PATCH",
+  "path": "/tasks/WG-4",
+  "body": {
+   "add_files": [
+    {
+     "path": "b.py"
+    },
+    {
+     "path": "a.py",
+     "anchor": "f"
+    }
+   ]
+  }
+ },
+ {
+  "name": "update files replace",
+  "method": "PATCH",
+  "path": "/tasks/WG-4",
+  "body": {
+   "files": [
+    {
+     "path": "only.py",
+     "note": "x"
+    }
+   ]
+  }
+ },
+ {
+  "name": "update projects",
+  "method": "PATCH",
+  "path": "/tasks/WG-3",
+  "body": {
+   "projects": [
+    "proj"
+   ]
+  }
+ },
+ {
+  "name": "update parent",
+  "method": "PATCH",
+  "path": "/tasks/WG-3",
+  "body": {
+   "parent": "WG-1"
+  }
+ },
+ {
+  "name": "update clear parent",
+  "method": "PATCH",
+  "path": "/tasks/WG-3",
+  "body": {
+   "clear_parent": true
+  }
+ },
+ {
+  "name": "update parent cycle",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {
+   "parent": "WG-4"
+  }
+ },
+ {
+  "name": "update metadata",
+  "method": "PATCH",
+  "path": "/tasks/WG-4",
+  "body": {
+   "metadata": {
+    "z": [
+     1,
+     2
+    ]
+   }
+  }
+ },
+ {
+  "name": "update status",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {
+   "status": "ready",
+   "reason": "go"
+  }
+ },
+ {
+  "name": "update status illegal",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {
+   "status": "accepted"
+  }
+ },
+ {
+  "name": "update status backlog",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {
+   "status": "backlog"
+  }
+ },
+ {
+  "name": "update empty",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {}
+ },
+ {
+  "name": "update extra field",
+  "method": "PATCH",
+  "path": "/tasks/WG-1",
+  "body": {
+   "bogus": 1
+  }
+ },
+ {
+  "name": "update missing task",
+  "method": "PATCH",
+  "path": "/tasks/WG-99",
+  "body": {
+   "title": "x"
+  }
+ },
+ {
+  "name": "update due date",
+  "method": "PATCH",
+  "path": "/tasks/WG-4",
+  "body": {
+   "due_at": "2030-01-02T03:04:05Z"
+  }
+ },
+ {
+  "name": "update scheduled null",
+  "method": "PATCH",
+  "path": "/tasks/WG-4",
+  "body": {
+   "scheduled_at": null,
+   "auto_execute": true
+  }
+ },
+ {
+  "name": "bulk priority",
+  "method": "POST",
+  "path": "/tasks/bulk",
+  "body": {
+   "tasks": [
+    "WG-1",
+    "WG-3",
+    "WG-99"
+   ],
+   "update": {
+    "priority": "critical"
+   }
+  }
+ },
+ {
+  "name": "bulk empty",
+  "method": "POST",
+  "path": "/tasks/bulk",
+  "body": {
+   "tasks": [],
+   "update": {}
+  }
+ },
+ {
+  "name": "bulk bad update",
+  "method": "POST",
+  "path": "/tasks/bulk",
+  "body": {
+   "tasks": [
+    "WG-1"
+   ],
+   "update": {
+    "priority": "nope"
+   }
+  }
+ },
+ {
+  "name": "bulk tags",
+  "method": "POST",
+  "path": "/tasks/bulk",
+  "body": {
+   "tasks": [
+    "WG-1",
+    "WG-3"
+   ],
+   "update": {
+    "add_tags": [
+     "bulk"
+    ]
+   }
+  }
+ },
+ {
+  "name": "claim gamma",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {}
+ },
+ {
+  "name": "claim gamma again renews",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {}
+ },
+ {
+  "name": "claim gamma as agent",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {
+   "agent": "bot"
+  }
+ },
+ {
+  "name": "claim blocked beta",
+  "method": "POST",
+  "path": "/tasks/WG-2/claim",
+  "body": {}
+ },
+ {
+  "name": "claim backlog task",
+  "method": "POST",
+  "path": "/tasks/WG-4/claim"
+ },
+ {
+  "name": "claim zero lease",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {
+   "lease_minutes": 0
+  }
+ },
+ {
+  "name": "claim huge lease",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {
+   "lease_minutes": 99999
+  }
+ },
+ {
+  "name": "claim extra field",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {
+   "bogus": 1
+  }
+ },
+ {
+  "name": "claim stale version",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {
+   "expected_version": 1
+  }
+ },
+ {
+  "name": "claim missing",
+  "method": "POST",
+  "path": "/tasks/WG-99/claim",
+  "body": {}
+ },
+ {
+  "name": "claim null body",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim"
+ },
+ {
+  "name": "release gamma with reason",
+  "method": "POST",
+  "path": "/tasks/WG-3/release",
+  "body": {
+   "reason": "need a break"
+  }
+ },
+ {
+  "name": "release gamma again",
+  "method": "POST",
+  "path": "/tasks/WG-3/release",
+  "body": {}
+ },
+ {
+  "name": "claim gamma for the bot",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {
+   "agent": "bot",
+   "lease_minutes": 5
+  }
+ },
+ {
+  "name": "release gamma held by bot",
+  "method": "POST",
+  "path": "/tasks/WG-3/release"
+ },
+ {
+  "name": "claim gamma once more",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {}
+ },
+ {
+  "name": "release gamma empty reason",
+  "method": "POST",
+  "path": "/tasks/WG-3/release",
+  "body": {
+   "reason": ""
+  }
+ },
+ {
+  "name": "claim gamma third time",
+  "method": "POST",
+  "path": "/tasks/WG-3/claim",
+  "body": {}
+ },
+ {
+  "name": "complete gamma",
+  "method": "POST",
+  "path": "/tasks/WG-3/complete",
+  "body": {
+   "summary": "all done"
+  }
+ },
+ {
+  "name": "complete gamma again",
+  "method": "POST",
+  "path": "/tasks/WG-3/complete",
+  "body": {}
+ },
+ {
+  "name": "complete unclaimed",
+  "method": "POST",
+  "path": "/tasks/WG-4/complete",
+  "body": {}
+ },
+ {
+  "name": "complete bad attempt",
+  "method": "POST",
+  "path": "/tasks/WG-3/complete",
+  "body": {
+   "attempt_id": "nope"
+  }
+ },
+ {
+  "name": "comment",
+  "method": "POST",
+  "path": "/tasks/WG-1/comments",
+  "body": {
+   "body": "a note"
+  }
+ },
+ {
+  "name": "comment with data",
+  "method": "POST",
+  "path": "/tasks/WG-1/comments",
+  "body": {
+   "body": "  padded  ",
+   "kind": "result",
+   "data": {
+    "x": 1,
+    "comment_id": "mine"
+   }
+  }
+ },
+ {
+  "name": "comment progress kind",
+  "method": "POST",
+  "path": "/tasks/WG-1/comments",
+  "body": {
+   "body": "p",
+   "kind": "progress"
+  }
+ },
+ {
+  "name": "comment empty body",
+  "method": "POST",
+  "path": "/tasks/WG-1/comments",
+  "body": {
+   "body": ""
+  }
+ },
+ {
+  "name": "comment blank body",
+  "method": "POST",
+  "path": "/tasks/WG-1/comments",
+  "body": {
+   "body": "   "
+  }
+ },
+ {
+  "name": "comment bad kind",
+  "method": "POST",
+  "path": "/tasks/WG-1/comments",
+  "body": {
+   "body": "x",
+   "kind": "nope"
+  }
+ },
+ {
+  "name": "comment unknown attempt",
+  "method": "POST",
+  "path": "/tasks/WG-1/comments",
+  "body": {
+   "body": "x",
+   "attempt_id": "00000000-0000-4000-8000-000000000000"
+  }
+ },
+ {
+  "name": "comment missing task",
+  "method": "POST",
+  "path": "/tasks/WG-99/comments",
+  "body": {
+   "body": "x"
+  }
+ },
+ {
+  "name": "progress",
+  "method": "POST",
+  "path": "/tasks/WG-1/progress",
+  "body": {
+   "message": "halfway",
+   "percent": 50.5,
+   "data": {
+    "step": 2
+   }
+  }
+ },
+ {
+  "name": "progress no percent",
+  "method": "POST",
+  "path": "/tasks/WG-1/progress",
+  "body": {
+   "message": "again"
+  }
+ },
+ {
+  "name": "progress bad percent",
+  "method": "POST",
+  "path": "/tasks/WG-1/progress",
+  "body": {
+   "message": "x",
+   "percent": 101
+  }
+ },
+ {
+  "name": "progress empty message",
+  "method": "POST",
+  "path": "/tasks/WG-1/progress",
+  "body": {
+   "message": ""
+  }
+ },
+ {
+  "name": "detail alpha with comments",
+  "method": "GET",
+  "path": "/tasks/WG-1"
+ },
+ {
+  "name": "list text finds comment",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "q",
+    "halfway"
+   ]
+  ]
+ },
+ {
+  "name": "claim delta while backlog",
+  "method": "POST",
+  "path": "/tasks/WG-4/claim",
+  "body": {}
+ },
+ {
+  "name": "ready delta",
+  "method": "PATCH",
+  "path": "/tasks/WG-4",
+  "body": {
+   "status": "ready"
+  }
+ },
+ {
+  "name": "claim delta",
+  "method": "POST",
+  "path": "/tasks/WG-4/claim",
+  "body": {}
+ },
+ {
+  "name": "result delta succeeded",
+  "method": "POST",
+  "path": "/tasks/WG-4/result",
+  "body": {
+   "outcome": "succeeded",
+   "summary": "built it"
+  }
+ },
+ {
+  "name": "result delta succeeded again",
+  "method": "POST",
+  "path": "/tasks/WG-4/result",
+  "body": {
+   "outcome": "succeeded"
+  }
+ },
+ {
+  "name": "result delta failed after review",
+  "method": "POST",
+  "path": "/tasks/WG-4/result",
+  "body": {
+   "outcome": "failed",
+   "summary": "nope"
+  }
+ },
+ {
+  "name": "create epsilon",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "Epsilon",
+   "status": "ready"
+  }
+ },
+ {
+  "hook": "attempt",
+  "task": "WG-5",
+  "as": "att1"
+ },
+ {
+  "hook": "attempt",
+  "task": "WG-1",
+  "as": "att2"
+ },
+ {
+  "name": "claim epsilon",
+  "method": "POST",
+  "path": "/tasks/WG-5/claim",
+  "body": {}
+ },
+ {
+  "name": "result epsilon failed",
+  "method": "POST",
+  "path": "/tasks/WG-5/result",
+  "body": {
+   "outcome": "failed",
+   "summary": "broke"
+  }
+ },
+ {
+  "name": "result epsilon failed again",
+  "method": "POST",
+  "path": "/tasks/WG-5/result",
+  "body": {
+   "outcome": "failed"
+  }
+ },
+ {
+  "name": "result bad outcome",
+  "method": "POST",
+  "path": "/tasks/WG-5/result",
+  "body": {
+   "outcome": "maybe"
+  }
+ },
+ {
+  "name": "result missing outcome",
+  "method": "POST",
+  "path": "/tasks/WG-5/result",
+  "body": {}
+ },
+ {
+  "name": "result unknown attempt",
+  "method": "POST",
+  "path": "/tasks/WG-5/result",
+  "body": {
+   "outcome": "failed",
+   "attempt_id": "00000000-0000-4000-8000-000000000000"
+  }
+ },
+ {
+  "name": "claim epsilon after failure",
+  "method": "POST",
+  "path": "/tasks/WG-5/claim",
+  "body": {}
+ },
+ {
+  "name": "comment on attempt",
+  "method": "POST",
+  "path": "/tasks/WG-5/comments",
+  "body": {
+   "body": "with attempt",
+   "attempt_id": "{att1}"
+  }
+ },
+ {
+  "name": "comment on other task attempt",
+  "method": "POST",
+  "path": "/tasks/WG-5/comments",
+  "body": {
+   "body": "wrong",
+   "attempt_id": "{att2}"
+  }
+ },
+ {
+  "name": "progress on attempt",
+  "method": "POST",
+  "path": "/tasks/WG-5/progress",
+  "body": {
+   "message": "step",
+   "attempt_id": "{att1}"
+  }
+ },
+ {
+  "name": "result epsilon succeeded with attempt",
+  "method": "POST",
+  "path": "/tasks/WG-5/result",
+  "body": {
+   "outcome": "succeeded",
+   "summary": "shipped",
+   "attempt_id": "{att1}",
+   "usage": {
+    "input_tokens": 10,
+    "output_tokens": 2.7,
+    "bogus": 5,
+    "total_tokens": -1
+   },
+   "cost_usd": 0.25
+  }
+ },
+ {
+  "name": "attempts of epsilon",
+  "method": "GET",
+  "path": "/tasks/WG-5/attempts"
+ },
+ {
+  "name": "attempts of alpha",
+  "method": "GET",
+  "path": "/tasks/WG-1/attempts",
+  "query": [
+   [
+    "limit",
+    "1"
+   ],
+   [
+    "offset",
+    "0"
+   ]
+  ]
+ },
+ {
+  "name": "attempts past the end",
+  "method": "GET",
+  "path": "/tasks/WG-5/attempts",
+  "query": [
+   [
+    "offset",
+    "5"
+   ]
+  ]
+ },
+ {
+  "name": "attempts bad limit",
+  "method": "GET",
+  "path": "/tasks/WG-5/attempts",
+  "query": [
+   [
+    "limit",
+    "501"
+   ]
+  ]
+ },
+ {
+  "name": "attempts missing task",
+  "method": "GET",
+  "path": "/tasks/WG-99/attempts"
+ },
+ {
+  "name": "result with wrong task attempt",
+  "method": "POST",
+  "path": "/tasks/WG-1/result",
+  "body": {
+   "outcome": "failed",
+   "attempt_id": "{att1}"
+  }
+ },
+ {
+  "name": "create zeta",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "Zeta",
+   "status": "ready"
+  }
+ },
+ {
+  "name": "add dependency zeta on gamma",
+  "method": "POST",
+  "path": "/tasks/WG-6/dependencies",
+  "body": {
+   "depends_on": "WG-3"
+  }
+ },
+ {
+  "name": "add same dependency again",
+  "method": "POST",
+  "path": "/tasks/WG-6/dependencies",
+  "body": {
+   "depends_on": "WG-3"
+  }
+ },
+ {
+  "name": "add reverse dependency cycle",
+  "method": "POST",
+  "path": "/tasks/WG-3/dependencies",
+  "body": {
+   "depends_on": "WG-6"
+  }
+ },
+ {
+  "name": "add self dependency",
+  "method": "POST",
+  "path": "/tasks/WG-6/dependencies",
+  "body": {
+   "depends_on": "WG-6"
+  }
+ },
+ {
+  "name": "add missing dependency",
+  "method": "POST",
+  "path": "/tasks/WG-6/dependencies",
+  "body": {
+   "depends_on": "WG-99"
+  }
+ },
+ {
+  "name": "add dependency empty",
+  "method": "POST",
+  "path": "/tasks/WG-6/dependencies",
+  "body": {
+   "depends_on": ""
+  }
+ },
+ {
+  "name": "add dependency extra",
+  "method": "POST",
+  "path": "/tasks/WG-6/dependencies",
+  "body": {
+   "depends_on": "WG-3",
+   "x": 1
+  }
+ },
+ {
+  "name": "zeta is blocked",
+  "method": "GET",
+  "path": "/tasks/WG-6"
+ },
+ {
+  "name": "remove dependency",
+  "method": "DELETE",
+  "path": "/tasks/WG-6/dependencies/WG-3"
+ },
+ {
+  "name": "remove dependency again",
+  "method": "DELETE",
+  "path": "/tasks/WG-6/dependencies/WG-3"
+ },
+ {
+  "name": "remove dependency missing",
+  "method": "DELETE",
+  "path": "/tasks/WG-6/dependencies/WG-99"
+ },
+ {
+  "name": "zeta is ready again",
+  "method": "GET",
+  "path": "/tasks/WG-6"
+ },
+ {
+  "name": "add dependency on unaccepted",
+  "method": "POST",
+  "path": "/tasks/WG-6/dependencies",
+  "body": {
+   "depends_on": "WG-1"
+  }
+ },
+ {
+  "name": "claim zeta blocked",
+  "method": "POST",
+  "path": "/tasks/WG-6/claim",
+  "body": {}
+ },
+ {
+  "name": "ready list",
+  "method": "GET",
+  "path": "/ready"
+ },
+ {
+  "name": "ready list limited",
+  "method": "GET",
+  "path": "/ready",
+  "query": [
+   [
+    "limit",
+    "1"
+   ]
+  ]
+ },
+ {
+  "name": "ready for project",
+  "method": "GET",
+  "path": "/ready",
+  "query": [
+   [
+    "project",
+    "proj"
+   ]
+  ]
+ },
+ {
+  "name": "ready for repository",
+  "method": "GET",
+  "path": "/ready",
+  "query": [
+   [
+    "repository",
+    "web"
+   ]
+  ]
+ },
+ {
+  "name": "relate",
+  "method": "POST",
+  "path": "/tasks/WG-1/relations",
+  "body": {
+   "target": "WG-3"
+  }
+ },
+ {
+  "name": "relate again",
+  "method": "POST",
+  "path": "/tasks/WG-1/relations",
+  "body": {
+   "target": "WG-3"
+  }
+ },
+ {
+  "name": "relate duplicates",
+  "method": "POST",
+  "path": "/tasks/WG-1/relations",
+  "body": {
+   "target": "WG-3",
+   "relation_type": "duplicates"
+  }
+ },
+ {
+  "name": "relate self",
+  "method": "POST",
+  "path": "/tasks/WG-1/relations",
+  "body": {
+   "target": "WG-1"
+  }
+ },
+ {
+  "name": "relate missing",
+  "method": "POST",
+  "path": "/tasks/WG-1/relations",
+  "body": {
+   "target": "WG-99"
+  }
+ },
+ {
+  "name": "relate bad type",
+  "method": "POST",
+  "path": "/tasks/WG-1/relations",
+  "body": {
+   "target": "WG-3",
+   "relation_type": "nope"
+  }
+ },
+ {
+  "name": "detail with relations",
+  "method": "GET",
+  "path": "/tasks/WG-1"
+ },
+ {
+  "name": "link repository",
+  "method": "POST",
+  "path": "/tasks/WG-1/repositories",
+  "body": {
+   "repository": "web"
+  }
+ },
+ {
+  "name": "link repository again",
+  "method": "POST",
+  "path": "/tasks/WG-1/repositories",
+  "body": {
+   "repository": "web"
+  }
+ },
+ {
+  "name": "link repository read only",
+  "method": "POST",
+  "path": "/tasks/WG-1/repositories",
+  "body": {
+   "repository": "web",
+   "access": "read_only"
+  }
+ },
+ {
+  "name": "link read only repository",
+  "method": "POST",
+  "path": "/tasks/WG-4/repositories",
+  "body": {
+   "repository": "ro"
+  }
+ },
+ {
+  "name": "link read only repository as writer",
+  "method": "POST",
+  "path": "/tasks/WG-3/repositories",
+  "body": {
+   "repository": "ro",
+   "access": "read_write"
+  }
+ },
+ {
+  "name": "link repository bad access",
+  "method": "POST",
+  "path": "/tasks/WG-1/repositories",
+  "body": {
+   "repository": "web",
+   "access": "nope"
+  }
+ },
+ {
+  "name": "link missing repository",
+  "method": "POST",
+  "path": "/tasks/WG-1/repositories",
+  "body": {
+   "repository": "nope"
+  }
+ },
+ {
+  "name": "link repository missing field",
+  "method": "POST",
+  "path": "/tasks/WG-1/repositories",
+  "body": {}
+ },
+ {
+  "name": "unlink repository",
+  "method": "DELETE",
+  "path": "/tasks/WG-1/repositories/web"
+ },
+ {
+  "name": "unlink repository again",
+  "method": "DELETE",
+  "path": "/tasks/WG-1/repositories/web"
+ },
+ {
+  "name": "unlink missing repository",
+  "method": "DELETE",
+  "path": "/tasks/WG-1/repositories/nope"
+ },
+ {
+  "name": "detail after links",
+  "method": "GET",
+  "path": "/tasks/WG-1"
+ },
+ {
+  "name": "archive",
+  "method": "POST",
+  "path": "/tasks/WG-6/archive"
+ },
+ {
+  "name": "archive again",
+  "method": "POST",
+  "path": "/tasks/WG-6/archive"
+ },
+ {
+  "name": "list hides archived",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "sort",
+    "key"
+   ],
+   [
+    "descending",
+    "false"
+   ]
+  ]
+ },
+ {
+  "name": "list archived only",
+  "method": "GET",
+  "path": "/tasks",
+  "query": [
+   [
+    "archived",
+    "true"
+   ]
+  ]
+ },
+ {
+  "name": "unarchive",
+  "method": "POST",
+  "path": "/tasks/WG-6/archive",
+  "query": [
+   [
+    "undo",
+    "true"
+   ]
+  ]
+ },
+ {
+  "name": "unarchive again",
+  "method": "POST",
+  "path": "/tasks/WG-6/archive",
+  "query": [
+   [
+    "undo",
+    "true"
+   ]
+  ]
+ },
+ {
+  "name": "archive missing",
+  "method": "POST",
+  "path": "/tasks/WG-99/archive"
+ },
+ {
+  "name": "archive with a parent",
+  "method": "POST",
+  "path": "/tasks/WG-1/archive"
+ },
+ {
+  "name": "history of alpha",
+  "method": "GET",
+  "path": "/tasks/WG-1/history"
+ },
+ {
+  "name": "history limited",
+  "method": "GET",
+  "path": "/tasks/WG-1/history",
+  "query": [
+   [
+    "limit",
+    "3"
+   ]
+  ]
+ },
+ {
+  "name": "history of epsilon",
+  "method": "GET",
+  "path": "/tasks/WG-5/history"
+ },
+ {
+  "name": "history too large",
+  "method": "GET",
+  "path": "/tasks/WG-1/history",
+  "query": [
+   [
+    "limit",
+    "5001"
+   ]
+  ]
+ },
+ {
+  "name": "history missing",
+  "method": "GET",
+  "path": "/tasks/WG-99/history"
+ },
+ {
+  "name": "graph",
+  "method": "GET",
+  "path": "/graph"
+ },
+ {
+  "name": "graph open only",
+  "method": "GET",
+  "path": "/graph",
+  "query": [
+   [
+    "include_closed",
+    "false"
+   ]
+  ]
+ },
+ {
+  "name": "graph from root",
+  "method": "GET",
+  "path": "/graph",
+  "query": [
+   [
+    "root",
+    "WG-1"
+   ]
+  ]
+ },
+ {
+  "name": "graph for project",
+  "method": "GET",
+  "path": "/graph",
+  "query": [
+   [
+    "project",
+    "proj"
+   ]
+  ]
+ },
+ {
+  "name": "graph for repository",
+  "method": "GET",
+  "path": "/graph",
+  "query": [
+   [
+    "repository",
+    "web"
+   ]
+  ]
+ },
+ {
+  "name": "graph bad root",
+  "method": "GET",
+  "path": "/graph",
+  "query": [
+   [
+    "root",
+    "WG-99"
+   ]
+  ]
+ },
+ {
+  "hook": "verification"
+ },
+ {
+  "name": "create eta",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "Eta",
+   "status": "ready"
+  }
+ },
+ {
+  "name": "claim eta",
+  "method": "POST",
+  "path": "/tasks/WG-7/claim",
+  "body": {}
+ },
+ {
+  "name": "complete eta under checks",
+  "method": "POST",
+  "path": "/tasks/WG-7/complete",
+  "body": {
+   "summary": "needs checks"
+  }
+ },
+ {
+  "name": "history of eta",
+  "method": "GET",
+  "path": "/tasks/WG-7/history"
+ },
+ {
+  "name": "create theta",
+  "method": "POST",
+  "path": "/tasks",
+  "body": {
+   "title": "Theta",
+   "status": "ready"
+  }
+ },
+ {
+  "name": "claim theta",
+  "method": "POST",
+  "path": "/tasks/WG-8/claim",
+  "body": {}
+ },
+ {
+  "name": "result theta under checks",
+  "method": "POST",
+  "path": "/tasks/WG-8/result",
+  "body": {
+   "outcome": "succeeded",
+   "summary": "ok"
+  }
+ },
+ {
+  "name": "detail theta",
+  "method": "GET",
+  "path": "/tasks/WG-8"
+ }
+]

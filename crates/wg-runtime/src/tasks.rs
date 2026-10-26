@@ -10,9 +10,15 @@ use std::collections::BTreeSet;
 use serde_json::{Map, Value as Json};
 use wg_json::Value;
 use wg_model::slice::QueueSlice;
-use wg_model::{Row, Write};
+use wg_model::{Decision, Row, Stamp, Write};
 use wg_registry::resolve;
 use wg_runtimespec::RequestContext;
+use wg_runtimespec::tasks::bodies::{
+    read_claim, read_comment, read_complete, read_dependency, read_progress, read_reason,
+    read_relation, read_repo, read_result,
+};
+use wg_runtimespec::tasks::claims::{self, Reported};
+use wg_runtimespec::tasks::links;
 use wg_runtimespec::tasks::out::{bulk_result_out, key_of};
 use wg_runtimespec::tasks::reads::{self, GraphRequest, Shown};
 use wg_runtimespec::tasks::requests::{
@@ -22,7 +28,7 @@ use wg_runtimespec::tasks::requests::{
 use wg_runtimespec::tasks::writes;
 use wg_store::{EventQuery, Session, TaskWorld};
 use wg_tasks::bulk::bulk_results;
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{ErrorCode, Id, Permission, WgError, parse_id};
 
 use crate::app::App;
 
@@ -40,6 +46,7 @@ pub(crate) fn index_written<R>(
                 row: Row::Task(task),
                 ..
             } => Some(task.id),
+            Write::Insert(Row::TaskComment(comment)) => Some(comment.task_id),
             _ => None,
         })
         .collect();
@@ -73,6 +80,15 @@ impl App {
             .stamps
             .stamp(context)?
             .require(&[Permission::TaskRead])
+    }
+
+    /// A permission check against a fresh stamp, before anything is looked up.
+    fn require_permission(
+        &mut self,
+        context: &RequestContext,
+        permission: Permission,
+    ) -> Result<(), WgError> {
+        self.runtime.stamps.stamp(context)?.require(&[permission])
     }
 
     /// `TaskService.create`.
@@ -315,6 +331,18 @@ impl App {
         reference: &str,
         event_types: &[String],
     ) -> Result<Value, WgError> {
+        self.task_history_limited(context, workspace, reference, event_types, 500)
+    }
+
+    /// [`task_history`](Self::task_history) cut to the first `limit` events.
+    pub fn task_history_limited(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        event_types: &[String],
+        limit: i64,
+    ) -> Result<Value, WgError> {
         self.require_read(context)?;
         let scope = self.workspace_or_all(workspace)?;
         self.runtime.query(
@@ -331,7 +359,7 @@ impl App {
                 session.query_events(&EventQuery {
                     entity_ids: ids,
                     event_types: event_types.to_vec(),
-                    limit: 500,
+                    limit,
                     ..EventQuery::default()
                 })
             },
@@ -371,4 +399,348 @@ impl App {
             )?
             .reply)
     }
+
+    /// Runs a decision over the task world that also reads the verification configurations of the
+    /// task's workspace and the attempt `attempt_id` names (complete, result, comment, progress).
+    fn task_reported(
+        &mut self,
+        context: &RequestContext,
+        scope: Option<Id>,
+        reference: &str,
+        attempt_id: Option<&str>,
+        decide: impl FnOnce(&Reported, &Stamp) -> Result<Decision<Value>, WgError>,
+    ) -> Result<Value, WgError> {
+        Ok(self
+            .runtime
+            .decide_then(
+                context,
+                |session| load_reported(session, scope, reference, attempt_id),
+                decide,
+                index_written,
+            )?
+            .reply)
+    }
+
+    /// `TaskService.claim`; `body` is the optional `ClaimRequest`.
+    pub fn task_claim(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let read = read_claim(body)?;
+        self.require_permission(context, Permission::TaskClaim)?;
+        let scope = self.workspace_or_all(workspace)?;
+        Ok(self
+            .runtime
+            .decide_then(
+                context,
+                |session| session.task_world(scope, &[]),
+                |world: &TaskWorld, stamp| {
+                    claims::claim_task(world, stamp, scope, reference, &read)
+                },
+                index_written,
+            )?
+            .reply)
+    }
+
+    /// `TaskService.release`; `body` is the optional `ReasonBody`.
+    pub fn task_release(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let reason = read_reason(body)?;
+        self.require_permission(context, Permission::TaskClaim)?;
+        let scope = self.workspace_or_all(workspace)?;
+        Ok(self
+            .runtime
+            .decide_then(
+                context,
+                |session| session.task_world(scope, &[]),
+                |world: &TaskWorld, stamp| {
+                    claims::release_task(world, stamp, scope, reference, reason.as_deref())
+                },
+                index_written,
+            )?
+            .reply)
+    }
+
+    /// `TaskService.complete`; `body` is the optional `CompleteBody`.
+    pub fn task_complete(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let read = read_complete(body)?;
+        self.require_permission(context, Permission::TaskComplete)?;
+        let scope = self.workspace_or_all(workspace)?;
+        self.task_reported(
+            context,
+            scope,
+            reference,
+            read.attempt_id.as_deref(),
+            |reported, stamp| claims::complete_task(reported, stamp, scope, reference, &read),
+        )
+    }
+
+    /// `TaskService.report_result`; `body` is the `ResultReport`.
+    pub fn task_result(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let read = read_result(body)?;
+        self.require_permission(context, Permission::TaskComplete)?;
+        let scope = self.workspace_or_all(workspace)?;
+        self.task_reported(
+            context,
+            scope,
+            reference,
+            read.attempt_id.as_deref(),
+            |reported, stamp| claims::report_result(reported, stamp, scope, reference, &read),
+        )
+    }
+
+    /// `TaskService.add_comment`: a `CommentOut`.
+    pub fn task_comment(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let read = read_comment(body)?;
+        self.require_permission(context, Permission::TaskWrite)?;
+        let scope = self.workspace_or_all(workspace)?;
+        self.task_reported(
+            context,
+            scope,
+            reference,
+            read.attempt_id.as_deref(),
+            |reported, stamp| {
+                links::add_comment(
+                    &reported.world,
+                    reported.attempt.as_ref(),
+                    stamp,
+                    scope,
+                    reference,
+                    &read,
+                )
+            },
+        )
+    }
+
+    /// `TaskService.report_progress`: a `CommentOut`.
+    pub fn task_progress(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let read = read_progress(body)?;
+        self.require_permission(context, Permission::TaskWrite)?;
+        let scope = self.workspace_or_all(workspace)?;
+        self.task_reported(
+            context,
+            scope,
+            reference,
+            read.attempt_id.as_deref(),
+            |reported, stamp| {
+                links::report_progress(
+                    &reported.world,
+                    reported.attempt.as_ref(),
+                    stamp,
+                    scope,
+                    reference,
+                    &read,
+                )
+            },
+        )
+    }
+
+    /// `TaskService.add_dependency`; `body` is the `DependencyBody`.
+    pub fn task_add_dependency(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let depends_on = read_dependency(body)?;
+        self.task_dependency(context, workspace, reference, &depends_on, true)
+    }
+
+    /// `TaskService.remove_dependency`.
+    pub fn task_remove_dependency(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        depends_on: &str,
+    ) -> Result<Value, WgError> {
+        self.task_dependency(context, workspace, reference, depends_on, false)
+    }
+
+    fn task_dependency(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        depends_on: &str,
+        add: bool,
+    ) -> Result<Value, WgError> {
+        self.require_permission(context, Permission::TaskWrite)?;
+        let scope = self.workspace_or_all(workspace)?;
+        Ok(self
+            .runtime
+            .decide_then(
+                context,
+                |session| session.task_world(scope, &[]),
+                |world: &TaskWorld, stamp| {
+                    if add {
+                        links::add_dependency(world, stamp, scope, reference, depends_on)
+                    } else {
+                        links::remove_dependency(world, stamp, scope, reference, depends_on)
+                    }
+                },
+                index_written,
+            )?
+            .reply)
+    }
+
+    /// `TaskService.add_relation`: a `RelationOut`.
+    pub fn task_add_relation(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let read = read_relation(body)?;
+        self.require_permission(context, Permission::TaskWrite)?;
+        let scope = self.workspace_or_all(workspace)?;
+        Ok(self
+            .runtime
+            .decide_then(
+                context,
+                |session| session.task_world(scope, &[]),
+                |world: &TaskWorld, stamp| {
+                    links::add_relation(world, stamp, scope, reference, &read)
+                },
+                index_written,
+            )?
+            .reply)
+    }
+
+    /// `TaskService.link_repository`; `body` is the `RepoBody`.
+    pub fn task_link_repository(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let read = read_repo(body)?;
+        self.require_permission(context, Permission::TaskWrite)?;
+        let scope = self.workspace_or_all(workspace)?;
+        Ok(self
+            .runtime
+            .decide_then(
+                context,
+                |session| session.task_world(scope, &[]),
+                |world: &TaskWorld, stamp| {
+                    links::link_repository(world, stamp, scope, reference, &read)
+                },
+                index_written,
+            )?
+            .reply)
+    }
+
+    /// `TaskService.unlink_repository`.
+    pub fn task_unlink_repository(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        repository: &str,
+    ) -> Result<Value, WgError> {
+        self.require_permission(context, Permission::TaskWrite)?;
+        let scope = self.workspace_or_all(workspace)?;
+        Ok(self
+            .runtime
+            .decide_then(
+                context,
+                |session| session.task_world(scope, &[]),
+                |world: &TaskWorld, stamp| {
+                    links::unlink_repository(world, stamp, scope, reference, repository)
+                },
+                index_written,
+            )?
+            .reply)
+    }
+
+    /// `AttemptService.list` for one task: a page of attempts, newest first.
+    pub fn task_attempts(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        limit: i64,
+        offset: i64,
+    ) -> Result<Value, WgError> {
+        self.require_read(context)?;
+        let scope = self.workspace_or_default(workspace)?;
+        self.runtime.query(
+            |session| {
+                let world = session.task_world(Some(scope), &[])?;
+                let task = reads::resolve_task_id(&world, Some(scope), reference)?;
+                session.attempts_page(scope, Some(task), &[], None, limit, offset)
+            },
+            |page| {
+                Ok(reads::attempts_page_out(
+                    &page.items,
+                    page.total,
+                    page.limit,
+                    page.offset,
+                    page.next_offset,
+                ))
+            },
+        )
+    }
+}
+
+/// The task world, the verification configurations of the task's workspace and the attempt
+/// `attempt_id` names, if any (`None` when no such attempt exists).
+fn load_reported(
+    session: &mut Session<'_>,
+    scope: Option<Id>,
+    reference: &str,
+    attempt_id: Option<&str>,
+) -> Result<Reported, WgError> {
+    let world = session.task_world(scope, &[])?;
+    let workspace = reads::resolve_task_id(&world, scope, reference)
+        .ok()
+        .and_then(|task| world.tasks.task(task).map(|found| found.workspace_id));
+    let configs = match workspace {
+        Some(id) => session.verification_configs(id)?,
+        None => Vec::new(),
+    };
+    let attempt = match attempt_id.and_then(|text| parse_id(text).ok()) {
+        Some(id) => session.attempt_by_id(id)?,
+        None => None,
+    };
+    Ok(Reported {
+        world,
+        configs,
+        attempt,
+    })
 }

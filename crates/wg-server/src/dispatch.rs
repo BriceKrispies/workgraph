@@ -170,6 +170,7 @@ async fn api(
     let request = ApiRequest {
         params: checked.params,
         body: checked.body,
+        given: checked.given,
         context,
         client: incoming.client,
         headers,

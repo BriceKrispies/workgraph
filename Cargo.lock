@@ -2452,6 +2452,7 @@ dependencies = [
  "time",
  "tracing-core",
  "wg-config",
+ "wg-exec",
  "wg-jobs",
  "wg-json",
  "wg-model",
@@ -2461,6 +2462,7 @@ dependencies = [
  "wg-tasks",
  "wg-types",
  "wg-validate",
+ "wg-verify",
  "wg-wire",
 ]
 

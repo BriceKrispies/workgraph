@@ -17,6 +17,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 time = { version = "0.3", default-features = false, features = ["std"] }
 tracing-core = "0.1"
 wg-config = { path = "../wg-config" }
+wg-exec = { path = "../wg-exec" }
 wg-json = { path = "../wg-json" }
 wg-jobs = { path = "../wg-jobs" }
 wg-model = { path = "../wg-model" }
@@ -26,4 +27,5 @@ wg-storecodec = { path = "../wg-storecodec" }
 wg-tasks = { path = "../wg-tasks" }
 wg-types = { path = "../wg-types" }
 wg-validate = { path = "../wg-validate" }
+wg-verify = { path = "../wg-verify" }
 wg-wire = { path = "../wg-wire" }

@@ -1,5 +1,6 @@
 //! `workgraph task create, list, show, update, bulk-update, archive, history, graph, ready,
-//! promote-ready` (IF-05). The other `task` commands are placeholders until their groups land.
+//! promote-ready` (IF-05) and `claim, release, complete, progress, result, comment, depend,
+//! relate, link-repo`. The other `task` commands are placeholders until their groups land.
 //!
 //! The clap command is the snapshot's own tree, so help and parameters match
 //! `contracts/cli.json`; each handler builds its request with `wg_clispec::task`, calls one
@@ -108,6 +109,78 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 dry_run,
             )?;
             state.emit(&out, Some(&|c| view::promote_view(c, &out, dry_run)))
+        }
+        Some("claim") => {
+            let body = view::claim_body(m)?;
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let out = state.app()?.task_claim(&context, ws, &reference, &body)?;
+            state.emit(&out, Some(&|c| view::claimed_line(c, &out)))
+        }
+        Some("release") => {
+            let body = view::release_body(m);
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let out = state.app()?.task_release(&context, ws, &reference, &body)?;
+            state.emit(&out, Some(&|c| view::released_line(c, &out)))
+        }
+        Some("complete") => {
+            let body = view::complete_body(m);
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let out = state
+                .app()?
+                .task_complete(&context, ws, &reference, &body)?;
+            state.emit(&out, Some(&|c| view::status_line(c, &out)))
+        }
+        Some("result") => {
+            let body = view::result_body(m)?;
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let out = state.app()?.task_result(&context, ws, &reference, &body)?;
+            state.emit(&out, Some(&|c| view::status_line(c, &out)))
+        }
+        Some("progress") => {
+            let body = view::progress_body(m)?;
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let out = state
+                .app()?
+                .task_progress(&context, ws, &reference, &body)?;
+            state.emit(&out, Some(&|c| view::note_line(c, "progress recorded")))
+        }
+        Some("comment") => {
+            let body = view::comment_body(m);
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let out = state.app()?.task_comment(&context, ws, &reference, &body)?;
+            state.emit(&out, Some(&|c| view::note_line(c, "comment added")))
+        }
+        Some("depend") => {
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let depends_on = view::option_text(m, "depends_on").unwrap_or_default();
+            let app = state.app()?;
+            let out = if view::option_flag(m, "--remove") {
+                app.task_remove_dependency(&context, ws, &reference, &depends_on)?
+            } else {
+                let body = view::dependency_body(&depends_on);
+                app.task_add_dependency(&context, ws, &reference, &body)?
+            };
+            state.emit(&out, Some(&|c| view::depend_line(c, &out)))
+        }
+        Some("relate") => {
+            let body = view::relation_body(m);
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let out = state
+                .app()?
+                .task_add_relation(&context, ws, &reference, &body)?;
+            state.emit(&out, Some(&|c| view::related_line(c, &out)))
+        }
+        Some("link-repo") => {
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let app = state.app()?;
+            let out = if view::option_flag(m, "--remove") {
+                let repository = view::option_text(m, "repository").unwrap_or_default();
+                app.task_unlink_repository(&context, ws, &reference, &repository)?
+            } else {
+                let body = view::repo_body(m);
+                app.task_link_repository(&context, ws, &reference, &body)?
+            };
+            state.emit(&out, Some(&|c| view::linked_line(c, &out)))
         }
         _ => Err(CliFailure::fail(not_implemented_message(path), 1)),
     }

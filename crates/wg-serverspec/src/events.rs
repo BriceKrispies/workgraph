@@ -63,7 +63,7 @@ mod tests {
             actor: "human:tester".to_owned(),
             actor_kind: "human".to_owned(),
             occurred_at: Timestamp::parse_iso("2026-10-25T13:56:00.123456+00:00")?,
-            correlation_id: id,
+            correlation_id: id.into(),
             causation_id: None,
             attempt_id: None,
             schema_version: 1,

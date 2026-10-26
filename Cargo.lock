@@ -2615,6 +2615,7 @@ dependencies = [
  "wg-codeparse",
  "wg-config",
  "wg-exec",
+ "wg-events",
  "wg-git",
  "wg-gitcore",
  "wg-jobs",

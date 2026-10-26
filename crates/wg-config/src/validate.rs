@@ -95,12 +95,26 @@ pub(crate) fn validate(
             let number = integer(input, loc, errors)?;
             if let Some(bound) = ge.filter(|bound| number < *bound) {
                 let message = format!("Input should be greater than or equal to {bound}");
-                push(errors, "greater_than_equal", message, loc, input);
+                push_ctx(
+                    errors,
+                    "greater_than_equal",
+                    message,
+                    loc,
+                    input,
+                    Some(bound_ctx("ge", Value::from(bound))),
+                );
                 return None;
             }
             if let Some(bound) = le.filter(|bound| number > *bound) {
                 let message = format!("Input should be less than or equal to {bound}");
-                push(errors, "less_than_equal", message, loc, input);
+                push_ctx(
+                    errors,
+                    "less_than_equal",
+                    message,
+                    loc,
+                    input,
+                    Some(bound_ctx("le", Value::from(bound))),
+                );
                 return None;
             }
             Some(Value::from(number))
@@ -112,12 +126,26 @@ pub(crate) fn validate(
                     "Input should be greater than or equal to {}",
                     bound_text(bound)
                 );
-                push(errors, "greater_than_equal", message, loc, input);
+                push_ctx(
+                    errors,
+                    "greater_than_equal",
+                    message,
+                    loc,
+                    input,
+                    Some(bound_ctx("ge", float_json(bound))),
+                );
                 return None;
             }
             if let Some(bound) = gt.filter(|bound| number <= *bound) {
                 let message = format!("Input should be greater than {}", bound_text(bound));
-                push(errors, "greater_than", message, loc, input);
+                push_ctx(
+                    errors,
+                    "greater_than",
+                    message,
+                    loc,
+                    input,
+                    Some(bound_ctx("gt", float_json(bound))),
+                );
                 return None;
             }
             Some(Value::from(number))
@@ -145,7 +173,14 @@ pub(crate) fn validate(
                     "List should have at least {min_len} item{}",
                     if *min_len == 1 { "" } else { "s" }
                 );
-                push(errors, "too_short", message, loc, input);
+                push_ctx(
+                    errors,
+                    "too_short",
+                    message,
+                    loc,
+                    input,
+                    Some(list_length_ctx(*min_len, items.len())),
+                );
                 return None;
             }
             Some(Value::Array(items))
@@ -168,12 +203,13 @@ pub(crate) fn validate(
         Schema::JiraProjects => {
             let items = list(input, loc, errors, &Schema::Str)?;
             if items.is_empty() {
-                push(
+                push_ctx(
                     errors,
                     "too_short",
                     "List should have at least 1 item".to_string(),
                     loc,
                     input,
+                    Some(list_length_ctx(1, 0)),
                 );
                 return None;
             }
@@ -464,11 +500,44 @@ fn push(
     loc: &[Loc],
     input: &Value,
 ) {
+    push_ctx(errors, kind, message, loc, input, None);
+}
+
+/// Pushes an error with Pydantic's context object (the bound or the list lengths it reports).
+fn push_ctx(
+    errors: &mut Vec<ValidationError>,
+    kind: &str,
+    message: String,
+    loc: &[Loc],
+    input: &Value,
+    ctx: Option<Map<String, Value>>,
+) {
     errors.push(ValidationError {
         kind: kind.to_string(),
         loc: loc.to_vec(),
         msg: message,
         input: input.clone(),
-        ctx: None,
+        ctx,
     });
+}
+
+/// A context object with one bound, such as `{"le": 65535}`.
+fn bound_ctx(key: &str, bound: Value) -> Map<String, Value> {
+    let mut ctx = Map::new();
+    ctx.insert(key.to_string(), bound);
+    ctx
+}
+
+/// The context of a `too_short` list error: `field_type`, `min_length` and `actual_length`.
+fn list_length_ctx(min_length: usize, actual_length: usize) -> Map<String, Value> {
+    let mut ctx = Map::new();
+    ctx.insert("field_type".to_string(), Value::String("List".to_string()));
+    ctx.insert("min_length".to_string(), Value::from(min_length));
+    ctx.insert("actual_length".to_string(), Value::from(actual_length));
+    ctx
+}
+
+/// A float bound as the JSON number Pydantic's context carries (`0.0` stays a float).
+fn float_json(bound: f64) -> Value {
+    serde_json::Number::from_f64(bound).map_or(Value::Null, Value::Number)
 }

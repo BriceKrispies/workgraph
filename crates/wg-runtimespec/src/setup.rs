@@ -117,6 +117,21 @@ pub struct DoctorFacts {
     pub live_workers: usize,
     pub dead_jobs: usize,
     pub spooled_events: usize,
+    /// The `events verify` result of each active workspace, when `--verify-events` was given.
+    pub event_projections: Option<Vec<EventProjection>>,
+}
+
+/// `events verify` for one workspace: the counts and the keys of the tasks whose rows differ from
+/// their replayed events.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EventProjection {
+    pub slug: String,
+    /// The tasks in the workspace's tables.
+    pub tasks: usize,
+    /// The task events replayed.
+    pub events: usize,
+    /// The mismatched task keys, in table order.
+    pub mismatches: Vec<String>,
 }
 
 /// One health check.
@@ -156,7 +171,7 @@ pub fn doctor_checks(facts: &DoctorFacts) -> Vec<Check> {
     } else {
         facts.config_problems.join("; ")
     };
-    vec![
+    let base = vec![
         check("python", true, "not required (native binary)", "error"),
         match &facts.git {
             Some(version) => check("git", true, version.clone(), "error"),
@@ -229,7 +244,40 @@ pub fn doctor_checks(facts: &DoctorFacts) -> Vec<Check> {
             ),
             "warning",
         ),
-    ]
+    ];
+    base.into_iter()
+        .chain(
+            facts
+                .event_projections
+                .iter()
+                .flatten()
+                .map(projection_check),
+        )
+        .collect()
+}
+
+/// `check("event projection <slug>", consistent, "<tasks> tasks / <events> events", ...)`, with
+/// the first five mismatched keys listed as Python's list repr when there are any.
+fn projection_check(projection: &EventProjection) -> Check {
+    let counts = format!("{} tasks / {} events", projection.tasks, projection.events);
+    let consistent = projection.mismatches.is_empty();
+    let detail = if consistent {
+        counts
+    } else {
+        let keys: Vec<String> = projection
+            .mismatches
+            .iter()
+            .take(5)
+            .map(|key| format!("'{key}'"))
+            .collect();
+        format!("{counts}; mismatches: [{}]", keys.join(", "))
+    };
+    check(
+        &format!("event projection {}", projection.slug),
+        consistent,
+        detail,
+        "error",
+    )
 }
 
 /// `all(c["ok"] or c["level"] != "error")`.

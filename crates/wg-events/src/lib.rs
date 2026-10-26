@@ -17,4 +17,4 @@ pub mod verify;
 
 pub use projection::{ProjectedTask, ProjectionError, project_tasks};
 pub use upcast::{current_version, read, upcast};
-pub use verify::{Mismatch, TaskState, VerifyReport, verify_task_projection};
+pub use verify::{Mismatch, TaskState, VerifyReport, task_states, verify_task_projection};

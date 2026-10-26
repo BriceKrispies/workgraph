@@ -2440,9 +2440,11 @@ dependencies = [
 name = "wg-stacks"
 version = "0.1.0"
 dependencies = [
+ "rpds",
  "serde_json",
  "uuid",
  "wg-types",
+ "wg-verify",
 ]
 
 [[package]]

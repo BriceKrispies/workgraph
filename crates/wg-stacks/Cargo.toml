@@ -11,8 +11,10 @@ description = "stack membership, integration queue, verification, landing"
 workspace = true
 
 [dependencies]
+rpds = { version = "1", features = ["serde"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-types = { path = "../wg-types" }
+wg-verify = { path = "../wg-verify" }
 
 [dev-dependencies]
 uuid = { version = "1", default-features = false, features = ["std", "serde"] }

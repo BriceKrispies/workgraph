@@ -29,7 +29,7 @@ fn golden(name: &str) -> Result<Value, Box<dyn Error>> {
 /// `config_error_json` of the generator: the error shape, without the Python input.
 fn config_error_json(error: &ConfigError) -> Value {
     match error {
-        ConfigError::InvalidToml(_) => {
+        ConfigError::InvalidToml(_) | ConfigError::InvalidSchemaVersion(_) => {
             json!({"outcome": "error", "kind": "invalid_toml", "errors": []})
         }
         ConfigError::Validation(errors) => json!({

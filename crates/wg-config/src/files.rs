@@ -9,7 +9,6 @@ use serde_json::{Map, Value};
 
 use crate::error::ConfigError;
 use crate::model::{validate_global, validate_overrides};
-use crate::pyfmt::int_of;
 use crate::toml_doc::parse_document;
 use crate::value::{deep_merge, truthy};
 use crate::{CONFIG_SCHEMA_VERSION, strip_none};
@@ -110,14 +109,16 @@ fn read(text: Option<&str>) -> Result<Map<String, Value>, ConfigError> {
     }
 }
 
-/// `int(raw.get("schema_version", 1))`.
+/// `_schema_version(raw)`: the document's `schema_version`, default 1. Only a real integer is
+/// accepted; `bool`, float and string values are a `ConfigError`, as Python raises them.
 fn version_of(raw: &Map<String, Value>) -> Result<i64, ConfigError> {
     let value = raw
         .get("schema_version")
         .cloned()
         .unwrap_or_else(|| Value::from(1));
-    // Python raises a ConfigError (with no validation details) for an unreadable version.
-    int_of(&value).map_err(|_| ConfigError::InvalidToml("schema_version is not an integer".into()))
+    value
+        .as_i64()
+        .ok_or(ConfigError::InvalidSchemaVersion(value))
 }
 
 /// `_migrate`: a version 1 document kept agent execution under `agents.enabled`; it moves to

@@ -29,6 +29,14 @@ pub fn config_failure(path: &str, err: ConfigError) -> WgError {
             ErrorCode::ConfigError,
             format!("{path} is not valid TOML: {detail}"),
         ),
+        ConfigError::InvalidSchemaVersion(value) => WgError::new(
+            ErrorCode::ConfigError,
+            format!(
+                "{path} has an invalid schema_version: expected an integer, got {}",
+                wg_config::value_repr(&value)
+            ),
+        )
+        .with_detail("schema_version", value),
         ConfigError::Validation(errors) => {
             WgError::new(ErrorCode::ConfigError, format!("{path} failed validation"))
                 .with_detail("errors", validation_details(&errors))
@@ -165,6 +173,18 @@ mod tests {
         let err = config_failure("C:\\wg\\config.toml", ConfigError::InvalidToml("x".into()));
         assert_eq!(err.message, "C:\\wg\\config.toml is not valid TOML: x");
         assert_eq!(err.code, ErrorCode::ConfigError);
+        let bad = config_failure(
+            "C:\\wg\\config.toml",
+            ConfigError::InvalidSchemaVersion(serde_json::Value::from("two")),
+        );
+        assert_eq!(
+            bad.message,
+            "C:\\wg\\config.toml has an invalid schema_version: expected an integer, got 'two'"
+        );
+        assert_eq!(
+            bad.details.get("schema_version"),
+            Some(&serde_json::Value::from("two"))
+        );
         let merged = merged_config_failure("ops", ConfigError::Validation(Vec::new()));
         assert_eq!(
             merged.message,

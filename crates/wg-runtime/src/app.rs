@@ -60,9 +60,9 @@ fn read_optional(path: &Path) -> Result<Option<String>, WgError> {
 
 impl App {
     /// `Workgraph.open(home)`: resolves the paths (`home`, else `WORKGRAPH_HOME`, else the
-    /// platform directories), creates the directories and opens the database.
-    ///
-    /// The schema migrations are not run here yet: they arrive with the migration runner.
+    /// platform directories), creates the directories, opens the database and, as
+    /// `Workgraph.__init__` does with `auto_migrate`, upgrades it to head when it is not there
+    /// yet. A fresh database is created at head; an older one is migrated in place.
     pub fn open(home: Option<&Path>) -> Result<App, WgError> {
         let env = environment();
         let root = home
@@ -98,9 +98,12 @@ impl App {
             let dir = PathBuf::from(dir.as_str());
             std::fs::create_dir_all(&dir).map_err(|err| io_error("create", &dir, &err))?;
         }
-        let store = Store::open(&Location::File(PathBuf::from(
+        let mut store = Store::open(&Location::File(PathBuf::from(
             paths.database_file().as_str(),
         )))?;
+        if !store.is_up_to_date()? {
+            store.upgrade("head")?;
+        }
         Ok(App {
             paths,
             runtime: Runtime {

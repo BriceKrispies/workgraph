@@ -1,0 +1,30 @@
+{
+  "id": "jobs-worker-runs-handlers-retries-dead-letters",
+  "covers": ["C102", "C179", "C105", "C177", "B03"],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["job", "enqueue", "noop", "--payload", "{\"sleep\": 0}"], "json": true, "save": {"ok": "/job_id"}},
+    {"cli": ["job", "enqueue", "noop", "--payload", "{\"fail\": \"always\"}"], "json": true, "save": {"bad": "/job_id"}},
+    {"cli": ["job", "enqueue", "does_not_exist"], "json": true, "expect_exit": 2},
+    {"cli": ["worker", "run", "--once"], "json": true},
+    {"assert": {"stdout_contains": "\"completed\": 1"}},
+    {"assert": {"stdout_contains": "\"failed\": 1"}},
+    {"cli": ["job", "show", "{var:ok}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "succeeded"}}},
+    {"cli": ["job", "show", "{var:bad}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "queued"}}},
+    {"assert": {"json": {"path": "/attempts", "equals": 1}}},
+    {"cli": ["worker", "list"], "json": true},
+    {"assert": {"json": {"path": "/0/status", "equals": "stopped"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/unit/test_jobs.py::test_worker_runs_handlers_retries_and_dead_letters: the unknown-kind job goes dead at once with error_kind unknown_kind; `job enqueue` refuses unknown kinds (exit 2, asserted above), so the worker's unknown-kind branch is not reachable through an interface",
+      "covered_by": "CORE-19"
+    },
+    {
+      "case": "tests/unit/test_jobs.py::test_worker_runs_handlers_retries_and_dead_letters: the failing job reaches dead after two runs (runs(bad) == 2); `job enqueue` cannot set max_attempts or backoff, and the second run needs the backoff elapsed, which the runner cannot wait for",
+      "covered_by": "CORE-19"
+    }
+  ]
+}

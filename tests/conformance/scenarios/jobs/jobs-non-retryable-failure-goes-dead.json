@@ -1,0 +1,14 @@
+{
+  "id": "jobs-non-retryable-failure-goes-dead",
+  "covers": ["C102", "C179", "C105", "B03"],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["job", "enqueue", "git_sync", "--payload", "{\"repository_id\": \"no-such-repository\"}"], "json": true, "save": {"j": "/job_id"}},
+    {"cli": ["worker", "run", "--once"], "json": true},
+    {"assert": {"stdout_contains": "\"failed\": 1"}},
+    {"cli": ["job", "show", "{var:j}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "dead"}}},
+    {"assert": {"json": {"path": "/attempts", "equals": 1}}}
+  ],
+  "not_observable": []
+}

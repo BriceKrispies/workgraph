@@ -1,0 +1,12 @@
+{
+  "id": "jobs-tracker-rejects-unknown-connection",
+  "covers": ["C170", "C103", "B08"],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "trackers.work-jira", "{\"base_url\": \"https://acme.atlassian.net\", \"workspace\": \"work\", \"projects\": [\"ABC\"], \"token_env\": \"WG_TEST_JIRA_TOKEN\", \"poll_interval_seconds\": 30, \"full_sync_interval_seconds\": 300}"], "json": true},
+    {"cli": ["tracker", "sync", "nope", "--queue"], "json": true, "expect_exit": 4},
+    {"cli": ["job", "list", "--kind", "tracker_sync"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 0}}}
+  ],
+  "not_observable": []
+}

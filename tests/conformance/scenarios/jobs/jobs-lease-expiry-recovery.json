@@ -1,0 +1,15 @@
+{
+  "id": "jobs-lease-expiry-recovery",
+  "covers": ["C178", "B03"],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["worker", "recover"], "json": true},
+    {"assert": {"json": {"path": "/recovered_jobs", "equals": []}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/unit/test_jobs.py::test_lease_expiry_recovery: a claimed job whose lease expires is recovered as lease_expired and its heartbeat then raises ConflictError; a claim held by a crashed worker needs a claim that never completes and a clock past its lease, and the runner has no kill, sleep or clock step, so only recovery of an empty queue is observed",
+      "covered_by": "CORE-19"
+    }
+  ]
+}

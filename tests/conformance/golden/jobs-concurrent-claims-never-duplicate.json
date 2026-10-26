@@ -1,0 +1,341 @@
+{
+  "scenario": "jobs-concurrent-claims-never-duplicate",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:1>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:2>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:3>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:4>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:5>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:6>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:7>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:8>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:9>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:10>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:11>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:12>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:13>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:14>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:15>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:16>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:17>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:18>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:19>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:20>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:21>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:22>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:23>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:24>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:25>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:26>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:27>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:28>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:29>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:30>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:31>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:32>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 33,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:33>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 34,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:34>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 35,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:35>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 36,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:36>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 37,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:37>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 38,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:38>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 39,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:39>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 40,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:40>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 41,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "worker DESKTOP-1IULO99-4252-56cafd started (concurrency 6)\n{\n  \"worker\": \"DESKTOP-1IULO99-4252-56cafd\",\n  \"completed\": 40,\n  \"failed\": 0\n}\n",
+      "stderr": "{\"ts\": \"<ts:81|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker started\", \"worker\": \"DESKTOP-1IULO99-4252-56cafd\", \"concurrency\": 6}\n{\"ts\": \"<ts:82|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker stopped\", \"worker\": \"DESKTOP-1IULO99-4252-56cafd\", \"completed\": 40, \"failed\": 0}\n"
+    },
+    {
+      "index": 42,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 43,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 44,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"total\": 40,\n  \"items\": [\n    {\n      \"id\": \"<id:40>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:79|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:80|db>\"\n    },\n    {\n      \"id\": \"<id:39>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:77|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:78|db>\"\n    },\n    {\n      \"id\": \"<id:38>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:75|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:76|db>\"\n    },\n    {\n      \"id\": \"<id:37>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:73|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:74|db>\"\n    },\n    {\n      \"id\": \"<id:36>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:71|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:72|db>\"\n    },\n    {\n      \"id\": \"<id:35>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:69|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:70|db>\"\n    },\n    {\n      \"id\": \"<id:34>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:67|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:68|db>\"\n    },\n    {\n      \"id\": \"<id:33>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:65|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:66|db>\"\n    },\n    {\n      \"id\": \"<id:32>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:63|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:64|db>\"\n    },\n    {\n      \"id\": \"<id:31>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:61|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:62|db>\"\n    },\n    {\n      \"id\": \"<id:30>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:59|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:60|db>\"\n    },\n    {\n      \"id\": \"<id:29>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:57|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:58|db>\"\n    },\n    {\n      \"id\": \"<id:28>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:55|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:56|db>\"\n    },\n    {\n      \"id\": \"<id:27>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:53|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:54|db>\"\n    },\n    {\n      \"id\": \"<id:26>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:51|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:52|db>\"\n    },\n    {\n      \"id\": \"<id:25>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:49|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:50|db>\"\n    },\n    {\n      \"id\": \"<id:24>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:47|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:48|db>\"\n    },\n    {\n      \"id\": \"<id:23>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:45|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:46|db>\"\n    },\n    {\n      \"id\": \"<id:22>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:43|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:44|db>\"\n    },\n    {\n      \"id\": \"<id:21>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:41|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:42|db>\"\n    },\n    {\n      \"id\": \"<id:20>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:39|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:40|db>\"\n    },\n    {\n      \"id\": \"<id:19>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:37|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:38|db>\"\n    },\n    {\n      \"id\": \"<id:18>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:35|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:36|db>\"\n    },\n    {\n      \"id\": \"<id:17>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:33|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:34|db>\"\n    },\n    {\n      \"id\": \"<id:16>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:31|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:32|db>\"\n    },\n    {\n      \"id\": \"<id:15>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:29|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:30|db>\"\n    },\n    {\n      \"id\": \"<id:14>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:27|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:28|db>\"\n    },\n    {\n      \"id\": \"<id:13>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:25|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:26|db>\"\n    },\n    {\n      \"id\": \"<id:12>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:23|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:24|db>\"\n    },\n    {\n      \"id\": \"<id:11>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:21|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:22|db>\"\n    },\n    {\n      \"id\": \"<id:10>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:19|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:20|db>\"\n    },\n    {\n      \"id\": \"<id:9>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:17|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:18|db>\"\n    },\n    {\n      \"id\": \"<id:8>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:15|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:16|db>\"\n    },\n    {\n      \"id\": \"<id:7>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:13|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:14|db>\"\n    },\n    {\n      \"id\": \"<id:6>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:11|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:12|db>\"\n    },\n    {\n      \"id\": \"<id:5>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:9|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:10|db>\"\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:7|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:8|db>\"\n    },\n    {\n      \"id\": \"<id:3>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:5|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:6|db>\"\n    },\n    {\n      \"id\": \"<id:2>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:3|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:4|db>\"\n    },\n    {\n      \"id\": \"<id:1>\",\n      \"kind\": \"noop\",\n      \"status\": \"succeeded\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:1|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:2|db>\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 45,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 46,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"total\": 0,\n  \"items\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 47,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

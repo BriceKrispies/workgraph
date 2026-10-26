@@ -1,0 +1,25 @@
+{
+  "id": "jobs-retry-backoff-and-dead-letter",
+  "covers": ["C102", "C179", "C105", "B03"],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["job", "enqueue", "noop", "--payload", "{\"fail\": \"always\"}"], "json": true, "save": {"j": "/job_id"}},
+    {"cli": ["worker", "run", "--once"], "json": true},
+    {"assert": {"stdout_contains": "\"failed\": 1"}},
+    {"cli": ["job", "show", "{var:j}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "queued"}}},
+    {"assert": {"json": {"path": "/attempts", "equals": 1}}},
+    {"assert": {"json": {"path": "/error_kind", "equals": "exception"}}},
+    {"assert": {"json": {"path": "/last_error", "equals": "RuntimeError: always"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/unit/test_jobs.py::test_retry_backoff_and_dead_letter: the job enqueued with max_attempts=2 and backoff_base_seconds=10 cannot be expressed (`job enqueue` takes neither option, so the default 5 attempts and 2 s base apply); reaching the dead letter needs a second attempt after the backoff has elapsed, and the runner has no sleep or clock step; the run_at lower bound is a timestamp relation the assertions cannot express",
+      "covered_by": "CORE-19"
+    },
+    {
+      "case": "tests/unit/test_jobs.py::test_retry_backoff_and_dead_letter: the pure backoff_delay(2, 1) == 2 and backoff_delay(2, 4) == 16 values are a function of its arguments, not of an interface",
+      "covered_by": "GV-20"
+    }
+  ]
+}

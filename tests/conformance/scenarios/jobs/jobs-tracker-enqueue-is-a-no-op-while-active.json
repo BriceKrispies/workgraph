@@ -1,0 +1,26 @@
+{
+  "id": "jobs-tracker-enqueue-is-a-no-op-while-active",
+  "covers": ["C170", "C100", "C105", "B08", "B03"],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "trackers.work-jira", "{\"base_url\": \"https://acme.atlassian.net\", \"workspace\": \"work\", \"projects\": [\"ABC\"], \"token_env\": \"WG_TEST_JIRA_TOKEN\", \"poll_interval_seconds\": 30, \"full_sync_interval_seconds\": 300}"], "json": true},
+    {"cli": ["tracker", "sync", "work-jira", "--queue"], "json": true, "save": {"a": "/job_id"}},
+    {"cli": ["tracker", "sync", "work-jira", "--queue"], "json": true},
+    {"assert": {"json": {"path": "/job_id", "equals": "{var:a}"}}},
+    {"cli": ["tracker", "sync", "work-jira", "--queue", "--full"], "json": true, "save": {"f": "/job_id"}},
+    {"cli": ["job", "show", "{var:f}"], "json": true},
+    {"assert": {"json": {"path": "/payload/full", "equals": true}}},
+    {"cli": ["job", "cancel", "{var:a}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "cancelled"}}},
+    {"cli": ["tracker", "sync", "work-jira", "--queue"], "json": true, "save": {"later": "/job_id"}},
+    {"cli": ["job", "show", "{var:later}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "queued"}}},
+    {"assert": {"json": {"path": "/payload/full", "equals": false}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/unit/test_tracker_jobs.py::test_enqueue_is_a_no_op_while_a_sync_is_active: the same job id while a claimed sync is still running needs a claim that stays held, which no step can hold; the assertions `full != first` and `later not in (first, full)` are inequalities the assert step cannot express (it has equals only), so the modes and the cancelled-state reuse are checked through payload.full and status instead",
+      "covered_by": "SC-14"
+    }
+  ]
+}

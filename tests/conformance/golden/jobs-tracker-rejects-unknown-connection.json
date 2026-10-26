@@ -1,0 +1,40 @@
+{
+  "scenario": "jobs-tracker-rejects-unknown-connection",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"trackers.work-jira\",\n  \"value\": {\n    \"base_url\": \"https://acme.atlassian.net\",\n    \"workspace\": \"work\",\n    \"projects\": [\n      \"ABC\"\n    ],\n    \"token_env\": \"WG_TEST_JIRA_TOKEN\",\n    \"poll_interval_seconds\": 30,\n    \"full_sync_interval_seconds\": 300\n  },\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 4,
+      "stdout": "{\"error\": {\"code\": \"not_found\", \"message\": \"tracker connection 'nope' is not configured\", \"details\": {\"connection\": \"nope\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"total\": 0,\n  \"items\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

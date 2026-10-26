@@ -1,0 +1,487 @@
+{
+  "id": "jobs-concurrent-claims-never-duplicate",
+  "covers": [
+    "C102",
+    "C179",
+    "C103",
+    "B03"
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 0}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 1}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 2}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 3}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 4}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 5}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 6}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 7}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 8}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 9}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 10}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 11}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 12}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 13}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 14}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 15}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 16}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 17}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 18}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 19}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 20}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 21}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 22}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 23}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 24}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 25}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 26}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 27}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 28}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 29}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 30}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 31}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 32}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 33}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 34}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 35}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 36}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 37}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 38}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "job",
+        "enqueue",
+        "noop",
+        "--payload",
+        "{\"i\": 39}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "worker",
+        "run",
+        "--once",
+        "--concurrency",
+        "6"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "stdout_contains": "\"completed\": 40"
+      }
+    },
+    {
+      "assert": {
+        "stdout_contains": "\"failed\": 0"
+      }
+    },
+    {
+      "cli": [
+        "job",
+        "list",
+        "--status",
+        "succeeded",
+        "--limit",
+        "100"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/total",
+          "equals": 40
+        }
+      }
+    },
+    {
+      "cli": [
+        "job",
+        "list",
+        "--status",
+        "queued"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/total",
+          "equals": 0
+        }
+      }
+    }
+  ],
+  "not_observable": [
+    {
+      "case": "tests/unit/test_jobs.py::test_concurrent_claims_never_duplicate: six separate JobQueue handles race in six Python threads; the runner drives one worker process with --concurrency 6, so only the outcome (40 completed, none failed, none left queued) is observed, not the claim interleaving",
+      "covered_by": "CORE-19"
+    },
+    {
+      "case": "tests/unit/test_jobs.py::test_resource_limits: the gpu and repo resource keys cannot be set through `job enqueue` (it takes no resource_keys), and the services that set them need a classification or git sync run; the per-resource capacity from config jobs.gpu_concurrency is not reachable from a step",
+      "covered_by": "CORE-19"
+    },
+    {
+      "case": "tests/unit/test_jobs.py::test_verify_keys_are_bounded_by_verify_concurrency: the verify:<repository> keys are set by the verification service when a task is verified, and the claim order is asserted between queued jobs held by two verifications; no step enqueues verify jobs with keys nor holds a claim while another claim is attempted",
+      "covered_by": "CORE-19"
+    }
+  ]
+}

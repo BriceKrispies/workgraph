@@ -1,0 +1,21 @@
+{
+  "id": "jobs-tracker-one-resource-key-per-connection",
+  "covers": ["C170", "C105", "B03"],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "trackers.work-jira", "{\"base_url\": \"https://acme.atlassian.net\", \"workspace\": \"work\", \"projects\": [\"ABC\"], \"token_env\": \"WG_TEST_JIRA_TOKEN\", \"poll_interval_seconds\": 30, \"full_sync_interval_seconds\": 300}"], "json": true},
+    {"cli": ["config", "set", "trackers.other", "{\"base_url\": \"https://acme.atlassian.net\", \"workspace\": \"other\", \"projects\": [\"ABC\"], \"token_env\": \"WG_TEST_JIRA_TOKEN\", \"poll_interval_seconds\": 30, \"full_sync_interval_seconds\": 300}"], "json": true},
+    {"cli": ["tracker", "sync", "work-jira", "--queue"], "json": true, "save": {"a": "/job_id"}},
+    {"cli": ["tracker", "sync", "other", "--queue"], "json": true, "save": {"b": "/job_id"}},
+    {"cli": ["job", "show", "{var:a}"], "json": true},
+    {"assert": {"json": {"path": "/resource_keys/0", "equals": "tracker:work-jira"}}},
+    {"cli": ["job", "show", "{var:b}"], "json": true},
+    {"assert": {"json": {"path": "/resource_keys/0", "equals": "tracker:other"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/unit/test_tracker_jobs.py::test_enqueue_uses_one_resource_key_per_connection: the claim of the second connection's sync while the first is held, and the empty third claim, need claims that stay held; no step holds a claim, and running the queued syncs would reach the real Jira site",
+      "covered_by": "SC-14"
+    }
+  ]
+}

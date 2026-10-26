@@ -9,6 +9,7 @@
 pub mod argv;
 pub mod failure;
 pub mod snapshot;
+pub mod task;
 pub mod tree;
 
 pub use argv::{Argv, is_hook_invocation, split_json};

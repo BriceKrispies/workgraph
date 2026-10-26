@@ -21,6 +21,7 @@ mod logging;
 mod queue;
 mod stamp;
 mod worker;
+mod tasks;
 
 pub use app::{App, environment};
 pub use bus::Bus;
@@ -32,5 +33,6 @@ pub use queue::Queue;
 pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
+pub use wg_runtimespec::tasks::reads::{GraphRequest, Shown};
 pub use wg_runtimespec::{Level, RequestContext};
 pub use worker::{RunOptions, Summary, Worker, WorkerOptions};

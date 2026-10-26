@@ -5,6 +5,8 @@
 //! `contracts/cli.json`. A top-level command or group that is not listed here is a placeholder
 //! built from the snapshot (see `wg_clispec::tree`).
 
+pub mod task;
+
 use clap::{ArgMatches, Command};
 use wg_clispec::CliFailure;
 
@@ -25,4 +27,4 @@ pub struct Group {
 }
 
 /// The implemented groups.
-pub const GROUPS: &[Group] = &[];
+pub const GROUPS: &[Group] = &[task::GROUP];

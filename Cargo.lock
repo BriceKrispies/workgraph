@@ -2143,10 +2143,13 @@ name = "wg-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "serde_json",
  "wg-clispec",
  "wg-json",
+ "wg-model",
  "wg-render",
  "wg-runtime",
+ "wg-types",
 ]
 
 [[package]]
@@ -2156,6 +2159,7 @@ dependencies = [
  "clap",
  "serde_json",
  "wg-json",
+ "wg-model",
  "wg-render",
  "wg-types",
  "wg-wire",
@@ -2382,6 +2386,7 @@ dependencies = [
  "wg-registry",
  "wg-runtimespec",
  "wg-store",
+ "wg-tasks",
  "wg-types",
 ]
 
@@ -2395,12 +2400,16 @@ dependencies = [
  "time",
  "tracing-core",
  "wg-config",
+ "wg-jobs",
  "wg-json",
  "wg-model",
  "wg-procspec",
+ "wg-registry",
  "wg-storecodec",
+ "wg-tasks",
  "wg-types",
  "wg-validate",
+ "wg-wire",
 ]
 
 [[package]]

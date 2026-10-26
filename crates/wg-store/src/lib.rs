@@ -28,6 +28,7 @@ mod search;
 mod session;
 mod sessions;
 mod stacks;
+mod task_world;
 mod tasks;
 mod verify;
 
@@ -46,6 +47,7 @@ pub use session::{Applied, Session};
 pub use verify::{FailureFilter, FailureRow, Page, RunFilter};
 pub use wg_storecodec::migrations::head_revision;
 pub use wg_storecodec::run_sql::{RecordedHead, WorktreeWithRepository};
+pub use wg_storecodec::task_world_sql::TaskWorld;
 pub use wg_storecodec::{EventQuery, EventRecord, Raw, Statement, TableRow};
 
 /// Python's `BUSY_TIMEOUT_MS`.

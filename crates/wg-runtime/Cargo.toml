@@ -25,4 +25,5 @@ wg-proc = { path = "../wg-proc" }
 wg-registry = { path = "../wg-registry" }
 wg-runtimespec = { path = "../wg-runtimespec" }
 wg-store = { path = "../wg-store" }
+wg-tasks = { path = "../wg-tasks" }
 wg-types = { path = "../wg-types" }

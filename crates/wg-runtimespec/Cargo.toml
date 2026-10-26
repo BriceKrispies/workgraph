@@ -18,8 +18,12 @@ time = { version = "0.3", default-features = false, features = ["std"] }
 tracing-core = "0.1"
 wg-config = { path = "../wg-config" }
 wg-json = { path = "../wg-json" }
+wg-jobs = { path = "../wg-jobs" }
 wg-model = { path = "../wg-model" }
 wg-procspec = { path = "../wg-procspec" }
+wg-registry = { path = "../wg-registry" }
 wg-storecodec = { path = "../wg-storecodec" }
+wg-tasks = { path = "../wg-tasks" }
 wg-types = { path = "../wg-types" }
 wg-validate = { path = "../wg-validate" }
+wg-wire = { path = "../wg-wire" }

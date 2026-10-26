@@ -587,7 +587,7 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
             rec.status = Status::Passed;
             rec
         }
-        Step::Mcp { tool, args } => {
+        Step::Mcp { tool, args, save } => {
             let rec = record(index, "mcp", tool.clone());
             let args = match ctx.resolve_value(args) {
                 Ok(a) => a,
@@ -606,6 +606,14 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
             );
             if let Some(o) = outcome {
                 ctx.remember(o);
+                for (name, ptr) in save {
+                    match ctx.last_pointer(ptr) {
+                        Ok(v) => {
+                            ctx.vars.insert(name.clone(), v);
+                        }
+                        Err(e) => return fail(rec, format!("save {name}: {e}")),
+                    }
+                }
             }
             rec
         }

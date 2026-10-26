@@ -1,0 +1,31 @@
+{
+  "id": "mcp-analytics-report",
+  "covers": ["M60"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Estimated", "ready": true}},
+    {"mcp": "analytics_report", "args": {"report": "catalog"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "cumulative_churn"}},
+    {"mcp": "analytics_report", "args": {"report": "overview"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "analytics_report", "args": {"report": "coupling"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "analytics_report", "args": {"report": "failures"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "analytics_report", "args": {"report": "history"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "analytics_report", "args": {"report": "estimate", "task": "WG-1"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "analytics_report", "args": {"report": "estimate"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "estimate requires a task"}},
+    {"mcp": "analytics_report", "args": {"report": "estimate", "task": "WG-404"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "analytics_report", "args": {"report": "forecast"}},
+    {"assert": {"exit": 1}}
+  ],
+  "not_observable": []
+}

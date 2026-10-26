@@ -51,6 +51,7 @@ pub enum Step {
     Mcp {
         tool: String,
         args: Value,
+        save: Vec<(String, String)>,
     },
     Http {
         method: String,
@@ -347,6 +348,7 @@ fn parse_step(v: &Value, at: &str) -> Res<Step> {
             Ok(Step::Mcp {
                 tool: string(&m["mcp"], &format!("{at}.mcp"))?,
                 args: m.get("args").cloned().unwrap_or(Value::Object(Map::new())),
+                save: save(m)?,
             })
         }
         "http" => {

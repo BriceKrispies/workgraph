@@ -1,0 +1,28 @@
+{
+  "id": "mcp-task-dependencies",
+  "covers": ["M37", "M38"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "A", "ready": true}},
+    {"mcp": "task_create", "args": {"title": "B", "ready": true}},
+    {"mcp": "task_create", "args": {"title": "C", "ready": true}},
+    {"mcp": "task_add_dependency", "args": {"task": "WG-2", "depends_on": "WG-1"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "task_get", "args": {"task": "WG-2"}},
+    {"assert": {"json": {"path": "/status", "equals": "blocked"}}},
+    {"mcp": "task_add_dependency", "args": {"task": "WG-1", "depends_on": "WG-2"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "cycle"}},
+    {"mcp": "task_add_dependency", "args": {"task": "WG-2", "depends_on": "WG-404"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "task_remove_dependency", "args": {"task": "WG-2", "depends_on": "WG-1"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "task_get", "args": {"task": "WG-2"}},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}},
+    {"mcp": "task_remove_dependency", "args": {"task": "WG-2", "depends_on": "WG-3"}},
+    {"assert": {"exit": 0}}
+  ],
+  "not_observable": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "mcp-task-contract-check",
+  "covers": ["M28"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Vague goal", "ready": true}},
+    {"mcp": "task_contract_check", "args": {"task": "WG-1", "model": "claude-haiku-5-5", "target": 0.8}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/verdict", "equals": "not_delegable"}}},
+    {"mcp": "task_contract_check", "args": {"task": "WG-1", "model": "claude-haiku-5-5", "target": 1.5}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_contract_check", "args": {"task": "WG-404", "model": "claude-haiku-5-5"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}}
+  ],
+  "not_observable": []
+}

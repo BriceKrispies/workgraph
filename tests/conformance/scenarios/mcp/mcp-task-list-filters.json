@@ -1,0 +1,24 @@
+{
+  "id": "mcp-task-list-filters",
+  "covers": ["M30"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Alpha", "priority": "high", "tags": ["api"], "ready": true}},
+    {"mcp": "task_create", "args": {"title": "Beta", "priority": "low", "tags": ["web"]}},
+    {"mcp": "task_list", "args": {"statuses": ["ready"], "tags": ["api"]}},
+    {"assert": {"json": {"path": "/items/0/key", "equals": "WG-1"}}},
+    {"mcp": "task_list", "args": {"sort": "key", "descending": false, "limit": 1, "offset": 1}},
+    {"assert": {"json": {"path": "/items/0/key", "equals": "WG-2"}}},
+    {"mcp": "task_list", "args": {"text": "Beta"}},
+    {"assert": {"json": {"path": "/items/0/key", "equals": "WG-2"}}},
+    {"mcp": "task_list", "args": {"priorities": ["low"], "project": "no-such-project"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "task_list", "args": {"sort": "owner"}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_list", "args": {"limit": 500}},
+    {"assert": {"exit": 1}}
+  ],
+  "not_observable": []
+}

@@ -12,8 +12,11 @@
 //!   (`src/workgraph/mcp/server.py`);
 //! * [`permissions`]: the agent's permission set from `--grant` flags, one function for both
 //!   transports (WG-3734);
+//! * [`accept`]: the `Accept` negotiation of the `/mcp/` endpoint, and the `406` answer to a
+//!   refusal (X6);
 //! * [`jsonrpc`]: the `400` answer to a POST body that is not a JSON-RPC message (X6).
 
+pub mod accept;
 pub mod arguments;
 pub mod catalog;
 pub mod jsonrpc;
@@ -22,6 +25,7 @@ pub mod outcome;
 pub mod permissions;
 pub mod wire;
 
+pub use accept::{Gate, Reject, SDK_ACCEPT, Verb, gate, not_acceptable_reply, refusal};
 pub use arguments::{ArgumentsError, check_arguments};
 pub use catalog::{Catalog, ToolSpec};
 pub use jsonrpc::not_jsonrpc_reply;

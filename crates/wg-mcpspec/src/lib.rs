@@ -23,11 +23,12 @@ pub mod jsonrpc;
 pub mod options;
 pub mod outcome;
 pub mod permissions;
+pub mod sse;
 pub mod wire;
 
 pub use accept::{
-    Gate, Plan, Reject, SDK_ACCEPT, Verb, gate, not_acceptable_reply, plan, refusal, reject_status,
-    verb_of,
+    Gate, Plan, Reject, Reply, SDK_ACCEPT, Step, Verb, check_body, check_headers, error_body, gate,
+    not_acceptable_reply, refusal, reject_status, too_large, verb_of,
 };
 pub use arguments::{ArgumentsError, check_arguments};
 pub use catalog::{Catalog, ToolSpec};
@@ -38,6 +39,7 @@ pub use outcome::{
     unknown_tool_text,
 };
 pub use permissions::{agent_permissions, require, tool_permissions};
+pub use sse::frame_events;
 pub use wire::structured;
 
 /// The server name in `serverInfo`.

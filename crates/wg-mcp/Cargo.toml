@@ -13,6 +13,7 @@ workspace = true
 [dependencies]
 axum = { version = "0.8", default-features = false, features = ["tokio", "http1"] }
 rmcp = { version = "3.7", default-features = false, features = ["server", "transport-io", "transport-streamable-http-server"] }
+futures-util = "0.3"
 serde = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 tokio = { version = "1", features = ["rt-multi-thread", "net", "io-std", "macros"] }

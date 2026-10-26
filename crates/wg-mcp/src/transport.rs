@@ -8,14 +8,19 @@ use std::sync::Arc;
 
 use axum::Router;
 use axum::body::{Body, to_bytes};
+use axum::extract::State;
+use axum::http::request::Parts;
 use axum::http::{HeaderName, HeaderValue, Request, Response, StatusCode, header};
 use axum::middleware::{self, Next};
+use futures_util::StreamExt;
 use rmcp::ServiceExt;
+use rmcp::service::ServerInitializeError;
 use rmcp::transport::common::server_side_http::session_id;
 use rmcp::transport::streamable_http_server::session::local::LocalSessionManager;
+use rmcp::transport::streamable_http_server::{SessionId, SessionManager};
 use rmcp::transport::{StreamableHttpServerConfig, StreamableHttpService, stdio};
 use tokio_util::sync::CancellationToken;
-use wg_mcpspec::{Plan, plan, verb_of};
+use wg_mcpspec::{Plan, Reply, Step, check_body, check_headers, frame_events, too_large, verb_of};
 use wg_types::WgError;
 
 use crate::backend::{Agent, ToolBackend};
@@ -24,18 +29,52 @@ use crate::handler::WgMcp;
 /// The largest request body the endpoint reads before answering.
 const BODY_LIMIT: usize = 4 * 1024 * 1024;
 
-/// Serves one client over this process's stdin and stdout until it closes the pipe.
+/// The header that names a session.
+const SESSION_HEADER: &str = "mcp-session-id";
+
+fn failure(what: &str, err: impl std::fmt::Display) -> WgError {
+    WgError::workgraph(format!("{what}: {err}"))
+}
+
+/// Serves one client over this process's stdin and stdout until it closes the pipe. A pipe that
+/// closes before `initialize` is a clean end, as the Python server treats it (exit 0, WG-3821).
 pub async fn serve_stdio(agent: Agent, backend: Box<dyn ToolBackend>) -> Result<(), WgError> {
     let server = WgMcp::new(agent, backend)?;
-    let running = server
-        .serve(stdio())
-        .await
-        .map_err(|err| WgError::workgraph(format!("mcp stdio: {err}")))?;
+    let running = match server.serve(stdio()).await {
+        Ok(running) => running,
+        Err(ServerInitializeError::ConnectionClosed(_)) => return Ok(()),
+        Err(err) => return Err(failure("mcp stdio", err)),
+    };
     running
         .waiting()
         .await
         .map_err(|err| WgError::workgraph(format!("mcp stdio: {err}")))?;
     Ok(())
+}
+
+/// The Streamable HTTP service for `agent`, with the session table it keeps: one handler per
+/// session.
+fn http_parts(
+    agent: Agent,
+    backend: Box<dyn ToolBackend>,
+    cancel: CancellationToken,
+) -> Result<
+    (
+        StreamableHttpService<WgMcp, LocalSessionManager>,
+        Arc<LocalSessionManager>,
+    ),
+    WgError,
+> {
+    let server = WgMcp::new(agent, backend)?;
+    let mut config = StreamableHttpServerConfig::default();
+    config.cancellation_token = cancel;
+    // The server's own middleware checks Host and Origin (loopback and the paired LAN
+    // addresses); the SDK's loopback-only default would refuse the paired devices.
+    config.allowed_hosts = Vec::new();
+    let sessions = Arc::new(LocalSessionManager::default());
+    let service =
+        StreamableHttpService::new(move || Ok(server.clone()), Arc::clone(&sessions), config);
+    Ok((service, sessions))
 }
 
 /// The Streamable HTTP service for `agent`: one handler per session.
@@ -44,17 +83,7 @@ pub fn http_service(
     backend: Box<dyn ToolBackend>,
     cancel: CancellationToken,
 ) -> Result<StreamableHttpService<WgMcp, LocalSessionManager>, WgError> {
-    let server = WgMcp::new(agent, backend)?;
-    let mut config = StreamableHttpServerConfig::default();
-    config.cancellation_token = cancel;
-    // The server's own middleware checks Host and Origin (loopback and the paired LAN
-    // addresses); the SDK's loopback-only default would refuse the paired devices.
-    config.allowed_hosts = Vec::new();
-    Ok(StreamableHttpService::new(
-        move || Ok(server.clone()),
-        Arc::new(LocalSessionManager::default()),
-        config,
-    ))
+    Ok(http_parts(agent, backend, cancel)?.0)
 }
 
 /// The router `wg-server` merges into its own: the MCP endpoint under `/mcp` (axum serves `/mcp/`
@@ -64,24 +93,23 @@ pub fn http_router(
     backend: Box<dyn ToolBackend>,
     cancel: CancellationToken,
 ) -> Result<Router, WgError> {
-    let service = http_service(agent, backend, cancel)?;
+    let (service, sessions) = http_parts(agent, backend, cancel)?;
     Ok(Router::new()
         .nest_service("/mcp", service)
-        .layer(middleware::from_fn(check_request)))
+        .layer(middleware::from_fn_with_state(sessions, check_request)))
 }
 
-/// The checks the Python endpoint makes before the SDK's own; `wg_mcpspec::plan` decides. The
-/// glue reads the request, applies the plan and passes every method but GET and POST through.
-async fn check_request(request: Request<Body>, next: Next) -> Response<Body> {
+/// The checks the Python endpoint makes before the SDK's own; `wg_mcpspec` decides. The glue reads
+/// the request, applies the decision and passes every method but GET and POST through.
+async fn check_request(
+    State(sessions): State<Arc<LocalSessionManager>>,
+    request: Request<Body>,
+    next: Next,
+) -> Response<Body> {
     let Some(verb) = verb_of(request.method().as_str()) else {
         return next.run(request).await;
     };
     let (mut parts, body) = request.into_parts();
-    let Ok(bytes) = to_bytes(body, BODY_LIMIT).await else {
-        let mut response = Response::new(Body::from("request body too large"));
-        *response.status_mut() = StatusCode::PAYLOAD_TOO_LARGE;
-        return response;
-    };
     let headers: Vec<(String, String)> = parts
         .headers
         .iter()
@@ -90,29 +118,48 @@ async fn check_request(request: Request<Body>, next: Next) -> Response<Body> {
             (name.as_str().to_owned(), text)
         })
         .collect();
-    match plan(verb, &headers, &session_id(), &bytes) {
-        Plan::Reply {
-            status,
-            headers,
-            body,
-        } => reply(status, &headers, body),
+    let session_known = match parts
+        .headers
+        .get(SESSION_HEADER)
+        .and_then(|value| value.to_str().ok())
+    {
+        Some(id) => {
+            let key: SessionId = id.into();
+            sessions.has_session(&key).await.unwrap_or(false)
+        }
+        None => false,
+    };
+    let fresh = session_id();
+    let (plan, body) = match check_headers(verb, &headers, session_known, &fresh) {
+        Step::Answer(plan) => (plan, body),
+        Step::ReadBody => {
+            let Ok(bytes) = to_bytes(body, BODY_LIMIT).await else {
+                return write(too_large());
+            };
+            (check_body(&headers, &fresh, &bytes), Body::from(bytes))
+        }
+    };
+    match plan {
+        Plan::Reply(reply) => write(reply),
         Plan::Forward { accept } => {
-            *parts
-                .headers
-                .entry(header::ACCEPT)
-                .or_insert_with(|| HeaderValue::from_static(accept)) =
-                HeaderValue::from_static(accept);
-            next.run(Request::from_parts(parts, Body::from(bytes)))
-                .await
+            widen_accept(&mut parts, accept);
+            python_framed(next.run(Request::from_parts(parts, body)).await)
         }
     }
 }
 
+/// Sets the `Accept` header the SDK needs for a request the Python rule has passed.
+fn widen_accept(parts: &mut Parts, accept: &'static str) {
+    parts
+        .headers
+        .insert(header::ACCEPT, HeaderValue::from_static(accept));
+}
+
 /// Writes a planned reply.
-fn reply(status: u16, headers: &[(String, String)], body: Vec<u8>) -> Response<Body> {
-    let mut response = Response::new(Body::from(body));
-    *response.status_mut() = StatusCode::from_u16(status).unwrap_or(StatusCode::BAD_REQUEST);
-    headers.iter().for_each(|(name, value)| {
+fn write(reply: Reply) -> Response<Body> {
+    let mut response = Response::new(Body::from(reply.body));
+    *response.status_mut() = StatusCode::from_u16(reply.status).unwrap_or(StatusCode::BAD_REQUEST);
+    reply.headers.iter().for_each(|(name, value)| {
         if let (Ok(name), Ok(value)) = (
             HeaderName::from_bytes(name.as_bytes()),
             HeaderValue::from_str(value),
@@ -121,4 +168,28 @@ fn reply(status: u16, headers: &[(String, String)], body: Vec<u8>) -> Response<B
         }
     });
     response
+}
+
+/// An event stream from the SDK, rewritten event by event to the Python framing as its bytes
+/// arrive. Any other response passes through.
+fn python_framed(response: Response<Body>) -> Response<Body> {
+    let is_events = response
+        .headers()
+        .get(header::CONTENT_TYPE)
+        .and_then(|value| value.to_str().ok())
+        .is_some_and(|ct| ct.starts_with("text/event-stream"));
+    if !is_events {
+        return response;
+    }
+    let (parts, body) = response.into_parts();
+    let mut pending: Vec<u8> = Vec::new();
+    let stream = body.into_data_stream().map(move |chunk| {
+        chunk.map(|bytes| {
+            pending.extend_from_slice(&bytes);
+            let (out, used) = frame_events(&pending);
+            pending.drain(..used);
+            out
+        })
+    });
+    Response::from_parts(parts, Body::from_stream(stream))
 }

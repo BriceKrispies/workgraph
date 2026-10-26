@@ -116,7 +116,8 @@ fn version_of(raw: &Map<String, Value>) -> Result<i64, ConfigError> {
         .get("schema_version")
         .cloned()
         .unwrap_or_else(|| Value::from(1));
-    int_of(&value).map_err(ConfigError::Exception)
+    // Python raises a ConfigError (with no validation details) for an unreadable version.
+    int_of(&value).map_err(|_| ConfigError::InvalidToml("schema_version is not an integer".into()))
 }
 
 /// `_migrate`: a version 1 document kept agent execution under `agents.enabled`; it moves to

@@ -8,7 +8,8 @@ use wg_validate::ValidationError;
 /// outside it.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConfigError {
-    /// The document is not valid TOML.
+    /// The document cannot be read as configuration: it is not valid TOML, or its
+    /// `schema_version` is not an integer.
     InvalidToml(String),
     /// The document, or the configuration it produces, fails validation.
     Validation(Vec<ValidationError>),

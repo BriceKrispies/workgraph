@@ -1,6 +1,9 @@
 //! GV-05: the pure parts of `src/workgraph/experiments/stats.py` and `predictor.py` reproduce
 //! `golden/expstats/{stats_wilson,stats_logistic,stats_bootstrap,stats_calibration,predictor}.json`
-//! exactly. Every float is compared with `==`: the port keeps the Python operation order (R5).
+//! exactly. Floats are compared with `==`, except the statistics computed through `exp`, `log` or
+//! `log1p` (the logistic fit, its predictions and its size-at-probability, and the predictor's
+//! probability), which use a relative tolerance of `1e-12` (Q9, see `common`). The port keeps the
+//! Python operation order (R5), so those values normally match bit for bit.
 
 use std::error::Error;
 use std::path::PathBuf;
@@ -12,6 +15,9 @@ use wg_experiments::stats::{
     bootstrap_interval, brier, fit_logistic, predict, quantile, reliability, size_at_probability,
     wilson,
 };
+
+mod common;
+use common::{assert_close_relative, assert_close_relative_slice};
 
 type TestResult = Result<(), Box<dyn Error>>;
 /// A bootstrap result: `Ok(None)` or the interval, or the Python error message.
@@ -109,7 +115,12 @@ fn usize_field(value: &Value, key: &str) -> Result<usize, Box<dyn Error>> {
 }
 
 fn fit_matches(fit: &LogisticFit, expected: &Value, name: &str) -> TestResult {
-    assert_eq!(fit.coef, floats(&expected["coef"])?, "{name} coef");
+    // The coefficients and the likelihood come through `exp`/`log1p` in the Newton iterations.
+    assert_close_relative_slice(
+        &fit.coef,
+        &floats(&expected["coef"])?,
+        &format!("{name} coef"),
+    );
     assert_eq!(fit.n, usize_field(expected, "n")?, "{name} n");
     assert_eq!(
         fit.converged,
@@ -121,10 +132,10 @@ fn fit_matches(fit: &LogisticFit, expected: &Value, name: &str) -> TestResult {
         usize_field(expected, "iterations")?,
         "{name} iterations"
     );
-    assert_eq!(
+    assert_close_relative(
         fit.log_likelihood,
         float(&expected["log_likelihood"])?,
-        "{name} log_likelihood"
+        &format!("{name} log_likelihood"),
     );
     assert_eq!(fit.penalty, floats(&expected["penalty"])?, "{name} penalty");
     Ok(())
@@ -171,7 +182,11 @@ fn logistic_fits_match_python() -> TestResult {
                 fit_matches(&fit, value, name)?;
                 for point in case["predict"].as_array().ok_or("predict")? {
                     let got = predict(&fit, &floats(&point["x"])?)?;
-                    assert_eq!(got, float(&point["p"])?, "{name} predict {}", point["x"]);
+                    assert_close_relative(
+                        got,
+                        float(&point["p"])?,
+                        &format!("{name} predict {}", point["x"]),
+                    );
                 }
                 if let Some(map) = case["size_at_probability"].as_object() {
                     for (key, want) in map {
@@ -179,7 +194,14 @@ fn logistic_fits_match_python() -> TestResult {
                         let got = size_at_probability(&fit, p)?;
                         match want {
                             Value::Null => assert_eq!(got, None, "{name} size {key}"),
-                            _ => assert_eq!(got, Some(float(want)?), "{name} size {key}"),
+                            _ => {
+                                let got = got.ok_or_else(|| format!("{name} size {key}: None"))?;
+                                assert_close_relative(
+                                    got,
+                                    float(want)?,
+                                    &format!("{name} size {key}"),
+                                );
+                            }
                         }
                     }
                 }
@@ -427,7 +449,9 @@ fn predictor_helpers_match_python() -> TestResult {
     for case in doc["probability"].as_array().ok_or("probability")? {
         let got = probability(&floats(&case["coef"])?, &floats(&case["x"])?);
         match expected(&case["result"])? {
-            Expected::Value(value) => assert_eq!(got?, float(value)?, "probability"),
+            Expected::Value(value) => {
+                assert_close_relative(got?, float(value)?, "probability");
+            }
             Expected::Error(message) => {
                 assert_eq!(
                     got.err().map(|e| e.message().to_string()).as_deref(),

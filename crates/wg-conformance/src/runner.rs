@@ -712,8 +712,17 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
                 Ok(c) => step_dir(ctx.sb, &c),
                 Err(e) => return fail(rec, e),
             };
+            let args: Result<Vec<String>, String> = args.iter().map(|a| ctx.resolve(a)).collect();
+            let args = match args {
+                Ok(a) => a,
+                Err(e) => return fail(rec, e),
+            };
+            let message = match message.as_deref().map(|m| ctx.resolve(m)).transpose() {
+                Ok(m) => m,
+                Err(e) => return fail(rec, e),
+            };
             let ticks = ctx.git_ticks.entry(display(&dir)).or_insert(0);
-            match git_op(dir, ticks, git, args, files, message.as_deref()) {
+            match git_op(dir, ticks, git, &args, files, message.as_deref()) {
                 Ok(o) => {
                     let failed = o.exit != 0;
                     let rec = StepRecord {
@@ -1038,6 +1047,23 @@ mod tests {
             ]}"#,
         );
         assert_eq!(failed.len(), 1, "{failed:?}");
+    }
+
+    #[test]
+    fn git_step_arguments_take_placeholders() {
+        // `{ws}` always resolves to `default`, so the branch created under a placeholder name
+        // can be checked out under its resolved name only if the arguments were resolved.
+        let failed = failures_of(
+            r#"{"id":"git-step-placeholders","covers":[],"setup":[
+              {"git":"init","repo":"r"},
+              {"git":"commit","repo":"r","files":{"a.txt":"a\n"},"message":"base"}
+            ],"steps":[
+              {"git":"branch","cwd":"{repo:r}","args":["{ws}-feat"]},
+              {"git":"checkout","cwd":"{repo:r}","args":["default-feat"]},
+              {"git":"commit","cwd":"{repo:r}","files":{"b.txt":"b\n"},"message":"on {ws}"}
+            ]}"#,
+        );
+        assert!(failed.is_empty(), "{failed:?}");
     }
 
     #[test]

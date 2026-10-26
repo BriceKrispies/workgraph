@@ -27,7 +27,8 @@ description = "human output piped on Windows is UTF-8 (Python writes cp1252 with
 id = "DV3"
 decision = "D12"
 scenario = "*"
-description = "<data>/analytics.duckdb is not created (analytics run in Rust without DuckDB)"
+fields = ["file"]
+description = "<data>/analytics.duckdb is not created (analytics run in Rust without DuckDB). A file, not output text: no stdout, stderr or exit difference is allowed by this entry"
 
 [[divergence]]
 id = "DV4"

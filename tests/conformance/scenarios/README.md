@@ -59,24 +59,23 @@ Never drop a case silently. If a sub-case can be expressed, assert it; the rest 
 
 ## Recording goldens
 
-* `wg-conformance record --scenarios <dir> --python "uv run --project <worktree> workgraph" --env COLUMNS=`
+* `wg-conformance record --scenarios <dir> --python "uv run --project <worktree> workgraph"`
   runs the Python implementation and writes `tests/conformance/golden/<id>.json`.
 * `record` writes the golden before it judges the run, so a scenario whose assertions fail still
   leaves a golden. Read the report, and fix the scenario or the Python behaviour, before committing.
-* `--env COLUMNS=` is a temporary workaround on Windows. With `COLUMNS=120` (the parity environment,
-  docs/rust-rewrite.md section 3.1) the Python CLI fails at import in `cli/common.py` (`CliConsole`
-  reads `self.file` before `_file` is set, when `legacy_windows` is evaluated). An empty value
-  avoids it. Only width-dependent human output differs, and scenarios here use `--json`, so the
-  goldens are unaffected. Remove the workaround once the Python console is fixed or the goldens are
-  recorded on a POSIX machine.
+* The runner sets `COLUMNS=120` and `NO_COLOR=1` (the parity environment, docs/rust-rewrite.md section
+  3.1) for every run. The Python console fix on `rust-integration` (`CliConsole` no longer reads
+  `self.file` before `_file` is set) makes that work on Windows, so no `--env` override is needed.
 * `wg-conformance check` against a Rust binary compares with the goldens; it is the cut-over gate.
 
 ## Runner gaps
 
 Gaps that block cases are listed in `not_observable`. Open runner gaps, for the owning tasks:
 
-* setup has no file deletion, move, rebase, cherry-pick or reset, and steps cannot create commits
-  between syncs (affects git scenarios that need history rewritten or commits made mid-run);
-* `load_scenarios` reads one directory level only, so `--scenarios tests/conformance/scenarios`
-  does not load the area subdirectories; pass the area directory until the loader recurses;
-* `db` assertions are skipped by `runner.rs` until the database driver lands.
+* `rmtree` removes only trees inside the sandbox home, so a linked worktree created beside the
+  home (`../wt/...` from a repository) cannot be removed by a step, and `git worktree remove` has
+  no step operation;
+* `worktree lock` and `worktree remove` have no setup or step operation;
+* `db` assertions are skipped by `runner.rs` until the database driver lands;
+* the change-set item of a submitted attempt (its `head_sha`) and the database-only fields of
+  rewrite equivalences have no CLI output to assert on.

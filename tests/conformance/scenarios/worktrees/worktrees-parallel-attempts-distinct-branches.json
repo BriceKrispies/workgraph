@@ -15,12 +15,11 @@
     {"assert": {"stdout_contains": "wg/wg-1/attempt-1-"}},
     {"cli": ["attempt", "start", "WG-2"], "json": true},
     {"assert": {"exit": 0}},
-    {"assert": {"stdout_contains": "wg/wg-2/attempt-1-"}}
+    {"assert": {"stdout_contains": "wg/wg-2/attempt-1-"}},
+    {"cli": ["git", "worktrees"], "json": true, "save": {"first": "/0/path"}},
+    {"assert": {"json": {"path": "/0/status", "equals": "active"}}},
+    {"assert": {"json": {"path": "/1/status", "equals": "active"}}},
+    {"assert": {"json": {"path": "/1/path", "not_equals": "{var:first}"}}}
   ],
-  "not_observable": [
-    {
-      "case": "tests/integration/test_worktrees.py::test_parallel_worktree_attempts_do_not_conflict: the two managed checkout paths are asserted to differ; the assertion language has equality only, so the inequality is not checked, and the scenario relies on both starts succeeding on distinct attempt branches.",
-      "covered_by": "CORE-13"
-    }
-  ]
+  "not_observable": []
 }

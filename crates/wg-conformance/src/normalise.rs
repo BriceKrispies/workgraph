@@ -330,12 +330,19 @@ fn local_port_at(bytes: &[u8], i: usize) -> Option<Span<()>> {
     (end > start).then_some((start, end, ()))
 }
 
+/// Instants closer than this are one instant for ranking. Python stamps `created_at` and
+/// `updated_at` in separate calls, and the clock sometimes gives both the same value, so without
+/// this a run can rank them equal and the next run different. Commit dates in the fixtures are a
+/// second apart, so they keep their order.
+const SAME_INSTANT_MICROS: i64 = 50_000;
+
 /// First-appearance numbers for UUIDs and SHAs, and timestamp ranks, for one run.
 #[derive(Default)]
 struct Numbering {
     ids: BTreeMap<String, usize>,
     shas: BTreeMap<String, usize>,
-    stamps: BTreeSet<i64>,
+    /// Rank of each distinct instant of the run (one-based), see `SAME_INSTANT_MICROS`.
+    ranks: BTreeMap<i64, usize>,
 }
 
 impl Numbering {
@@ -352,14 +359,24 @@ impl Numbering {
                 n.attempt(&prefix);
             }
         }
+        let mut stamps = BTreeSet::new();
         for text in outputs {
             let bytes = text.as_bytes();
             for (_, _, key) in scan(bytes, sha_at) {
                 n.sha(&key);
             }
             for (_, _, stamp) in scan(bytes, timestamp_at) {
-                n.stamps.insert(stamp.micros);
+                stamps.insert(stamp.micros);
             }
+        }
+        let mut rank = 0;
+        let mut previous: Option<i64> = None;
+        for micros in stamps {
+            if previous.is_none_or(|p| micros - p > SAME_INSTANT_MICROS) {
+                rank += 1;
+            }
+            previous = Some(micros);
+            n.ranks.insert(micros, rank);
         }
         n
     }
@@ -385,10 +402,10 @@ impl Numbering {
         *self.shas.entry(key.to_owned()).or_insert(next)
     }
 
-    /// One-based rank of an instant among the distinct instants of the run.
-    fn rank(&mut self, micros: i64) -> usize {
-        self.stamps.insert(micros);
-        self.stamps.range(..micros).count() + 1
+    /// One-based rank of an instant among the distinct instants of the run. Every timestamp of
+    /// the text being normalised is in the run's outputs, so it has a rank.
+    fn rank(&self, micros: i64) -> usize {
+        self.ranks.get(&micros).copied().unwrap_or(1)
     }
 }
 
@@ -509,6 +526,22 @@ mod tests {
                 "",
             )],
         );
+        assert!(!compare("s", &observe(&a, &n), &observe(&c, &n), &[]).is_empty());
+    }
+
+    #[test]
+    fn stamps_a_clock_tick_apart_are_one_instant() {
+        // `created_at` and `updated_at` written in separate calls: equal in one run, a few
+        // milliseconds apart in the other. Both runs must normalise to the same text.
+        let n = FullNormaliser::default();
+        let same = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:41.462098Z";
+        let apart = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:41.466000Z";
+        let a = run("py", &[(same, "")]);
+        let b = run("rs", &[(apart, "")]);
+        assert!(compare("s", &observe(&a, &n), &observe(&b, &n), &[]).is_empty());
+        // A second apart is a different instant, and the order is kept across the whole run.
+        let later = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:42.462098Z";
+        let c = run("rs", &[(later, "")]);
         assert!(!compare("s", &observe(&a, &n), &observe(&c, &n), &[]).is_empty());
     }
 

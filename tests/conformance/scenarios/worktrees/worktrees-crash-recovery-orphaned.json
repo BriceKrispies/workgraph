@@ -10,15 +10,13 @@
     {"cli": ["repo", "register", "{repo:crashy}"], "json": true},
     {"cli": ["task", "create", "External work", "--repo", "crashy", "--ready"], "json": true},
     {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true},
-    {"cli": ["git", "worktrees"], "json": true},
+    {"cli": ["git", "worktrees"], "json": true, "save": {"checkout": "/0/path"}},
     {"assert": {"json": {"path": "/0/status", "equals": "active"}}},
+    {"rmtree": "{var:checkout}"},
     {"cli": ["worker", "recover"], "json": true},
-    {"assert": {"json": {"path": "/worktrees/orphaned", "equals": []}}}
+    {"assert": {"json": {"path": "/worktrees/orphaned/0", "equals": "{var:checkout}"}}},
+    {"cli": ["git", "worktrees"], "json": true},
+    {"assert": {"json": {"path": "/0/status", "equals": "orphaned"}}}
   ],
-  "not_observable": [
-    {
-      "case": "tests/integration/test_worktrees.py::test_crash_recovery_of_worktrees: the managed checkout directory is removed out of band with shutil.rmtree before worker recover, which then reports its path as orphaned with the row status orphaned; no step can delete files inside a managed checkout (delete acts on the repository's own tree), so the orphan is never created and the orphaned report is not reached.",
-      "covered_by": "CORE-13"
-    }
-  ]
+  "not_observable": []
 }

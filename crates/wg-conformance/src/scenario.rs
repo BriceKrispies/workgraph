@@ -363,9 +363,9 @@ fn parse_step(v: &Value, at: &str) -> Res<Step> {
         "rmtree",
         "assert",
     ]
-        .into_iter()
-        .filter(|k| m.contains_key(*k))
-        .collect();
+    .into_iter()
+    .filter(|k| m.contains_key(*k))
+    .collect();
     let [kind] = kinds.as_slice() else {
         return Err(format!(
             "{at}: expected exactly one of cli, mcp, mcp_resource, http, drain, git, rmtree, assert"

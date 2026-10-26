@@ -78,3 +78,63 @@ pub fn model(name: &str, fields: Vec<(&'static str, Value)>) -> Value {
             .collect(),
     }
 }
+
+/// An integer field.
+pub fn int(value: i64) -> Value {
+    Value::Int(i128::from(value))
+}
+
+/// An optional integer field: `null` when absent.
+pub fn optional_int(value: Option<i64>) -> Value {
+    value.map_or(Value::Null, int)
+}
+
+/// An optional float field: `null` when absent.
+pub fn optional_float(value: Option<f64>) -> Value {
+    value.map_or(Value::Null, Value::Float)
+}
+
+/// An optional text field: `null` when absent.
+pub fn optional_text(value: Option<&str>) -> Value {
+    value.map_or(Value::Null, text)
+}
+
+/// An optional id field: `null` when absent.
+pub fn optional_id(value: Option<Id>) -> Value {
+    value.map_or(Value::Null, id)
+}
+
+/// A list-of-text field.
+pub fn texts<'a>(values: impl IntoIterator<Item = &'a str>) -> Value {
+    Value::List(values.into_iter().map(text).collect())
+}
+
+/// A dict value, as a route handler returns a mapping: keys in the order given.
+pub fn dict(fields: Vec<(&'static str, Value)>) -> Value {
+    Value::Dict(
+        fields
+            .into_iter()
+            .map(|(key, value)| (PyStr::from(key), value))
+            .collect(),
+    )
+}
+
+/// A `Page[T]` envelope (`items`, `total`, `limit`, `offset`, `next_offset`).
+pub fn page(
+    items: Vec<Value>,
+    total: i64,
+    limit: i64,
+    offset: i64,
+    next_offset: Option<i64>,
+) -> Value {
+    model(
+        "Page",
+        vec![
+            ("items", Value::List(items)),
+            ("total", int(total)),
+            ("limit", int(limit)),
+            ("offset", int(offset)),
+            ("next_offset", optional_int(next_offset)),
+        ],
+    )
+}

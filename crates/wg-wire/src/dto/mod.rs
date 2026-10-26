@@ -4,7 +4,11 @@
 //! documentation for the conventions. Later wire tasks add their modules here and their DTOs to
 //! [`implemented`].
 
+pub mod attempt;
+pub mod job;
 pub mod project;
+pub mod scheduler;
+pub mod worker;
 pub mod workspace;
 
 /// The DTOs that exist: the OpenAPI component schema name and the field names in order.

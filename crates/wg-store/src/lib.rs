@@ -12,24 +12,18 @@
 //!
 //! The migration runner is [`Store::upgrade`]; later tasks add the per-entity queries on top of this base.
 
-mod analytics;
+mod acceptance;
 mod automation;
-mod classify;
-mod experiments;
-mod external;
 mod git;
 mod jobs;
 mod migrate;
-mod query;
+pub mod query;
 mod repos;
 mod run;
-mod search;
 mod session;
-mod sessions;
 mod stacks;
 mod task_world;
 mod tasks;
-mod verify;
 
 use std::path::PathBuf;
 use std::time::Duration;
@@ -40,10 +34,8 @@ use wg_types::{ErrorCode, WgError};
 
 use session::db;
 
-pub use analytics::AnalyticsSource;
 pub use run::AttemptPage;
 pub use session::{Applied, Session};
-pub use verify::{FailureFilter, FailureRow, Page, RunFilter};
 pub use wg_storecodec::migrations::head_revision;
 pub use wg_storecodec::run_sql::{RecordedHead, WorktreeWithRepository};
 pub use wg_storecodec::task_world_sql::TaskWorld;

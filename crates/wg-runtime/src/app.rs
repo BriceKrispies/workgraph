@@ -52,7 +52,7 @@ pub fn environment() -> Environment {
 /// The paths of a Workgraph home: `home`, else `WORKGRAPH_HOME`, else the platform directories.
 /// `Path(root).expanduser().resolve()`: a relative root is taken from the working directory; `~` is
 /// expanded by the path rules.
-pub(crate) fn resolve_paths(home: Option<&Path>) -> Result<AppPaths, WgError> {
+pub fn resolve_paths(home: Option<&Path>) -> Result<AppPaths, WgError> {
     let env = environment();
     let root = home
         .map(|path| path.to_string_lossy().into_owned())

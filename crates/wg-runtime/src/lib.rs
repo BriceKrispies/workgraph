@@ -23,13 +23,13 @@ mod feature;
 mod git;
 mod git_sync;
 mod handlers;
-mod hooks;
 mod jobs;
 mod logging;
 mod queue;
 mod registry;
 mod repos;
 mod setup;
+mod spool;
 mod stacks;
 mod stamp;
 mod tasks;
@@ -37,7 +37,7 @@ pub use tasks::index_written;
 mod worker;
 mod worktrees;
 
-pub use app::{App, environment};
+pub use app::{App, environment, resolve_paths};
 pub use bus::Bus;
 pub use cli_state::CliState;
 pub use cycle::{Flow, Outcome, Runtime, Step};
@@ -47,11 +47,11 @@ pub use feature::{
     ToolRun,
 };
 pub use handlers::{Handler, HandlerError, HandlerRegistry, HandlerResult, JobContext};
-pub use hooks::{Failure, IngestResult, IngestStatus, ReplayCounts, ingest_direct, spool_record};
 pub use logging::{JsonLayer, LogSettings, RotatingFile, configure_logging, json_layer};
 pub use queue::Queue;
 pub use repos::repository_out;
 pub use setup::Diagnosis;
+pub use spool::{spool_record, write_spooled};
 pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };

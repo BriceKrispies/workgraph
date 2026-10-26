@@ -2242,6 +2242,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-analytics-feature"
+version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "wg-analytics",
+ "wg-model",
+ "wg-runtime",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+]
+
+[[package]]
 name = "wg-archive"
 version = "0.1.0"
 dependencies = [
@@ -2456,6 +2470,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-experiments-feature"
+version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "wg-experiments",
+ "wg-model",
+ "wg-runtime",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+]
+
+[[package]]
 name = "wg-git"
 version = "0.1.0"
 dependencies = [
@@ -2489,6 +2517,20 @@ dependencies = [
  "rpds",
  "serde_json",
  "wg-hash",
+]
+
+[[package]]
+name = "wg-intel-feature"
+version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "wg-intel",
+ "wg-model",
+ "wg-runtime",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
 ]
 
 [[package]]
@@ -2798,6 +2840,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-telemetry-feature"
+version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "time",
+ "uuid",
+ "wg-model",
+ "wg-registry",
+ "wg-runtime",
+ "wg-runtimespec",
+ "wg-store",
+ "wg-storecodec",
+ "wg-telemetry",
+ "wg-telemetryspec",
+ "wg-types",
+]
+
+[[package]]
 name = "wg-telemetryspec"
 version = "0.1.0"
 dependencies = [
@@ -2813,6 +2874,20 @@ dependencies = [
  "serde_json",
  "wg-hash",
  "wg-registry",
+ "wg-types",
+]
+
+[[package]]
+name = "wg-trackers-feature"
+version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "wg-model",
+ "wg-runtime",
+ "wg-store",
+ "wg-storecodec",
+ "wg-trackers",
  "wg-types",
 ]
 
@@ -2854,6 +2929,20 @@ dependencies = [
  "serde_json",
  "wg-model",
  "wg-types",
+]
+
+[[package]]
+name = "wg-verify-feature"
+version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "wg-model",
+ "wg-runtime",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+ "wg-verify",
 ]
 
 [[package]]

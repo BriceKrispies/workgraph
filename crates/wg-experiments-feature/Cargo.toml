@@ -1,0 +1,23 @@
+[package]
+name = "wg-experiments-feature"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "the experiments feature: experiments, trials and predictor fits (SQL, readers, FEATURE)"
+
+[lints]
+workspace = true
+
+[dependencies]
+wg-experiments = { path = "../wg-experiments" }
+wg-model = { path = "../wg-model" }
+wg-runtime = { path = "../wg-runtime" }
+wg-store = { path = "../wg-store" }
+wg-storecodec = { path = "../wg-storecodec" }
+wg-types = { path = "../wg-types" }
+
+[dev-dependencies]
+rpds = "1"
+serde_json = { version = "1", features = ["preserve_order"] }

@@ -2310,6 +2310,7 @@ dependencies = [
  "wg-runtimespec",
  "wg-store",
  "wg-storecodec",
+ "wg-tasks-feature",
  "wg-types",
  "wg-wire",
 ]

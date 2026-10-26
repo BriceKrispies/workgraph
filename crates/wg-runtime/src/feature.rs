@@ -9,6 +9,7 @@
 use clap::{ArgMatches, Command};
 use serde_json::{Map, Value as Json};
 use wg_clispec::CliFailure;
+use wg_jobs::maintenance::Step;
 use wg_json::Value;
 use wg_mcpspec::options::Agent;
 use wg_serverspec::groups::RouteSpec;
@@ -71,6 +72,17 @@ pub struct JobKind {
     pub handler: JobRun,
 }
 
+/// A maintenance step a feature runs, as the maintenance leader's pass does (`jobs/maintenance.py`).
+pub type MaintenanceRun = fn(&mut App, &RequestContext) -> Result<Json, WgError>;
+
+/// The feature's step for one slot of the maintenance plan. A slot no feature fills reports
+/// `"not ported"` in the pass's report.
+#[derive(Clone, Copy)]
+pub struct MaintenanceStep {
+    pub slot: Step,
+    pub run: MaintenanceRun,
+}
+
 /// One feature's contributions. Every table may be empty.
 pub struct Feature {
     /// The feature's name, as the crate names it (`decisions`, `tasks`, ...).
@@ -80,4 +92,5 @@ pub struct Feature {
     pub tools: &'static [ToolRun],
     pub resources: &'static [ResourceRun],
     pub jobs: &'static [JobKind],
+    pub maintenance: &'static [MaintenanceStep],
 }

@@ -16,7 +16,7 @@ use wg_jobs::queue::ClaimedJob;
 use wg_model::entity::JsonObject;
 use wg_types::WgError;
 
-use crate::feature::{Feature, JobKind};
+use crate::feature::{Feature, JobKind, MaintenanceStep};
 use crate::queue::Queue;
 
 /// Why a handler did not finish normally.
@@ -86,10 +86,12 @@ where
     }
 }
 
-/// Job kind to handler.
+/// Job kind to handler, and the maintenance steps the features fill.
 #[derive(Clone, Default)]
 pub struct HandlerRegistry {
     pub handlers: BTreeMap<String, Arc<dyn Handler>>,
+    /// The features' maintenance steps, in feature order.
+    pub maintenance: Vec<MaintenanceStep>,
 }
 
 impl HandlerRegistry {
@@ -103,16 +105,22 @@ impl HandlerRegistry {
             })
     }
 
-    /// [`HandlerRegistry::standard`] plus the job kinds of `features`, in order; a later feature
-    /// replaces an earlier handler of the same kind.
+    /// [`HandlerRegistry::standard`] plus the job kinds and maintenance steps of `features`, in
+    /// order; a later feature replaces an earlier handler of the same kind.
     pub fn from_features(features: &[&Feature]) -> HandlerRegistry {
-        features
+        let mut registry = features
             .iter()
             .flat_map(|feature| feature.jobs.iter())
             .fold(HandlerRegistry::standard(), |mut registry, job| {
                 registry.register(job.kind, job.handler);
                 registry
-            })
+            });
+        registry.maintenance.extend(
+            features
+                .iter()
+                .flat_map(|feature| feature.maintenance.iter().copied()),
+        );
+        registry
     }
 
     /// Registers (or replaces) the handler of `kind`.

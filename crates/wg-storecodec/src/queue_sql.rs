@@ -194,6 +194,61 @@ pub fn job_runs(job_id: Id) -> Statement {
     }
 }
 
+/// Every running job, by id (what lease recovery inspects).
+pub fn running_jobs() -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"jobs\" WHERE \"status\" = ?1 ORDER BY \"id\"",
+            select_list(Table::Job, None)
+        ),
+        params: vec![text_sql(JobStatus::Running.as_str())],
+    }
+}
+
+/// The runs of running jobs, by id.
+pub fn running_job_runs() -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"job_runs\" AS r JOIN \"jobs\" AS j ON j.\"id\" = r.\"job_id\"              WHERE j.\"status\" = ?1 ORDER BY r.\"id\"",
+            select_list(Table::JobRun, Some("r"))
+        ),
+        params: vec![text_sql(JobStatus::Running.as_str())],
+    }
+}
+
+/// The resource claims of one job, by resource key.
+pub fn job_claims(job_id: Id) -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"job_resource_claims\" WHERE \"job_id\" = ?1              ORDER BY \"resource_key\"",
+            select_list(Table::JobResourceClaim, None)
+        ),
+        params: vec![id_sql(job_id)],
+    }
+}
+
+/// The job holding an idempotency key, in any status.
+pub fn job_by_idempotency_key(key: &str) -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"jobs\" WHERE \"idempotency_key\" = ?1 ORDER BY \"id\"",
+            select_list(Table::Job, None)
+        ),
+        params: vec![text_sql(key)],
+    }
+}
+
+/// The workers whose status is `running`, by id.
+pub fn running_workers() -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"workers\" WHERE \"status\" = ?1 ORDER BY \"id\"",
+            select_list(Table::Worker, None)
+        ),
+        params: vec![text_sql("running")],
+    }
+}
+
 /// Job counts grouped by status, over the jobs visible in `workspace_id` (every job when `None`).
 /// Rows are `(status, count)`; see [`stats_from_rows`].
 pub fn job_stats(workspace_id: Option<Id>) -> Statement {

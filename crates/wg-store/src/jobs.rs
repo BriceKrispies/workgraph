@@ -77,19 +77,9 @@ impl Session<'_> {
         self.fetch(&RowKey::SystemCursor(name.to_owned()))
     }
 
-    /// Claims the next runnable job for `worker` (`JobQueue.claim`) inside this session's
-    /// transaction. The candidates and the held resources are read first, the claim is decided by
-    /// `wg_jobs::queue::claim`, and its writes (the job, its run, its resource claims) are applied.
-    /// Call it from a write transaction (or use [`Store::claim_job`]), so the reads and the writes
-    /// see one state.
-    pub fn claim_job(
-        &mut self,
-        worker: &str,
-        kinds: &[&str],
-        lease_seconds: i64,
-        limits: &LimitSettings,
-        stamp: &Stamp,
-    ) -> Result<Option<ClaimedJob>, WgError> {
+    /// The slice a claim reads: the runnable candidates for `kinds` at `stamp.at`, the running jobs
+    /// that hold resource claims, and those claims.
+    pub fn claim_slice(&mut self, kinds: &[&str], stamp: &Stamp) -> Result<QueueSlice, WgError> {
         let mut slice = QueueSlice::default();
         let candidates =
             self.decode_all::<Job>(&queue_sql::runnable_jobs(stamp.at, kinds, CLAIM_CANDIDATES))?;
@@ -104,6 +94,109 @@ impl Session<'_> {
                 .claims
                 .insert((claim.job_id, claim.resource_key.clone()), claim);
         }
+        Ok(slice)
+    }
+
+    /// The slice an enqueue reads: the job already holding `key`, if any.
+    pub fn enqueue_slice(&mut self, key: Option<&str>) -> Result<QueueSlice, WgError> {
+        let mut slice = QueueSlice::default();
+        if let Some(key) = key {
+            for job in self.decode_all::<Job>(&queue_sql::job_by_idempotency_key(key))? {
+                slice.jobs = slice.jobs.insert(job.id, job);
+            }
+        }
+        Ok(slice)
+    }
+
+    /// The queued and running jobs of `kind` as a slice (what a duplicate check reads).
+    pub fn active_slice(&mut self, kind: &str) -> Result<QueueSlice, WgError> {
+        let mut slice = QueueSlice::default();
+        let filter = JobFilter {
+            statuses: &wg_jobs::queue::ACTIVE_STATUSES,
+            kind: Some(kind),
+            ..JobFilter::default()
+        };
+        for job in self.list_jobs(&filter)?.0 {
+            slice.jobs = slice.jobs.insert(job.id, job);
+        }
+        Ok(slice)
+    }
+
+    /// The slice a decision on one job reads: the job, its runs and its resource claims. An
+    /// unknown job gives an empty slice.
+    pub fn job_slice(&mut self, job_id: Id) -> Result<QueueSlice, WgError> {
+        let mut slice = QueueSlice::default();
+        if let Some(job) = self.job(job_id)? {
+            slice.jobs = slice.jobs.insert(job.id, job);
+        }
+        for run in self.job_runs(job_id)? {
+            slice.runs = slice.runs.insert(run.id, run);
+        }
+        for claim in self.decode_all::<JobResourceClaim>(&queue_sql::job_claims(job_id))? {
+            slice.claims = slice
+                .claims
+                .insert((claim.job_id, claim.resource_key.clone()), claim);
+        }
+        Ok(slice)
+    }
+
+    /// The slice lease recovery reads: every running job with its runs and resource claims.
+    pub fn running_slice(&mut self) -> Result<QueueSlice, WgError> {
+        let mut slice = QueueSlice::default();
+        for job in self.decode_all::<Job>(&queue_sql::running_jobs())? {
+            slice.jobs = slice.jobs.insert(job.id, job);
+        }
+        for run in self.decode_all::<JobRun>(&queue_sql::running_job_runs())? {
+            slice.runs = slice.runs.insert(run.id, run);
+        }
+        for claim in self.decode_all::<JobResourceClaim>(&queue_sql::running_claims())? {
+            slice.claims = slice
+                .claims
+                .insert((claim.job_id, claim.resource_key.clone()), claim);
+        }
+        Ok(slice)
+    }
+
+    /// The slice worker liveness reads: the worker `worker_id` (when given) and every running
+    /// worker.
+    pub fn worker_slice(&mut self, worker_id: Option<&str>) -> Result<QueueSlice, WgError> {
+        let mut slice = QueueSlice::default();
+        for worker in self.decode_all::<Worker>(&queue_sql::running_workers())? {
+            slice.workers = slice.workers.insert(worker.id.clone(), worker);
+        }
+        if let Some(id) = worker_id
+            && let Some(worker) = self.fetch::<Worker>(&RowKey::Worker(id.to_owned()))?
+        {
+            slice.workers = slice.workers.insert(worker.id.clone(), worker);
+        }
+        Ok(slice)
+    }
+
+    /// The slice the cadence gates read: the system cursors called `names` that exist.
+    pub fn cursor_slice(&mut self, names: &[String]) -> Result<QueueSlice, WgError> {
+        let mut slice = QueueSlice::default();
+        for name in names {
+            if let Some(cursor) = self.system_cursor(name)? {
+                slice.cursors = slice.cursors.insert(cursor.name.clone(), cursor);
+            }
+        }
+        Ok(slice)
+    }
+
+    /// Claims the next runnable job for `worker` (`JobQueue.claim`) inside this session's
+    /// transaction. The candidates and the held resources are read first, the claim is decided by
+    /// `wg_jobs::queue::claim`, and its writes (the job, its run, its resource claims) are applied.
+    /// Call it from a write transaction (or use [`Store::claim_job`]), so the reads and the writes
+    /// see one state.
+    pub fn claim_job(
+        &mut self,
+        worker: &str,
+        kinds: &[&str],
+        lease_seconds: i64,
+        limits: &LimitSettings,
+        stamp: &Stamp,
+    ) -> Result<Option<ClaimedJob>, WgError> {
+        let slice = self.claim_slice(kinds, stamp)?;
         let decision = wg_jobs::queue::claim(&slice, worker, kinds, lease_seconds, limits, stamp);
         self.apply_decision(&decision)?;
         Ok(decision.reply)

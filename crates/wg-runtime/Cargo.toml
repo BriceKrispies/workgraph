@@ -18,9 +18,11 @@ tracing = "0.1"
 tracing-core = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false, features = ["registry", "std"] }
 wg-config = { path = "../wg-config" }
+wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }
 wg-model = { path = "../wg-model" }
 wg-proc = { path = "../wg-proc" }
+wg-registry = { path = "../wg-registry" }
 wg-runtimespec = { path = "../wg-runtimespec" }
 wg-store = { path = "../wg-store" }
 wg-types = { path = "../wg-types" }

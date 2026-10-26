@@ -37,6 +37,16 @@ pub fn task_by_key(workspace_id: Id, key: &TaskKey) -> Statement {
     )
 }
 
+/// Every task with `key`, in any workspace, in number order (`resolve.task` without a workspace).
+pub fn tasks_by_key(key: &TaskKey) -> Statement {
+    select(
+        Table::Task,
+        "\"key\" = ?1",
+        "\"workspace_id\", \"number\"",
+        vec![Raw::Text(key.to_string())],
+    )
+}
+
 /// The tasks of a workspace in number order, optionally only those in `status`.
 pub fn tasks_in_workspace(workspace_id: Id, status: Option<TaskStatus>) -> Statement {
     match status {

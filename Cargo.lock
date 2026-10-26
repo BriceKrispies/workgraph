@@ -2293,8 +2293,11 @@ dependencies = [
  "tokio",
  "tokio-util",
  "wg-mcpspec",
+ "wg-model",
  "wg-runtime",
+ "wg-store",
  "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

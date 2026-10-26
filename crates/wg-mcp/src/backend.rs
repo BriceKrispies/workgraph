@@ -20,12 +20,11 @@ pub trait ToolBackend: Send + 'static {
 pub struct AppBackend(pub wg_runtime::App);
 
 impl ToolBackend for AppBackend {
-    fn call_tool(
-        &mut self,
-        _agent: &Agent,
-        name: &str,
-        _arguments: Value,
-    ) -> Result<Value, WgError> {
+    fn call_tool(&mut self, agent: &Agent, name: &str, arguments: Value) -> Result<Value, WgError> {
+        // Dispatch: each tool group answers the names it owns (IF-33 owns M47 to M56).
+        if let Some(result) = crate::run_tools::call(&mut self.0, agent, name, &arguments) {
+            return result;
+        }
         Err(WgError::new(
             ErrorCode::WorkgraphError,
             format!("tool {name} is not wired yet"),

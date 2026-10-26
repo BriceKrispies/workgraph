@@ -1,0 +1,189 @@
+//! wg-serverspec: the pure half of `wg-server` (docs/rust-rewrite.md section 4.8).
+//!
+//! The HTTP server reproduces the FastAPI application of `api/app.py` and the middleware of
+//! `api/security.py`. Everything in that work that is a function of values lives here, so the
+//! shell crate keeps only the sockets, the file reads, the locks and the calls into the runtime:
+//!
+//! * [`security`]: the request screen (LAN clients, `Host`, `Origin`, the token), the device
+//!   cookie, the allowed hosts and origins;
+//! * [`pairing`]: pairing codes, the lockout and the `/pair` page;
+//! * [`coverage`]: the route-table check against the OpenAPI snapshot;
+//! * [`routes`] and [`operations`]: Starlette's route matching (first full match, else 405 from
+//!   the first partial match) and the 130 operations in registration order with their groups;
+//! * [`request`] and [`pyjson`]: FastAPI's parameter and body validation and its 422 and 400
+//!   bodies, including Python's JSON decode errors;
+//! * [`reply`]: responses as values and the security headers (O07);
+//! * [`spa`] and [`pages`]: the single-page app route, the Swagger pages and the placeholder;
+//! * [`sse`]: sse-starlette's event framing and ping (O08);
+//! * [`net`], [`form`] and [`text`]: `ipaddress`, `urllib.parse` and `repr`/`html.escape`.
+
+pub mod coverage;
+pub mod form;
+pub mod net;
+pub mod operations;
+pub mod pages;
+pub mod pairing;
+pub mod pyjson;
+pub mod reply;
+pub mod request;
+pub mod routes;
+pub mod security;
+pub mod spa;
+pub mod sse;
+pub mod text;
+
+use wg_types::{ErrorCode, WgError};
+
+use crate::routes::Entry;
+
+/// What a route of the application does.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Target {
+    /// `GET /api/openapi.json` (X1).
+    OpenApi,
+    /// `GET /api/docs` (X2).
+    Docs,
+    /// `GET /docs/oauth2-redirect` (X3).
+    OAuth2Redirect,
+    /// The registered API route at this index.
+    Api(usize),
+    /// The MCP transport mounted at `/mcp` (X6).
+    Mcp,
+    /// `GET /pair` (X4).
+    PairForm,
+    /// `POST /pair` (X5).
+    PairSubmit,
+    /// `GET /{path:path}` (X7).
+    Spa,
+}
+
+/// The route table in Starlette's order: FastAPI's own pages, the API routes (`(method, path)`
+/// in registration order), the MCP mount when there is one, the pairing routes and the SPA
+/// catch-all.
+pub fn route_table(api: &[(&str, &str)], with_mcp: bool) -> Vec<Entry<Target>> {
+    let mut entries = vec![
+        Entry::page("/api/openapi.json", Target::OpenApi),
+        Entry::page("/api/docs", Target::Docs),
+        Entry::page("/docs/oauth2-redirect", Target::OAuth2Redirect),
+    ];
+    entries.extend(
+        api.iter()
+            .enumerate()
+            .map(|(index, (method, path))| Entry::api(method, path, Target::Api(index))),
+    );
+    if with_mcp {
+        entries.push(Entry::mount("/mcp", Target::Mcp));
+    }
+    entries.push(Entry::api("GET", "/pair", Target::PairForm));
+    entries.push(Entry::api("POST", "/pair", Target::PairSubmit));
+    entries.push(Entry::api("GET", "/{path:path}", Target::Spa));
+    entries
+}
+
+/// The body of `GET /api/openapi.json`: the embedded snapshot as `JSONResponse` prints it.
+pub fn openapi_body() -> Result<Vec<u8>, WgError> {
+    let document = wg_wire::contract::openapi()?;
+    wg_json::http_json(&wg_wire::convention::json_value(&document))
+        .map(String::into_bytes)
+        .map_err(|err| WgError::new(ErrorCode::WorkgraphError, format!("openapi: {err:?}")))
+}
+
+/// `X-Workgraph-Actor`: the acting human's name, cut to 100 characters (`deps.get_ctx`).
+pub fn actor_name(header: Option<&str>) -> Option<String> {
+    header
+        .filter(|name| !name.is_empty())
+        .map(|name| name.chars().take(100).collect())
+}
+
+/// `X-Correlation-Id`: used when it is at most 64 characters.
+pub fn correlation_header(header: Option<&str>) -> Option<&str> {
+    header.filter(|id| !id.is_empty() && id.chars().count() <= 64)
+}
+
+/// `deps.get_ctx(request)`: `RequestContext.human(actor)` (the login name when the header is
+/// absent) with the request's correlation id. `fresh` is the id drawn for a request without one.
+///
+/// Python keeps any correlation text up to 64 characters; the runtime's correlation is an id, so
+/// a header that is not one is replaced by `fresh`.
+pub fn request_context(
+    actor: Option<&str>,
+    correlation: Option<&str>,
+    login: Option<&str>,
+    fresh: wg_types::Id,
+) -> Result<wg_runtimespec::RequestContext, WgError> {
+    let name = actor_name(actor);
+    let correlation = correlation_header(correlation)
+        .and_then(|text| wg_types::parse_id(text).ok())
+        .unwrap_or(fresh);
+    wg_runtimespec::RequestContext::human(name.as_deref(), login, correlation)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::routes::{Found, find};
+
+    #[test]
+    fn table_order() {
+        let table = route_table(&[("GET", "/api/v1/health")], true);
+        assert_eq!(
+            find(&table, "GET", "/api/v1/health"),
+            Found::Route {
+                target: &Target::Api(0),
+                params: Vec::new()
+            }
+        );
+        assert!(matches!(
+            find(&table, "POST", "/mcp/"),
+            Found::Route {
+                target: Target::Mcp,
+                ..
+            }
+        ));
+        assert!(matches!(
+            find(&table, "GET", "/pair"),
+            Found::Route {
+                target: Target::PairForm,
+                ..
+            }
+        ));
+        assert!(matches!(
+            find(&table, "GET", "/x"),
+            Found::Route {
+                target: Target::Spa,
+                ..
+            }
+        ));
+        assert_eq!(
+            find(&table, "DELETE", "/pair"),
+            Found::NotAllowed("GET".into())
+        );
+        let without = route_table(&[], false);
+        assert!(matches!(
+            find(&without, "GET", "/mcp/"),
+            Found::Route {
+                target: Target::Spa,
+                ..
+            }
+        ));
+    }
+
+    #[test]
+    fn openapi_body_is_compact() {
+        let body = String::from_utf8(openapi_body().unwrap()).unwrap();
+        assert!(body.starts_with("{\"components\":{\"schemas\":{"));
+        let parsed: serde_json::Value = serde_json::from_str(&body).unwrap();
+        assert_eq!(parsed, wg_wire::contract::openapi().unwrap());
+    }
+
+    #[test]
+    fn request_headers() {
+        assert_eq!(
+            actor_name(Some(&"x".repeat(150))).map(|n| n.len()),
+            Some(100)
+        );
+        assert_eq!(actor_name(Some("")), None);
+        assert_eq!(correlation_header(Some(&"c".repeat(65))), None);
+        assert_eq!(correlation_header(Some("abc")), Some("abc"));
+    }
+}

@@ -9,3 +9,10 @@ description = "protocol validation, planner, trials, statistics, predictor"
 
 [lints]
 workspace = true
+
+[dependencies]
+rpds = "1"
+wg-pyrand = { path = "../wg-pyrand" }
+
+[dev-dependencies]
+serde_json = { version = "1", features = ["float_roundtrip"] }

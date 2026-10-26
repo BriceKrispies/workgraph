@@ -1,0 +1,875 @@
+{
+  "cases": [
+    {
+      "covers": [],
+      "id": "index-first-wins",
+      "input": {
+        "pages": [
+          [
+            {
+              "key": "WG-1",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            },
+            {
+              "key": "WG-2",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            },
+            {
+              "key": "WG-3",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              }
+            }
+          ]
+        ]
+      },
+      "output": {
+        "index": {
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": "WG-1",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": "WG-3"
+        }
+      }
+    },
+    {
+      "covers": [],
+      "id": "index-other-classifier-ignored",
+      "input": {
+        "pages": [
+          [
+            {
+              "key": "WG-1",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-1",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            },
+            {
+              "key": "WG-2",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-0",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            },
+            {
+              "key": "WG-3",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            }
+          ]
+        ]
+      },
+      "output": {
+        "index": {
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": "WG-3"
+        }
+      }
+    },
+    {
+      "covers": [],
+      "id": "index-no-classifier-is-default",
+      "input": {
+        "pages": [
+          [
+            {
+              "key": "WG-1",
+              "metadata": {
+                "replay": {
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            },
+            {
+              "key": "WG-2",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              }
+            }
+          ]
+        ]
+      },
+      "output": {
+        "index": {
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": "WG-2"
+        }
+      }
+    },
+    {
+      "covers": [],
+      "id": "index-non-string-sha-and-no-metadata",
+      "input": {
+        "pages": [
+          [
+            {
+              "key": "WG-1",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": 7
+                }
+              }
+            },
+            {
+              "key": "WG-2",
+              "metadata": {}
+            },
+            {
+              "key": "WG-3",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              }
+            }
+          ]
+        ]
+      },
+      "output": {
+        "index": {
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": "WG-3"
+        }
+      }
+    },
+    {
+      "covers": [],
+      "id": "index-paged",
+      "input": {
+        "pages": [
+          [
+            {
+              "key": "WG-1",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            }
+          ],
+          [
+            {
+              "key": "WG-2",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            },
+            {
+              "key": "WG-3",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              }
+            }
+          ]
+        ]
+      },
+      "output": {
+        "index": {
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": "WG-1",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": "WG-3"
+        }
+      }
+    },
+    {
+      "covers": [],
+      "id": "create-mixed",
+      "input": {
+        "commits": [
+          {
+            "body": "Return g.",
+            "excluded": [],
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "subject": "Add g",
+            "test_paths": [
+              "tests/test_mod.py"
+            ]
+          },
+          {
+            "body": "Return g.",
+            "excluded": [
+              "no_tests",
+              "formatting_only"
+            ],
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "subject": "Add g",
+            "test_paths": [
+              "tests/test_mod.py"
+            ]
+          },
+          {
+            "body": "Return g.",
+            "excluded": [],
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "subject": "Add g",
+            "test_paths": [
+              "tests/test_mod.py"
+            ]
+          },
+          {
+            "body": "Return g.",
+            "excluded": [],
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "subject": "Add g",
+            "test_paths": [
+              "tests/test_mod.py"
+            ]
+          }
+        ],
+        "pages": [
+          [
+            {
+              "key": "WG-7",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            }
+          ]
+        ],
+        "shas": [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "cccccccccccccccccccccccccccccccccccccccc",
+          "cccccccccccccccccccccccccccccccccccccccc"
+        ]
+      },
+      "output": {
+        "results": [
+          {
+            "reason": null,
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "status": "exists",
+            "task_key": "WG-7"
+          },
+          {
+            "reason": "no_tests,formatting_only",
+            "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "status": "skipped",
+            "task_key": null
+          },
+          {
+            "reason": null,
+            "sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "status": "created",
+            "task_key": "WG-1000"
+          },
+          {
+            "reason": null,
+            "sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "status": "exists",
+            "task_key": "WG-1000"
+          }
+        ]
+      }
+    },
+    {
+      "covers": [],
+      "id": "create-skipped-before-existing",
+      "input": {
+        "commits": [
+          {
+            "body": "Return g.",
+            "excluded": [
+              "root"
+            ],
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "subject": "Add g",
+            "test_paths": [
+              "tests/test_mod.py"
+            ]
+          }
+        ],
+        "pages": [
+          [
+            {
+              "key": "WG-7",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-2",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            }
+          ]
+        ],
+        "shas": [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "output": {
+        "results": [
+          {
+            "reason": "root",
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "status": "skipped",
+            "task_key": null
+          }
+        ]
+      }
+    },
+    {
+      "covers": [],
+      "id": "create-other-classifier-not-existing",
+      "input": {
+        "commits": [
+          {
+            "body": "Return g.",
+            "excluded": [],
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "subject": "Add g",
+            "test_paths": [
+              "tests/test_mod.py"
+            ]
+          }
+        ],
+        "pages": [
+          [
+            {
+              "key": "WG-7",
+              "metadata": {
+                "replay": {
+                  "classifier": "replay-classifier-1",
+                  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              }
+            }
+          ]
+        ],
+        "shas": [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "output": {
+        "results": [
+          {
+            "reason": null,
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "status": "created",
+            "task_key": "WG-1000"
+          }
+        ]
+      }
+    },
+    {
+      "covers": [],
+      "id": "task-unvalidated",
+      "input": {
+        "base_ref": "wg/replay/aaaaaaaaaaaa",
+        "commit": {
+          "body": "Return g.",
+          "excluded": [],
+          "features": {
+            "band": 5,
+            "packages": [
+              "pkg"
+            ],
+            "src_files": 1,
+            "src_lines": 40,
+            "test_files": 1,
+            "test_lines": 12
+          },
+          "oracle": [
+            [
+              "python",
+              "-m",
+              "pytest",
+              "-q",
+              "tests/test_mod.py"
+            ]
+          ],
+          "parent": "pppppppppppppppppppppppppppppppppppppppp",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "source_paths": [
+            "pkg/mod.py"
+          ],
+          "subject": "Add g",
+          "test_paths": [
+            "tests/test_mod.py"
+          ]
+        },
+        "repository": "demo",
+        "validation": null
+      },
+      "output": {
+        "description": "Replay of commit `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`.\n\nAdd g\n\nReturn g.\n\n## Tests\n- `tests/test_mod.py`\n\n## Oracle\n- `python -m pytest -q tests/test_mod.py`\n\nBase branch: `wg/replay/aaaaaaaaaaaa`",
+        "metadata": {
+          "replay": {
+            "base_ref": "wg/replay/aaaaaaaaaaaa",
+            "classifier": "replay-classifier-2",
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "test_paths": [
+              "tests/test_mod.py"
+            ],
+            "validated": false,
+            "validated_at": null,
+            "validation": null
+          }
+        },
+        "tags": [
+          "replay",
+          "experiment-pool"
+        ],
+        "title": "Replay aaaaaaaaaaaa: Add g"
+      }
+    },
+    {
+      "covers": [],
+      "id": "task-validated",
+      "input": {
+        "base_ref": "wg/replay/aaaaaaaaaaaa",
+        "commit": {
+          "body": "Return g.",
+          "excluded": [],
+          "features": {
+            "band": 5,
+            "packages": [
+              "pkg"
+            ],
+            "src_files": 1,
+            "src_lines": 40,
+            "test_files": 1,
+            "test_lines": 12
+          },
+          "oracle": [
+            [
+              "python",
+              "-m",
+              "pytest",
+              "-q",
+              "tests/test_mod.py"
+            ]
+          ],
+          "parent": "pppppppppppppppppppppppppppppppppppppppp",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "source_paths": [
+            "pkg/mod.py"
+          ],
+          "subject": "Add g",
+          "test_paths": [
+            "tests/test_mod.py"
+          ]
+        },
+        "repository": "demo",
+        "validation": {
+          "base": [
+            1
+          ],
+          "solution": [
+            0
+          ]
+        }
+      },
+      "output": {
+        "description": "Replay of commit `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`.\n\nAdd g\n\nReturn g.\n\n## Tests\n- `tests/test_mod.py`\n\n## Oracle\n- `python -m pytest -q tests/test_mod.py`\n\nBase branch: `wg/replay/aaaaaaaaaaaa`",
+        "metadata": {
+          "replay": {
+            "base_ref": "wg/replay/aaaaaaaaaaaa",
+            "classifier": "replay-classifier-2",
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "test_paths": [
+              "tests/test_mod.py"
+            ],
+            "validated": true,
+            "validated_at": "2026-10-26T00:00:00+00:00",
+            "validation": {
+              "base": [
+                1
+              ],
+              "solution": [
+                0
+              ]
+            }
+          }
+        },
+        "tags": [
+          "replay",
+          "experiment-pool"
+        ],
+        "title": "Replay aaaaaaaaaaaa: Add g"
+      }
+    },
+    {
+      "covers": [],
+      "id": "task-long-subject",
+      "input": {
+        "base_ref": "wg/replay/aaaaaaaaaaaa",
+        "commit": {
+          "body": "Return g.",
+          "excluded": [],
+          "features": {
+            "band": 5,
+            "packages": [
+              "pkg"
+            ],
+            "src_files": 1,
+            "src_lines": 40,
+            "test_files": 1,
+            "test_lines": 12
+          },
+          "oracle": [
+            [
+              "python",
+              "-m",
+              "pytest",
+              "-q",
+              "tests/test_mod.py"
+            ]
+          ],
+          "parent": "pppppppppppppppppppppppppppppppppppppppp",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "source_paths": [
+            "pkg/mod.py"
+          ],
+          "subject": "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
+          "test_paths": [
+            "tests/test_mod.py"
+          ]
+        },
+        "repository": "demo",
+        "validation": null
+      },
+      "output": {
+        "description": "Replay of commit `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`.\n\nssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss\n\nReturn g.\n\n## Tests\n- `tests/test_mod.py`\n\n## Oracle\n- `python -m pytest -q tests/test_mod.py`\n\nBase branch: `wg/replay/aaaaaaaaaaaa`",
+        "metadata": {
+          "replay": {
+            "base_ref": "wg/replay/aaaaaaaaaaaa",
+            "classifier": "replay-classifier-2",
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "test_paths": [
+              "tests/test_mod.py"
+            ],
+            "validated": false,
+            "validated_at": null,
+            "validation": null
+          }
+        },
+        "tags": [
+          "replay",
+          "experiment-pool"
+        ],
+        "title": "Replay aaaaaaaaaaaa: sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+      }
+    },
+    {
+      "covers": [],
+      "id": "task-empty-body-no-tests",
+      "input": {
+        "base_ref": "wg/replay/aaaaaaaaaaaa",
+        "commit": {
+          "body": "",
+          "excluded": [],
+          "features": {
+            "band": 5,
+            "packages": [
+              "pkg"
+            ],
+            "src_files": 1,
+            "src_lines": 40,
+            "test_files": 1,
+            "test_lines": 12
+          },
+          "oracle": [
+            [
+              "python",
+              "-m",
+              "pytest",
+              "-q",
+              "tests/test_mod.py"
+            ]
+          ],
+          "parent": "pppppppppppppppppppppppppppppppppppppppp",
+          "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "source_paths": [
+            "pkg/mod.py"
+          ],
+          "subject": "Add g",
+          "test_paths": []
+        },
+        "repository": "demo",
+        "validation": null
+      },
+      "output": {
+        "description": "Replay of commit `bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb`.\n\nAdd g\n\n\n\n## Tests\n\n## Oracle\n- `python -m pytest -q tests/test_mod.py`\n\nBase branch: `wg/replay/aaaaaaaaaaaa`",
+        "metadata": {
+          "replay": {
+            "base_ref": "wg/replay/aaaaaaaaaaaa",
+            "classifier": "replay-classifier-2",
+            "features": {
+              "band": 5,
+              "packages": [
+                "pkg"
+              ],
+              "src_files": 1,
+              "src_lines": 40,
+              "test_files": 1,
+              "test_lines": 12
+            },
+            "oracle": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_mod.py"
+              ]
+            ],
+            "parent": "pppppppppppppppppppppppppppppppppppppppp",
+            "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "source_paths": [
+              "pkg/mod.py"
+            ],
+            "test_paths": [],
+            "validated": false,
+            "validated_at": null,
+            "validation": null
+          }
+        },
+        "tags": [
+          "replay",
+          "experiment-pool"
+        ],
+        "title": "Replay bbbbbbbbbbbb: Add g"
+      }
+    }
+  ],
+  "file": "pool",
+  "vector": "expmisc"
+}

@@ -8,5 +8,10 @@
 pub mod planner;
 pub mod predictor;
 pub mod staircase;
+pub mod briefs;
+pub mod contract;
+pub mod escape;
+pub mod pool;
+pub mod replay;
 pub mod stats;
 pub mod trials;

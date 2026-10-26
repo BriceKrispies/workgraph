@@ -12,14 +12,18 @@ from __future__ import annotations
 import json
 import tempfile
 from dataclasses import asdict, replace
+from datetime import UTC
+from datetime import datetime as real_datetime
 from pathlib import Path
 from types import SimpleNamespace
 
 from workgraph.core.errors import ValidationFailed
+from workgraph.experiments import pool as pool_mod
 from workgraph.experiments import replay as replay_mod
 from workgraph.experiments.briefs import BriefContext, render
 from workgraph.experiments.contract import contract_problems
 from workgraph.experiments.escape import find_escapes, normalize_path_text
+from workgraph.experiments.pool import ReplayPool
 from workgraph.integrations.claude_code.transcript import ToolCall
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -781,11 +785,221 @@ def replay_cases() -> list[dict]:
     return cases
 
 
+# ---------------------------------------------------------------- pool
+
+
+def _pool_stub(pages: list[list[dict]]):
+    """A ReplayPool whose app stubs the paged task list and the task create. Git and the database are not touched."""
+
+    def list_tasks(ctx, workspace, task_filter):
+        index = task_filter.offset
+        items = [SimpleNamespace(key=t["key"], metadata=t["metadata"]) for t in pages[index]]
+        next_offset = index + 1 if index + 1 < len(pages) else None
+        return SimpleNamespace(items=items, next_offset=next_offset)
+
+    created: list[str] = []
+
+    def create_task(ctx, workspace, task_create):
+        key = f"WG-{1000 + len(created)}"
+        created.append(key)
+        return SimpleNamespace(key=key)
+
+    pool = ReplayPool.__new__(ReplayPool)
+    pool.app = SimpleNamespace(tasks=SimpleNamespace(list=list_tasks, create=create_task))
+    pool.db = None
+    pool._checkout = lambda workspace, repository: Path("/repo")
+    return pool
+
+
+def _candidate(case: dict) -> replay_mod.ReplayCandidate:
+    f = case["features"]
+    return replay_mod.ReplayCandidate(
+        sha=case["sha"],
+        parent=case["parent"],
+        subject=case["subject"],
+        body=case["body"],
+        test_paths=tuple(case["test_paths"]),
+        source_paths=tuple(case["source_paths"]),
+        features=replay_mod.ReplayFeatures(
+            src_lines=f["src_lines"],
+            test_lines=f["test_lines"],
+            src_files=f["src_files"],
+            test_files=f["test_files"],
+            packages=tuple(f["packages"]),
+            band=f["band"],
+        ),
+        oracle=tuple(tuple(c) for c in case["oracle"]),
+        excluded=tuple(case["excluded"]),
+    )
+
+
+CANDIDATE_FEATURES = {
+    "src_lines": 40,
+    "test_lines": 12,
+    "src_files": 1,
+    "test_files": 1,
+    "packages": ["pkg"],
+    "band": 5,
+}
+
+
+def _commit(sha: str, excluded=(), subject="Add g", parent="p" * 40) -> dict:
+    return {
+        "sha": sha,
+        "parent": parent,
+        "subject": subject,
+        "body": "Return g.",
+        "test_paths": ["tests/test_mod.py"],
+        "source_paths": ["pkg/mod.py"],
+        "features": CANDIDATE_FEATURES,
+        "oracle": [["python", "-m", "pytest", "-q", "tests/test_mod.py"]],
+        "excluded": list(excluded),
+    }
+
+
+def _pool_task(key: str, metadata: dict) -> dict:
+    return {"key": key, "metadata": metadata}
+
+
+def _replay_meta(sha=None, classifier=None) -> dict:
+    replay = {}
+    if sha is not None:
+        replay["sha"] = sha
+    if classifier is not None:
+        replay["classifier"] = classifier
+    return {"replay": replay}
+
+
+def pool_cases() -> list[dict]:
+    cases: list[dict] = []
+    current = replay_mod.CLASSIFIER
+    sha_a, sha_b = "a" * 40, "b" * 40
+    default_classifier = "replay-classifier-1"
+
+    # Index: the first task per commit wins, only the current classifier counts, pages are read in order.
+    index_inputs = {
+        "index-first-wins": [
+            [
+                _pool_task("WG-1", _replay_meta(sha_a, current)),
+                _pool_task("WG-2", _replay_meta(sha_a, current)),
+                _pool_task("WG-3", _replay_meta(sha_b, current)),
+            ]
+        ],
+        "index-other-classifier-ignored": [
+            [
+                _pool_task("WG-1", _replay_meta(sha_a, default_classifier)),
+                _pool_task("WG-2", _replay_meta(sha_a, "replay-classifier-0")),
+                _pool_task("WG-3", _replay_meta(sha_a, current)),
+            ]
+        ],
+        "index-no-classifier-is-default": [
+            [
+                _pool_task("WG-1", _replay_meta(sha_a)),
+                _pool_task("WG-2", {"replay": {"sha": sha_b, "classifier": current}}),
+            ]
+        ],
+        "index-non-string-sha-and-no-metadata": [
+            [
+                _pool_task("WG-1", {"replay": {"sha": 7, "classifier": current}}),
+                _pool_task("WG-2", {}),
+                _pool_task("WG-3", _replay_meta(sha_b, current)),
+            ]
+        ],
+        "index-paged": [
+            [_pool_task("WG-1", _replay_meta(sha_a, current))],
+            [
+                _pool_task("WG-2", _replay_meta(sha_a, current)),
+                _pool_task("WG-3", _replay_meta(sha_b, current)),
+            ],
+        ],
+    }
+    for case_id, pages in index_inputs.items():
+        found = _pool_stub(pages)._replay_tasks_by_sha(None, None)
+        cases.append({"id": case_id, "covers": [], "input": {"pages": pages}, "output": {"index": found}})
+
+    # Create: excluded commits are skipped, existing tasks are reported, the rest are created and deduplicated
+    # within the batch. The created keys come from the stub: WG-1000, WG-1001, ...
+    pool_mod.require = lambda ctx, permission: None
+    replay_mod.create_base = lambda path, candidate: f"wg/replay/{candidate.sha[:12]}"
+    create_inputs = [
+        (
+            "create-mixed",
+            [[_pool_task("WG-7", _replay_meta(sha_a, current))]],
+            [
+                _commit(sha_a),
+                _commit(sha_b, excluded=["no_tests", "formatting_only"]),
+                _commit("c" * 40),
+                _commit("c" * 40),
+            ],
+        ),
+        (
+            "create-skipped-before-existing",
+            [[_pool_task("WG-7", _replay_meta(sha_a, current))]],
+            [_commit(sha_a, excluded=["root"])],
+        ),
+        (
+            "create-other-classifier-not-existing",
+            [[_pool_task("WG-7", _replay_meta(sha_a, default_classifier))]],
+            [_commit(sha_a)],
+        ),
+    ]
+    for case_id, pages, commits in create_inputs:
+        by_sha = {c["sha"]: _candidate(c) for c in commits}
+        replay_mod.analyze_commit = lambda path, sha, config, _by=by_sha: _by[sha]
+        results = _pool_stub(pages).create(None, None, "demo", [c["sha"] for c in commits])
+        cases.append(
+            {
+                "id": case_id,
+                "covers": [],
+                "input": {"pages": pages, "commits": commits, "shas": [c["sha"] for c in commits]},
+                "output": {"results": results},
+            }
+        )
+
+    # Task shaping: title, description, tags and metadata, unvalidated and validated.
+    pool_mod.utcnow = lambda: real_datetime(2026, 10, 26, tzinfo=UTC)
+    base_ref = f"wg/replay/{sha_a[:12]}"
+    shaped = [
+        ("task-unvalidated", _commit(sha_a), None),
+        (
+            "task-validated",
+            _commit(sha_a),
+            replay_mod.Validation(ok=True, reason=None, base=(1,), solution=(0,)),
+        ),
+        ("task-long-subject", _commit(sha_a, subject="s" * 600), None),
+        ("task-empty-body-no-tests", {**_commit(sha_b), "body": "", "test_paths": []}, None),
+    ]
+    for case_id, commit, validation in shaped:
+        task = pool_mod._task_create(_candidate(commit), "demo", base_ref, validation)
+        cases.append(
+            {
+                "id": case_id,
+                "covers": [],
+                "input": {
+                    "commit": commit,
+                    "repository": "demo",
+                    "base_ref": base_ref,
+                    "validation": None
+                    if validation is None
+                    else {"base": list(validation.base), "solution": list(validation.solution)},
+                },
+                "output": {
+                    "title": task.title,
+                    "description": task.description,
+                    "tags": task.tags,
+                    "metadata": task.metadata,
+                },
+            }
+        )
+    return cases
+
+
 def main() -> None:
     write("contract", contract_cases())
     write("briefs", briefs_cases())
     write("escape", escape_cases())
     write("replay", replay_cases())
+    write("pool", pool_cases())
 
 
 if __name__ == "__main__":

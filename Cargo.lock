@@ -2306,6 +2306,7 @@ version = "0.1.0"
 dependencies = [
  "rpds",
  "serde_json",
+ "wg-json",
  "wg-pyrand",
  "wg-types",
 ]

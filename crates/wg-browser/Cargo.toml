@@ -9,3 +9,10 @@ description = "locating Chromium-family browsers and CDP screenshots"
 
 [lints]
 workspace = true
+
+[dependencies]
+wg-types = { path = "../wg-types" }
+wg-browserspec = { path = "../wg-browserspec" }
+serde_json = "1"
+tungstenite = "0.30"
+ureq = "3.5"

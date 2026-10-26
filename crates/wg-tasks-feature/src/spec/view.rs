@@ -431,6 +431,61 @@ pub fn graph_view(console: &Console, graph: &Value) -> String {
     out
 }
 
+/// `_render_verdict`: the `task contract-check` verdict as a key/value block.
+#[must_use]
+pub fn contract_view(console: &Console, out: &Value) -> String {
+    let probability = match get(out, "prediction").filter(|p| !matches!(p, Value::Null)) {
+        None => "none (no prediction)".to_owned(),
+        Some(prediction) => {
+            let interval = match (get(prediction, "low"), get(prediction, "high")) {
+                (Some(Value::Null) | None, _) | (_, Some(Value::Null) | None) => "none".to_owned(),
+                (low, high) => format!("95% {:.3} to {:.3}", float_of(low), float_of(high)),
+            };
+            let cutoff = opt(get(prediction, "data_cutoff"))
+                .filter(|cutoff| !cutoff.is_empty())
+                .unwrap_or_else(|| "none".to_owned());
+            format!(
+                "{:.3}, interval {interval}, fit {}, data cutoff {cutoff} (inference)",
+                float_of(get(prediction, "probability")),
+                s(get(prediction, "fit_id"))
+            )
+        }
+    };
+    let reasons = texts(get(out, "reasons"), "; ");
+    let missing = texts(get(out, "missing"), ", ");
+    let target = format!("{:.3}", float_of(get(out, "target")));
+    let verdict = s(get(out, "verdict"));
+    let model = s(get(out, "model"));
+    let pairs: [(&str, Option<&str>); 6] = [
+        ("verdict", Some(verdict.as_str())),
+        ("reasons", Some(reasons.as_str())),
+        ("missing", Some(missing.as_str())),
+        ("probability", Some(probability.as_str())),
+        ("target", Some(target.as_str())),
+        ("model", Some(model.as_str())),
+    ];
+    console.kv(&pairs, Some("contract check")).text
+}
+
+/// A JSON number as a float (`0.0` for anything else).
+fn float_of(value: Option<&Value>) -> f64 {
+    match value {
+        Some(Value::Float(number)) => *number,
+        Some(Value::Int(number)) => *number as f64,
+        _ => 0.0,
+    }
+}
+
+/// The strings of a list joined with `separator`, or `none` when the list is empty.
+fn texts(value: Option<&Value>, separator: &str) -> String {
+    let parts: Vec<String> = items(value).iter().map(|item| s(Some(item))).collect();
+    if parts.is_empty() {
+        "none".to_owned()
+    } else {
+        parts.join(separator)
+    }
+}
+
 /// The human view of `task promote-ready`.
 #[must_use]
 pub fn promote_view(console: &Console, report: &Value, dry_run: bool) -> String {

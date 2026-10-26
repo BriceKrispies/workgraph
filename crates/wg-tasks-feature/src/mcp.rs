@@ -5,10 +5,11 @@
 //!
 //! Each tool turns its validated arguments into the body its service reads ([`crate::spec::tool_args`])
 //! and calls the feature's [`crate::service`] entry point under the agent's identity, so the
-//! permission checks are the services' own, as in Python. `task_contract_check` (M28) and
-//! `task_search` (M29) are not answered here yet: their services are not ported (the experiments
-//! predictor and the hybrid search ranking), so those names reach the generic "not wired" answer.
+//! permission checks are the services' own, as in Python. `task_search` (M29) is not
+//! answered here yet: its service is not ported (the hybrid search ranking), so that name reaches
+//! the generic "not wired" answer.
 
+use crate::service::contract::task_contract_check;
 use serde_json::Value;
 use wg_json::Value as Dto;
 use wg_mcpspec::options::Agent;
@@ -50,6 +51,7 @@ pub fn call(
         "task_link_commit" => link_commit(app, agent, arguments),
         "task_report_progress" => report_progress(app, agent, arguments),
         "task_report_result" => report_result(app, agent, arguments),
+        "task_contract_check" => contract_check(app, agent, arguments),
         _ => return None,
     };
     Some(answer.and_then(|dto| structured_output(&dto)))
@@ -256,7 +258,8 @@ fn link_repository(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgErr
 /// `GitService.link_commit` for `task_link_commit` (M44), under `{"links": …}`.
 fn link_commit(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
     let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
-    let links = app.git_link(
+    let links = wg_git_feature::service::git_link(
+        app,
         &context,
         text_argument(a, "workspace"),
         &args::text(a, "task"),
@@ -289,4 +292,14 @@ fn report_result(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError
         &args::text(a, "task"),
         &args::result_body(a),
     )
+}
+
+/// `task_contract_check` (M28): the arguments arrive validated with the default target filled in.
+fn contract_check(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let reference = a.get("task").and_then(Value::as_str).unwrap_or_default();
+    let model = a.get("model").and_then(Value::as_str).unwrap_or_default();
+    let target = a.get("target").and_then(Value::as_f64).unwrap_or(0.8);
+    let workspace = a.get("workspace").and_then(Value::as_str);
+    task_contract_check(app, &context, workspace, reference, model, target)
 }

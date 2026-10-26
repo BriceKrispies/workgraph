@@ -6,6 +6,7 @@
 //! built from the snapshot (see `wg_clispec::tree`).
 
 pub mod decision;
+pub mod git;
 pub mod job;
 pub mod registry;
 pub mod repo;
@@ -44,6 +45,7 @@ pub const GROUPS: &[Group] = &[
     serve::SERVE,
     decision::GROUP,
     job::GROUP,
+    git::GROUP,
     task::GROUP,
     ui::GROUP,
     registry::PROJECT,

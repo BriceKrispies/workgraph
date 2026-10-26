@@ -207,12 +207,13 @@ pub fn path_totals(commit_ids: &[Id]) -> Statement {
     }
 }
 
-/// The symbols of `file_change_ids`, by file change then id.
+/// The symbols of `file_change_ids`, by file change then insertion order (`rowid`), the order the
+/// analysis wrote them in; the Python service lists them the same way.
 pub fn symbols(file_change_ids: &[Id]) -> Statement {
     Statement {
         sql: format!(
             "SELECT {} FROM \"commit_symbols\" WHERE \"file_change_id\" IN ({}) \
-             ORDER BY \"file_change_id\", \"id\"",
+             ORDER BY \"file_change_id\", \"rowid\"",
             select_list(Table::CommitSymbol, None),
             placeholders(1, file_change_ids.len())
         ),

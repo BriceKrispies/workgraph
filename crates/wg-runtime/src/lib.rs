@@ -18,6 +18,8 @@ mod bus;
 mod cycle;
 mod decisions;
 mod effects;
+mod git;
+mod git_sync;
 mod handlers;
 mod hooks;
 mod jobs;

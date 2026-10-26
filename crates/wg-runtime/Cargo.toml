@@ -18,8 +18,11 @@ serde_json = { version = "1", features = ["preserve_order"] }
 tracing = "0.1"
 tracing-core = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false, features = ["registry", "std"] }
+wg-codeanalysis = { path = "../wg-codeanalysis" }
+wg-codeparse = { path = "../wg-codeparse" }
 wg-config = { path = "../wg-config" }
 wg-git = { path = "../wg-git" }
+wg-gitcore = { path = "../wg-gitcore" }
 wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }
 wg-model = { path = "../wg-model" }
@@ -29,8 +32,9 @@ wg-registry = { path = "../wg-registry" }
 wg-runtimespec = { path = "../wg-runtimespec" }
 wg-stacks = { path = "../wg-stacks" }
 wg-store = { path = "../wg-store" }
+wg-storecodec = { path = "../wg-storecodec" }
+wg-wire = { path = "../wg-wire" }
 wg-tasks = { path = "../wg-tasks" }
 wg-telemetry = { path = "../wg-telemetry" }
 wg-telemetryspec = { path = "../wg-telemetryspec" }
 wg-types = { path = "../wg-types" }
-wg-wire = { path = "../wg-wire" }

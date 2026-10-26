@@ -71,6 +71,7 @@ pub fn json_value(value: &Json) -> Value {
             .as_i64()
             .map(|i| Value::Int(i128::from(i)))
             .or_else(|| n.as_u64().map(|u| Value::Int(i128::from(u))))
+            .or_else(|| n.to_string().parse::<i128>().ok().map(Value::Int))
             .or_else(|| n.as_f64().map(Value::Float))
             .unwrap_or(Value::Null),
         Json::String(s) => text(s),

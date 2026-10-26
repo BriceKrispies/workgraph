@@ -137,11 +137,9 @@ impl Scanner<'_> {
         let value = if is_float || integer_end != idx {
             float_value(&text)
         } else {
-            text.parse::<i64>()
-                .map(Number::from)
-                .or_else(|_| text.parse::<u64>().map(Number::from))
-                .map(Value::Number)
-                .unwrap_or_else(|_| float_value(&text))
+            // An integer keeps its digits exactly (serde_json's `arbitrary_precision`), as Python's
+            // `int` does, so a value past 64 bits reaches validation intact.
+            serde_json::from_str::<Value>(&text).unwrap_or_else(|_| float_value(&text))
         };
         Ok((value, idx))
     }

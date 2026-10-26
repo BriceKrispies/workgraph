@@ -207,11 +207,16 @@ fn task_filter(openapi: &Value) -> Model {
     )
 }
 
-/// JSON equality with numbers compared by value, so the result does not depend on whether
-/// `serde_json` runs with `arbitrary_precision` (the workspace build enables it through wg-json).
+/// JSON equality with numbers compared by value. Two integers compare exactly, so a 128-bit value
+/// is not rounded through `f64`; any other pair compares as floats.
 fn same(a: &Value, b: &Value) -> bool {
     match (a, b) {
-        (Value::Number(x), Value::Number(y)) => x.as_f64() == y.as_f64(),
+        (Value::Number(x), Value::Number(y)) => {
+            match (x.to_string().parse::<i128>(), y.to_string().parse::<i128>()) {
+                (Ok(p), Ok(q)) => p == q,
+                _ => x.as_f64() == y.as_f64(),
+            }
+        }
         (Value::Array(x), Value::Array(y)) => {
             x.len() == y.len() && x.iter().zip(y).all(|(p, q)| same(p, q))
         }

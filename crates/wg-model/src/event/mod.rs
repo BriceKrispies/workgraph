@@ -6,10 +6,13 @@
 //! several event types that share a shape (`task.archived` and `task.unarchived` are both
 //! [`task::TaskKeyed`]); [`EventPayload`] has one variant per event type, named after it.
 
+pub mod attempt;
 pub mod project;
 pub mod repository;
+pub mod stack;
 pub mod task;
 pub mod workspace;
+pub mod worktree;
 
 use rpds::VectorSync;
 use serde::{Serialize, Serializer};
@@ -19,6 +22,11 @@ use wg_types::{Actor, ErrorCode, Id, Timestamp, WgError};
 use crate::entity::JsonObject;
 use crate::stamp::Stamp;
 
+pub use attempt::{
+    AttemptCancelRequested, AttemptCreated, AttemptFinished, AttemptMessage,
+    AttemptOutcomeCaptured, AttemptProgress, AttemptResult, AttemptStatusChanged,
+    AttemptSubagentBound, AttemptUsage, AttemptWorkspacePrepared,
+};
 pub use project::{
     ProjectCreated, ProjectRepositoryAdded, ProjectRepositoryRemoved, ProjectUpdated,
 };
@@ -27,6 +35,14 @@ pub use repository::{
     RepositoryCheckoutLost, RepositoryCheckoutRemoved, RepositoryDependencyDeclared,
     RepositoryHealthChanged, RepositoryRemoved, RepositoryUpdated,
 };
+pub use stack::{
+    StackBisectProbe, StackCreated, StackIntegrationConflict, StackIntegrationMerged,
+    StackIntegrationRemoved, StackIntegrationSkipped, StackItemAdded, StackItemEjected,
+    StackItemReleased, StackItemRemoved, StackItemStateChanged, StackLandRequested, StackLanded,
+    StackLandingRefused, StackParentNotReviewable, StackParentRejected, StackRebased, StackRebuilt,
+    StackStatusChanged, StackVerificationErrored, StackVerificationFailed,
+    StackVerificationFailedOnBase, StackVerificationStarted, StackVerified,
+};
 pub use task::{
     TaskAccepted, TaskChangeSurfaceComputed, TaskClaimed, TaskCommentRecorded, TaskCommitLinked,
     TaskCommitUnlinked, TaskCompleted, TaskCreated, TaskDecomposed, TaskDependencyChanged,
@@ -34,6 +50,7 @@ pub use task::{
     TaskRepositoryLinked, TaskRepositoryUnlinked, TaskStatusChanged, TaskSynced, TaskUpdated,
 };
 pub use workspace::{WorkspaceArchived, WorkspaceCreated, WorkspaceSettingsChanged};
+pub use worktree::{WorktreeCreated, WorktreeRecovered, WorktreeRemoved};
 
 /// The `entity_type` column of an event.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -42,6 +59,10 @@ pub enum EntityType {
     Project,
     Repository,
     Task,
+    Attempt,
+    Stack,
+    Worktree,
+    System,
 }
 
 impl EntityType {
@@ -51,6 +72,10 @@ impl EntityType {
             EntityType::Project => "project",
             EntityType::Repository => "repository",
             EntityType::Task => "task",
+            EntityType::Attempt => "attempt",
+            EntityType::Stack => "stack",
+            EntityType::Worktree => "worktree",
+            EntityType::System => "system",
         }
     }
 }
@@ -148,6 +173,54 @@ event_payloads! {
     TaskCommitLinked(TaskCommitLinked) = "task.commit_linked", Task, version 1;
     TaskCommitUnlinked(TaskCommitUnlinked) = "task.commit_unlinked", Task, version 1;
     TaskChangeSurfaceComputed(TaskChangeSurfaceComputed) = "task.change_surface_computed", Task, version 1;
+
+    AttemptCreated(AttemptCreated) = "attempt.created", Attempt, version 1;
+    AttemptStatusChanged(AttemptStatusChanged) = "attempt.status_changed", Attempt, version 1;
+    AttemptCancelRequested(AttemptCancelRequested) = "attempt.cancel_requested", Attempt, version 1;
+    AttemptSucceeded(AttemptFinished) = "attempt.succeeded", Attempt, version 1;
+    AttemptFailed(AttemptFinished) = "attempt.failed", Attempt, version 1;
+    AttemptCancelled(AttemptFinished) = "attempt.cancelled", Attempt, version 1;
+    AttemptWorkspacePrepared(AttemptWorkspacePrepared) = "attempt.workspace_prepared", Attempt, version 1;
+    AttemptOutcomeCaptured(AttemptOutcomeCaptured) = "attempt.outcome_captured", Attempt, version 1;
+    AttemptSubagentBound(AttemptSubagentBound) = "attempt.subagent_bound", Attempt, version 1;
+    AttemptArtifact(AttemptMessage) = "attempt.artifact", Attempt, version 1;
+    AttemptLog(AttemptMessage) = "attempt.log", Attempt, version 1;
+    AttemptMessage(AttemptMessage) = "attempt.message", Attempt, version 1;
+    AttemptSession(AttemptMessage) = "attempt.session", Attempt, version 1;
+    AttemptToolUse(AttemptMessage) = "attempt.tool_use", Attempt, version 1;
+    AttemptToolResult(AttemptMessage) = "attempt.tool_result", Attempt, version 1;
+    AttemptProgress(AttemptProgress) = "attempt.progress", Attempt, version 1;
+    AttemptResult(AttemptResult) = "attempt.result", Attempt, version 1;
+    AttemptUsage(AttemptUsage) = "attempt.usage", Attempt, version 1;
+
+    StackCreated(StackCreated) = "stack.created", Stack, version 1;
+    StackItemAdded(StackItemAdded) = "stack.item_added", Stack, version 1;
+    StackItemRemoved(StackItemRemoved) = "stack.item_removed", Stack, version 1;
+    StackItemReleased(StackItemReleased) = "stack.item_released", Stack, version 1;
+    StackItemEjected(StackItemEjected) = "stack.item_ejected", Stack, version 1;
+    StackItemStateChanged(StackItemStateChanged) = "stack.item_state_changed", Stack, version 1;
+    StackStatusChanged(StackStatusChanged) = "stack.status_changed", Stack, version 1;
+    StackLandRequested(StackLandRequested) = "stack.land_requested", Stack, version 1;
+    StackLanded(StackLanded) = "stack.landed", Stack, version 1;
+    StackLandingRefused(StackLandingRefused) = "stack.landing_refused", Stack, version 1;
+    StackRebased(StackRebased) = "stack.rebased", Stack, version 1;
+    StackRebuilt(StackRebuilt) = "stack.rebuilt", Stack, version 1;
+    StackVerificationStarted(StackVerificationStarted) = "stack.verification_started", Stack, version 1;
+    StackVerified(StackVerified) = "stack.verified", Stack, version 1;
+    StackVerificationFailed(StackVerificationFailed) = "stack.verification_failed", Stack, version 1;
+    StackVerificationFailedOnBase(StackVerificationFailedOnBase) = "stack.verification_failed_on_base", Stack, version 1;
+    StackVerificationErrored(StackVerificationErrored) = "stack.verification_errored", Stack, version 1;
+    StackBisectProbe(StackBisectProbe) = "stack.bisect_probe", Stack, version 1;
+    StackIntegrationMerged(StackIntegrationMerged) = "stack.integration_merged", Stack, version 1;
+    StackIntegrationConflict(StackIntegrationConflict) = "stack.integration_conflict", Stack, version 1;
+    StackIntegrationSkipped(StackIntegrationSkipped) = "stack.integration_skipped", Stack, version 1;
+    StackIntegrationRemoved(StackIntegrationRemoved) = "stack.integration_removed", Stack, version 1;
+    StackParentNotReviewable(StackParentNotReviewable) = "stack.parent_not_reviewable", Stack, version 1;
+    StackParentRejected(StackParentRejected) = "stack.parent_rejected", Stack, version 1;
+
+    WorktreeCreated(WorktreeCreated) = "worktree.created", Worktree, version 1;
+    WorktreeRemoved(WorktreeRemoved) = "worktree.removed", Worktree, version 1;
+    WorktreeRecovered(WorktreeRecovered) = "worktree.recovered", System, version 1;
 }
 
 fn object<T: Serialize>(payload: &T) -> Result<JsonObject, WgError> {

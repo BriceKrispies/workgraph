@@ -12,6 +12,7 @@ workspace = true
 
 [dependencies]
 rpds = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
 wg-pyrand = { path = "../wg-pyrand" }
 
 [dev-dependencies]

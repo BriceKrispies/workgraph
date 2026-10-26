@@ -53,6 +53,7 @@ wg-intel Core
 wg-intel-feature Shell
 wg-intel-feature::spec Pure
 wg-intel-feature::service Shell
+wg-intel-feature::cli Shell
 wg-jobs Core
 wg-json Pure
 wg-mcp Shell

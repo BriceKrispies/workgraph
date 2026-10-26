@@ -1,0 +1,26 @@
+{
+  "id": "git-changes-confidence-and-diff-repository",
+  "covers": ["C087", "C089", "C091", "C092", "C095", "C118"],
+  "setup": [
+    {"git": "init", "repo": "tracked"},
+    {"git": "commit", "repo": "tracked", "files": {"base.txt": "base\n"}, "message": "initial"},
+    {"git": "commit", "repo": "tracked", "files": {"feature.txt": "feature\n"}, "message": "add feature"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:tracked}"], "json": true},
+    {"cli": ["task", "create", "Feature", "--repo", "tracked", "--ready"], "json": true},
+    {"cli": ["git", "sync", "tracked"], "json": true},
+    {"cli": ["git", "log", "tracked"], "json": true, "save": {"feature_sha": "/items/0/sha"}},
+    {"cli": ["git", "link", "WG-1", "{var:feature_sha}", "--repository", "tracked"], "json": true},
+    {"cli": ["git", "changes", "WG-1", "--min-confidence", "0.9"], "json": true},
+    {"assert": {"json": {"path": "/cumulative_churn/commits", "equals": 1}}},
+    {"assert": {"json": {"path": "/commits/0/sha", "equals": "{var:feature_sha}"}}},
+    {"cli": ["git", "changes", "WG-1", "--min-confidence", "1.5"], "json": true},
+    {"assert": {"json": {"path": "/cumulative_churn/commits", "equals": 0}}},
+    {"cli": ["git", "diff", "WG-1", "--repository", "tracked"], "json": true},
+    {"assert": {"json": {"path": "/parts/0/repository", "equals": "tracked"}}},
+    {"assert": {"stdout_contains": "feature.txt"}}
+  ],
+  "not_observable": []
+}

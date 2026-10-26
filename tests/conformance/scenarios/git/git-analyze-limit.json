@@ -1,0 +1,20 @@
+{
+  "id": "git-analyze-limit",
+  "covers": ["C086", "C095", "C118"],
+  "setup": [
+    {"git": "init", "repo": "limited"},
+    {"git": "commit", "repo": "limited", "files": {"pkg/a.py": "def one():\n    return 1\n"}, "message": "first"},
+    {"git": "commit", "repo": "limited", "files": {"pkg/a.py": "def one():\n    return 2\n\ndef two():\n    return 3\n"}, "message": "second"},
+    {"git": "commit", "repo": "limited", "files": {"pkg/b.py": "def three():\n    return 4\n"}, "message": "third"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:limited}"], "json": true},
+    {"cli": ["git", "sync", "limited"], "json": true},
+    {"cli": ["git", "analyze", "limited", "--limit", "1"], "json": true},
+    {"assert": {"json": {"path": "/analyzed", "equals": 1}}},
+    {"cli": ["git", "analyze", "limited"], "json": true},
+    {"assert": {"json": {"path": "/analyzed", "equals": 2}}}
+  ],
+  "not_observable": []
+}

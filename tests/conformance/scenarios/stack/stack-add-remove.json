@@ -1,0 +1,35 @@
+{
+  "id": "stack-add-remove",
+  "covers": ["C135", "C136", "C142", "C143", "C118"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["task", "create", "Late change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "Unrelated"], "json": true},
+    {"cli": ["stack", "add", "WG-1", "WG-4"], "json": true},
+    {"assert": {"json": {"path": "/items/2/task_key", "equals": "WG-4"}}},
+    {"assert": {"json": {"path": "/items/2/state", "equals": "pending"}}},
+    {"cli": ["stack", "add", "WG-1", "WG-4"], "json": true},
+    {"assert": {"exit": 3}},
+    {"cli": ["stack", "add", "WG-1", "WG-5"], "json": true},
+    {"assert": {"exit": 2}},
+    {"cli": ["stack", "add", "WG-99", "WG-4"], "json": true},
+    {"assert": {"exit": 4}},
+    {"cli": ["stack", "remove", "WG-1", "WG-3", "--workspace", "default"], "json": true},
+    {"assert": {"json": {"path": "/items/0/task_key", "equals": "WG-2"}}},
+    {"assert": {"json": {"path": "/items/1/task_key", "equals": "WG-4"}}},
+    {"cli": ["stack", "remove", "WG-1", "WG-5"], "json": true},
+    {"assert": {"exit": 4}},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/items/1/task_key", "equals": "WG-4"}}}
+  ],
+  "not_observable": []
+}

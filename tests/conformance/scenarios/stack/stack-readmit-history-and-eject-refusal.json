@@ -1,0 +1,32 @@
+{
+  "id": "stack-readmit-history-and-eject-refusal",
+  "covers": ["C137", "C138", "C141", "C143", "C118"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["stack", "readmit", "WG-1", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/items/0/task_key", "equals": "WG-2"}}},
+    {"assert": {"json": {"path": "/items/0/state", "equals": "ready"}}},
+    {"cli": ["stack", "eject", "WG-1", "WG-3", "--reason", "fails the combined check"], "json": true},
+    {"assert": {"exit": 3}},
+    {"cli": ["stack", "eject", "WG-1", "WG-2", "-m", "fails the combined check"], "json": true},
+    {"assert": {"exit": 3}},
+    {"cli": ["stack", "history", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/0/event_type", "equals": "stack.created"}}},
+    {"assert": {"stdout_contains": "stack.item_state_changed"}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stack_integration.py::test_an_operator_ejects_a_known_culprit_and_the_stack_rebuilds_without_it: the successful eject of a merged child, which rebuilds the stack without it. A child only reaches merged through the merge jobs and the fast gate, so the eject happy path is reached by the integration scenarios",
+      "covered_by": "SC-05"
+    }
+  ]
+}

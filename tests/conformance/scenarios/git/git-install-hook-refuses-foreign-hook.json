@@ -1,0 +1,18 @@
+{
+  "id": "git-install-hook-refuses-foreign-hook",
+  "covers": ["C090", "C118"],
+  "setup": [
+    {"git": "init", "repo": "foreign"},
+    {"git": "commit", "repo": "foreign", "files": {"README.md": "foreign\n"}, "message": "initial"},
+    {"git": "write", "repo": "foreign", "files": {".git/hooks/post-commit": "#!/bin/sh\necho mine\n"}}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:foreign}"], "json": true},
+    {"cli": ["git", "install-hook", "foreign"], "json": true, "expect_exit": 3},
+    {"assert": {"exit": 3}},
+    {"assert": {"stdout_contains": "not overwriting"}},
+    {"assert": {"file": "{repo:foreign}/.git/hooks/post-commit", "exists": true, "contains": "echo mine"}}
+  ],
+  "not_observable": []
+}

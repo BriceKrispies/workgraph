@@ -1,21 +1,27 @@
 //! The trackers feature (docs/rust-rewrite.md 4.16, D15): the external tracker items of tracked
-//! tasks. The Jira mapping and the sync decisions are the core crate `wg-trackers`; this crate
-//! holds the statement text and the readers over a session. Two modules, one per tier:
+//! tasks and the `tracker` commands. The Jira mapping and the sync decisions are the core crate
+//! `wg-trackers`; this crate holds the statement text, the readers over a session, the connection
+//! documents and the CLI group. Modules, one per tier:
 //!
-//! * [`spec`] (Pure): the statements and the row decoding;
-//! * [`service`] (Shell): free functions over `&mut Session`, the readers the store served.
+//! * [`spec`] (Pure): the statements and the row decoding, the connection and status documents,
+//!   the clap command and the human views of the `tracker` commands;
+//! * [`service`] (Shell): free functions over `&mut App` and `&mut Session`, the readers the store
+//!   served and the entry points of the commands;
+//! * [`cli`] (Shell): the clap group, a table of `fn` pointers into [`service`].
 //!
-//! The feature exports [`FEATURE`]. Nothing is served yet, so its tables are empty.
+//! The feature exports [`FEATURE`]. Its routes and tools are not served yet, and `tracker sync`
+//! without `--queue` (the run-now sync) is not ported, so the CLI reports it as not implemented.
 
+pub mod cli;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The trackers feature. It has no CLI group, routes, tools, resources or jobs yet.
+/// The trackers feature: its `tracker` CLI group. It has no routes, tools, resources or jobs yet.
 pub static FEATURE: Feature = Feature {
     name: "trackers",
-    cli: &[],
+    cli: &[cli::GROUP],
     routes: &[],
     tools: &[],
     resources: &[],

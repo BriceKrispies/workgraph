@@ -118,6 +118,7 @@ wg-trackers Core
 wg-trackers-feature Shell
 wg-trackers-feature::spec Pure
 wg-trackers-feature::service Shell
+wg-trackers-feature::cli Shell
 wg-types Core
 wg-uispec Pure
 wg-validate Pure

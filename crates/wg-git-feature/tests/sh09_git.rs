@@ -11,6 +11,7 @@ use std::path::PathBuf;
 
 use rpds::VectorSync;
 use serde_json::{Value, json};
+use wg_git_feature::service::store;
 use wg_model::entity::{
     Commit, CommitAnalysis, CommitEquivalence, CommitFileChange, CommitSymbol, CommitTaskLink,
     GitObjectGap, Real, Repository, Task, TaskChangeSurface, Workspace,
@@ -441,18 +442,22 @@ fn commits_are_found_by_sha_prefix_and_id() -> TestResult {
     let mut store = fixture()?;
 
     let exact = store
-        .read(|s| s.commit_by_sha(id(10), "aaaa1111"))?
+        .read(|s| store::commit_by_sha(s, id(10), "aaaa1111"))?
         .ok_or("aaaa1111 missing")?;
     assert_eq!(exact.id, id(101));
     // The same SHA in another repository is a different row.
     let elsewhere = store
-        .read(|s| s.commit_by_sha(id(11), "aaaa1111"))?
+        .read(|s| store::commit_by_sha(s, id(11), "aaaa1111"))?
         .ok_or("aaaa1111 missing in repository 11")?;
     assert_eq!(elsewhere.id, id(201));
-    assert!(store.read(|s| s.commit_by_sha(id(10), "aaaa"))?.is_none());
+    assert!(
+        store
+            .read(|s| store::commit_by_sha(s, id(10), "aaaa"))?
+            .is_none()
+    );
 
     // A prefix matches every commit it starts, by SHA; a wildcard is an ordinary character.
-    let prefixed = store.read(|s| s.commits_by_sha_prefix(id(10), "aaaa"))?;
+    let prefixed = store.read(|s| store::commits_by_sha_prefix(s, id(10), "aaaa"))?;
     assert_eq!(
         sorted_ids(&prefixed, |c| c.id),
         sorted(vec![id(101), id(105)])
@@ -460,11 +465,11 @@ fn commits_are_found_by_sha_prefix_and_id() -> TestResult {
     assert_eq!(prefixed[0].sha, "aaaa1111");
     assert!(
         store
-            .read(|s| s.commits_by_sha_prefix(id(10), "a%"))?
+            .read(|s| store::commits_by_sha_prefix(s, id(10), "a%"))?
             .is_empty()
     );
 
-    let shas = store.read(|s| s.commit_shas(id(10)))?;
+    let shas = store.read(|s| store::commit_shas(s, id(10)))?;
     assert_eq!(
         shas,
         vec![
@@ -472,9 +477,9 @@ fn commits_are_found_by_sha_prefix_and_id() -> TestResult {
         ]
     );
 
-    let by_id = store.read(|s| s.commits_by_ids(&[id(101), id(103)]))?;
+    let by_id = store.read(|s| store::commits_by_ids(s, &[id(101), id(103)]))?;
     assert_eq!(sorted_ids(&by_id, |c| c.id), sorted(vec![id(101), id(103)]));
-    assert!(store.read(|s| s.commits_by_ids(&[]))?.is_empty());
+    assert!(store.read(|s| store::commits_by_ids(s, &[]))?.is_empty());
     Ok(())
 }
 
@@ -482,32 +487,33 @@ fn commits_are_found_by_sha_prefix_and_id() -> TestResult {
 fn repository_commit_list_pages_newest_first_with_filters() -> TestResult {
     let mut store = fixture()?;
 
-    let total = store.read(|s| s.repository_commits_count(id(10), false, false))?;
+    let total = store.read(|s| store::repository_commits_count(s, id(10), false, false))?;
     assert_eq!(total, 6);
     // Reachable only leaves out 103 and 106; linked only keeps 101, 102 and 103.
     assert_eq!(
-        store.read(|s| s.repository_commits_count(id(10), true, false))?,
+        store.read(|s| store::repository_commits_count(s, id(10), true, false))?,
         4
     );
     assert_eq!(
-        store.read(|s| s.repository_commits_count(id(10), false, true))?,
+        store.read(|s| store::repository_commits_count(s, id(10), false, true))?,
         3
     );
     assert_eq!(
-        store.read(|s| s.repository_commits_count(id(10), true, true))?,
+        store.read(|s| store::repository_commits_count(s, id(10), true, true))?,
         2
     );
 
     // Newest first; the undated commits sort last (NULL is smallest, so DESC puts it last).
-    let first_two = store.read(|s| s.repository_commits_page(id(10), false, false, 2, 0))?;
+    let first_two =
+        store.read(|s| store::repository_commits_page(s, id(10), false, false, 2, 0))?;
     let shas: Vec<&str> = first_two.iter().map(|c| c.sha.as_str()).collect();
     assert_eq!(shas, vec!["cccc4444", "bbbb3333"]);
 
-    let middle = store.read(|s| s.repository_commits_page(id(10), false, false, 2, 2))?;
+    let middle = store.read(|s| store::repository_commits_page(s, id(10), false, false, 2, 2))?;
     let shas: Vec<&str> = middle.iter().map(|c| c.sha.as_str()).collect();
     assert_eq!(shas, vec!["aaab2222", "aaaa1111"]);
 
-    let last = store.read(|s| s.repository_commits_page(id(10), false, false, 2, 4))?;
+    let last = store.read(|s| store::repository_commits_page(s, id(10), false, false, 2, 4))?;
     assert_eq!(last.len(), 2);
     assert_eq!(
         sorted_ids(&last, |c| c.id),
@@ -515,11 +521,12 @@ fn repository_commit_list_pages_newest_first_with_filters() -> TestResult {
         "the two undated commits fill the final page"
     );
 
-    let reachable_page = store.read(|s| s.repository_commits_page(id(10), true, false, 2, 0))?;
+    let reachable_page =
+        store.read(|s| store::repository_commits_page(s, id(10), true, false, 2, 0))?;
     let shas: Vec<&str> = reachable_page.iter().map(|c| c.sha.as_str()).collect();
     assert_eq!(shas, vec!["cccc4444", "aaab2222"]);
 
-    let linked = store.read(|s| s.repository_commits_page(id(10), false, true, 10, 0))?;
+    let linked = store.read(|s| store::repository_commits_page(s, id(10), false, true, 10, 0))?;
     assert_eq!(linked.len(), 3);
     Ok(())
 }
@@ -528,7 +535,7 @@ fn repository_commit_list_pages_newest_first_with_filters() -> TestResult {
 fn task_links_come_back_with_their_task_keys_and_commit_facts() -> TestResult {
     let mut store = fixture()?;
 
-    let linked = store.read(|s| s.links_with_task_keys(&[id(101), id(103)]))?;
+    let linked = store.read(|s| store::links_with_task_keys(s, &[id(101), id(103)]))?;
     assert_eq!(linked.len(), 3);
     let mut keys: Vec<(Id, String)> = linked
         .iter()
@@ -544,24 +551,24 @@ fn task_links_come_back_with_their_task_keys_and_commit_facts() -> TestResult {
     assert_eq!(keys, expected);
     assert!(
         store
-            .read(|s| s.links_with_task_keys(&[id(104)]))?
+            .read(|s| store::links_with_task_keys(s, &[id(104)]))?
             .is_empty()
     );
 
-    let all = store.read(|s| s.commit_task_links_between(id(101), id(20), None))?;
+    let all = store.read(|s| store::commit_task_links_between(s, id(101), id(20), None))?;
     assert_eq!(all.len(), 2);
     let heuristic =
-        store.read(|s| s.commit_task_links_between(id(101), id(20), Some("heuristic")))?;
+        store.read(|s| store::commit_task_links_between(s, id(101), id(20), Some("heuristic")))?;
     assert_eq!(heuristic.len(), 1);
     assert_eq!(heuristic[0].id, id(302));
     assert!(
         store
-            .read(|s| s.commit_task_links_between(id(101), id(21), None))?
+            .read(|s| store::commit_task_links_between(s, id(101), id(21), None))?
             .is_empty()
     );
 
     // The task's commits at or above 0.5: 101 (explicit) and 102; the 0.4 heuristic link drops out.
-    let joined = store.read(|s| s.task_commit_links(id(20), 0.5))?;
+    let joined = store.read(|s| store::task_commit_links(s, id(20), 0.5))?;
     assert_eq!(joined.len(), 2);
     for row in &joined {
         assert_eq!(row.repository_name, "core");
@@ -571,7 +578,7 @@ fn task_links_come_back_with_their_task_keys_and_commit_facts() -> TestResult {
     let commits = sorted_ids(&joined, |row| row.commit.id);
     assert_eq!(commits, sorted(vec![id(101), id(102)]));
 
-    let everything = store.read(|s| s.task_commit_links(id(20), 0.0))?;
+    let everything = store.read(|s| store::task_commit_links(s, id(20), 0.0))?;
     assert_eq!(everything.len(), 3);
     // Ordered by commit date: the two links to 101 come before the one to 102.
     assert_eq!(everything.last().map(|row| row.commit.id), Some(id(102)));
@@ -582,12 +589,12 @@ fn task_links_come_back_with_their_task_keys_and_commit_facts() -> TestResult {
 fn churn_inputs_are_read_per_commit_and_summed_per_path() -> TestResult {
     let mut store = fixture()?;
 
-    let changes = store.read(|s| s.file_changes(&[id(101)]))?;
+    let changes = store.read(|s| store::file_changes(s, &[id(101)]))?;
     let paths: Vec<&str> = changes.iter().map(|c| c.path.as_str()).collect();
     assert_eq!(paths, vec!["src/a.rs", "src/b.rs"]);
     assert_eq!(changes[0].language.as_deref(), Some("rust"));
 
-    let totals = store.read(|s| s.path_totals(&[id(101), id(102)]))?;
+    let totals = store.read(|s| store::path_totals(s, &[id(101), id(102)]))?;
     assert_eq!(totals.len(), 2);
     let a = &totals[0];
     assert_eq!(
@@ -600,13 +607,17 @@ fn churn_inputs_are_read_per_commit_and_summed_per_path() -> TestResult {
         (b.path.as_str(), b.changes, b.insertions, b.deletions),
         ("src/b.rs", 1, 2, 0)
     );
-    assert!(store.read(|s| s.path_totals(&[]))?.is_empty());
+    assert!(store.read(|s| store::path_totals(s, &[]))?.is_empty());
 
-    let symbols = store.read(|s| s.commit_symbols(&[id(401)]))?;
+    let symbols = store.read(|s| store::commit_symbols(s, &[id(401)]))?;
     assert_eq!(symbols.len(), 2);
-    assert!(store.read(|s| s.commit_symbols(&[id(403)]))?.is_empty());
+    assert!(
+        store
+            .read(|s| store::commit_symbols(s, &[id(403)]))?
+            .is_empty()
+    );
 
-    let analyses = store.read(|s| s.commit_analyses(&[id(101), id(102)]))?;
+    let analyses = store.read(|s| store::commit_analyses(s, &[id(101), id(102)]))?;
     assert_eq!(analyses.len(), 1);
     assert_eq!(analyses[0].commit_id, id(101));
     assert_eq!(analyses[0].functions_affected, 1);
@@ -618,46 +629,65 @@ fn equivalences_and_their_candidates_are_found_both_ways() -> TestResult {
     let mut store = fixture()?;
 
     // 103 is the original of the rewrite; 102 is the equivalent of the cherry-pick.
-    let of_103 = store.read(|s| s.equivalences_of_commit(id(103)))?;
+    let of_103 = store.read(|s| store::equivalences_of_commit(s, id(103)))?;
     assert_eq!(of_103.len(), 1);
     assert_eq!(of_103[0].kind, "rewrite");
-    let of_102 = store.read(|s| s.equivalences_of_commit(id(102)))?;
+    let of_102 = store.read(|s| store::equivalences_of_commit(s, id(102)))?;
     assert_eq!(of_102.len(), 1);
     assert_eq!(of_102[0].kind, "cherry_pick");
     assert!(
         store
-            .read(|s| s.equivalences_of_commit(id(105)))?
+            .read(|s| store::equivalences_of_commit(s, id(105)))?
             .is_empty()
     );
 
     let found: CommitEquivalence = store
-        .read(|s| s.equivalence(id(103), id(104)))?
+        .read(|s| store::equivalence(s, id(103), id(104)))?
         .ok_or("rewrite missing")?;
     assert_eq!(found.id, id(601));
-    assert!(store.read(|s| s.equivalence(id(104), id(103)))?.is_none());
+    assert!(
+        store
+            .read(|s| store::equivalence(s, id(104), id(103)))?
+            .is_none()
+    );
 
     // Same patch id in repository 10, other than the commit itself.
-    let same_patch = store.read(|s| s.commits_with_patch_id(id(10), "p1", id(999)))?;
+    let same_patch = store.read(|s| store::commits_with_patch_id(s, id(10), "p1", id(999)))?;
     assert_eq!(sorted_ids(&same_patch, |c| c.id), vec![id(101)]);
     assert!(
         store
-            .read(|s| s.commits_with_patch_id(id(10), "p1", id(101)))?
+            .read(|s| store::commits_with_patch_id(s, id(10), "p1", id(101)))?
             .is_empty()
     );
 
     // Unreachable commits by author, author date and subject: 103 matches 104's facts, and 106
     // matches an undated author date only with another undated one.
     let by_date = store.read(|s| {
-        s.unreachable_commits_matching(id(10), "ada@example.test", Some(at(7)), "amend me", id(104))
+        store::unreachable_commits_matching(
+            s,
+            id(10),
+            "ada@example.test",
+            Some(at(7)),
+            "amend me",
+            id(104),
+        )
     })?;
     assert_eq!(sorted_ids(&by_date, |c| c.id), vec![id(103)]);
     let undated = store.read(|s| {
-        s.unreachable_commits_matching(id(10), "ada@example.test", None, "amend me", id(104))
+        store::unreachable_commits_matching(
+            s,
+            id(10),
+            "ada@example.test",
+            None,
+            "amend me",
+            id(104),
+        )
     })?;
     assert_eq!(sorted_ids(&undated, |c| c.id), vec![id(106)]);
     assert!(
         store
-            .read(|s| s.unreachable_commits_matching(
+            .read(|s| store::unreachable_commits_matching(
+                s,
                 id(10),
                 "ada@example.test",
                 Some(at(7)),
@@ -674,18 +704,22 @@ fn gaps_reachability_and_change_surfaces() -> TestResult {
     let mut store = fixture()?;
 
     let gap = store
-        .read(|s| s.git_object_gap(id(10), "dead0000"))?
+        .read(|s| store::git_object_gap(s, id(10), "dead0000"))?
         .ok_or("gap missing")?;
     assert_eq!(gap.context, "parent");
     assert!(
         store
-            .read(|s| s.git_object_gap(id(11), "dead0000"))?
+            .read(|s| store::git_object_gap(s, id(11), "dead0000"))?
             .is_none()
     );
-    assert_eq!(store.read(|s| s.git_object_gaps(id(10)))?.len(), 1);
-    assert!(store.read(|s| s.git_object_gaps(id(11)))?.is_empty());
+    assert_eq!(store.read(|s| store::git_object_gaps(s, id(10)))?.len(), 1);
+    assert!(
+        store
+            .read(|s| store::git_object_gaps(s, id(11)))?
+            .is_empty()
+    );
 
-    let reachability = store.read(|s| s.commit_reachability(id(10)))?;
+    let reachability = store.read(|s| store::commit_reachability(s, id(10)))?;
     assert_eq!(reachability.len(), 6);
     let unreachable: Vec<&str> = reachability
         .iter()
@@ -694,10 +728,10 @@ fn gaps_reachability_and_change_surfaces() -> TestResult {
         .collect();
     assert_eq!(unreachable, vec!["bbbb3333", "dddd6666"]);
 
-    let surfaces = store.read(|s| s.task_change_surfaces(id(20)))?;
+    let surfaces = store.read(|s| store::task_change_surfaces(s, id(20)))?;
     assert_eq!(surfaces.len(), 2);
     let core: TaskChangeSurface = store
-        .read(|s| s.task_change_surface(id(20), id(10)))?
+        .read(|s| store::task_change_surface(s, id(20), id(10)))?
         .ok_or("surface missing")?;
     assert_eq!(
         (core.base_sha.as_str(), core.final_sha.as_str()),
@@ -706,7 +740,7 @@ fn gaps_reachability_and_change_surfaces() -> TestResult {
     assert_eq!(core.insertions, 5);
     assert!(
         store
-            .read(|s| s.task_change_surface(id(21), id(10)))?
+            .read(|s| store::task_change_surface(s, id(21), id(10)))?
             .is_none()
     );
     Ok(())

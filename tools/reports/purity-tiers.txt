@@ -47,6 +47,10 @@ wg-experiments-feature Shell
 wg-experiments-feature::spec Pure
 wg-experiments-feature::service Shell
 wg-git Shell
+wg-git-feature Shell
+wg-git-feature::spec Pure
+wg-git-feature::service Shell
+wg-git-feature::cli Shell
 wg-gitcore Core
 wg-hash Core
 wg-intel Core

@@ -2,10 +2,10 @@
 //! link writes, and the shape of the changes reply.
 
 use rpds::VectorSync;
+use wg_git_feature::spec::{ingest, links, reads};
 use wg_json::Value;
 use wg_model::entity::git::{Commit, CommitTaskLink};
 use wg_model::{Row, Write};
-use wg_runtimespec::git::{ingest, links, reads};
 use wg_types::{Id, Timestamp, parse_id};
 
 const REPOSITORY: &str = "018f0000-0000-7000-8000-000000000001";

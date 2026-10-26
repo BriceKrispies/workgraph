@@ -8,7 +8,10 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use rpds::VectorSync;
-use wg_gitcore::{CommitDiff, CommitFacts, CommitMeta, file_class, language_for, module_for};
+use wg_gitcore::{
+    CommitDiff, CommitFacts, CommitMeta, Equivalence, EquivalenceMethod, file_class, language_for,
+    module_for,
+};
 use wg_json::Value;
 use wg_model::entity::JsonObject;
 use wg_model::entity::git::{Commit, CommitFileChange};
@@ -320,4 +323,29 @@ pub fn sync_result_value(result: &SyncResult) -> Value {
             ("head_refs", int(result.head_refs)),
         ],
     )
+}
+
+/// The `evidence` JSON of an equivalence: the method, then both SHAs.
+pub fn equivalence_evidence(
+    equivalence: &Equivalence,
+) -> serde_json::Map<String, serde_json::Value> {
+    let mut evidence = serde_json::Map::new();
+    match &equivalence.method {
+        EquivalenceMethod::PatchId { patch_id } => {
+            evidence.insert("method".to_owned(), "patch-id".into());
+            evidence.insert("patch_id".to_owned(), patch_id.clone().into());
+        }
+        EquivalenceMethod::AuthorDateSubject => {
+            evidence.insert("method".to_owned(), "author-date+subject".into());
+        }
+        EquivalenceMethod::CherryPickTrailer => {
+            evidence.insert("method".to_owned(), "cherry-pick trailer".into());
+        }
+    }
+    evidence.insert(
+        "original_sha".to_owned(),
+        equivalence.original_sha.clone().into(),
+    );
+    evidence.insert("new_sha".to_owned(), equivalence.new_sha.clone().into());
+    evidence
 }

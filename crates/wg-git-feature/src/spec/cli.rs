@@ -1,19 +1,20 @@
 //! The pure half of the `git` command group (`cli/commands/gitcmd.py`): the clap command and the
 //! human views of its results.
 
+use clap::ArgMatches;
+use wg_clispec::args::option_text;
+use wg_clispec::args::{get, items, python, s};
+use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
+use wg_clispec::{CliFailure, Snapshot};
 use wg_json::Value;
 use wg_render::Console;
-
-use crate::Snapshot;
-use crate::args::{get, items, python, s};
-use crate::tree::{SNAPSHOT_JSON, placeholder};
 
 /// The clap command of the `git` group, from the snapshot's own tree.
 #[must_use]
 pub fn command() -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "git"),
-        Err(_) => crate::tree::command("git"),
+        Err(_) => wg_clispec::tree::command("git"),
     }
 }
 
@@ -389,4 +390,30 @@ pub fn hook_line(console: &Console, result: &Value) -> String {
     console
         .print(&format!("installed {}", s(get(result, "hook"))))
         .text
+}
+
+/// An integer option, with its default when it is not given.
+pub fn int_option(m: &ArgMatches, id: &str, default: i64) -> Result<i64, CliFailure> {
+    match option_text(m, id) {
+        None => Ok(default),
+        Some(text) => text.parse().map_err(|_| {
+            CliFailure::fail(
+                format!("Invalid value for '{id}': '{text}' is not a valid integer."),
+                2,
+            )
+        }),
+    }
+}
+
+/// A float option, with its default when it is not given.
+pub fn float_option(m: &ArgMatches, id: &str, default: f64) -> Result<f64, CliFailure> {
+    match option_text(m, id) {
+        None => Ok(default),
+        Some(text) => text.parse().map_err(|_| {
+            CliFailure::fail(
+                format!("Invalid value for '{id}': '{text}' is not a valid float."),
+                2,
+            )
+        }),
+    }
 }

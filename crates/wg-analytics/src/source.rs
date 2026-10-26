@@ -125,17 +125,58 @@ pub struct TaskProject {
     pub project_id: Option<String>,
 }
 
-/// A row of `task_repositories`; only its task matters to the fact tables.
+/// A row of `task_repositories`. The fact tables read only its task; the metrics also read the
+/// repository a task is linked to.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct TaskRepository {
     pub task_id: Option<String>,
+    pub repository_id: Option<String>,
 }
 
-/// A row of `verification_runs`, the columns the fact tables read.
+/// A row of `projects`, the columns the metric labels and filters read.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct ProjectRow {
+    pub id: Option<String>,
+    pub workspace_id: Option<String>,
+    pub slug: Option<String>,
+}
+
+/// A row of `repositories`, the columns the metric labels and filters read.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct RepositoryRow {
+    pub id: Option<String>,
+    pub workspace_id: Option<String>,
+    pub name: Option<String>,
+}
+
+/// A row of `verification_runs`, the columns the fact tables and the metrics read.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct VerificationRun {
+    pub id: Option<String>,
+    pub workspace_id: Option<String>,
+    pub task_id: Option<String>,
     pub attempt_id: Option<String>,
     pub status: Option<String>,
+    pub created_at: Option<Timestamp>,
+}
+
+/// A row of `verification_check_results`, the columns the metrics read.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct CheckResult {
+    pub run_id: Option<String>,
+    pub name: Option<String>,
+    pub kind: Option<String>,
+    pub repository_id: Option<String>,
+    pub status: Option<String>,
+    pub created_at: Option<Timestamp>,
+}
+
+/// A row of `task_relations`, the columns the metrics read.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct TaskRelation {
+    pub source_task_id: Option<String>,
+    pub relation_type: Option<String>,
+    pub created_at: Option<Timestamp>,
 }
 
 /// A row of `subagent_runs`, the columns the subagent and agent-time reports read.
@@ -185,6 +226,10 @@ pub struct AnalyticsInput {
     pub task_projects: VectorSync<TaskProject>,
     pub task_repositories: VectorSync<TaskRepository>,
     pub verification_runs: VectorSync<VerificationRun>,
+    pub check_results: VectorSync<CheckResult>,
+    pub relations: VectorSync<TaskRelation>,
+    pub projects: VectorSync<ProjectRow>,
+    pub repositories: VectorSync<RepositoryRow>,
     pub events: VectorSync<Event>,
     pub subagent_runs: VectorSync<SubagentRunRow>,
     pub acceptances: VectorSync<AcceptanceRow>,

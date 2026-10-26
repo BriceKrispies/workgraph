@@ -9,6 +9,10 @@ use wg_types::{Id, Timestamp};
 pub enum TimeFormat {
     /// Pydantic's model form (`2026-10-25T13:56:00Z`), used by every `datetime` field of a model.
     ModelZ,
+    /// The same `Z` text as [`TimeFormat::ModelZ`], written as a string so it prints the same in a
+    /// plain dict. A route that returns a dict of datetimes gets it from FastAPI's encoder
+    /// (`GET /jobs` prints `"run_at":"2026-10-26T04:55:43.038933Z"`).
+    Z,
     /// Python `isoformat()` (`2026-10-25T13:56:00+00:00`), used where a handler stringifies the
     /// datetime itself.
     Isoformat,
@@ -18,6 +22,7 @@ pub enum TimeFormat {
 pub fn timestamp(ts: Timestamp, format: TimeFormat) -> Value {
     match format {
         TimeFormat::ModelZ => Value::DateTime(ts),
+        TimeFormat::Z => Value::Str(PyStr::from(ts.format_z())),
         TimeFormat::Isoformat => Value::Str(PyStr::from(ts.format_isoformat())),
     }
 }

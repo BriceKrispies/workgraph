@@ -12,19 +12,7 @@ use wg_types::{ErrorCode, Id, WgError};
 
 use crate::codec::{Cols, Raw, id_sql, text_sql};
 use crate::rows::{TableRow, columns};
-use crate::sql::Statement;
-
-/// The table's columns, quoted and qualified by `alias` when one is given.
-fn select_list(table: Table, alias: Option<&str>) -> String {
-    columns(table)
-        .iter()
-        .map(|column| match alias {
-            Some(alias) => format!("{alias}.\"{column}\""),
-            None => format!("\"{column}\""),
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
+use crate::sql::{Statement, select_list};
 
 /// The classifications of `task_id`, newest first (`ClassificationService.get`).
 pub fn classification_history(task_id: Id) -> Statement {

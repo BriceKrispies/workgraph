@@ -12,12 +12,7 @@ use wg_types::{Id, TaskKey, TaskStatus};
 
 use crate::codec::{Raw, id_sql, text_sql};
 use crate::rows::columns;
-use crate::sql::Statement;
-
-/// Quotes an identifier (as [`crate::sql`] does; `key` is a keyword-adjacent column name).
-fn quote(name: &str) -> String {
-    format!("\"{name}\"")
-}
+use crate::sql::{Statement, quote};
 
 /// `SELECT <columns of table> FROM <table> WHERE <clause> ORDER BY <order>`.
 fn select(table: Table, clause: &str, order: &str, params: Vec<Raw>) -> Statement {

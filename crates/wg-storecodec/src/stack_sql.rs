@@ -10,23 +10,10 @@ use wg_model::Table;
 use wg_types::Id;
 
 use crate::codec::id_sql;
-use crate::rows::columns;
-use crate::sql::Statement;
+use crate::sql::{Statement, select_list};
 
 /// The statuses a stack no longer takes part in (Python `INACTIVE_STACK_STATUSES`), as SQL text.
 const INACTIVE: &str = "('landed', 'abandoned')";
-
-/// The table's columns, quoted and qualified by `alias` when one is given.
-fn select_list(table: Table, alias: Option<&str>) -> String {
-    columns(table)
-        .iter()
-        .map(|column| match alias {
-            Some(alias) => format!("{alias}.\"{column}\""),
-            None => format!("\"{column}\""),
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
 
 /// The stack whose id is `stack_id`.
 pub fn stack_by_id(stack_id: Id) -> Statement {

@@ -15,6 +15,7 @@ pub mod project;
 pub mod repository;
 pub mod session;
 pub mod stack;
+pub mod stored;
 pub mod task;
 pub mod verification;
 pub mod workspace;
@@ -68,6 +69,7 @@ pub use stack::{
     StackStatusChanged, StackVerificationErrored, StackVerificationFailed,
     StackVerificationFailedOnBase, StackVerificationStarted, StackVerified,
 };
+pub use stored::StoredEvent;
 pub use task::{
     TaskAccepted, TaskChangeSurfaceComputed, TaskClaimed, TaskCommentRecorded, TaskCommitLinked,
     TaskCommitUnlinked, TaskCompleted, TaskCreated, TaskDecisionChanged, TaskDecomposed,

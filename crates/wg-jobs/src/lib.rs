@@ -8,6 +8,7 @@
 
 use wg_types::Timestamp;
 
+pub mod dispatch;
 pub mod limits;
 pub mod maintenance;
 pub mod queue;

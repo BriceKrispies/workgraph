@@ -64,16 +64,23 @@ fn type_name(value: &Value) -> &'static str {
     }
 }
 
-/// Pydantic keeps the first 25 and the last 24 characters of a repr longer than 50.
+/// Pydantic's `truncate_safe_repr`: a repr longer than 50 UTF-8 bytes keeps a head of at most 25
+/// bytes and a tail of at most 24, each cut at a character boundary, joined by `...`. Checked
+/// against Pydantic 2.14 for ASCII, two-, three- and four-byte characters (`golden/`).
 fn truncated_repr(value: &Value) -> String {
     let repr = py_repr(value);
-    let chars: Vec<char> = repr.chars().collect();
-    if chars.len() <= REPR_LIMIT {
+    if repr.len() <= REPR_LIMIT {
         return repr;
     }
-    let head: String = chars[..25].iter().collect();
-    let tail: String = chars[chars.len() - 24..].iter().collect();
-    format!("{head}...{tail}")
+    let mut head_end = REPR_LIMIT / 2;
+    while !repr.is_char_boundary(head_end) {
+        head_end -= 1;
+    }
+    let mut tail_start = repr.len() - (REPR_LIMIT / 2 - 1);
+    while !repr.is_char_boundary(tail_start) {
+        tail_start += 1;
+    }
+    format!("{}...{}", &repr[..head_end], &repr[tail_start..])
 }
 
 /// `repr()` of the Python value a JSON value decodes to.
@@ -148,5 +155,11 @@ mod tests {
         let long = Value::String("a".repeat(80));
         let text = truncated_repr(&long);
         assert_eq!(text.chars().count(), 25 + 3 + 24);
+        // 48 characters make a 50-byte repr with the quotes: kept whole.
+        let edge = Value::String("a".repeat(48));
+        assert_eq!(truncated_repr(&edge).len(), 50);
+        // Multi-byte characters count in bytes: 25 two-byte characters are too long.
+        let accented = Value::String("é".repeat(25));
+        assert_eq!(truncated_repr(&accented).matches("...").count(), 1);
     }
 }

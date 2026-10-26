@@ -85,6 +85,9 @@ pub struct Metric {
     /// The metric's `WHERE` clause over the base row.
     pub filter: fn(&Row) -> bool,
     pub ratio: Option<Ratio>,
+    /// Whether the value column is an integer column: DuckDB keeps `MIN`, `MAX` and `SUM` of it
+    /// integral, so the statistics come out as integers.
+    pub integer: bool,
     pub caveats: &'static [&'static str],
 }
 
@@ -150,6 +153,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: always,
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -164,6 +168,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| r.completed_at.is_some(),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -178,6 +183,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| r.accepted_at.is_some(),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -196,6 +202,7 @@ pub fn registry() -> Vec<Metric> {
                     .is_some_and(|s| s != "accepted" && s != "cancelled")
             },
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -210,6 +217,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| is(&r.status, "blocked"),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         // quality (reopens)
@@ -225,6 +233,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| r.reopen_count > 0,
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         // execution
@@ -240,6 +249,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(r.queue_wait_ms),
             filter: |r| r.queue_wait_ms.is_some(),
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -254,6 +264,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(r.duration_ms),
             filter: |r| r.duration_ms.is_some() && r.finished_at.is_some(),
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -268,6 +279,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(r.elapsed_ms),
             filter: |r| r.elapsed_ms.is_some(),
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -282,6 +294,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(r.cycle_ms),
             filter: |r| r.cycle_ms.is_some(),
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -296,6 +309,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| Some(r.attempts as f64),
             filter: |r| r.accepted_at.is_some() && r.attempts > 0,
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -310,6 +324,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: always,
             ratio: Some(Ratio::Hits(|r| r.retry)),
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -326,6 +341,7 @@ pub fn registry() -> Vec<Metric> {
             ratio: Some(Ratio::Hits(|r| {
                 r.attempts == 1 && is(&r.first_attempt_status, "succeeded")
             })),
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -340,6 +356,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| one_of(&r.status, &ACTIVE_ATTEMPT_STATUSES),
             ratio: Some(Ratio::Hits(|r| is(&r.status, "succeeded"))),
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -354,6 +371,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: always,
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         // code
@@ -369,6 +387,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| Some(churn(r) as f64),
             filter: |r| r.commits > 0,
             ratio: None,
+            integer: true,
             caveats: &[CAVEAT_LINES],
         },
         Metric {
@@ -383,6 +402,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(final_lines(r)),
             filter: |r| r.final_files.is_some(),
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -397,6 +417,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| Some(r.files_touched as f64),
             filter: |r| r.commits > 0,
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -411,6 +432,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| Some(r.churn_functions as f64),
             filter: |r| r.commits > 0,
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -429,6 +451,7 @@ pub fn registry() -> Vec<Metric> {
             },
             filter: |r| r.commits > 0 && final_lines(r).unwrap_or(0) > 0,
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -443,6 +466,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| Some(r.repeated_file_edits as f64),
             filter: |r| r.commits > 0,
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -457,6 +481,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(commit_lines(r)),
             filter: |r| r.is_merge == Some(false),
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         // architecture
@@ -472,6 +497,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(r.lines),
             filter: always,
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -486,6 +512,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(r.lines),
             filter: always,
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         // agents
@@ -501,6 +528,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| one_of(&r.status, &ACTIVE_ATTEMPT_STATUSES),
             ratio: Some(Ratio::Hits(|r| is(&r.status, "succeeded"))),
+            integer: false,
             caveats: &[CAVEAT_SELECTION],
         },
         Metric {
@@ -515,6 +543,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(r.duration_ms),
             filter: |r| is(&r.status, "succeeded") && r.duration_ms.is_some(),
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -532,6 +561,7 @@ pub fn registry() -> Vec<Metric> {
                 numerator: |r| Some(r.verification_passed as f64),
                 denominator: |r| Some(r.verification_runs as f64),
             }),
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -546,6 +576,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(r.input_tokens),
             filter: |r| r.usage_source && r.input_tokens.is_some(),
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -560,6 +591,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| as_f64(r.output_tokens),
             filter: |r| r.usage_source && r.output_tokens.is_some(),
             ratio: None,
+            integer: true,
             caveats: &[],
         },
         Metric {
@@ -574,6 +606,7 @@ pub fn registry() -> Vec<Metric> {
             value: |r| r.cost_usd,
             filter: |r| r.cost_source && r.cost_usd.is_some(),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         // quality
@@ -589,6 +622,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| one_of(&r.status, &["passed", "failed"]),
             ratio: Some(Ratio::Hits(|r| is(&r.status, "passed"))),
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -603,6 +637,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| one_of(&r.status, &["failed", "error"]),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -617,6 +652,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| one_of(&r.status, &["failed", "error"]) && is(&r.kind, "test"),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -631,6 +667,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| one_of(&r.status, &["failed", "error"]) && is(&r.kind, "build"),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -645,6 +682,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| one_of(&r.status, &["failed", "error"]) && is(&r.kind, "integration"),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -659,6 +697,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| is(&r.relation_type, "regression_of"),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
         Metric {
@@ -673,6 +712,7 @@ pub fn registry() -> Vec<Metric> {
             value: no_value,
             filter: |r| is(&r.relation_type, "follows_up"),
             ratio: None,
+            integer: false,
             caveats: &[],
         },
     ]

@@ -9,8 +9,8 @@ use std::path::PathBuf;
 use serde_json::{Map, Value};
 use wg_analytics::source::{
     Analysis, AnalyticsInput, AttemptRow, CheckResult, CommitLink, CommitRow, Event, FileChange,
-    ProjectRow, RepositoryRow, Surface, TaskProject, TaskRelation, TaskRepository, TaskRow,
-    VerificationRun,
+    ProjectRow, RepositoryDependency, RepositoryRow, Surface, TaskProject, TaskRelation,
+    TaskRepository, TaskRow, VerificationRun,
 };
 use wg_types::Timestamp;
 
@@ -257,6 +257,13 @@ pub fn input(source: &Value) -> AnalyticsInput {
                 entity_id: text(row, "entity_id"),
                 occurred_at: moment(row, "occurred_at"),
                 data: text(row, "data"),
+            })
+            .collect(),
+        repository_dependencies: records(source, "repository_dependencies")
+            .iter()
+            .map(|row| RepositoryDependency {
+                from_repository_id: text(row, "from_repository_id"),
+                to_repository_id: text(row, "to_repository_id"),
             })
             .collect(),
         ..Default::default()

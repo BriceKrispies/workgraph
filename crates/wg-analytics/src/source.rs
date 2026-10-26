@@ -133,6 +133,13 @@ pub struct TaskRepository {
     pub repository_id: Option<String>,
 }
 
+/// A row of `repository_dependencies`: a declared dependency of one repository on another.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct RepositoryDependency {
+    pub from_repository_id: Option<String>,
+    pub to_repository_id: Option<String>,
+}
+
 /// A row of `projects`, the columns the metric labels and filters read.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct ProjectRow {
@@ -233,4 +240,5 @@ pub struct AnalyticsInput {
     pub events: VectorSync<Event>,
     pub subagent_runs: VectorSync<SubagentRunRow>,
     pub acceptances: VectorSync<AcceptanceRow>,
+    pub repository_dependencies: VectorSync<RepositoryDependency>,
 }

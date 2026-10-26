@@ -18,10 +18,14 @@ const EXIT_USAGE: u8 = 2;
 /// Runs `workgraph` with the process's arguments and streams and returns the exit code.
 #[must_use]
 pub fn run() -> u8 {
-    let args = std::env::args_os()
+    let args: Vec<String> = std::env::args_os()
         .skip(1)
         .map(|arg| arg.to_string_lossy().into_owned())
         .collect();
+    if wg_clispec::is_hook_invocation(&args) {
+        // `claude hook` never builds the clap tree, the console or the snapshot (P01, O15).
+        return crate::hook::run(args.get(2..).unwrap_or_default());
+    }
     run_with(
         args,
         Box::new(std::io::stdout()),

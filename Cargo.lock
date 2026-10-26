@@ -2361,6 +2361,8 @@ dependencies = [
  "wg-server",
  "wg-serverspec",
  "wg-tasks-feature",
+ "wg-telemetry",
+ "wg-telemetry-feature",
  "wg-types",
  "wg-uispec",
 ]
@@ -2932,6 +2934,7 @@ dependencies = [
  "wg-hash",
  "wg-model",
  "wg-types",
+ "wg-validate",
 ]
 
 [[package]]

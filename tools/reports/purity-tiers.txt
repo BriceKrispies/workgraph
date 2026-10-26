@@ -41,6 +41,7 @@ wg-render Pure
 wg-runtime Shell
 wg-runtimespec Pure
 wg-server Shell
+wg-serverspec Pure
 wg-stacks Core
 wg-store Shell
 wg-storecodec Pure

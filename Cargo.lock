@@ -874,6 +874,13 @@ dependencies = [
 [[package]]
 name = "wg-verify"
 version = "0.1.0"
+dependencies = [
+ "regex",
+ "rpds",
+ "serde_json",
+ "wg-model",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-wire"

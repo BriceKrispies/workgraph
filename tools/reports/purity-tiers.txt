@@ -24,6 +24,7 @@ wg-exec Core
 wg-experiments Core
 wg-git Shell
 wg-gitcore Core
+wg-hash Core
 wg-intel Core
 wg-jobs Core
 wg-json Pure
@@ -36,6 +37,7 @@ wg-pyrand Pure
 wg-registry Core
 wg-render Pure
 wg-runtime Shell
+wg-runtimespec Pure
 wg-server Shell
 wg-stacks Core
 wg-store Shell

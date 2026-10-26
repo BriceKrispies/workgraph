@@ -8,3 +8,5 @@
 pub mod ejection;
 pub mod item;
 pub mod membership;
+pub mod merge;
+pub mod queue;

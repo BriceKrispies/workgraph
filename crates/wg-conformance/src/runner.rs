@@ -447,6 +447,12 @@ fn git_step(ctx: &mut Ctx<'_>, s: &Setup) -> Result<Outcome, String> {
         ("checkout", [flag, name]) if flag == "-b" => repo.checkout(name, true),
         ("worktree", [path, branch]) => repo.worktree(path, branch),
         ("merge", [branch]) => repo.merge(branch),
+        ("delete", paths) if !paths.is_empty() => repo.delete(paths),
+        ("move", [from, to]) => repo.move_path(from, to),
+        ("rebase", [onto]) => repo.rebase(onto),
+        ("cherry-pick", [rev]) => repo.cherry_pick(rev),
+        ("reset", [rev]) => repo.reset(None, rev),
+        ("reset", [mode, rev]) => repo.reset(Some(mode), rev),
         (op, args) => Err(format!(
             "setup `{op}` does not take {} argument(s)",
             args.len()
@@ -858,5 +864,38 @@ mod tests {
         );
         assert!(ctx.resolve("{key:3}").is_err());
         let _ = std::fs::remove_dir_all(&sb.root);
+    }
+
+    #[test]
+    fn every_setup_operation_runs_without_a_failed_step() {
+        let text = r#"{"id":"setup-ops","covers":[],"setup":[
+          {"git":"init","repo":"r"},
+          {"git":"commit","repo":"r","files":{"a.txt":"a\n","b.txt":"b\n"},"message":"base"},
+          {"git":"delete","repo":"r","args":["a.txt"]},
+          {"git":"move","repo":"r","args":["b.txt","d/b.txt"]},
+          {"git":"commit","repo":"r","message":"tidy"},
+          {"git":"branch","repo":"r","args":["keep"]},
+          {"git":"checkout","repo":"r","args":["-b","feat"]},
+          {"git":"commit","repo":"r","files":{"f.txt":"f\n"},"message":"feature"},
+          {"git":"checkout","repo":"r","args":["main"]},
+          {"git":"cherry-pick","repo":"r","args":["feat"]},
+          {"git":"reset","repo":"r","args":["--hard","HEAD~1"]},
+          {"git":"write","repo":"r","files":{"w.txt":"w\n"}},
+          {"git":"rebase","repo":"r","args":["keep"]}
+        ],"steps":[{"cli":["--version"]},{"assert":{"exit":0}}]}"#;
+        let scenario = crate::scenario::parse_scenario(text).unwrap();
+        let imp = Implementation::from_command("git", "git", Vec::new()).unwrap();
+        let run = run_scenario(&scenario, &imp).unwrap();
+        assert_eq!(run.steps.len(), 15);
+        let failures: Vec<&StepRecord> = run
+            .steps
+            .iter()
+            .filter(|s| s.status == Status::Failed)
+            .collect();
+        assert!(
+            failures.is_empty(),
+            "{:?}",
+            failures.iter().map(|s| &s.note).collect::<Vec<_>>()
+        );
     }
 }

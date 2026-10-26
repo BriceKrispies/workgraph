@@ -12,6 +12,8 @@ workspace = true
 
 [dependencies]
 rusqlite = { version = "0.41", features = ["bundled"] }
+time = { version = "0.3", default-features = false, features = ["std"] }
+uuid = { version = "1", default-features = false, features = ["std", "v4"] }
 wg-model = { path = "../wg-model" }
 wg-storecodec = { path = "../wg-storecodec" }
 wg-types = { path = "../wg-types" }
@@ -19,3 +21,4 @@ wg-types = { path = "../wg-types" }
 [dev-dependencies]
 rpds = { version = "1", features = ["serde"] }
 serde_json = { version = "1", features = ["preserve_order"] }
+wg-conformance = { path = "../wg-conformance" }

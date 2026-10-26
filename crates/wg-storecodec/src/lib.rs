@@ -7,10 +7,15 @@
 
 pub mod codec;
 pub mod events;
+pub mod migrations;
 pub mod query;
+pub mod repo_sql;
 pub mod rows;
 mod rows_more;
+pub mod run_sql;
 pub mod sql;
+pub mod stack_sql;
+pub mod task_sql;
 
 pub use codec::{Cols, DbFailure, Raw, db_error};
 pub use events::{EVENT_COLUMNS, EventQuery, EventRecord, append_statement, decode_event};

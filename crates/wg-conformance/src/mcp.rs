@@ -649,7 +649,9 @@ mod tests {
         );
         let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
         let exchanges = parse_transcript(&text)?;
-        assert_eq!(exchanges.len(), 156);
+        // Every recorded line is one exchange; the count changes whenever the transcript is re-recorded.
+        let lines = text.lines().filter(|line| !line.trim().is_empty()).count();
+        assert_eq!(exchanges.len(), lines);
         assert_eq!(exchanges[0].label, "initialize");
         assert!(exchanges[0].response.is_some());
         assert!(

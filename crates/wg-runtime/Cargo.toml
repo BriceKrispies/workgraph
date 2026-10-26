@@ -9,3 +9,18 @@ description = "effect interpreter, decision cycle, flow drivers, workers"
 
 [lints]
 workspace = true
+
+[dependencies]
+getrandom = "0.4"
+rpds = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+tracing = "0.1"
+tracing-core = "0.1"
+tracing-subscriber = { version = "0.3", default-features = false, features = ["registry", "std"] }
+wg-config = { path = "../wg-config" }
+wg-json = { path = "../wg-json" }
+wg-model = { path = "../wg-model" }
+wg-proc = { path = "../wg-proc" }
+wg-runtimespec = { path = "../wg-runtimespec" }
+wg-store = { path = "../wg-store" }
+wg-types = { path = "../wg-types" }

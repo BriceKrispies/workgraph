@@ -37,7 +37,7 @@ impl Fixture {
             std::env::temp_dir().join(format!("wg-mcp-if31-{name}-{}-{nanos}", std::process::id()));
         std::fs::create_dir_all(&root).expect("root");
         let app = App::open(Some(&root.join("home"))).expect("open the home");
-        let mut backend = AppBackend(app);
+        let mut backend = AppBackend { app, features: &[] };
         let now = Timestamp::from_components(2026, 10, 26, 0, 0, 0, 0).expect("timestamp");
         let workspace = Workspace {
             id: new_id().expect("id"),
@@ -63,7 +63,7 @@ impl Fixture {
             updated_at: now,
         };
         backend
-            .0
+            .app
             .runtime
             .store
             .write(|session| {

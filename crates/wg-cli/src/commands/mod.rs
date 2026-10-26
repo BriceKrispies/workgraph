@@ -1,9 +1,9 @@
 //! The command groups implemented so far, one module per group (`commands/<group>.rs`).
 //!
-//! A group task adds its module, appends a [`Group`] to [`GROUPS`] and adds the group's name to
-//! the implemented list of `tests/if01_cli.rs`, which then compares its clap command against
-//! `contracts/cli.json`. A top-level command or group that is not listed here is a placeholder
-//! built from the snapshot (see `wg_clispec::tree`).
+//! A group is implemented once it is in [`GROUPS`] or in a feature's `cli` table listed in
+//! [`FEATURES`]; `tests/if01_cli.rs` derives its implemented list from both and compares each
+//! group's clap command against `contracts/cli.json`. A top-level command or group that is not
+//! implemented is a placeholder built from the snapshot (see `wg_clispec::tree`).
 
 pub mod automation;
 pub mod decision;
@@ -17,26 +17,20 @@ pub mod task;
 pub mod ui;
 pub mod worker;
 
-use clap::{ArgMatches, Command};
-use wg_clispec::CliFailure;
-
-use crate::CliState;
+use wg_runtime::{CliGroup, CliRun, Feature};
 
 /// What a handler receives: the global state, the command path below the root
 /// (`["task", "list"]`) and the matches of the leaf command.
-pub type Handler = fn(&mut CliState, &[String], &ArgMatches) -> Result<(), CliFailure>;
+pub type Handler = CliRun;
 
-/// One top-level command or group.
-pub struct Group {
-    /// The name as typed after `workgraph`.
-    pub name: &'static str,
-    /// Builds the clap command; start from [`wg_clispec::tree::command`] so the help flag matches.
-    pub command: fn() -> Command,
-    /// Runs the matched leaf command of this group.
-    pub run: Handler,
-}
+/// One top-level command or group (the descriptor of `wg_runtime::feature`).
+pub type Group = CliGroup;
 
-/// The implemented groups.
+/// The features of this binary, in the order their command groups are dispatched and listed as
+/// implemented. A feature task adds its crate's `Feature` here; none is listed yet.
+pub const FEATURES: &[&Feature] = &[];
+
+/// The implemented groups that predate the feature descriptor, in CLI help order.
 pub const GROUPS: &[Group] = &[
     repo::GROUP,
     setup::CONFIG,

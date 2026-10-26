@@ -16,6 +16,7 @@ use wg_jobs::queue::ClaimedJob;
 use wg_model::entity::JsonObject;
 use wg_types::WgError;
 
+use crate::feature::Feature;
 use crate::queue::Queue;
 
 /// Why a handler did not finish normally.
@@ -98,6 +99,18 @@ impl HandlerRegistry {
         registry.register("noop", noop);
         registry.register("compact_telemetry", compact_telemetry);
         registry
+    }
+
+    /// [`HandlerRegistry::standard`] plus the job kinds of `features`, in order; a later feature
+    /// replaces an earlier handler of the same kind.
+    pub fn from_features(features: &[&Feature]) -> HandlerRegistry {
+        features
+            .iter()
+            .flat_map(|feature| feature.jobs.iter())
+            .fold(HandlerRegistry::standard(), |mut registry, job| {
+                registry.register(job.kind, job.handler);
+                registry
+            })
     }
 
     /// Registers (or replaces) the handler of `kind`.

@@ -24,7 +24,7 @@ use wg_serverspec::lan::{
 };
 use wg_serverspec::serve::{Settings, bind_refusal};
 
-use super::Group;
+use super::{FEATURES, Group};
 use crate::{CliState, console};
 
 /// The `serve` command.
@@ -92,7 +92,10 @@ fn run_serve(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(
             name: "mcp-http-client".to_owned(),
             permissions: agent_permissions::<String>(&[])?,
         };
-        let backend = Box::new(AppBackend(App::open(home.as_deref())?));
+        let backend = Box::new(AppBackend {
+            app: App::open(home.as_deref())?,
+            features: FEATURES,
+        });
         Some(http_router(agent, backend, cancel.clone())?)
     } else {
         None
@@ -108,7 +111,7 @@ fn run_serve(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(
         }),
         ui: Ui::Embedded,
         mcp,
-        routes: groups::routes(),
+        routes: groups::routes_with(FEATURES),
     };
     let server = Arc::new(Server::new(options, App::open(home.as_deref())?)?);
     let runtime = runtime()?;
@@ -150,7 +153,7 @@ fn start_worker(home: Option<std::path::PathBuf>) -> Result<Background, CliFailu
             home,
             ..WorkerOptions::default()
         },
-        HandlerRegistry::standard(),
+        HandlerRegistry::from_features(FEATURES),
     )?;
     let stop = worker.stop_flag();
     let thread = std::thread::Builder::new()
@@ -170,12 +173,18 @@ fn run_mcp(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(),
     let runtime = runtime()?;
     match options.transport {
         Transport::Stdio => {
-            let backend = Box::new(AppBackend(App::open(home.as_deref())?));
+            let backend = Box::new(AppBackend {
+                app: App::open(home.as_deref())?,
+                features: FEATURES,
+            });
             Ok(runtime.block_on(serve_stdio(agent, backend))?)
         }
         Transport::Http => {
             let cancel = CancellationToken::new();
-            let backend = Box::new(AppBackend(App::open(home.as_deref())?));
+            let backend = Box::new(AppBackend {
+                app: App::open(home.as_deref())?,
+                features: FEATURES,
+            });
             let mcp = http_router(agent, backend, cancel.clone())?;
             let server = Server::new(
                 ServerOptions {
@@ -184,7 +193,7 @@ fn run_mcp(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(),
                     lan: None,
                     ui: Ui::Embedded,
                     mcp: Some(mcp),
-                    routes: groups::routes(),
+                    routes: groups::routes_with(FEATURES),
                 },
                 App::open(home.as_deref())?,
             )?;

@@ -256,7 +256,7 @@ impl Harness {
                 lan: None,
                 ui: Ui::Dir(ui),
                 mcp: None,
-                routes: groups::routes(),
+                routes: groups::routes_with(&[]),
             },
             app,
         )?;

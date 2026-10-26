@@ -15,7 +15,7 @@ use wg_runtime::{
     HandlerRegistry, RunOptions, Worker, WorkerOptions, human_context, worker_summary_out,
 };
 
-use super::Group;
+use super::{FEATURES, Group};
 use crate::CliState;
 
 /// The `worker` group.
@@ -51,7 +51,7 @@ fn run_worker(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
         kinds: view::worker_kinds(m),
         ..WorkerOptions::default()
     };
-    let mut worker = Worker::open(options, HandlerRegistry::standard())?;
+    let mut worker = Worker::open(options, HandlerRegistry::from_features(FEATURES))?;
     install_interrupt_handlers(worker.stop_flag());
     let started = view::started_line(&state.console, &worker.worker_id, worker.concurrency);
     state.print(&started);

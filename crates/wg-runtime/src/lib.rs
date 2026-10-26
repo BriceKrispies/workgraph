@@ -16,9 +16,11 @@ mod acceptance;
 mod app;
 mod automation;
 mod bus;
+mod cli_state;
 mod cycle;
 mod decisions;
 mod effects;
+mod feature;
 mod git;
 mod git_sync;
 mod handlers;
@@ -37,8 +39,13 @@ mod worktrees;
 
 pub use app::{App, environment};
 pub use bus::Bus;
+pub use cli_state::CliState;
 pub use cycle::{Flow, Outcome, Runtime, Step};
 pub use effects::{HttpClient, Interpreter, NetHttp, write_atomic};
+pub use feature::{
+    CliGroup, CliRun, Feature, JobKind, JobRun, ResourceRun, RouteGroup, RouteRequest, RouteRun,
+    ToolRun,
+};
 pub use handlers::{Handler, HandlerError, HandlerRegistry, HandlerResult, JobContext};
 pub use hooks::{Failure, IngestResult, IngestStatus, ReplayCounts, ingest_direct, spool_record};
 pub use logging::{JsonLayer, LogSettings, RotatingFile, configure_logging, json_layer};

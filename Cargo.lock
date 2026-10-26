@@ -2600,6 +2600,7 @@ dependencies = [
 name = "wg-runtime"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "getrandom 0.4.3",
  "rpds",
  "serde_json",
@@ -2608,6 +2609,7 @@ dependencies = [
  "tracing-core",
  "tracing-subscriber",
  "wg-automation",
+ "wg-clispec",
  "wg-codeanalysis",
  "wg-codeparse",
  "wg-config",
@@ -2615,11 +2617,14 @@ dependencies = [
  "wg-gitcore",
  "wg-jobs",
  "wg-json",
+ "wg-mcpspec",
  "wg-model",
  "wg-net",
  "wg-proc",
  "wg-registry",
+ "wg-render",
  "wg-runtimespec",
+ "wg-serverspec",
  "wg-stacks",
  "wg-store",
  "wg-storecodec",

@@ -17,7 +17,8 @@ use wg_serverspec::groups::STACKS;
 use wg_types::{ErrorCode, WgError};
 
 use super::bind;
-use crate::route::{ApiRequest, ApiRoute};
+use crate::route::ApiRoute;
+use wg_runtime::RouteRequest;
 
 /// Registers the group's routes into `table`, in the group's order.
 pub fn register(table: &mut Vec<ApiRoute>) {
@@ -25,7 +26,7 @@ pub fn register(table: &mut Vec<ApiRoute>) {
 }
 
 /// One operation on the application context: the request in, the document out.
-fn run(app: &mut App, id: &str, request: ApiRequest) -> Result<Value, WgError> {
+fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {
     let context = &request.context;
     let params = &request.params;
     let ws = Some(text_param(params, "ws"));

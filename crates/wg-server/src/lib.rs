@@ -9,7 +9,7 @@
 //! the runtime.
 //!
 //! Route groups (sections 9.9, IF-42 to IF-49) live in [`groups`]: each adds its [`ApiRoute`]s
-//! and its name to [`groups::IMPLEMENTED`], and the route-table test checks them against the
+//! and the route-table test checks the implemented groups (`groups::implemented`) against the
 //! OpenAPI snapshot.
 
 mod dispatch;

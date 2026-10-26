@@ -1,10 +1,11 @@
 //! The API route groups (plan section 9.9).
 //!
-//! A group task adds a module here with `pub fn routes() -> Vec<ApiRoute>` for its operations,
-//! chains it into [`routes`] (which `ServerOptions::routes` takes), and adds its group name
-//! (`wg_serverspec::operations::group_of`) to [`IMPLEMENTED`]. The route-table test then requires
-//! every operation of the group to be registered as the OpenAPI snapshot declares it; groups not
-//! listed are reported, not failed (plan 5.5).
+//! A group task adds a module here with `pub fn register(table)` for its operations and chains it
+//! into [`routes_with`] (which `ServerOptions::routes` takes). A feature contributes its routes as
+//! `wg_runtime::RouteGroup` tables through the `&[&Feature]` the binary passes. The route-table
+//! test derives the implemented groups from the registered routes and requires every operation of
+//! those groups to be registered as the OpenAPI snapshot declares it; groups not implemented are
+//! reported, not failed (plan 5.5).
 //!
 //! A handler parses nothing itself: the path and query parameters arrive validated against the
 //! snapshot, and the body against the route's [`crate::BodySpec`]. It calls the runtime through
@@ -17,31 +18,15 @@ pub mod meta_settings;
 pub mod stacks;
 pub mod tasks;
 
-use wg_json::Value;
-use wg_runtime::App;
+use wg_runtime::{Feature, RouteRequest, RouteRun};
 use wg_serverspec::groups::{RouteSpec, body_spec};
-use wg_types::WgError;
 
-use crate::route::{Answer, ApiRequest, ApiRoute, handler};
-
-/// The groups whose routes are registered.
-pub const IMPLEMENTED: &[&str] = &[
-    "meta-settings",
-    "IF-24",
-    "IF-44",
-    "IF-49",
-    "decisions",
-    "IF-53",
-];
-
-/// What a group runs for one operation: the application context, the operation's inventory id
-/// and the validated request, in; the document, out.
-pub type Run = fn(&mut App, &str, ApiRequest) -> Result<Value, WgError>;
+use crate::route::{Answer, ApiRoute, handler};
 
 /// Registers a table of operations into `table`, in the table's order: each operation's handler
 /// runs `run` with the operation's id on the application context and answers its document with
 /// the operation's success status.
-pub fn bind(table: &mut Vec<ApiRoute>, specs: &[RouteSpec], run: Run) {
+pub fn bind(table: &mut Vec<ApiRoute>, specs: &[RouteSpec], run: RouteRun) {
     let openapi = wg_wire::contract::openapi().ok();
     for spec in specs {
         let body = spec
@@ -57,15 +42,23 @@ pub fn bind(table: &mut Vec<ApiRoute>, specs: &[RouteSpec], run: Run) {
             query: spec.query,
             body,
             handler: handler(move |server, request| async move {
-                let value = server.blocking(move |app| run(app, id, request)).await?;
+                // The validated parts of the API request, as the group's `run` receives them.
+                let route = RouteRequest {
+                    params: request.params,
+                    body: request.body,
+                    given: request.given,
+                    context: request.context,
+                };
+                let value = server.blocking(move |app| run(app, id, route)).await?;
                 Ok(Answer::Json(value))
             }),
         });
     }
 }
 
-/// Every registered API route, from the implemented groups.
-pub fn routes() -> Vec<ApiRoute> {
+/// Every registered API route: the groups that predate the feature descriptor, in their order,
+/// then the routes of `features` in order.
+pub fn routes_with(features: &[&Feature]) -> Vec<ApiRoute> {
     let mut table = Vec::new();
     meta_settings::register(&mut table);
     events::register(&mut table);
@@ -73,5 +66,10 @@ pub fn routes() -> Vec<ApiRoute> {
     tasks::register(&mut table);
     acceptance::register(&mut table);
     stacks::register(&mut table);
+    for feature in features {
+        for group in feature.routes {
+            bind(&mut table, group.specs, group.run);
+        }
+    }
     table
 }

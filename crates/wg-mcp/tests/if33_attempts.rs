@@ -284,3 +284,45 @@ fn a_known_task_resolves_and_the_unwired_success_path_says_so() -> TestResult {
     let _ = std::fs::remove_dir_all(home);
     Ok(())
 }
+
+// covers: M55
+#[test]
+fn an_ambiguous_task_key_is_refused_without_a_workspace() -> TestResult {
+    let (mut app, home) = seeded_app("ambiguous")?;
+    // A second workspace holding its own WG-7, so the key names two tasks.
+    let mut other = workspace();
+    other.id = id(5);
+    other.slug = "other".into();
+    let mut other_task = task();
+    other_task.id = id(6);
+    other_task.workspace_id = id(5);
+    app.runtime.store.write(|session| {
+        session.apply_write(&Write::insert(other))?;
+        session.apply_write(&Write::insert(other_task))
+    })?;
+    let mut backend = AppBackend(app);
+
+    let (code, message) = error_of(backend.call_tool(
+        &agent(granted()?),
+        "git_get_changes",
+        json!({"task": "WG-7"}),
+    ));
+    assert_eq!(code, "validation_failed");
+    assert_eq!(
+        message,
+        "task key 'WG-7' is ambiguous across workspaces; pass a workspace"
+    );
+
+    // Naming the workspace picks its task, and the reference then resolves.
+    for workspace in ["default", "other"] {
+        let (code, message) = error_of(backend.call_tool(
+            &agent(granted()?),
+            "git_get_changes",
+            json!({"task": "WG-7", "workspace": workspace}),
+        ));
+        assert_eq!(code, "workgraph_error", "workspace {workspace}");
+        assert_eq!(message, "tool git_get_changes is not wired yet");
+    }
+    let _ = std::fs::remove_dir_all(home);
+    Ok(())
+}

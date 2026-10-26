@@ -1,7 +1,8 @@
 //! The attempt, run and git tools (IF-33: M47 to M56).
 //!
 //! Each call checks the permissions its Python method requires (`wg_mcpspec::tool_permissions`),
-//! then resolves its references as `resolve.py` does: a task by UUID or key within the workspace,
+//! then resolves its references as `resolve.py` does: a task by UUID or key, within the workspace
+//! the call names or across all workspaces when it names none (an ambiguous key is refused), and
 //! an attempt by UUID. A reference that names nothing is the same `not_found` error Python gives.
 //!
 //! `attempt_get` and `attempt_list` are answered from the store and the `wg-wire` DTOs. The other
@@ -54,7 +55,7 @@ fn attempt_get(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
 
 /// `attempt_list`: one page of attempts in the workspace, newest first.
 fn attempt_list(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
-    let workspace = workspace_of(app, arguments)?;
+    let workspace = workspace_or_default(app, arguments)?;
     let limit = arguments.get("limit").and_then(Value::as_i64).unwrap_or(50);
     let offset = arguments.get("offset").and_then(Value::as_i64).unwrap_or(0);
     let provider = arguments.get("provider").and_then(Value::as_str);
@@ -74,7 +75,7 @@ fn attempt_list(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
         Some(reference) => Some(
             app.runtime
                 .store
-                .read(|session| find_task(session, workspace, reference))?
+                .read(|session| find_task(session, Some(workspace), reference))?
                 .id,
         ),
         None => None,
@@ -114,7 +115,7 @@ fn unwired(app: &mut App, name: &str, arguments: &Value) -> Result<Value, WgErro
             .store
             .read(|session| find_attempt(session, reference))?;
     } else {
-        let workspace = workspace_of(app, arguments)?;
+        let workspace = workspace_arg(app, arguments)?;
         let reference = arguments
             .get("task")
             .and_then(Value::as_str)
@@ -129,17 +130,31 @@ fn unwired(app: &mut App, name: &str, arguments: &Value) -> Result<Value, WgErro
     ))
 }
 
-/// The workspace the arguments name, else the default one.
-fn workspace_of(app: &mut App, arguments: &Value) -> Result<Id, WgError> {
+/// The workspace the arguments name, else the default one (the tools that list a workspace).
+fn workspace_or_default(app: &mut App, arguments: &Value) -> Result<Id, WgError> {
     match arguments.get("workspace").and_then(Value::as_str) {
         Some(reference) => app.workspace_id(reference),
         None => app.default_workspace_id(),
     }
 }
 
-/// `resolve.task`: by UUID, else by key within `workspace`; a task of another workspace is not
-/// found.
-fn find_task(session: &mut Session<'_>, workspace: Id, reference: &str) -> Result<Task, WgError> {
+/// The workspace the arguments name, if any. Without one a task reference is resolved across
+/// every workspace, as `resolve.task(session, None, ref)` does.
+fn workspace_arg(app: &mut App, arguments: &Value) -> Result<Option<Id>, WgError> {
+    match arguments.get("workspace").and_then(Value::as_str) {
+        Some(reference) => app.workspace_id(reference).map(Some),
+        None => Ok(None),
+    }
+}
+
+/// `resolve.task`: by UUID, else by key, within `workspace` when one is given. A key held by
+/// tasks of more than one workspace is ambiguous when no workspace is given; a task outside
+/// `workspace` is not found.
+fn find_task(
+    session: &mut Session<'_>,
+    workspace: Option<Id>,
+    reference: &str,
+) -> Result<Task, WgError> {
     if reference.is_empty() {
         return Err(WgError::new(
             ErrorCode::ValidationFailed,
@@ -153,12 +168,28 @@ fn find_task(session: &mut Session<'_>, workspace: Id, reference: &str) -> Resul
     let found = match by_id {
         Some(task) => Some(task),
         None => match TaskKey::parse(&reference.trim().to_uppercase()) {
-            Ok(key) => session.task_by_key(workspace, &key)?,
+            Ok(key) => match workspace {
+                Some(ws) => session.task_by_key(ws, &key)?,
+                None => {
+                    // At most one match is needed to tell "one" from "ambiguous".
+                    let mut matches = session.tasks_by_key(&key)?;
+                    if matches.len() > 1 {
+                        return Err(WgError::new(
+                            ErrorCode::ValidationFailed,
+                            format!(
+                                "task key {} is ambiguous across workspaces; pass a workspace",
+                                py_repr_str(reference)
+                            ),
+                        ));
+                    }
+                    matches.pop()
+                }
+            },
             Err(_) => None,
         },
     };
     found
-        .filter(|task| task.workspace_id == workspace)
+        .filter(|task| workspace.is_none_or(|ws| task.workspace_id == ws))
         .ok_or_else(|| {
             WgError::new(
                 ErrorCode::NotFound,

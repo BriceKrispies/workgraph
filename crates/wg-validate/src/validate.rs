@@ -379,19 +379,6 @@ fn list(
             None,
         )));
     };
-    let mut errors = Vec::new();
-    let mut out = Vec::new();
-    for (index, element) in items.iter().enumerate() {
-        let mut item_loc = loc.to_vec();
-        item_loc.push(Loc::Index(index));
-        match value(item, element, &item_loc) {
-            Ok(done) => out.push(done),
-            Err(found) => errors.extend(found),
-        }
-    }
-    if !errors.is_empty() {
-        return Err(errors);
-    }
     let length_error = |kind: &str, word: &str, limit: usize, key: &str| {
         one(error(
             kind,
@@ -409,15 +396,28 @@ fn list(
             ]),
         ))
     };
-    if let Some(min) = min_length
-        && items.len() < min
-    {
-        return Err(length_error("too_short", "least", min, "min_length"));
-    }
     if let Some(max) = max_length
         && items.len() > max
     {
         return Err(length_error("too_long", "most", max, "max_length"));
+    }
+    let mut errors = Vec::new();
+    let mut out = Vec::new();
+    for (index, element) in items.iter().enumerate() {
+        let mut item_loc = loc.to_vec();
+        item_loc.push(Loc::Index(index));
+        match value(item, element, &item_loc) {
+            Ok(done) => out.push(done),
+            Err(found) => errors.extend(found),
+        }
+    }
+    if !errors.is_empty() {
+        return Err(errors);
+    }
+    if let Some(min) = min_length
+        && items.len() < min
+    {
+        return Err(length_error("too_short", "least", min, "min_length"));
     }
     Ok(Value::Array(out))
 }

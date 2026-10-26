@@ -207,6 +207,21 @@ fn task_filter(openapi: &Value) -> Model {
     )
 }
 
+/// JSON equality with numbers compared by value, so the result does not depend on whether
+/// `serde_json` runs with `arbitrary_precision` (the workspace build enables it through wg-json).
+fn same(a: &Value, b: &Value) -> bool {
+    match (a, b) {
+        (Value::Number(x), Value::Number(y)) => x.as_f64() == y.as_f64(),
+        (Value::Array(x), Value::Array(y)) => {
+            x.len() == y.len() && x.iter().zip(y).all(|(p, q)| same(p, q))
+        }
+        (Value::Object(x), Value::Object(y)) => {
+            x.len() == y.len() && x.iter().all(|(k, v)| y.get(k).is_some_and(|w| same(v, w)))
+        }
+        _ => a == b,
+    }
+}
+
 /// Runs every case of one golden file; returns the number of cases.
 fn run_file(path: &Path, model: &Model) -> usize {
     let golden = read(path.to_path_buf());
@@ -218,12 +233,15 @@ fn run_file(path: &Path, model: &Model) -> usize {
         match (&case["output"]["ok"], &case["output"]["errors"]) {
             (ok, _) if !ok.is_null() => {
                 let got = result.unwrap_or_else(|e| panic!("{label}: errors {e:?}"));
-                assert_eq!(&got, ok, "{label}");
+                assert!(same(&got, ok), "{label}: {got} != {ok}");
             }
             (_, Value::Array(expected)) => {
                 let got = result.expect_err(&label);
                 let got: Vec<Value> = got.iter().map(|e| e.to_json()).collect();
-                assert_eq!(&got, expected, "{label}");
+                assert!(
+                    same(&Value::Array(got.clone()), &Value::Array(expected.clone())),
+                    "{label}: {got:?} != {expected:?}"
+                );
             }
             _ => panic!("{label}: neither ok nor errors"),
         }

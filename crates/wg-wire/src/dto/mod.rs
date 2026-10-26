@@ -4,7 +4,10 @@
 //! documentation for the conventions. Later wire tasks add their modules here and their DTOs to
 //! [`implemented`].
 
+pub mod agents;
 pub mod attempt;
+pub mod automation;
+pub mod claude;
 pub mod comment;
 pub mod decision;
 pub mod decision_choose;
@@ -15,10 +18,14 @@ pub mod decision_task;
 pub mod decision_with_task;
 pub mod decision_withdraw;
 pub mod dependency_state;
+pub mod event;
 pub mod graph_edge;
 pub mod graph_node;
+pub mod health;
 pub mod job;
+pub mod llm;
 pub mod mcp_shapes;
+pub mod notification;
 pub mod page;
 pub mod project;
 pub mod project_summary;
@@ -29,6 +36,7 @@ pub mod repository_checkout;
 pub mod repository_remote;
 pub mod repository_status;
 pub mod scheduler;
+pub mod settings;
 pub mod stack;
 pub mod stack_create;
 pub mod stack_item;
@@ -45,15 +53,6 @@ pub mod task_link;
 pub mod task_rollup;
 pub mod verification;
 pub mod worker;
-pub mod agents;
-pub mod automation;
-pub mod claude;
-pub mod event;
-pub mod health;
-pub mod llm;
-pub mod notification;
-pub mod project;
-pub mod settings;
 pub mod workspace;
 pub mod workspace_summary;
 

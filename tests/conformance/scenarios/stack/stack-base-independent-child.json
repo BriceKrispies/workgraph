@@ -1,0 +1,45 @@
+{
+  "id": "stack-base-independent-child",
+  "covers": ["C021", "C023", "C066", "C136"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true, "save": {"base": "/repositories/0/base_sha"}},
+    {"cli": ["attempt", "start", "WG-2", "--agent-name", "tester"], "json": true, "save": {"attempt": "/attempt_id"}},
+    {"assert": {"json": {"path": "/repositories/0/base_sha", "equals": "{var:base}"}}},
+    {"assert": {"json": {"path": "/repositories/0/base/source", "equals": "stack_base"}}},
+    {"cli": ["attempt", "manifests", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/0/kind", "equals": "baseline"}}},
+    {"assert": {"json": {"path": "/0/entries/0/target_ref", "equals": "{var:base}"}}},
+    {"assert": {"json": {"path": "/0/entries/0/sha", "equals": "{var:base}"}}},
+    {"cli": ["events", "list", "--prefix", "attempt.workspace_prepared"], "json": true},
+    {"assert": {"json": {"path": "/0/data/bases/svc/source", "equals": "stack_base"}}},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "running"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stack_bases.py::test_independent_child_starts_at_stack_base_after_main_moves: the repository's main moves on after the stack is created, so the stack base differs from the current head; steps cannot create commits after setup, so the base is asserted against the one recorded at creation only",
+      "covered_by": "CORE-13"
+    },
+    {
+      "case": "tests/integration/test_stack_bases.py::test_child_depending_on_sibling_starts_at_sibling_attempt_head: the dependent child's base is the sibling's attempt head, which needs a completed sibling attempt that commits; no scenario step can make an agent commit in an attempt checkout",
+      "covered_by": "CORE-13"
+    },
+    {
+      "case": "tests/integration/test_stack_bases.py::test_non_linear_sibling_heads_fail_preparation_with_guidance: a join child over two sibling heads that are not one line of history fails preparation; it needs two completed sibling attempts with commits",
+      "covered_by": "CORE-13"
+    },
+    {
+      "case": "tests/integration/test_stack_bases.py::test_external_attempt_start_gets_sibling_head_base: an external attempt start for a child whose sibling has committed; needs a completed sibling attempt with a commit",
+      "covered_by": "CORE-13"
+    }
+  ]
+}

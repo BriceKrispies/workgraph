@@ -1,0 +1,43 @@
+{
+  "id": "stack-readmit-and-item-transitions",
+  "covers": ["C138", "C141", "C143"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["stack", "readmit", "WG-1", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/items/0/task_key", "equals": "WG-2"}}},
+    {"assert": {"json": {"path": "/items/0/state", "equals": "ready"}}},
+    {"assert": {"json": {"path": "/items/0/merge_order", "equals": null}}},
+    {"assert": {"json": {"path": "/items/1/state", "equals": "pending"}}},
+    {"cli": ["stack", "readmit", "WG-1", "WG-2"], "json": true, "expect_exit": 3},
+    {"assert": {"json": {"path": "/error/code", "equals": "conflict"}}},
+    {"cli": ["stack", "readmit", "WG-1", "WG-3"], "json": true},
+    {"assert": {"json": {"path": "/items/1/task_key", "equals": "WG-3"}}},
+    {"assert": {"json": {"path": "/items/1/state", "equals": "ready"}}},
+    {"cli": ["stack", "history", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/1/event_type", "equals": "stack.item_state_changed"}}},
+    {"assert": {"json": {"path": "/1/data/task_key", "equals": "WG-2"}}},
+    {"assert": {"json": {"path": "/1/data/from", "equals": "pending"}}},
+    {"assert": {"json": {"path": "/1/data/to", "equals": "ready"}}},
+    {"assert": {"json": {"path": "/2/data/task_key", "equals": "WG-3"}}},
+    {"assert": {"json": {"path": "/2/data/to", "equals": "ready"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stacks.py::test_item_transitions_follow_the_table: the ready to merged transition with its merge order, the conflict state with its detail, the refused transition to verified, and the no-op re-merge; no command sets an item to merged or conflict, so only pending and ready are reachable",
+      "covered_by": "CORE-14"
+    },
+    {
+      "case": "tests/integration/test_stacks.py::test_readmit_requeues_an_ejected_or_pending_child: re-admitting an ejected child and refusing to readmit a merged child; merged and ejected states are only reached by integration and verification runs",
+      "covered_by": "SC-05"
+    }
+  ]
+}

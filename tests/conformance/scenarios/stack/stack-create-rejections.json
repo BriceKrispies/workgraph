@@ -1,0 +1,32 @@
+{
+  "id": "stack-create-rejections",
+  "covers": ["C136", "C118"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "Second change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "No children", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "Unlinked parent"], "json": true},
+    {"cli": ["task", "create", "Orphan child", "--parent", "WG-5"], "json": true},
+    {"cli": ["stack", "create", "WG-4"], "json": true, "expect_exit": 2},
+    {"assert": {"json": {"path": "/error/code", "equals": "validation_failed"}}},
+    {"cli": ["stack", "create", "WG-5"], "json": true, "expect_exit": 2},
+    {"assert": {"json": {"path": "/error/code", "equals": "validation_failed"}}},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/parent_key", "equals": "WG-1"}}},
+    {"cli": ["stack", "create", "WG-1"], "json": true, "expect_exit": 3},
+    {"assert": {"json": {"path": "/error/code", "equals": "conflict"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_stacks.py::test_new_stack_allowed_once_previous_is_inactive: a second stack is allowed once the first is abandoned or landed; no command abandons a stack, and the landed status comes from the landing flow, so the inactive-stack listing is only set up in-process",
+      "covered_by": "CORE-18"
+    }
+  ]
+}

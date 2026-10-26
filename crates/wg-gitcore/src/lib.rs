@@ -14,9 +14,9 @@ mod diff;
 mod error;
 mod hook;
 mod meta;
+mod reconcile;
 mod refs;
 mod status;
-mod reconcile;
 mod surface;
 mod worktree;
 
@@ -30,16 +30,16 @@ pub use diff::{CommitDiff, FileChange, parse_diff_tree, parse_numstat_z, parse_p
 pub use error::{GitError, HookError, RunOptions};
 pub use hook::{HOOK_MARKER, HookPlan, plan_post_commit_hook, post_commit_script};
 pub use meta::{CommitMeta, META_FORMAT, Trailer, cherry_picked_from, parse_meta, parse_trailers};
+pub use reconcile::{
+    CarriedLink, CommitFacts, Equivalence, EquivalenceKind, EquivalenceMethod, OriginalLink,
+    REWRITE_CONFIDENCE, carry_links, plan_equivalences,
+};
 pub use refs::{
     choose_default_branch, failed_message, is_sha, is_valid_ref, non_empty_trimmed,
     parse_git_version, parse_path_lines, parse_refs, parse_remotes, parse_sha_lines, posix_path,
     split_words, stdin_lines, strip_verbatim_prefix, symref_branch,
 };
 pub use status::{WorkingTreeStatus, parse_status_porcelain_v2};
-pub use reconcile::{
-    CarriedLink, CommitFacts, Equivalence, EquivalenceKind, EquivalenceMethod, OriginalLink,
-    REWRITE_CONFIDENCE, carry_links, plan_equivalences,
-};
 pub use surface::{
     DETAIL_FILE_LIMIT, DetailFile, EMPTY_TREE, Provenance, SurfacePlan, SurfaceRecord, SurfaceRepo,
     plan_surface, surface_record,

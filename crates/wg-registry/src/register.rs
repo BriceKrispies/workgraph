@@ -368,7 +368,7 @@ pub fn register(request: &Request, facts: &Facts, stamp: &Stamp) -> Result<Decis
         workspace_id: Some(ws),
         idempotency_key: Some(sync_key(repo_id, &request.path)),
         resource_keys: vec![format!("repo:{repo_id}")],
-        correlation_id: Some(stamp.correlation),
+        correlation_id: Some(stamp.correlation.clone()),
         causation_id: stamp.causation,
         created_by: stamp.actor.to_string(),
         ..NewJob::new("git_sync")

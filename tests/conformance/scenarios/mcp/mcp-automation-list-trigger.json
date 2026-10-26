@@ -1,0 +1,25 @@
+{
+  "id": "mcp-automation-list-trigger",
+  "covers": ["M64", "M65"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Something"], "json": true},
+    {"cli": ["automation", "create", "{\"name\":\"escalate\",\"trigger\":{\"type\":\"manual\"},\"actions\":[{\"type\":\"update_task\",\"priority\":\"critical\"}]}"], "json": true},
+    {"mcp": "automation_list", "args": {}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/rules/0/name", "equals": "escalate"}}},
+    {"mcp": "automation_trigger", "args": {"rule": "escalate", "task": "WG-1"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "queued"}},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/priority", "equals": "critical"}}},
+    {"mcp": "automation_list", "args": {}},
+    {"assert": {"exit": 0}},
+    {"mcp": "automation_trigger", "args": {"rule": "no-such-rule"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}}
+  ],
+  "not_observable": []
+}

@@ -1,0 +1,24 @@
+{
+  "id": "mcp-attempt-submit-refused",
+  "covers": ["M49", "M47"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Submit me", "ready": true}},
+    {"mcp": "task_claim", "args": {"task": "WG-1"}},
+    {"mcp": "attempt_create", "args": {"task": "WG-1"}, "save": {"attempt": "/id"}},
+    {"mcp": "attempt_submit", "args": {"attempt": "{var:attempt}", "status": "succeeded", "summary": "done"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "verify:run"}},
+    {"mcp": "attempt_submit", "args": {"attempt": "{var:attempt}", "status": "maybe"}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_get", "args": {"task": "WG-1"}},
+    {"assert": {"json": {"path": "/status", "equals": "running"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_mcp.py::test_stdio_server_discovery_invocation_and_persistence: the success path of attempt_submit needs the verify:run grant and commits captured from an attempt_start worktree; the mcp step runs with the default agent grants only and steps cannot create commits, so only the permission refusal is reachable",
+      "covered_by": "CORE-13"
+    }
+  ]
+}

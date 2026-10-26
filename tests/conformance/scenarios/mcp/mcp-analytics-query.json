@@ -1,0 +1,22 @@
+{
+  "id": "mcp-analytics-query",
+  "covers": ["M59"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Counted", "ready": true}},
+    {"mcp": "analytics_query", "args": {"metric": "tasks_accepted", "group_by": ["status"], "period": "week"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "analytics_query", "args": {"metric": "cumulative_churn", "project": "no-such-project"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "analytics_query", "args": {"metric": "no_such_metric"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "validation_failed"}},
+    {"mcp": "analytics_query", "args": {"metric": "tasks_accepted", "group_by": ["nonsense"]}},
+    {"assert": {"exit": 1}},
+    {"mcp": "analytics_query", "args": {"metric": "tasks_accepted", "period": "fortnight"}},
+    {"assert": {"exit": 1}}
+  ],
+  "not_observable": []
+}

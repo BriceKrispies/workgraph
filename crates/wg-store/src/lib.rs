@@ -23,6 +23,7 @@ mod run;
 mod search;
 mod session;
 mod stacks;
+mod sessions;
 mod tasks;
 mod verify;
 

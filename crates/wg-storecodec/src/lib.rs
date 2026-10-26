@@ -19,6 +19,7 @@ pub mod rows;
 mod rows_more;
 pub mod run_sql;
 pub mod search_sql;
+pub mod session_sql;
 pub mod sql;
 pub mod stack_sql;
 pub mod task_sql;

@@ -22,5 +22,6 @@ pub mod query;
 pub mod reads;
 pub mod requests;
 pub mod routes;
+pub mod tool_args;
 pub mod view;
 pub mod writes;

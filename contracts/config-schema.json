@@ -18,6 +18,7 @@
       "additionalProperties": false,
       "properties": {
         "allowed_tools": {
+          "default": [],
           "items": {
             "type": "string"
           },
@@ -30,6 +31,7 @@
           "type": "string"
         },
         "extra_args": {
+          "default": [],
           "items": {
             "type": "string"
           },
@@ -126,6 +128,7 @@
       "description": "A generic executable speaking the Workgraph JSON-lines agent protocol.",
       "properties": {
         "args": {
+          "default": [],
           "items": {
             "type": "string"
           },
@@ -136,6 +139,7 @@
           "additionalProperties": {
             "type": "string"
           },
+          "default": {},
           "title": "Env",
           "type": "object"
         },
@@ -255,6 +259,10 @@
           "type": "string"
         },
         "cancelled_resolutions": {
+          "default": [
+            "Won't Do",
+            "Duplicate"
+          ],
           "items": {
             "type": "string"
           },
@@ -312,6 +320,7 @@
           "type": "integer"
         },
         "pr_fields": {
+          "default": [],
           "items": {
             "type": "string"
           },
@@ -426,10 +435,18 @@
           "type": "boolean"
         },
         "classification": {
-          "$ref": "#/$defs/ModelSelection"
+          "$ref": "#/$defs/ModelSelection",
+          "default": {
+            "model": "qwen2.5:7b-instruct",
+            "provider": "ollama"
+          }
         },
         "embeddings": {
-          "$ref": "#/$defs/ModelSelection"
+          "$ref": "#/$defs/ModelSelection",
+          "default": {
+            "model": "nomic-embed-text",
+            "provider": "ollama"
+          }
         },
         "providers": {
           "additionalProperties": {
@@ -453,11 +470,28 @@
               }
             ]
           },
+          "default": {
+            "heuristic": {
+              "type": "heuristic"
+            },
+            "ollama": {
+              "api_key_env": null,
+              "backoff_seconds": 1.0,
+              "base_url": "http://127.0.0.1:11434",
+              "max_retries": 2,
+              "timeout_seconds": 120.0,
+              "type": "ollama"
+            }
+          },
           "title": "Providers",
           "type": "object"
         },
         "summarization": {
-          "$ref": "#/$defs/ModelSelection"
+          "$ref": "#/$defs/ModelSelection",
+          "default": {
+            "model": "qwen2.5:7b-instruct",
+            "provider": "ollama"
+          }
         }
       },
       "title": "LLMConfig",
@@ -633,6 +667,7 @@
           "title": "Lan Address"
         },
         "lan_networks": {
+          "default": [],
           "items": {
             "type": "string"
           },
@@ -695,14 +730,34 @@
           }
         ]
       },
+      "default": {
+        "claude_code": {
+          "allowed_tools": [],
+          "executable": "claude",
+          "extra_args": [],
+          "max_budget_usd": null,
+          "max_turns": null,
+          "model": null,
+          "permission_mode": "acceptEdits",
+          "timeout_seconds": 3600.0,
+          "type": "claude_code"
+        }
+      },
       "title": "Agents",
       "type": "object"
     },
     "automation": {
-      "$ref": "#/$defs/AutomationConfig"
+      "$ref": "#/$defs/AutomationConfig",
+      "default": {
+        "max_depth": 3
+      }
     },
     "claude": {
-      "$ref": "#/$defs/ClaudeIntegrationConfig"
+      "$ref": "#/$defs/ClaudeIntegrationConfig",
+      "default": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      }
     },
     "default_workspace": {
       "anyOf": [
@@ -717,16 +772,68 @@
       "title": "Default Workspace"
     },
     "execution": {
-      "$ref": "#/$defs/ExecutionConfig"
+      "$ref": "#/$defs/ExecutionConfig",
+      "default": {
+        "allow_merge": false,
+        "allow_push": false,
+        "auto_schedule": false,
+        "default_agent": "claude_code",
+        "enabled": false,
+        "isolation": "worktree",
+        "max_attempts_per_task": 3,
+        "max_concurrent_runs": 2
+      }
     },
     "jobs": {
-      "$ref": "#/$defs/JobLimitsConfig"
+      "$ref": "#/$defs/JobLimitsConfig",
+      "default": {
+        "default_max_attempts": 5,
+        "gpu_concurrency": 1,
+        "lease_seconds": 60,
+        "per_agent_concurrency": 2,
+        "per_repository_concurrency": 1,
+        "verify_concurrency": 1,
+        "worker_concurrency": 4
+      }
     },
     "llm": {
-      "$ref": "#/$defs/LLMConfig"
+      "$ref": "#/$defs/LLMConfig",
+      "default": {
+        "auto_classify": true,
+        "auto_embed": true,
+        "classification": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        },
+        "embeddings": {
+          "model": "nomic-embed-text",
+          "provider": "ollama"
+        },
+        "providers": {
+          "heuristic": {
+            "type": "heuristic"
+          },
+          "ollama": {
+            "api_key_env": null,
+            "backoff_seconds": 1.0,
+            "base_url": "http://127.0.0.1:11434",
+            "max_retries": 2,
+            "timeout_seconds": 120.0,
+            "type": "ollama"
+          }
+        },
+        "summarization": {
+          "model": "qwen2.5:7b-instruct",
+          "provider": "ollama"
+        }
+      }
     },
     "retention": {
-      "$ref": "#/$defs/RetentionConfig"
+      "$ref": "#/$defs/RetentionConfig",
+      "default": {
+        "run_log_days": 90,
+        "telemetry_payload_days": 30
+      }
     },
     "schema_version": {
       "default": 2,
@@ -734,20 +841,35 @@
       "type": "integer"
     },
     "server": {
-      "$ref": "#/$defs/ServerConfig"
+      "$ref": "#/$defs/ServerConfig",
+      "default": {
+        "allow_non_loopback": false,
+        "host": "127.0.0.1",
+        "lan": true,
+        "lan_address": null,
+        "lan_networks": [],
+        "port": 8765
+      }
     },
     "stacks": {
-      "$ref": "#/$defs/StacksConfig"
+      "$ref": "#/$defs/StacksConfig",
+      "default": {
+        "auto_accept": true
+      }
     },
     "trackers": {
       "additionalProperties": {
         "$ref": "#/$defs/JiraTrackerConfig"
       },
+      "default": {},
       "title": "Trackers",
       "type": "object"
     },
     "verification": {
-      "$ref": "#/$defs/VerificationConfig"
+      "$ref": "#/$defs/VerificationConfig",
+      "default": {
+        "auto_accept": true
+      }
     }
   },
   "title": "GlobalConfig",

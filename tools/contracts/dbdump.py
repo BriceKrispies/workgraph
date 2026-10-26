@@ -3,6 +3,7 @@
 Usage::
 
     uv run python tools/contracts/dbdump.py build            # rewrite contracts/schema-NNNN.sql and golden/db/rev-NNNN.db
+    uv run python tools/contracts/dbdump.py check            # exit 1 if a committed fixture's canonical dump is stale
     uv run python tools/contracts/dbdump.py dump DB [-o FILE]  # canonical dump of any database (section 3.1 item 4)
 
 ``build`` migrates a fresh database to each revision in ``REVISIONS`` with the Python migration
@@ -26,6 +27,7 @@ import argparse
 import json
 import sqlite3
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +41,7 @@ GOLDEN_DB_DIR = ROOT / "golden" / "db"
 REVISIONS = ("0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008", "0009", "0010", "0011")
 HEAD = REVISIONS[-1]
 ROWS_PER_TABLE = 2
+PAGE_SIZE = 4096  # fixed, so the file layout does not depend on the SQLite default
 
 EXCLUDED_TABLES = frozenset({"alembic_version"})
 EXCLUDED_PREFIXES = ("task_fts",)  # the FTS5 table and its shadow tables
@@ -293,42 +296,113 @@ def _remove_database(path: Path) -> None:
             candidate.unlink()
 
 
-def _single_file(database: Path) -> None:
-    """Leave the fixture as one file in rollback-journal mode, vacuumed, so its bytes are stable."""
+def _canonicalise_ddl(conn: sqlite3.Connection) -> None:
+    """Store each table's ``CREATE TABLE`` text in the canonical form of ``dump._canonical_create_table``.
+
+    The migration chain adds table constraints in an order that varies from run to run (SQLAlchemy
+    keeps them in a set), and that order would otherwise reach the file bytes. SQLite treats both
+    orders as the same table, so only the stored text changes.
+    """
+    tables = conn.execute(
+        "SELECT name, sql FROM sqlite_master WHERE type = 'table' AND sql IS NOT NULL"
+    ).fetchall()
+    conn.execute("PRAGMA writable_schema = ON")
+    try:
+        for name, sql in tables:
+            canonical = _canonical_create_table(sql)
+            if canonical != sql:
+                conn.execute(
+                    "UPDATE sqlite_master SET sql = ? WHERE type = 'table' AND name = ?", (canonical, name)
+                )
+        (version,) = conn.execute("PRAGMA schema_version").fetchone()
+        conn.execute(f"PRAGMA schema_version = {version + 1}")
+        conn.commit()
+    finally:
+        conn.execute("PRAGMA writable_schema = OFF")
+
+
+def _finalise(database: Path) -> None:
+    """Rewrite ``database`` as a fresh single file with a fixed page size and no WAL.
+
+    The source is put in rollback-journal mode with a fixed page size and vacuumed, then copied
+    with ``VACUUM INTO`` to a new file. Free pages, journal state and ``-wal``/``-shm`` leftovers
+    from the build do not survive into the committed bytes.
+    """
+    scratch = Path(str(database) + ".final")
+    _remove_database(scratch)
     conn = sqlite3.connect(str(database))
     try:
         conn.execute("PRAGMA journal_mode = DELETE").fetchone()
+        _canonicalise_ddl(conn)
+        conn.execute(f"PRAGMA page_size = {PAGE_SIZE}")
         conn.execute("VACUUM")
+        conn.execute("VACUUM INTO ?", (str(scratch),))
     finally:
         conn.close()
+    _remove_database(database)
+    scratch.replace(database)
 
 
-def build() -> None:
+def _build_fixtures(golden_dir: Path, contracts_dir: Path | None) -> None:
+    """Migrate, populate and finalise one fixture per revision under ``golden_dir``.
+
+    ``contracts_dir`` receives the ``schema-NNNN.sql`` snapshots; ``None`` writes only the databases
+    (the ``check`` path).
+    """
     from workgraph.persistence.db import Database
     from workgraph.persistence.migrate import upgrade
 
     kinds = _column_kinds()
-    CONTRACTS_DIR.mkdir(parents=True, exist_ok=True)
-    GOLDEN_DB_DIR.mkdir(parents=True, exist_ok=True)
+    golden_dir.mkdir(parents=True, exist_ok=True)
+    if contracts_dir is not None:
+        contracts_dir.mkdir(parents=True, exist_ok=True)
     for revision in REVISIONS:
-        path = GOLDEN_DB_DIR / f"rev-{revision}.db"
+        path = golden_dir / f"rev-{revision}.db"
         _remove_database(path)
         db = Database(path)
         try:
             upgrade(db, revision)
         finally:
             db.engine.dispose()
-        schema = _schema_text(path, revision)
-        (CONTRACTS_DIR / f"schema-{revision}.sql").write_bytes(schema.encode("utf-8"))
+        if contracts_dir is not None:
+            schema = _schema_text(path, revision)
+            (contracts_dir / f"schema-{revision}.sql").write_bytes(schema.encode("utf-8"))
         populate(path, kinds)
-        _single_file(path)
-        print(f"revision {revision}: {path.relative_to(ROOT).as_posix()} ({path.stat().st_size} bytes)")
+        _finalise(path)
+        print(f"revision {revision}: {path.name} ({path.stat().st_size} bytes)")
+
+
+def build() -> None:
+    _build_fixtures(GOLDEN_DB_DIR, CONTRACTS_DIR)
+
+
+def check() -> int:
+    """Rebuild every fixture in a temporary directory and compare canonical dumps with the committed ones.
+
+    Dumps are compared rather than bytes: the dump is the contract (section 3.1 item 4).
+    """
+    stale: list[str] = []
+    with tempfile.TemporaryDirectory() as tmp:
+        scratch = Path(tmp)
+        _build_fixtures(scratch, None)
+        for revision in REVISIONS:
+            name = f"rev-{revision}.db"
+            committed = GOLDEN_DB_DIR / name
+            if not committed.is_file() or canonical_dump(committed) != canonical_dump(scratch / name):
+                stale.append(name)
+    if stale:
+        print("golden database dumps differ: " + ", ".join(stale), file=sys.stderr)
+        print("run: uv run python tools/contracts/dbdump.py build", file=sys.stderr)
+        return 1
+    print("golden database dumps match")
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("build", help="rewrite contracts/schema-NNNN.sql and golden/db/rev-NNNN.db")
+    sub.add_parser("check", help="rebuild the fixtures in a temp dir and compare canonical dumps")
     dump_parser = sub.add_parser("dump", help="print the canonical dump of a database")
     dump_parser.add_argument("database", type=Path)
     dump_parser.add_argument("-o", "--output", type=Path, help="write to FILE instead of stdout")
@@ -336,6 +410,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "build":
         build()
         return 0
+    if args.command == "check":
+        return check()
     data = canonical_dump(args.database)
     if args.output is not None:
         args.output.write_bytes(data)

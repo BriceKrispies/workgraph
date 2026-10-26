@@ -1,7 +1,9 @@
 """Unified quality gate: `uv run tools/check.py` (add --fast to skip slow tests, --no-web to skip the frontend).
 
-Runs, in order: ruff lint, ruff format check, ty, pytest with coverage (80% gate) and,
-when the frontend dependencies are installed, bun run typecheck / test / build.
+Runs, in order: ruff lint, ruff format check, ty, the Rust steps (cargo fmt check, clippy with
+warnings denied, `cargo purity`), pytest with coverage (80% gate) and, when the frontend
+dependencies are installed, bun run typecheck / test / build. Add --tests to also run
+`cargo test --workspace`; only stack verification passes it, since per-change runs stay cheap.
 Exits non-zero on the first failing step.
 """
 
@@ -34,11 +36,22 @@ def main() -> None:
         "--fast", action="store_true", help="skip tests marked slow/e2e and the coverage gate"
     )
     parser.add_argument("--no-web", action="store_true", help="skip frontend checks")
+    parser.add_argument(
+        "--tests",
+        action="store_true",
+        help="also run `cargo test --workspace` (used by stack verification only)",
+    )
     args = parser.parse_args()
     uv = shutil.which("uv") or "uv"
+    cargo = shutil.which("cargo") or "cargo"
     step("ruff lint", [uv, "run", "ruff", "check", "."])
     step("ruff format", [uv, "run", "ruff", "format", "--check", "."])
     step("ty", [uv, "run", "ty", "check"])
+    step("cargo fmt", [cargo, "fmt", "--all", "--check"])
+    step("cargo clippy", [cargo, "clippy", "--workspace", "--all-targets", "--", "-D", "warnings"])
+    step("cargo purity", [cargo, "purity"])
+    if args.tests:
+        step("cargo test", [cargo, "test", "--workspace"])
     if args.fast:
         step("pytest (fast)", [uv, "run", "pytest", "-q", "-m", "not slow and not e2e"])
     else:

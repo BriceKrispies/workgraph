@@ -7,8 +7,8 @@ use crate::decision::Decision;
 use crate::effect::{Effect, EffectResult};
 use crate::event::{EventDraft, EventPayload};
 use crate::slice::{
-    AutomationSlice, ExperimentSlice, IntelSlice, RegistrySlice, TaskSlice, TelemetrySlice,
-    TrackerSlice, VerifySlice,
+    AutomationSlice, ExperimentSlice, IntelSlice, QueueSlice, RegistrySlice, RunSlice, RunState,
+    StackFlow, StackSlice, TaskSlice, TelemetrySlice, TrackerSlice, VerifySlice,
 };
 use crate::stamp::{IdSeq, Stamp};
 use crate::write::{Row, RowKey, Write};
@@ -24,6 +24,11 @@ const _: () = {
     assert_value::<TelemetrySlice>();
     assert_value::<TrackerSlice>();
     assert_value::<ExperimentSlice>();
+    assert_value::<RunSlice>();
+    assert_value::<RunState>();
+    assert_value::<StackSlice>();
+    assert_value::<StackFlow>();
+    assert_value::<QueueSlice>();
     assert_value::<Stamp>();
     assert_value::<IdSeq>();
     assert_value::<Decision<()>>();

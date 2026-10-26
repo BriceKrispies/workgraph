@@ -1,13 +1,16 @@
 //! Command line for the conformance runner.
 
+use std::io::Write as _;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use wg_conformance::compare::{FileReport, parse_divergences, report_json, report_text, tally};
+use wg_conformance::dbdump::canonical_dump;
 use wg_conformance::modes::{check, diff, load_scenarios, record};
 use wg_conformance::normalise::FullNormaliser;
 use wg_conformance::runner::Implementation;
 
 const USAGE: &str = "usage: wg-conformance <validate|diff|record|check> [options]
+       wg-conformance dbdump DATABASE [-o FILE]   canonical database dump (as dbdump.py dump)
   --scenarios PATH     scenario directory or file (default tests/conformance/scenarios)
   --python COMMAND     reference implementation command line (diff, record)
   --rust COMMAND       candidate implementation command line (diff, check)
@@ -120,8 +123,63 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
     })
 }
 
+/// `dbdump DATABASE [-o FILE]`: the same output as `tools/contracts/dbdump.py dump`.
+fn dbdump(args: &[String]) -> ExitCode {
+    let mut database = None;
+    let mut output = None;
+    let mut it = args.iter();
+    while let Some(arg) = it.next() {
+        match arg.as_str() {
+            "-o" | "--output" => match it.next() {
+                Some(path) => output = Some(PathBuf::from(path)),
+                None => {
+                    eprintln!("error: {arg} needs a value\n{USAGE}");
+                    return ExitCode::from(2);
+                }
+            },
+            other if database.is_none() && !other.starts_with('-') => {
+                database = Some(PathBuf::from(other));
+            }
+            other => {
+                eprintln!("error: unknown option `{other}`\n{USAGE}");
+                return ExitCode::from(2);
+            }
+        }
+    }
+    let Some(database) = database else {
+        eprintln!("error: dbdump needs a DATABASE\n{USAGE}");
+        return ExitCode::from(2);
+    };
+    let bytes = match canonical_dump(&database) {
+        Ok(bytes) => bytes,
+        Err(e) => {
+            eprintln!("error: {}: {e}", database.display());
+            return ExitCode::from(1);
+        }
+    };
+    let written = match output {
+        Some(path) => {
+            std::fs::write(&path, &bytes).map_err(|e| format!("write {}: {e}", path.display()))
+        }
+        None => std::io::stdout()
+            .write_all(&bytes)
+            .map_err(|e| format!("write stdout: {e}")),
+    };
+    match written {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            eprintln!("error: {e}");
+            ExitCode::from(2)
+        }
+    }
+}
+
 fn main() -> ExitCode {
-    let options = match parse_args(std::env::args().skip(1).collect()) {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    if args.first().map(String::as_str) == Some("dbdump") {
+        return dbdump(&args[1..]);
+    }
+    let options = match parse_args(args) {
         Ok(o) => o,
         Err(e) => {
             eprintln!("error: {e}\n{USAGE}");

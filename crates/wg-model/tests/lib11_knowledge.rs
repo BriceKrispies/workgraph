@@ -424,7 +424,8 @@ fn knowledge_tables_are_schema_tables_with_their_names() -> TestResult {
         Table::ExperimentTrial,
         Table::PredictorFit,
     ];
-    assert_eq!(Table::ALL.len(), 18 + knowledge.len());
+    // 18 base tables, 15 execution tables (`execution.rs`), then the knowledge tables.
+    assert_eq!(Table::ALL.len(), 18 + 15 + knowledge.len());
     for table in knowledge {
         let name = table.name();
         let plain = format!("CREATE TABLE {name} (");

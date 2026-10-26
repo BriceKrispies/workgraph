@@ -1,0 +1,4068 @@
+{
+ "schema": [
+  {
+   "name": "ix_agent_attempts_session_id",
+   "sql": "CREATE INDEX ix_agent_attempts_session_id ON agent_attempts (session_id)",
+   "table": "agent_attempts",
+   "type": "index"
+  },
+  {
+   "name": "ix_agent_attempts_task_id",
+   "sql": "CREATE INDEX ix_agent_attempts_task_id ON agent_attempts (task_id)",
+   "table": "agent_attempts",
+   "type": "index"
+  },
+  {
+   "name": "ix_agent_internal_tasks_session_id",
+   "sql": "CREATE INDEX ix_agent_internal_tasks_session_id ON agent_internal_tasks (session_id)",
+   "table": "agent_internal_tasks",
+   "type": "index"
+  },
+  {
+   "name": "ix_agent_profiles_workspace_id",
+   "sql": "CREATE INDEX ix_agent_profiles_workspace_id ON agent_profiles (workspace_id)",
+   "table": "agent_profiles",
+   "type": "index"
+  },
+  {
+   "name": "ix_agent_sessions_attempt_id",
+   "sql": "CREATE INDEX ix_agent_sessions_attempt_id ON agent_sessions (attempt_id)",
+   "table": "agent_sessions",
+   "type": "index"
+  },
+  {
+   "name": "ix_agent_sessions_task_id",
+   "sql": "CREATE INDEX ix_agent_sessions_task_id ON agent_sessions (task_id)",
+   "table": "agent_sessions",
+   "type": "index"
+  },
+  {
+   "name": "ix_agent_sessions_workspace_id",
+   "sql": "CREATE INDEX ix_agent_sessions_workspace_id ON agent_sessions (workspace_id)",
+   "table": "agent_sessions",
+   "type": "index"
+  },
+  {
+   "name": "ix_artifacts_attempt_id",
+   "sql": "CREATE INDEX ix_artifacts_attempt_id ON artifacts (attempt_id)",
+   "table": "artifacts",
+   "type": "index"
+  },
+  {
+   "name": "ix_artifacts_task_id",
+   "sql": "CREATE INDEX ix_artifacts_task_id ON artifacts (task_id)",
+   "table": "artifacts",
+   "type": "index"
+  },
+  {
+   "name": "ix_artifacts_workspace_id",
+   "sql": "CREATE INDEX ix_artifacts_workspace_id ON artifacts (workspace_id)",
+   "table": "artifacts",
+   "type": "index"
+  },
+  {
+   "name": "ix_attempts_ws_status",
+   "sql": "CREATE INDEX ix_attempts_ws_status ON agent_attempts (workspace_id, status)",
+   "table": "agent_attempts",
+   "type": "index"
+  },
+  {
+   "name": "ix_automation_rules_workspace_id",
+   "sql": "CREATE INDEX ix_automation_rules_workspace_id ON automation_rules (workspace_id)",
+   "table": "automation_rules",
+   "type": "index"
+  },
+  {
+   "name": "ix_automation_runs_rule_id",
+   "sql": "CREATE INDEX ix_automation_runs_rule_id ON automation_runs (rule_id)",
+   "table": "automation_runs",
+   "type": "index"
+  },
+  {
+   "name": "ix_automation_runs_workspace_id",
+   "sql": "CREATE INDEX ix_automation_runs_workspace_id ON automation_runs (workspace_id)",
+   "table": "automation_runs",
+   "type": "index"
+  },
+  {
+   "name": "ix_change_set_items_change_set_id",
+   "sql": "CREATE INDEX ix_change_set_items_change_set_id ON change_set_items (change_set_id)",
+   "table": "change_set_items",
+   "type": "index"
+  },
+  {
+   "name": "ix_change_sets_attempt_id",
+   "sql": "CREATE INDEX ix_change_sets_attempt_id ON change_sets (attempt_id)",
+   "table": "change_sets",
+   "type": "index"
+  },
+  {
+   "name": "ix_change_sets_task_id",
+   "sql": "CREATE INDEX ix_change_sets_task_id ON change_sets (task_id)",
+   "table": "change_sets",
+   "type": "index"
+  },
+  {
+   "name": "ix_classification_evaluations_workspace_id",
+   "sql": "CREATE INDEX ix_classification_evaluations_workspace_id ON classification_evaluations (workspace_id)",
+   "table": "classification_evaluations",
+   "type": "index"
+  },
+  {
+   "name": "ix_classification_gold_labels_workspace_id",
+   "sql": "CREATE INDEX ix_classification_gold_labels_workspace_id ON classification_gold_labels (workspace_id)",
+   "table": "classification_gold_labels",
+   "type": "index"
+  },
+  {
+   "name": "ix_classifications_task",
+   "sql": "CREATE INDEX ix_classifications_task ON classifications (task_id, created_at)",
+   "table": "classifications",
+   "type": "index"
+  },
+  {
+   "name": "ix_commit_equivalences_repository_id",
+   "sql": "CREATE INDEX ix_commit_equivalences_repository_id ON commit_equivalences (repository_id)",
+   "table": "commit_equivalences",
+   "type": "index"
+  },
+  {
+   "name": "ix_commit_file_changes_commit_id",
+   "sql": "CREATE INDEX ix_commit_file_changes_commit_id ON commit_file_changes (commit_id)",
+   "table": "commit_file_changes",
+   "type": "index"
+  },
+  {
+   "name": "ix_commit_file_changes_path",
+   "sql": "CREATE INDEX ix_commit_file_changes_path ON commit_file_changes (path)",
+   "table": "commit_file_changes",
+   "type": "index"
+  },
+  {
+   "name": "ix_commit_symbols_file_change_id",
+   "sql": "CREATE INDEX ix_commit_symbols_file_change_id ON commit_symbols (file_change_id)",
+   "table": "commit_symbols",
+   "type": "index"
+  },
+  {
+   "name": "ix_commit_task_links_commit_id",
+   "sql": "CREATE INDEX ix_commit_task_links_commit_id ON commit_task_links (commit_id)",
+   "table": "commit_task_links",
+   "type": "index"
+  },
+  {
+   "name": "ix_commit_task_links_task_id",
+   "sql": "CREATE INDEX ix_commit_task_links_task_id ON commit_task_links (task_id)",
+   "table": "commit_task_links",
+   "type": "index"
+  },
+  {
+   "name": "ix_commits_patch_id",
+   "sql": "CREATE INDEX ix_commits_patch_id ON commits (patch_id)",
+   "table": "commits",
+   "type": "index"
+  },
+  {
+   "name": "ix_commits_repo_time",
+   "sql": "CREATE INDEX ix_commits_repo_time ON commits (repository_id, committed_at)",
+   "table": "commits",
+   "type": "index"
+  },
+  {
+   "name": "ix_events_attempt_id",
+   "sql": "CREATE INDEX ix_events_attempt_id ON events (attempt_id)",
+   "table": "events",
+   "type": "index"
+  },
+  {
+   "name": "ix_events_correlation_id",
+   "sql": "CREATE INDEX ix_events_correlation_id ON events (correlation_id)",
+   "table": "events",
+   "type": "index"
+  },
+  {
+   "name": "ix_events_entity",
+   "sql": "CREATE INDEX ix_events_entity ON events (entity_type, entity_id)",
+   "table": "events",
+   "type": "index"
+  },
+  {
+   "name": "ix_events_event_type",
+   "sql": "CREATE INDEX ix_events_event_type ON events (event_type)",
+   "table": "events",
+   "type": "index"
+  },
+  {
+   "name": "ix_events_ws_seq",
+   "sql": "CREATE INDEX ix_events_ws_seq ON events (workspace_id, seq)",
+   "table": "events",
+   "type": "index"
+  },
+  {
+   "name": "ix_findings_workspace_id",
+   "sql": "CREATE INDEX ix_findings_workspace_id ON findings (workspace_id)",
+   "table": "findings",
+   "type": "index"
+  },
+  {
+   "name": "ix_hook_events_attempt_id",
+   "sql": "CREATE INDEX ix_hook_events_attempt_id ON hook_events (attempt_id)",
+   "table": "hook_events",
+   "type": "index"
+  },
+  {
+   "name": "ix_hook_events_external_session_id",
+   "sql": "CREATE INDEX ix_hook_events_external_session_id ON hook_events (external_session_id)",
+   "table": "hook_events",
+   "type": "index"
+  },
+  {
+   "name": "ix_hook_events_hook_event_name",
+   "sql": "CREATE INDEX ix_hook_events_hook_event_name ON hook_events (hook_event_name)",
+   "table": "hook_events",
+   "type": "index"
+  },
+  {
+   "name": "ix_job_resource_claims_resource_key",
+   "sql": "CREATE INDEX ix_job_resource_claims_resource_key ON job_resource_claims (resource_key)",
+   "table": "job_resource_claims",
+   "type": "index"
+  },
+  {
+   "name": "ix_job_runs_job_id",
+   "sql": "CREATE INDEX ix_job_runs_job_id ON job_runs (job_id)",
+   "table": "job_runs",
+   "type": "index"
+  },
+  {
+   "name": "ix_jobs_attempt_id",
+   "sql": "CREATE INDEX ix_jobs_attempt_id ON jobs (attempt_id)",
+   "table": "jobs",
+   "type": "index"
+  },
+  {
+   "name": "ix_jobs_claim",
+   "sql": "CREATE INDEX ix_jobs_claim ON jobs (status, run_at, priority)",
+   "table": "jobs",
+   "type": "index"
+  },
+  {
+   "name": "ix_jobs_kind",
+   "sql": "CREATE INDEX ix_jobs_kind ON jobs (kind)",
+   "table": "jobs",
+   "type": "index"
+  },
+  {
+   "name": "ix_jobs_task_id",
+   "sql": "CREATE INDEX ix_jobs_task_id ON jobs (task_id)",
+   "table": "jobs",
+   "type": "index"
+  },
+  {
+   "name": "ix_jobs_workspace_id",
+   "sql": "CREATE INDEX ix_jobs_workspace_id ON jobs (workspace_id)",
+   "table": "jobs",
+   "type": "index"
+  },
+  {
+   "name": "ix_managed_worktrees_attempt_id",
+   "sql": "CREATE INDEX ix_managed_worktrees_attempt_id ON managed_worktrees (attempt_id)",
+   "table": "managed_worktrees",
+   "type": "index"
+  },
+  {
+   "name": "ix_managed_worktrees_repository_id",
+   "sql": "CREATE INDEX ix_managed_worktrees_repository_id ON managed_worktrees (repository_id)",
+   "table": "managed_worktrees",
+   "type": "index"
+  },
+  {
+   "name": "ix_managed_worktrees_source_checkout_id",
+   "sql": "CREATE INDEX ix_managed_worktrees_source_checkout_id ON managed_worktrees (source_checkout_id)",
+   "table": "managed_worktrees",
+   "type": "index"
+  },
+  {
+   "name": "ix_notifications_workspace_id",
+   "sql": "CREATE INDEX ix_notifications_workspace_id ON notifications (workspace_id)",
+   "table": "notifications",
+   "type": "index"
+  },
+  {
+   "name": "ix_project_repositories_repository_id",
+   "sql": "CREATE INDEX ix_project_repositories_repository_id ON project_repositories (repository_id)",
+   "table": "project_repositories",
+   "type": "index"
+  },
+  {
+   "name": "ix_projects_workspace_id",
+   "sql": "CREATE INDEX ix_projects_workspace_id ON projects (workspace_id)",
+   "table": "projects",
+   "type": "index"
+  },
+  {
+   "name": "ix_reports_workspace_id",
+   "sql": "CREATE INDEX ix_reports_workspace_id ON reports (workspace_id)",
+   "table": "reports",
+   "type": "index"
+  },
+  {
+   "name": "ix_repositories_identity_fingerprint",
+   "sql": "CREATE INDEX ix_repositories_identity_fingerprint ON repositories (identity_fingerprint)",
+   "table": "repositories",
+   "type": "index"
+  },
+  {
+   "name": "ix_repositories_workspace_id",
+   "sql": "CREATE INDEX ix_repositories_workspace_id ON repositories (workspace_id)",
+   "table": "repositories",
+   "type": "index"
+  },
+  {
+   "name": "ix_repository_checkouts_path",
+   "sql": "CREATE INDEX ix_repository_checkouts_path ON repository_checkouts (path)",
+   "table": "repository_checkouts",
+   "type": "index"
+  },
+  {
+   "name": "ix_repository_checkouts_repository_id",
+   "sql": "CREATE INDEX ix_repository_checkouts_repository_id ON repository_checkouts (repository_id)",
+   "table": "repository_checkouts",
+   "type": "index"
+  },
+  {
+   "name": "ix_repository_refs_repository_id",
+   "sql": "CREATE INDEX ix_repository_refs_repository_id ON repository_refs (repository_id)",
+   "table": "repository_refs",
+   "type": "index"
+  },
+  {
+   "name": "ix_repository_remotes_normalized_url",
+   "sql": "CREATE INDEX ix_repository_remotes_normalized_url ON repository_remotes (normalized_url)",
+   "table": "repository_remotes",
+   "type": "index"
+  },
+  {
+   "name": "ix_repository_remotes_repository_id",
+   "sql": "CREATE INDEX ix_repository_remotes_repository_id ON repository_remotes (repository_id)",
+   "table": "repository_remotes",
+   "type": "index"
+  },
+  {
+   "name": "ix_revision_manifests_attempt_id",
+   "sql": "CREATE INDEX ix_revision_manifests_attempt_id ON revision_manifests (attempt_id)",
+   "table": "revision_manifests",
+   "type": "index"
+  },
+  {
+   "name": "ix_revision_manifests_workspace_id",
+   "sql": "CREATE INDEX ix_revision_manifests_workspace_id ON revision_manifests (workspace_id)",
+   "table": "revision_manifests",
+   "type": "index"
+  },
+  {
+   "name": "ix_session_bindings_external_session_id",
+   "sql": "CREATE INDEX ix_session_bindings_external_session_id ON session_bindings (external_session_id)",
+   "table": "session_bindings",
+   "type": "index"
+  },
+  {
+   "name": "ix_session_bindings_task_id",
+   "sql": "CREATE INDEX ix_session_bindings_task_id ON session_bindings (task_id)",
+   "table": "session_bindings",
+   "type": "index"
+  },
+  {
+   "name": "ix_stack_items_stack_id",
+   "sql": "CREATE INDEX ix_stack_items_stack_id ON stack_items (stack_id)",
+   "table": "stack_items",
+   "type": "index"
+  },
+  {
+   "name": "ix_stack_items_task_id",
+   "sql": "CREATE INDEX ix_stack_items_task_id ON stack_items (task_id)",
+   "table": "stack_items",
+   "type": "index"
+  },
+  {
+   "name": "ix_stack_repositories_repository_id",
+   "sql": "CREATE INDEX ix_stack_repositories_repository_id ON stack_repositories (repository_id)",
+   "table": "stack_repositories",
+   "type": "index"
+  },
+  {
+   "name": "ix_stacks_active_parent",
+   "sql": "CREATE UNIQUE INDEX ix_stacks_active_parent ON stacks (parent_task_id) WHERE status NOT IN ('landed', 'abandoned')",
+   "table": "stacks",
+   "type": "index"
+  },
+  {
+   "name": "ix_stacks_parent_task_id",
+   "sql": "CREATE INDEX ix_stacks_parent_task_id ON stacks (parent_task_id)",
+   "table": "stacks",
+   "type": "index"
+  },
+  {
+   "name": "ix_stacks_workspace_id",
+   "sql": "CREATE INDEX ix_stacks_workspace_id ON stacks (workspace_id)",
+   "table": "stacks",
+   "type": "index"
+  },
+  {
+   "name": "ix_subagent_runs_session_id",
+   "sql": "CREATE INDEX ix_subagent_runs_session_id ON subagent_runs (session_id)",
+   "table": "subagent_runs",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_acceptances_task_id",
+   "sql": "CREATE INDEX ix_task_acceptances_task_id ON task_acceptances (task_id)",
+   "table": "task_acceptances",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_change_surfaces_task_id",
+   "sql": "CREATE INDEX ix_task_change_surfaces_task_id ON task_change_surfaces (task_id)",
+   "table": "task_change_surfaces",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_comments_attempt_id",
+   "sql": "CREATE INDEX ix_task_comments_attempt_id ON task_comments (attempt_id)",
+   "table": "task_comments",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_comments_task_id",
+   "sql": "CREATE INDEX ix_task_comments_task_id ON task_comments (task_id)",
+   "table": "task_comments",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_dependencies_depends_on_id",
+   "sql": "CREATE INDEX ix_task_dependencies_depends_on_id ON task_dependencies (depends_on_id)",
+   "table": "task_dependencies",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_dependencies_task_id",
+   "sql": "CREATE INDEX ix_task_dependencies_task_id ON task_dependencies (task_id)",
+   "table": "task_dependencies",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_embeddings_task_id",
+   "sql": "CREATE INDEX ix_task_embeddings_task_id ON task_embeddings (task_id)",
+   "table": "task_embeddings",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_projects_project_id",
+   "sql": "CREATE INDEX ix_task_projects_project_id ON task_projects (project_id)",
+   "table": "task_projects",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_relations_source_task_id",
+   "sql": "CREATE INDEX ix_task_relations_source_task_id ON task_relations (source_task_id)",
+   "table": "task_relations",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_relations_target_task_id",
+   "sql": "CREATE INDEX ix_task_relations_target_task_id ON task_relations (target_task_id)",
+   "table": "task_relations",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_repositories_repository_id",
+   "sql": "CREATE INDEX ix_task_repositories_repository_id ON task_repositories (repository_id)",
+   "table": "task_repositories",
+   "type": "index"
+  },
+  {
+   "name": "ix_task_tags_tag",
+   "sql": "CREATE INDEX ix_task_tags_tag ON task_tags (tag)",
+   "table": "task_tags",
+   "type": "index"
+  },
+  {
+   "name": "ix_tasks_assignee",
+   "sql": "CREATE INDEX ix_tasks_assignee ON tasks (assignee)",
+   "table": "tasks",
+   "type": "index"
+  },
+  {
+   "name": "ix_tasks_category",
+   "sql": "CREATE INDEX ix_tasks_category ON tasks (category)",
+   "table": "tasks",
+   "type": "index"
+  },
+  {
+   "name": "ix_tasks_parent_id",
+   "sql": "CREATE INDEX ix_tasks_parent_id ON tasks (parent_id)",
+   "table": "tasks",
+   "type": "index"
+  },
+  {
+   "name": "ix_tasks_ws_status",
+   "sql": "CREATE INDEX ix_tasks_ws_status ON tasks (workspace_id, status)",
+   "table": "tasks",
+   "type": "index"
+  },
+  {
+   "name": "ix_tool_events_attempt_id",
+   "sql": "CREATE INDEX ix_tool_events_attempt_id ON tool_events (attempt_id)",
+   "table": "tool_events",
+   "type": "index"
+  },
+  {
+   "name": "ix_tool_events_session_id",
+   "sql": "CREATE INDEX ix_tool_events_session_id ON tool_events (session_id)",
+   "table": "tool_events",
+   "type": "index"
+  },
+  {
+   "name": "ix_tool_events_tool_name",
+   "sql": "CREATE INDEX ix_tool_events_tool_name ON tool_events (tool_name)",
+   "table": "tool_events",
+   "type": "index"
+  },
+  {
+   "name": "ix_verification_check_results_run_id",
+   "sql": "CREATE INDEX ix_verification_check_results_run_id ON verification_check_results (run_id)",
+   "table": "verification_check_results",
+   "type": "index"
+  },
+  {
+   "name": "ix_verification_configs_workspace_id",
+   "sql": "CREATE INDEX ix_verification_configs_workspace_id ON verification_configs (workspace_id)",
+   "table": "verification_configs",
+   "type": "index"
+  },
+  {
+   "name": "ix_verification_runs_attempt_id",
+   "sql": "CREATE INDEX ix_verification_runs_attempt_id ON verification_runs (attempt_id)",
+   "table": "verification_runs",
+   "type": "index"
+  },
+  {
+   "name": "ix_verification_runs_task_id",
+   "sql": "CREATE INDEX ix_verification_runs_task_id ON verification_runs (task_id)",
+   "table": "verification_runs",
+   "type": "index"
+  },
+  {
+   "name": "ix_verification_runs_workspace_id",
+   "sql": "CREATE INDEX ix_verification_runs_workspace_id ON verification_runs (workspace_id)",
+   "table": "verification_runs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_agent_attempts_1",
+   "sql": null,
+   "table": "agent_attempts",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_agent_attempts_2",
+   "sql": null,
+   "table": "agent_attempts",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_agent_internal_tasks_1",
+   "sql": null,
+   "table": "agent_internal_tasks",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_agent_internal_tasks_2",
+   "sql": null,
+   "table": "agent_internal_tasks",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_agent_profiles_1",
+   "sql": null,
+   "table": "agent_profiles",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_agent_profiles_2",
+   "sql": null,
+   "table": "agent_profiles",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_agent_sessions_1",
+   "sql": null,
+   "table": "agent_sessions",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_agent_sessions_2",
+   "sql": null,
+   "table": "agent_sessions",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_alembic_version_1",
+   "sql": null,
+   "table": "alembic_version",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_artifacts_1",
+   "sql": null,
+   "table": "artifacts",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_automation_rules_1",
+   "sql": null,
+   "table": "automation_rules",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_automation_rules_2",
+   "sql": null,
+   "table": "automation_rules",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_automation_runs_1",
+   "sql": null,
+   "table": "automation_runs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_automation_runs_2",
+   "sql": null,
+   "table": "automation_runs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_change_set_items_1",
+   "sql": null,
+   "table": "change_set_items",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_change_set_items_2",
+   "sql": null,
+   "table": "change_set_items",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_change_sets_1",
+   "sql": null,
+   "table": "change_sets",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_classification_evaluations_1",
+   "sql": null,
+   "table": "classification_evaluations",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_classification_gold_labels_1",
+   "sql": null,
+   "table": "classification_gold_labels",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_classifications_1",
+   "sql": null,
+   "table": "classifications",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_commit_analyses_1",
+   "sql": null,
+   "table": "commit_analyses",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_commit_equivalences_1",
+   "sql": null,
+   "table": "commit_equivalences",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_commit_equivalences_2",
+   "sql": null,
+   "table": "commit_equivalences",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_commit_file_changes_1",
+   "sql": null,
+   "table": "commit_file_changes",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_commit_symbols_1",
+   "sql": null,
+   "table": "commit_symbols",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_commit_task_links_1",
+   "sql": null,
+   "table": "commit_task_links",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_commit_task_links_2",
+   "sql": null,
+   "table": "commit_task_links",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_commits_1",
+   "sql": null,
+   "table": "commits",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_commits_2",
+   "sql": null,
+   "table": "commits",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_events_1",
+   "sql": null,
+   "table": "events",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_findings_1",
+   "sql": null,
+   "table": "findings",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_findings_2",
+   "sql": null,
+   "table": "findings",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_git_object_gaps_1",
+   "sql": null,
+   "table": "git_object_gaps",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_git_object_gaps_2",
+   "sql": null,
+   "table": "git_object_gaps",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_hook_events_1",
+   "sql": null,
+   "table": "hook_events",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_hook_events_2",
+   "sql": null,
+   "table": "hook_events",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_job_resource_claims_1",
+   "sql": null,
+   "table": "job_resource_claims",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_job_runs_1",
+   "sql": null,
+   "table": "job_runs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_jobs_1",
+   "sql": null,
+   "table": "jobs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_jobs_2",
+   "sql": null,
+   "table": "jobs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_managed_worktrees_1",
+   "sql": null,
+   "table": "managed_worktrees",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_managed_worktrees_2",
+   "sql": null,
+   "table": "managed_worktrees",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_notifications_1",
+   "sql": null,
+   "table": "notifications",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_project_repositories_1",
+   "sql": null,
+   "table": "project_repositories",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_projects_1",
+   "sql": null,
+   "table": "projects",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_projects_2",
+   "sql": null,
+   "table": "projects",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_reports_1",
+   "sql": null,
+   "table": "reports",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repositories_1",
+   "sql": null,
+   "table": "repositories",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repositories_2",
+   "sql": null,
+   "table": "repositories",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repository_checkouts_1",
+   "sql": null,
+   "table": "repository_checkouts",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repository_checkouts_2",
+   "sql": null,
+   "table": "repository_checkouts",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repository_dependencies_1",
+   "sql": null,
+   "table": "repository_dependencies",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repository_dependencies_2",
+   "sql": null,
+   "table": "repository_dependencies",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repository_refs_1",
+   "sql": null,
+   "table": "repository_refs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repository_refs_2",
+   "sql": null,
+   "table": "repository_refs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repository_remotes_1",
+   "sql": null,
+   "table": "repository_remotes",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_repository_remotes_2",
+   "sql": null,
+   "table": "repository_remotes",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_resource_leases_1",
+   "sql": null,
+   "table": "resource_leases",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_revision_manifests_1",
+   "sql": null,
+   "table": "revision_manifests",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_session_bindings_1",
+   "sql": null,
+   "table": "session_bindings",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_stack_items_1",
+   "sql": null,
+   "table": "stack_items",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_stack_items_2",
+   "sql": null,
+   "table": "stack_items",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_stack_repositories_1",
+   "sql": null,
+   "table": "stack_repositories",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_stacks_1",
+   "sql": null,
+   "table": "stacks",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_subagent_runs_1",
+   "sql": null,
+   "table": "subagent_runs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_subagent_runs_2",
+   "sql": null,
+   "table": "subagent_runs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_system_cursors_1",
+   "sql": null,
+   "table": "system_cursors",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_acceptances_1",
+   "sql": null,
+   "table": "task_acceptances",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_change_surfaces_1",
+   "sql": null,
+   "table": "task_change_surfaces",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_change_surfaces_2",
+   "sql": null,
+   "table": "task_change_surfaces",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_comments_1",
+   "sql": null,
+   "table": "task_comments",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_dependencies_1",
+   "sql": null,
+   "table": "task_dependencies",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_dependencies_2",
+   "sql": null,
+   "table": "task_dependencies",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_embeddings_1",
+   "sql": null,
+   "table": "task_embeddings",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_embeddings_2",
+   "sql": null,
+   "table": "task_embeddings",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_projects_1",
+   "sql": null,
+   "table": "task_projects",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_relations_1",
+   "sql": null,
+   "table": "task_relations",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_relations_2",
+   "sql": null,
+   "table": "task_relations",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_repositories_1",
+   "sql": null,
+   "table": "task_repositories",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_task_tags_1",
+   "sql": null,
+   "table": "task_tags",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_tasks_1",
+   "sql": null,
+   "table": "tasks",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_tasks_2",
+   "sql": null,
+   "table": "tasks",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_tasks_3",
+   "sql": null,
+   "table": "tasks",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_tool_events_1",
+   "sql": null,
+   "table": "tool_events",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_tool_events_2",
+   "sql": null,
+   "table": "tool_events",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_verification_check_results_1",
+   "sql": null,
+   "table": "verification_check_results",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_verification_configs_1",
+   "sql": null,
+   "table": "verification_configs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_verification_configs_2",
+   "sql": null,
+   "table": "verification_configs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_verification_runs_1",
+   "sql": null,
+   "table": "verification_runs",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_workers_1",
+   "sql": null,
+   "table": "workers",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_workspaces_1",
+   "sql": null,
+   "table": "workspaces",
+   "type": "index"
+  },
+  {
+   "name": "sqlite_autoindex_workspaces_2",
+   "sql": null,
+   "table": "workspaces",
+   "type": "index"
+  },
+  {
+   "name": "agent_attempts",
+   "sql": "CREATE TABLE agent_attempts (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tnumber INTEGER NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\tprovider VARCHAR(100) NOT NULL,\n\tadapter VARCHAR(100) NOT NULL,\n\tagent_id VARCHAR(200),\n\tmodel VARCHAR(200),\n\tsession_id VARCHAR(200),\n\tparent_attempt_id VARCHAR,\n\tretry_of_attempt_id VARCHAR,\n\trerun_of_attempt_id VARCHAR,\n\tcreated_by VARCHAR(200) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tqueued_at VARCHAR(32),\n\tstarted_at VARCHAR(32),\n\tfinished_at VARCHAR(32),\n\tqueue_wait_ms INTEGER,\n\tduration_ms INTEGER,\n\texit_reason VARCHAR(100),\n\texit_code INTEGER,\n\terror TEXT,\n\tsummary TEXT,\n\tinput_task_version INTEGER,\n\tinput_task_snapshot TEXT NOT NULL,\n\tprompt_artifact_id VARCHAR(36),\n\tconfig_snapshot TEXT NOT NULL,\n\tenvironment TEXT NOT NULL,\n\tbaseline_manifest_id VARCHAR(36),\n\toutcome_manifest_id VARCHAR(36),\n\tusage TEXT NOT NULL,\n\tusage_source VARCHAR(32),\n\tcost_usd FLOAT,\n\tcost_source VARCHAR(32),\n\ttelemetry TEXT NOT NULL,\n\tmodified_repository_ids TEXT NOT NULL,\n\tretries INTEGER NOT NULL,\n\tcancel_requested BOOLEAN NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_agent_attempts_parent_attempt_id_agent_attempts FOREIGN KEY(parent_attempt_id) REFERENCES agent_attempts (id) ON DELETE SET NULL,\n\tCONSTRAINT fk_agent_attempts_rerun_of_attempt_id_agent_attempts FOREIGN KEY(rerun_of_attempt_id) REFERENCES agent_attempts (id) ON DELETE SET NULL,\n\tCONSTRAINT fk_agent_attempts_retry_of_attempt_id_agent_attempts FOREIGN KEY(retry_of_attempt_id) REFERENCES agent_attempts (id) ON DELETE SET NULL,\n\tCONSTRAINT fk_agent_attempts_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE RESTRICT,\n\tCONSTRAINT fk_agent_attempts_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_agent_attempts PRIMARY KEY (id),\n\tCONSTRAINT uq_agent_attempts_task_id UNIQUE (task_id, number)\n)",
+   "table": "agent_attempts",
+   "type": "table"
+  },
+  {
+   "name": "agent_internal_tasks",
+   "sql": "CREATE TABLE agent_internal_tasks (\n\tid VARCHAR NOT NULL,\n\tsession_id VARCHAR NOT NULL,\n\texternal_task_id VARCHAR(200) NOT NULL,\n\tsubject VARCHAR(500) NOT NULL,\n\tdescription TEXT,\n\tstatus VARCHAR(16) NOT NULL,\n\ttask_id VARCHAR(36),\n\texternal_agent_id VARCHAR(200),\n\tcreated_at VARCHAR(32) NOT NULL,\n\tcompleted_at VARCHAR(32),\n\tCONSTRAINT fk_agent_internal_tasks_session_id_agent_sessions FOREIGN KEY(session_id) REFERENCES agent_sessions (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_agent_internal_tasks PRIMARY KEY (id),\n\tCONSTRAINT uq_agent_internal_tasks_session_id UNIQUE (session_id, external_task_id)\n)",
+   "table": "agent_internal_tasks",
+   "type": "table"
+  },
+  {
+   "name": "agent_profiles",
+   "sql": "CREATE TABLE agent_profiles (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tname VARCHAR(100) NOT NULL,\n\tadapter VARCHAR(100),\n\tmodel VARCHAR(200),\n\tpermissions TEXT NOT NULL,\n\tenabled BOOLEAN NOT NULL,\n\tlast_seen_at VARCHAR(32),\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_agent_profiles_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_agent_profiles PRIMARY KEY (id),\n\tCONSTRAINT uq_agent_profiles_workspace_id UNIQUE (workspace_id, name)\n)",
+   "table": "agent_profiles",
+   "type": "table"
+  },
+  {
+   "name": "agent_sessions",
+   "sql": "CREATE TABLE agent_sessions (\n\tid VARCHAR NOT NULL,\n\tprovider VARCHAR(100) NOT NULL,\n\texternal_session_id VARCHAR(200) NOT NULL,\n\tworkspace_id VARCHAR(36),\n\tattempt_id VARCHAR(36),\n\ttask_id VARCHAR(36),\n\tbinding_source VARCHAR(32) NOT NULL,\n\tcwd VARCHAR(1000),\n\tmodel VARCHAR(200),\n\ttranscript_path VARCHAR(1000),\n\tstarted_at VARCHAR(32),\n\tended_at VARCHAR(32),\n\tend_reason VARCHAR(100),\n\ttool_calls INTEGER NOT NULL,\n\ttool_failures INTEGER NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT pk_agent_sessions PRIMARY KEY (id),\n\tCONSTRAINT uq_agent_sessions_provider UNIQUE (provider, external_session_id)\n)",
+   "table": "agent_sessions",
+   "type": "table"
+  },
+  {
+   "name": "alembic_version",
+   "sql": "CREATE TABLE alembic_version (\n\tversion_num VARCHAR(32) NOT NULL,\n\tCONSTRAINT alembic_version_pkc PRIMARY KEY (version_num)\n)",
+   "table": "alembic_version",
+   "type": "table"
+  },
+  {
+   "name": "artifacts",
+   "sql": "CREATE TABLE artifacts (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\ttask_id VARCHAR,\n\tattempt_id VARCHAR(36),\n\tkind VARCHAR(32) NOT NULL,\n\tname VARCHAR(300) NOT NULL,\n\tmedia_type VARCHAR(100) NOT NULL,\n\tpath VARCHAR(1000) NOT NULL,\n\tsize_bytes INTEGER NOT NULL,\n\tsha256 VARCHAR(64) NOT NULL,\n\tretention VARCHAR(16) NOT NULL,\n\tpurged_at VARCHAR(32),\n\tmetadata TEXT NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_artifacts_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE SET NULL,\n\tCONSTRAINT fk_artifacts_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_artifacts PRIMARY KEY (id)\n)",
+   "table": "artifacts",
+   "type": "table"
+  },
+  {
+   "name": "automation_rules",
+   "sql": "CREATE TABLE automation_rules (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tname VARCHAR(200) NOT NULL,\n\tdescription TEXT NOT NULL,\n\tenabled BOOLEAN NOT NULL,\n\t\"trigger\" TEXT NOT NULL,\n\tconditions TEXT NOT NULL,\n\tactions TEXT NOT NULL,\n\tretry_max_attempts INTEGER NOT NULL,\n\tmax_depth INTEGER NOT NULL,\n\tlast_scheduled_at VARCHAR(32),\n\tnext_run_at VARCHAR(32),\n\tcreated_by VARCHAR(200) NOT NULL,\n\tversion INTEGER NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_automation_rules_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_automation_rules PRIMARY KEY (id),\n\tCONSTRAINT uq_automation_rules_workspace_id UNIQUE (workspace_id, name)\n)",
+   "table": "automation_rules",
+   "type": "table"
+  },
+  {
+   "name": "automation_runs",
+   "sql": "CREATE TABLE automation_runs (\n\tid VARCHAR NOT NULL,\n\trule_id VARCHAR NOT NULL,\n\tworkspace_id VARCHAR(36) NOT NULL,\n\ttrigger_type VARCHAR(32) NOT NULL,\n\ttrigger_key VARCHAR(200) NOT NULL,\n\ttrigger_event_id VARCHAR(36),\n\tdepth INTEGER NOT NULL,\n\tdry_run BOOLEAN NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\tmatched BOOLEAN NOT NULL,\n\treason TEXT NOT NULL,\n\tcondition_trace TEXT NOT NULL,\n\taction_results TEXT NOT NULL,\n\terror TEXT,\n\tattempts INTEGER NOT NULL,\n\tcorrelation_id VARCHAR(36),\n\tcreated_at VARCHAR(32) NOT NULL,\n\tfinished_at VARCHAR(32),\n\tinputs TEXT DEFAULT '{}' NOT NULL,\n\tCONSTRAINT fk_automation_runs_rule_id_automation_rules FOREIGN KEY(rule_id) REFERENCES automation_rules (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_automation_runs PRIMARY KEY (id),\n\tCONSTRAINT uq_automation_runs_rule_id UNIQUE (rule_id, trigger_key)\n)",
+   "table": "automation_runs",
+   "type": "table"
+  },
+  {
+   "name": "change_set_items",
+   "sql": "CREATE TABLE change_set_items (\n\tid VARCHAR NOT NULL,\n\tchange_set_id VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\tbase_sha VARCHAR(64),\n\thead_sha VARCHAR(64),\n\tbranch VARCHAR(300),\n\tcommit_shas TEXT NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\tdetail TEXT,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_change_set_items_change_set_id_change_sets FOREIGN KEY(change_set_id) REFERENCES change_sets (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_change_set_items_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_change_set_items PRIMARY KEY (id),\n\tCONSTRAINT uq_change_set_items_change_set_id UNIQUE (change_set_id, repository_id)\n)",
+   "table": "change_set_items",
+   "type": "table"
+  },
+  {
+   "name": "change_sets",
+   "sql": "CREATE TABLE change_sets (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tattempt_id VARCHAR(36),\n\ttitle VARCHAR(500) NOT NULL,\n\tstatus VARCHAR(32) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_change_sets_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE RESTRICT,\n\tCONSTRAINT fk_change_sets_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_change_sets PRIMARY KEY (id)\n)",
+   "table": "change_sets",
+   "type": "table"
+  },
+  {
+   "name": "classification_evaluations",
+   "sql": "CREATE TABLE classification_evaluations (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR(36) NOT NULL,\n\tprovider VARCHAR(100) NOT NULL,\n\tmodel VARCHAR(200) NOT NULL,\n\tprompt_version VARCHAR(32) NOT NULL,\n\ttaxonomy_version VARCHAR(32) NOT NULL,\n\tsample_size INTEGER NOT NULL,\n\tfailures INTEGER NOT NULL,\n\taccuracy FLOAT,\n\tmacro_f1 FLOAT,\n\tper_class TEXT NOT NULL,\n\tconfusion TEXT NOT NULL,\n\tresults TEXT NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT pk_classification_evaluations PRIMARY KEY (id)\n)",
+   "table": "classification_evaluations",
+   "type": "table"
+  },
+  {
+   "name": "classification_gold_labels",
+   "sql": "CREATE TABLE classification_gold_labels (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\ttask_id VARCHAR,\n\ttitle VARCHAR(500) NOT NULL,\n\tdescription TEXT NOT NULL,\n\tcategory VARCHAR(32) NOT NULL,\n\tlabeled_by VARCHAR(200) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_classification_gold_labels_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE SET NULL,\n\tCONSTRAINT fk_classification_gold_labels_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_classification_gold_labels PRIMARY KEY (id)\n)",
+   "table": "classification_gold_labels",
+   "type": "table"
+  },
+  {
+   "name": "classifications",
+   "sql": "CREATE TABLE classifications (\n\tid VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tsource VARCHAR(16) NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\tprovider VARCHAR(100),\n\tmodel VARCHAR(200),\n\tprompt_version VARCHAR(32),\n\ttaxonomy_version VARCHAR(32) NOT NULL,\n\tinput_hash VARCHAR(64) NOT NULL,\n\tcategory VARCHAR(32),\n\tsubtype VARCHAR(100),\n\tdomain VARCHAR(100),\n\taffected_systems TEXT NOT NULL,\n\tcomplexity VARCHAR(16),\n\ttags TEXT NOT NULL,\n\tconfidence FLOAT,\n\trationale TEXT,\n\traw_output TEXT,\n\tvalidation_status VARCHAR(16) NOT NULL,\n\terror TEXT,\n\tduration_ms INTEGER,\n\tis_current BOOLEAN NOT NULL,\n\tconfirmed_by VARCHAR(200),\n\tbatch_id VARCHAR(36),\n\tcreated_by VARCHAR(200) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_classifications_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_classifications PRIMARY KEY (id)\n)",
+   "table": "classifications",
+   "type": "table"
+  },
+  {
+   "name": "commit_analyses",
+   "sql": "CREATE TABLE commit_analyses (\n\tcommit_id VARCHAR NOT NULL,\n\tanalyzer_version VARCHAR(32) NOT NULL,\n\tfiles_parsed INTEGER NOT NULL,\n\tfiles_fallback INTEGER NOT NULL,\n\tfunctions_affected INTEGER NOT NULL,\n\ttypes_affected INTEGER NOT NULL,\n\tdetail TEXT NOT NULL,\n\tanalyzed_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_commit_analyses_commit_id_commits FOREIGN KEY(commit_id) REFERENCES commits (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_commit_analyses PRIMARY KEY (commit_id)\n)",
+   "table": "commit_analyses",
+   "type": "table"
+  },
+  {
+   "name": "commit_equivalences",
+   "sql": "CREATE TABLE commit_equivalences (\n\tid VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\toriginal_commit_id VARCHAR NOT NULL,\n\tequivalent_commit_id VARCHAR NOT NULL,\n\tkind VARCHAR(16) NOT NULL,\n\tevidence TEXT NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_commit_equivalences_equivalent_commit_id_commits FOREIGN KEY(equivalent_commit_id) REFERENCES commits (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_commit_equivalences_original_commit_id_commits FOREIGN KEY(original_commit_id) REFERENCES commits (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_commit_equivalences_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_commit_equivalences PRIMARY KEY (id),\n\tCONSTRAINT uq_commit_equivalences_original_commit_id UNIQUE (original_commit_id, equivalent_commit_id)\n)",
+   "table": "commit_equivalences",
+   "type": "table"
+  },
+  {
+   "name": "commit_file_changes",
+   "sql": "CREATE TABLE commit_file_changes (\n\tid VARCHAR NOT NULL,\n\tcommit_id VARCHAR NOT NULL,\n\tpath VARCHAR(1000) NOT NULL,\n\told_path VARCHAR(1000),\n\tchange_type VARCHAR(2) NOT NULL,\n\tsimilarity INTEGER,\n\tinsertions INTEGER NOT NULL,\n\tdeletions INTEGER NOT NULL,\n\tis_binary BOOLEAN NOT NULL,\n\tlanguage VARCHAR(32),\n\tfile_class VARCHAR(16) NOT NULL,\n\tmodule VARCHAR(300) NOT NULL,\n\tCONSTRAINT fk_commit_file_changes_commit_id_commits FOREIGN KEY(commit_id) REFERENCES commits (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_commit_file_changes PRIMARY KEY (id)\n)",
+   "table": "commit_file_changes",
+   "type": "table"
+  },
+  {
+   "name": "commit_symbols",
+   "sql": "CREATE TABLE commit_symbols (\n\tid VARCHAR NOT NULL,\n\tfile_change_id VARCHAR NOT NULL,\n\tsymbol_kind VARCHAR(32) NOT NULL,\n\tname VARCHAR(500) NOT NULL,\n\tchange_kind VARCHAR(16) NOT NULL,\n\tstart_line INTEGER,\n\tend_line INTEGER,\n\tlines_changed INTEGER NOT NULL,\n\tCONSTRAINT fk_commit_symbols_file_change_id_commit_file_changes FOREIGN KEY(file_change_id) REFERENCES commit_file_changes (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_commit_symbols PRIMARY KEY (id)\n)",
+   "table": "commit_symbols",
+   "type": "table"
+  },
+  {
+   "name": "commit_task_links",
+   "sql": "CREATE TABLE commit_task_links (\n\tid VARCHAR NOT NULL,\n\tcommit_id VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tsource VARCHAR(32) NOT NULL,\n\tconfidence FLOAT NOT NULL,\n\tevidence TEXT NOT NULL,\n\tattempt_id VARCHAR(36),\n\tcreated_by VARCHAR(200) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_commit_task_links_commit_id_commits FOREIGN KEY(commit_id) REFERENCES commits (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_commit_task_links_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_commit_task_links PRIMARY KEY (id),\n\tCONSTRAINT uq_commit_task_links_commit_id UNIQUE (commit_id, task_id, source)\n)",
+   "table": "commit_task_links",
+   "type": "table"
+  },
+  {
+   "name": "commits",
+   "sql": "CREATE TABLE commits (\n\tid VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\tsha VARCHAR(64) NOT NULL,\n\ttree_sha VARCHAR(64),\n\tparents TEXT NOT NULL,\n\tauthor_name VARCHAR(300) NOT NULL,\n\tauthor_email VARCHAR(300) NOT NULL,\n\tauthored_at VARCHAR(32),\n\tcommitter_name VARCHAR(300) NOT NULL,\n\tcommitter_email VARCHAR(300) NOT NULL,\n\tcommitted_at VARCHAR(32),\n\tsubject VARCHAR(1000) NOT NULL,\n\tmessage TEXT NOT NULL,\n\ttrailers TEXT NOT NULL,\n\tis_merge BOOLEAN NOT NULL,\n\tpatch_id VARCHAR(64),\n\tinsertions INTEGER NOT NULL,\n\tdeletions INTEGER NOT NULL,\n\tfiles_changed INTEGER NOT NULL,\n\treachable BOOLEAN NOT NULL,\n\tunreachable_since VARCHAR(32),\n\tobject_available BOOLEAN NOT NULL,\n\tstructure_analyzed BOOLEAN NOT NULL,\n\tbranches TEXT NOT NULL,\n\tingested_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_commits_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_commits PRIMARY KEY (id),\n\tCONSTRAINT uq_commits_repository_id UNIQUE (repository_id, sha)\n)",
+   "table": "commits",
+   "type": "table"
+  },
+  {
+   "name": "events",
+   "sql": "CREATE TABLE events (\n\tseq INTEGER NOT NULL,\n\tid VARCHAR(36) NOT NULL,\n\tworkspace_id VARCHAR(36),\n\tevent_type VARCHAR(100) NOT NULL,\n\tentity_type VARCHAR(50) NOT NULL,\n\tentity_id VARCHAR(36) NOT NULL,\n\tactor VARCHAR(200) NOT NULL,\n\tactor_kind VARCHAR(16) NOT NULL,\n\toccurred_at VARCHAR(32) NOT NULL,\n\tcorrelation_id VARCHAR(36) NOT NULL,\n\tcausation_id VARCHAR(36),\n\tattempt_id VARCHAR(36),\n\tschema_version INTEGER NOT NULL,\n\tdata TEXT NOT NULL,\n\tCONSTRAINT pk_events PRIMARY KEY (seq),\n\tCONSTRAINT uq_events_id UNIQUE (id)\n)",
+   "table": "events",
+   "type": "table"
+  },
+  {
+   "name": "findings",
+   "sql": "CREATE TABLE findings (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tkind VARCHAR(64) NOT NULL,\n\tfingerprint VARCHAR(64) NOT NULL,\n\ttitle VARCHAR(500) NOT NULL,\n\tseverity VARCHAR(16) NOT NULL,\n\tmetric_value FLOAT,\n\tsample_size INTEGER NOT NULL,\n\tevidence TEXT NOT NULL,\n\tfirst_detected_at VARCHAR(32) NOT NULL,\n\tlast_detected_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_findings_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_findings PRIMARY KEY (id),\n\tCONSTRAINT uq_findings_workspace_id UNIQUE (workspace_id, fingerprint)\n)",
+   "table": "findings",
+   "type": "table"
+  },
+  {
+   "name": "git_object_gaps",
+   "sql": "CREATE TABLE git_object_gaps (\n\tid VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\tsha VARCHAR(64) NOT NULL,\n\tcontext TEXT NOT NULL,\n\tdetected_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_git_object_gaps_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_git_object_gaps PRIMARY KEY (id),\n\tCONSTRAINT uq_git_object_gaps_repository_id UNIQUE (repository_id, sha)\n)",
+   "table": "git_object_gaps",
+   "type": "table"
+  },
+  {
+   "name": "hook_events",
+   "sql": "CREATE TABLE hook_events (\n\tid VARCHAR NOT NULL,\n\tdedupe_key VARCHAR(64) NOT NULL,\n\tprovider VARCHAR(100) NOT NULL,\n\thook_event_name VARCHAR(64) NOT NULL,\n\texternal_session_id VARCHAR(200),\n\tsession_id VARCHAR(36),\n\tattempt_id VARCHAR(36),\n\tpayload TEXT,\n\tpayload_purged_at VARCHAR(32),\n\treceived_at VARCHAR(32) NOT NULL,\n\tsource VARCHAR(16) NOT NULL,\n\tCONSTRAINT pk_hook_events PRIMARY KEY (id),\n\tCONSTRAINT uq_hook_events_dedupe_key UNIQUE (dedupe_key)\n)",
+   "table": "hook_events",
+   "type": "table"
+  },
+  {
+   "name": "job_resource_claims",
+   "sql": "CREATE TABLE job_resource_claims (\n\tjob_id VARCHAR NOT NULL,\n\tresource_key VARCHAR(300) NOT NULL,\n\tCONSTRAINT fk_job_resource_claims_job_id_jobs FOREIGN KEY(job_id) REFERENCES jobs (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_job_resource_claims PRIMARY KEY (job_id, resource_key)\n)",
+   "table": "job_resource_claims",
+   "type": "table"
+  },
+  {
+   "name": "job_runs",
+   "sql": "CREATE TABLE job_runs (\n\tid VARCHAR NOT NULL,\n\tjob_id VARCHAR NOT NULL,\n\tattempt_number INTEGER NOT NULL,\n\tworker_id VARCHAR(100) NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\terror TEXT,\n\tstarted_at VARCHAR(32) NOT NULL,\n\tfinished_at VARCHAR(32),\n\tCONSTRAINT fk_job_runs_job_id_jobs FOREIGN KEY(job_id) REFERENCES jobs (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_job_runs PRIMARY KEY (id)\n)",
+   "table": "job_runs",
+   "type": "table"
+  },
+  {
+   "name": "jobs",
+   "sql": "CREATE TABLE jobs (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR(36),\n\tkind VARCHAR(64) NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\tpriority INTEGER NOT NULL,\n\tpayload TEXT NOT NULL,\n\tresult TEXT,\n\trun_at VARCHAR(32) NOT NULL,\n\tattempts INTEGER NOT NULL,\n\tmax_attempts INTEGER NOT NULL,\n\tbackoff_base_seconds FLOAT NOT NULL,\n\ttimeout_seconds FLOAT,\n\tlease_owner VARCHAR(100),\n\tlease_expires_at VARCHAR(32),\n\theartbeat_at VARCHAR(32),\n\tstarted_at VARCHAR(32),\n\tfinished_at VARCHAR(32),\n\tcancel_requested BOOLEAN NOT NULL,\n\tidempotency_key VARCHAR(300),\n\tresource_keys TEXT NOT NULL,\n\tlast_error TEXT,\n\terror_kind VARCHAR(64),\n\tcorrelation_id VARCHAR(36),\n\tcausation_id VARCHAR(36),\n\ttask_id VARCHAR(36),\n\tattempt_id VARCHAR(36),\n\tcreated_by VARCHAR(200) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT pk_jobs PRIMARY KEY (id),\n\tCONSTRAINT uq_jobs_idempotency_key UNIQUE (idempotency_key)\n)",
+   "table": "jobs",
+   "type": "table"
+  },
+  {
+   "name": "managed_worktrees",
+   "sql": "CREATE TABLE managed_worktrees (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\tsource_checkout_id VARCHAR NOT NULL,\n\tattempt_id VARCHAR(36),\n\tpath VARCHAR(1000) NOT NULL,\n\tbranch VARCHAR(300) NOT NULL,\n\tbase_sha VARCHAR(64) NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\tlast_error TEXT,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tremoved_at VARCHAR(32),\n\tCONSTRAINT fk_managed_worktrees_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE RESTRICT,\n\tCONSTRAINT fk_managed_worktrees_source_checkout_id_repository_checkouts FOREIGN KEY(source_checkout_id) REFERENCES repository_checkouts (id) ON DELETE RESTRICT,\n\tCONSTRAINT fk_managed_worktrees_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_managed_worktrees PRIMARY KEY (id),\n\tCONSTRAINT uq_managed_worktrees_path UNIQUE (path)\n)",
+   "table": "managed_worktrees",
+   "type": "table"
+  },
+  {
+   "name": "notifications",
+   "sql": "CREATE TABLE notifications (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tlevel VARCHAR(16) NOT NULL,\n\ttitle VARCHAR(300) NOT NULL,\n\tbody TEXT NOT NULL,\n\tsource VARCHAR(200) NOT NULL,\n\tdata TEXT NOT NULL,\n\tread_at VARCHAR(32),\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_notifications_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_notifications PRIMARY KEY (id)\n)",
+   "table": "notifications",
+   "type": "table"
+  },
+  {
+   "name": "project_repositories",
+   "sql": "CREATE TABLE project_repositories (\n\tproject_id VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\trole VARCHAR(32) NOT NULL,\n\taccess_mode VARCHAR(16),\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_project_repositories_project_id_projects FOREIGN KEY(project_id) REFERENCES projects (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_project_repositories_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_project_repositories PRIMARY KEY (project_id, repository_id)\n)",
+   "table": "project_repositories",
+   "type": "table"
+  },
+  {
+   "name": "projects",
+   "sql": "CREATE TABLE projects (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tslug VARCHAR(64) NOT NULL,\n\tname VARCHAR(200) NOT NULL,\n\tdescription TEXT NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\tsettings TEXT NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_projects_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_projects PRIMARY KEY (id),\n\tCONSTRAINT uq_projects_workspace_id UNIQUE (workspace_id, slug)\n)",
+   "table": "projects",
+   "type": "table"
+  },
+  {
+   "name": "reports",
+   "sql": "CREATE TABLE reports (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tkind VARCHAR(32) NOT NULL,\n\ttitle VARCHAR(300) NOT NULL,\n\tscope TEXT NOT NULL,\n\tcontent_markdown TEXT NOT NULL,\n\tdata TEXT NOT NULL,\n\tnarrative_source VARCHAR(200) NOT NULL,\n\tcreated_by VARCHAR(200) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_reports_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_reports PRIMARY KEY (id)\n)",
+   "table": "reports",
+   "type": "table"
+  },
+  {
+   "name": "repositories",
+   "sql": "CREATE TABLE repositories (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tname VARCHAR(200) NOT NULL,\n\tdescription TEXT NOT NULL,\n\tidentity_fingerprint VARCHAR(400),\n\tdefault_branch VARCHAR(200),\n\ttracked_branches TEXT NOT NULL,\n\taccess_mode VARCHAR(16) NOT NULL,\n\thealth_status VARCHAR(16) NOT NULL,\n\thealth_detail TEXT NOT NULL,\n\thealth_checked_at VARCHAR(32),\n\tis_shallow BOOLEAN NOT NULL,\n\tlast_scanned_at VARCHAR(32),\n\tarchived_at VARCHAR(32),\n\tmetadata TEXT NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_repositories_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_repositories PRIMARY KEY (id),\n\tCONSTRAINT uq_repositories_workspace_id UNIQUE (workspace_id, name)\n)",
+   "table": "repositories",
+   "type": "table"
+  },
+  {
+   "name": "repository_checkouts",
+   "sql": "CREATE TABLE repository_checkouts (\n\tid VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\tpath VARCHAR(1000) NOT NULL,\n\tkind VARCHAR(32) NOT NULL,\n\tis_primary BOOLEAN NOT NULL,\n\taccess_mode VARCHAR(16),\n\tavailable BOOLEAN NOT NULL,\n\tlast_seen_at VARCHAR(32),\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_repository_checkouts_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_repository_checkouts PRIMARY KEY (id),\n\tCONSTRAINT uq_repository_checkouts_repository_id UNIQUE (repository_id, path)\n)",
+   "table": "repository_checkouts",
+   "type": "table"
+  },
+  {
+   "name": "repository_dependencies",
+   "sql": "CREATE TABLE repository_dependencies (\n\tid VARCHAR NOT NULL,\n\tfrom_repository_id VARCHAR NOT NULL,\n\tto_repository_id VARCHAR NOT NULL,\n\tkind VARCHAR(32) NOT NULL,\n\tdescription TEXT NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT ck_repository_dependencies_no_self CHECK (from_repository_id <> to_repository_id),\n\tCONSTRAINT fk_repository_dependencies_from_repository_id_repositories FOREIGN KEY(from_repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_repository_dependencies_to_repository_id_repositories FOREIGN KEY(to_repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_repository_dependencies PRIMARY KEY (id),\n\tCONSTRAINT uq_repository_dependencies_from_repository_id UNIQUE (from_repository_id, to_repository_id)\n)",
+   "table": "repository_dependencies",
+   "type": "table"
+  },
+  {
+   "name": "repository_refs",
+   "sql": "CREATE TABLE repository_refs (\n\tid VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\tname VARCHAR(500) NOT NULL,\n\tsha VARCHAR(64) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_repository_refs_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_repository_refs PRIMARY KEY (id),\n\tCONSTRAINT uq_repository_refs_repository_id UNIQUE (repository_id, name)\n)",
+   "table": "repository_refs",
+   "type": "table"
+  },
+  {
+   "name": "repository_remotes",
+   "sql": "CREATE TABLE repository_remotes (\n\tid VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\tname VARCHAR(200) NOT NULL,\n\turl VARCHAR(1000) NOT NULL,\n\tnormalized_url VARCHAR(1000) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_repository_remotes_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_repository_remotes PRIMARY KEY (id),\n\tCONSTRAINT uq_repository_remotes_repository_id UNIQUE (repository_id, name)\n)",
+   "table": "repository_remotes",
+   "type": "table"
+  },
+  {
+   "name": "resource_leases",
+   "sql": "CREATE TABLE resource_leases (\n\tresource_key VARCHAR(300) NOT NULL,\n\tholder VARCHAR(200) NOT NULL,\n\tpurpose VARCHAR(200) NOT NULL,\n\tacquired_at VARCHAR(32) NOT NULL,\n\texpires_at VARCHAR(32),\n\tCONSTRAINT pk_resource_leases PRIMARY KEY (resource_key)\n)",
+   "table": "resource_leases",
+   "type": "table"
+  },
+  {
+   "name": "revision_manifests",
+   "sql": "CREATE TABLE revision_manifests (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tattempt_id VARCHAR(36),\n\tkind VARCHAR(32) NOT NULL,\n\tentries TEXT NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_revision_manifests_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_revision_manifests PRIMARY KEY (id)\n)",
+   "table": "revision_manifests",
+   "type": "table"
+  },
+  {
+   "name": "session_bindings",
+   "sql": "CREATE TABLE session_bindings (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tprovider VARCHAR(100) NOT NULL,\n\texternal_session_id VARCHAR(200),\n\tcwd_prefix VARCHAR(1000),\n\tactive BOOLEAN NOT NULL,\n\tcreated_by VARCHAR(200) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_session_bindings_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_session_bindings_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_session_bindings PRIMARY KEY (id)\n)",
+   "table": "session_bindings",
+   "type": "table"
+  },
+  {
+   "name": "stack_items",
+   "sql": "CREATE TABLE stack_items (\n\tid VARCHAR NOT NULL,\n\tstack_id VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tstate VARCHAR(16) NOT NULL,\n\tmerge_order INTEGER,\n\tdetail TEXT,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_stack_items_stack_id_stacks FOREIGN KEY(stack_id) REFERENCES stacks (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_stack_items_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_stack_items PRIMARY KEY (id),\n\tCONSTRAINT uq_stack_items_stack_id UNIQUE (stack_id, task_id)\n)",
+   "table": "stack_items",
+   "type": "table"
+  },
+  {
+   "name": "stack_repositories",
+   "sql": "CREATE TABLE stack_repositories (\n\tstack_id VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\tbase_sha VARCHAR(64) NOT NULL,\n\tintegration_branch VARCHAR(300) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_stack_repositories_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE RESTRICT,\n\tCONSTRAINT fk_stack_repositories_stack_id_stacks FOREIGN KEY(stack_id) REFERENCES stacks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_stack_repositories PRIMARY KEY (stack_id, repository_id)\n)",
+   "table": "stack_repositories",
+   "type": "table"
+  },
+  {
+   "name": "stacks",
+   "sql": "CREATE TABLE stacks (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tparent_task_id VARCHAR NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tland_request TEXT,\n\tCONSTRAINT fk_stacks_parent_task_id_tasks FOREIGN KEY(parent_task_id) REFERENCES tasks (id) ON DELETE RESTRICT,\n\tCONSTRAINT fk_stacks_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_stacks PRIMARY KEY (id)\n)",
+   "table": "stacks",
+   "type": "table"
+  },
+  {
+   "name": "subagent_runs",
+   "sql": "CREATE TABLE subagent_runs (\n\tid VARCHAR NOT NULL,\n\tsession_id VARCHAR NOT NULL,\n\texternal_agent_id VARCHAR(200) NOT NULL,\n\tagent_type VARCHAR(200),\n\tattempt_id VARCHAR(36),\n\tstarted_at VARCHAR(32),\n\tstopped_at VARCHAR(32),\n\tlast_message_excerpt TEXT,\n\ttranscript_path VARCHAR(1000),\n\tCONSTRAINT fk_subagent_runs_session_id_agent_sessions FOREIGN KEY(session_id) REFERENCES agent_sessions (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_subagent_runs PRIMARY KEY (id),\n\tCONSTRAINT uq_subagent_runs_session_id UNIQUE (session_id, external_agent_id)\n)",
+   "table": "subagent_runs",
+   "type": "table"
+  },
+  {
+   "name": "system_cursors",
+   "sql": "CREATE TABLE system_cursors (\n\tname VARCHAR(100) NOT NULL,\n\tvalue INTEGER NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT pk_system_cursors PRIMARY KEY (name)\n)",
+   "table": "system_cursors",
+   "type": "table"
+  },
+  {
+   "name": "task_acceptances",
+   "sql": "CREATE TABLE task_acceptances (\n\tid VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tattempt_id VARCHAR(36),\n\tverification_run_id VARCHAR(36),\n\tdecision VARCHAR(16) NOT NULL,\n\tmode VARCHAR(16) NOT NULL,\n\treason TEXT NOT NULL,\n\tactor VARCHAR(200) NOT NULL,\n\tmanifest_id VARCHAR(36),\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_task_acceptances_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_task_acceptances PRIMARY KEY (id)\n)",
+   "table": "task_acceptances",
+   "type": "table"
+  },
+  {
+   "name": "task_change_surfaces",
+   "sql": "CREATE TABLE task_change_surfaces (\n\tid VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\tattempt_id VARCHAR(36),\n\tbase_sha VARCHAR(64) NOT NULL,\n\tfinal_sha VARCHAR(64) NOT NULL,\n\tfiles_changed INTEGER NOT NULL,\n\tinsertions INTEGER NOT NULL,\n\tdeletions INTEGER NOT NULL,\n\trenames INTEGER NOT NULL,\n\tbinary_files INTEGER NOT NULL,\n\tfunctions_affected INTEGER NOT NULL,\n\ttypes_affected INTEGER NOT NULL,\n\tdetail TEXT NOT NULL,\n\tcomputed_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_task_change_surfaces_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_task_change_surfaces_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_task_change_surfaces PRIMARY KEY (id),\n\tCONSTRAINT uq_task_change_surfaces_task_id UNIQUE (task_id, repository_id, attempt_id)\n)",
+   "table": "task_change_surfaces",
+   "type": "table"
+  },
+  {
+   "name": "task_comments",
+   "sql": "CREATE TABLE task_comments (\n\tid VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tattempt_id VARCHAR(36),\n\tauthor VARCHAR(200) NOT NULL,\n\tkind VARCHAR(16) NOT NULL,\n\tbody TEXT NOT NULL,\n\tdata TEXT NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_task_comments_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_task_comments PRIMARY KEY (id)\n)",
+   "table": "task_comments",
+   "type": "table"
+  },
+  {
+   "name": "task_dependencies",
+   "sql": "CREATE TABLE task_dependencies (\n\tid VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tdepends_on_id VARCHAR NOT NULL,\n\tcreated_by VARCHAR(200) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT ck_task_dependencies_no_self CHECK (task_id <> depends_on_id),\n\tCONSTRAINT fk_task_dependencies_depends_on_id_tasks FOREIGN KEY(depends_on_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_task_dependencies_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_task_dependencies PRIMARY KEY (id),\n\tCONSTRAINT uq_task_dependencies_task_id UNIQUE (task_id, depends_on_id)\n)",
+   "table": "task_dependencies",
+   "type": "table"
+  },
+  {
+   "name": "task_embeddings",
+   "sql": "CREATE TABLE task_embeddings (\n\tid VARCHAR NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tprovider VARCHAR(100) NOT NULL,\n\tmodel VARCHAR(200) NOT NULL,\n\tdimensions INTEGER NOT NULL,\n\tvector BLOB NOT NULL,\n\tinput_hash VARCHAR(64) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_task_embeddings_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_task_embeddings PRIMARY KEY (id),\n\tCONSTRAINT uq_task_embeddings_task_id UNIQUE (task_id, provider, model)\n)",
+   "table": "task_embeddings",
+   "type": "table"
+  },
+  {
+   "name": "task_fts",
+   "sql": "CREATE VIRTUAL TABLE task_fts USING fts5 (\n\ttask_id UNINDEXED,\n\tworkspace_id UNINDEXED,\n\tkey,\n\ttitle,\n\tdescription,\n\tcomments,\n\ttags,\n\tsummary,\n\ttokenize='porter unicode61'\n)",
+   "table": "task_fts",
+   "type": "table"
+  },
+  {
+   "name": "task_fts_config",
+   "sql": "CREATE TABLE 'task_fts_config' (\n\tk PRIMARY KEY,\n\tv\n) WITHOUT ROWID",
+   "table": "task_fts_config",
+   "type": "table"
+  },
+  {
+   "name": "task_fts_content",
+   "sql": "CREATE TABLE 'task_fts_content' (\n\tid INTEGER PRIMARY KEY,\n\tc0,\n\tc1,\n\tc2,\n\tc3,\n\tc4,\n\tc5,\n\tc6,\n\tc7\n)",
+   "table": "task_fts_content",
+   "type": "table"
+  },
+  {
+   "name": "task_fts_data",
+   "sql": "CREATE TABLE 'task_fts_data' (\n\tid INTEGER PRIMARY KEY,\n\tblock BLOB\n)",
+   "table": "task_fts_data",
+   "type": "table"
+  },
+  {
+   "name": "task_fts_docsize",
+   "sql": "CREATE TABLE 'task_fts_docsize' (\n\tid INTEGER PRIMARY KEY,\n\tsz BLOB\n)",
+   "table": "task_fts_docsize",
+   "type": "table"
+  },
+  {
+   "name": "task_fts_idx",
+   "sql": "CREATE TABLE 'task_fts_idx' (\n\tsegid,\n\tterm,\n\tpgno,\n\tPRIMARY KEY(segid, term)\n) WITHOUT ROWID",
+   "table": "task_fts_idx",
+   "type": "table"
+  },
+  {
+   "name": "task_projects",
+   "sql": "CREATE TABLE task_projects (\n\ttask_id VARCHAR NOT NULL,\n\tproject_id VARCHAR NOT NULL,\n\tCONSTRAINT fk_task_projects_project_id_projects FOREIGN KEY(project_id) REFERENCES projects (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_task_projects_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_task_projects PRIMARY KEY (task_id, project_id)\n)",
+   "table": "task_projects",
+   "type": "table"
+  },
+  {
+   "name": "task_relations",
+   "sql": "CREATE TABLE task_relations (\n\tid VARCHAR NOT NULL,\n\tsource_task_id VARCHAR NOT NULL,\n\ttarget_task_id VARCHAR NOT NULL,\n\trelation_type VARCHAR(32) NOT NULL,\n\tcreated_by VARCHAR(200) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT ck_task_relations_no_self CHECK (source_task_id <> target_task_id),\n\tCONSTRAINT fk_task_relations_source_task_id_tasks FOREIGN KEY(source_task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_task_relations_target_task_id_tasks FOREIGN KEY(target_task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_task_relations PRIMARY KEY (id),\n\tCONSTRAINT uq_task_relations_source_task_id UNIQUE (source_task_id, target_task_id, relation_type)\n)",
+   "table": "task_relations",
+   "type": "table"
+  },
+  {
+   "name": "task_repositories",
+   "sql": "CREATE TABLE task_repositories (\n\ttask_id VARCHAR NOT NULL,\n\trepository_id VARCHAR NOT NULL,\n\taccess VARCHAR(16) NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_task_repositories_repository_id_repositories FOREIGN KEY(repository_id) REFERENCES repositories (id) ON DELETE CASCADE,\n\tCONSTRAINT fk_task_repositories_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_task_repositories PRIMARY KEY (task_id, repository_id)\n)",
+   "table": "task_repositories",
+   "type": "table"
+  },
+  {
+   "name": "task_tags",
+   "sql": "CREATE TABLE task_tags (\n\ttask_id VARCHAR NOT NULL,\n\ttag VARCHAR(100) NOT NULL,\n\tCONSTRAINT fk_task_tags_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_task_tags PRIMARY KEY (task_id, tag)\n)",
+   "table": "task_tags",
+   "type": "table"
+  },
+  {
+   "name": "tasks",
+   "sql": "CREATE TABLE tasks (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tnumber INTEGER NOT NULL,\n\t\"key\" VARCHAR(32) NOT NULL,\n\ttitle VARCHAR(500) NOT NULL,\n\tdescription TEXT NOT NULL,\n\tdescription_hash VARCHAR(64) NOT NULL,\n\tacceptance_criteria TEXT NOT NULL,\n\tstatus VARCHAR(32) NOT NULL,\n\tpriority VARCHAR(16) NOT NULL,\n\tcategory VARCHAR(32),\n\tparent_id VARCHAR,\n\tassignee VARCHAR(200),\n\tassigned_agent VARCHAR(100),\n\tclaimed_by VARCHAR(200),\n\tclaim_expires_at VARCHAR(32),\n\tauto_execute BOOLEAN NOT NULL,\n\testimated_effort TEXT,\n\texternal_refs TEXT NOT NULL,\n\tmetadata TEXT NOT NULL,\n\tdue_at VARCHAR(32),\n\tscheduled_at VARCHAR(32),\n\tcreated_by VARCHAR(200) NOT NULL,\n\tversion INTEGER NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tstarted_at VARCHAR(32),\n\tcompleted_at VARCHAR(32),\n\taccepted_at VARCHAR(32),\n\tarchived_at VARCHAR(32),\n\tcurrent_classification_id VARCHAR(36),\n\tCONSTRAINT ck_tasks_no_self_parent CHECK (parent_id IS NULL OR parent_id <> id),\n\tCONSTRAINT fk_tasks_parent_id_tasks FOREIGN KEY(parent_id) REFERENCES tasks (id) ON DELETE RESTRICT,\n\tCONSTRAINT fk_tasks_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE RESTRICT,\n\tCONSTRAINT pk_tasks PRIMARY KEY (id),\n\tCONSTRAINT uq_tasks_workspace_id UNIQUE (workspace_id, \"key\"),\n\tCONSTRAINT uq_tasks_workspace_id UNIQUE (workspace_id, number)\n)",
+   "table": "tasks",
+   "type": "table"
+  },
+  {
+   "name": "tool_events",
+   "sql": "CREATE TABLE tool_events (\n\tid VARCHAR NOT NULL,\n\thook_event_id VARCHAR NOT NULL,\n\tsession_id VARCHAR(36),\n\tattempt_id VARCHAR(36),\n\texternal_agent_id VARCHAR(200),\n\tphase VARCHAR(16) NOT NULL,\n\ttool_name VARCHAR(200) NOT NULL,\n\ttool_use_id VARCHAR(200),\n\tduration_ms INTEGER,\n\terror_excerpt TEXT,\n\tsummary TEXT NOT NULL,\n\toccurred_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_tool_events_hook_event_id_hook_events FOREIGN KEY(hook_event_id) REFERENCES hook_events (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_tool_events PRIMARY KEY (id),\n\tCONSTRAINT uq_tool_events_hook_event_id UNIQUE (hook_event_id)\n)",
+   "table": "tool_events",
+   "type": "table"
+  },
+  {
+   "name": "verification_check_results",
+   "sql": "CREATE TABLE verification_check_results (\n\tid VARCHAR NOT NULL,\n\trun_id VARCHAR NOT NULL,\n\tname VARCHAR(200) NOT NULL,\n\tkind VARCHAR(16) NOT NULL,\n\trequired BOOLEAN NOT NULL,\n\trepository_id VARCHAR(36),\n\tstatus VARCHAR(16) NOT NULL,\n\texit_code INTEGER,\n\tduration_ms INTEGER,\n\ttimed_out BOOLEAN NOT NULL,\n\tlog_artifact_id VARCHAR(36),\n\toutput_excerpt TEXT NOT NULL,\n\tfailure_signatures TEXT NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_verification_check_results_run_id_verification_runs FOREIGN KEY(run_id) REFERENCES verification_runs (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_verification_check_results PRIMARY KEY (id)\n)",
+   "table": "verification_check_results",
+   "type": "table"
+  },
+  {
+   "name": "verification_configs",
+   "sql": "CREATE TABLE verification_configs (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR NOT NULL,\n\tscope_type VARCHAR(16) NOT NULL,\n\tscope_id VARCHAR(36) NOT NULL,\n\tname VARCHAR(200) NOT NULL,\n\tchecks TEXT NOT NULL,\n\tenabled BOOLEAN NOT NULL,\n\tapproved_by VARCHAR(200) NOT NULL,\n\tversion INTEGER NOT NULL,\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_verification_configs_workspace_id_workspaces FOREIGN KEY(workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_verification_configs PRIMARY KEY (id),\n\tCONSTRAINT uq_verification_configs_workspace_id UNIQUE (workspace_id, scope_type, scope_id, name)\n)",
+   "table": "verification_configs",
+   "type": "table"
+  },
+  {
+   "name": "verification_runs",
+   "sql": "CREATE TABLE verification_runs (\n\tid VARCHAR NOT NULL,\n\tworkspace_id VARCHAR(36) NOT NULL,\n\ttask_id VARCHAR NOT NULL,\n\tattempt_id VARCHAR(36),\n\tmanifest_id VARCHAR(36),\n\tconfig_snapshot TEXT NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\trequired_passed BOOLEAN NOT NULL,\n\ttriggered_by VARCHAR(200) NOT NULL,\n\tstarted_at VARCHAR(32),\n\tfinished_at VARCHAR(32),\n\tcreated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT fk_verification_runs_task_id_tasks FOREIGN KEY(task_id) REFERENCES tasks (id) ON DELETE CASCADE,\n\tCONSTRAINT pk_verification_runs PRIMARY KEY (id)\n)",
+   "table": "verification_runs",
+   "type": "table"
+  },
+  {
+   "name": "workers",
+   "sql": "CREATE TABLE workers (\n\tid VARCHAR(100) NOT NULL,\n\thostname VARCHAR(200) NOT NULL,\n\tpid INTEGER NOT NULL,\n\tstatus VARCHAR(16) NOT NULL,\n\tconcurrency INTEGER NOT NULL,\n\tkinds TEXT NOT NULL,\n\tcurrent_jobs TEXT NOT NULL,\n\tjobs_completed INTEGER NOT NULL,\n\tjobs_failed INTEGER NOT NULL,\n\tstarted_at VARCHAR(32) NOT NULL,\n\theartbeat_at VARCHAR(32) NOT NULL,\n\tstopped_at VARCHAR(32),\n\tCONSTRAINT pk_workers PRIMARY KEY (id)\n)",
+   "table": "workers",
+   "type": "table"
+  },
+  {
+   "name": "workspaces",
+   "sql": "CREATE TABLE workspaces (\n\tid VARCHAR NOT NULL,\n\tslug VARCHAR(64) NOT NULL,\n\tname VARCHAR(200) NOT NULL,\n\tdescription TEXT NOT NULL,\n\tkey_prefix VARCHAR(12) NOT NULL,\n\tnext_task_number INTEGER NOT NULL,\n\tsettings TEXT NOT NULL,\n\tarchived_at VARCHAR(32),\n\tcreated_at VARCHAR(32) NOT NULL,\n\tupdated_at VARCHAR(32) NOT NULL,\n\tCONSTRAINT pk_workspaces PRIMARY KEY (id),\n\tCONSTRAINT uq_workspaces_slug UNIQUE (slug)\n)",
+   "table": "workspaces",
+   "type": "table"
+  },
+  {
+   "name": "events_no_delete",
+   "sql": "CREATE TRIGGER events_no_delete BEFORE DELETE ON events BEGIN SELECT RAISE(ABORT, 'events are append-only'); END",
+   "table": "events",
+   "type": "trigger"
+  },
+  {
+   "name": "events_no_update",
+   "sql": "CREATE TRIGGER events_no_update BEFORE UPDATE ON events BEGIN SELECT RAISE(ABORT, 'events are append-only'); END",
+   "table": "events",
+   "type": "trigger"
+  }
+ ],
+ "tables": {
+  "agent_attempts": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "task_id",
+    "number",
+    "status",
+    "provider",
+    "adapter",
+    "agent_id",
+    "model",
+    "session_id",
+    "parent_attempt_id",
+    "retry_of_attempt_id",
+    "rerun_of_attempt_id",
+    "created_by",
+    "created_at",
+    "queued_at",
+    "started_at",
+    "finished_at",
+    "queue_wait_ms",
+    "duration_ms",
+    "exit_reason",
+    "exit_code",
+    "error",
+    "summary",
+    "input_task_version",
+    "input_task_snapshot",
+    "prompt_artifact_id",
+    "config_snapshot",
+    "environment",
+    "baseline_manifest_id",
+    "outcome_manifest_id",
+    "usage",
+    "usage_source",
+    "cost_usd",
+    "cost_source",
+    "telemetry",
+    "modified_repository_ids",
+    "retries",
+    "cancel_requested",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "adapter": "agent_attempts.adapter.1",
+     "agent_id": "agent_attempts.agent_id.1",
+     "baseline_manifest_id": "agent_attempts.baseline_manifest_id.1",
+     "cancel_requested": 1,
+     "config_snapshot": [],
+     "cost_source": "agent_attempts.cost_source.1",
+     "cost_usd": 1.5,
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "agent_attempts.created_by.1",
+     "duration_ms": 1,
+     "environment": [],
+     "error": "agent_attempts.error.1",
+     "exit_code": 1,
+     "exit_reason": "agent_attempts.exit_reason.1",
+     "finished_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "agent_attempts.id.1",
+     "input_task_snapshot": [],
+     "input_task_version": 1,
+     "model": "agent_attempts.model.1",
+     "modified_repository_ids": [],
+     "number": 1,
+     "outcome_manifest_id": "agent_attempts.outcome_manifest_id.1",
+     "parent_attempt_id": null,
+     "prompt_artifact_id": "agent_attempts.prompt_artifact_id.1",
+     "provider": "agent_attempts.provider.1",
+     "queue_wait_ms": 1,
+     "queued_at": "2026-01-01T00:00:00.000000+00:00",
+     "rerun_of_attempt_id": null,
+     "retries": 1,
+     "retry_of_attempt_id": null,
+     "session_id": "agent_attempts.session_id.1",
+     "started_at": "2026-01-01T00:00:00.000000+00:00",
+     "status": "agent_attempts.status.1",
+     "summary": "agent_attempts.summary.1",
+     "task_id": "tasks.id.2",
+     "telemetry": [],
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "usage": [],
+     "usage_source": "agent_attempts.usage_source.1",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "adapter": "agent_attempts.adapter.2",
+     "agent_id": "agent_attempts.agent_id.2",
+     "baseline_manifest_id": "agent_attempts.baseline_manifest_id.2",
+     "cancel_requested": 2,
+     "config_snapshot": [],
+     "cost_source": "agent_attempts.cost_source.2",
+     "cost_usd": 2.5,
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "agent_attempts.created_by.2",
+     "duration_ms": 2,
+     "environment": [],
+     "error": "agent_attempts.error.2",
+     "exit_code": 2,
+     "exit_reason": "agent_attempts.exit_reason.2",
+     "finished_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "agent_attempts.id.2",
+     "input_task_snapshot": [],
+     "input_task_version": 2,
+     "model": "agent_attempts.model.2",
+     "modified_repository_ids": [],
+     "number": 2,
+     "outcome_manifest_id": "agent_attempts.outcome_manifest_id.2",
+     "parent_attempt_id": null,
+     "prompt_artifact_id": "agent_attempts.prompt_artifact_id.2",
+     "provider": "agent_attempts.provider.2",
+     "queue_wait_ms": 2,
+     "queued_at": "2026-01-02T00:00:00.000000+00:00",
+     "rerun_of_attempt_id": null,
+     "retries": 2,
+     "retry_of_attempt_id": null,
+     "session_id": "agent_attempts.session_id.2",
+     "started_at": "2026-01-02T00:00:00.000000+00:00",
+     "status": "agent_attempts.status.2",
+     "summary": "agent_attempts.summary.2",
+     "task_id": "tasks.id.1",
+     "telemetry": [],
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "usage": [],
+     "usage_source": "agent_attempts.usage_source.2",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "agent_internal_tasks": {
+   "columns": [
+    "id",
+    "session_id",
+    "external_task_id",
+    "subject",
+    "description",
+    "status",
+    "task_id",
+    "external_agent_id",
+    "created_at",
+    "completed_at"
+   ],
+   "rows": [
+    {
+     "completed_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "description": "agent_internal_tasks.description.1",
+     "external_agent_id": "agent_internal_tasks.external_agent_id.1",
+     "external_task_id": "agent_internal_tasks.external_task_id.1",
+     "id": "agent_internal_tasks.id.1",
+     "session_id": "agent_sessions.id.1",
+     "status": "agent_internal_tasks.status.1",
+     "subject": "agent_internal_tasks.subject.1",
+     "task_id": "agent_internal_tasks.task_id.1"
+    },
+    {
+     "completed_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "description": "agent_internal_tasks.description.2",
+     "external_agent_id": "agent_internal_tasks.external_agent_id.2",
+     "external_task_id": "agent_internal_tasks.external_task_id.2",
+     "id": "agent_internal_tasks.id.2",
+     "session_id": "agent_sessions.id.2",
+     "status": "agent_internal_tasks.status.2",
+     "subject": "agent_internal_tasks.subject.2",
+     "task_id": "agent_internal_tasks.task_id.2"
+    }
+   ]
+  },
+  "agent_profiles": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "name",
+    "adapter",
+    "model",
+    "permissions",
+    "enabled",
+    "last_seen_at",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "adapter": "agent_profiles.adapter.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "enabled": 1,
+     "id": "agent_profiles.id.1",
+     "last_seen_at": "2026-01-01T00:00:00.000000+00:00",
+     "model": "agent_profiles.model.1",
+     "name": "agent_profiles.name.1",
+     "permissions": [],
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "adapter": "agent_profiles.adapter.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "enabled": 2,
+     "id": "agent_profiles.id.2",
+     "last_seen_at": "2026-01-02T00:00:00.000000+00:00",
+     "model": "agent_profiles.model.2",
+     "name": "agent_profiles.name.2",
+     "permissions": [],
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "agent_sessions": {
+   "columns": [
+    "id",
+    "provider",
+    "external_session_id",
+    "workspace_id",
+    "attempt_id",
+    "task_id",
+    "binding_source",
+    "cwd",
+    "model",
+    "transcript_path",
+    "started_at",
+    "ended_at",
+    "end_reason",
+    "tool_calls",
+    "tool_failures",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "agent_sessions.attempt_id.1",
+     "binding_source": "agent_sessions.binding_source.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "cwd": "agent_sessions.cwd.1",
+     "end_reason": "agent_sessions.end_reason.1",
+     "ended_at": "2026-01-01T00:00:00.000000+00:00",
+     "external_session_id": "agent_sessions.external_session_id.1",
+     "id": "agent_sessions.id.1",
+     "model": "agent_sessions.model.1",
+     "provider": "agent_sessions.provider.1",
+     "started_at": "2026-01-01T00:00:00.000000+00:00",
+     "task_id": "agent_sessions.task_id.1",
+     "tool_calls": 1,
+     "tool_failures": 1,
+     "transcript_path": "agent_sessions.transcript_path.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "workspace_id": "agent_sessions.workspace_id.1"
+    },
+    {
+     "attempt_id": "agent_sessions.attempt_id.2",
+     "binding_source": "agent_sessions.binding_source.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "cwd": "agent_sessions.cwd.2",
+     "end_reason": "agent_sessions.end_reason.2",
+     "ended_at": "2026-01-02T00:00:00.000000+00:00",
+     "external_session_id": "agent_sessions.external_session_id.2",
+     "id": "agent_sessions.id.2",
+     "model": "agent_sessions.model.2",
+     "provider": "agent_sessions.provider.2",
+     "started_at": "2026-01-02T00:00:00.000000+00:00",
+     "task_id": "agent_sessions.task_id.2",
+     "tool_calls": 2,
+     "tool_failures": 2,
+     "transcript_path": "agent_sessions.transcript_path.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "workspace_id": "agent_sessions.workspace_id.2"
+    }
+   ]
+  },
+  "artifacts": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "task_id",
+    "attempt_id",
+    "kind",
+    "name",
+    "media_type",
+    "path",
+    "size_bytes",
+    "sha256",
+    "retention",
+    "purged_at",
+    "metadata",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "artifacts.attempt_id.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "artifacts.id.1",
+     "kind": "artifacts.kind.1",
+     "media_type": "artifacts.media_type.1",
+     "metadata": [],
+     "name": "artifacts.name.1",
+     "path": "artifacts.path.1",
+     "purged_at": "2026-01-01T00:00:00.000000+00:00",
+     "retention": "artifacts.retention.1",
+     "sha256": "artifacts.sha256.1",
+     "size_bytes": 1,
+     "task_id": "tasks.id.2",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "attempt_id": "artifacts.attempt_id.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "artifacts.id.2",
+     "kind": "artifacts.kind.2",
+     "media_type": "artifacts.media_type.2",
+     "metadata": [],
+     "name": "artifacts.name.2",
+     "path": "artifacts.path.2",
+     "purged_at": "2026-01-02T00:00:00.000000+00:00",
+     "retention": "artifacts.retention.2",
+     "sha256": "artifacts.sha256.2",
+     "size_bytes": 2,
+     "task_id": "tasks.id.1",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "automation_rules": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "name",
+    "description",
+    "enabled",
+    "trigger",
+    "conditions",
+    "actions",
+    "retry_max_attempts",
+    "max_depth",
+    "last_scheduled_at",
+    "next_run_at",
+    "created_by",
+    "version",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "actions": [],
+     "conditions": [],
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "automation_rules.created_by.1",
+     "description": "automation_rules.description.1",
+     "enabled": 1,
+     "id": "automation_rules.id.1",
+     "last_scheduled_at": "2026-01-01T00:00:00.000000+00:00",
+     "max_depth": 1,
+     "name": "automation_rules.name.1",
+     "next_run_at": "2026-01-01T00:00:00.000000+00:00",
+     "retry_max_attempts": 1,
+     "trigger": [],
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "version": 1,
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "actions": [],
+     "conditions": [],
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "automation_rules.created_by.2",
+     "description": "automation_rules.description.2",
+     "enabled": 2,
+     "id": "automation_rules.id.2",
+     "last_scheduled_at": "2026-01-02T00:00:00.000000+00:00",
+     "max_depth": 2,
+     "name": "automation_rules.name.2",
+     "next_run_at": "2026-01-02T00:00:00.000000+00:00",
+     "retry_max_attempts": 2,
+     "trigger": [],
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "version": 2,
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "automation_runs": {
+   "columns": [
+    "id",
+    "rule_id",
+    "workspace_id",
+    "trigger_type",
+    "trigger_key",
+    "trigger_event_id",
+    "depth",
+    "dry_run",
+    "status",
+    "matched",
+    "reason",
+    "condition_trace",
+    "action_results",
+    "error",
+    "attempts",
+    "correlation_id",
+    "created_at",
+    "finished_at",
+    "inputs"
+   ],
+   "rows": [
+    {
+     "action_results": [],
+     "attempts": 1,
+     "condition_trace": [],
+     "correlation_id": "automation_runs.correlation_id.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "depth": 1,
+     "dry_run": 1,
+     "error": "automation_runs.error.1",
+     "finished_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "automation_runs.id.1",
+     "inputs": [],
+     "matched": 1,
+     "reason": "automation_runs.reason.1",
+     "rule_id": "automation_rules.id.1",
+     "status": "automation_runs.status.1",
+     "trigger_event_id": "automation_runs.trigger_event_id.1",
+     "trigger_key": "automation_runs.trigger_key.1",
+     "trigger_type": "automation_runs.trigger_type.1",
+     "workspace_id": "automation_runs.workspace_id.1"
+    },
+    {
+     "action_results": [],
+     "attempts": 2,
+     "condition_trace": [],
+     "correlation_id": "automation_runs.correlation_id.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "depth": 2,
+     "dry_run": 2,
+     "error": "automation_runs.error.2",
+     "finished_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "automation_runs.id.2",
+     "inputs": [],
+     "matched": 2,
+     "reason": "automation_runs.reason.2",
+     "rule_id": "automation_rules.id.2",
+     "status": "automation_runs.status.2",
+     "trigger_event_id": "automation_runs.trigger_event_id.2",
+     "trigger_key": "automation_runs.trigger_key.2",
+     "trigger_type": "automation_runs.trigger_type.2",
+     "workspace_id": "automation_runs.workspace_id.2"
+    }
+   ]
+  },
+  "change_set_items": {
+   "columns": [
+    "id",
+    "change_set_id",
+    "repository_id",
+    "base_sha",
+    "head_sha",
+    "branch",
+    "commit_shas",
+    "status",
+    "detail",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "base_sha": "change_set_items.base_sha.1",
+     "branch": "change_set_items.branch.1",
+     "change_set_id": "change_sets.id.2",
+     "commit_shas": [],
+     "detail": "change_set_items.detail.1",
+     "head_sha": "change_set_items.head_sha.1",
+     "id": "change_set_items.id.1",
+     "repository_id": "repositories.id.1",
+     "status": "change_set_items.status.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00"
+    },
+    {
+     "base_sha": "change_set_items.base_sha.2",
+     "branch": "change_set_items.branch.2",
+     "change_set_id": "change_sets.id.1",
+     "commit_shas": [],
+     "detail": "change_set_items.detail.2",
+     "head_sha": "change_set_items.head_sha.2",
+     "id": "change_set_items.id.2",
+     "repository_id": "repositories.id.2",
+     "status": "change_set_items.status.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00"
+    }
+   ]
+  },
+  "change_sets": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "task_id",
+    "attempt_id",
+    "title",
+    "status",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "change_sets.attempt_id.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "change_sets.id.1",
+     "status": "change_sets.status.1",
+     "task_id": "tasks.id.2",
+     "title": "change_sets.title.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "attempt_id": "change_sets.attempt_id.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "change_sets.id.2",
+     "status": "change_sets.status.2",
+     "task_id": "tasks.id.1",
+     "title": "change_sets.title.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "classification_evaluations": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "provider",
+    "model",
+    "prompt_version",
+    "taxonomy_version",
+    "sample_size",
+    "failures",
+    "accuracy",
+    "macro_f1",
+    "per_class",
+    "confusion",
+    "results",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "accuracy": 1.5,
+     "confusion": [],
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "failures": 1,
+     "id": "classification_evaluations.id.1",
+     "macro_f1": 1.5,
+     "model": "classification_evaluations.model.1",
+     "per_class": [],
+     "prompt_version": "classification_evaluations.prompt_version.1",
+     "provider": "classification_evaluations.provider.1",
+     "results": [],
+     "sample_size": 1,
+     "taxonomy_version": "classification_evaluations.taxonomy_version.1",
+     "workspace_id": "classification_evaluations.workspace_id.1"
+    },
+    {
+     "accuracy": 2.5,
+     "confusion": [],
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "failures": 2,
+     "id": "classification_evaluations.id.2",
+     "macro_f1": 2.5,
+     "model": "classification_evaluations.model.2",
+     "per_class": [],
+     "prompt_version": "classification_evaluations.prompt_version.2",
+     "provider": "classification_evaluations.provider.2",
+     "results": [],
+     "sample_size": 2,
+     "taxonomy_version": "classification_evaluations.taxonomy_version.2",
+     "workspace_id": "classification_evaluations.workspace_id.2"
+    }
+   ]
+  },
+  "classification_gold_labels": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "task_id",
+    "title",
+    "description",
+    "category",
+    "labeled_by",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "category": "classification_gold_labels.category.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "description": "classification_gold_labels.description.1",
+     "id": "classification_gold_labels.id.1",
+     "labeled_by": "classification_gold_labels.labeled_by.1",
+     "task_id": "tasks.id.2",
+     "title": "classification_gold_labels.title.1",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "category": "classification_gold_labels.category.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "description": "classification_gold_labels.description.2",
+     "id": "classification_gold_labels.id.2",
+     "labeled_by": "classification_gold_labels.labeled_by.2",
+     "task_id": "tasks.id.1",
+     "title": "classification_gold_labels.title.2",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "classifications": {
+   "columns": [
+    "id",
+    "task_id",
+    "source",
+    "status",
+    "provider",
+    "model",
+    "prompt_version",
+    "taxonomy_version",
+    "input_hash",
+    "category",
+    "subtype",
+    "domain",
+    "affected_systems",
+    "complexity",
+    "tags",
+    "confidence",
+    "rationale",
+    "raw_output",
+    "validation_status",
+    "error",
+    "duration_ms",
+    "is_current",
+    "confirmed_by",
+    "batch_id",
+    "created_by",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "affected_systems": [],
+     "batch_id": "classifications.batch_id.1",
+     "category": "classifications.category.1",
+     "complexity": "classifications.complexity.1",
+     "confidence": 1.5,
+     "confirmed_by": "classifications.confirmed_by.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "classifications.created_by.1",
+     "domain": "classifications.domain.1",
+     "duration_ms": 1,
+     "error": "classifications.error.1",
+     "id": "classifications.id.1",
+     "input_hash": "classifications.input_hash.1",
+     "is_current": 1,
+     "model": "classifications.model.1",
+     "prompt_version": "classifications.prompt_version.1",
+     "provider": "classifications.provider.1",
+     "rationale": "classifications.rationale.1",
+     "raw_output": [],
+     "source": "classifications.source.1",
+     "status": "classifications.status.1",
+     "subtype": "classifications.subtype.1",
+     "tags": [],
+     "task_id": "tasks.id.1",
+     "taxonomy_version": "classifications.taxonomy_version.1",
+     "validation_status": "classifications.validation_status.1"
+    },
+    {
+     "affected_systems": [],
+     "batch_id": "classifications.batch_id.2",
+     "category": "classifications.category.2",
+     "complexity": "classifications.complexity.2",
+     "confidence": 2.5,
+     "confirmed_by": "classifications.confirmed_by.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "classifications.created_by.2",
+     "domain": "classifications.domain.2",
+     "duration_ms": 2,
+     "error": "classifications.error.2",
+     "id": "classifications.id.2",
+     "input_hash": "classifications.input_hash.2",
+     "is_current": 2,
+     "model": "classifications.model.2",
+     "prompt_version": "classifications.prompt_version.2",
+     "provider": "classifications.provider.2",
+     "rationale": "classifications.rationale.2",
+     "raw_output": [],
+     "source": "classifications.source.2",
+     "status": "classifications.status.2",
+     "subtype": "classifications.subtype.2",
+     "tags": [],
+     "task_id": "tasks.id.2",
+     "taxonomy_version": "classifications.taxonomy_version.2",
+     "validation_status": "classifications.validation_status.2"
+    }
+   ]
+  },
+  "commit_analyses": {
+   "columns": [
+    "commit_id",
+    "analyzer_version",
+    "files_parsed",
+    "files_fallback",
+    "functions_affected",
+    "types_affected",
+    "detail",
+    "analyzed_at"
+   ],
+   "rows": [
+    {
+     "analyzed_at": "2026-01-01T00:00:00.000000+00:00",
+     "analyzer_version": "commit_analyses.analyzer_version.1",
+     "commit_id": "commits.id.1",
+     "detail": [],
+     "files_fallback": 1,
+     "files_parsed": 1,
+     "functions_affected": 1,
+     "types_affected": 1
+    },
+    {
+     "analyzed_at": "2026-01-02T00:00:00.000000+00:00",
+     "analyzer_version": "commit_analyses.analyzer_version.2",
+     "commit_id": "commits.id.2",
+     "detail": [],
+     "files_fallback": 2,
+     "files_parsed": 2,
+     "functions_affected": 2,
+     "types_affected": 2
+    }
+   ]
+  },
+  "commit_equivalences": {
+   "columns": [
+    "id",
+    "repository_id",
+    "original_commit_id",
+    "equivalent_commit_id",
+    "kind",
+    "evidence",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "equivalent_commit_id": "commits.id.1",
+     "evidence": [],
+     "id": "commit_equivalences.id.1",
+     "kind": "commit_equivalences.kind.1",
+     "original_commit_id": "commits.id.2",
+     "repository_id": "repositories.id.1"
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "equivalent_commit_id": "commits.id.2",
+     "evidence": [],
+     "id": "commit_equivalences.id.2",
+     "kind": "commit_equivalences.kind.2",
+     "original_commit_id": "commits.id.1",
+     "repository_id": "repositories.id.2"
+    }
+   ]
+  },
+  "commit_file_changes": {
+   "columns": [
+    "id",
+    "commit_id",
+    "path",
+    "old_path",
+    "change_type",
+    "similarity",
+    "insertions",
+    "deletions",
+    "is_binary",
+    "language",
+    "file_class",
+    "module"
+   ],
+   "rows": [
+    {
+     "change_type": "commit_file_changes.change_type.1",
+     "commit_id": "commits.id.1",
+     "deletions": 1,
+     "file_class": "commit_file_changes.file_class.1",
+     "id": "commit_file_changes.id.1",
+     "insertions": 1,
+     "is_binary": 1,
+     "language": "commit_file_changes.language.1",
+     "module": "commit_file_changes.module.1",
+     "old_path": "commit_file_changes.old_path.1",
+     "path": "commit_file_changes.path.1",
+     "similarity": 1
+    },
+    {
+     "change_type": "commit_file_changes.change_type.2",
+     "commit_id": "commits.id.2",
+     "deletions": 2,
+     "file_class": "commit_file_changes.file_class.2",
+     "id": "commit_file_changes.id.2",
+     "insertions": 2,
+     "is_binary": 2,
+     "language": "commit_file_changes.language.2",
+     "module": "commit_file_changes.module.2",
+     "old_path": "commit_file_changes.old_path.2",
+     "path": "commit_file_changes.path.2",
+     "similarity": 2
+    }
+   ]
+  },
+  "commit_symbols": {
+   "columns": [
+    "id",
+    "file_change_id",
+    "symbol_kind",
+    "name",
+    "change_kind",
+    "start_line",
+    "end_line",
+    "lines_changed"
+   ],
+   "rows": [
+    {
+     "change_kind": "commit_symbols.change_kind.1",
+     "end_line": 1,
+     "file_change_id": "commit_file_changes.id.1",
+     "id": "commit_symbols.id.1",
+     "lines_changed": 1,
+     "name": "commit_symbols.name.1",
+     "start_line": 1,
+     "symbol_kind": "commit_symbols.symbol_kind.1"
+    },
+    {
+     "change_kind": "commit_symbols.change_kind.2",
+     "end_line": 2,
+     "file_change_id": "commit_file_changes.id.2",
+     "id": "commit_symbols.id.2",
+     "lines_changed": 2,
+     "name": "commit_symbols.name.2",
+     "start_line": 2,
+     "symbol_kind": "commit_symbols.symbol_kind.2"
+    }
+   ]
+  },
+  "commit_task_links": {
+   "columns": [
+    "id",
+    "commit_id",
+    "task_id",
+    "source",
+    "confidence",
+    "evidence",
+    "attempt_id",
+    "created_by",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "commit_task_links.attempt_id.1",
+     "commit_id": "commits.id.2",
+     "confidence": 1.5,
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "commit_task_links.created_by.1",
+     "evidence": [],
+     "id": "commit_task_links.id.1",
+     "source": "commit_task_links.source.1",
+     "task_id": "tasks.id.1"
+    },
+    {
+     "attempt_id": "commit_task_links.attempt_id.2",
+     "commit_id": "commits.id.1",
+     "confidence": 2.5,
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "commit_task_links.created_by.2",
+     "evidence": [],
+     "id": "commit_task_links.id.2",
+     "source": "commit_task_links.source.2",
+     "task_id": "tasks.id.2"
+    }
+   ]
+  },
+  "commits": {
+   "columns": [
+    "id",
+    "repository_id",
+    "sha",
+    "tree_sha",
+    "parents",
+    "author_name",
+    "author_email",
+    "authored_at",
+    "committer_name",
+    "committer_email",
+    "committed_at",
+    "subject",
+    "message",
+    "trailers",
+    "is_merge",
+    "patch_id",
+    "insertions",
+    "deletions",
+    "files_changed",
+    "reachable",
+    "unreachable_since",
+    "object_available",
+    "structure_analyzed",
+    "branches",
+    "ingested_at"
+   ],
+   "rows": [
+    {
+     "author_email": "commits.author_email.1",
+     "author_name": "commits.author_name.1",
+     "authored_at": "2026-01-01T00:00:00.000000+00:00",
+     "branches": [],
+     "committed_at": "2026-01-01T00:00:00.000000+00:00",
+     "committer_email": "commits.committer_email.1",
+     "committer_name": "commits.committer_name.1",
+     "deletions": 1,
+     "files_changed": 1,
+     "id": "commits.id.1",
+     "ingested_at": "2026-01-01T00:00:00.000000+00:00",
+     "insertions": 1,
+     "is_merge": 1,
+     "message": "commits.message.1",
+     "object_available": 1,
+     "parents": [],
+     "patch_id": "commits.patch_id.1",
+     "reachable": 1,
+     "repository_id": "repositories.id.1",
+     "sha": "commits.sha.1",
+     "structure_analyzed": 1,
+     "subject": "commits.subject.1",
+     "trailers": [],
+     "tree_sha": "commits.tree_sha.1",
+     "unreachable_since": "2026-01-01T00:00:00.000000+00:00"
+    },
+    {
+     "author_email": "commits.author_email.2",
+     "author_name": "commits.author_name.2",
+     "authored_at": "2026-01-02T00:00:00.000000+00:00",
+     "branches": [],
+     "committed_at": "2026-01-02T00:00:00.000000+00:00",
+     "committer_email": "commits.committer_email.2",
+     "committer_name": "commits.committer_name.2",
+     "deletions": 2,
+     "files_changed": 2,
+     "id": "commits.id.2",
+     "ingested_at": "2026-01-02T00:00:00.000000+00:00",
+     "insertions": 2,
+     "is_merge": 2,
+     "message": "commits.message.2",
+     "object_available": 2,
+     "parents": [],
+     "patch_id": "commits.patch_id.2",
+     "reachable": 2,
+     "repository_id": "repositories.id.2",
+     "sha": "commits.sha.2",
+     "structure_analyzed": 2,
+     "subject": "commits.subject.2",
+     "trailers": [],
+     "tree_sha": "commits.tree_sha.2",
+     "unreachable_since": "2026-01-02T00:00:00.000000+00:00"
+    }
+   ]
+  },
+  "events": {
+   "columns": [
+    "seq",
+    "id",
+    "workspace_id",
+    "event_type",
+    "entity_type",
+    "entity_id",
+    "actor",
+    "actor_kind",
+    "occurred_at",
+    "correlation_id",
+    "causation_id",
+    "attempt_id",
+    "schema_version",
+    "data"
+   ],
+   "rows": [
+    {
+     "actor": "events.actor.1",
+     "actor_kind": "events.actor_kind.1",
+     "attempt_id": "events.attempt_id.1",
+     "causation_id": "events.causation_id.1",
+     "correlation_id": "events.correlation_id.1",
+     "data": [],
+     "entity_id": "events.entity_id.1",
+     "entity_type": "events.entity_type.1",
+     "event_type": "events.event_type.1",
+     "id": "events.id.1",
+     "occurred_at": "2026-01-01T00:00:00.000000+00:00",
+     "schema_version": 1,
+     "seq": 1,
+     "workspace_id": "events.workspace_id.1"
+    },
+    {
+     "actor": "events.actor.2",
+     "actor_kind": "events.actor_kind.2",
+     "attempt_id": "events.attempt_id.2",
+     "causation_id": "events.causation_id.2",
+     "correlation_id": "events.correlation_id.2",
+     "data": [],
+     "entity_id": "events.entity_id.2",
+     "entity_type": "events.entity_type.2",
+     "event_type": "events.event_type.2",
+     "id": "events.id.2",
+     "occurred_at": "2026-01-02T00:00:00.000000+00:00",
+     "schema_version": 2,
+     "seq": 2,
+     "workspace_id": "events.workspace_id.2"
+    }
+   ]
+  },
+  "findings": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "kind",
+    "fingerprint",
+    "title",
+    "severity",
+    "metric_value",
+    "sample_size",
+    "evidence",
+    "first_detected_at",
+    "last_detected_at"
+   ],
+   "rows": [
+    {
+     "evidence": [],
+     "fingerprint": "findings.fingerprint.1",
+     "first_detected_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "findings.id.1",
+     "kind": "findings.kind.1",
+     "last_detected_at": "2026-01-01T00:00:00.000000+00:00",
+     "metric_value": 1.5,
+     "sample_size": 1,
+     "severity": "findings.severity.1",
+     "title": "findings.title.1",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "evidence": [],
+     "fingerprint": "findings.fingerprint.2",
+     "first_detected_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "findings.id.2",
+     "kind": "findings.kind.2",
+     "last_detected_at": "2026-01-02T00:00:00.000000+00:00",
+     "metric_value": 2.5,
+     "sample_size": 2,
+     "severity": "findings.severity.2",
+     "title": "findings.title.2",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "git_object_gaps": {
+   "columns": [
+    "id",
+    "repository_id",
+    "sha",
+    "context",
+    "detected_at"
+   ],
+   "rows": [
+    {
+     "context": "git_object_gaps.context.1",
+     "detected_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "git_object_gaps.id.1",
+     "repository_id": "repositories.id.1",
+     "sha": "git_object_gaps.sha.1"
+    },
+    {
+     "context": "git_object_gaps.context.2",
+     "detected_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "git_object_gaps.id.2",
+     "repository_id": "repositories.id.2",
+     "sha": "git_object_gaps.sha.2"
+    }
+   ]
+  },
+  "hook_events": {
+   "columns": [
+    "id",
+    "dedupe_key",
+    "provider",
+    "hook_event_name",
+    "external_session_id",
+    "session_id",
+    "attempt_id",
+    "payload",
+    "payload_purged_at",
+    "received_at",
+    "source"
+   ],
+   "rows": [
+    {
+     "attempt_id": "hook_events.attempt_id.1",
+     "dedupe_key": "hook_events.dedupe_key.1",
+     "external_session_id": "hook_events.external_session_id.1",
+     "hook_event_name": "hook_events.hook_event_name.1",
+     "id": "hook_events.id.1",
+     "payload": [],
+     "payload_purged_at": "2026-01-01T00:00:00.000000+00:00",
+     "provider": "hook_events.provider.1",
+     "received_at": "2026-01-01T00:00:00.000000+00:00",
+     "session_id": "hook_events.session_id.1",
+     "source": "hook_events.source.1"
+    },
+    {
+     "attempt_id": "hook_events.attempt_id.2",
+     "dedupe_key": "hook_events.dedupe_key.2",
+     "external_session_id": "hook_events.external_session_id.2",
+     "hook_event_name": "hook_events.hook_event_name.2",
+     "id": "hook_events.id.2",
+     "payload": [],
+     "payload_purged_at": "2026-01-02T00:00:00.000000+00:00",
+     "provider": "hook_events.provider.2",
+     "received_at": "2026-01-02T00:00:00.000000+00:00",
+     "session_id": "hook_events.session_id.2",
+     "source": "hook_events.source.2"
+    }
+   ]
+  },
+  "job_resource_claims": {
+   "columns": [
+    "job_id",
+    "resource_key"
+   ],
+   "rows": [
+    {
+     "job_id": "jobs.id.1",
+     "resource_key": "job_resource_claims.resource_key.1"
+    },
+    {
+     "job_id": "jobs.id.2",
+     "resource_key": "job_resource_claims.resource_key.2"
+    }
+   ]
+  },
+  "job_runs": {
+   "columns": [
+    "id",
+    "job_id",
+    "attempt_number",
+    "worker_id",
+    "status",
+    "error",
+    "started_at",
+    "finished_at"
+   ],
+   "rows": [
+    {
+     "attempt_number": 1,
+     "error": "job_runs.error.1",
+     "finished_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "job_runs.id.1",
+     "job_id": "jobs.id.1",
+     "started_at": "2026-01-01T00:00:00.000000+00:00",
+     "status": "job_runs.status.1",
+     "worker_id": "job_runs.worker_id.1"
+    },
+    {
+     "attempt_number": 2,
+     "error": "job_runs.error.2",
+     "finished_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "job_runs.id.2",
+     "job_id": "jobs.id.2",
+     "started_at": "2026-01-02T00:00:00.000000+00:00",
+     "status": "job_runs.status.2",
+     "worker_id": "job_runs.worker_id.2"
+    }
+   ]
+  },
+  "jobs": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "kind",
+    "status",
+    "priority",
+    "payload",
+    "result",
+    "run_at",
+    "attempts",
+    "max_attempts",
+    "backoff_base_seconds",
+    "timeout_seconds",
+    "lease_owner",
+    "lease_expires_at",
+    "heartbeat_at",
+    "started_at",
+    "finished_at",
+    "cancel_requested",
+    "idempotency_key",
+    "resource_keys",
+    "last_error",
+    "error_kind",
+    "correlation_id",
+    "causation_id",
+    "task_id",
+    "attempt_id",
+    "created_by",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "jobs.attempt_id.1",
+     "attempts": 1,
+     "backoff_base_seconds": 1.5,
+     "cancel_requested": 1,
+     "causation_id": "jobs.causation_id.1",
+     "correlation_id": "jobs.correlation_id.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "jobs.created_by.1",
+     "error_kind": "jobs.error_kind.1",
+     "finished_at": "2026-01-01T00:00:00.000000+00:00",
+     "heartbeat_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "jobs.id.1",
+     "idempotency_key": "jobs.idempotency_key.1",
+     "kind": "jobs.kind.1",
+     "last_error": "jobs.last_error.1",
+     "lease_expires_at": "2026-01-01T00:00:00.000000+00:00",
+     "lease_owner": "jobs.lease_owner.1",
+     "max_attempts": 1,
+     "payload": [],
+     "priority": 1,
+     "resource_keys": [],
+     "result": [],
+     "run_at": "2026-01-01T00:00:00.000000+00:00",
+     "started_at": "2026-01-01T00:00:00.000000+00:00",
+     "status": "jobs.status.1",
+     "task_id": "jobs.task_id.1",
+     "timeout_seconds": 1.5,
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "workspace_id": "jobs.workspace_id.1"
+    },
+    {
+     "attempt_id": "jobs.attempt_id.2",
+     "attempts": 2,
+     "backoff_base_seconds": 2.5,
+     "cancel_requested": 2,
+     "causation_id": "jobs.causation_id.2",
+     "correlation_id": "jobs.correlation_id.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "jobs.created_by.2",
+     "error_kind": "jobs.error_kind.2",
+     "finished_at": "2026-01-02T00:00:00.000000+00:00",
+     "heartbeat_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "jobs.id.2",
+     "idempotency_key": "jobs.idempotency_key.2",
+     "kind": "jobs.kind.2",
+     "last_error": "jobs.last_error.2",
+     "lease_expires_at": "2026-01-02T00:00:00.000000+00:00",
+     "lease_owner": "jobs.lease_owner.2",
+     "max_attempts": 2,
+     "payload": [],
+     "priority": 2,
+     "resource_keys": [],
+     "result": [],
+     "run_at": "2026-01-02T00:00:00.000000+00:00",
+     "started_at": "2026-01-02T00:00:00.000000+00:00",
+     "status": "jobs.status.2",
+     "task_id": "jobs.task_id.2",
+     "timeout_seconds": 2.5,
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "workspace_id": "jobs.workspace_id.2"
+    }
+   ]
+  },
+  "managed_worktrees": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "repository_id",
+    "source_checkout_id",
+    "attempt_id",
+    "path",
+    "branch",
+    "base_sha",
+    "status",
+    "last_error",
+    "created_at",
+    "updated_at",
+    "removed_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "managed_worktrees.attempt_id.1",
+     "base_sha": "managed_worktrees.base_sha.1",
+     "branch": "managed_worktrees.branch.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "managed_worktrees.id.1",
+     "last_error": "managed_worktrees.last_error.1",
+     "path": "managed_worktrees.path.1",
+     "removed_at": "2026-01-01T00:00:00.000000+00:00",
+     "repository_id": "repositories.id.1",
+     "source_checkout_id": "repository_checkouts.id.2",
+     "status": "managed_worktrees.status.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "attempt_id": "managed_worktrees.attempt_id.2",
+     "base_sha": "managed_worktrees.base_sha.2",
+     "branch": "managed_worktrees.branch.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "managed_worktrees.id.2",
+     "last_error": "managed_worktrees.last_error.2",
+     "path": "managed_worktrees.path.2",
+     "removed_at": "2026-01-02T00:00:00.000000+00:00",
+     "repository_id": "repositories.id.2",
+     "source_checkout_id": "repository_checkouts.id.1",
+     "status": "managed_worktrees.status.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "notifications": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "level",
+    "title",
+    "body",
+    "source",
+    "data",
+    "read_at",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "body": "notifications.body.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "data": [],
+     "id": "notifications.id.1",
+     "level": "notifications.level.1",
+     "read_at": "2026-01-01T00:00:00.000000+00:00",
+     "source": "notifications.source.1",
+     "title": "notifications.title.1",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "body": "notifications.body.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "data": [],
+     "id": "notifications.id.2",
+     "level": "notifications.level.2",
+     "read_at": "2026-01-02T00:00:00.000000+00:00",
+     "source": "notifications.source.2",
+     "title": "notifications.title.2",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "project_repositories": {
+   "columns": [
+    "project_id",
+    "repository_id",
+    "role",
+    "access_mode",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "access_mode": "project_repositories.access_mode.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "project_id": "projects.id.1",
+     "repository_id": "repositories.id.2",
+     "role": "project_repositories.role.2"
+    },
+    {
+     "access_mode": "project_repositories.access_mode.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "project_id": "projects.id.2",
+     "repository_id": "repositories.id.1",
+     "role": "project_repositories.role.1"
+    }
+   ]
+  },
+  "projects": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "slug",
+    "name",
+    "description",
+    "status",
+    "settings",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "description": "projects.description.1",
+     "id": "projects.id.1",
+     "name": "projects.name.1",
+     "settings": [],
+     "slug": "projects.slug.1",
+     "status": "projects.status.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "description": "projects.description.2",
+     "id": "projects.id.2",
+     "name": "projects.name.2",
+     "settings": [],
+     "slug": "projects.slug.2",
+     "status": "projects.status.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "reports": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "kind",
+    "title",
+    "scope",
+    "content_markdown",
+    "data",
+    "narrative_source",
+    "created_by",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "content_markdown": "reports.content_markdown.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "reports.created_by.1",
+     "data": [],
+     "id": "reports.id.1",
+     "kind": "reports.kind.1",
+     "narrative_source": "reports.narrative_source.1",
+     "scope": [],
+     "title": "reports.title.1",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "content_markdown": "reports.content_markdown.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "reports.created_by.2",
+     "data": [],
+     "id": "reports.id.2",
+     "kind": "reports.kind.2",
+     "narrative_source": "reports.narrative_source.2",
+     "scope": [],
+     "title": "reports.title.2",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "repositories": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "name",
+    "description",
+    "identity_fingerprint",
+    "default_branch",
+    "tracked_branches",
+    "access_mode",
+    "health_status",
+    "health_detail",
+    "health_checked_at",
+    "is_shallow",
+    "last_scanned_at",
+    "archived_at",
+    "metadata",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "access_mode": "repositories.access_mode.1",
+     "archived_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "default_branch": "repositories.default_branch.1",
+     "description": "repositories.description.1",
+     "health_checked_at": "2026-01-01T00:00:00.000000+00:00",
+     "health_detail": [],
+     "health_status": "repositories.health_status.1",
+     "id": "repositories.id.1",
+     "identity_fingerprint": "repositories.identity_fingerprint.1",
+     "is_shallow": 1,
+     "last_scanned_at": "2026-01-01T00:00:00.000000+00:00",
+     "metadata": [],
+     "name": "repositories.name.1",
+     "tracked_branches": [],
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "access_mode": "repositories.access_mode.2",
+     "archived_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "default_branch": "repositories.default_branch.2",
+     "description": "repositories.description.2",
+     "health_checked_at": "2026-01-02T00:00:00.000000+00:00",
+     "health_detail": [],
+     "health_status": "repositories.health_status.2",
+     "id": "repositories.id.2",
+     "identity_fingerprint": "repositories.identity_fingerprint.2",
+     "is_shallow": 2,
+     "last_scanned_at": "2026-01-02T00:00:00.000000+00:00",
+     "metadata": [],
+     "name": "repositories.name.2",
+     "tracked_branches": [],
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "repository_checkouts": {
+   "columns": [
+    "id",
+    "repository_id",
+    "path",
+    "kind",
+    "is_primary",
+    "access_mode",
+    "available",
+    "last_seen_at",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "access_mode": "repository_checkouts.access_mode.1",
+     "available": 1,
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "repository_checkouts.id.1",
+     "is_primary": 1,
+     "kind": "repository_checkouts.kind.1",
+     "last_seen_at": "2026-01-01T00:00:00.000000+00:00",
+     "path": "repository_checkouts.path.1",
+     "repository_id": "repositories.id.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00"
+    },
+    {
+     "access_mode": "repository_checkouts.access_mode.2",
+     "available": 2,
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "repository_checkouts.id.2",
+     "is_primary": 2,
+     "kind": "repository_checkouts.kind.2",
+     "last_seen_at": "2026-01-02T00:00:00.000000+00:00",
+     "path": "repository_checkouts.path.2",
+     "repository_id": "repositories.id.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00"
+    }
+   ]
+  },
+  "repository_dependencies": {
+   "columns": [
+    "id",
+    "from_repository_id",
+    "to_repository_id",
+    "kind",
+    "description",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "description": "repository_dependencies.description.1",
+     "from_repository_id": "repositories.id.2",
+     "id": "repository_dependencies.id.1",
+     "kind": "repository_dependencies.kind.1",
+     "to_repository_id": "repositories.id.1"
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "description": "repository_dependencies.description.2",
+     "from_repository_id": "repositories.id.1",
+     "id": "repository_dependencies.id.2",
+     "kind": "repository_dependencies.kind.2",
+     "to_repository_id": "repositories.id.2"
+    }
+   ]
+  },
+  "repository_refs": {
+   "columns": [
+    "id",
+    "repository_id",
+    "name",
+    "sha",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "id": "repository_refs.id.1",
+     "name": "repository_refs.name.1",
+     "repository_id": "repositories.id.1",
+     "sha": "repository_refs.sha.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00"
+    },
+    {
+     "id": "repository_refs.id.2",
+     "name": "repository_refs.name.2",
+     "repository_id": "repositories.id.2",
+     "sha": "repository_refs.sha.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00"
+    }
+   ]
+  },
+  "repository_remotes": {
+   "columns": [
+    "id",
+    "repository_id",
+    "name",
+    "url",
+    "normalized_url",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "repository_remotes.id.1",
+     "name": "repository_remotes.name.1",
+     "normalized_url": "repository_remotes.normalized_url.1",
+     "repository_id": "repositories.id.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "url": "repository_remotes.url.1"
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "repository_remotes.id.2",
+     "name": "repository_remotes.name.2",
+     "normalized_url": "repository_remotes.normalized_url.2",
+     "repository_id": "repositories.id.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "url": "repository_remotes.url.2"
+    }
+   ]
+  },
+  "resource_leases": {
+   "columns": [
+    "resource_key",
+    "holder",
+    "purpose",
+    "acquired_at",
+    "expires_at"
+   ],
+   "rows": [
+    {
+     "acquired_at": "2026-01-01T00:00:00.000000+00:00",
+     "expires_at": "2026-01-01T00:00:00.000000+00:00",
+     "holder": "resource_leases.holder.1",
+     "purpose": "resource_leases.purpose.1",
+     "resource_key": "resource_leases.resource_key.1"
+    },
+    {
+     "acquired_at": "2026-01-02T00:00:00.000000+00:00",
+     "expires_at": "2026-01-02T00:00:00.000000+00:00",
+     "holder": "resource_leases.holder.2",
+     "purpose": "resource_leases.purpose.2",
+     "resource_key": "resource_leases.resource_key.2"
+    }
+   ]
+  },
+  "revision_manifests": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "attempt_id",
+    "kind",
+    "entries",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "revision_manifests.attempt_id.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "entries": [],
+     "id": "revision_manifests.id.1",
+     "kind": "revision_manifests.kind.1",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "attempt_id": "revision_manifests.attempt_id.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "entries": [],
+     "id": "revision_manifests.id.2",
+     "kind": "revision_manifests.kind.2",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "session_bindings": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "task_id",
+    "provider",
+    "external_session_id",
+    "cwd_prefix",
+    "active",
+    "created_by",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "active": 1,
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "session_bindings.created_by.1",
+     "cwd_prefix": "session_bindings.cwd_prefix.1",
+     "external_session_id": "session_bindings.external_session_id.1",
+     "id": "session_bindings.id.1",
+     "provider": "session_bindings.provider.1",
+     "task_id": "tasks.id.2",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "active": 2,
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "session_bindings.created_by.2",
+     "cwd_prefix": "session_bindings.cwd_prefix.2",
+     "external_session_id": "session_bindings.external_session_id.2",
+     "id": "session_bindings.id.2",
+     "provider": "session_bindings.provider.2",
+     "task_id": "tasks.id.1",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "stack_items": {
+   "columns": [
+    "id",
+    "stack_id",
+    "task_id",
+    "state",
+    "merge_order",
+    "detail",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "detail": "stack_items.detail.1",
+     "id": "stack_items.id.1",
+     "merge_order": 1,
+     "stack_id": "stacks.id.2",
+     "state": "stack_items.state.1",
+     "task_id": "tasks.id.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00"
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "detail": "stack_items.detail.2",
+     "id": "stack_items.id.2",
+     "merge_order": 2,
+     "stack_id": "stacks.id.1",
+     "state": "stack_items.state.2",
+     "task_id": "tasks.id.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00"
+    }
+   ]
+  },
+  "stack_repositories": {
+   "columns": [
+    "stack_id",
+    "repository_id",
+    "base_sha",
+    "integration_branch",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "base_sha": "stack_repositories.base_sha.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "integration_branch": "stack_repositories.integration_branch.1",
+     "repository_id": "repositories.id.2",
+     "stack_id": "stacks.id.1"
+    },
+    {
+     "base_sha": "stack_repositories.base_sha.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "integration_branch": "stack_repositories.integration_branch.2",
+     "repository_id": "repositories.id.1",
+     "stack_id": "stacks.id.2"
+    }
+   ]
+  },
+  "stacks": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "parent_task_id",
+    "status",
+    "created_at",
+    "updated_at",
+    "land_request"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "stacks.id.1",
+     "land_request": "stacks.land_request.1",
+     "parent_task_id": "tasks.id.2",
+     "status": "stacks.status.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "stacks.id.2",
+     "land_request": "stacks.land_request.2",
+     "parent_task_id": "tasks.id.1",
+     "status": "stacks.status.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "subagent_runs": {
+   "columns": [
+    "id",
+    "session_id",
+    "external_agent_id",
+    "agent_type",
+    "attempt_id",
+    "started_at",
+    "stopped_at",
+    "last_message_excerpt",
+    "transcript_path"
+   ],
+   "rows": [
+    {
+     "agent_type": "subagent_runs.agent_type.1",
+     "attempt_id": "subagent_runs.attempt_id.1",
+     "external_agent_id": "subagent_runs.external_agent_id.1",
+     "id": "subagent_runs.id.1",
+     "last_message_excerpt": "subagent_runs.last_message_excerpt.1",
+     "session_id": "agent_sessions.id.1",
+     "started_at": "2026-01-01T00:00:00.000000+00:00",
+     "stopped_at": "2026-01-01T00:00:00.000000+00:00",
+     "transcript_path": "subagent_runs.transcript_path.1"
+    },
+    {
+     "agent_type": "subagent_runs.agent_type.2",
+     "attempt_id": "subagent_runs.attempt_id.2",
+     "external_agent_id": "subagent_runs.external_agent_id.2",
+     "id": "subagent_runs.id.2",
+     "last_message_excerpt": "subagent_runs.last_message_excerpt.2",
+     "session_id": "agent_sessions.id.2",
+     "started_at": "2026-01-02T00:00:00.000000+00:00",
+     "stopped_at": "2026-01-02T00:00:00.000000+00:00",
+     "transcript_path": "subagent_runs.transcript_path.2"
+    }
+   ]
+  },
+  "system_cursors": {
+   "columns": [
+    "name",
+    "value",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "name": "system_cursors.name.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "value": 1
+    },
+    {
+     "name": "system_cursors.name.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "value": 2
+    }
+   ]
+  },
+  "task_acceptances": {
+   "columns": [
+    "id",
+    "task_id",
+    "attempt_id",
+    "verification_run_id",
+    "decision",
+    "mode",
+    "reason",
+    "actor",
+    "manifest_id",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "actor": "task_acceptances.actor.1",
+     "attempt_id": "task_acceptances.attempt_id.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "decision": "task_acceptances.decision.1",
+     "id": "task_acceptances.id.1",
+     "manifest_id": "task_acceptances.manifest_id.1",
+     "mode": "task_acceptances.mode.1",
+     "reason": "task_acceptances.reason.1",
+     "task_id": "tasks.id.1",
+     "verification_run_id": "task_acceptances.verification_run_id.1"
+    },
+    {
+     "actor": "task_acceptances.actor.2",
+     "attempt_id": "task_acceptances.attempt_id.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "decision": "task_acceptances.decision.2",
+     "id": "task_acceptances.id.2",
+     "manifest_id": "task_acceptances.manifest_id.2",
+     "mode": "task_acceptances.mode.2",
+     "reason": "task_acceptances.reason.2",
+     "task_id": "tasks.id.2",
+     "verification_run_id": "task_acceptances.verification_run_id.2"
+    }
+   ]
+  },
+  "task_change_surfaces": {
+   "columns": [
+    "id",
+    "task_id",
+    "repository_id",
+    "attempt_id",
+    "base_sha",
+    "final_sha",
+    "files_changed",
+    "insertions",
+    "deletions",
+    "renames",
+    "binary_files",
+    "functions_affected",
+    "types_affected",
+    "detail",
+    "computed_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "task_change_surfaces.attempt_id.1",
+     "base_sha": "task_change_surfaces.base_sha.1",
+     "binary_files": 1,
+     "computed_at": "2026-01-01T00:00:00.000000+00:00",
+     "deletions": 1,
+     "detail": [],
+     "files_changed": 1,
+     "final_sha": "task_change_surfaces.final_sha.1",
+     "functions_affected": 1,
+     "id": "task_change_surfaces.id.1",
+     "insertions": 1,
+     "renames": 1,
+     "repository_id": "repositories.id.2",
+     "task_id": "tasks.id.1",
+     "types_affected": 1,
+     "updated_at": "2026-01-01T00:00:00.000000+00:00"
+    },
+    {
+     "attempt_id": "task_change_surfaces.attempt_id.2",
+     "base_sha": "task_change_surfaces.base_sha.2",
+     "binary_files": 2,
+     "computed_at": "2026-01-02T00:00:00.000000+00:00",
+     "deletions": 2,
+     "detail": [],
+     "files_changed": 2,
+     "final_sha": "task_change_surfaces.final_sha.2",
+     "functions_affected": 2,
+     "id": "task_change_surfaces.id.2",
+     "insertions": 2,
+     "renames": 2,
+     "repository_id": "repositories.id.1",
+     "task_id": "tasks.id.2",
+     "types_affected": 2,
+     "updated_at": "2026-01-02T00:00:00.000000+00:00"
+    }
+   ]
+  },
+  "task_comments": {
+   "columns": [
+    "id",
+    "task_id",
+    "attempt_id",
+    "author",
+    "kind",
+    "body",
+    "data",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "task_comments.attempt_id.1",
+     "author": "task_comments.author.1",
+     "body": "task_comments.body.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "data": [],
+     "id": "task_comments.id.1",
+     "kind": "task_comments.kind.1",
+     "task_id": "tasks.id.1"
+    },
+    {
+     "attempt_id": "task_comments.attempt_id.2",
+     "author": "task_comments.author.2",
+     "body": "task_comments.body.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "data": [],
+     "id": "task_comments.id.2",
+     "kind": "task_comments.kind.2",
+     "task_id": "tasks.id.2"
+    }
+   ]
+  },
+  "task_dependencies": {
+   "columns": [
+    "id",
+    "task_id",
+    "depends_on_id",
+    "created_by",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "task_dependencies.created_by.1",
+     "depends_on_id": "tasks.id.2",
+     "id": "task_dependencies.id.1",
+     "task_id": "tasks.id.1"
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "task_dependencies.created_by.2",
+     "depends_on_id": "tasks.id.1",
+     "id": "task_dependencies.id.2",
+     "task_id": "tasks.id.2"
+    }
+   ]
+  },
+  "task_embeddings": {
+   "columns": [
+    "id",
+    "task_id",
+    "provider",
+    "model",
+    "dimensions",
+    "vector",
+    "input_hash",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "dimensions": 1,
+     "id": "task_embeddings.id.1",
+     "input_hash": "task_embeddings.input_hash.1",
+     "model": "task_embeddings.model.1",
+     "provider": "task_embeddings.provider.1",
+     "task_id": "tasks.id.1",
+     "vector": {
+      "blob": "01"
+     }
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "dimensions": 2,
+     "id": "task_embeddings.id.2",
+     "input_hash": "task_embeddings.input_hash.2",
+     "model": "task_embeddings.model.2",
+     "provider": "task_embeddings.provider.2",
+     "task_id": "tasks.id.2",
+     "vector": {
+      "blob": "02"
+     }
+    }
+   ]
+  },
+  "task_projects": {
+   "columns": [
+    "task_id",
+    "project_id"
+   ],
+   "rows": [
+    {
+     "project_id": "projects.id.2",
+     "task_id": "tasks.id.1"
+    },
+    {
+     "project_id": "projects.id.1",
+     "task_id": "tasks.id.2"
+    }
+   ]
+  },
+  "task_relations": {
+   "columns": [
+    "id",
+    "source_task_id",
+    "target_task_id",
+    "relation_type",
+    "created_by",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "task_relations.created_by.1",
+     "id": "task_relations.id.1",
+     "relation_type": "task_relations.relation_type.1",
+     "source_task_id": "tasks.id.2",
+     "target_task_id": "tasks.id.1"
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "task_relations.created_by.2",
+     "id": "task_relations.id.2",
+     "relation_type": "task_relations.relation_type.2",
+     "source_task_id": "tasks.id.1",
+     "target_task_id": "tasks.id.2"
+    }
+   ]
+  },
+  "task_repositories": {
+   "columns": [
+    "task_id",
+    "repository_id",
+    "access",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "access": "task_repositories.access.1",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "repository_id": "repositories.id.2",
+     "task_id": "tasks.id.1"
+    },
+    {
+     "access": "task_repositories.access.2",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "repository_id": "repositories.id.1",
+     "task_id": "tasks.id.2"
+    }
+   ]
+  },
+  "task_tags": {
+   "columns": [
+    "task_id",
+    "tag"
+   ],
+   "rows": [
+    {
+     "tag": "task_tags.tag.1",
+     "task_id": "tasks.id.1"
+    },
+    {
+     "tag": "task_tags.tag.2",
+     "task_id": "tasks.id.2"
+    }
+   ]
+  },
+  "tasks": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "number",
+    "key",
+    "title",
+    "description",
+    "description_hash",
+    "acceptance_criteria",
+    "status",
+    "priority",
+    "category",
+    "parent_id",
+    "assignee",
+    "assigned_agent",
+    "claimed_by",
+    "claim_expires_at",
+    "auto_execute",
+    "estimated_effort",
+    "external_refs",
+    "metadata",
+    "due_at",
+    "scheduled_at",
+    "created_by",
+    "version",
+    "created_at",
+    "updated_at",
+    "started_at",
+    "completed_at",
+    "accepted_at",
+    "archived_at",
+    "current_classification_id"
+   ],
+   "rows": [
+    {
+     "acceptance_criteria": [],
+     "accepted_at": "2026-01-01T00:00:00.000000+00:00",
+     "archived_at": "2026-01-01T00:00:00.000000+00:00",
+     "assigned_agent": "tasks.assigned_agent.1",
+     "assignee": "tasks.assignee.1",
+     "auto_execute": 1,
+     "category": "tasks.category.1",
+     "claim_expires_at": "2026-01-01T00:00:00.000000+00:00",
+     "claimed_by": "tasks.claimed_by.1",
+     "completed_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_by": "tasks.created_by.1",
+     "current_classification_id": "tasks.current_classification_id.1",
+     "description": "tasks.description.1",
+     "description_hash": "tasks.description_hash.1",
+     "due_at": "2026-01-01T00:00:00.000000+00:00",
+     "estimated_effort": [],
+     "external_refs": [
+      {
+       "id": "1",
+       "system": "github",
+       "url": "https://github.example/1"
+      }
+     ],
+     "id": "tasks.id.1",
+     "key": "tasks.key.1",
+     "metadata": [],
+     "number": 1,
+     "parent_id": null,
+     "priority": "tasks.priority.1",
+     "scheduled_at": "2026-01-01T00:00:00.000000+00:00",
+     "started_at": "2026-01-01T00:00:00.000000+00:00",
+     "status": "tasks.status.1",
+     "title": "tasks.title.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "version": 1,
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "acceptance_criteria": [],
+     "accepted_at": "2026-01-02T00:00:00.000000+00:00",
+     "archived_at": "2026-01-02T00:00:00.000000+00:00",
+     "assigned_agent": "tasks.assigned_agent.2",
+     "assignee": "tasks.assignee.2",
+     "auto_execute": 2,
+     "category": "tasks.category.2",
+     "claim_expires_at": "2026-01-02T00:00:00.000000+00:00",
+     "claimed_by": "tasks.claimed_by.2",
+     "completed_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_by": "tasks.created_by.2",
+     "current_classification_id": "tasks.current_classification_id.2",
+     "description": "tasks.description.2",
+     "description_hash": "tasks.description_hash.2",
+     "due_at": "2026-01-02T00:00:00.000000+00:00",
+     "estimated_effort": [],
+     "external_refs": [
+      {
+       "id": "2",
+       "system": "github",
+       "url": "https://github.example/2"
+      }
+     ],
+     "id": "tasks.id.2",
+     "key": "tasks.key.2",
+     "metadata": [],
+     "number": 2,
+     "parent_id": null,
+     "priority": "tasks.priority.2",
+     "scheduled_at": "2026-01-02T00:00:00.000000+00:00",
+     "started_at": "2026-01-02T00:00:00.000000+00:00",
+     "status": "tasks.status.2",
+     "title": "tasks.title.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "version": 2,
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "tool_events": {
+   "columns": [
+    "id",
+    "hook_event_id",
+    "session_id",
+    "attempt_id",
+    "external_agent_id",
+    "phase",
+    "tool_name",
+    "tool_use_id",
+    "duration_ms",
+    "error_excerpt",
+    "summary",
+    "occurred_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "tool_events.attempt_id.1",
+     "duration_ms": 1,
+     "error_excerpt": "tool_events.error_excerpt.1",
+     "external_agent_id": "tool_events.external_agent_id.1",
+     "hook_event_id": "hook_events.id.1",
+     "id": "tool_events.id.1",
+     "occurred_at": "2026-01-01T00:00:00.000000+00:00",
+     "phase": "tool_events.phase.1",
+     "session_id": "tool_events.session_id.1",
+     "summary": [],
+     "tool_name": "tool_events.tool_name.1",
+     "tool_use_id": "tool_events.tool_use_id.1"
+    },
+    {
+     "attempt_id": "tool_events.attempt_id.2",
+     "duration_ms": 2,
+     "error_excerpt": "tool_events.error_excerpt.2",
+     "external_agent_id": "tool_events.external_agent_id.2",
+     "hook_event_id": "hook_events.id.2",
+     "id": "tool_events.id.2",
+     "occurred_at": "2026-01-02T00:00:00.000000+00:00",
+     "phase": "tool_events.phase.2",
+     "session_id": "tool_events.session_id.2",
+     "summary": [],
+     "tool_name": "tool_events.tool_name.2",
+     "tool_use_id": "tool_events.tool_use_id.2"
+    }
+   ]
+  },
+  "verification_check_results": {
+   "columns": [
+    "id",
+    "run_id",
+    "name",
+    "kind",
+    "required",
+    "repository_id",
+    "status",
+    "exit_code",
+    "duration_ms",
+    "timed_out",
+    "log_artifact_id",
+    "output_excerpt",
+    "failure_signatures",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "duration_ms": 1,
+     "exit_code": 1,
+     "failure_signatures": [],
+     "id": "verification_check_results.id.1",
+     "kind": "verification_check_results.kind.1",
+     "log_artifact_id": "verification_check_results.log_artifact_id.1",
+     "name": "verification_check_results.name.1",
+     "output_excerpt": "verification_check_results.output_excerpt.1",
+     "repository_id": "verification_check_results.repository_id.1",
+     "required": 1,
+     "run_id": "verification_runs.id.1",
+     "status": "verification_check_results.status.1",
+     "timed_out": 1
+    },
+    {
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "duration_ms": 2,
+     "exit_code": 2,
+     "failure_signatures": [],
+     "id": "verification_check_results.id.2",
+     "kind": "verification_check_results.kind.2",
+     "log_artifact_id": "verification_check_results.log_artifact_id.2",
+     "name": "verification_check_results.name.2",
+     "output_excerpt": "verification_check_results.output_excerpt.2",
+     "repository_id": "verification_check_results.repository_id.2",
+     "required": 2,
+     "run_id": "verification_runs.id.2",
+     "status": "verification_check_results.status.2",
+     "timed_out": 2
+    }
+   ]
+  },
+  "verification_configs": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "scope_type",
+    "scope_id",
+    "name",
+    "checks",
+    "enabled",
+    "approved_by",
+    "version",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "approved_by": "verification_configs.approved_by.1",
+     "checks": [],
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "enabled": 1,
+     "id": "verification_configs.id.1",
+     "name": "verification_configs.name.1",
+     "scope_id": "verification_configs.scope_id.1",
+     "scope_type": "verification_configs.scope_type.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00",
+     "version": 1,
+     "workspace_id": "workspaces.id.1"
+    },
+    {
+     "approved_by": "verification_configs.approved_by.2",
+     "checks": [],
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "enabled": 2,
+     "id": "verification_configs.id.2",
+     "name": "verification_configs.name.2",
+     "scope_id": "verification_configs.scope_id.2",
+     "scope_type": "verification_configs.scope_type.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00",
+     "version": 2,
+     "workspace_id": "workspaces.id.2"
+    }
+   ]
+  },
+  "verification_runs": {
+   "columns": [
+    "id",
+    "workspace_id",
+    "task_id",
+    "attempt_id",
+    "manifest_id",
+    "config_snapshot",
+    "status",
+    "required_passed",
+    "triggered_by",
+    "started_at",
+    "finished_at",
+    "created_at"
+   ],
+   "rows": [
+    {
+     "attempt_id": "verification_runs.attempt_id.1",
+     "config_snapshot": [],
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "finished_at": "2026-01-01T00:00:00.000000+00:00",
+     "id": "verification_runs.id.1",
+     "manifest_id": "verification_runs.manifest_id.1",
+     "required_passed": 1,
+     "started_at": "2026-01-01T00:00:00.000000+00:00",
+     "status": "verification_runs.status.1",
+     "task_id": "tasks.id.1",
+     "triggered_by": "verification_runs.triggered_by.1",
+     "workspace_id": "verification_runs.workspace_id.1"
+    },
+    {
+     "attempt_id": "verification_runs.attempt_id.2",
+     "config_snapshot": [],
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "finished_at": "2026-01-02T00:00:00.000000+00:00",
+     "id": "verification_runs.id.2",
+     "manifest_id": "verification_runs.manifest_id.2",
+     "required_passed": 2,
+     "started_at": "2026-01-02T00:00:00.000000+00:00",
+     "status": "verification_runs.status.2",
+     "task_id": "tasks.id.2",
+     "triggered_by": "verification_runs.triggered_by.2",
+     "workspace_id": "verification_runs.workspace_id.2"
+    }
+   ]
+  },
+  "workers": {
+   "columns": [
+    "id",
+    "hostname",
+    "pid",
+    "status",
+    "concurrency",
+    "kinds",
+    "current_jobs",
+    "jobs_completed",
+    "jobs_failed",
+    "started_at",
+    "heartbeat_at",
+    "stopped_at"
+   ],
+   "rows": [
+    {
+     "concurrency": 1,
+     "current_jobs": [],
+     "heartbeat_at": "2026-01-01T00:00:00.000000+00:00",
+     "hostname": "workers.hostname.1",
+     "id": "workers.id.1",
+     "jobs_completed": 1,
+     "jobs_failed": 1,
+     "kinds": [],
+     "pid": 1,
+     "started_at": "2026-01-01T00:00:00.000000+00:00",
+     "status": "workers.status.1",
+     "stopped_at": "2026-01-01T00:00:00.000000+00:00"
+    },
+    {
+     "concurrency": 2,
+     "current_jobs": [],
+     "heartbeat_at": "2026-01-02T00:00:00.000000+00:00",
+     "hostname": "workers.hostname.2",
+     "id": "workers.id.2",
+     "jobs_completed": 2,
+     "jobs_failed": 2,
+     "kinds": [],
+     "pid": 2,
+     "started_at": "2026-01-02T00:00:00.000000+00:00",
+     "status": "workers.status.2",
+     "stopped_at": "2026-01-02T00:00:00.000000+00:00"
+    }
+   ]
+  },
+  "workspaces": {
+   "columns": [
+    "id",
+    "slug",
+    "name",
+    "description",
+    "key_prefix",
+    "next_task_number",
+    "settings",
+    "archived_at",
+    "created_at",
+    "updated_at"
+   ],
+   "rows": [
+    {
+     "archived_at": "2026-01-01T00:00:00.000000+00:00",
+     "created_at": "2026-01-01T00:00:00.000000+00:00",
+     "description": "workspaces.description.1",
+     "id": "workspaces.id.1",
+     "key_prefix": "workspaces.key_prefix.1",
+     "name": "workspaces.name.1",
+     "next_task_number": 1,
+     "settings": [],
+     "slug": "workspaces.slug.1",
+     "updated_at": "2026-01-01T00:00:00.000000+00:00"
+    },
+    {
+     "archived_at": "2026-01-02T00:00:00.000000+00:00",
+     "created_at": "2026-01-02T00:00:00.000000+00:00",
+     "description": "workspaces.description.2",
+     "id": "workspaces.id.2",
+     "key_prefix": "workspaces.key_prefix.2",
+     "name": "workspaces.name.2",
+     "next_task_number": 2,
+     "settings": [],
+     "slug": "workspaces.slug.2",
+     "updated_at": "2026-01-02T00:00:00.000000+00:00"
+    }
+   ]
+  }
+ }
+}

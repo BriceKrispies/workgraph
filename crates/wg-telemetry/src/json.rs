@@ -7,6 +7,15 @@ use serde_json::{Number, Value};
 
 /// `json.dumps(value, sort_keys=True)` with Python's default separators and `ensure_ascii`.
 pub fn dumps_sorted(value: &Value) -> String {
+    dumps(value, true)
+}
+
+/// `json.dumps(value)` with Python's default separators and `ensure_ascii`: keys in insertion order.
+pub fn dumps_ordered(value: &Value) -> String {
+    dumps(value, false)
+}
+
+fn dumps(value: &Value, sort_keys: bool) -> String {
     match value {
         Value::Null => "null".to_owned(),
         Value::Bool(true) => "true".to_owned(),
@@ -17,17 +26,24 @@ pub fn dumps_sorted(value: &Value) -> String {
             "[{}]",
             items
                 .iter()
-                .map(dumps_sorted)
+                .map(|item| dumps(item, sort_keys))
                 .collect::<Vec<_>>()
                 .join(", ")
         ),
         Value::Object(map) => {
-            let sorted: BTreeMap<&String, &Value> = map.iter().collect();
+            let entries: Vec<(&String, &Value)> = if sort_keys {
+                map.iter()
+                    .collect::<BTreeMap<&String, &Value>>()
+                    .into_iter()
+                    .collect()
+            } else {
+                map.iter().collect()
+            };
             format!(
                 "{{{}}}",
-                sorted
+                entries
                     .iter()
-                    .map(|(key, item)| format!("{}: {}", ascii_string(key), dumps_sorted(item)))
+                    .map(|(key, item)| format!("{}: {}", ascii_string(key), dumps(item, sort_keys)))
                     .collect::<Vec<_>>()
                     .join(", ")
             )

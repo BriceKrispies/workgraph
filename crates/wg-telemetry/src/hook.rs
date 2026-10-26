@@ -39,6 +39,23 @@ pub const SCHEMA_V2: u8 = 2;
 /// The `Workgraph Task-ID` pattern used to find task keys in free text.
 const TASK_KEY: &str = r"\b([A-Z][A-Z0-9]{0,9}-\d+)\b";
 
+/// The capture settings of a configuration (`config.claude`), with the defaults for what it leaves out.
+pub fn capture_config_of(config: &Map<String, Value>) -> CaptureConfig {
+    let claude = config.get("claude").and_then(Value::as_object);
+    let defaults = CaptureConfig::default();
+    CaptureConfig {
+        capture_tool_payloads: claude
+            .and_then(|claude| claude.get("capture_tool_payloads"))
+            .and_then(Value::as_bool)
+            .unwrap_or(defaults.capture_tool_payloads),
+        max_payload_chars: claude
+            .and_then(|claude| claude.get("max_payload_chars"))
+            .and_then(Value::as_u64)
+            .and_then(|chars| usize::try_from(chars).ok())
+            .unwrap_or(defaults.max_payload_chars),
+    }
+}
+
 /// The two settings that bound what a hook keeps.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct CaptureConfig {
@@ -136,12 +153,7 @@ pub fn normalise(
     config: CaptureConfig,
     source: &str,
 ) -> Result<Normalised, PayloadError> {
-    let payload = record
-        .get("payload")
-        .filter(|value| truthy(Some(value)))
-        .cloned()
-        .unwrap_or_else(|| json!({}));
-    let raw = hook_object(payload);
+    let raw = payload_object(record);
     let fields = fields_of(validated);
     let key = dedupe_key(record);
     let version = schema_version(&raw);
@@ -153,7 +165,10 @@ pub fn normalise(
         )])
         .collect();
     let received_at = match record.get("received_at") {
-        Some(Value::String(text)) => Some(parse_received(text)?),
+        Some(Value::String(text)) => Some(parse_utc(text).map_err(|_| PayloadError {
+            field: "received_at".to_owned(),
+            message: format!("invalid timestamp {text:?}"),
+        })?),
         _ => None,
     };
     Ok(Normalised {
@@ -165,6 +180,18 @@ pub fn normalise(
         fields,
         received_at,
     })
+}
+
+/// The hook object of a record: its payload when that is truthy (else `{}`), wrapped as `Invalid` unless it is
+/// an object with `hook_event_name`.
+pub fn payload_object(record: &Value) -> Map<String, Value> {
+    hook_object(
+        record
+            .get("payload")
+            .filter(|value| truthy(Some(value)))
+            .cloned()
+            .unwrap_or_else(|| json!({})),
+    )
 }
 
 /// The payload as a hook object: a dict with `hook_event_name`, else the `Invalid` wrap that keeps the
@@ -181,8 +208,8 @@ pub fn hook_object(payload: Value) -> Map<String, Value> {
     }
 }
 
-/// A received timestamp. A naive value is taken as UTC, as `ensure_utc` does.
-fn parse_received(text: &str) -> Result<Timestamp, PayloadError> {
+/// A timestamp text as `ensure_utc(datetime.fromisoformat(text))` reads it: a naive value is taken as UTC.
+pub fn parse_utc(text: &str) -> Result<Timestamp, wg_types::WgError> {
     let has_offset =
         text.ends_with('Z') || text.get(10..).is_some_and(|rest| rest.contains(['+', '-']));
     let candidate = if text.ends_with('Z') {
@@ -192,10 +219,7 @@ fn parse_received(text: &str) -> Result<Timestamp, PayloadError> {
     } else {
         text.to_owned() + "+00:00"
     };
-    Timestamp::parse_iso(&candidate).map_err(|_| PayloadError {
-        field: "received_at".to_owned(),
-        message: format!("invalid timestamp {text:?}"),
-    })
+    Timestamp::parse_iso(&candidate)
 }
 
 /// The common hook fields of a validated hook object (the output of `wg-telemetryspec`). Validation has already

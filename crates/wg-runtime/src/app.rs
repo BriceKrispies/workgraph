@@ -49,6 +49,30 @@ pub fn environment() -> Environment {
     }
 }
 
+/// The paths of a Workgraph home: `home`, else `WORKGRAPH_HOME`, else the platform directories.
+/// `Path(root).expanduser().resolve()`: a relative root is taken from the working directory; `~` is
+/// expanded by the path rules.
+pub(crate) fn resolve_paths(home: Option<&Path>) -> Result<AppPaths, WgError> {
+    let env = environment();
+    let root = home
+        .map(|path| path.to_string_lossy().into_owned())
+        .or_else(|| env.workgraph_home.clone().filter(|text| !text.is_empty()));
+    let root = match root {
+        Some(text) if !text.starts_with('~') => Some(
+            std::path::absolute(&text)
+                .map_err(|err| io_error("resolve", Path::new(&text), &err))?
+                .to_string_lossy()
+                .into_owned(),
+        ),
+        other => other,
+    };
+    AppPaths::resolve(&Environment {
+        workgraph_home: root,
+        ..env
+    })
+    .map_err(|err| WgError::new(ErrorCode::ConfigError, err.to_string()))
+}
+
 /// Reads a text file; a missing file is `None`.
 fn read_optional(path: &Path) -> Result<Option<String>, WgError> {
     match std::fs::read_to_string(path) {
@@ -64,26 +88,7 @@ impl App {
     /// `Workgraph.__init__` does with `auto_migrate`, upgrades it to head when it is not there
     /// yet. A fresh database is created at head; an older one is migrated in place.
     pub fn open(home: Option<&Path>) -> Result<App, WgError> {
-        let env = environment();
-        let root = home
-            .map(|path| path.to_string_lossy().into_owned())
-            .or_else(|| env.workgraph_home.clone().filter(|text| !text.is_empty()));
-        // `Path(root).expanduser().resolve()`: a relative root is taken from the working
-        // directory; `~` is expanded by the path rules.
-        let root = match root {
-            Some(text) if !text.starts_with('~') => Some(
-                std::path::absolute(&text)
-                    .map_err(|err| io_error("resolve", Path::new(&text), &err))?
-                    .to_string_lossy()
-                    .into_owned(),
-            ),
-            other => other,
-        };
-        let paths = AppPaths::resolve(&Environment {
-            workgraph_home: root,
-            ..env
-        })
-        .map_err(|err| WgError::new(ErrorCode::ConfigError, err.to_string()))?;
+        let paths = resolve_paths(home)?;
         for dir in [
             paths.config_dir(),
             paths.workspace_config_dir(),

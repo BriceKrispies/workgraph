@@ -7,7 +7,9 @@
 //! keeps unknown keys; [`Extra::Ignore`] here drops them, and the shell keeps them from the raw object.
 
 use serde_json::{Map, Value};
-use wg_validate::{Extra, Field, IntRules, Model, Schema, StrRules, ValidationError, validate};
+use wg_validate::{
+    Extra, Field, IntRules, Loc, Model, Schema, StrRules, ValidationError, validate,
+};
 
 /// The model of the common hook fields, in Pydantic's declaration order (which sets the error order).
 pub fn hook_payload_model() -> Model {
@@ -48,6 +50,31 @@ pub fn hook_payload_model() -> Model {
 /// validated declared fields; otherwise Pydantic's error list.
 pub fn validate_hook_payload(raw: &Map<String, Value>) -> Result<Value, Vec<ValidationError>> {
     validate(&hook_payload_model(), &Value::Object(raw.clone()))
+}
+
+/// The text of a failed validation, in the shape of Pydantic's `ValidationError` message: the count, then each
+/// error as its location, its message and its type.
+pub fn failure_message(errors: &[ValidationError]) -> String {
+    let count = errors.len();
+    let noun = if count == 1 { "error" } else { "errors" };
+    let items: Vec<String> = errors
+        .iter()
+        .map(|error| {
+            let loc: Vec<String> = error
+                .loc
+                .iter()
+                .map(|step| match step {
+                    Loc::Key(key) => key.clone(),
+                    Loc::Index(index) => index.to_string(),
+                })
+                .collect();
+            format!("{}\n  {} [type={}]", loc.join("."), error.msg, error.kind)
+        })
+        .collect();
+    format!(
+        "{count} validation {noun} for HookPayload\n{}",
+        items.join("\n")
+    )
 }
 
 fn optional(name: &str, schema: Schema) -> Field {

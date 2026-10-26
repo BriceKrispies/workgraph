@@ -5,6 +5,8 @@
 //! prefix an operator registered. The shell does the lookups and passes the matching rows in
 //! [`BindingFacts`]; the precedence and the path rules are decided here.
 
+use wg_model::entity::{AgentAttempt, SessionBinding, Task};
+
 use crate::hook::task_keys_in;
 
 /// Where a session's binding came from. The text is the value the store keeps.
@@ -207,4 +209,37 @@ pub fn mapped_task_key(
 ) -> Option<String> {
     let text = format!("{} {}", subject.unwrap_or(""), description.unwrap_or(""));
     task_keys_in(&text).into_iter().find(|key| is_known(key))
+}
+
+/// The attempt row the binding facts name.
+pub fn attempt_row(attempt: &AgentAttempt) -> AttemptRow {
+    AttemptRow {
+        workspace_id: attempt.workspace_id.to_string(),
+        attempt_id: attempt.id.to_string(),
+        task_id: attempt.task_id.to_string(),
+    }
+}
+
+/// The target an operator binding points at.
+pub fn binding_target(binding: &SessionBinding) -> TargetRow {
+    TargetRow {
+        workspace_id: binding.workspace_id.to_string(),
+        task_id: binding.task_id.to_string(),
+    }
+}
+
+/// The target a task is, for the environment's task.
+pub fn task_target(task: &Task) -> TargetRow {
+    TargetRow {
+        workspace_id: task.workspace_id.to_string(),
+        task_id: task.id.to_string(),
+    }
+}
+
+/// An active binding with its `cwd` prefix.
+pub fn cwd_binding(binding: &SessionBinding) -> CwdBinding {
+    CwdBinding {
+        target: binding_target(binding),
+        prefix: binding.cwd_prefix.clone(),
+    }
 }

@@ -91,14 +91,14 @@ fn samples() -> Vec<EventPayload> {
     let run_id = id(11);
     let mut out = vec![
         EventPayload::AgentSessionBound(AgentSessionBound {
-            cwd: "C:/src/app".into(),
-            session_id: "s-1".into(),
+            cwd: Some("C:/src/app".into()),
+            session_id: Some("s-1".into()),
         }),
         EventPayload::AgentSessionStarted(AgentSessionStarted {
             binding: json!("task"),
             external_session_id: "s-1".into(),
             provider: "claude_code".into(),
-            source: "hook".into(),
+            source: Some("hook".into()),
             task_id: Some(task_id),
         }),
         EventPayload::AgentSessionEnded(AgentSessionEnded {

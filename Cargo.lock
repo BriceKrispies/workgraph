@@ -982,6 +982,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "num_threads"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cabcc654086861f9e1bc5115258de62ef92c79b20f4615a1b0cc57c4e82027d4"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1635,7 +1644,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdb87b95ec50ddfa440816d227a17b2ccbdda963a316a727fda0fc4334f7d134"
 dependencies = [
  "deranged",
+ "libc",
  "num-conv",
+ "num_threads",
  "powerfmt",
  "serde_core",
  "time-core",
@@ -2422,6 +2433,7 @@ dependencies = [
  "getrandom 0.4.3",
  "rpds",
  "serde_json",
+ "time",
  "tracing",
  "tracing-core",
  "tracing-subscriber",
@@ -2434,6 +2446,8 @@ dependencies = [
  "wg-runtimespec",
  "wg-store",
  "wg-tasks",
+ "wg-telemetry",
+ "wg-telemetryspec",
  "wg-types",
 ]
 
@@ -2554,6 +2568,7 @@ dependencies = [
  "regex",
  "rpds",
  "serde_json",
+ "wg-exec",
  "wg-hash",
  "wg-model",
  "wg-types",

@@ -14,6 +14,7 @@ workspace = true
 regex = "1"
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order", "arbitrary_precision"] }
+wg-exec = { path = "../wg-exec" }
 wg-hash = { path = "../wg-hash" }
 wg-model = { path = "../wg-model" }
 wg-types = { path = "../wg-types" }

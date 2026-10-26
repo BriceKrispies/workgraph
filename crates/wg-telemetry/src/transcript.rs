@@ -471,3 +471,16 @@ fn task_key_pattern() -> Option<Regex> {
 fn trial_id_pattern() -> Option<Regex> {
     Regex::new(r"(?m)^[ \t]*Trial-ID:[ \t]*([0-9A-Za-z][0-9A-Za-z-]{7,})").ok()
 }
+
+/// The sidecar of a transcript: the same directory, the file name without `.jsonl` and with `.meta.json`.
+pub fn sidecar_path(transcript: &str) -> String {
+    let path = std::path::Path::new(transcript);
+    let name = path
+        .file_name()
+        .map(|name| name.to_string_lossy().into_owned())
+        .unwrap_or_default();
+    let stem = name.strip_suffix(".jsonl").unwrap_or(&name);
+    path.with_file_name(format!("{stem}.meta.json"))
+        .to_string_lossy()
+        .into_owned()
+}

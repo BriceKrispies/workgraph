@@ -585,6 +585,10 @@ version = "0.1.0"
 [[package]]
 name = "wg-tasks"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-telemetry"

@@ -2271,6 +2271,11 @@ dependencies = [
 [[package]]
 name = "wg-experiments"
 version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "wg-pyrand",
+]
 
 [[package]]
 name = "wg-git"

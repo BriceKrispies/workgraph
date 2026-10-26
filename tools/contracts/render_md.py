@@ -134,7 +134,6 @@ def _registry(section: str) -> dict[str, Any]:
     mcp_params: dict[str, list[str]] = {}
     http_ids: dict[tuple[str, str], str] = {}
     config_order: dict[str, int] = {}
-    config_defaults: dict[str, str] = {}
     for line in section.splitlines():
         if m := re.match(r"^\| (C\d{3}) \| `([^`]+)` \|", line):
             cli_ids[m.group(2)] = m.group(1)
@@ -146,14 +145,12 @@ def _registry(section: str) -> dict[str, Any]:
             http_ids[(m.group(2), m.group(3))] = m.group(1)
         elif m := re.match(r"^\| `([^`]+)` \| (.*?) \| (.*?) \| (.*?) \|$", line):
             config_order.setdefault(m.group(1), len(config_order))
-            config_defaults[m.group(1)] = m.group(3)
     return {
         "cli": cli_ids,
         "mcp": mcp_ids,
         "mcp_params": mcp_params,
         "http": http_ids,
         "config": config_order,
-        "config_defaults": config_defaults,
     }
 
 
@@ -392,9 +389,7 @@ def _config_type(schema: dict[str, Any]) -> str:
     return str(schema.get("type", "any"))
 
 
-def _config_rows(
-    schema: dict[str, Any], old_order: dict[str, int], old_defaults: dict[str, str]
-) -> list[tuple[str, str]]:
+def _config_rows(schema: dict[str, Any], old_order: dict[str, int]) -> list[tuple[str, str]]:
     defs = schema.get("$defs", {})
     rows: list[tuple[str, str]] = []
 
@@ -403,7 +398,9 @@ def _config_rows(
             return defs[node["$ref"].split("/")[-1]]
         return node
 
-    def visit(prefix: str, node: dict[str, Any]) -> None:
+    def visit(prefix: str, node: dict[str, Any], inherited: Any) -> None:
+        # A nested model with a default (a default_factory) carries the whole object as its default;
+        # each leaf takes its own key from that object.
         for name, raw in node.get("properties", {}).items():
             path = f"{prefix}{name}"
             if "additionalProperties" in raw:
@@ -414,16 +411,20 @@ def _config_rows(
                 rows.append((f"{path}.<name>", "table: " + " or ".join(refs), "", ""))
                 continue
             target = resolve(raw)
+            if "default" in raw:
+                own, has_default = raw["default"], True
+            elif isinstance(inherited, dict) and name in inherited:
+                own, has_default = inherited[name], True
+            else:
+                own, has_default = None, False
             if target.get("type") == "object" and "properties" in target:
-                visit(path + ".", target)
+                visit(path + ".", target, own)
                 continue
-            default = json.dumps(raw.get("default"), ensure_ascii=False) if "default" in raw else ""
-            # default_factory fields carry no "default" in the snapshot; keep the committed value.
-            default = default or old_defaults.get(path, "")
+            default = json.dumps(own, ensure_ascii=False) if has_default else ""
             allowed = ",".join(raw.get("enum", []))
             rows.append((path, _config_type(raw), default, allowed))
 
-    visit("", schema)
+    visit("", schema, None)
     # Order: committed order where the key already appears there; new keys after, in snapshot order.
     indexed = list(enumerate(rows))
     indexed.sort(key=lambda item: old_order.get(item[1][0], len(old_order) + item[0]))
@@ -498,10 +499,7 @@ def render(doc_text: str) -> str:
         MCP_HEADER: _mcp_rows(mcp["tools"], mcp_ids, reg["mcp_params"]),
         HTTP_HEADER: _http_rows(openapi, http_ids),
         DB_HEADER: db_rows,
-        CONFIG_HEADER: [
-            f"| `{k}` | {t} | {d} | {a} |"
-            for k, t, d, a in _config_rows(config, reg["config"], reg["config_defaults"])
-        ],
+        CONFIG_HEADER: [f"| `{k}` | {t} | {d} | {a} |" for k, t, d, a in _config_rows(config, reg["config"])],
     }
 
     out: list[str] = []

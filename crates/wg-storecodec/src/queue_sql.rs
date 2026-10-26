@@ -204,6 +204,17 @@ pub fn job_stats(workspace_id: Option<Id>) -> Statement {
     }
 }
 
+/// The job holding idempotency key `key`, if any (at most one: the key is unique).
+pub fn job_by_idempotency_key(key: &str) -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"jobs\" WHERE \"idempotency_key\" = ?1",
+            select_list(Table::Job, None)
+        ),
+        params: vec![text_sql(key)],
+    }
+}
+
 /// The newest `limit` workers first (by start time, then id).
 pub fn workers(limit: usize) -> Statement {
     Statement {

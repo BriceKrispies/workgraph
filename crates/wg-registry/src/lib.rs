@@ -7,6 +7,7 @@ pub mod boundary;
 pub mod checkout;
 pub mod health;
 pub mod identity;
+pub mod register;
 pub mod remote;
 pub mod resolve;
 pub mod settings;

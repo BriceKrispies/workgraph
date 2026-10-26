@@ -15,18 +15,13 @@ pub trait ToolBackend: Send + 'static {
     fn read_resource(&mut self, agent: &Agent, uri: &str) -> Result<String, WgError>;
 }
 
-/// The backend over `wg_runtime::App`. The workspace, project and repository reads (M01 to M06)
+/// The backend over `wg_runtime::App`. The workspace, project and repository tools (M01 to M08)
 /// are answered by [`crate::tools`]; the other tools are refused until their interface tasks land.
 pub struct AppBackend(pub wg_runtime::App);
 
 impl ToolBackend for AppBackend {
-    fn call_tool(
-        &mut self,
-        _agent: &Agent,
-        name: &str,
-        arguments: Value,
-    ) -> Result<Value, WgError> {
-        match crate::tools::call(&mut self.0, name, &arguments) {
+    fn call_tool(&mut self, agent: &Agent, name: &str, arguments: Value) -> Result<Value, WgError> {
+        match crate::tools::call(&mut self.0, agent, name, &arguments) {
             Some(answer) => answer,
             None => Err(WgError::new(
                 ErrorCode::WorkgraphError,

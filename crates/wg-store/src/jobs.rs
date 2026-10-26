@@ -33,6 +33,14 @@ impl Session<'_> {
         self.fetch(&RowKey::Job(job_id))
     }
 
+    /// The job holding idempotency key `key`, if any.
+    pub fn job_by_idempotency_key(&mut self, key: &str) -> Result<Option<Job>, WgError> {
+        Ok(self
+            .decode_all::<Job>(&queue_sql::job_by_idempotency_key(key))?
+            .into_iter()
+            .next())
+    }
+
     /// A page of jobs, newest first, with the number of jobs the filter matches before paging
     /// (`JobQueue.list`).
     pub fn list_jobs(&mut self, filter: &JobFilter<'_>) -> Result<(Vec<Job>, usize), WgError> {

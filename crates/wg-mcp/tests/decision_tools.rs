@@ -6,6 +6,9 @@ use std::error::Error;
 
 use serde_json::{Value, json};
 use wg_mcp::{Agent, AppBackend, ToolBackend};
+
+/// The features the backend serves: the decisions feature.
+static FEATURES: &[&wg_runtime::Feature] = &[&wg_decisions::FEATURE];
 use wg_mcpspec::{Catalog, agent_permissions, respond_to_call};
 use wg_model::Write;
 use wg_model::entity::Workspace;
@@ -39,7 +42,10 @@ fn backend(name: &str) -> Result<AppBackend, Box<dyn Error>> {
         Some("main"),
         &json!({"title": "Pick a store"}),
     )?;
-    Ok(AppBackend { app, features: &[] })
+    Ok(AppBackend {
+        app,
+        features: FEATURES,
+    })
 }
 
 /// Calls `name` as the server does: argument checks, then the backend. Returns the result value.

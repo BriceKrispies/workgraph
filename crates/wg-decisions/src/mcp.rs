@@ -1,17 +1,38 @@
 //! The decision tools: `task_request_decision`, `decision_list` and `task_decisions`
 //! (`mcp/server.py`).
 //!
-//! Each call runs the `App` entry point of `DecisionService` under the agent's identity
+//! Each call runs the [`crate::service`] entry point of the decision under the agent's identity
 //! (`RequestContext.agent(name, permissions)`), which checks the permissions the Python service
-//! requires, then wraps the document the way the tool returns it.
+//! requires, then wraps the document the way the tool returns it. [`TABLE`] names the tools this
+//! feature answers; [`TOOLS`] is the descriptor's table.
 
 use serde_json::{Map, Value};
+use wg_mcpspec::options::Agent;
 use wg_mcpspec::structured;
-use wg_runtime::{App, agent_context};
-use wg_runtimespec::decisions::{decisions, list_args, request_parts, text_param};
+use wg_runtime::{App, RequestContext, ToolRun, agent_context};
+use wg_runtimespec::text_param;
 use wg_types::WgError;
 
-use crate::backend::Agent;
+use crate::service;
+use crate::spec::{decisions, list_args, request_parts};
+
+/// One tool body: the application, the agent's context, the workspace argument and the arguments.
+pub type Body = fn(
+    &mut App,
+    &RequestContext,
+    Option<&str>,
+    &Map<String, Value>,
+) -> Result<wg_json::Value, WgError>;
+
+/// The tools of the feature, by name, with the body each one runs.
+pub const TABLE: &[(&str, Body)] = &[
+    ("task_request_decision", request),
+    ("decision_list", list),
+    ("task_decisions", for_task),
+];
+
+/// The feature's tool descriptor: one [`call`].
+pub const TOOLS: &[ToolRun] = &[call];
 
 /// Runs tool `name` for `agent`, or returns `None` when the tool is not a decision tool.
 pub fn call(
@@ -20,23 +41,10 @@ pub fn call(
     name: &str,
     arguments: &Value,
 ) -> Option<Result<Value, WgError>> {
+    let (_, body) = TABLE.iter().find(|(tool, _)| *tool == name)?;
     let wanted = arguments.as_object().cloned().unwrap_or_default();
-    let result = match name {
-        "task_request_decision" => run(app, agent, &wanted, request),
-        "decision_list" => run(app, agent, &wanted, list),
-        "task_decisions" => run(app, agent, &wanted, for_task),
-        _ => return None,
-    };
-    Some(result)
+    Some(run(app, agent, &wanted, *body))
 }
-
-/// One tool body: the application, the agent's context, the workspace argument and the arguments.
-type Body = fn(
-    &mut App,
-    &wg_runtime::RequestContext,
-    Option<&str>,
-    &Map<String, Value>,
-) -> Result<wg_json::Value, WgError>;
 
 /// Builds the agent's context, runs `body` and shapes its document as structured output.
 fn run(
@@ -52,12 +60,13 @@ fn run(
 
 fn request(
     app: &mut App,
-    context: &wg_runtime::RequestContext,
+    context: &RequestContext,
     workspace: Option<&str>,
     arguments: &Map<String, Value>,
 ) -> Result<wg_json::Value, WgError> {
     let (question, options) = request_parts(&Value::Object(arguments.clone()));
-    app.decision_request(
+    service::request(
+        app,
         context,
         workspace,
         text_param(arguments, "task"),
@@ -68,21 +77,19 @@ fn request(
 
 fn list(
     app: &mut App,
-    context: &wg_runtime::RequestContext,
+    context: &RequestContext,
     workspace: Option<&str>,
     arguments: &Map<String, Value>,
 ) -> Result<wg_json::Value, WgError> {
     let (filter, limit) = list_args(arguments);
-    app.decision_list(context, workspace, filter, limit)
-        .map(decisions)
+    service::list(app, context, workspace, filter, limit).map(decisions)
 }
 
 fn for_task(
     app: &mut App,
-    context: &wg_runtime::RequestContext,
+    context: &RequestContext,
     workspace: Option<&str>,
     arguments: &Map<String, Value>,
 ) -> Result<wg_json::Value, WgError> {
-    app.decision_for_task(context, workspace, text_param(arguments, "task"))
-        .map(decisions)
+    service::for_task(app, context, workspace, text_param(arguments, "task")).map(decisions)
 }

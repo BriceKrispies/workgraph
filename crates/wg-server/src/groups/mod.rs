@@ -12,7 +12,6 @@
 //! [`crate::Server::blocking`] and returns an [`crate::Answer`].
 
 pub mod acceptance;
-pub mod decisions;
 pub mod events;
 pub mod meta_settings;
 pub mod stacks;
@@ -62,7 +61,6 @@ pub fn routes_with(features: &[&Feature]) -> Vec<ApiRoute> {
     let mut table = Vec::new();
     meta_settings::register(&mut table);
     events::register(&mut table);
-    decisions::register(&mut table);
     tasks::register(&mut table);
     acceptance::register(&mut table);
     stacks::register(&mut table);

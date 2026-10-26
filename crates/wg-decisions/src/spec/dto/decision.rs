@@ -3,10 +3,10 @@
 use wg_json::Value;
 use wg_model::entity::task::TaskDecision;
 
-use crate::convention::{
+use super::decision_option;
+use wg_wire::convention::{
     TimeFormat, id, model, optional_text, optional_timestamp, text, timestamp,
 };
-use crate::dto::decision_option;
 
 /// The OpenAPI component schema this DTO mirrors.
 pub const NAME: &str = "DecisionOut";

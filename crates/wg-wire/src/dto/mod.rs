@@ -30,14 +30,6 @@ pub mod comment;
 pub mod commit_link;
 pub mod contract_check;
 pub mod coupling_out;
-pub mod decision;
-pub mod decision_choose;
-pub mod decision_option;
-pub mod decision_option_in;
-pub mod decision_request;
-pub mod decision_task;
-pub mod decision_with_task;
-pub mod decision_withdraw;
 pub mod dependency_state;
 pub mod estimate_out;
 pub mod event;
@@ -127,23 +119,6 @@ pub fn implemented() -> Vec<(&'static str, &'static [&'static str])> {
         (graph_edge::NAME, graph_edge::FIELDS.as_slice()),
         (task_graph::NAME, task_graph::FIELDS.as_slice()),
         (page::NAME, page::FIELDS.as_slice()),
-        (decision_option::NAME, decision_option::FIELDS.as_slice()),
-        (decision_task::NAME, decision_task::FIELDS.as_slice()),
-        (decision::NAME, decision::FIELDS.as_slice()),
-        (
-            decision_with_task::NAME,
-            decision_with_task::FIELDS.as_slice(),
-        ),
-        (
-            decision_option_in::NAME,
-            decision_option_in::FIELDS.as_slice(),
-        ),
-        (decision_request::NAME, decision_request::FIELDS.as_slice()),
-        (decision_choose::NAME, decision_choose::FIELDS.as_slice()),
-        (
-            decision_withdraw::NAME,
-            decision_withdraw::FIELDS.as_slice(),
-        ),
         (stack::NAME, stack::FIELDS.as_slice()),
         (stack_item::NAME, stack_item::FIELDS.as_slice()),
         (stack_repository::NAME, stack_repository::FIELDS.as_slice()),

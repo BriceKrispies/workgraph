@@ -6,12 +6,12 @@ mod common;
 
 use common::{id, stamp, task, tasks_slice};
 use rpds::RedBlackTreeSetSync;
+use wg_decisions::core::{
+    Answer, DecisionPlan, OptionInput, PlannedEvent, plan_choose, plan_request, plan_withdraw,
+};
 use wg_model::entity::{TaskComment, TaskDecision, TaskTag};
 use wg_model::stamp::Stamp;
 use wg_model::{Task, TaskSlice};
-use wg_tasks::decisions::{
-    Answer, DecisionPlan, OptionInput, PlannedEvent, plan_choose, plan_request, plan_withdraw,
-};
 use wg_types::{Actor, ErrorCode, Permission, TaskStatus, WgError};
 
 const ACTOR: &str = "human:tester";
@@ -531,7 +531,7 @@ fn withdraw_emits_the_withdrawn_event() {
 
 #[test]
 fn option_ids_are_lettered_by_position_and_empty_ids_are_filled() {
-    let out = wg_tasks::decisions::normalize_options(&[
+    let out = wg_decisions::core::normalize_options(&[
         OptionInput {
             id: Some(String::new()),
             label: "first".to_owned(),

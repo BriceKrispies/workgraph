@@ -55,11 +55,11 @@ pub fn command() -> clap::Command {
 /// Reads a file named by an `@file` option: the text, or the reason it could not be read.
 pub type ReadFile<'a> = &'a dyn Fn(&str) -> Result<String, String>;
 
-pub(crate) fn one(m: &ArgMatches, id: &str) -> Option<String> {
+pub fn one(m: &ArgMatches, id: &str) -> Option<String> {
     m.try_get_one::<String>(id).ok().flatten().cloned()
 }
 
-pub(crate) fn many(m: &ArgMatches, id: &str) -> Vec<String> {
+pub fn many(m: &ArgMatches, id: &str) -> Vec<String> {
     m.try_get_many::<String>(id)
         .ok()
         .flatten()
@@ -77,7 +77,7 @@ pub(crate) fn flag(m: &ArgMatches, id: &str) -> bool {
 
 /// The `int` option `id`, else `default`. Click's `int` check: a value Python's `int()` cannot read
 /// is a usage error (`at` names the command it is reported under).
-pub(crate) fn number(m: &ArgMatches, id: &str, default: i64, at: Usage) -> Result<i64, CliFailure> {
+pub fn number(m: &ArgMatches, id: &str, default: i64, at: Usage) -> Result<i64, CliFailure> {
     match one(m, id) {
         None => Ok(default),
         Some(text) => python_number_text(&text)
@@ -408,7 +408,7 @@ pub fn option_flag(m: &ArgMatches, id: &str) -> bool {
 
 // ---------------------------------------------------------------- views
 
-pub(crate) fn get<'a>(value: &'a Value, name: &str) -> Option<&'a Value> {
+pub fn get<'a>(value: &'a Value, name: &str) -> Option<&'a Value> {
     match value {
         Value::Model { fields, .. } => fields
             .iter()
@@ -422,7 +422,7 @@ pub(crate) fn get<'a>(value: &'a Value, name: &str) -> Option<&'a Value> {
     }
 }
 
-pub(crate) fn items(value: Option<&Value>) -> &[Value] {
+pub fn items(value: Option<&Value>) -> &[Value] {
     match value {
         Some(Value::List(items)) => items,
         _ => &[],
@@ -475,11 +475,11 @@ fn repr(value: &Value) -> String {
     }
 }
 
-pub(crate) fn s(value: Option<&Value>) -> String {
+pub fn s(value: Option<&Value>) -> String {
     value.map(python).unwrap_or_default()
 }
 
-pub(crate) fn opt(value: Option<&Value>) -> Option<String> {
+pub fn opt(value: Option<&Value>) -> Option<String> {
     match value {
         None | Some(Value::Null) => None,
         Some(other) => Some(python(other)),
@@ -487,7 +487,7 @@ pub(crate) fn opt(value: Option<&Value>) -> Option<String> {
 }
 
 /// `when()`: `YYYY-MM-DD HH:MM`, or nothing.
-pub(crate) fn when(value: Option<&Value>) -> String {
+pub fn when(value: Option<&Value>) -> String {
     match value {
         Some(Value::DateTime(at)) => at.format_display(),
         _ => String::new(),
@@ -499,7 +499,7 @@ fn count(value: Option<&Value>) -> Option<String> {
     (length > 0).then(|| length.to_string())
 }
 
-pub(crate) fn truncate(text: &str, width: usize) -> String {
+pub fn truncate(text: &str, width: usize) -> String {
     text.chars().take(width).collect()
 }
 

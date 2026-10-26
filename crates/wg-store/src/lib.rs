@@ -15,7 +15,6 @@
 mod analytics;
 mod automation;
 mod classify;
-mod decisions;
 mod experiments;
 mod external;
 mod git;

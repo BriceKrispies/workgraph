@@ -20,12 +20,12 @@ use wg_json::{PyStr, Value};
 use super::{
     agent_time_out, analytics_overview, analytics_query, analytics_query_out, attempt, automation,
     classification_job, classification_out, classification_task, comment, commit_link,
-    coupling_out, decision, decision_option, decision_task, decision_with_task, dependency_state,
-    estimate_out, event, experiment, failures_out, metric_definition, page, predictor, project,
-    project_summary, relation, repository, repository_brief, repository_checkout,
-    repository_remote, repository_status, search_result, stack, stack_item, stack_repository,
-    subagents_out, task, task_brief, task_changes, task_detail, task_diff, task_file,
-    task_history_row, task_rollup, trial, workspace, workspace_summary,
+    coupling_out, dependency_state, estimate_out, event, experiment, failures_out,
+    metric_definition, page, predictor, project, project_summary, relation, repository,
+    repository_brief, repository_checkout, repository_remote, repository_status, search_result,
+    stack, stack_item, stack_repository, subagents_out, task, task_brief, task_changes,
+    task_detail, task_diff, task_file, task_history_row, task_rollup, trial, workspace,
+    workspace_summary,
 };
 use crate::convention::{counts, dict, int, optional_text, text, texts};
 
@@ -203,19 +203,6 @@ const EXPERIMENT_REPORT_ARM: Shape = Shape::Object(&[
     ("failure_causes", Shape::Any),
     ("invalid", Shape::Any),
 ]);
-
-// Decisions.
-const DECISION: Shape = Shape::Dto {
-    fields: &decision::FIELDS,
-    nested: &[("options", list(&dto(&decision_option::FIELDS)))],
-};
-const DECISION_WITH_TASK: Shape = Shape::Dto {
-    fields: &decision_with_task::FIELDS,
-    nested: &[
-        ("options", list(&dto(&decision_option::FIELDS))),
-        ("task", dto(&decision_task::FIELDS)),
-    ],
-};
 
 // Analytics.
 const METRIC: Shape = dto(&metric_definition::FIELDS);
@@ -471,15 +458,6 @@ static SHAPES: &[(&str, Shape)] = &[
     ("task_add_relation", dto(&relation::FIELDS)),
     ("task_add_comment", COMMENT),
     ("task_report_progress", COMMENT),
-    ("task_request_decision", DECISION),
-    (
-        "decision_list",
-        Shape::Object(&[("decisions", list(&DECISION_WITH_TASK))]),
-    ),
-    (
-        "task_decisions",
-        Shape::Object(&[("decisions", list(&DECISION))]),
-    ),
     ("task_get_attempts", PAGE_OF_ATTEMPTS),
     ("attempt_list", PAGE_OF_ATTEMPTS),
     (
@@ -618,11 +596,6 @@ pub fn stacks(items: Vec<Value>) -> Value {
 /// `{"tasks": [...]}`: `task_get_ready`.
 pub fn tasks(items: Vec<Value>) -> Value {
     dict(vec![("tasks", Value::List(items))])
-}
-
-/// `{"decisions": [...]}`: `decision_list` and `task_decisions`.
-pub fn decisions(items: Vec<Value>) -> Value {
-    dict(vec![("decisions", Value::List(items))])
 }
 
 /// `{"links": [...]}`: `task_link_commit`.

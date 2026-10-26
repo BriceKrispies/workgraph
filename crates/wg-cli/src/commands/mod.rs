@@ -6,7 +6,6 @@
 //! implemented is a placeholder built from the snapshot (see `wg_clispec::tree`).
 
 pub mod automation;
-pub mod decision;
 pub mod git;
 pub mod job;
 pub mod registry;
@@ -27,8 +26,8 @@ pub type Handler = CliRun;
 pub type Group = CliGroup;
 
 /// The features of this binary, in the order their command groups are dispatched and listed as
-/// implemented. A feature task adds its crate's `Feature` here; none is listed yet.
-pub const FEATURES: &[&Feature] = &[];
+/// implemented. A feature task adds its crate's `Feature` here.
+pub const FEATURES: &[&Feature] = &[&wg_decisions::FEATURE];
 
 /// The implemented groups that predate the feature descriptor, in CLI help order.
 pub const GROUPS: &[Group] = &[
@@ -38,7 +37,6 @@ pub const GROUPS: &[Group] = &[
     setup::INIT,
     serve::MCP,
     serve::SERVE,
-    decision::GROUP,
     job::GROUP,
     git::GROUP,
     automation::GROUP,

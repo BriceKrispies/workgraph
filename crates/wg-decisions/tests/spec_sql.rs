@@ -3,11 +3,11 @@
 
 use std::error::Error;
 
-use wg_model::Table;
-use wg_model::entity::{DecisionOption, TaskDecision};
-use wg_storecodec::decision_sql::{
+use wg_decisions::spec::sql::{
     DecisionFilter, decision_by_id, decisions_by_status, decisions_for_task, open_decision_count,
 };
+use wg_model::Table;
+use wg_model::entity::{DecisionOption, TaskDecision};
 use wg_storecodec::{Raw, TableRow, columns};
 use wg_types::{Id, Timestamp, parse_id};
 
@@ -203,7 +203,7 @@ fn get_by_id_is_scoped_to_the_workspace_and_open_count_to_the_task() -> TestResu
 
 #[test]
 fn brief_rows_decode_the_decision_then_the_task_brief() -> TestResult {
-    use wg_storecodec::decision_sql::{
+    use wg_decisions::spec::sql::{
         DecisionFilter, attach_tags, decisions_by_status_with_task, decode_decision_with_task,
         decode_task_tag, task_tags_of,
     };

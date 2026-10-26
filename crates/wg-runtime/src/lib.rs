@@ -18,7 +18,6 @@ mod automation;
 mod bus;
 mod cli_state;
 mod cycle;
-mod decisions;
 mod effects;
 mod feature;
 mod git;
@@ -34,6 +33,7 @@ mod setup;
 mod stacks;
 mod stamp;
 mod tasks;
+pub use tasks::index_written;
 mod worker;
 mod worktrees;
 
@@ -57,7 +57,6 @@ pub use stamp::{
 };
 pub use wg_registry::admin::Patch as RepositoryPatch;
 pub use wg_runtimespec::automation::catalog as automation_catalog;
-pub use wg_runtimespec::decisions::{DecisionFilter, filter_of as decision_filter};
 pub use wg_runtimespec::jobs::{unknown_job_kind, worker_summary_out};
 pub use wg_runtimespec::registry::{
     project_create_body, project_option_body, workspace_create_body,

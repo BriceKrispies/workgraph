@@ -7,18 +7,14 @@ use rpds::VectorSync;
 use serde_json::{Map, json};
 use wg_json::{Value, http_json};
 use wg_model::entity::JsonObject;
-use wg_model::entity::task::{
-    DecisionOption, Task, TaskComment, TaskDecision, TaskFile, TaskLink, TaskRelation, TaskTag,
-};
+use wg_model::entity::task::{Task, TaskComment, TaskFile, TaskLink, TaskRelation, TaskTag};
 use wg_types::{
     CommentKind, Id, RelationType, TaskKey, TaskPriority, TaskStatus, Timestamp, parse_id,
 };
-use wg_wire::dto::decision;
 use wg_wire::dto::task::TaskRelated;
 use wg_wire::dto::{
-    comment, decision_choose, decision_option, decision_option_in, decision_request, decision_task,
-    decision_with_task, decision_withdraw, dependency_state, graph_edge, graph_node, page,
-    relation, task, task_brief, task_detail, task_file, task_graph, task_link, task_rollup,
+    comment, dependency_state, graph_edge, graph_node, page, relation, task, task_brief,
+    task_detail, task_file, task_graph, task_link, task_rollup,
 };
 
 fn id_of(text: &str) -> Id {
@@ -100,33 +96,6 @@ fn link_row() -> TaskLink {
     }
 }
 
-fn decision_row() -> TaskDecision {
-    TaskDecision {
-        id: id_of("00000000-0000-4000-8000-000000000030"),
-        workspace_id: id_of("00000000-0000-4000-8000-000000000001"),
-        task_id: task_row().id,
-        question: "Which?".into(),
-        options: vec![DecisionOption {
-            id: "a".into(),
-            label: "A".into(),
-            detail: String::new(),
-            recommended: true,
-        }]
-        .into_iter()
-        .collect(),
-        status: "open".into(),
-        chosen_option_id: None,
-        other_text: None,
-        note: None,
-        decided_by: None,
-        decided_at: None,
-        created_by: "agent:claude".into(),
-        created_at: at(0),
-        updated_at: at(0),
-        version: 1,
-    }
-}
-
 #[test]
 fn every_task_dto_lists_its_fields_in_order() {
     let task_row = task_row();
@@ -193,7 +162,7 @@ fn every_task_dto_lists_its_fields_in_order() {
 }
 
 #[test]
-fn every_comment_relation_and_decision_dto_lists_its_fields_in_order() {
+fn every_comment_and_relation_dto_lists_its_fields_in_order() {
     let task_row = task_row();
     let comment_row = TaskComment {
         id: id_of("00000000-0000-4000-8000-000000000040"),
@@ -213,39 +182,12 @@ fn every_comment_relation_and_decision_dto_lists_its_fields_in_order() {
         created_by: "human:Brice".into(),
         created_at: at(0),
     };
-    let decision = decision_row();
 
     assert_eq!(names(&comment::from_model(&comment_row)), comment::FIELDS);
     assert_eq!(
         names(&relation::from_model(&relation_row)),
         relation::FIELDS
     );
-    assert_eq!(
-        names(&decision_option::from_model(&decision.options[0])),
-        decision_option::FIELDS
-    );
-    assert_eq!(
-        names(&decision_task::from_model(&task_row, &[])),
-        decision_task::FIELDS
-    );
-    assert_eq!(
-        names(&decision::from_model(&decision, "WG-7")),
-        decision::FIELDS
-    );
-    let task_value = decision_task::from_model(&task_row, &[]);
-    assert_eq!(
-        names(&decision_with_task::from_model(
-            &decision, "WG-7", task_value
-        )),
-        decision_with_task::FIELDS
-    );
-    assert_eq!(
-        decision_option_in::FIELDS,
-        ["id", "label", "detail", "recommended"]
-    );
-    assert_eq!(decision_request::FIELDS, ["question", "options"]);
-    assert_eq!(decision_choose::FIELDS, ["option_id", "other_text", "note"]);
-    assert_eq!(decision_withdraw::FIELDS, ["reason"]);
 }
 
 #[test]
@@ -257,14 +199,4 @@ fn a_task_prints_with_the_fields_model_dump_gives() {
     assert!(text.starts_with(
         r#"{"id":"00000000-0000-4000-8000-000000000010","workspace_id":"00000000-0000-4000-8000-000000000001","key":"WG-7","number":7,"title":"Wire DTOs","description":"d","acceptance_criteria":["a"],"status":"ready","priority":"high","category":"documentation","tags":[],"files":[],"project_ids":[],"repository_ids":[],"parent_id":null,"child_ids":[],"depends_on":[],"blocks":[],"assignee":null,"assigned_agent":null,"claimed_by":null,"claim_expires_at":null,"auto_execute":false,"estimated_effort":{"value":3},"links":[],"metadata":{},"due_at":null,"scheduled_at":null,"created_by":"human:Brice","version":3,"created_at":"2026-10-25T13:56:00Z","updated_at":"2026-10-25T13:56:00.250000Z","started_at":null,"completed_at":null,"accepted_at":null,"archived_at":null,"current_classification_id":null}"#
     ));
-}
-
-#[test]
-fn decision_out_carries_the_task_key_and_options() {
-    let decision = decision_row();
-    let text = http_json(&decision::from_model(&decision, "WG-7")).expect("dump");
-    assert!(text.contains(
-        r#""options":[{"id":"a","label":"A","detail":"","recommended":true}],"status":"open""#
-    ));
-    assert!(text.contains(r#""task_key":"WG-7""#));
 }

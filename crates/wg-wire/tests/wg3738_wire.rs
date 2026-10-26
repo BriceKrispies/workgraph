@@ -76,6 +76,10 @@ fn tool_output(record: &Json) -> Option<(String, Json)> {
     Some((tool, serde_json::from_str(body).ok()?))
 }
 
+/// The decision tools: their output shapes are the feature's (`wg_decisions::spec::shapes`), not
+/// this catalog's, so the catalog checks leave them out (docs/rust-rewrite.md 4.16).
+const FEATURE_SHAPED: [&str; 3] = ["task_request_decision", "decision_list", "task_decisions"];
+
 #[test]
 fn every_tool_has_exactly_one_output_shape() {
     let tools: BTreeSet<String> = mcp_tools()
@@ -85,8 +89,12 @@ fn every_tool_has_exactly_one_output_shape() {
         .collect();
     let shaped: BTreeSet<String> = tools_with_shape().map(str::to_string).collect();
     assert_eq!(tools.len(), 69);
+    let base: BTreeSet<String> = tools
+        .into_iter()
+        .filter(|tool| !FEATURE_SHAPED.contains(&tool.as_str()))
+        .collect();
     assert_eq!(
-        tools, shaped,
+        base, shaped,
         "tools without a shape or shapes without a tool"
     );
     assert_eq!(
@@ -104,13 +112,15 @@ fn recorded_tool_outputs_match_their_shapes() {
         let Some((tool, output)) = tool_output(&record) else {
             continue;
         };
-        let shape = output_shape(&tool).unwrap_or_else(|| panic!("no shape for {tool}"));
-        shape.check(&output).unwrap_or_else(|failure| {
-            panic!(
-                "{transport} {}: {failure}",
-                record["label"].as_str().unwrap_or("?")
-            )
-        });
+        if !FEATURE_SHAPED.contains(&tool.as_str()) {
+            let shape = output_shape(&tool).unwrap_or_else(|| panic!("no shape for {tool}"));
+            shape.check(&output).unwrap_or_else(|failure| {
+                panic!(
+                    "{transport} {}: {failure}",
+                    record["label"].as_str().unwrap_or("?")
+                )
+            });
+        }
         covered.insert(tool);
         checked += 1;
     }
@@ -140,8 +150,6 @@ fn wrapper_builders_produce_the_shapes_the_tools_declare() {
         ("task_get_history", mcp_outputs::events(Vec::new())),
         ("stack_list", mcp_outputs::stacks(Vec::new())),
         ("task_get_ready", mcp_outputs::tasks(Vec::new())),
-        ("task_decisions", mcp_outputs::decisions(Vec::new())),
-        ("decision_list", mcp_outputs::decisions(Vec::new())),
         ("task_link_commit", mcp_outputs::links(Vec::new())),
         (
             "stack_integrate",

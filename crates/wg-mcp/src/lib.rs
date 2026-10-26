@@ -11,7 +11,6 @@
 //!   transport (WG-3734). There is no unauthenticated HTTP listener here (WG-3764).
 
 pub mod backend;
-mod decision_tools;
 pub mod handler;
 mod run_tools;
 pub mod tools;

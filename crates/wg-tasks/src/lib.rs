@@ -14,4 +14,6 @@ pub mod lifecycle;
 pub mod links;
 pub mod ownership;
 pub mod promote;
+pub mod rename;
+pub mod triage;
 pub mod update;

@@ -17,6 +17,11 @@ serde = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 tokio = { version = "1", features = ["rt-multi-thread", "net", "io-std", "macros"] }
 tokio-util = "0.7"
+wg-json = { path = "../wg-json" }
 wg-mcpspec = { path = "../wg-mcpspec" }
+wg-model = { path = "../wg-model" }
+wg-registry = { path = "../wg-registry" }
 wg-runtime = { path = "../wg-runtime" }
+wg-store = { path = "../wg-store" }
 wg-types = { path = "../wg-types" }
+wg-wire = { path = "../wg-wire" }

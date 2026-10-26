@@ -6,9 +6,9 @@
 //! `TableRow` codecs as a fetch by key. Lists have a fixed `ORDER BY` so results are deterministic.
 
 use wg_model::Table;
-use wg_types::Id;
+use wg_types::{ErrorCode, Id, WgError};
 
-use crate::codec::{id_sql, text_sql};
+use crate::codec::{Raw, id_sql, text_sql};
 use crate::rows::columns;
 use crate::sql::Statement;
 
@@ -240,5 +240,86 @@ fn repository_child(table: Table, column: &str, repository_id: Id, order: &str) 
             table.name()
         ),
         params: vec![id_sql(repository_id)],
+    }
+}
+
+/// Live (not archived) tasks of a workspace, counted by status, in status order. The rows are
+/// `(status, count)`; see [`pairs_from_rows`].
+pub fn workspace_task_counts(workspace_id: Id) -> Statement {
+    Statement {
+        sql: "SELECT \"status\", COUNT(*) FROM \"tasks\" WHERE \"workspace_id\" = ?1 \
+              AND \"archived_at\" IS NULL GROUP BY \"status\" ORDER BY \"status\""
+            .to_owned(),
+        params: vec![id_sql(workspace_id)],
+    }
+}
+
+/// Live (not archived) tasks of a project, counted by status, in status order.
+pub fn project_task_counts(project_id: Id) -> Statement {
+    Statement {
+        sql: "SELECT t.\"status\", COUNT(*) FROM \"tasks\" AS t \
+              JOIN \"task_projects\" AS tp ON tp.\"task_id\" = t.\"id\" \
+              WHERE tp.\"project_id\" = ?1 AND t.\"archived_at\" IS NULL \
+              GROUP BY t.\"status\" ORDER BY t.\"status\""
+            .to_owned(),
+        params: vec![id_sql(project_id)],
+    }
+}
+
+/// The `limit` most recently updated live tasks of a project, newest first.
+pub fn project_recent_tasks(project_id: Id, limit: i64) -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"tasks\" AS t \
+             JOIN \"task_projects\" AS tp ON tp.\"task_id\" = t.\"id\" \
+             WHERE tp.\"project_id\" = ?1 AND t.\"archived_at\" IS NULL \
+             ORDER BY t.\"updated_at\" DESC LIMIT ?2",
+            select_list(Table::Task, Some("t"))
+        ),
+        params: vec![id_sql(project_id), Raw::Int(limit)],
+    }
+}
+
+/// The attempts of a workspace that are still preparing, running or verifying, as one count.
+pub fn workspace_active_attempts(workspace_id: Id) -> Statement {
+    Statement {
+        sql: "SELECT COUNT(*) FROM \"agent_attempts\" WHERE \"workspace_id\" = ?1 \
+              AND \"status\" IN ('preparing', 'running', 'verifying')"
+            .to_owned(),
+        params: vec![id_sql(workspace_id)],
+    }
+}
+
+/// Jobs whose workspace is `workspace_id`, counted by status, in status order.
+pub fn workspace_job_counts(workspace_id: Id) -> Statement {
+    Statement {
+        sql: "SELECT \"status\", COUNT(*) FROM \"jobs\" WHERE \"workspace_id\" = ?1 \
+              GROUP BY \"status\" ORDER BY \"status\""
+            .to_owned(),
+        params: vec![id_sql(workspace_id)],
+    }
+}
+
+/// Decodes `(text, integer)` rows, such as the `GROUP BY` counts above, in row order.
+pub fn pairs_from_rows(rows: &[Vec<Raw>]) -> Result<Vec<(String, i64)>, WgError> {
+    rows.iter()
+        .map(|row| match row.as_slice() {
+            [Raw::Text(key), Raw::Int(count)] => Ok((key.clone(), *count)),
+            _ => Err(WgError::new(
+                ErrorCode::WorkgraphError,
+                "unexpected row shape for a count query",
+            )),
+        })
+        .collect()
+}
+
+/// Decodes the single integer of a `COUNT(*)` statement.
+pub fn scalar_from_rows(rows: &[Vec<Raw>]) -> Result<i64, WgError> {
+    match rows.first().map(Vec::as_slice) {
+        Some([Raw::Int(count)]) => Ok(*count),
+        _ => Err(WgError::new(
+            ErrorCode::WorkgraphError,
+            "unexpected row shape for a count query",
+        )),
     }
 }

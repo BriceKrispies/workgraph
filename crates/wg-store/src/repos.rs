@@ -5,6 +5,8 @@
 //! through the session and decodes the rows with the table codecs. Writes go through the generic
 //! [`Session::apply_write`] and [`Session::apply_decision`] like every other family.
 
+use wg_model::RowKey;
+use wg_model::entity::task::Task;
 use wg_model::entity::{
     Project, ProjectRepository, Repository, RepositoryCheckout, RepositoryDependency,
     RepositoryRef, RepositoryRemote, Workspace,
@@ -170,4 +172,50 @@ impl Session<'_> {
     ) -> Result<Option<RepositoryDependency>, WgError> {
         one(self, &repo_sql::dependency_between(from, to))
     }
+
+    /// The workspace row whose id is `workspace_id`, if any.
+    pub fn workspace_by_id(&mut self, workspace_id: Id) -> Result<Option<Workspace>, WgError> {
+        self.fetch(&RowKey::Workspace(workspace_id))
+    }
+
+    /// The live tasks of `workspace_id` counted by status: `(status, count)` in status order.
+    pub fn workspace_task_counts(
+        &mut self,
+        workspace_id: Id,
+    ) -> Result<Vec<(String, i64)>, WgError> {
+        pairs(self, &repo_sql::workspace_task_counts(workspace_id))
+    }
+
+    /// The live tasks of `project_id` counted by status: `(status, count)` in status order.
+    pub fn project_task_counts(&mut self, project_id: Id) -> Result<Vec<(String, i64)>, WgError> {
+        pairs(self, &repo_sql::project_task_counts(project_id))
+    }
+
+    /// The `limit` most recently updated live tasks of `project_id`, newest first.
+    pub fn project_recent_tasks(
+        &mut self,
+        project_id: Id,
+        limit: i64,
+    ) -> Result<Vec<Task>, WgError> {
+        many(self, &repo_sql::project_recent_tasks(project_id, limit))
+    }
+
+    /// The attempts of `workspace_id` that are preparing, running or verifying.
+    pub fn workspace_active_attempts(&mut self, workspace_id: Id) -> Result<i64, WgError> {
+        let rows = self.rows(&repo_sql::workspace_active_attempts(workspace_id))?;
+        repo_sql::scalar_from_rows(&rows)
+    }
+
+    /// The jobs of `workspace_id` counted by status: `(status, count)` in status order.
+    pub fn workspace_job_counts(
+        &mut self,
+        workspace_id: Id,
+    ) -> Result<Vec<(String, i64)>, WgError> {
+        pairs(self, &repo_sql::workspace_job_counts(workspace_id))
+    }
+}
+
+/// Runs `statement` and decodes its `(text, integer)` rows.
+fn pairs(session: &mut Session<'_>, statement: &Statement) -> Result<Vec<(String, i64)>, WgError> {
+    repo_sql::pairs_from_rows(&session.rows(statement)?)
 }

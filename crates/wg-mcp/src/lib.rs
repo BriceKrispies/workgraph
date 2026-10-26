@@ -11,6 +11,7 @@
 
 pub mod backend;
 pub mod handler;
+pub mod tools;
 pub mod transport;
 
 pub use backend::{Agent, AppBackend, ToolBackend};

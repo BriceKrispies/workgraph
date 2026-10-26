@@ -15,8 +15,8 @@ pub trait ToolBackend: Send + 'static {
     fn read_resource(&mut self, agent: &Agent, uri: &str) -> Result<String, WgError>;
 }
 
-/// The backend over `wg_runtime::App`. The tools are wired by the interface tasks that follow
-/// the skeleton, so every call is refused for now.
+/// The backend over `wg_runtime::App`. The workspace, project and repository reads (M01 to M06)
+/// are answered by [`crate::tools`]; the other tools are refused until their interface tasks land.
 pub struct AppBackend(pub wg_runtime::App);
 
 impl ToolBackend for AppBackend {
@@ -24,12 +24,15 @@ impl ToolBackend for AppBackend {
         &mut self,
         _agent: &Agent,
         name: &str,
-        _arguments: Value,
+        arguments: Value,
     ) -> Result<Value, WgError> {
-        Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("tool {name} is not wired yet"),
-        ))
+        match crate::tools::call(&mut self.0, name, &arguments) {
+            Some(answer) => answer,
+            None => Err(WgError::new(
+                ErrorCode::WorkgraphError,
+                format!("tool {name} is not wired yet"),
+            )),
+        }
     }
 
     fn read_resource(&mut self, _agent: &Agent, uri: &str) -> Result<String, WgError> {

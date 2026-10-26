@@ -1783,9 +1783,14 @@ dependencies = [
  "serde_json",
  "tokio",
  "tokio-util",
+ "wg-json",
  "wg-mcpspec",
+ "wg-model",
+ "wg-registry",
  "wg-runtime",
+ "wg-store",
  "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

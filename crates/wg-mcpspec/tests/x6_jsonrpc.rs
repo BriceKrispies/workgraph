@@ -24,6 +24,25 @@ fn an_empty_object_gets_the_sdk_union_message() {
 
 // covers: X6
 #[test]
+fn the_python_answers_to_non_jsonrpc_bodies_are_reproduced_byte_for_byte() {
+    // tools/golden/x6_probe.py: the Python server's status and body text for each body.
+    let golden: serde_json::Value =
+        serde_json::from_str(include_str!("golden/x6_bodies.json")).expect("golden json");
+    let cases = golden["cases"].as_array().expect("cases");
+    assert_eq!(cases.len(), 7);
+    for case in cases {
+        let body = case["body"].as_str().expect("body");
+        let want = case["text"].as_str().expect("text");
+        assert_eq!(case["status"], 400, "{}", case["case"]);
+        let reply = not_jsonrpc_reply(body.as_bytes())
+            .unwrap_or_else(|| panic!("{}: not refused", case["case"]));
+        let got = serde_json::to_string(&reply).expect("encode");
+        assert_eq!(got, want, "{}", case["case"]);
+    }
+}
+
+// covers: X6
+#[test]
 fn a_complete_member_is_left_to_the_transport() {
     let body = br#"{"jsonrpc":"2.0","id":1,"method":"ping"}"#;
     assert_eq!(not_jsonrpc_reply(body), None);

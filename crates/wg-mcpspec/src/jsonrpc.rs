@@ -56,27 +56,40 @@ fn complete(fields: &Map<String, Value>, required: &[&str]) -> bool {
         && required.iter().all(|field| fields.contains_key(*field))
 }
 
-/// The errors one member reports for `value`: each missing field of an object, or one
-/// `model_attributes_type` error for a value that is not an object.
+/// The errors one member reports for `value`. A value that is not an object fails the model as a
+/// whole (`model_type`). For an object, each required field that is missing is a `missing` error
+/// whose input is the whole object, and a `jsonrpc` that is not `"2.0"` is a `literal_error`.
+/// Other field types are not checked here, so a member with them is left to the SDK.
 fn member_errors(name: &str, required: &[&str], value: &Value) -> Vec<ValidationError> {
     let Value::Object(fields) = value else {
         return vec![ValidationError {
-            kind: "model_attributes_type".to_owned(),
+            kind: "model_type".to_owned(),
             loc: vec![Loc::Key(name.to_owned())],
-            msg: "Input should be a valid dictionary or object to extract fields from".to_owned(),
+            msg: format!("Input should be a valid dictionary or instance of {name}"),
             input: value.clone(),
             ctx: None,
         }];
     };
     required
         .iter()
-        .filter(|field| !fields.contains_key(**field))
-        .map(|field| ValidationError {
-            kind: "missing".to_owned(),
-            loc: vec![Loc::Key(name.to_owned()), Loc::Key((*field).to_owned())],
-            msg: "Field required".to_owned(),
-            input: value.clone(),
-            ctx: None,
+        .filter_map(|field| match fields.get(*field) {
+            None => Some(ValidationError {
+                kind: "missing".to_owned(),
+                loc: vec![Loc::Key(name.to_owned()), Loc::Key((*field).to_owned())],
+                msg: "Field required".to_owned(),
+                input: value.clone(),
+                ctx: None,
+            }),
+            Some(found) if *field == "jsonrpc" && found.as_str() != Some("2.0") => {
+                Some(ValidationError {
+                    kind: "literal_error".to_owned(),
+                    loc: vec![Loc::Key(name.to_owned()), Loc::Key((*field).to_owned())],
+                    msg: "Input should be '2.0'".to_owned(),
+                    input: found.clone(),
+                    ctx: None,
+                })
+            }
+            Some(_) => None,
         })
         .collect()
 }

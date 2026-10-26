@@ -58,30 +58,8 @@ fn invalid<T>(message: String) -> Result<T, ValueError> {
     Err(ValueError(message))
 }
 
-/// CPython 3.12+ `sum()` over floats: Neumaier compensated summation starting from `0`.
-///
-/// Mirrors `builtin_sum_impl`: each term is added with the compensation term
-/// `(f - t) + x` or `(x - t) + f` chosen by magnitude, and the compensation is added once at
-/// the end when it is finite and non-zero.
-#[must_use]
-pub fn py_sum(values: impl IntoIterator<Item = f64>) -> f64 {
-    let (total, compensation) = values
-        .into_iter()
-        .fold((0.0_f64, 0.0_f64), |(total, c), x| {
-            let t = total + x;
-            let delta = if total.abs() >= x.abs() {
-                (total - t) + x
-            } else {
-                (x - t) + total
-            };
-            (t, c + delta)
-        });
-    if compensation != 0.0 && compensation.is_finite() {
-        total + compensation
-    } else {
-        total
-    }
-}
+/// CPython 3.12+ `sum()` over floats, shared with the other Core crates in `wg-pynum`.
+pub use wg_pynum::py_sum;
 
 /// Python's `max(a, b)` for floats: `b` only when strictly greater than `a`.
 fn py_max(a: f64, b: f64) -> f64 {

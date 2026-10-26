@@ -10,6 +10,9 @@ description = "fact tables, metric definitions, query engine, reports"
 [dependencies]
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
+wg-experiments = { path = "../wg-experiments" }
+wg-pynum = { path = "../wg-pynum" }
+wg-telemetry = { path = "../wg-telemetry" }
 wg-types = { path = "../wg-types" }
 
 [lints]

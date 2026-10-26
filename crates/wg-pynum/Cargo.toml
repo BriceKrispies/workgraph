@@ -1,0 +1,11 @@
+[package]
+name = "wg-pynum"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "CPython numeric and ordering semantics: sum() over floats, statistics.median, stable sorts, bisect"
+
+[lints]
+workspace = true

@@ -223,6 +223,7 @@ fn input(source: &Value) -> AnalyticsInput {
                 data: text(row, "data"),
             })
             .collect(),
+        ..Default::default()
     }
 }
 
@@ -457,4 +458,50 @@ fn gv15_demo_fact_tables_match_the_python_warehouse() {
 #[test]
 fn gv15_generated_fact_tables_match_the_python_warehouse() {
     check("gen");
+}
+
+/// GV-15 reports, subagent and agent time: the golden reports of both databases. Their source
+/// tables hold no subagent runs, so each report is the empty report with its notes.
+fn check_reports(name: &str) {
+    let source = golden(&format!("input-{name}.json"));
+    let expected = golden(&format!("reports-{name}.json"));
+    let input = input(&source);
+    let scope = wg_analytics::common::Scope {
+        workspace_id: "ws".to_owned(),
+        default_workspace_id: Some("ws".to_owned()),
+    };
+    let window = wg_analytics::common::Window::default();
+    let reports = &expected["reports"];
+    let week = wg_analytics::subagents::report(
+        &input,
+        &scope,
+        wg_analytics::subagents::Period::Week,
+        &window,
+    );
+    let month = wg_analytics::subagents::report(
+        &input,
+        &scope,
+        wg_analytics::subagents::Period::Month,
+        &window,
+    );
+    let bottlenecks = wg_analytics::agent_time::bottlenecks(&input, &scope, &window, 15);
+    assert_eq!(week, reports["subagents_week"], "subagents_week ({name})");
+    assert_eq!(
+        month, reports["subagents_month"],
+        "subagents_month ({name})"
+    );
+    assert_eq!(
+        bottlenecks, reports["agent_time_bottlenecks"],
+        "agent_time_bottlenecks ({name})"
+    );
+}
+
+#[test]
+fn gv15_demo_subagent_and_time_reports_match_the_python_reports() {
+    check_reports("demo");
+}
+
+#[test]
+fn gv15_generated_subagent_and_time_reports_match_the_python_reports() {
+    check_reports("gen");
 }

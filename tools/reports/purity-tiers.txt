@@ -37,6 +37,7 @@ wg-net Shell
 wg-proc Shell
 wg-procspec Pure
 wg-pyrand Pure
+wg-pynum Pure
 wg-registry Core
 wg-render Pure
 wg-runtime Shell

@@ -178,3 +178,12 @@ pub fn select_by_key(key: &RowKey) -> Statement {
         params: key_values(key),
     }
 }
+
+/// The integer in the first column of the first row of a one-row result, if there is one and it
+/// is not NULL. The count readers of several families use it.
+pub fn int_scalar(rows: &[Vec<Raw>]) -> Option<i64> {
+    match rows.first().and_then(|row| row.first()) {
+        Some(Raw::Int(value)) => Some(*value),
+        _ => None,
+    }
+}

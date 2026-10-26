@@ -1,0 +1,23 @@
+[package]
+name = "wg-analytics-feature"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "the analytics feature: source extraction for the warehouse (SQL, readers, FEATURE)"
+
+[lints]
+workspace = true
+
+[dependencies]
+wg-analytics = { path = "../wg-analytics" }
+wg-model = { path = "../wg-model" }
+wg-runtime = { path = "../wg-runtime" }
+wg-store = { path = "../wg-store" }
+wg-storecodec = { path = "../wg-storecodec" }
+wg-types = { path = "../wg-types" }
+
+[dev-dependencies]
+rpds = "1"
+serde_json = { version = "1", features = ["preserve_order"] }

@@ -1,0 +1,23 @@
+[package]
+name = "wg-intel-feature"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "the intelligence feature: classification history, gold labels, search candidates and embeddings (SQL, readers, FEATURE)"
+
+[lints]
+workspace = true
+
+[dependencies]
+rpds = "1"
+wg-intel = { path = "../wg-intel" }
+wg-model = { path = "../wg-model" }
+wg-runtime = { path = "../wg-runtime" }
+wg-store = { path = "../wg-store" }
+wg-storecodec = { path = "../wg-storecodec" }
+wg-types = { path = "../wg-types" }
+
+[dev-dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }

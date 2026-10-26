@@ -22,7 +22,7 @@ from collections.abc import Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlsplit
 
 import httpx
@@ -238,17 +238,20 @@ def api_client(
 
 
 @contextmanager
-def api_server(app: Workgraph, *, with_mcp: bool = True) -> Iterator[str]:
+def api_server(
+    app: Workgraph, *, with_mcp: bool = True, mcp_permissions: frozenset[Any] | None = None
+) -> Iterator[str]:
     """A running HTTP server for the API of ``app``; yields its base URL (``http://127.0.0.1:<port>``).
 
     Python mode serves the ASGI app with uvicorn on a background thread; Rust mode runs
     ``workgraph serve --no-worker --local``. Callers reach the MCP endpoint at ``<base>/mcp/`` and add
-    the bearer token from ``app.api_token()``. Rust mode does not take ``with_mcp=False`` yet.
+    the bearer token from ``app.api_token()``. ``mcp_permissions`` replaces the MCP agent's
+    grants. Rust mode does not take ``with_mcp=False`` or ``mcp_permissions`` yet.
     """
     app.api_token()
     if impl_mode() == "rust":
-        if not with_mcp:
-            raise RuntimeError("no-MCP servers are not served by the Rust binary yet")
+        if not with_mcp or mcp_permissions is not None:
+            raise RuntimeError("no-MCP servers and MCP grants are not served by the Rust binary yet")
         with _rust_server(app) as base_url:
             yield base_url
         return
@@ -258,7 +261,7 @@ def api_server(app: Workgraph, *, with_mcp: bool = True) -> Iterator[str]:
     from workgraph.api.app import create_app
 
     port = _free_port()
-    asgi = create_app(app, host="127.0.0.1", port=port, with_mcp=with_mcp)
+    asgi = create_app(app, host="127.0.0.1", port=port, with_mcp=with_mcp, mcp_permissions=mcp_permissions)
     server = uvicorn.Server(uvicorn.Config(asgi, host="127.0.0.1", port=port, log_level="warning"))
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()

@@ -38,16 +38,22 @@ pub fn current_files(tasks: &TaskSlice, task_id: Id) -> Vec<FileInput> {
 
 /// Appends each of `adds` whose `(path, anchor)` is not yet in `files`. A repeated pair in
 /// `adds` is appended once.
-pub fn add_files(mut files: Vec<FileInput>, adds: &[FileInput]) -> Vec<FileInput> {
-    let mut known: BTreeSet<(String, Option<String>)> = files
+pub fn add_files(files: Vec<FileInput>, adds: &[FileInput]) -> Vec<FileInput> {
+    let known: BTreeSet<(String, Option<String>)> = files
         .iter()
         .map(|file| (file.path.clone(), file.anchor.clone()))
         .collect();
-    for item in adds {
-        if known.insert((item.path.clone(), item.anchor.clone())) {
-            files.push(item.clone());
+    let (_, files) = adds.iter().fold((known, files), |(known, files), item| {
+        let pair = (item.path.clone(), item.anchor.clone());
+        if known.contains(&pair) {
+            (known, files)
+        } else {
+            (
+                known.into_iter().chain([pair]).collect(),
+                files.into_iter().chain([item.clone()]).collect(),
+            )
         }
-    }
+    });
     files
 }
 

@@ -31,24 +31,40 @@ pub struct BulkResult {
 pub fn bulk_results(
     outcomes: impl IntoIterator<Item = (String, Result<String, WgError>)>,
 ) -> Result<BulkResult, WgError> {
-    let mut result = BulkResult::default();
-    for (reference, outcome) in outcomes {
-        match outcome {
-            Ok(key) => result.updated.push(key),
-            Err(error) if RECORDED_CODES.contains(&error.code) => {
-                match result
-                    .failed
-                    .iter_mut()
-                    .find(|(seen, _)| *seen == reference)
-                {
-                    Some(entry) => entry.1 = error.message,
-                    None => result.failed.push((reference, error.message)),
+    outcomes
+        .into_iter()
+        .try_fold(BulkResult::default(), |result, (reference, outcome)| {
+            let BulkResult { updated, failed } = result;
+            match outcome {
+                Ok(key) => Ok(BulkResult {
+                    updated: updated.into_iter().chain([key]).collect(),
+                    failed,
+                }),
+                Err(error) if RECORDED_CODES.contains(&error.code) => {
+                    let seen = failed.iter().any(|(seen, _)| *seen == reference);
+                    let failed = if seen {
+                        // Keep the first position, take the last message.
+                        failed
+                            .into_iter()
+                            .map(|(seen, message)| {
+                                if seen == reference {
+                                    (seen, error.message.clone())
+                                } else {
+                                    (seen, message)
+                                }
+                            })
+                            .collect()
+                    } else {
+                        failed
+                            .into_iter()
+                            .chain([(reference, error.message)])
+                            .collect()
+                    };
+                    Ok(BulkResult { updated, failed })
                 }
+                Err(error) => Err(error),
             }
-            Err(error) => return Err(error),
-        }
-    }
-    Ok(result)
+        })
 }
 
 #[cfg(test)]

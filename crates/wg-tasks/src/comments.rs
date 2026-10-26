@@ -45,24 +45,25 @@ pub fn comment_event_data(
     body: &str,
     data: &Map<String, Value>,
 ) -> Value {
-    let mut payload = Map::new();
-    payload.insert("comment_id".to_owned(), json!(comment_id.to_string()));
-    payload.insert("kind".to_owned(), json!(kind.as_str()));
-    payload.insert("excerpt".to_owned(), json!(excerpt(body)));
-    for (key, value) in data {
-        payload.insert(key.clone(), value.clone());
-    }
-    Value::Object(payload)
+    Value::Object(
+        [
+            ("comment_id".to_owned(), json!(comment_id.to_string())),
+            ("kind".to_owned(), json!(kind.as_str())),
+            ("excerpt".to_owned(), json!(excerpt(body))),
+        ]
+        .into_iter()
+        .chain(data.iter().map(|(key, value)| (key.clone(), value.clone())))
+        .collect(),
+    )
 }
 
 /// The `data` stored with a progress comment: the caller's data, plus `percent` when given
 /// (`report_progress`).
 pub fn progress_data(data: &Map<String, Value>, percent: Option<f64>) -> Map<String, Value> {
-    let mut payload = data.clone();
-    if let Some(percent) = percent {
-        payload.insert("percent".to_owned(), json!(percent));
-    }
-    payload
+    data.iter()
+        .map(|(key, value)| (key.clone(), value.clone()))
+        .chain(percent.map(|percent| ("percent".to_owned(), json!(percent))))
+        .collect()
 }
 
 #[cfg(test)]

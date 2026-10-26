@@ -8,7 +8,8 @@
 //!
 //! * `lint-architecture` ([`lint_architecture`]) applies each crate's tier rules and
 //!   the `Core` rules from `tools/reports/core-rules.toml`, fails on a crate the
-//!   tier file does not list, and runs the shell logic ceiling.
+//!   tier file does not list, fails on a top-level module of a module-tiered crate
+//!   that has no `crate::module` line, and runs the shell logic ceiling.
 //! * `purity-report` ([`purity_report_with`]) prints tiers and LOC, and with
 //!   `--violations <crate>`, `--candidates [<crate>]` or `--gate` the detail views.
 //!

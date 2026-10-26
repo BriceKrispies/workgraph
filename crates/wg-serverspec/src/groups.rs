@@ -68,6 +68,33 @@ pub const META_SETTINGS: [RouteSpec; 4] = [
     },
 ];
 
+/// The events group (IF-49): the history (H123) and the server-sent stream (H124).
+pub const EVENTS: [RouteSpec; 2] = [
+    RouteSpec {
+        id: "H123",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/events",
+        status: 200,
+        query: &[
+            "after_seq",
+            "entity_type",
+            "entity_id",
+            "prefix",
+            "limit",
+            "descending",
+        ],
+        body: None,
+    },
+    RouteSpec {
+        id: "H124",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/events/stream",
+        status: 200,
+        query: &["after_seq", "max_events"],
+        body: None,
+    },
+];
+
 /// The request body a [`BodyRef`] names, read from the OpenAPI document: the component's object
 /// model, which the route validates bodies against. `None` when the component is missing.
 pub fn body_spec(openapi: &Json, body: &BodyRef) -> Option<BodySpec> {
@@ -94,6 +121,15 @@ mod tests {
         assert_eq!(ids, ["H001", "H002", "H117", "H118"]);
         for spec in &META_SETTINGS {
             assert_eq!(crate::operations::group_of(spec.id), "meta-settings");
+        }
+    }
+
+    #[test]
+    fn the_events_table_has_the_operations_of_its_group() {
+        let ids: Vec<&str> = EVENTS.iter().map(|spec| spec.id).collect();
+        assert_eq!(ids, ["H123", "H124"]);
+        for spec in &EVENTS {
+            assert_eq!(crate::operations::group_of(spec.id), "IF-49");
         }
     }
 

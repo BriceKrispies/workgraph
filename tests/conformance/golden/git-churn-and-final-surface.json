@@ -1,0 +1,173 @@
+{
+  "scenario": "git-churn-and-final-surface",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"churny\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:4|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\churny\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:4|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:4|Z>\",\n  \"updated_at\": \"<ts:4|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Churn\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:6|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Other\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:7|Z>\",\n  \"updated_at\": \"<ts:7|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"repository_id\": \"<id:1>\",\n    \"repository\": \"churny\",\n    \"mode\": \"incremental\",\n    \"new_commits\": 3,\n    \"refs_changed\": 1,\n    \"marked_unreachable\": 0,\n    \"restored_reachable\": 0,\n    \"equivalences\": 0,\n    \"links_created\": 0,\n    \"shallow\": false,\n    \"head_refs\": 1\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"repository_id\": \"<id:1>\",\n  \"total\": 3,\n  \"items\": [\n    {\n      \"id\": \"<id:6>\",\n      \"sha\": \"<sha:2>\",\n      \"subject\": \"rewrite again\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:3|+00:00>\",\n      \"insertions\": 1,\n      \"deletions\": 21,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [],\n      \"tasks\": []\n    },\n    {\n      \"id\": \"<id:7>\",\n      \"sha\": \"<sha:3>\",\n      \"subject\": \"write lots\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:2|+00:00>\",\n      \"insertions\": 22,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [],\n      \"tasks\": []\n    },\n    {\n      \"id\": \"<id:8>\",\n      \"sha\": \"<sha:1>\",\n      \"subject\": \"initial\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:1|+00:00>\",\n      \"insertions\": 1,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [],\n      \"tasks\": []\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:9>\",\n    \"commit_id\": \"<id:7>\",\n    \"sha\": \"<sha:3>\",\n    \"repository_id\": \"<id:1>\",\n    \"task_id\": \"<id:4>\",\n    \"source\": \"explicit\",\n    \"confidence\": 1.0,\n    \"evidence\": {\n      \"linked_by\": \"human:Brice\",\n      \"note\": \"\"\n    },\n    \"attempt_id\": null,\n    \"created_at\": \"<ts:8|Z>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:10>\",\n    \"commit_id\": \"<id:6>\",\n    \"sha\": \"<sha:2>\",\n    \"repository_id\": \"<id:1>\",\n    \"task_id\": \"<id:4>\",\n    \"source\": \"explicit\",\n    \"confidence\": 1.0,\n    \"evidence\": {\n      \"linked_by\": \"human:Brice\",\n      \"note\": \"\"\n    },\n    \"attempt_id\": null,\n    \"created_at\": \"<ts:9|Z>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:11>\",\n    \"commit_id\": \"<id:6>\",\n    \"sha\": \"<sha:2>\",\n    \"repository_id\": \"<id:1>\",\n    \"task_id\": \"<id:5>\",\n    \"source\": \"explicit\",\n    \"confidence\": 1.0,\n    \"evidence\": {\n      \"linked_by\": \"human:Brice\",\n      \"note\": \"\"\n    },\n    \"attempt_id\": null,\n    \"created_at\": \"<ts:10|Z>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"task_id\": \"<id:4>\",\n  \"task_key\": \"WG-1\",\n  \"min_confidence\": 0.5,\n  \"commits\": [\n    {\n      \"commit_id\": \"<id:7>\",\n      \"sha\": \"<sha:3>\",\n      \"repository_id\": \"<id:1>\",\n      \"repository\": \"churny\",\n      \"subject\": \"write lots\",\n      \"author\": \"Test Author\",\n      \"committed_at\": \"<ts:2|+00:00>\",\n      \"insertions\": 22,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"object_available\": true,\n      \"links\": [\n        {\n          \"source\": \"explicit\",\n          \"confidence\": 1.0,\n          \"evidence\": {\n            \"linked_by\": \"human:Brice\",\n            \"note\": \"\"\n          },\n          \"attempt_id\": null\n        }\n      ],\n      \"confidence\": 1.0\n    },\n    {\n      \"commit_id\": \"<id:6>\",\n      \"sha\": \"<sha:2>\",\n      \"repository_id\": \"<id:1>\",\n      \"repository\": \"churny\",\n      \"subject\": \"rewrite again\",\n      \"author\": \"Test Author\",\n      \"committed_at\": \"<ts:3|+00:00>\",\n      \"insertions\": 1,\n      \"deletions\": 21,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"object_available\": true,\n      \"links\": [\n        {\n          \"source\": \"explicit\",\n          \"confidence\": 1.0,\n          \"evidence\": {\n            \"linked_by\": \"human:Brice\",\n            \"note\": \"\"\n          },\n          \"attempt_id\": null\n        }\n      ],\n      \"confidence\": 1.0\n    }\n  ],\n  \"cumulative_churn\": {\n    \"commits\": 2,\n    \"insertions\": 23,\n    \"deletions\": 21,\n    \"files_touched\": 1,\n    \"repeated_file_edits\": 1,\n    \"functions_affected\": 0,\n    \"types_affected\": 0,\n    \"structurally_analyzed_commits\": 0,\n    \"excluded_duplicates\": 0,\n    \"excluded_merges\": 0,\n    \"by_file_class\": {\n      \"production\": {\n        \"insertions\": 23,\n        \"deletions\": 21,\n        \"files\": 2\n      }\n    }\n  },\n  \"final_change_surface\": [],\n  \"definitions\": {\n    \"cumulative_churn\": \"Sum of lines added/removed across distinct linked non-merge commits; cherry-picked/rewritten duplicates of the same change are counted once.\",\n    \"final_change_surface\": \"git diff between the attempt baseline and the accepted revision, per repository.\"\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"repository_id\": \"<id:1>\",\n    \"base_sha\": \"<sha:1>\",\n    \"final_sha\": \"<sha:2>\",\n    \"files_changed\": 1,\n    \"insertions\": 2,\n    \"deletions\": 0,\n    \"renames\": 0,\n    \"binary_files\": 0,\n    \"functions_affected\": 1,\n    \"types_affected\": 0,\n    \"detail\": {\n      \"provenance\": {\n        \"base\": \"parent of earliest linked commit\",\n        \"final\": \"latest linked commit\"\n      },\n      \"structural_fallback_files\": 0,\n      \"files\": [\n        {\n          \"path\": \"src/mod.py\",\n          \"old_path\": null,\n          \"insertions\": 2,\n          \"deletions\": 0,\n          \"binary\": false,\n          \"class\": \"production\"\n        }\n      ]\n    }\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"task_id\": \"<id:4>\",\n  \"task_key\": \"WG-1\",\n  \"parts\": [\n    {\n      \"repository\": \"churny\",\n      \"kind\": \"final\",\n      \"range\": \"17976a523756..30b6c72bfacc\",\n      \"diff\": \"diff --git a/src/mod.py b/src/mod.py\\nnew file mode 100644\\nindex 0000000..b859599\\n--- /dev/null\\n+++ b/src/mod.py\\n@@ -0,0 +1,2 @@\\n+def f():\\n+    return 1\\n\"\n    }\n  ],\n  \"missing_objects\": [],\n  \"truncated\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

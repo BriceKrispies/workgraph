@@ -1,0 +1,26 @@
+{
+  "id": "git-rebase-and-cherry-pick-link",
+  "covers": ["C091", "C092", "C095", "C118", "C152"],
+  "setup": [
+    {"git": "init", "repo": "rewrite"},
+    {"git": "commit", "repo": "rewrite", "files": {"README.md": "rewrite\n"}, "message": "initial"},
+    {"git": "checkout", "repo": "rewrite", "args": ["-b", "topic"]},
+    {"git": "commit", "repo": "rewrite", "files": {"t.txt": "topic\n"}, "message": "topic change"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:rewrite}"], "json": true},
+    {"cli": ["task", "create", "Rewrite me", "--repo", "rewrite"], "json": true},
+    {"cli": ["git", "sync", "rewrite"], "json": true},
+    {"cli": ["git", "log", "rewrite"], "json": true, "save": {"original_sha": "/items/0/sha"}},
+    {"cli": ["git", "link", "WG-1", "{var:original_sha}"], "json": true},
+    {"assert": {"json": {"path": "/0/source", "equals": "explicit"}}},
+    {"assert": {"json": {"path": "/0/confidence", "equals": 1.0}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_git.py::test_rebase_reconciliation_and_cherry_pick: the rebase of topic onto a moved main, the full sync that marks the original commit unreachable, the rewrite equivalence and the rewrite_reconciliation carry-over link, and the cherry-pick equivalence. The runner's setup operations have no rebase, cherry-pick or reset, and no step creates commits",
+      "covered_by": "CORE-10"
+    }
+  ]
+}

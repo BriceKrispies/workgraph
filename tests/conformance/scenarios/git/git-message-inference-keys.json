@@ -1,0 +1,23 @@
+{
+  "id": "git-message-inference-keys",
+  "covers": ["C092", "C095", "C118"],
+  "setup": [
+    {"git": "init", "repo": "jira-msg"},
+    {"git": "commit", "repo": "jira-msg", "files": {"README.md": "jira\n"}, "message": "initial"},
+    {"git": "commit", "repo": "jira-msg", "files": {"login.txt": "x\n"}, "message": "fix the login redirect, closes ABC-7"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:jira-msg}"], "json": true},
+    {"cli": ["git", "sync", "jira-msg"], "json": true},
+    {"cli": ["git", "log", "jira-msg"], "json": true},
+    {"assert": {"json": {"path": "/items/0/subject", "equals": "fix the login redirect, closes ABC-7"}}},
+    {"assert": {"json": {"path": "/items/0/tasks", "equals": []}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_git.py::test_message_inference_learns_tracker_keys: a tracker-synced task with the Jira key ABC-7 exists beside the local WG prefix, and the commit message 'closes ABC-7' links to it with source message_inference, confidence 0.5 and evidence matched ABC-7. The CLI cannot create a task with a chosen key, and the tracker sync that does is read-only through the fake Jira fixture. The scenario asserts only the case with no ABC-7 task, where nothing links",
+      "covered_by": "SC-14"
+    }
+  ]
+}

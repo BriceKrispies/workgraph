@@ -1,0 +1,33 @@
+{
+  "id": "git-churn-and-final-surface",
+  "covers": ["C089", "C087", "C091", "C092", "C094", "C095", "C118", "C152"],
+  "setup": [
+    {"git": "init", "repo": "churny"},
+    {"git": "commit", "repo": "churny", "files": {"README.md": "base\n"}, "message": "initial"},
+    {"git": "commit", "repo": "churny", "files": {"src/mod.py": "def f():\n    x0 = 0\n    x1 = 1\n    x2 = 2\n    x3 = 3\n    x4 = 4\n    x5 = 5\n    x6 = 6\n    x7 = 7\n    x8 = 8\n    x9 = 9\n    x10 = 10\n    x11 = 11\n    x12 = 12\n    x13 = 13\n    x14 = 14\n    x15 = 15\n    x16 = 16\n    x17 = 17\n    x18 = 18\n    x19 = 19\n    return 0\n"}, "message": "write lots"},
+    {"git": "commit", "repo": "churny", "files": {"src/mod.py": "def f():\n    return 1\n"}, "message": "rewrite again"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:churny}"], "json": true},
+    {"cli": ["task", "create", "Churn", "--repo", "churny", "--ready"], "json": true},
+    {"cli": ["task", "create", "Other"], "json": true},
+    {"cli": ["git", "sync", "churny"], "json": true},
+    {"cli": ["git", "log", "churny"], "json": true, "save": {"c2": "/items/0/sha", "c1": "/items/1/sha"}},
+    {"cli": ["git", "link", "WG-1", "{var:c1}"], "json": true},
+    {"cli": ["git", "link", "WG-1", "{var:c2}"], "json": true},
+    {"cli": ["git", "link", "WG-2", "{var:c2}"], "json": true},
+    {"cli": ["git", "changes", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/cumulative_churn/commits", "equals": 2}}},
+    {"assert": {"json": {"path": "/cumulative_churn/insertions", "equals": 23}}},
+    {"assert": {"json": {"path": "/cumulative_churn/repeated_file_edits", "equals": 1}}},
+    {"cli": ["git", "surface", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/0/insertions", "equals": 2}}},
+    {"assert": {"json": {"path": "/0/files_changed", "equals": 1}}},
+    {"assert": {"json": {"path": "/0/functions_affected", "equals": 1}}},
+    {"assert": {"json": {"path": "/0/detail/provenance/base", "equals": "parent of earliest linked commit"}}},
+    {"cli": ["git", "diff", "WG-1"], "json": true},
+    {"assert": {"stdout_contains": "src/mod.py"}}
+  ],
+  "not_observable": []
+}

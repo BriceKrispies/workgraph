@@ -19,6 +19,11 @@
 //!    `Stamp`), matched by path suffix such as `Instant::now`;
 //! 5. a dependency allowlist: tier-listed workspace crates plus the rules file's
 //!    `external_deps`.
+//! 6. module reach, for the `Core` modules of a module-tiered crate (a crate with
+//!    `crate::module` lines in the tier file): every `use` item and path names std,
+//!    core or alloc, `crate`/`self`/`super`, a `Core` module of the same crate, a
+//!    `Core` crate, or a rules-file external dependency. Rule 5 then applies per path
+//!    and not to the whole manifest.
 //!
 //! The unlisted-crate rule is `purity::unlisted_crate_violations`.
 //!
@@ -33,7 +38,10 @@ use syn::spanned::Spanned;
 use syn::visit::{self, Visit};
 
 use crate::is_test_gated;
-use crate::purity::{TierTable, UseMap, impl_item_attrs, item_attrs, trait_item_attrs};
+use crate::purity::{
+    Mark, PurityTier, TierFile, TierTable, UseMap, crate_mark, impl_item_attrs, item_attrs,
+    trait_item_attrs, use_paths,
+};
 
 /// The `Core` rules that differ between repositories, read from
 /// `tools/reports/core-rules.toml`.
@@ -423,6 +431,169 @@ impl<'ast> Visit<'ast> for BannedCollections<'_> {
     }
 }
 
+// --- rule 6: module reach, for module-tiered crates -------------------------
+
+/// Rule 6 for one `Core` file of a module-tiered crate. `path` is the file's
+/// repo-relative path, `ast` its parse, `manifest` the crate's `Cargo.toml` text
+/// (for the names it depends on). Returns one rendered line per finding.
+pub(crate) fn check_module_reach(
+    krate: &str,
+    path: &str,
+    ast: &syn::File,
+    manifest: &str,
+    file: &TierFile,
+    rules: &CoreRules,
+) -> Vec<String> {
+    if is_test_gated(&ast.attrs) {
+        return Vec::new();
+    }
+    let deps: Vec<String> = manifest_dependencies(manifest)
+        .into_iter()
+        .map(|(_, name)| name)
+        .collect();
+    let mut scan = ReachScan {
+        krate,
+        path,
+        file,
+        deps: &deps,
+        rules,
+        found: Vec::new(),
+    };
+    scan.visit_file(ast);
+    scan.found.iter().map(Finding::render).collect()
+}
+
+/// Walks the non-test `use` items and paths of one file for rule 6.
+struct ReachScan<'a> {
+    krate: &'a str,
+    path: &'a str,
+    file: &'a TierFile,
+    deps: &'a [String],
+    rules: &'a CoreRules,
+    found: Vec<Finding>,
+}
+
+impl ReachScan<'_> {
+    fn check(&mut self, segs: &[String], line: usize) {
+        let refs: Vec<&str> = segs.iter().map(String::as_str).collect();
+        if let Some(problem) = reach_problem(self.krate, &refs, self.file, self.deps, self.rules) {
+            self.found.push(Finding {
+                path: self.path.to_string(),
+                line,
+                rule: 6,
+                text: format!("`{}`: {problem}", segs.join("::")),
+            });
+        }
+    }
+}
+
+impl<'ast> Visit<'ast> for ReachScan<'_> {
+    fn visit_item(&mut self, node: &'ast syn::Item) {
+        if is_test_gated(item_attrs(node)) {
+            return;
+        }
+        if let syn::Item::Use(item) = node {
+            let mut paths = Vec::new();
+            use_paths(&item.tree, &mut Vec::new(), &mut paths);
+            let line = node.span().start().line;
+            for segs in &paths {
+                self.check(segs, line);
+            }
+        }
+        visit::visit_item(self, node);
+    }
+
+    fn visit_impl_item(&mut self, node: &'ast syn::ImplItem) {
+        if !is_test_gated(impl_item_attrs(node)) {
+            visit::visit_impl_item(self, node);
+        }
+    }
+
+    fn visit_trait_item(&mut self, node: &'ast syn::TraitItem) {
+        if !is_test_gated(trait_item_attrs(node)) {
+            visit::visit_trait_item(self, node);
+        }
+    }
+
+    fn visit_path(&mut self, node: &'ast syn::Path) {
+        let segs: Vec<String> = node.segments.iter().map(|s| s.ident.to_string()).collect();
+        self.check(&segs, node.span().start().line);
+        visit::visit_path(self, node);
+    }
+}
+
+/// The reason a path is not allowed in a `Core` module of `krate`, or `None` if it
+/// may be named there. `segs` is the path as written.
+pub(crate) fn reach_problem(
+    krate: &str,
+    segs: &[&str],
+    file: &TierFile,
+    deps: &[String],
+    rules: &CoreRules,
+) -> Option<String> {
+    let (first, rest) = segs.split_first()?;
+    match *first {
+        "std" | "core" | "alloc" | "self" | "Self" => None,
+        // `super` from a top-level module is the crate root, as `crate` is.
+        "crate" | "super" => match rest.first() {
+            Some(module) if listed_module(file, krate, module).is_some() => {
+                module_reach(file, krate, module)
+            }
+            _ => root_reach(file, krate),
+        },
+        name if listed_module(file, krate, name).is_some() => module_reach(file, krate, name),
+        name => {
+            if let Some(other) = workspace_crate(file, name) {
+                (crate_mark(file, other) != Some(Mark::Tier(PurityTier::Core)))
+                    .then(|| format!("refers to crate `{other}`, which is not a Core crate"))
+            } else if rules.external_deps.iter().any(|dep| dep == name) {
+                None
+            } else if deps.iter().any(|dep| dep.replace('-', "_") == name) {
+                Some(format!(
+                    "`{name}` is not on the Core allowlist (tier-listed Core crates, {})",
+                    rules.external_deps.join(", ")
+                ))
+            } else {
+                // A local item, a prelude name or a generic parameter: not a crate.
+                None
+            }
+        }
+    }
+}
+
+/// The mark of `module` if the tier file lists it in `krate`.
+fn listed_module<'a>(file: &'a TierFile, krate: &str, module: &str) -> Option<&'a Mark> {
+    file.modules.get(krate)?.get(module)
+}
+
+/// A reference to a listed module: allowed only for a `Core` module.
+fn module_reach(file: &TierFile, krate: &str, module: &str) -> Option<String> {
+    match listed_module(file, krate, module) {
+        Some(Mark::Tier(PurityTier::Core)) | None => None,
+        Some(_) => Some(format!(
+            "refers to module `{module}`, which is not a Core module"
+        )),
+    }
+}
+
+/// A reference to an item of the crate root (`lib.rs`, `main.rs`, `bin/`): allowed
+/// only when the crate line is `Core`.
+fn root_reach(file: &TierFile, krate: &str) -> Option<String> {
+    (crate_mark(file, krate) != Some(Mark::Tier(PurityTier::Core)))
+        .then(|| "refers to the crate root, which is not a Core module".to_string())
+}
+
+/// The listed crate whose name, with `-` read as `_`, is `name` (a `use` path's
+/// first segment).
+fn workspace_crate<'a>(file: &'a TierFile, name: &str) -> Option<&'a str> {
+    file.tiers
+        .keys()
+        .chain(file.tooling.iter())
+        .chain(file.shell.iter())
+        .find(|krate| krate.replace('-', "_") == name)
+        .map(String::as_str)
+}
+
 // --- rule 5: the dependency allowlist ---------------------------------------
 
 fn dependency_findings(
@@ -789,5 +960,133 @@ mod tests {
         let found = unlisted_crate_violations(&names, &file);
         assert_eq!(found.len(), 1, "{found:?}");
         assert!(found[0].contains("`wg-new`"), "{found:?}");
+    }
+
+    // Rule 6: module reach.
+
+    /// A module-tiered crate `wg-a` (root Shell; `tasks` Core, `report` Pure,
+    /// `shell` Shell) next to Core `wg-base`, Pure `wg-json` and Shell `wg-proc`.
+    fn reach_file() -> TierFile {
+        parse_tier_file(
+            "wg-base Core\nwg-json Pure\nwg-proc Shell\nwg-a Shell\n\
+             wg-a::tasks Core\nwg-a::report Pure\nwg-a::shell Shell\n",
+        )
+        .expect("parses")
+    }
+
+    fn reach_rules() -> CoreRules {
+        CoreRules {
+            world_roots: Vec::new(),
+            external_deps: vec!["rpds".to_string()],
+            banned_calls: Vec::new(),
+        }
+    }
+
+    /// The reason `segs` is refused in a `Core` module of `wg-a`, or `None`.
+    fn reach(segs: &[&str], deps: &[&str]) -> Option<String> {
+        let deps: Vec<String> = deps.iter().map(|dep| (*dep).to_string()).collect();
+        reach_problem("wg-a", segs, &reach_file(), &deps, &reach_rules())
+    }
+
+    #[test]
+    fn reach_allows_std_core_alloc_allowlisted_and_core_names() {
+        assert_eq!(reach(&["std", "fs"], &[]), None);
+        assert_eq!(reach(&["core", "cmp", "max"], &[]), None);
+        assert_eq!(reach(&["alloc", "vec"], &[]), None);
+        assert_eq!(reach(&["rpds", "HashTrieMap"], &[]), None);
+        assert_eq!(reach(&["wg_base", "id"], &[]), None);
+        assert_eq!(reach(&["crate", "tasks", "Task"], &[]), None);
+        assert_eq!(reach(&["self", "helper"], &[]), None);
+        assert_eq!(reach(&["super", "tasks"], &[]), None);
+        assert_eq!(
+            reach(&["Vec"], &[]),
+            None,
+            "prelude and local names are not crates"
+        );
+        assert_eq!(
+            reach(&["T", "Output"], &[]),
+            None,
+            "generic parameters are not crates"
+        );
+    }
+
+    #[test]
+    fn reach_refuses_a_non_core_module_of_the_same_crate() {
+        let shell = reach(&["crate", "shell", "read"], &[]).expect("refused");
+        assert!(
+            shell.contains("module `shell`, which is not a Core module"),
+            "{shell}"
+        );
+        assert!(reach(&["super", "report", "total"], &[]).is_some());
+        assert!(
+            reach(&["shell", "read"], &[]).is_some(),
+            "a bare sibling name"
+        );
+    }
+
+    #[test]
+    fn reach_refuses_the_crate_root_unless_the_crate_line_is_core() {
+        let root = reach(&["crate", "Error"], &[]).expect("refused");
+        assert!(root.contains("refers to the crate root"), "{root}");
+        assert!(reach(&["crate"], &[]).is_some(), "a glob of the root");
+    }
+
+    #[test]
+    fn reach_refuses_a_workspace_crate_that_is_not_core() {
+        let shell = reach(&["wg_proc", "run"], &[]).expect("refused");
+        assert!(
+            shell.contains("crate `wg-proc`, which is not a Core crate"),
+            "{shell}"
+        );
+        assert!(reach(&["wg_json", "parse"], &[]).is_some(), "a Pure crate");
+    }
+
+    #[test]
+    fn reach_refuses_a_manifest_dependency_off_the_allowlist() {
+        let tokio = reach(&["tokio", "spawn"], &["tokio", "wg-base"]).expect("refused");
+        assert!(tokio.contains("not on the Core allowlist"), "{tokio}");
+        assert_eq!(
+            reach(&["wg_base", "id"], &["wg-base"]),
+            None,
+            "a Core crate"
+        );
+    }
+
+    #[test]
+    fn module_reach_flags_each_use_item_and_path_with_rule_6() {
+        let src = "use crate::shell::read;\npub fn f() -> u8 {\n    crate::report::total()\n}\n";
+        let ast = syn::parse_file(src).expect("parses");
+        let found = check_module_reach(
+            "wg-a",
+            "crates/wg-a/src/tasks.rs",
+            &ast,
+            "",
+            &reach_file(),
+            &reach_rules(),
+        );
+        assert_eq!(found.len(), 2, "{found:?}");
+        assert!(
+            found[0].starts_with("crates/wg-a/src/tasks.rs:1: Core rule 6:"),
+            "{found:?}"
+        );
+        assert!(
+            found[1].starts_with("crates/wg-a/src/tasks.rs:3: Core rule 6:"),
+            "{found:?}"
+        );
+    }
+
+    #[test]
+    fn module_reach_skips_test_code() {
+        let src = "pub fn f() -> u8 {\n    1\n}\n#[cfg(test)]\nmod tests {\n    use crate::shell::read;\n}\n";
+        let ast = syn::parse_file(src).expect("parses");
+        let found = check_module_reach(
+            "wg-a",
+            "crates/wg-a/src/tasks.rs",
+            &ast,
+            "",
+            &reach_file(),
+            &reach_rules(),
+        );
+        assert!(found.is_empty(), "{found:?}");
     }
 }

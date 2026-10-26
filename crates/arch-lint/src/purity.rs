@@ -20,6 +20,7 @@
 //! Test-gated code (`#[test]`, `#[cfg(test)]`) is exempt, as in the other scans.
 
 use std::collections::{BTreeMap, BTreeSet};
+use std::ffi::OsStr;
 use std::fs;
 use std::path::Path;
 
@@ -57,8 +58,9 @@ pub(crate) fn purity_tier(tiers: &TierTable, krate: &str) -> PurityTier {
 pub(crate) const BUILTIN_TOOLING: &[&str] = &["arch-lint"];
 
 /// Parsed tier file: the checked tiers, the crates marked `Tooling` and the crates
-/// marked `Shell`. A `Tooling` or `Shell` crate is `Impure` for the gate; the
-/// markers split the report and select the crates the shell logic ceiling covers.
+/// marked `Shell`, plus the module lines. A `Tooling` or `Shell` crate is `Impure`
+/// for the gate; the markers split the report and select the crates the shell logic
+/// ceiling covers.
 #[derive(Debug, Default, PartialEq, Eq)]
 pub(crate) struct TierFile {
     pub(crate) tiers: TierTable,
@@ -66,11 +68,56 @@ pub(crate) struct TierFile {
     /// Impure shell crates (the I/O edge): listed, and covered by the shell logic
     /// ceiling.
     pub(crate) shell: BTreeSet<String>,
+    /// `crate::module` lines: for each module-tiered crate, the mark of each of its
+    /// top-level modules. A module mark is a checked tier or `Shell`. A crate with
+    /// an entry here has its root files (`lib.rs`, `main.rs`, `bin/`) on the crate
+    /// line's tier, and each listed module on its own line's tier.
+    pub(crate) modules: BTreeMap<String, BTreeMap<String, Mark>>,
 }
 
 /// True if `krate` is tooling: a built-in tooling crate or a `Tooling` line.
 pub(crate) fn is_tooling(file: &TierFile, krate: &str) -> bool {
     BUILTIN_TOOLING.contains(&krate) || file.tooling.contains(krate)
+}
+
+/// The mark of a crate line: a checked tier, `Tooling`, `Shell`, or `None` for a
+/// crate the tier file does not name.
+pub(crate) fn crate_mark(file: &TierFile, krate: &str) -> Option<Mark> {
+    if let Some(tier) = file.tiers.get(krate) {
+        Some(Mark::Tier(*tier))
+    } else if is_tooling(file, krate) {
+        Some(Mark::Tooling)
+    } else if file.shell.contains(krate) {
+        Some(Mark::Shell)
+    } else {
+        None
+    }
+}
+
+/// The mark that governs one source file of `krate`: its top-level module's
+/// `crate::module` line when it has one, else the crate line. `module` is `None`
+/// for the crate's root files.
+pub(crate) fn file_mark(file: &TierFile, krate: &str, module: Option<&str>) -> Option<Mark> {
+    let crate_level = crate_mark(file, krate)?;
+    let module_level = module.and_then(|name| file.modules.get(krate)?.get(name));
+    Some(module_level.copied().unwrap_or(crate_level))
+}
+
+/// The top-level module a source file belongs to, from its path under the crate's
+/// `src` directory: `src/tasks.rs` and `src/tasks/x.rs` are both `tasks`. The root
+/// files `lib.rs` and `main.rs`, and anything under `src/bin/`, are `None`.
+pub(crate) fn module_of(src_dir: &Path, file: &Path) -> Option<String> {
+    let relative = file.strip_prefix(src_dir).ok()?;
+    let parts: Vec<&OsStr> = relative.iter().collect();
+    match parts.as_slice() {
+        [] => None,
+        [single] => {
+            let stem = single.to_str()?.strip_suffix(".rs")?;
+            (!matches!(stem, "lib" | "main")).then(|| stem.to_string())
+        }
+        [dir, ..] if *dir == "bin" => None,
+        [dir, ..] => dir.to_str().map(str::to_string),
+    }
 }
 
 /// Reads and parses [`TIERS_PATH`] under `root`. A missing file is an error,
@@ -90,7 +137,7 @@ pub(crate) fn load_tiers(root: &Path) -> Result<TierTable, String> {
 /// One tier-file line's meaning: a checked tier, or the `Tooling` or `Shell`
 /// marker.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Mark {
+pub(crate) enum Mark {
     Tier(PurityTier),
     Tooling,
     Shell,
@@ -98,7 +145,9 @@ enum Mark {
 
 /// Parses the tier file text. Blank lines and `#` comments (whole-line or
 /// trailing) are skipped. Errors name the 1-based line number. A crate may
-/// appear once, as a tier, `Tooling` or `Shell`.
+/// appear once, as a tier, `Tooling` or `Shell`. A `crate::module` line tiers one
+/// top-level module of that crate; it takes a checked tier or `Shell`, and its
+/// crate must have a crate line.
 pub(crate) fn parse_tier_file(text: &str) -> Result<TierFile, String> {
     let entries = text
         .lines()
@@ -107,46 +156,79 @@ pub(crate) fn parse_tier_file(text: &str) -> Result<TierFile, String> {
         .filter(|(_, content)| !content.is_empty())
         .map(|(line_no, content)| parse_entry(line_no, content))
         .collect::<Result<Vec<(usize, &str, Mark)>, String>>()?;
-    for (at, (line_no, krate, _)) in entries.iter().enumerate() {
-        if let Some((first, _, _)) = entries[..at]
-            .iter()
-            .find(|(_, earlier, _)| earlier == krate)
-        {
+    for (at, (line_no, key, _)) in entries.iter().enumerate() {
+        if let Some((first, _, _)) = entries[..at].iter().find(|(_, earlier, _)| earlier == key) {
             return Err(format!(
-                "line {line_no}: duplicate crate `{krate}` (first listed on line {first})"
+                "line {line_no}: duplicate crate `{key}` (first listed on line {first})"
             ));
         }
     }
     let mut file = TierFile::default();
-    for (_, krate, mark) in entries {
+    for (_, key, mark) in &entries {
+        if key.contains("::") {
+            continue;
+        }
         match mark {
             Mark::Tier(tier) => {
-                file.tiers.insert(krate.to_string(), tier);
+                file.tiers.insert((*key).to_string(), *tier);
             }
             Mark::Tooling => {
-                file.tooling.insert(krate.to_string());
+                file.tooling.insert((*key).to_string());
             }
             Mark::Shell => {
-                file.shell.insert(krate.to_string());
+                file.shell.insert((*key).to_string());
             }
         }
+    }
+    for (line_no, key, mark) in &entries {
+        let Some((krate, module)) = key.split_once("::") else {
+            continue;
+        };
+        let listed = file.tiers.contains_key(krate)
+            || file.tooling.contains(krate)
+            || file.shell.contains(krate);
+        if !listed {
+            return Err(format!(
+                "line {line_no}: module line `{key}` names crate `{krate}`, which has no crate line"
+            ));
+        }
+        file.modules
+            .entry(krate.to_string())
+            .or_default()
+            .insert(module.to_string(), *mark);
     }
     Ok(file)
 }
 
-/// Parses one non-blank, comment-free line into `(line number, crate, mark)`.
+/// True for a crate or module name: ASCII letters, digits, `_`, and (crates only)
+/// `-`.
+fn is_name(text: &str, allow_hyphen: bool) -> bool {
+    !text.is_empty()
+        && text
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '_' || (allow_hyphen && c == '-'))
+}
+
+/// Parses one non-blank, comment-free line into `(line number, key, mark)`. The key
+/// is the crate name, or `crate::module` for a module line.
 fn parse_entry(line_no: usize, content: &str) -> Result<(usize, &str, Mark), String> {
     let fields: Vec<&str> = content.split_whitespace().collect();
-    let &[krate, tier_name] = fields.as_slice() else {
+    let &[key, tier_name] = fields.as_slice() else {
         return Err(format!(
             "line {line_no}: expected `crate-name Tier`, found `{content}`"
         ));
     };
-    if !krate
-        .chars()
-        .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
-    {
+    let (krate, module) = match key.split_once("::") {
+        Some((krate, module)) => (krate, Some(module)),
+        None => (key, None),
+    };
+    if !is_name(krate, true) {
         return Err(format!("line {line_no}: malformed crate name `{krate}`"));
+    }
+    if let Some(module) = module.filter(|module| !is_name(module, false)) {
+        return Err(format!(
+            "line {line_no}: malformed module name `{module}` in `{key}`"
+        ));
     }
     let mark = match tier_name {
         "Pure" => Mark::Tier(PurityTier::Pure),
@@ -160,7 +242,12 @@ fn parse_entry(line_no: usize, content: &str) -> Result<(usize, &str, Mark), Str
             ));
         }
     };
-    Ok((line_no, krate, mark))
+    if module.is_some() && mark == Mark::Tooling {
+        return Err(format!(
+            "line {line_no}: module line `{key}` takes `Pure`, `StrictPure`, `Core` or `Shell`, not `Tooling`"
+        ));
+    }
+    Ok((line_no, key, mark))
 }
 
 /// Repo-relative baseline file for the shell logic ceiling.
@@ -274,14 +361,18 @@ pub(crate) fn scan(root: &Path, file: &TierFile, rules: &CoreRules, violations: 
     violations.extend(unlisted_crate_violations(&names, file));
     let mut_traits = mut_trait_names(root);
     for name in names {
-        let tier = purity_tier(tiers, &name);
-        if tier == PurityTier::Impure {
-            continue;
-        }
-        let files = rust_files(&root.join("crates").join(&name).join("src"));
-        for src in &files {
-            let path = rel(root, src);
-            for v in file_violations(src, &mut_traits) {
+        violations.extend(unlisted_module_violations(root, &name, file));
+        let src_dir = root.join("crates").join(&name).join("src");
+        let manifest_path = root.join("crates").join(&name).join("Cargo.toml");
+        // Each file is checked at the tier its module (or the crate) gives it.
+        let mut core_files = Vec::new();
+        for src in rust_files(&src_dir) {
+            let module = module_of(&src_dir, &src);
+            let Some(Mark::Tier(tier)) = file_mark(file, &name, module.as_deref()) else {
+                continue;
+            };
+            let path = rel(root, &src);
+            for v in file_violations(&src, &mut_traits) {
                 if v.strict && tier < PurityTier::StrictPure {
                     continue;
                 }
@@ -292,19 +383,88 @@ pub(crate) fn scan(root: &Path, file: &TierFile, rules: &CoreRules, violations: 
                     v.text
                 ));
             }
+            if tier == PurityTier::Core {
+                core_files.push(src);
+            }
         }
-        if tier == PurityTier::Core {
-            let parsed: Vec<(String, syn::File)> = files
-                .iter()
-                .filter_map(|src| Some((rel(root, src), parse(src)?)))
-                .collect();
-            let manifest_path = root.join("crates").join(&name).join("Cargo.toml");
+        let parsed: Vec<(String, syn::File)> = core_files
+            .iter()
+            .filter_map(|src| Some((rel(root, src), parse(src)?)))
+            .collect();
+        if file.modules.contains_key(&name) {
+            // A module-tiered crate: the dependency allowlist is applied per path in
+            // each Core file, not to the whole manifest.
+            let manifest = fs::read_to_string(&manifest_path).unwrap_or_default();
+            for (path, ast) in &parsed {
+                violations.extend(core_tier::check_module_reach(
+                    &name, path, ast, &manifest, file, rules,
+                ));
+            }
+            violations.extend(core_tier::check_crate(&name, &parsed, "", tiers, rules));
+        } else if purity_tier(tiers, &name) == PurityTier::Core {
             let manifest = fs::read_to_string(&manifest_path).unwrap_or_default();
             violations.extend(core_tier::check_crate(
                 &name, &parsed, &manifest, tiers, rules,
             ));
         }
     }
+}
+
+/// For a module-tiered crate: each top-level module the crate's source declares or
+/// has a file for must have a `crate::module` line, and each such line must name a
+/// module that exists. Test-only modules (`#[cfg(test)] mod x;`) are not modules of
+/// the product and need no line. A crate without module lines is not checked here.
+pub(crate) fn unlisted_module_violations(root: &Path, krate: &str, file: &TierFile) -> Vec<String> {
+    let Some(listed) = file.modules.get(krate) else {
+        return Vec::new();
+    };
+    let src_dir = root.join("crates").join(krate).join("src");
+    let (declared_live, declared_test) = root_declarations(&src_dir);
+    let mut present = declared_live.clone();
+    for src in rust_files(&src_dir) {
+        if let Some(module) = module_of(&src_dir, &src)
+            && !declared_test.contains(&module)
+        {
+            present.insert(module);
+        }
+    }
+    let known: BTreeSet<String> = present.iter().chain(&declared_test).cloned().collect();
+    let unlisted = present
+        .iter()
+        .filter(|module| !listed.contains_key(module.as_str()))
+        .map(|module| {
+            format!("{TIERS_PATH}: module `{krate}::{module}` is not listed; add a `{krate}::{module} Tier` line")
+        });
+    let stale = listed
+        .keys()
+        .filter(|module| !known.contains(module.as_str()))
+        .map(|module| {
+            format!("{TIERS_PATH}: module `{krate}::{module}` is listed but crate `{krate}` has no such module")
+        });
+    unlisted.chain(stale).collect()
+}
+
+/// The module names a crate's root files declare: `(live, test-only)`. A module
+/// declared only under `cfg(test)` is test code.
+fn root_declarations(src_dir: &Path) -> (BTreeSet<String>, BTreeSet<String>) {
+    let mut live = BTreeSet::new();
+    let mut test_only = BTreeSet::new();
+    for root_file in ["lib.rs", "main.rs"] {
+        let Some(ast) = parse(&src_dir.join(root_file)) else {
+            continue;
+        };
+        for item in &ast.items {
+            if let syn::Item::Mod(module) = item {
+                let name = module.ident.to_string();
+                if is_test_gated(&module.attrs) {
+                    test_only.insert(name);
+                } else {
+                    live.insert(name);
+                }
+            }
+        }
+    }
+    (live, test_only)
 }
 
 /// Every crate directory must be named in the tier file (as a tier, `Tooling` or
@@ -330,14 +490,29 @@ pub(crate) fn unlisted_crate_violations(names: &[String], file: &TierFile) -> Ve
 /// The label printed in the tier column: the checked tier, `Shell`, `Tooling`, or
 /// `unlisted` for a crate the tier file does not name.
 fn tier_label(file: &TierFile, name: &str) -> &'static str {
-    match purity_tier(&file.tiers, name) {
-        PurityTier::Core => "Core",
-        PurityTier::StrictPure => "StrictPure",
-        PurityTier::Pure => "Pure",
-        PurityTier::Impure if is_tooling(file, name) => "Tooling",
-        PurityTier::Impure if file.shell.contains(name) => "Shell",
-        PurityTier::Impure => "unlisted",
+    mark_label(crate_mark(file, name))
+}
+
+/// The label of a mark, as the report prints it.
+fn mark_label(mark: Option<Mark>) -> &'static str {
+    match mark {
+        Some(Mark::Tier(PurityTier::Core)) => "Core",
+        Some(Mark::Tier(PurityTier::StrictPure)) => "StrictPure",
+        Some(Mark::Tier(PurityTier::Pure)) => "Pure",
+        Some(Mark::Tooling) => "Tooling",
+        Some(Mark::Shell) => "Shell",
+        Some(Mark::Tier(PurityTier::Impure)) | None => "unlisted",
     }
+}
+
+/// True if a crate has any `Shell` source: its crate line is `Shell`, or one of its
+/// module lines is.
+fn has_shell_source(file: &TierFile, krate: &str) -> bool {
+    file.shell.contains(krate)
+        || file
+            .modules
+            .get(krate)
+            .is_some_and(|modules| modules.values().any(|mark| *mark == Mark::Shell))
 }
 
 /// `purity-report` with no flags: per-crate tier, non-test LOC and violation
@@ -357,13 +532,24 @@ pub fn report() -> Result<(), String> {
     let mut total_strict = 0;
     let mut by_tier: BTreeMap<&'static str, usize> = BTreeMap::new();
     let mut unlisted = Vec::new();
+    let mut module_problems = Vec::new();
     for name in crate_names(&root) {
         let label = tier_label(&tier_file, &name);
+        let src_dir = root.join("crates").join(&name).join("src");
         let mut loc = 0;
         let mut pure = 0;
         let mut strict = 0;
-        for file in rust_files(&root.join("crates").join(&name).join("src")) {
-            loc += non_test_loc(&file);
+        for file in rust_files(&src_dir) {
+            let file_loc = non_test_loc(&file);
+            loc += file_loc;
+            // A file's LOC counts under its own tier, which a module line can set apart
+            // from the crate line.
+            let file_label = mark_label(file_mark(
+                &tier_file,
+                &name,
+                module_of(&src_dir, &file).as_deref(),
+            ));
+            *by_tier.entry(file_label).or_default() += file_loc;
             for v in file_violations(&file, &mut_traits) {
                 if v.strict {
                     strict += 1;
@@ -376,10 +562,10 @@ pub fn report() -> Result<(), String> {
         total_loc += loc;
         total_pure += pure;
         total_strict += strict;
-        *by_tier.entry(label).or_default() += loc;
         if label == "unlisted" {
-            unlisted.push(name);
+            unlisted.push(name.clone());
         }
+        module_problems.extend(unlisted_module_violations(&root, &name, &tier_file));
     }
     println!(
         "totals: loc {total_loc}, pure-violations {total_pure}, strict-violations {total_strict}"
@@ -399,10 +585,9 @@ pub fn report() -> Result<(), String> {
         Ok(c) => println!("baseline:    pure {}, strict {}", c.pure, c.strict),
         Err(e) => println!("baseline:    {e}"),
     }
-    if unlisted.is_empty() {
-        Ok(())
-    } else {
-        Err(format!(
+    let mut problems = Vec::new();
+    if !unlisted.is_empty() {
+        problems.push(format!(
             "{TIERS_PATH}: crate{} not listed: {}; add a tier, `Tooling` or `Shell` line",
             if unlisted.len() == 1 { " is" } else { "s are" },
             unlisted
@@ -410,7 +595,13 @@ pub fn report() -> Result<(), String> {
                 .map(|name| format!("`{name}`"))
                 .collect::<Vec<_>>()
                 .join(", ")
-        ))
+        ));
+    }
+    problems.extend(module_problems);
+    if problems.is_empty() {
+        Ok(())
+    } else {
+        Err(problems.join("; "))
     }
 }
 
@@ -548,30 +739,44 @@ struct Candidate {
     loc: usize,
     name: String,
     strict: bool,
+    /// The function's file is `Shell` (the shell logic ceiling counts it).
+    shell: bool,
 }
 
 /// Every free function and impl method in one crate, with its facts.
-fn crate_candidates(root: &Path, krate: &str, mut_traits: &BTreeSet<String>) -> Vec<Candidate> {
-    let mut sites: Vec<(String, FnSite)> = Vec::new();
-    for file in rust_files(&root.join("crates").join(krate).join("src")) {
+fn crate_candidates(
+    root: &Path,
+    krate: &str,
+    mut_traits: &BTreeSet<String>,
+    tier_file: &TierFile,
+) -> Vec<Candidate> {
+    let src_dir = root.join("crates").join(krate).join("src");
+    let mut sites: Vec<(String, bool, FnSite)> = Vec::new();
+    for file in rust_files(&src_dir) {
         let path = rel(root, &file);
+        let shell =
+            file_mark(tier_file, krate, module_of(&src_dir, &file).as_deref()) == Some(Mark::Shell);
         sites.extend(
             fn_sites(&file, mut_traits)
                 .into_iter()
-                .map(|site| (path.clone(), site)),
+                .map(|site| (path.clone(), shell, site)),
         );
     }
-    let facts: Vec<FnFacts> = sites.iter().map(|(_, site)| site.facts.clone()).collect();
+    let facts: Vec<FnFacts> = sites
+        .iter()
+        .map(|(_, _, site)| site.facts.clone())
+        .collect();
     let mut found: Vec<Candidate> = sites
         .into_iter()
         .zip(candidate_flags(&facts))
-        .filter_map(|((path, site), (pure, strict))| {
+        .filter_map(|((path, shell, site), (pure, strict))| {
             pure.then_some(Candidate {
                 path,
                 line: site.line,
                 loc: site.loc,
                 name: site.facts.name,
                 strict,
+                shell,
             })
         })
         .collect();
@@ -707,7 +912,7 @@ fn candidates_report(only: Option<&str>) -> Result<(), String> {
         }
         None => crate_names(&root)
             .into_iter()
-            .filter(|name| tier_file.shell.contains(name.as_str()))
+            .filter(|name| has_shell_source(&tier_file, name))
             .collect(),
     };
     println!("== purity-candidates");
@@ -721,7 +926,11 @@ fn candidates_report(only: Option<&str>) -> Result<(), String> {
     let mut all_strict_loc = 0;
     for krate in &crates {
         let tier = tier_label(&tier_file, krate);
-        let candidates = crate_candidates(&root, krate, &mut_traits);
+        // With no crate named, only the `Shell` sources (the ceiling's scope) are listed.
+        let candidates: Vec<Candidate> = crate_candidates(&root, krate, &mut_traits, &tier_file)
+            .into_iter()
+            .filter(|c| only.is_some() || c.shell)
+            .collect();
         let pure_loc: usize = candidates.iter().map(|c| c.loc).sum();
         let strict: Vec<&Candidate> = candidates.iter().filter(|c| c.strict).collect();
         let strict_loc: usize = strict.iter().map(|c| c.loc).sum();
@@ -750,14 +959,18 @@ fn candidates_report(only: Option<&str>) -> Result<(), String> {
 }
 
 /// Shell logic ceiling: the pure and strict candidate LOC summed over the `Shell`
-/// crates, as `purity-report --candidates` lists them.
+/// sources (`Shell` crates and `Shell` modules), as `purity-report --candidates`
+/// lists them.
 fn shell_candidate_loc(root: &Path, file: &TierFile, mut_traits: &BTreeSet<String>) -> Ceilings {
     let mut total = Ceilings::default();
     for name in crate_names(root)
         .into_iter()
-        .filter(|name| file.shell.contains(name.as_str()))
+        .filter(|name| has_shell_source(file, name))
     {
-        for c in crate_candidates(root, &name, mut_traits) {
+        for c in crate_candidates(root, &name, mut_traits, file)
+            .into_iter()
+            .filter(|c| c.shell)
+        {
             total.pure += c.loc as u64;
             if c.strict {
                 total.strict += c.loc as u64;
@@ -1010,7 +1223,7 @@ fn is_formatter_ref(r: &syn::TypeReference) -> bool {
 }
 
 /// Flattens a `use` tree into full paths (`std::time::Instant`, ...).
-fn use_paths(tree: &syn::UseTree, prefix: &mut Vec<String>, out: &mut Vec<Vec<String>>) {
+pub(crate) fn use_paths(tree: &syn::UseTree, prefix: &mut Vec<String>, out: &mut Vec<Vec<String>>) {
     match tree {
         syn::UseTree::Path(p) => {
             prefix.push(p.ident.to_string());
@@ -2008,5 +2221,222 @@ mod tests { fn helper() {} }
             parse_report_args(&args(&["--gate"])).unwrap(),
             ReportMode::Gate
         );
+    }
+
+    // --- module lines -----------------------------------------------------
+
+    #[test]
+    fn module_lines_tier_the_modules_of_a_listed_crate() {
+        let file = parse_tier_file("wg-a Shell\nwg-a::tasks Core\nwg-a::report StrictPure\n")
+            .expect("parses");
+        let modules = &file.modules["wg-a"];
+        assert_eq!(modules["tasks"], Mark::Tier(PurityTier::Core));
+        assert_eq!(modules["report"], Mark::Tier(PurityTier::StrictPure));
+        assert!(file.tiers.is_empty(), "module lines are not crate lines");
+        assert!(file.shell.contains("wg-a"));
+    }
+
+    #[test]
+    fn module_line_errors_name_the_line() {
+        let tooling = parse_tier_file("wg-a Shell\nwg-a::tasks Tooling\n").unwrap_err();
+        assert!(tooling.starts_with("line 2:"), "{tooling}");
+        assert!(tooling.contains("not `Tooling`"), "{tooling}");
+        let no_crate = parse_tier_file("wg-a Shell\nwg-b::tasks Core\n").unwrap_err();
+        assert!(no_crate.starts_with("line 2:"), "{no_crate}");
+        assert!(no_crate.contains("has no crate line"), "{no_crate}");
+        let bad_name = parse_tier_file("wg-a Shell\nwg-a::bad-name Core\n").unwrap_err();
+        assert!(
+            bad_name.contains("malformed module name `bad-name`"),
+            "{bad_name}"
+        );
+        let twice = parse_tier_file("wg-a Shell\nwg-a::x Core\nwg-a::x Pure\n").unwrap_err();
+        assert!(twice.contains("duplicate crate `wg-a::x`"), "{twice}");
+    }
+
+    #[test]
+    fn module_of_maps_files_to_their_top_level_module() {
+        let src = Path::new("crates/wg-a/src");
+        let module = |file: &str| module_of(src, &Path::new("crates/wg-a/src").join(file));
+        assert_eq!(module("tasks.rs").as_deref(), Some("tasks"));
+        assert_eq!(module("tasks/mod.rs").as_deref(), Some("tasks"));
+        assert_eq!(module("tasks/store/x.rs").as_deref(), Some("tasks"));
+        assert_eq!(module("lib.rs"), None);
+        assert_eq!(module("main.rs"), None);
+        assert_eq!(module("bin/tool.rs"), None);
+    }
+
+    #[test]
+    fn a_file_takes_its_module_line_over_the_crate_line() {
+        let file = parse_tier_file("wg-a Shell\nwg-a::tasks Core\n").unwrap();
+        assert_eq!(
+            file_mark(&file, "wg-a", Some("tasks")),
+            Some(Mark::Tier(PurityTier::Core))
+        );
+        assert_eq!(file_mark(&file, "wg-a", Some("other")), Some(Mark::Shell));
+        assert_eq!(file_mark(&file, "wg-a", None), Some(Mark::Shell));
+        assert_eq!(file_mark(&file, "wg-x", None), None);
+    }
+
+    /// Writes the fixture crates under a per-test directory of the temp dir.
+    fn fixture_root(name: &str, files: &[(&str, &str)]) -> std::path::PathBuf {
+        let root = std::env::temp_dir().join("arch-lint-tests").join(name);
+        let _ = fs::remove_dir_all(&root);
+        for (path, text) in files {
+            let full = root.join("crates").join(path);
+            fs::create_dir_all(full.parent().expect("parent")).expect("mkdir");
+            fs::write(full, text).expect("write");
+        }
+        root
+    }
+
+    /// Runs `scan` on a fixture with the given tier file text.
+    fn scan_fixture(root: &Path, tiers: &str) -> Vec<String> {
+        let file = parse_tier_file(tiers).expect("tier file parses");
+        let rules = CoreRules {
+            world_roots: Vec::new(),
+            external_deps: vec!["rpds".to_string()],
+            banned_calls: Vec::new(),
+        };
+        let mut violations = Vec::new();
+        scan(root, &file, &rules, &mut violations);
+        violations
+    }
+
+    /// A module-tiered fixture: `wg-base` is Core; `wg-a` is Shell at the root, with
+    /// Core `tasks`, Pure `report` and Shell `shell` modules. `lib.rs` declares the
+    /// three modules, and `tasks.rs` is conforming.
+    fn module_fixture(name: &str, extra: &[(&str, &str)]) -> std::path::PathBuf {
+        let mut files = vec![
+            ("wg-base/Cargo.toml", "[package]\nname = \"wg-base\"\n"),
+            ("wg-base/src/lib.rs", "pub fn id(v: u8) -> u8 {\n    v\n}\n"),
+            (
+                "wg-a/Cargo.toml",
+                "[package]\nname = \"wg-a\"\n\n[dependencies]\nwg-base = { path = \"../wg-base\" }\n",
+            ),
+            (
+                "wg-a/src/lib.rs",
+                "pub mod report;\npub mod shell;\npub mod tasks;\n",
+            ),
+            (
+                "wg-a/src/tasks.rs",
+                "use wg_base::id;\n\npub fn next(v: u8) -> u8 {\n    id(v) + 1\n}\n",
+            ),
+            (
+                "wg-a/src/report.rs",
+                "pub fn total(v: &[u8]) -> u32 {\n    v.iter().map(|x| u32::from(*x)).sum()\n}\n",
+            ),
+            (
+                "wg-a/src/shell.rs",
+                "use std::fs;\n\npub fn read(path: &str) -> std::io::Result<Vec<u8>> {\n    fs::read(path)\n}\n",
+            ),
+        ];
+        files.extend_from_slice(extra);
+        fixture_root(name, &files)
+    }
+
+    const MODULE_TIERS: &str =
+        "wg-base Core\nwg-a Shell\nwg-a::tasks Core\nwg-a::report Pure\nwg-a::shell Shell\n";
+
+    #[test]
+    fn module_tiered_crate_passes() {
+        let root = module_fixture("module-tiered-passes", &[]);
+        let found = scan_fixture(&root, MODULE_TIERS);
+        assert!(found.is_empty(), "{found:?}");
+    }
+
+    #[test]
+    fn unlisted_module_fails() {
+        let root = module_fixture(
+            "unlisted-module-fails",
+            &[
+                (
+                    "wg-a/src/lib.rs",
+                    "pub mod report;\npub mod shell;\npub mod tasks;\npub mod extra;\n",
+                ),
+                ("wg-a/src/extra.rs", "pub fn extra() -> u8 {\n    1\n}\n"),
+            ],
+        );
+        let found = scan_fixture(&root, MODULE_TIERS);
+        assert_eq!(found.len(), 1, "{found:?}");
+        assert!(
+            found[0].contains("module `wg-a::extra` is not listed"),
+            "{found:?}"
+        );
+    }
+
+    #[test]
+    fn listed_module_without_a_source_fails() {
+        let root = module_fixture(
+            "stale-module-fails",
+            &[(
+                "wg-a/src/lib.rs",
+                "pub mod report;\npub mod shell;\npub mod tasks;\n",
+            )],
+        );
+        let tiers = format!("{MODULE_TIERS}wg-a::gone Core\n");
+        let found = scan_fixture(&root, &tiers);
+        assert_eq!(found.len(), 1, "{found:?}");
+        assert!(found[0].contains("`wg-a::gone` is listed"), "{found:?}");
+    }
+
+    #[test]
+    fn core_module_importing_a_shell_module_fails() {
+        let root = module_fixture(
+            "core-imports-shell-fails",
+            &[(
+                "wg-a/src/tasks.rs",
+                "use crate::shell::read;\n\npub fn next(v: u8) -> u8 {\n    v\n}\n",
+            )],
+        );
+        let found = scan_fixture(&root, MODULE_TIERS);
+        assert_eq!(found.len(), 1, "{found:?}");
+        assert!(
+            found[0].starts_with("crates/wg-a/src/tasks.rs:1: Core rule 6:"),
+            "{found:?}"
+        );
+        assert!(
+            found[0].contains("module `shell`, which is not a Core module"),
+            "{found:?}"
+        );
+    }
+
+    #[test]
+    fn pure_module_gets_the_pure_rules() {
+        let root = module_fixture(
+            "pure-module-rules",
+            &[(
+                "wg-a/src/report.rs",
+                "pub fn now() -> bool {\n    std::env::var(\"X\").is_ok()\n}\n",
+            )],
+        );
+        let found = scan_fixture(&root, MODULE_TIERS);
+        assert!(
+            found
+                .iter()
+                .any(|line| line.starts_with("crates/wg-a/src/report.rs:")
+                    && line.contains("Pure purity violation")),
+            "{found:?}"
+        );
+        assert!(
+            found.iter().all(|line| !line.contains("Core rule")),
+            "{found:?}"
+        );
+    }
+
+    #[test]
+    fn shell_ceiling_counts_only_shell_modules() {
+        // `clean` in the Shell module is a pure candidate (3 code lines); `next` in
+        // the Core module is also pure but is not Shell, so the ceiling skips it.
+        let root = module_fixture(
+            "ceiling-counts-shell-modules",
+            &[(
+                "wg-a/src/shell.rs",
+                "pub fn clean(a: u8) -> u8 {\n    a + 1\n}\n",
+            )],
+        );
+        let file = parse_tier_file(MODULE_TIERS).expect("parses");
+        let measured = shell_candidate_loc(&root, &file, &BTreeSet::new());
+        assert_eq!(measured.pure, 3);
+        assert_eq!(measured.strict, 3);
     }
 }

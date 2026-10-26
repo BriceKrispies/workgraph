@@ -50,7 +50,8 @@ description = "exception class names in spool_reason, unexpected-error message t
 id = "DV6"
 decision = "3.6"
 scenario = "*"
-description = "Parquet export bytes (compared by reading both files back; not a text comparison)"
+fields = ["file"]
+description = "Parquet export bytes (compared by reading both files back; not a text comparison). A file, not output text: no stdout, stderr or exit difference is allowed by this entry"
 
 [[divergence]]
 id = "DV7"

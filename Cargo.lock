@@ -1343,6 +1343,7 @@ dependencies = [
  "time",
  "uuid",
  "wg-conformance",
+ "wg-jobs",
  "wg-model",
  "wg-storecodec",
  "wg-types",

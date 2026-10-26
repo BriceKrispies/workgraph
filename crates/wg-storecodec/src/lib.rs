@@ -10,6 +10,7 @@ pub mod decision_sql;
 pub mod events;
 pub mod migrations;
 pub mod query;
+pub mod queue_sql;
 pub mod repo_sql;
 pub mod rows;
 mod rows_more;

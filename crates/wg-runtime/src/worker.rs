@@ -78,7 +78,8 @@ pub struct Worker {
     queue: Queue,
     options: WorkerOptions,
     settings: WorkerSettings,
-    concurrency: usize,
+    /// Concurrent jobs this worker runs.
+    pub concurrency: usize,
     pub worker_id: String,
     registry: Arc<HandlerRegistry>,
     stop: Arc<AtomicBool>,
@@ -292,6 +293,14 @@ impl Worker {
             std::thread::sleep(Duration::from_millis(100));
         }
         self.running.clear();
+        // The counters the worker row shows are the ones it last wrote: write the final ones.
+        let Summary { completed, failed } = self.summary();
+        if let Err(error) = self
+            .queue
+            .worker_heartbeat(&self.worker_id, &[], completed, failed)
+        {
+            tracing::error!(target: "workgraph.worker", error = %error.message, "worker heartbeat failed");
+        }
         if let Err(error) = self.queue.stop_worker(&self.worker_id) {
             tracing::error!(target: "workgraph.worker", error = %error.message, "cannot stop worker row");
         }

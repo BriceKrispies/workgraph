@@ -8,25 +8,20 @@
 use std::path::Path;
 
 use serde_json::{Map, Value, json};
-use wg_jobs::dispatch::{STALE_WORKER_SECONDS, WorkerSettings};
+use wg_jobs::dispatch::WorkerSettings;
 use wg_jobs::limits::LimitSettings;
 use wg_jobs::maintenance::{
     LEADER_LEASE_KEY, RETENTION_INTERVAL_SECONDS, Step, due, elect, plan, tracker_syncs_due,
 };
 use wg_jobs::queue::{ClaimedJob, NewJob};
-use wg_jobs::retention::compact_artifacts;
 use wg_jobs::trackers::enqueue_tracker_sync;
-use wg_jobs::workers::{
-    NewWorker, mark_lost_workers, register_worker, stop_worker, worker_heartbeat,
-};
+use wg_jobs::workers::{NewWorker, register_worker, stop_worker, worker_heartbeat};
 use wg_model::entity::JsonObject;
-use wg_model::{Decision, Effect, FsOp, Row, Write};
-use wg_registry::boundary::is_within;
 use wg_runtimespec::RequestContext;
 use wg_types::{Id, JobStatus, WgError};
 
 use crate::app::App;
-use crate::stamp::{draw, system_context};
+use crate::stamp::system_context;
 
 /// The queue, over one [`App`] (one database connection).
 pub struct Queue {
@@ -45,29 +40,12 @@ impl Queue {
 
     /// `JobQueue.enqueue`.
     pub fn enqueue(&mut self, job: &NewJob) -> Result<Id, WgError> {
-        let key = job.idempotency_key.clone();
-        Ok(self
-            .app
-            .runtime
-            .decide(
-                &self.context,
-                |session| session.enqueue_slice(key.as_deref()),
-                |slice, stamp| Ok(wg_jobs::queue::enqueue(slice, job, stamp)),
-            )?
-            .reply)
+        self.app.enqueue_as(&self.context, job)
     }
 
     /// `JobQueue.cancel`: the job's status afterwards.
     pub fn cancel(&mut self, job_id: Id) -> Result<JobStatus, WgError> {
-        Ok(self
-            .app
-            .runtime
-            .decide(
-                &self.context,
-                |session| session.job_slice(job_id),
-                |slice, stamp| wg_jobs::queue::cancel(slice, job_id, stamp),
-            )?
-            .reply)
+        self.app.cancel_as(&self.context, job_id)
     }
 
     /// `JobQueue.claim`: the next runnable job, claimed atomically.
@@ -178,28 +156,12 @@ impl Queue {
 
     /// `JobQueue.recover_expired`: the ids of the jobs whose lease had expired.
     pub fn recover_expired(&mut self) -> Result<Vec<Id>, WgError> {
-        Ok(self
-            .app
-            .runtime
-            .decide(
-                &self.context,
-                |session| session.running_slice(),
-                |slice, stamp| Ok(wg_jobs::queue::recover_expired(slice, stamp)),
-            )?
-            .reply)
+        self.app.recover_expired_as(&self.context)
     }
 
     /// `JobQueue.mark_lost_workers`: the ids of the workers that stopped heartbeating.
     pub fn mark_lost_workers(&mut self) -> Result<Vec<String>, WgError> {
-        Ok(self
-            .app
-            .runtime
-            .decide(
-                &self.context,
-                |session| session.worker_slice(None),
-                |slice, stamp| Ok(mark_lost_workers(slice, STALE_WORKER_SECONDS, stamp)),
-            )?
-            .reply)
+        self.app.mark_lost_workers_as(&self.context)
     }
 
     /// `JobQueue.register_worker`.
@@ -394,61 +356,13 @@ impl Queue {
         Ok(json!({"incremental": incremental, "full": full, "failed": failed}))
     }
 
-    /// `retention.compact`: purges the telemetry artifacts past the run-log window. A dry run
-    /// reports without changing anything. Hook payload compaction waits for the knowledge-family
-    /// entities, so `hook_payloads` is always 0.
+    /// `retention.compact`: see [`App::job_compact`]; `hook_payloads` is always 0.
     pub fn compact_telemetry(
         &mut self,
         settings: &WorkerSettings,
         dry_run: bool,
     ) -> Result<Map<String, Value>, WgError> {
-        let root = self.app.paths.artifacts_dir().as_str().to_owned();
-        let inside = |path: &str| is_within(&format!("{root}/{path}"), &root);
-        let load = |session: &mut wg_store::Session<'_>, at| {
-            let (_, log_cutoff) = wg_jobs::retention::cutoffs(&settings.retention, at);
-            session.purgeable_artifacts("telemetry", log_cutoff)
-        };
-        let report = if dry_run {
-            let stamp = self.app.runtime.stamps.stamp(&self.context)?;
-            let artifacts = self
-                .app
-                .runtime
-                .store
-                .read(|session| load(session, stamp.at))?;
-            compact_artifacts(&artifacts, &settings.retention, &stamp, inside).reply
-        } else {
-            self.app
-                .runtime
-                .decide(
-                    &self.context,
-                    |session| load(session, draw()?.0),
-                    |artifacts, stamp| {
-                        let decision =
-                            compact_artifacts(artifacts, &settings.retention, stamp, inside);
-                        // The files go once the rows commit; removing a missing file succeeds.
-                        let removals = decision.writes.iter().filter_map(|write| match write {
-                            Write::Update {
-                                row: Row::Artifact(artifact),
-                                ..
-                            } => Some(Effect::Fs(FsOp::RemoveFile {
-                                path: format!("{root}/{}", artifact.path),
-                            })),
-                            _ => None,
-                        });
-                        let removals: Vec<Effect> = removals.collect();
-                        Ok(removals.into_iter().fold(decision, Decision::effect))
-                    },
-                )?
-                .reply
-        };
-        Ok(json!({
-            "hook_payloads": 0,
-            "artifacts": report.artifacts,
-            "bytes_freed": report.bytes_freed,
-            "dry_run": dry_run,
-        })
-        .as_object()
-        .cloned()
-        .unwrap_or_default())
+        self.app
+            .compact_telemetry_as(&self.context, settings, dry_run)
     }
 }

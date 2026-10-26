@@ -10,7 +10,7 @@ use wg_clispec::{Snapshot, diff_commands};
 
 /// Top-level groups whose clap tree must equal the snapshot. Each group task adds its name.
 const IMPLEMENTED: &[&str] = &[
-    "config", "doctor", "init", "task", "decision", "ui", "serve", "mcp",
+    "config", "doctor", "init", "task", "decision", "ui", "serve", "mcp", "job", "worker",
 ];
 
 /// The hand-written command of an implemented group.

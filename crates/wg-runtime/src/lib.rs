@@ -18,6 +18,7 @@ mod cycle;
 mod decisions;
 mod effects;
 mod handlers;
+mod jobs;
 mod logging;
 mod queue;
 mod setup;
@@ -37,6 +38,7 @@ pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
 pub use wg_runtimespec::decisions::{DecisionFilter, filter_of as decision_filter};
+pub use wg_runtimespec::jobs::{unknown_job_kind, worker_summary_out};
 pub use wg_runtimespec::setup::InitRequest;
 pub use wg_runtimespec::tasks::reads::{GraphRequest, Shown};
 pub use wg_runtimespec::{Level, RequestContext};

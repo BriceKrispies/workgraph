@@ -168,7 +168,7 @@ impl World {
     }
 
     fn event_types(&self) -> Vec<&'static str> {
-        self.events.iter().map(|e| e.event_type).collect()
+        self.events.iter().map(|e| e.payload.event_type()).collect()
     }
 }
 
@@ -436,7 +436,7 @@ fn choose_plan_writes_the_comment_before_the_events() {
     )
     .unwrap_or_else(|e| panic!("{e}"));
     assert!(plan.comment.is_some());
-    let types: Vec<&str> = plan.events.iter().map(|e| e.event_type).collect();
+    let types: Vec<&str> = plan.events.iter().map(|e| e.payload.event_type()).collect();
     assert_eq!(types, ["task.comment_added", "task.decision_chosen"]);
     let update = plan
         .tags
@@ -519,9 +519,12 @@ fn withdraw_emits_the_withdrawn_event() {
         ]
     );
     let withdrawn = world.events.last().unwrap_or_else(|| panic!("no event"));
-    assert_eq!(withdrawn.data["question"], "Q?");
-    assert_eq!(withdrawn.data["decision_id"], d.id.to_string());
-    assert_eq!(withdrawn.data["version"], 2);
+    let wg_model::EventPayload::TaskDecisionWithdrawn(payload) = &withdrawn.payload else {
+        panic!("not a withdrawal: {:?}", withdrawn.payload);
+    };
+    assert_eq!(payload.question, "Q?");
+    assert_eq!(payload.decision_id, d.id);
+    assert_eq!(payload.version, 2);
 }
 
 // ------------------------------------------------------------------ normalisation

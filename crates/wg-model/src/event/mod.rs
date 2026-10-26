@@ -70,9 +70,10 @@ pub use stack::{
 };
 pub use task::{
     TaskAccepted, TaskChangeSurfaceComputed, TaskClaimed, TaskCommentRecorded, TaskCommitLinked,
-    TaskCommitUnlinked, TaskCompleted, TaskCreated, TaskDecomposed, TaskDependencyChanged,
-    TaskEscalated, TaskKeyed, TaskRejected, TaskRelationAdded, TaskReleased, TaskReopened,
-    TaskRepositoryLinked, TaskRepositoryUnlinked, TaskStatusChanged, TaskSynced, TaskUpdated,
+    TaskCommitUnlinked, TaskCompleted, TaskCreated, TaskDecisionChanged, TaskDecomposed,
+    TaskDependencyChanged, TaskEscalated, TaskKeyed, TaskRejected, TaskRelationAdded, TaskReleased,
+    TaskReopened, TaskRepositoryLinked, TaskRepositoryUnlinked, TaskStatusChanged, TaskSynced,
+    TaskUpdated,
 };
 pub use verification::{
     VerificationCompleted, VerificationConfigToggled, VerificationConfigWritten,
@@ -224,6 +225,9 @@ event_payloads! {
     TaskCommitLinked(TaskCommitLinked) = "task.commit_linked", Task, version 1;
     TaskCommitUnlinked(TaskCommitUnlinked) = "task.commit_unlinked", Task, version 1;
     TaskChangeSurfaceComputed(TaskChangeSurfaceComputed) = "task.change_surface_computed", Task, version 1;
+    TaskDecisionRequested(TaskDecisionChanged) = "task.decision_requested", Task, version 1;
+    TaskDecisionChosen(TaskDecisionChanged) = "task.decision_chosen", Task, version 1;
+    TaskDecisionWithdrawn(TaskDecisionChanged) = "task.decision_withdrawn", Task, version 1;
 
     AgentSessionBound(AgentSessionBound) = "agent_session.bound", Task, version 1;
     AgentSessionStarted(AgentSessionStarted) = "agent_session.started", AgentSession, version 1;

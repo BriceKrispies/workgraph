@@ -71,6 +71,7 @@ def enc(f, ty):
         "VectorSync<JsonObject>": f"objects_sql(&{s})?",
         "VectorSync<Value>": f"values_sql(&{s})?",
         "VectorSync<u8>": f"blob_sql(&{s})",
+        "Vec<DecisionOption>": f"decision_options_sql(&{s})?",
         "Real": f"real_sql({s})",
         "Option<Real>": f"opt_real_sql({s})",
     }
@@ -97,6 +98,7 @@ def dec(f, ty):
         "VectorSync<JsonObject>": "objects",
         "VectorSync<Value>": "values",
         "VectorSync<u8>": "blob",
+        "Vec<DecisionOption>": "decision_options",
         "Real": "real",
         "Option<Real>": "opt_real",
     }.get(ty, "parsed")
@@ -116,9 +118,9 @@ use wg_model::{Row, RowKey, Table};
 use wg_types::WgError;
 
 use crate::codec::{
-    Cols, Raw, blob_sql, bool_sql, id_sql, object_sql, objects_sql, opt_id_sql, opt_int_sql,
-    opt_object_sql, opt_real_sql, opt_text_sql, opt_ts_sql, real_sql, strings_sql, text_sql, ts_sql,
-    values_sql,
+    Cols, Raw, blob_sql, bool_sql, decision_options_sql, id_sql, object_sql, objects_sql,
+    opt_id_sql, opt_int_sql, opt_object_sql, opt_real_sql, opt_text_sql, opt_ts_sql, real_sql,
+    strings_sql, text_sql, ts_sql, values_sql,
 };
 use crate::rows::TableRow;
 """)

@@ -13,7 +13,7 @@ use rpds::VectorSync;
 use serde_json::Value;
 use wg_json::{DumpError, PyStr};
 use wg_model::JsonObject;
-use wg_model::entity::Real;
+use wg_model::entity::{DecisionOption, Real};
 use wg_types::{ErrorCode, Id, Timestamp, WgError, parse_id};
 
 /// One database value, as the three storage classes the schema uses.
@@ -138,6 +138,25 @@ pub fn blob_sql(bytes: &VectorSync<u8>) -> Raw {
 /// A NOT NULL JSON list of objects.
 pub fn objects_sql(items: &VectorSync<JsonObject>) -> Result<Raw, WgError> {
     let list = Value::Array(items.iter().cloned().map(Value::Object).collect());
+    let text = json_text(&list)?;
+    Ok(text.map_or(Raw::Null, Raw::Text))
+}
+
+/// A NOT NULL JSON list of decision options, each `{id, label, detail, recommended}`.
+pub fn decision_options_sql(options: &[DecisionOption]) -> Result<Raw, WgError> {
+    let list = Value::Array(
+        options
+            .iter()
+            .map(|option| {
+                let mut object = JsonObject::new();
+                object.insert("id".to_owned(), Value::String(option.id.clone()));
+                object.insert("label".to_owned(), Value::String(option.label.clone()));
+                object.insert("detail".to_owned(), Value::String(option.detail.clone()));
+                object.insert("recommended".to_owned(), Value::Bool(option.recommended));
+                Value::Object(object)
+            })
+            .collect(),
+    );
     let text = json_text(&list)?;
     Ok(text.map_or(Raw::Null, Raw::Text))
 }
@@ -286,6 +305,31 @@ impl<'a> Cols<'a> {
         self.list(name)?
             .into_iter()
             .map(|item| Self::object_from(item, name))
+            .collect()
+    }
+
+    /// A NOT NULL JSON list of decision options.
+    pub fn decision_options(&self, name: &str) -> Result<Vec<DecisionOption>, WgError> {
+        self.list(name)?
+            .into_iter()
+            .map(|item| {
+                let Value::Object(object) = item else {
+                    return Err(corrupt(name, "a decision option is not a JSON object"));
+                };
+                let text = |key: &str| match object.get(key) {
+                    Some(Value::String(text)) => Ok(text.clone()),
+                    _ => Err(corrupt(name, &format!("option {key} is not text"))),
+                };
+                Ok(DecisionOption {
+                    id: text("id")?,
+                    label: text("label")?,
+                    detail: text("detail")?,
+                    recommended: match object.get("recommended") {
+                        Some(Value::Bool(flag)) => *flag,
+                        _ => return Err(corrupt(name, "option recommended is not a boolean")),
+                    },
+                })
+            })
             .collect()
     }
 

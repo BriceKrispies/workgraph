@@ -13,10 +13,10 @@ use wg_model::event::{
     RepositoryCheckoutLost, RepositoryCheckoutRemoved, RepositoryDependencyDeclared,
     RepositoryHealthChanged, RepositoryRemoved, RepositoryUpdated, TaskAccepted,
     TaskChangeSurfaceComputed, TaskClaimed, TaskCommentRecorded, TaskCommitLinked,
-    TaskCommitUnlinked, TaskCompleted, TaskCreated, TaskDecomposed, TaskDependencyChanged,
-    TaskEscalated, TaskKeyed, TaskRejected, TaskRelationAdded, TaskReleased, TaskReopened,
-    TaskRepositoryLinked, TaskRepositoryUnlinked, TaskStatusChanged, TaskSynced, TaskUpdated,
-    WorkspaceArchived, WorkspaceCreated, WorkspaceSettingsChanged,
+    TaskCommitUnlinked, TaskCompleted, TaskCreated, TaskDecisionChanged, TaskDecomposed,
+    TaskDependencyChanged, TaskEscalated, TaskKeyed, TaskRejected, TaskRelationAdded, TaskReleased,
+    TaskReopened, TaskRepositoryLinked, TaskRepositoryUnlinked, TaskStatusChanged, TaskSynced,
+    TaskUpdated, WorkspaceArchived, WorkspaceCreated, WorkspaceSettingsChanged,
 };
 use wg_model::{
     Changes, Decision, EventDraft, EventPayload, IdSeq, JsonObject, RowKey, Stamp, StrMap, Table,
@@ -250,6 +250,15 @@ fn changes() -> Changes {
     Changes::new().with("title", json!("old"), json!("new"))
 }
 
+fn decision() -> TaskDecisionChanged {
+    TaskDecisionChanged {
+        key: key("WG-1"),
+        decision_id: id(4),
+        question: "Ship it?".into(),
+        version: 1,
+    }
+}
+
 fn key(text: &str) -> TaskKey {
     ok(TaskKey::parse(text))
 }
@@ -456,6 +465,9 @@ fn samples() -> Vec<EventPayload> {
             insertions: 10,
             deletions: 2,
         }),
+        EventPayload::TaskDecisionRequested(decision()),
+        EventPayload::TaskDecisionChosen(decision()),
+        EventPayload::TaskDecisionWithdrawn(decision()),
     ]
 }
 
@@ -502,7 +514,7 @@ fn every_family_event_of_the_contract_has_a_payload() -> TestResult {
         .copied()
         .filter(|name| families.iter().any(|family| name.starts_with(family)))
         .collect();
-    assert_eq!(core_known.len(), 43);
+    assert_eq!(core_known.len(), 46);
     let sampled: BTreeSet<&str> = samples().iter().map(EventPayload::event_type).collect();
     assert_eq!(sampled, core_known, "every event type has a sample");
     Ok(())
@@ -758,14 +770,14 @@ fn decisions_compose_in_order() {
 
 #[test]
 fn table_names_are_schema_tables() -> TestResult {
-    let schema = std::fs::read_to_string(repo_root().join("contracts/schema-0010.sql"))?;
+    let schema = std::fs::read_to_string(repo_root().join("contracts/schema-0011.sql"))?;
     let names: BTreeSet<&str> = Table::ALL.iter().map(|table| table.name()).collect();
     assert_eq!(names.len(), Table::ALL.len());
     for name in names {
         let quoted = format!("CREATE TABLE \"{name}\" (");
         assert!(
             schema.contains(&format!("CREATE TABLE {name} (")) || schema.contains(&quoted),
-            "{name} is not a table of schema 0010"
+            "{name} is not a table of schema 0011"
         );
     }
     Ok(())
@@ -782,4 +794,58 @@ fn permissions_set_is_persistent() {
     assert!(!fewer.has(Permission::TaskAccept));
     let empty: RedBlackTreeSetSync<Permission> = RedBlackTreeSetSync::new_sync();
     assert!(empty.is_empty());
+}
+
+fn task_decision(n: u32, task_n: u32, second: u8) -> wg_model::entity::TaskDecision {
+    wg_model::entity::TaskDecision {
+        id: id(n),
+        workspace_id: id(0),
+        task_id: id(task_n),
+        question: format!("question {n}?"),
+        options: vec![wg_model::entity::DecisionOption {
+            id: "a".into(),
+            label: "A".into(),
+            detail: String::new(),
+            recommended: true,
+        }],
+        status: "open".into(),
+        chosen_option_id: None,
+        other_text: None,
+        note: None,
+        decided_by: None,
+        decided_at: None,
+        created_by: "human:brice".into(),
+        created_at: at(second),
+        updated_at: at(second),
+        version: 1,
+    }
+}
+
+#[test]
+fn task_slice_folds_decision_writes_by_id() -> TestResult {
+    let base = TaskSlice::default();
+    let first = task_decision(20, 1, 9);
+    let second = task_decision(21, 1, 3);
+    let other_task = task_decision(22, 2, 4);
+    let slice = base.apply_all(&[
+        Write::insert(first.clone()),
+        Write::insert(second.clone()),
+        Write::insert(other_task.clone()),
+    ]);
+    assert_eq!(slice.decisions.get(&id(20)), Some(&first));
+    // Oldest first, regardless of insertion order.
+    assert_eq!(slice.decisions_of(id(1)), vec![&second, &first]);
+    assert_eq!(slice.decisions_of(id(2)), vec![&other_task]);
+    // A whole-row update replaces the row by id; the earlier slice is unchanged (values).
+    let mut answered = first.clone();
+    answered.status = "decided".into();
+    answered.version = 2;
+    let updated = slice.apply(&Write::update(answered.clone()));
+    assert_eq!(updated.decisions.get(&id(20)), Some(&answered));
+    assert_eq!(slice.decisions.get(&id(20)), Some(&first));
+    assert!(base.decisions.is_empty());
+    // Deleting by key removes exactly that row.
+    let removed = updated.apply(&Write::delete(RowKey::TaskDecision(id(21))));
+    assert_eq!(removed.decisions_of(id(1)), vec![&answered]);
+    Ok(())
 }

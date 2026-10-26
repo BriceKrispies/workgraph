@@ -1,3 +1,7 @@
-//! wg-cli: the workgraph binary: clap command tree and handlers.
+//! The `workgraph` binary.
 
-fn main() {}
+use std::process::ExitCode;
+
+fn main() -> ExitCode {
+    ExitCode::from(wg_cli::run())
+}

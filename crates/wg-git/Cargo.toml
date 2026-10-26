@@ -9,3 +9,11 @@ description = "git CLI runner and one function per git operation"
 
 [lints]
 workspace = true
+
+[dependencies]
+rpds = "1"
+wg-gitcore = { path = "../wg-gitcore" }
+wg-model = { path = "../wg-model" }
+wg-proc = { path = "../wg-proc" }
+wg-procspec = { path = "../wg-procspec" }
+wg-runtimespec = { path = "../wg-runtimespec" }

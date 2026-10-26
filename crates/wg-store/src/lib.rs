@@ -14,6 +14,7 @@
 
 mod migrate;
 mod repos;
+mod run;
 mod session;
 mod tasks;
 

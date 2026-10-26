@@ -12,6 +12,7 @@ pub mod query;
 pub mod repo_sql;
 pub mod rows;
 mod rows_more;
+pub mod run_sql;
 pub mod sql;
 pub mod task_sql;
 

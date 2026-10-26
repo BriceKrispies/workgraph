@@ -8,8 +8,8 @@
 //! `NaN` and `Infinity` are floats to Python, so they are written as the validator's non-finite
 //! marker (`wg_validate::non_finite_marker`); an integer beyond 64 bits that overflows is `null`.
 
+use crate::validate::non_finite_marker;
 use serde_json::{Map, Number, Value};
-use wg_validate::non_finite_marker;
 
 /// What decoding a body gave.
 #[derive(Debug, Clone, PartialEq)]
@@ -43,24 +43,54 @@ enum Endian {
 
 /// `json.loads(bytes)`: the bytes decoded as `json.detect_encoding` picks, then parsed.
 pub fn loads(body: &[u8]) -> Decoded {
-    let Some(text) = decode(body) else {
-        return Decoded::NotText;
-    };
+    match decode(body) {
+        Some(text) => loads_text(&text),
+        None => Decoded::NotText,
+    }
+}
+
+/// `json.loads(str)`: the text parsed as it is. A leading byte-order mark is an error, as in
+/// CPython, because only the bytes path strips one.
+pub fn loads_text(text: &str) -> Decoded {
+    match scan(text) {
+        Ok(value) => Decoded::Value(value),
+        Err(Failure { message, position }) => Decoded::Invalid { message, position },
+    }
+}
+
+/// `json.loads(str)` for a caller that reports the error: the value, or the text of the
+/// `JSONDecodeError` (`str(exc)`).
+pub fn parse_message(text: &str) -> Result<Value, String> {
+    scan(text).map_err(|Failure { message, position }| error_text(text, message, position))
+}
+
+fn scan(text: &str) -> Result<Value, Failure> {
+    if text.starts_with('\u{feff}') {
+        return fail("Unexpected UTF-8 BOM (decode using utf-8-sig)", 0);
+    }
     let chars: Vec<char> = text.chars().collect();
     let scanner = Scanner { s: &chars };
     let start = scanner.ws(0);
-    let result = scanner.value(start).and_then(|(value, end)| {
+    scanner.value(start).and_then(|(value, end)| {
         let end = scanner.ws(end);
         if end == chars.len() {
             Ok(value)
         } else {
             fail("Extra data", end)
         }
-    });
-    match result {
-        Ok(value) => Decoded::Value(value),
-        Err(Failure { message, position }) => Decoded::Invalid { message, position },
-    }
+    })
+}
+
+/// `str(JSONDecodeError(message, text, position))`: `message: line L column C (char P)`. The line
+/// and column are counted as CPython counts them, and the position is a character index.
+pub fn error_text(text: &str, message: &str, position: usize) -> String {
+    let before: Vec<char> = text.chars().take(position).collect();
+    let line = before.iter().filter(|c| **c == '\n').count() + 1;
+    let column = match before.iter().rposition(|c| *c == '\n') {
+        Some(newline) => position - newline,
+        None => position + 1,
+    };
+    format!("{message}: line {line} column {column} (char {position})")
 }
 
 /// `s.decode(json.detect_encoding(s), 'surrogatepass')`: the text of the body, or `None` when the
@@ -530,5 +560,64 @@ mod tests {
         assert_eq!(invalid("{\"a\""), ("Expecting ':' delimiter", 4));
         assert_eq!(invalid("{\"a\":1"), ("Expecting ',' delimiter", 6));
         assert_eq!(invalid("\"\\"), ("Unterminated string starting at", 0));
+    }
+
+    /// `str(e)` for the `JSONDecodeError` of `json.loads(text)`, as CPython words it.
+    fn python_error(text: &str) -> String {
+        match loads_text(text) {
+            Decoded::Invalid { message, position } => error_text(text, message, position),
+            other => panic!("{text:?} decoded: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn error_text_matches_cpython_messages() {
+        assert_eq!(
+            python_error("{a:1}"),
+            "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+        );
+        assert_eq!(
+            python_error("[1,]"),
+            "Expecting value: line 1 column 4 (char 3)"
+        );
+        assert_eq!(
+            python_error("{\"a\":1"),
+            "Expecting ',' delimiter: line 1 column 7 (char 6)"
+        );
+        assert_eq!(
+            python_error("{\"a\" 1}"),
+            "Expecting ':' delimiter: line 1 column 6 (char 5)"
+        );
+        assert_eq!(python_error("1 2"), "Extra data: line 1 column 3 (char 2)");
+        assert_eq!(
+            python_error("\"abc"),
+            "Unterminated string starting at: line 1 column 1 (char 0)"
+        );
+    }
+
+    #[test]
+    fn error_text_counts_lines_and_characters() {
+        // The position is 8, after one newline, so the column counts from that newline.
+        assert_eq!(
+            python_error("{\n  \"a\" 1}"),
+            "Expecting ':' delimiter: line 2 column 7 (char 8)"
+        );
+        // Characters, not bytes: the 'é' is one position.
+        assert_eq!(
+            python_error("[\"é\" 1]"),
+            "Expecting ',' delimiter: line 1 column 6 (char 5)"
+        );
+        assert_eq!(
+            python_error(""),
+            "Expecting value: line 1 column 1 (char 0)"
+        );
+    }
+
+    #[test]
+    fn text_with_byte_order_mark_is_rejected() {
+        assert_eq!(
+            python_error("\u{feff}{}"),
+            "Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)"
+        );
     }
 }

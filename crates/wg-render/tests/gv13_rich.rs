@@ -209,6 +209,21 @@ fn error_reports() {
     assert_eq!(checked, 28);
 }
 
+/// Emoji shortcodes in table cells, titles and key-value values are replaced before layout.
+#[test]
+fn emoji_shortcodes() {
+    let cases = load("emoji");
+    assert_eq!(cases.len(), 112);
+    for case in &cases {
+        let id = case["id"].as_str().unwrap_or_default();
+        if id.starts_with("emoji-table") {
+            check(case, &table(case), "stdout");
+        } else {
+            check(case, &kv(case), "stdout");
+        }
+    }
+}
+
 /// Consoles narrower than the vectors go must still draw something, never panic.
 #[test]
 fn narrow_consoles_do_not_panic() {

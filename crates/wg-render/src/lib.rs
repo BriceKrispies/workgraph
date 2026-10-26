@@ -5,11 +5,12 @@
 //! table layout. Every function returns the text the Python code would have written, so callers
 //! decide where it goes. Output is always plain text: styles (bold, colours) are parsed so tags
 //! match and vanish exactly as in rich, but no escape sequences are produced, whether or not
-//! [`Console::color`] is set.
-//!
-//! Known difference from rich: emoji codes such as `:rocket:` are not replaced.
+//! [`Console::color`] is set. Emoji shortcodes such as `:rocket:` are replaced before the markup is
+//! parsed, as rich does.
 
 mod cells;
+mod emoji;
+mod emoji_data;
 mod markup;
 mod rich_data;
 mod table;

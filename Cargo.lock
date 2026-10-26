@@ -2383,6 +2383,7 @@ dependencies = [
  "wg-runtime",
  "wg-server",
  "wg-serverspec",
+ "wg-stacks-feature",
  "wg-tasks-feature",
  "wg-telemetry",
  "wg-telemetry-feature",
@@ -2943,6 +2944,22 @@ dependencies = [
  "uuid",
  "wg-types",
  "wg-verify",
+]
+
+[[package]]
+name = "wg-stacks-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde_json",
+ "wg-clispec",
+ "wg-json",
+ "wg-registry",
+ "wg-render",
+ "wg-runtime",
+ "wg-stacks",
+ "wg-store",
+ "wg-types",
 ]
 
 [[package]]

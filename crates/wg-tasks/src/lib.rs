@@ -16,5 +16,6 @@ pub mod links;
 pub mod ownership;
 pub mod promote;
 pub mod rename;
+pub mod transition;
 pub mod triage;
 pub mod update;

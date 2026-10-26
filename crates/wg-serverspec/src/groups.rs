@@ -68,6 +68,68 @@ pub const META_SETTINGS: [RouteSpec; 4] = [
     },
 ];
 
+/// The decisions group (`api/routes/decisions.py`): the list and one decision (H125, H126), the
+/// decisions of a task (H129, H130) and the answers (H127, H128), in registration order.
+pub const DECISIONS: [RouteSpec; 6] = [
+    RouteSpec {
+        id: "H125",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/decisions",
+        status: 200,
+        query: &["status", "limit"],
+        body: None,
+    },
+    RouteSpec {
+        id: "H126",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/decisions/{decision_id}",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
+        id: "H129",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/tasks/{ref}/decisions",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
+        id: "H130",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/tasks/{ref}/decisions",
+        status: 201,
+        query: &[],
+        body: Some(BodyRef {
+            component: "DecisionRequest",
+            required: true,
+        }),
+    },
+    RouteSpec {
+        id: "H127",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/decisions/{decision_id}/choose",
+        status: 200,
+        query: &[],
+        body: Some(BodyRef {
+            component: "DecisionChoose",
+            required: true,
+        }),
+    },
+    RouteSpec {
+        id: "H128",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/decisions/{decision_id}/withdraw",
+        status: 200,
+        query: &[],
+        body: Some(BodyRef {
+            component: "DecisionWithdraw",
+            required: false,
+        }),
+    },
+];
+
 /// The events group (IF-49): the history (H123) and the server-sent stream (H124).
 pub const EVENTS: [RouteSpec; 2] = [
     RouteSpec {
@@ -121,6 +183,25 @@ mod tests {
         assert_eq!(ids, ["H001", "H002", "H117", "H118"]);
         for spec in &META_SETTINGS {
             assert_eq!(crate::operations::group_of(spec.id), "meta-settings");
+        }
+    }
+
+    #[test]
+    fn the_decisions_table_has_the_operations_of_its_group() {
+        let ids: Vec<&str> = DECISIONS.iter().map(|spec| spec.id).collect();
+        assert_eq!(ids, ["H125", "H126", "H129", "H130", "H127", "H128"]);
+        for spec in &DECISIONS {
+            assert_eq!(crate::operations::group_of(spec.id), "decisions");
+        }
+    }
+
+    #[test]
+    fn the_decision_bodies_load_from_the_snapshot() {
+        let openapi = wg_wire::contract::openapi().unwrap_or_default();
+        for spec in &DECISIONS {
+            if let Some(body) = &spec.body {
+                assert!(body_spec(&openapi, body).is_some(), "{}", spec.id);
+            }
         }
     }
 

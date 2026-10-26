@@ -26,6 +26,9 @@ impl ToolBackend for AppBackend {
         if let Some(result) = crate::run_tools::call(&mut self.0, agent, name, &arguments) {
             return result;
         }
+        if let Some(result) = crate::decision_tools::call(&mut self.0, agent, name, &arguments) {
+            return result;
+        }
         match crate::tools::call(&mut self.0, agent, name, &arguments) {
             Some(answer) => answer,
             None => Err(WgError::new(

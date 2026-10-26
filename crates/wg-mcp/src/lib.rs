@@ -10,6 +10,7 @@
 //!   [`backend::Agent`] (the same `--grant` permissions) as the stdio transport (WG-3734).
 
 pub mod backend;
+mod decision_tools;
 pub mod handler;
 mod run_tools;
 pub mod tools;

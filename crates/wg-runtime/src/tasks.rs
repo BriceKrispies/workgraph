@@ -27,7 +27,7 @@ use wg_types::{ErrorCode, Id, Permission, WgError};
 use crate::app::App;
 
 /// Keeps `task_fts` in step with the tasks a decision wrote (`index_task`).
-fn index_written<R>(
+pub(crate) fn index_written<R>(
     session: &mut Session<'_>,
     decision: &wg_model::Decision<R>,
 ) -> Result<(), WgError> {
@@ -50,7 +50,7 @@ fn index_written<R>(
 
 impl App {
     /// `TaskService._workspace_id`: the named workspace, else the default one.
-    fn workspace_or_default(&mut self, workspace: Option<&str>) -> Result<Id, WgError> {
+    pub(crate) fn workspace_or_default(&mut self, workspace: Option<&str>) -> Result<Id, WgError> {
         match workspace {
             Some(reference) => self.workspace_id(reference),
             None => self.default_workspace_id(),
@@ -58,14 +58,17 @@ impl App {
     }
 
     /// The workspace a task reference is looked up in: the named one, else every workspace.
-    fn workspace_or_all(&mut self, workspace: Option<&str>) -> Result<Option<Id>, WgError> {
+    pub(crate) fn workspace_or_all(
+        &mut self,
+        workspace: Option<&str>,
+    ) -> Result<Option<Id>, WgError> {
         workspace
             .map(|reference| self.workspace_id(reference))
             .transpose()
     }
 
     /// A read-permission check against a fresh stamp.
-    fn require_read(&mut self, context: &RequestContext) -> Result<(), WgError> {
+    pub(crate) fn require_read(&mut self, context: &RequestContext) -> Result<(), WgError> {
         self.runtime
             .stamps
             .stamp(context)?

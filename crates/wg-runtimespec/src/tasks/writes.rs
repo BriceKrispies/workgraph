@@ -273,7 +273,7 @@ pub fn create_task(
 
 /// The rows that replace a task's tags: the old ones that are gone, the new ones that are not
 /// there yet.
-fn tag_writes(task: &Task, before: &[String], after: &[String]) -> Vec<Write> {
+pub(crate) fn tag_writes(task: &Task, before: &[String], after: &[String]) -> Vec<Write> {
     let removed = before.iter().filter(|tag| !after.contains(tag)).map(|tag| {
         Write::delete(RowKey::TaskTag {
             task_id: task.id,

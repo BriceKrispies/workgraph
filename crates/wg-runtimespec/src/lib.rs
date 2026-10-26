@@ -16,6 +16,7 @@
 
 pub mod app;
 pub mod context;
+pub mod decisions;
 pub mod effects;
 pub mod events;
 pub mod logs;

@@ -12,10 +12,13 @@
 //! `commit_facts` is listed in the module docstring of `warehouse.py` but never built there, so it
 //! is not built here either.
 
+pub mod agent_time;
 mod agg;
 pub mod attempts;
 pub mod commits;
+pub mod common;
 pub mod source;
+pub mod subagents;
 pub mod tasks;
 
 pub use attempts::AttemptFact;

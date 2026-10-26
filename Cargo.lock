@@ -2129,6 +2129,9 @@ version = "0.1.0"
 dependencies = [
  "rpds",
  "serde_json",
+ "wg-experiments",
+ "wg-pynum",
+ "wg-telemetry",
  "wg-types",
 ]
 
@@ -2290,6 +2293,13 @@ dependencies = [
 [[package]]
 name = "wg-events"
 version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "wg-model",
+ "wg-pynum",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-exec"
@@ -2307,6 +2317,7 @@ dependencies = [
  "rpds",
  "serde_json",
  "wg-json",
+ "wg-pynum",
  "wg-pyrand",
 ]
 
@@ -2425,6 +2436,10 @@ dependencies = [
 
 [[package]]
 name = "wg-procspec"
+version = "0.1.0"
+
+[[package]]
+name = "wg-pynum"
 version = "0.1.0"
 
 [[package]]

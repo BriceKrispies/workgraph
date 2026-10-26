@@ -138,6 +138,29 @@ pub struct VerificationRun {
     pub status: Option<String>,
 }
 
+/// A row of `subagent_runs`, the columns the subagent and agent-time reports read.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct SubagentRunRow {
+    pub id: Option<String>,
+    pub task_id: Option<String>,
+    pub agent_type: Option<String>,
+    pub model: Option<String>,
+    pub requested_model: Option<String>,
+    pub started_at: Option<Timestamp>,
+    pub stopped_at: Option<Timestamp>,
+    /// The JSON text of the usage object.
+    pub usage: Option<String>,
+    /// The JSON text of the telemetry object (`trial_ids`, `turns`, `tool_errors`, `time`, ...).
+    pub telemetry: Option<String>,
+}
+
+/// A row of `task_acceptances`: one acceptance decision of a task.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct AcceptanceRow {
+    pub task_id: Option<String>,
+    pub decision: Option<String>,
+}
+
 /// A row of `events` among the types the warehouse loads.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Event {
@@ -163,4 +186,6 @@ pub struct AnalyticsInput {
     pub task_repositories: VectorSync<TaskRepository>,
     pub verification_runs: VectorSync<VerificationRun>,
     pub events: VectorSync<Event>,
+    pub subagent_runs: VectorSync<SubagentRunRow>,
+    pub acceptances: VectorSync<AcceptanceRow>,
 }

@@ -1,0 +1,75 @@
+{
+  "scenario": "claude-hook-subprocess-exit-zero",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"external_session_id\": \"proc-1\",\n    \"binding\": \"unbound\",\n    \"task_id\": null,\n    \"attempt_id\": null,\n    \"cwd\": \"/work\",\n    \"model\": null,\n    \"tool_calls\": 0,\n    \"tool_failures\": 0,\n    \"started_at\": \"<ts:1|db>\",\n    \"ended_at\": null,\n    \"end_reason\": null\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"installation\": {\n    \"scope\": \"user\",\n    \"settings\": \"C:\\\\Users\\\\Brice\\\\.claude\\\\settings.json\",\n    \"exists\": true,\n    \"error\": null,\n    \"installed_events\": [\n      \"PostToolUse\",\n      \"PostToolUseFailure\",\n      \"PreToolUse\",\n      \"SessionEnd\",\n      \"SessionStart\",\n      \"Stop\",\n      \"SubagentStart\",\n      \"SubagentStop\",\n      \"TaskCompleted\",\n      \"TaskCreated\"\n    ],\n    \"missing_events\": [],\n    \"command_resolves\": true\n  },\n  \"ingestion\": {\n    \"hook_events\": 2,\n    \"last_received_at\": \"<ts:2|db>\",\n    \"by_event\": {\n      \"Invalid\": 1,\n      \"SessionStart\": 1\n    },\n    \"spooled\": 0,\n    \"spool_failed\": 0\n  },\n  \"sessions\": [\n    {\n      \"id\": \"<id:1>\",\n      \"external_session_id\": \"proc-1\",\n      \"binding\": \"unbound\",\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"cwd\": \"/work\",\n      \"model\": null,\n      \"tool_calls\": 0,\n      \"tool_failures\": 0,\n      \"started_at\": \"<ts:1|db>\",\n      \"ended_at\": null,\n      \"end_reason\": null\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

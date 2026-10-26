@@ -1,0 +1,140 @@
+{
+  "id": "claude-hook-subagent-binds-running-attempt",
+  "covers": [
+    "C050",
+    "C018",
+    "C020",
+    "C152",
+    "C099",
+    "P03"
+  ],
+  "setup": [
+    {
+      "git": "init",
+      "repo": "transcripts"
+    },
+    {
+      "git": "write",
+      "repo": "transcripts",
+      "files": {
+        "agent-o1.jsonl": "{\"type\": \"user\", \"timestamp\": \"2026-10-14T08:54:30.000Z\", \"message\": {\"role\": \"user\", \"content\": \"Task-ID: WG-1\\nDo the work.\"}}\n{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:31.000Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"tu_1\", \"name\": \"Bash\", \"input\": {}}], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 10, \"cache_read_input_tokens\": 20, \"output_tokens\": 3}}}\n{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T08:54:32.000Z\", \"message\": {\"id\": \"msg_1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [], \"usage\": {\"input_tokens\": 3, \"cache_creation_input_tokens\": 10, \"cache_read_input_tokens\": 20, \"output_tokens\": 25}}}\n"
+      }
+    }
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Hooked"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "attempt",
+        "create",
+        "WG-1",
+        "--provider",
+        "claude_code"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "claude",
+        "hook"
+      ],
+      "stdin": "{\"session_id\": \"sess-orch\", \"transcript_path\": \"/t.jsonl\", \"cwd\": \"/work\", \"hook_event_name\": \"SessionStart\", \"source\": \"startup\"}",
+      "expect_exit": 0
+    },
+    {
+      "cli": [
+        "claude",
+        "hook"
+      ],
+      "stdin": "{\"session_id\": \"sess-orch\", \"transcript_path\": \"/t.jsonl\", \"cwd\": \"/work\", \"hook_event_name\": \"SubagentStart\", \"agent_id\": \"agent-o1\", \"agent_type\": \"general-purpose\"}",
+      "expect_exit": 0
+    },
+    {
+      "cli": [
+        "claude",
+        "hook"
+      ],
+      "stdin": "{\"session_id\": \"sess-orch\", \"transcript_path\": \"/t.jsonl\", \"cwd\": \"/work\", \"hook_event_name\": \"SubagentStop\", \"agent_id\": \"agent-o1\", \"agent_type\": \"general-purpose\", \"agent_transcript_path\": \"transcripts/agent-o1.jsonl\"}",
+      "expect_exit": 0
+    },
+    {
+      "cli": [
+        "attempt",
+        "list",
+        "--task",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/status",
+          "equals": "running"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/finished_at",
+          "equals": null
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/adapter",
+          "equals": "claude_code"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/model",
+          "equals": "claude-haiku-4-5-20251001"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/usage/output_tokens",
+          "equals": 25
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/usage_source",
+          "equals": "claude_code_transcript"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/telemetry/tool_uses/Bash",
+          "equals": 1
+        }
+      }
+    }
+  ],
+  "not_observable": []
+}

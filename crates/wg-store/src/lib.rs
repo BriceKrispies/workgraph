@@ -16,6 +16,7 @@ mod migrate;
 mod repos;
 mod session;
 mod tasks;
+mod verify;
 
 use std::path::PathBuf;
 use std::time::Duration;
@@ -27,6 +28,7 @@ use wg_types::{ErrorCode, WgError};
 use session::db;
 
 pub use session::{Applied, Session};
+pub use verify::{FailureFilter, FailureRow, Page, RunFilter};
 pub use wg_storecodec::migrations::head_revision;
 pub use wg_storecodec::{EventQuery, EventRecord, Raw, Statement, TableRow};
 

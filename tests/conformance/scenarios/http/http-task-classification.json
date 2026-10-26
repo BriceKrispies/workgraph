@@ -1,0 +1,20 @@
+{
+  "id": "http-task-classification",
+  "covers": ["H052", "H053", "H054"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks", "body": {"title": "Fix token crash in the login flow", "description": "Users are logged out on refresh."}},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-1/classification"},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-1/classification"},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-1/classification?promote=false"},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-1/classification"},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-1/classification/confirm", "body": {"category": "bug", "note": "confirmed by the reviewer", "complexity": "small"}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-1/classification/confirm", "body": {"category": "bug_fix", "note": "confirmed by the reviewer", "complexity": "small"}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-1/classification/confirm", "body": {"note": "no category"}},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-1/classification"},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/category", "equals": "bug_fix"}}}
+  ],
+  "not_observable": []
+}

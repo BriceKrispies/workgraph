@@ -145,8 +145,15 @@ pub fn config_paths(app: &mut App) -> Value {
 /// `ConfigStore.validate_files`: the problems found, none when every file is valid.
 pub fn config_problems(app: &App) -> Result<Vec<String>, WgError> {
     let path = app.paths.config_file();
+    let global = PathBuf::from(path.as_str()).display().to_string();
+    let workspace_dir = PathBuf::from(app.paths.workspace_config_dir().as_str());
     config_files(app)?
-        .validate_files()
+        .validate_files(&global, |slug| {
+            workspace_dir
+                .join(format!("{slug}.toml"))
+                .display()
+                .to_string()
+        })
         .map_err(|err| config_failure(path.as_str(), err))
 }
 

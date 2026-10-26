@@ -9,6 +9,7 @@ fn env<'a>(columns: Option<&'a str>, is_terminal: bool, legacy: bool) -> Console
     ConsoleEnv {
         columns,
         term: None,
+        no_color: None,
         is_terminal,
         terminal_width: None,
         legacy_windows: legacy,

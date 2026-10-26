@@ -211,6 +211,19 @@ fn boundary_roots(app: &mut App, workspace_id: Id) -> Result<(Vec<String>, Vec<S
     Ok((allowed, managed))
 }
 
+/// `RepositoryOut` of a repository row as it was just written, so its `health_detail` keeps the key
+/// order the decision built (the store reload would sort it).
+fn repository_row_value(
+    app: &mut App,
+    workspace_id: Id,
+    repo: &Repository,
+) -> Result<Value, WgError> {
+    app.runtime.store.read(|session| {
+        let registry = reads::registry_slice(session, workspace_id)?;
+        repository_out(session, &registry, repo)
+    })
+}
+
 /// `RepositoryOut` of repository `id`.
 fn repository_value(app: &mut App, workspace_id: Id, id: Id) -> Result<Value, WgError> {
     app.runtime.store.read(|session| {
@@ -384,7 +397,7 @@ pub fn repo_refresh(
         allowed_roots,
         managed_roots,
     };
-    let id = app
+    let row = app
         .runtime
         .decide(
             context,
@@ -396,7 +409,7 @@ pub fn repo_refresh(
             |loaded, stamp| refresh::refresh(&request, loaded, stamp),
         )?
         .reply;
-    repository_value(app, scope, id)
+    repository_row_value(app, scope, &row)
 }
 
 /// `RepositoryService.status`: the working tree of the primary checkout.

@@ -1,0 +1,27 @@
+{
+  "id": "http-repositories",
+  "covers": ["H012", "H013", "H014", "H015", "H016", "H017", "H018"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"},
+    {"git": "init", "repo": "spare"},
+    {"git": "commit", "repo": "spare", "files": {"README.md": "spare\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"http": "POST", "path": "/api/v1/ws/default/repositories", "body": {"path": "{repo:svc}"}},
+    {"http": "POST", "path": "/api/v1/ws/default/repositories", "body": {"path": "{repo:spare}", "name": "spare-copy"}},
+    {"http": "POST", "path": "/api/v1/ws/default/repositories", "body": {"path": ""}},
+    {"http": "GET", "path": "/api/v1/ws/default/repositories"},
+    {"http": "GET", "path": "/api/v1/ws/default/repositories?include_archived=true&project=core"},
+    {"http": "GET", "path": "/api/v1/ws/default/repositories/svc"},
+    {"http": "GET", "path": "/api/v1/ws/default/repositories/missing"},
+    {"http": "PATCH", "path": "/api/v1/ws/default/repositories/svc", "body": {"description": "Service code"}},
+    {"http": "POST", "path": "/api/v1/ws/default/repositories/svc/refresh"},
+    {"http": "GET", "path": "/api/v1/ws/default/repositories/svc/status"},
+    {"http": "DELETE", "path": "/api/v1/ws/default/repositories/spare-copy"},
+    {"cli": ["repo", "list"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "svc"}}}
+  ],
+  "not_observable": []
+}

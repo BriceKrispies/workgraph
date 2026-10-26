@@ -26,7 +26,7 @@ pub mod net;
 pub mod operations;
 pub mod pages;
 pub mod pairing;
-pub mod pyjson;
+pub use wg_validate::pyjson;
 pub mod reply;
 pub mod request;
 pub mod routes;

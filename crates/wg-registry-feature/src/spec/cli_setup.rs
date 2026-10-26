@@ -261,10 +261,11 @@ pub fn migrate_view(console: &Console, result: &Value) -> String {
         .text
 }
 
-/// The human view of `config show`: the result as indented JSON (`console.print_json`).
+/// The human view of `config show`: the result as indented JSON (`console.print_json`), coloured
+/// with rich's JSON theme when the console colours (a terminal, or `FORCE_COLOR`).
 #[must_use]
-pub fn show_view(show: &Json) -> String {
+pub fn show_view(console: &Console, show: &Json) -> String {
     let mut text = serde_json::to_string_pretty(show).unwrap_or_default();
     text.push('\n');
-    text
+    console.print_json(&text)
 }

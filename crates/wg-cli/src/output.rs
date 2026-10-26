@@ -16,6 +16,7 @@ pub fn console(stderr: bool) -> Console {
     };
     let columns = var("COLUMNS");
     let term = var("TERM");
+    let no_color = var("NO_COLOR");
     let is_terminal = terminal_detected(
         isatty,
         var("TTY_COMPATIBLE").as_deref(),
@@ -24,6 +25,7 @@ pub fn console(stderr: bool) -> Console {
     Console::from_env(&ConsoleEnv {
         columns: columns.as_deref(),
         term: term.as_deref(),
+        no_color: no_color.as_deref(),
         is_terminal,
         terminal_width: None,
         legacy_windows: legacy_windows(),

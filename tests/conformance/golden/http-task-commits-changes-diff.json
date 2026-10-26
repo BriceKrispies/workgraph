@@ -1,0 +1,145 @@
+{
+  "scenario": "http-task-commits-changes-diff",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"svc\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:4|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\svc\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:4|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:4|Z>\",\n  \"updated_at\": \"<ts:5|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Feature\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:6|Z>\",\n  \"updated_at\": \"<ts:6|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Loose work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:7|Z>\",\n  \"updated_at\": \"<ts:7|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"repository_id\":\"<id:1>\",\"repository\":\"svc\",\"mode\":\"full\",\"new_commits\":3,\"refs_changed\":1,\"marked_unreachable\":0,\"restored_reachable\":0,\"equivalences\":0,\"links_created\":1,\"shallow\":false,\"head_refs\":1}",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[{\"commit_id\":\"<id:6>\",\"sha\":\"<sha:2>\",\"repository_id\":\"<id:1>\",\"repository\":\"svc\",\"subject\":\"add feature\",\"author\":\"Test Author\",\"committed_at\":\"<ts:2|+00:00>\",\"insertions\":1,\"deletions\":0,\"files_changed\":1,\"is_merge\":false,\"reachable\":true,\"object_available\":true,\"links\":[{\"source\":\"trailer\",\"confidence\":0.95,\"evidence\":{\"trailer\":\"Task-ID: WG-1\"},\"attempt_id\":null}],\"confidence\":0.95}]",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"task_id\":\"<id:4>\",\"task_key\":\"WG-1\",\"min_confidence\":0.5,\"commits\":[{\"commit_id\":\"<id:6>\",\"sha\":\"<sha:2>\",\"repository_id\":\"<id:1>\",\"repository\":\"svc\",\"subject\":\"add feature\",\"author\":\"Test Author\",\"committed_at\":\"<ts:2|+00:00>\",\"insertions\":1,\"deletions\":0,\"files_changed\":1,\"is_merge\":false,\"reachable\":true,\"object_available\":true,\"links\":[{\"source\":\"trailer\",\"confidence\":0.95,\"evidence\":{\"trailer\":\"Task-ID: WG-1\"},\"attempt_id\":null}],\"confidence\":0.95}],\"cumulative_churn\":{\"commits\":1,\"insertions\":1,\"deletions\":0,\"files_touched\":1,\"repeated_file_edits\":0,\"functions_affected\":0,\"types_affected\":0,\"structurally_analyzed_commits\":0,\"excluded_duplicates\":0,\"excluded_merges\":0,\"by_file_class\":{\"docs\":{\"insertions\":1,\"deletions\":0,\"files\":1}}},\"final_change_surface\":[],\"definitions\":{\"cumulative_churn\":\"Sum of lines added/removed across distinct linked non-merge commits; cherry-picked/rewritten duplicates of the same change are counted once.\",\"final_change_surface\":\"git diff between the attempt baseline and the accepted revision, per repository.\"}}",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"task_id\":\"<id:4>\",\"task_key\":\"WG-1\",\"parts\":[{\"repository\":\"svc\",\"kind\":\"commit\",\"sha\":\"<sha:2>\",\"diff\":\"commit <sha:2>\\nadd feature\\n\\n\\ndiff --git a/feature.txt b/feature.txt\\nnew file mode 100644\\nindex 0000000..a7453f0\\n--- /dev/null\\n+++ b/feature.txt\\n@@ -0,0 +1 @@\\n+feature\\n\"}],\"missing_objects\":[],\"truncated\":false}",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[]",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"repository_id\":\"<id:1>\",\"total\":3,\"items\":[{\"id\":\"<id:7>\",\"sha\":\"<sha:3>\",\"subject\":\"unrelated fix\",\"author\":\"Test Author\",\"author_email\":\"author@example.com\",\"committed_at\":\"<ts:3|+00:00>\",\"insertions\":1,\"deletions\":0,\"files_changed\":1,\"is_merge\":false,\"reachable\":true,\"branches\":[\"main\"],\"trailers\":[],\"tasks\":[]},{\"id\":\"<id:6>\",\"sha\":\"<sha:2>\",\"subject\":\"add feature\",\"author\":\"Test Author\",\"author_email\":\"author@example.com\",\"committed_at\":\"<ts:2|+00:00>\",\"insertions\":1,\"deletions\":0,\"files_changed\":1,\"is_merge\":false,\"reachable\":true,\"branches\":[\"main\"],\"trailers\":[{\"key\":\"Task-ID\",\"value\":\"WG-1\"}],\"tasks\":[{\"task_id\":\"<id:4>\",\"task_key\":\"WG-1\",\"source\":\"trailer\",\"confidence\":0.95}]},{\"id\":\"<id:8>\",\"sha\":\"<sha:1>\",\"subject\":\"initial\",\"author\":\"Test Author\",\"author_email\":\"author@example.com\",\"committed_at\":\"<ts:1|+00:00>\",\"insertions\":1,\"deletions\":0,\"files_changed\":1,\"is_merge\":false,\"reachable\":true,\"branches\":[\"main\"],\"trailers\":[],\"tasks\":[]}]}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[{\"id\":\"<id:9>\",\"commit_id\":\"<id:7>\",\"sha\":\"<sha:3>\",\"repository_id\":\"<id:1>\",\"task_id\":\"<id:5>\",\"source\":\"explicit\",\"confidence\":1.0,\"evidence\":{\"linked_by\":\"human:Brice\",\"note\":\"manual link\"},\"attempt_id\":null,\"created_at\":\"<ts:8|Z>\"}]",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "http",
+      "exit": 422,
+      "stdout": "{\"error\":{\"code\":\"validation_failed\",\"message\":\"invalid request\",\"details\":{\"errors\":[{\"type\":\"string_too_short\",\"loc\":[\"body\",\"sha\"],\"msg\":\"String should have at least 4 characters\",\"input\":\"abc\",\"ctx\":{\"min_length\":4}}]}}}",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[{\"commit_id\":\"<id:7>\",\"sha\":\"<sha:3>\",\"repository_id\":\"<id:1>\",\"repository\":\"svc\",\"subject\":\"unrelated fix\",\"author\":\"Test Author\",\"committed_at\":\"<ts:3|+00:00>\",\"insertions\":1,\"deletions\":0,\"files_changed\":1,\"is_merge\":false,\"reachable\":true,\"object_available\":true,\"links\":[{\"source\":\"explicit\",\"confidence\":1.0,\"evidence\":{\"linked_by\":\"human:Brice\",\"note\":\"manual link\"},\"attempt_id\":null}],\"confidence\":1.0}]",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"task 'WG-999' not found\",\"details\":{\"ref\":\"WG-999\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Loose work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:7|Z>\",\n  \"updated_at\": \"<ts:7|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

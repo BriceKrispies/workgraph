@@ -9,6 +9,7 @@ use serde_json::{Map, Value};
 
 use crate::error::ConfigError;
 use crate::model::{validate_global, validate_overrides};
+use crate::pyfmt::{errors_repr, value_repr};
 use crate::toml_doc::parse_document;
 use crate::value::{deep_merge, truthy};
 use crate::{CONFIG_SCHEMA_VERSION, strip_none};
@@ -55,20 +56,39 @@ impl ConfigFiles {
         validate_global(&Value::Object(merged)).map_err(ConfigError::Validation)
     }
 
-    /// Human-readable problems across all files; empty when every file is valid. A non-validation
-    /// exception (an unreadable `schema_version`) is returned as an error, as Python raises it.
-    pub fn validate_files(&self) -> Result<Vec<String>, ConfigError> {
+    /// Human-readable problems across all files, as `ConfigStore.validate_files` words them: each
+    /// is the failure's message, a colon, and its details (the Pydantic errors, or nothing).
+    /// `global_path` names `config.toml` and `workspace_path` names a workspace's file, as Python
+    /// prints their paths. Empty when every file is valid. A non-validation exception (an
+    /// unreadable `schema_version`) is returned as an error, as Python raises it.
+    pub fn validate_files(
+        &self,
+        global_path: &str,
+        workspace_path: impl Fn(&str) -> String,
+    ) -> Result<Vec<String>, ConfigError> {
         let mut problems = Vec::new();
-        match self.load_global() {
-            Ok(_) => {}
-            Err(error @ ConfigError::Exception(_)) => return Err(error),
-            Err(error) => problems.push(error.to_string()),
+        if let Err(error) = self.load_global() {
+            problems.push(file_problem(error, global_path)?);
         }
-        for slug in self.workspaces.keys() {
-            match self.effective(Some(slug)) {
-                Ok(_) => {}
-                Err(error @ ConfigError::Exception(_)) => return Err(error),
-                Err(error) => problems.push(format!("workspaces/{slug}.toml: {error}")),
+        let mut slugs: Vec<&String> = self.workspaces.keys().collect();
+        slugs.sort_by_key(|slug| format!("{slug}.toml"));
+        for slug in slugs {
+            // Python's `effective` loads the global file first, so a broken one is reported again
+            // for every workspace; then the workspace file; then the merged configuration.
+            let checked = self
+                .load_global()
+                .map_err(|error| (global_path.to_owned(), error))
+                .and_then(|_| {
+                    self.load_workspace(slug)
+                        .map_err(|error| (workspace_path(slug), error))
+                });
+            match checked {
+                Err((path, error)) => problems.push(file_problem(error, &path)?),
+                Ok(_) => {
+                    if let Err(error) = self.effective(Some(slug)) {
+                        problems.push(merged_problem(error, slug)?);
+                    }
+                }
             }
         }
         Ok(problems)
@@ -119,6 +139,34 @@ fn version_of(raw: &Map<String, Value>) -> Result<i64, ConfigError> {
     value
         .as_i64()
         .ok_or(ConfigError::InvalidSchemaVersion(value))
+}
+
+/// The problem line of a failure in the file at `path`: `ConfigStore`'s message for it, then the
+/// details `validate_files` prints after it. An exception is not a problem; it is returned.
+fn file_problem(error: ConfigError, path: &str) -> Result<String, ConfigError> {
+    match error {
+        ConfigError::Exception(_) => Err(error),
+        ConfigError::InvalidToml(detail) => Ok(format!("{path} is not valid TOML: {detail}: ")),
+        ConfigError::InvalidSchemaVersion(value) => Ok(format!(
+            "{path} has an invalid schema_version: expected an integer, got {}: ",
+            value_repr(&value)
+        )),
+        ConfigError::Validation(errors) => Ok(format!(
+            "{path} failed validation: {}",
+            errors_repr(&errors)
+        )),
+    }
+}
+
+/// The problem line of a workspace whose overrides, merged over the global configuration, fail.
+fn merged_problem(error: ConfigError, slug: &str) -> Result<String, ConfigError> {
+    match error {
+        ConfigError::Validation(errors) => Ok(format!(
+            "workspace overrides for {slug} produce an invalid configuration: {}",
+            errors_repr(&errors)
+        )),
+        other => file_problem(other, slug),
+    }
 }
 
 /// `_migrate`: a version 1 document kept agent execution under `agents.enabled`; it moves to

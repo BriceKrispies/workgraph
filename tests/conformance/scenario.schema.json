@@ -31,7 +31,13 @@
       "type": "object",
       "required": ["git", "repo"],
       "properties": {
-        "git": { "type": "string", "minLength": 1 },
+        "git": {
+          "description": "A typed git operation on the named repository. init, commit and write take no args; branch, merge, rebase and cherry-pick take one rev; checkout takes a branch, or -b and a new branch; worktree takes a path and a branch; move takes a source and a destination; delete takes one or more paths; reset takes a rev, or a mode (--soft, --mixed or --hard) and a rev. commit records the files and message as a commit dated with the next tick; rebase, cherry-pick and merge are dated the same way.",
+          "enum": [
+            "init", "commit", "write", "branch", "checkout", "worktree", "merge",
+            "delete", "move", "rebase", "cherry-pick", "reset"
+          ]
+        },
         "repo": { "type": "string", "minLength": 1 },
         "files": { "type": "object", "additionalProperties": { "type": "string" } },
         "message": { "type": "string" },

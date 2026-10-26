@@ -147,6 +147,12 @@ fn parse_setup(v: &Value, at: &str) -> Res<Setup> {
     if repo.is_empty() {
         return Err(format!("{at}.repo: must not be empty"));
     }
+    let args = m
+        .get("args")
+        .map(|a| strings(a, &format!("{at}.args")))
+        .transpose()?
+        .unwrap_or_default();
+    check_git_op(&git, &args).map_err(|e| format!("{at}.git: {e}"))?;
     Ok(Setup {
         git,
         repo,
@@ -159,12 +165,54 @@ fn parse_setup(v: &Value, at: &str) -> Res<Setup> {
             .get("message")
             .map(|s| string(s, &format!("{at}.message")))
             .transpose()?,
-        args: m
-            .get("args")
-            .map(|a| strings(a, &format!("{at}.args")))
-            .transpose()?
-            .unwrap_or_default(),
+        args,
     })
+}
+
+/// The setup operations of `gitfix`. The runner dispatches on the same argument shapes that
+/// [`check_git_op`] accepts, so a scenario that passes `validate` also runs.
+pub const GIT_OPS: &[&str] = &[
+    "init",
+    "commit",
+    "write",
+    "branch",
+    "checkout",
+    "worktree",
+    "merge",
+    "delete",
+    "move",
+    "rebase",
+    "cherry-pick",
+    "reset",
+];
+
+/// Check that `op` names a setup operation and that `args` have a shape it accepts.
+pub fn check_git_op(op: &str, args: &[String]) -> Res<()> {
+    let shape = |ok: bool| {
+        if ok {
+            Ok(())
+        } else {
+            Err(format!(
+                "`{op}` does not take {} argument(s) in that form",
+                args.len()
+            ))
+        }
+    };
+    match op {
+        "init" | "commit" | "write" => shape(args.is_empty()),
+        "branch" | "merge" | "rebase" | "cherry-pick" => shape(args.len() == 1),
+        "checkout" => shape(args.len() == 1 || (args.len() == 2 && args[0] == "-b")),
+        "worktree" | "move" => shape(args.len() == 2),
+        "delete" => shape(!args.is_empty()),
+        "reset" => shape(
+            args.len() == 1
+                || (args.len() == 2 && ["--soft", "--mixed", "--hard"].contains(&args[0].as_str())),
+        ),
+        _ => Err(format!(
+            "unknown setup operation `{op}` (one of {})",
+            GIT_OPS.join(", ")
+        )),
+    }
 }
 
 fn parse_assert(v: &Value, at: &str) -> Res<Assertion> {
@@ -472,6 +520,56 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    fn setup_of(op: &str, args: &[&str]) -> String {
+        let args: Vec<String> = args.iter().map(|a| format!("\"{a}\"")).collect();
+        format!(
+            r#"{{"id":"a","covers":[],"setup":[{{"git":"{op}","repo":"r","args":[{}]}}],"steps":[{{"cli":["x"]}}]}}"#,
+            args.join(",")
+        )
+    }
+
+    #[test]
+    fn setup_operations_take_the_shapes_the_runner_dispatches_on() {
+        let ok: &[(&str, &[&str])] = &[
+            ("init", &[]),
+            ("commit", &[]),
+            ("write", &[]),
+            ("branch", &["feat"]),
+            ("checkout", &["feat"]),
+            ("checkout", &["-b", "feat"]),
+            ("worktree", &["wt", "feat"]),
+            ("merge", &["feat"]),
+            ("delete", &["a.txt", "dir"]),
+            ("move", &["a.txt", "dir/b.txt"]),
+            ("rebase", &["main"]),
+            ("cherry-pick", &["abc123"]),
+            ("reset", &["HEAD~1"]),
+            ("reset", &["--hard", "HEAD~1"]),
+        ];
+        for (op, args) in ok {
+            let s = parse_scenario(&setup_of(op, args)).unwrap_or_else(|e| panic!("{op}: {e}"));
+            assert_eq!(s.setup[0].git, *op);
+            let want: Vec<String> = args.iter().map(|a| (*a).to_owned()).collect();
+            assert_eq!(s.setup[0].args, want);
+        }
+        let bad: &[(&str, &[&str])] = &[
+            ("init", &["x"]),
+            ("move", &["a.txt"]),
+            ("delete", &[]),
+            ("rebase", &[]),
+            ("cherry-pick", &["a", "b"]),
+            ("reset", &["--keep", "HEAD"]),
+            ("reset", &["--hard", "HEAD", "x"]),
+            ("squash", &[]),
+        ];
+        for (op, args) in bad {
+            assert!(
+                parse_scenario(&setup_of(op, args)).is_err(),
+                "{op} {args:?} should be rejected"
+            );
+        }
     }
 
     #[test]

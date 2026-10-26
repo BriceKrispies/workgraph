@@ -20,8 +20,8 @@ mod handlers;
 mod logging;
 mod queue;
 mod stamp;
-mod worker;
 mod tasks;
+mod worker;
 
 pub use app::{App, environment};
 pub use bus::Bus;

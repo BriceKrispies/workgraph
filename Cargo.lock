@@ -2096,6 +2096,21 @@ dependencies = [
 [[package]]
 name = "wg-agents"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "uuid",
+ "wg-agentspec",
+ "wg-proc",
+]
+
+[[package]]
+name = "wg-agentspec"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-json",
+ "wg-procspec",
+]
 
 [[package]]
 name = "wg-analytics"

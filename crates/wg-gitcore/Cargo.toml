@@ -9,3 +9,10 @@ description = "parsers for git output, attribution, rewrite reconciliation"
 
 [lints]
 workspace = true
+
+[dependencies]
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
+wg-types = { path = "../wg-types" }
+
+[dev-dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }

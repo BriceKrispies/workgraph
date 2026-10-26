@@ -8,7 +8,11 @@
 //! column-type mapping.
 
 pub mod project;
+pub mod queue;
+pub mod real;
 pub mod repository;
+pub mod run;
+pub mod stack;
 pub mod task;
 pub mod workspace;
 
@@ -17,9 +21,16 @@ pub mod workspace;
 pub type JsonObject = serde_json::Map<String, serde_json::Value>;
 
 pub use project::{Project, ProjectRepository};
+pub use queue::{Job, JobResourceClaim, JobRun, SystemCursor, Worker};
+pub use real::Real;
 pub use repository::{
     Repository, RepositoryCheckout, RepositoryDependency, RepositoryRef, RepositoryRemote,
 };
+pub use run::{
+    AgentAttempt, Artifact, ChangeSet, ChangeSetItem, ManagedWorktree, ResourceLease,
+    RevisionManifest,
+};
+pub use stack::{Stack, StackItem, StackRepository};
 pub use task::{
     ExternalItem, Task, TaskComment, TaskDependency, TaskFile, TaskLink, TaskProject, TaskRelation,
     TaskRepository, TaskTag,

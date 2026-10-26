@@ -6,7 +6,9 @@
 use crate::decision::Decision;
 use crate::effect::{Effect, EffectResult};
 use crate::event::{EventDraft, EventPayload};
-use crate::slice::{RegistrySlice, TaskSlice};
+use crate::slice::{
+    QueueSlice, RegistrySlice, RunSlice, RunState, StackFlow, StackSlice, TaskSlice,
+};
 use crate::stamp::{IdSeq, Stamp};
 use crate::write::{Row, RowKey, Write};
 
@@ -15,6 +17,11 @@ const fn assert_value<T: Clone + Eq + core::fmt::Debug + Send + Sync + 'static>(
 const _: () = {
     assert_value::<TaskSlice>();
     assert_value::<RegistrySlice>();
+    assert_value::<RunSlice>();
+    assert_value::<RunState>();
+    assert_value::<StackSlice>();
+    assert_value::<StackFlow>();
+    assert_value::<QueueSlice>();
     assert_value::<Stamp>();
     assert_value::<IdSeq>();
     assert_value::<Decision<()>>();

@@ -15,9 +15,11 @@
 use wg_types::Id;
 
 use crate::entity::{
-    ExternalItem, Project, ProjectRepository, Repository, RepositoryCheckout, RepositoryDependency,
-    RepositoryRef, RepositoryRemote, Task, TaskComment, TaskDependency, TaskFile, TaskLink,
-    TaskProject, TaskRelation, TaskRepository, TaskTag, Workspace,
+    AgentAttempt, Artifact, ChangeSet, ChangeSetItem, ExternalItem, Job, JobResourceClaim, JobRun,
+    ManagedWorktree, Project, ProjectRepository, Repository, RepositoryCheckout,
+    RepositoryDependency, RepositoryRef, RepositoryRemote, ResourceLease, RevisionManifest, Stack,
+    StackItem, StackRepository, SystemCursor, Task, TaskComment, TaskDependency, TaskFile,
+    TaskLink, TaskProject, TaskRelation, TaskRepository, TaskTag, Worker, Workspace,
 };
 
 /// A table the model writes.
@@ -41,6 +43,21 @@ pub enum Table {
     TaskProject,
     TaskRepository,
     ExternalItem,
+    AgentAttempt,
+    RevisionManifest,
+    ManagedWorktree,
+    ResourceLease,
+    ChangeSet,
+    ChangeSetItem,
+    Artifact,
+    Stack,
+    StackRepository,
+    StackItem,
+    Job,
+    JobRun,
+    JobResourceClaim,
+    Worker,
+    SystemCursor,
 }
 
 impl Table {
@@ -64,6 +81,21 @@ impl Table {
         Table::TaskProject,
         Table::TaskRepository,
         Table::ExternalItem,
+        Table::AgentAttempt,
+        Table::RevisionManifest,
+        Table::ManagedWorktree,
+        Table::ResourceLease,
+        Table::ChangeSet,
+        Table::ChangeSetItem,
+        Table::Artifact,
+        Table::Stack,
+        Table::StackRepository,
+        Table::StackItem,
+        Table::Job,
+        Table::JobRun,
+        Table::JobResourceClaim,
+        Table::Worker,
+        Table::SystemCursor,
     ];
 
     /// The SQL table name.
@@ -87,6 +119,21 @@ impl Table {
             Table::TaskProject => "task_projects",
             Table::TaskRepository => "task_repositories",
             Table::ExternalItem => "external_items",
+            Table::AgentAttempt => "agent_attempts",
+            Table::RevisionManifest => "revision_manifests",
+            Table::ManagedWorktree => "managed_worktrees",
+            Table::ResourceLease => "resource_leases",
+            Table::ChangeSet => "change_sets",
+            Table::ChangeSetItem => "change_set_items",
+            Table::Artifact => "artifacts",
+            Table::Stack => "stacks",
+            Table::StackRepository => "stack_repositories",
+            Table::StackItem => "stack_items",
+            Table::Job => "jobs",
+            Table::JobRun => "job_runs",
+            Table::JobResourceClaim => "job_resource_claims",
+            Table::Worker => "workers",
+            Table::SystemCursor => "system_cursors",
         }
     }
 }
@@ -116,6 +163,21 @@ pub enum Row {
     TaskProject(TaskProject),
     TaskRepository(TaskRepository),
     ExternalItem(ExternalItem),
+    AgentAttempt(AgentAttempt),
+    RevisionManifest(RevisionManifest),
+    ManagedWorktree(ManagedWorktree),
+    ResourceLease(ResourceLease),
+    ChangeSet(ChangeSet),
+    ChangeSetItem(ChangeSetItem),
+    Artifact(Artifact),
+    Stack(Stack),
+    StackRepository(StackRepository),
+    StackItem(StackItem),
+    Job(Job),
+    JobRun(JobRun),
+    JobResourceClaim(JobResourceClaim),
+    Worker(Worker),
+    SystemCursor(SystemCursor),
 }
 
 impl Row {
@@ -145,6 +207,21 @@ impl Row {
             Row::TaskProject(row) => row.row_key(),
             Row::TaskRepository(row) => row.row_key(),
             Row::ExternalItem(row) => row.row_key(),
+            Row::AgentAttempt(row) => row.row_key(),
+            Row::RevisionManifest(row) => row.row_key(),
+            Row::ManagedWorktree(row) => row.row_key(),
+            Row::ResourceLease(row) => row.row_key(),
+            Row::ChangeSet(row) => row.row_key(),
+            Row::ChangeSetItem(row) => row.row_key(),
+            Row::Artifact(row) => row.row_key(),
+            Row::Stack(row) => row.row_key(),
+            Row::StackRepository(row) => row.row_key(),
+            Row::StackItem(row) => row.row_key(),
+            Row::Job(row) => row.row_key(),
+            Row::JobRun(row) => row.row_key(),
+            Row::JobResourceClaim(row) => row.row_key(),
+            Row::Worker(row) => row.row_key(),
+            Row::SystemCursor(row) => row.row_key(),
         }
     }
 }
@@ -170,6 +247,21 @@ pub enum RowKey {
     TaskProject { task_id: Id, project_id: Id },
     TaskRepository { task_id: Id, repository_id: Id },
     ExternalItem(Id),
+    AgentAttempt(Id),
+    RevisionManifest(Id),
+    ManagedWorktree(Id),
+    ResourceLease(String),
+    ChangeSet(Id),
+    ChangeSetItem(Id),
+    Artifact(Id),
+    Stack(Id),
+    StackRepository { stack_id: Id, repository_id: Id },
+    StackItem(Id),
+    Job(Id),
+    JobRun(Id),
+    JobResourceClaim { job_id: Id, resource_key: String },
+    Worker(String),
+    SystemCursor(String),
 }
 
 impl RowKey {
@@ -194,6 +286,21 @@ impl RowKey {
             RowKey::TaskProject { .. } => Table::TaskProject,
             RowKey::TaskRepository { .. } => Table::TaskRepository,
             RowKey::ExternalItem(_) => Table::ExternalItem,
+            RowKey::AgentAttempt(_) => Table::AgentAttempt,
+            RowKey::RevisionManifest(_) => Table::RevisionManifest,
+            RowKey::ManagedWorktree(_) => Table::ManagedWorktree,
+            RowKey::ResourceLease(_) => Table::ResourceLease,
+            RowKey::ChangeSet(_) => Table::ChangeSet,
+            RowKey::ChangeSetItem(_) => Table::ChangeSetItem,
+            RowKey::Artifact(_) => Table::Artifact,
+            RowKey::Stack(_) => Table::Stack,
+            RowKey::StackRepository { .. } => Table::StackRepository,
+            RowKey::StackItem(_) => Table::StackItem,
+            RowKey::Job(_) => Table::Job,
+            RowKey::JobRun(_) => Table::JobRun,
+            RowKey::JobResourceClaim { .. } => Table::JobResourceClaim,
+            RowKey::Worker(_) => Table::Worker,
+            RowKey::SystemCursor(_) => Table::SystemCursor,
         }
     }
 }

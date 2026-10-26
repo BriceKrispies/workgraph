@@ -491,13 +491,15 @@ fn every_family_event_of_the_contract_has_a_payload() -> TestResult {
         .map(String::as_str)
         .filter(|name| families.iter().any(|family| name.starts_with(family)))
         .collect();
-    let known: BTreeSet<&str> = EventPayload::EVENT_TYPES.iter().copied().collect();
+    // The execution families (`attempt.`, `stack.`, `worktree.`) are checked by tests/execution.rs.
+    let known: BTreeSet<&str> = EventPayload::EVENT_TYPES
+        .iter()
+        .copied()
+        .filter(|name| families.iter().any(|family| name.starts_with(family)))
+        .collect();
     assert_eq!(known, expected);
-    assert_eq!(
-        EventPayload::EVENT_TYPES.len(),
-        known.len(),
-        "duplicate type"
-    );
+    let all: BTreeSet<&str> = EventPayload::EVENT_TYPES.iter().copied().collect();
+    assert_eq!(all.len(), EventPayload::EVENT_TYPES.len(), "duplicate type");
     assert_eq!(known.len(), 43);
     let sampled: BTreeSet<&str> = samples().iter().map(EventPayload::event_type).collect();
     assert_eq!(sampled, known, "every event type has a sample");

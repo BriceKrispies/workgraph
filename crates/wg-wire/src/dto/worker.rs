@@ -37,17 +37,14 @@ pub fn from_model(worker: &Worker) -> Value {
         ),
         ("jobs_completed", int(worker.jobs_completed)),
         ("jobs_failed", int(worker.jobs_failed)),
-        (
-            "started_at",
-            timestamp(worker.started_at, TimeFormat::Isoformat),
-        ),
+        ("started_at", timestamp(worker.started_at, TimeFormat::Z)),
         (
             "heartbeat_at",
-            timestamp(worker.heartbeat_at, TimeFormat::Isoformat),
+            timestamp(worker.heartbeat_at, TimeFormat::Z),
         ),
         (
             "stopped_at",
-            optional_timestamp(worker.stopped_at, TimeFormat::Isoformat),
+            optional_timestamp(worker.stopped_at, TimeFormat::Z),
         ),
     ])
 }

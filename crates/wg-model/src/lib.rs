@@ -155,7 +155,7 @@ pub use entity::{
     RepositoryDependency, RepositoryRef, RepositoryRemote, Task, TaskComment, TaskDependency,
     TaskFile, TaskLink, TaskProject, TaskRelation, TaskRepository, TaskTag, Workspace,
 };
-pub use event::{Changes, EntityType, EventDraft, EventPayload, FieldChange, StrMap};
+pub use event::{Changes, EntityType, EventDraft, EventPayload, FieldChange, StoredEvent, StrMap};
 pub use slice::{RegistrySlice, TaskSlice};
 pub use stamp::{IdSeq, Stamp, derive_id, py_repr_str};
 pub use write::{Row, RowKey, Table, Write};

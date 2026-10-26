@@ -37,7 +37,8 @@ fn backend(name: &str) -> Result<AppBackend, Box<dyn Error>> {
             created_at: at,
             updated_at: at,
         })))?;
-    app.task_create(
+    wg_tasks_feature::service::task_create(
+        &mut app,
         &human_context(None)?,
         Some("main"),
         &json!({"title": "Pick a store"}),

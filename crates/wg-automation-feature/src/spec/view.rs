@@ -2,7 +2,7 @@
 //! tables a result prints, as functions of the result document and the console. The arguments are
 //! in [`super::args`].
 
-use wg_clispec::task::{get, items, opt, python, s, truncate, when};
+use wg_clispec::args::{get, items, opt, python, s, truncate, when};
 use wg_json::Value;
 use wg_render::{Console, escape};
 

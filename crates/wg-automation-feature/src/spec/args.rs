@@ -5,7 +5,7 @@
 
 use clap::ArgMatches;
 use serde_json::{Map, Value as Json};
-use wg_clispec::task::{ReadFile, flag, number, one};
+use wg_clispec::args::{ReadFile, flag, number, one};
 use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_clispec::{CliFailure, Snapshot, Usage};
 

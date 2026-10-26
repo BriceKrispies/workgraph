@@ -41,23 +41,15 @@ pub mod health;
 pub mod job;
 pub mod llm;
 pub mod mcp_outputs;
-pub mod mcp_shapes;
 pub mod metric_definition;
 pub mod page;
 pub mod predictor;
-pub mod project;
-pub mod project_summary;
 pub mod relation;
-pub mod repository;
 pub mod repository_brief;
-pub mod repository_checkout;
-pub mod repository_remote;
-pub mod repository_status;
 pub mod retro_body;
 pub mod retrospective_out;
 pub mod scheduler;
 pub mod search_result;
-pub mod settings;
 pub mod stack;
 pub mod stack_create;
 pub mod stack_item;
@@ -77,33 +69,11 @@ pub mod task_rollup;
 pub mod trial;
 pub mod verification;
 pub mod worker;
-pub mod workspace;
-pub mod workspace_summary;
 
 /// The DTOs that exist: the OpenAPI component schema name and the field names in order.
 pub fn implemented() -> Vec<(&'static str, &'static [&'static str])> {
     let mut list = vec![
-        (workspace::NAME, workspace::FIELDS.as_slice()),
-        (project::NAME, project::FIELDS.as_slice()),
-        (
-            workspace_summary::NAME,
-            workspace_summary::FIELDS.as_slice(),
-        ),
-        (project_summary::NAME, project_summary::FIELDS.as_slice()),
-        (repository::NAME, repository::FIELDS.as_slice()),
-        (
-            repository_remote::NAME,
-            repository_remote::FIELDS.as_slice(),
-        ),
-        (
-            repository_checkout::NAME,
-            repository_checkout::FIELDS.as_slice(),
-        ),
         (repository_brief::NAME, repository_brief::FIELDS.as_slice()),
-        (
-            repository_status::NAME,
-            repository_status::FIELDS.as_slice(),
-        ),
         (task::NAME, task::FIELDS.as_slice()),
         (task_detail::NAME, task_detail::FIELDS.as_slice()),
         (task_brief::NAME, task_brief::FIELDS.as_slice()),

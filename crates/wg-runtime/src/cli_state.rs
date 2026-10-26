@@ -23,6 +23,8 @@ pub struct CliState {
     pub stderr: Box<dyn Write>,
     /// The console for standard output.
     pub console: Console,
+    /// The console for standard error.
+    pub err_console: Console,
 }
 
 impl CliState {

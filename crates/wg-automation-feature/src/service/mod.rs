@@ -14,8 +14,8 @@ use wg_jobs::shift;
 use wg_json::Value;
 use wg_model::entity::{AgentAttempt, AutomationRule, AutomationRun, Classification, Task};
 use wg_model::{RowKey, Write};
+use wg_registry::resolve;
 use wg_runtime::{App, RequestContext};
-use wg_runtimespec::tasks::reads::resolve_task_id;
 use wg_store::{EventRecord, Session};
 use wg_types::{ActorKind, ErrorCode, Id, Permission, Timestamp, WgError, parse_id};
 
@@ -113,7 +113,7 @@ fn load_rows(
     let mut task = task_of_event(session, event.as_ref(), attempt.as_ref())?;
     if let (None, Some(reference)) = (&task, input.get("task").and_then(Json::as_str)) {
         let world = session.task_world(None, &[])?;
-        if let Ok(id) = resolve_task_id(&world, None, reference) {
+        if let Ok(id) = resolve::task(&world.tasks, None, reference).map(|task| task.id) {
             task = session.fetch::<Task>(&RowKey::Task(id))?;
         }
     }

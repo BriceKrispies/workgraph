@@ -4,7 +4,7 @@
 
 use clap::ArgMatches;
 use wg_clispec::CliFailure;
-use wg_clispec::task::option_text;
+use wg_clispec::args::option_text;
 use wg_runtime::{CliState, RequestContext, human_context};
 
 use crate::service;

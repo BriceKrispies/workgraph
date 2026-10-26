@@ -21,11 +21,9 @@ use super::{
     agent_time_out, analytics_overview, analytics_query, analytics_query_out, attempt,
     classification_job, classification_out, classification_task, comment, commit_link,
     coupling_out, dependency_state, estimate_out, event, experiment, failures_out,
-    metric_definition, page, predictor, project, project_summary, relation, repository,
-    repository_brief, repository_checkout, repository_remote, repository_status, search_result,
-    stack, stack_item, stack_repository, subagents_out, task, task_brief, task_changes,
-    task_detail, task_diff, task_file, task_history_row, task_rollup, trial, workspace,
-    workspace_summary,
+    metric_definition, page, predictor, relation, search_result, stack, stack_item,
+    stack_repository, subagents_out, task, task_changes, task_detail, task_diff, task_file,
+    task_history_row, task_rollup, trial,
 };
 use crate::convention::{counts, dict, int, optional_text, text, texts};
 
@@ -147,16 +145,6 @@ const fn list(item: &'static Shape) -> Shape {
 const fn nullable(inner: &'static Shape) -> Shape {
     Shape::Nullable(inner)
 }
-
-// Areas: workspaces, projects, repositories.
-const WORKSPACE: Shape = dto(&workspace::FIELDS);
-const REPOSITORY: Shape = Shape::Dto {
-    fields: &repository::FIELDS,
-    nested: &[
-        ("remotes", list(&dto(&repository_remote::FIELDS))),
-        ("checkouts", list(&dto(&repository_checkout::FIELDS))),
-    ],
-};
 
 // Tasks.
 const TASK: Shape = Shape::Dto {
@@ -307,39 +295,6 @@ const EXPERIMENT_NEXT: Shape = Shape::Object(&[
 
 /// The output shape of every tool, by tool name.
 static SHAPES: &[(&str, Shape)] = &[
-    (
-        "workspace_list",
-        Shape::Object(&[("workspaces", list(&WORKSPACE))]),
-    ),
-    (
-        "workspace_get",
-        Shape::Dto {
-            fields: &workspace_summary::FIELDS,
-            nested: &[("workspace", WORKSPACE)],
-        },
-    ),
-    (
-        "project_list",
-        Shape::Object(&[("projects", list(&dto(&project::FIELDS)))]),
-    ),
-    (
-        "project_get",
-        Shape::Dto {
-            fields: &project_summary::FIELDS,
-            nested: &[
-                ("project", dto(&project::FIELDS)),
-                ("repositories", list(&dto(&repository_brief::FIELDS))),
-                ("recent_tasks", list(&dto(&task_brief::FIELDS))),
-            ],
-        },
-    ),
-    (
-        "repository_list",
-        Shape::Object(&[("repositories", list(&REPOSITORY))]),
-    ),
-    ("repository_get", REPOSITORY),
-    ("repository_register", REPOSITORY),
-    ("repository_status", dto(&repository_status::FIELDS)),
     // M09-M16: stacks.
     ("stack_create", STACK),
     ("stack_get", STACK),

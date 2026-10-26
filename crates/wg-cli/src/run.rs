@@ -41,6 +41,7 @@ pub fn run_with(args: Vec<String>, stdout: Box<dyn Write>, stderr: Box<dyn Write
         stdout,
         stderr,
         console: console(false),
+        err_console: console(true),
     };
     let snapshot = match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => snapshot,

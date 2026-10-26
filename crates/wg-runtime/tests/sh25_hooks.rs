@@ -36,7 +36,21 @@ fn home(name: &str) -> Result<Home, Box<dyn Error>> {
     std::fs::create_dir_all(&dir)?;
     let mut app = App::open(Some(&dir))?;
     let ctx = human_context(Some("tester"))?;
-    app.workspace_create(&ctx, &json!({"slug": "main", "name": "Main"}), true)?;
+    // The workspace the registry feature creates, and its default (`WorkspaceService.create`).
+    let dump = object(json!({
+        "slug": "main",
+        "name": "Main",
+        "description": "",
+        "key_prefix": "WG",
+    }));
+    app.runtime.decide(
+        &ctx,
+        |session| session.registry_world(None),
+        |slice, stamp| wg_registry::workspaces::create(slice, stamp, &dump),
+    )?;
+    let mut config = app.config()?;
+    config.insert("default_workspace".to_owned(), json!("main"));
+    app.save_config(&config)?;
     Ok(Home { app, ctx, dir })
 }
 
@@ -79,8 +93,12 @@ impl Home {
 
     /// Creates a task and returns it.
     fn task(&mut self, title: &str) -> Result<Task, Box<dyn Error>> {
-        self.app
-            .task_create(&self.ctx, Some("main"), &json!({"title": title}))?;
+        wg_tasks_feature::service::task_create(
+            &mut self.app,
+            &self.ctx,
+            Some("main"),
+            &json!({"title": title}),
+        )?;
         let tasks = self.read(|session| {
             let ws = session.rows(&sql("SELECT id FROM workspaces"))?;
             let id = ids(&ws)?.remove(0);

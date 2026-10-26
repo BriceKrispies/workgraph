@@ -11,11 +11,9 @@
 //! snapshot, and the body against the route's [`crate::BodySpec`]. It calls the runtime through
 //! [`crate::Server::blocking`] and returns an [`crate::Answer`].
 
-pub mod acceptance;
 pub mod events;
 pub mod meta_settings;
 pub mod stacks;
-pub mod tasks;
 
 use wg_runtime::{Feature, RouteRequest, RouteRun};
 use wg_serverspec::groups::{RouteSpec, body_spec};
@@ -61,8 +59,6 @@ pub fn routes_with(features: &[&Feature]) -> Vec<ApiRoute> {
     let mut table = Vec::new();
     meta_settings::register(&mut table);
     events::register(&mut table);
-    tasks::register(&mut table);
-    acceptance::register(&mut table);
     stacks::register(&mut table);
     for feature in features {
         for group in feature.routes {

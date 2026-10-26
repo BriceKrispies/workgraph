@@ -13,8 +13,8 @@ use serde_json::Value as Json;
 use wg_json::Value;
 use wg_model::RowKey;
 use wg_model::entity::TaskDecision;
+use wg_registry::resolve;
 use wg_runtime::{App, RequestContext, index_written};
-use wg_runtimespec::tasks::reads::resolve_task_id;
 use wg_store::Session;
 use wg_types::{ErrorCode, Id, Permission, WgError};
 
@@ -115,7 +115,7 @@ pub fn for_task(
     app.runtime.query(
         |session| {
             let world = session.task_world(scope, &[])?;
-            let id = resolve_task_id(&world, scope, task)?;
+            let id = resolve::task(&world.tasks, scope, task)?.id;
             let key = world
                 .tasks
                 .task(id)

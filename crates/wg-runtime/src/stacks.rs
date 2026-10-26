@@ -24,7 +24,7 @@ use wg_store::{EventQuery, Session, TaskWorld};
 use wg_types::{ErrorCode, Id, Permission, WgError};
 
 use crate::app::App;
-use crate::tasks::index_written;
+use crate::scope::index_written;
 
 /// The task world of `scope` with the repository rows of its stacks, which the world's own
 /// statements do not load.

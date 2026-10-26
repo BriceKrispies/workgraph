@@ -11,7 +11,11 @@ use wg_serverspec::coverage::{RouteDecl, coverage, route_problems};
 #[test]
 fn registered_routes_match_the_openapi_snapshot() {
     let openapi = wg_wire::contract::openapi().unwrap();
-    let registered = routes_with(&[&wg_decisions::FEATURE]);
+    let registered = routes_with(&[
+        &wg_tasks_feature::FEATURE,
+        &wg_decisions::FEATURE,
+        &wg_registry_feature::FEATURE,
+    ]);
     let problems: Vec<String> = registered
         .iter()
         .flat_map(|route| {

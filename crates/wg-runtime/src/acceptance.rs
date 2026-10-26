@@ -2,7 +2,7 @@
 //! `task reject`, `task promote-dependents` and the acceptance list, and the landing of a
 //! verified stack when its parent is accepted.
 //!
-//! The decisions are `wg_runtimespec::tasks::acceptance` and `landing`; this module loads what
+//! The decisions are `wg_tasks::accept` and `wg_tasks::landing`; this module loads what
 //! they read, runs the git commands of a landing (the fast-forward of each default branch with
 //! the rollback plan of `wg_stacks::landing`, and the removal of the integration worktrees and
 //! branches) and applies the result.
@@ -16,26 +16,22 @@ use wg_json::Value;
 use wg_model::RowKey;
 use wg_model::entity::{AgentAttempt, Repository, Stack, VerificationRun};
 use wg_registry::checkout::is_within;
-use wg_registry::resolve;
 use wg_runtimespec::RequestContext;
-use wg_runtimespec::tasks::acceptance::{
-    AcceptFacts, AcceptWorld, Route, accept_task, acceptances_out, item_stack_id, land_request_of,
-    promote_dependents, rebuild_unavailable, reject_task, with_promoted,
-};
-use wg_runtimespec::tasks::landing::{
-    Heads, LandWorld, RepoRows, Target, directory_name, finish_landing, integration_busy_of,
-    integration_removed, land_state, move_dir, native_path, refusal_event, targets, verified_from,
-    worktree_removed,
-};
 use wg_stacks::landing::{
     FfCheck, FfMove, LandDecision, fast_forward_plan, guard_defer, land_decision, move_args,
     moved_while_landing, rollback_args,
 };
 use wg_store::{EventQuery, Session, TaskWorld};
-use wg_types::{AttemptStatus, ErrorCode, Id, JobStatus, Permission, WgError, WorktreeStatus};
+use wg_tasks::accept::rebuild_unavailable;
+use wg_tasks::landing::{
+    Heads, LandWorld, RepoRows, Target, directory_name, finish_landing, integration_busy_of,
+    integration_removed, land_state, move_dir, native_path, refusal_event, targets, verified_from,
+    worktree_removed,
+};
+use wg_types::{AttemptStatus, ErrorCode, Id, JobStatus, WgError, WorktreeStatus};
 
 use crate::app::App;
-use crate::tasks::index_written;
+use crate::scope::index_written;
 
 /// A git failure as the domain error (`GitError` in Python).
 fn git_failure(error: GitError) -> WgError {
@@ -53,7 +49,10 @@ macro_rules! runner {
 }
 
 /// The latest succeeded attempt of `task` (`_latest_succeeded_attempt`).
-fn latest_succeeded(session: &mut Session<'_>, task: Id) -> Result<Option<AgentAttempt>, WgError> {
+pub fn latest_succeeded(
+    session: &mut Session<'_>,
+    task: Id,
+) -> Result<Option<AgentAttempt>, WgError> {
     Ok(session
         .attempts_of_task(task, &[AttemptStatus::Succeeded])?
         .into_iter()
@@ -61,7 +60,7 @@ fn latest_succeeded(session: &mut Session<'_>, task: Id) -> Result<Option<AgentA
 }
 
 /// Integration work for `stack` is queued or running.
-fn integration_busy(session: &mut Session<'_>, stack: Id) -> Result<bool, WgError> {
+pub fn integration_busy(session: &mut Session<'_>, stack: Id) -> Result<bool, WgError> {
     let jobs = ["stack_integrate", "stack_verify"]
         .into_iter()
         .map(|kind| {
@@ -76,49 +75,6 @@ fn integration_busy(session: &mut Session<'_>, stack: Id) -> Result<bool, WgErro
         .collect::<Result<Vec<_>, _>>()?
         .concat();
     Ok(integration_busy_of(&jobs, stack))
-}
-
-/// The facts of an acceptance of `task`: its latest run, that run's manifest and its latest
-/// succeeded attempt.
-fn facts_of(session: &mut Session<'_>, task: Id) -> Result<AcceptFacts, WgError> {
-    let run = session.latest_verification_run(task)?;
-    let manifest = match run.as_ref().and_then(|found| found.manifest_id) {
-        Some(id) => session.manifest_by_id(id)?,
-        None => None,
-    };
-    Ok(AcceptFacts {
-        run,
-        manifest,
-        attempt: latest_succeeded(session, task)?,
-    })
-}
-
-/// What `accept` reads for the task `reference` names.
-fn load_accept(
-    session: &mut Session<'_>,
-    scope: Option<Id>,
-    reference: &str,
-) -> Result<AcceptWorld, WgError> {
-    let world = session.task_world(scope, &[])?;
-    let Some((task, workspace)) = resolve::task(&world.tasks, scope, reference)
-        .ok()
-        .map(|found| (found.id, found.workspace_id))
-    else {
-        return Ok(AcceptWorld {
-            world,
-            ..AcceptWorld::default()
-        });
-    };
-    let busy = match item_stack_id(&world.stacks, task) {
-        Some(stack) => integration_busy(session, stack)?,
-        None => false,
-    };
-    Ok(AcceptWorld {
-        configs: session.verification_configs(workspace)?,
-        facts: facts_of(session, task)?,
-        busy,
-        world,
-    })
 }
 
 /// What a landing reads before it moves anything.
@@ -279,133 +235,6 @@ fn make_moves(moves: &[(FfMove, String)]) -> Result<(), WgError> {
 }
 
 impl App {
-    /// `VerificationService.accept`: automated acceptance. The parent of a stack lands the
-    /// stack instead.
-    pub fn task_accept(
-        &mut self,
-        context: &RequestContext,
-        workspace: Option<&str>,
-        reference: &str,
-        reason: &str,
-    ) -> Result<Value, WgError> {
-        self.accept_with(context, workspace, reference, false, reason)
-    }
-
-    /// `VerificationService.accept_manually`: the acceptance of a reviewer, with a reason.
-    pub fn task_accept_manually(
-        &mut self,
-        context: &RequestContext,
-        workspace: Option<&str>,
-        reference: &str,
-        reason: &str,
-    ) -> Result<Value, WgError> {
-        self.accept_with(context, workspace, reference, true, reason)
-    }
-
-    fn accept_with(
-        &mut self,
-        context: &RequestContext,
-        workspace: Option<&str>,
-        reference: &str,
-        manual: bool,
-        reason: &str,
-    ) -> Result<Value, WgError> {
-        self.require_permission(context, Permission::TaskAccept)?;
-        let scope = self.workspace_or_all(workspace)?;
-        let route = self
-            .runtime
-            .decide_then(
-                context,
-                |session| load_accept(session, scope, reference),
-                |loaded: &AcceptWorld, stamp| {
-                    accept_task(loaded, stamp, scope, reference, manual, reason)
-                },
-                index_written,
-            )?
-            .reply;
-        match route {
-            Route::Done(out) => Ok(out),
-            Route::Land { stack_id } => {
-                let (mode, text) = land_request_of(manual, reason);
-                self.land_stack(context, stack_id, mode, &text, true)
-            }
-        }
-    }
-
-    /// `VerificationService.reject`.
-    pub fn task_reject(
-        &mut self,
-        context: &RequestContext,
-        workspace: Option<&str>,
-        reference: &str,
-        reason: &str,
-    ) -> Result<Value, WgError> {
-        self.require_permission(context, Permission::TaskAccept)?;
-        let scope = self.workspace_or_all(workspace)?;
-        Ok(self
-            .runtime
-            .decide_then(
-                context,
-                |session| session.task_world(scope, &[]),
-                |world: &TaskWorld, stamp| reject_task(world, stamp, scope, reference, reason),
-                index_written,
-            )?
-            .reply)
-    }
-
-    /// `TaskService.promote_dependents`: the keys of the dependents moved to `ready`.
-    pub fn task_promote_dependents(
-        &mut self,
-        context: &RequestContext,
-        workspace: Option<&str>,
-        reference: &str,
-    ) -> Result<Value, WgError> {
-        self.require_permission(context, Permission::TaskWrite)?;
-        let scope = self.workspace_or_all(workspace)?;
-        Ok(self
-            .runtime
-            .decide_then(
-                context,
-                |session| session.task_world(scope, &[]),
-                |world: &TaskWorld, stamp| promote_dependents(world, stamp, scope, reference),
-                index_written,
-            )?
-            .reply)
-    }
-
-    /// `accept --promote-dependents`: the acceptance and the keys it promoted.
-    pub fn task_accept_promoting(
-        &mut self,
-        context: &RequestContext,
-        workspace: Option<&str>,
-        reference: &str,
-        manual: bool,
-        reason: &str,
-    ) -> Result<Value, WgError> {
-        let out = self.accept_with(context, workspace, reference, manual, reason)?;
-        let promoted = self.task_promote_dependents(context, workspace, reference)?;
-        Ok(with_promoted(&out, &promoted))
-    }
-
-    /// `VerificationService.acceptances`: the decisions recorded for a task, oldest first.
-    pub fn task_acceptances(
-        &mut self,
-        context: &RequestContext,
-        workspace: Option<&str>,
-        reference: &str,
-    ) -> Result<Value, WgError> {
-        self.require_read(context)?;
-        let scope = self.workspace_or_all(workspace)?;
-        self.runtime.query(
-            |session| {
-                let world = session.task_world(scope, &[])?;
-                let task = resolve::task(&world.tasks, scope, reference)?.id;
-                session.task_acceptances(task)
-            },
-            |rows| Ok(acceptances_out(rows)),
-        )
-    }
-
     /// `StackLander.land`: accepts a verified stack's parent and lands its children. A refusal
     /// is recorded as a `stack.landing_refused` event and raised.
     pub fn land_stack(

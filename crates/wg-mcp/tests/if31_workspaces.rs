@@ -19,6 +19,9 @@ use wg_model::{Row, Write};
 use wg_runtime::{App, new_id};
 use wg_types::{ErrorCode, Timestamp, WgError};
 
+/// The features the backend serves: the registry feature.
+static REGISTRY: &[&wg_runtime::Feature] = &[&wg_registry_feature::FEATURE];
+
 /// One home, its backend and the agent calling it. The directory is removed on drop, best effort
 /// (Windows keeps the database open until the backend drops).
 struct Fixture {
@@ -37,7 +40,10 @@ impl Fixture {
             std::env::temp_dir().join(format!("wg-mcp-if31-{name}-{}-{nanos}", std::process::id()));
         std::fs::create_dir_all(&root).expect("root");
         let app = App::open(Some(&root.join("home"))).expect("open the home");
-        let mut backend = AppBackend { app, features: &[] };
+        let mut backend = AppBackend {
+            app,
+            features: REGISTRY,
+        };
         let now = Timestamp::from_components(2026, 10, 26, 0, 0, 0, 0).expect("timestamp");
         let workspace = Workspace {
             id: new_id().expect("id"),

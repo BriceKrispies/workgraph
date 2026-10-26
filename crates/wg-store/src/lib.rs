@@ -10,8 +10,9 @@
 //!   decision's writes and events ([`Session::apply_decision`], run as one transaction by
 //!   [`Store::commit_decision`]), and reads the append-only `events` log.
 //!
-//! Later tasks add the migration runner and the per-entity queries on top of this base.
+//! The migration runner is [`Store::upgrade`]; later tasks add the per-entity queries on top of this base.
 
+mod migrate;
 mod session;
 
 use std::path::PathBuf;
@@ -24,6 +25,7 @@ use wg_types::{ErrorCode, WgError};
 use session::db;
 
 pub use session::{Applied, Session};
+pub use wg_storecodec::migrations::head_revision;
 pub use wg_storecodec::{EventQuery, EventRecord, Raw, Statement, TableRow};
 
 /// Python's `BUSY_TIMEOUT_MS`.

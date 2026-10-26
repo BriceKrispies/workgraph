@@ -7,6 +7,7 @@
 
 pub mod codec;
 pub mod events;
+pub mod migrations;
 pub mod query;
 pub mod rows;
 mod rows_more;

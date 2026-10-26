@@ -9,3 +9,14 @@ description = "MCP server over stdio and Streamable HTTP"
 
 [lints]
 workspace = true
+
+[dependencies]
+axum = { version = "0.8", default-features = false, features = ["tokio", "http1"] }
+rmcp = { version = "3.7", default-features = false, features = ["server", "transport-io", "transport-streamable-http-server"] }
+serde = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+tokio = { version = "1", features = ["rt-multi-thread", "net", "io-std", "macros"] }
+tokio-util = "0.7"
+wg-mcpspec = { path = "../wg-mcpspec" }
+wg-runtime = { path = "../wg-runtime" }
+wg-types = { path = "../wg-types" }

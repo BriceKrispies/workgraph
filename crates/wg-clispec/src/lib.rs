@@ -10,6 +10,7 @@ pub mod argv;
 pub mod datetime;
 pub mod decision;
 pub mod failure;
+pub mod job;
 pub mod registry;
 pub mod servers;
 pub mod setup;

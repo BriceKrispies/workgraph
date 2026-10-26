@@ -5,13 +5,13 @@
 //! operation order follows the Python source (`src/workgraph/experiments/`) so that results
 //! match it bit for bit (plan risk R5).
 
-pub mod planner;
-pub mod predictor;
-pub mod staircase;
 pub mod briefs;
 pub mod contract;
 pub mod escape;
+pub mod planner;
 pub mod pool;
+pub mod predictor;
 pub mod replay;
+pub mod staircase;
 pub mod stats;
 pub mod trials;

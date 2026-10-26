@@ -4,10 +4,8 @@ import json
 from pathlib import Path
 
 import pytest
-from typer.testing import CliRunner
 
-from workgraph.cli.common import STATE
-from workgraph.cli.main import app as cli
+from tests.helpers import run_cli
 from workgraph.core.errors import ProviderUnavailableError, ValidationFailed
 from workgraph.core.models.schemas import TaskCreate
 from workgraph.demo.scenario import _free_port, _start_api
@@ -17,13 +15,7 @@ STATIC_UI = Path(__file__).parents[2] / "src" / "workgraph" / "api" / "static" /
 
 
 def _invoke(*args: str) -> tuple[int, dict]:
-    STATE.json = True
-    STATE.home = None
-    try:
-        result = CliRunner().invoke(cli, list(args), catch_exceptions=False)
-    finally:
-        STATE.close()
-        STATE.json = False
+    result = run_cli(["--json", *args])
     assert result.output.strip(), f"no output; stderr: {result.stderr}"
     return result.exit_code, json.loads(result.output)
 

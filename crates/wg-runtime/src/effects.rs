@@ -29,6 +29,19 @@ pub trait HttpClient: Send {
     fn call(&mut self, call: &HttpCall) -> Result<HttpResponse, EffectError>;
 }
 
+/// The `wg-net` transport as the interpreter's HTTP client (WG-3741 item 2). One call per effect:
+/// the retries of the provider and Jira clients are theirs, not the interpreter's.
+#[derive(Default)]
+pub struct NetHttp {
+    net: wg_net::Net,
+}
+
+impl HttpClient for NetHttp {
+    fn call(&mut self, call: &HttpCall) -> Result<HttpResponse, EffectError> {
+        self.net.perform(call)
+    }
+}
+
 /// Performs effects. `http` is `None` until a client is plugged in; `Http` effects then fail as
 /// unavailable.
 #[derive(Default)]

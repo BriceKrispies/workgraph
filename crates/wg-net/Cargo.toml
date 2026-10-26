@@ -9,3 +9,15 @@ description = "blocking HTTP clients for Ollama, OpenAI-compatible and Jira"
 
 [lints]
 workspace = true
+
+[dependencies]
+jiff = "0.2"
+rpds = "1"
+serde_json = "1"
+tracing = "0.1"
+ureq = "3.5"
+wg-model = { path = "../wg-model" }
+wg-netspec = { path = "../wg-netspec" }
+
+[dev-dependencies]
+base64 = "0.22"

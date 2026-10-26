@@ -1,7 +1,23 @@
-//! wg-net: blocking HTTP clients for Ollama, OpenAI-compatible and Jira.
+//! wg-net: blocking HTTP clients for Ollama, OpenAI-compatible and Jira (SH-18).
 //!
-//! So far this crate holds the plain-HTTP request used by `workgraph ui open` to see whether a
-//! server answers. The provider clients (SH-18) add to it.
+//! The requests, retry decisions, JQL and parsing are `wg-netspec`'s. This crate sends them: the
+//! socket, the sleeping, the clock, the time zones and the log are [`Net`]. [`Net::perform`] is
+//! also the `Http` effect's client in `wg-runtime`. The plain-HTTP status probe of
+//! `workgraph ui open` is [`http_status_line`].
+
+pub mod client;
+pub mod host;
+pub mod jira;
+pub mod ollama;
+pub mod openai;
+
+pub use host::{Net, Sleeper};
+pub use jira::JiraClient;
+pub use ollama::Ollama;
+pub use openai::OpenAiCompatible;
+pub use wg_netspec::client::{Endpoint, Generated};
+pub use wg_netspec::jira::Flavour;
+pub use wg_netspec::{ProviderError, TrackerError};
 
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};

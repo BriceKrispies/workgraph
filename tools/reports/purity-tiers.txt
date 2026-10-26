@@ -35,6 +35,7 @@ wg-mcp Shell
 wg-mcpspec Pure
 wg-model Core
 wg-net Shell
+wg-netspec Pure
 wg-proc Shell
 wg-procspec Pure
 wg-pyrand Pure

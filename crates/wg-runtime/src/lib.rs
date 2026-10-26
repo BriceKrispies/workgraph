@@ -33,7 +33,7 @@ mod worker;
 pub use app::{App, environment};
 pub use bus::Bus;
 pub use cycle::{Flow, Outcome, Runtime, Step};
-pub use effects::{HttpClient, Interpreter, write_atomic};
+pub use effects::{HttpClient, Interpreter, NetHttp, write_atomic};
 pub use handlers::{Handler, HandlerError, HandlerRegistry, HandlerResult, JobContext};
 pub use hooks::{Failure, IngestResult, IngestStatus, ReplayCounts, ingest_direct, spool_record};
 pub use logging::{JsonLayer, LogSettings, RotatingFile, configure_logging, json_layer};

@@ -1,0 +1,17 @@
+[package]
+name = "wg-netspec"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "pure half of wg-net: request building, retry decisions and response parsing for Ollama, OpenAI-compatible and Jira"
+
+[lints]
+workspace = true
+
+[dependencies]
+base64 = "0.22"
+rpds = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-model = { path = "../wg-model" }

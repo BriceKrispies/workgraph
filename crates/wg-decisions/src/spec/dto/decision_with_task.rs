@@ -3,8 +3,8 @@
 use wg_json::Value;
 use wg_model::entity::task::TaskDecision;
 
-use crate::convention::model;
-use crate::dto::decision;
+use super::decision;
+use wg_wire::convention::model;
 
 /// The OpenAPI component schema this DTO mirrors.
 pub const NAME: &str = "DecisionWithTaskOut";

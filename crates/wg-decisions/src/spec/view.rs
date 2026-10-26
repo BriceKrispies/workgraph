@@ -1,110 +1,17 @@
-//! The pure half of the `decision` commands (`cli/commands/decisions.py`): the requests the
-//! options make and the human views of the results.
-//!
-//! The handlers in `wg-cli` read nothing but the matched options; everything that decides what is
-//! asked, or how a result looks, is here as a function of its inputs.
+//! The human views of the `decision` commands and the prefix lookup (`cli/commands/decisions.py`):
+//! functions of the values the services return, with no clap and no I/O.
 
-use clap::ArgMatches;
-use serde_json::{Value as Json, json};
+use wg_clispec::CliFailure;
+use wg_clispec::task::{get, items, opt, s, truncate, when};
 use wg_json::Value;
 use wg_model::py_repr_str;
 use wg_render::{Console, escape};
-
-use crate::task::{get, items, many, number, one, opt, s, truncate, when};
-use crate::tree::{SNAPSHOT_JSON, placeholder};
-use crate::{CliFailure, Snapshot, Usage};
-
-/// The usage of `decision list` and `decision request`, as Click prints them in a usage error.
-const LIST: Usage = Usage {
-    usage: "workgraph decision list [OPTIONS]",
-    command: "workgraph decision list",
-};
-const REQUEST: Usage = Usage {
-    usage: "workgraph decision request [OPTIONS] {task}",
-    command: "workgraph decision request",
-};
-
-/// The statuses `decision list --status` takes.
-const STATUSES: [&str; 4] = ["open", "decided", "withdrawn", "all"];
 
 /// The 32 characters of a full decision id; shorter ids are prefixes.
 const FULL_ID: usize = 32;
 
 /// How many decisions the prefix lookup lists (`decisions.list(..., "all", 500)`).
 pub const PREFIX_LOOKUP_LIMIT: i64 = 500;
-
-/// The clap command of the `decision` group: the snapshot's own tree.
-#[must_use]
-pub fn command() -> clap::Command {
-    match Snapshot::parse(SNAPSHOT_JSON) {
-        Ok(snapshot) => placeholder(&snapshot, "decision"),
-        Err(_) => crate::tree::command("decision"),
-    }
-}
-
-/// The `--status` and `--limit` of `decision list`.
-pub fn list_args(m: &ArgMatches) -> Result<(String, i64), CliFailure> {
-    let status = one(m, "--status").unwrap_or_else(|| "open".to_owned());
-    if !STATUSES.contains(&status.as_str()) {
-        return Err(CliFailure::fail(
-            "--status must be open, decided, withdrawn or all",
-            2,
-        ));
-    }
-    Ok((status, number(m, "--limit", 50, LIST)?))
-}
-
-/// `_parse_option`: `label` or `label::detail`, as the request option it makes.
-fn parse_option(spec: &str, recommended: bool) -> Json {
-    let (label, detail) = spec.split_once("::").unwrap_or((spec, ""));
-    json!({"label": label.trim(), "detail": detail.trim(), "recommended": recommended})
-}
-
-/// The task, question and options of `decision request`.
-pub fn request_args(m: &ArgMatches) -> Result<(String, String, Vec<Json>), CliFailure> {
-    let specs = many(m, "--option");
-    let recommend = one(m, "--recommend")
-        .map(|_| number(m, "--recommend", 0, REQUEST))
-        .transpose()?;
-    let count = i64::try_from(specs.len()).unwrap_or(i64::MAX);
-    if recommend.is_some_and(|position| !(1..=count).contains(&position)) {
-        return Err(CliFailure::fail(
-            format!("--recommend must be between 1 and {count}"),
-            2,
-        ));
-    }
-    let options = specs
-        .iter()
-        .enumerate()
-        .map(|(index, spec)| {
-            let position = i64::try_from(index + 1).unwrap_or(i64::MAX);
-            parse_option(spec, recommend == Some(position))
-        })
-        .collect();
-    Ok((
-        one(m, "task").unwrap_or_default(),
-        one(m, "--question").unwrap_or_default(),
-        options,
-    ))
-}
-
-/// The option id, free text and note of `decision choose`.
-#[must_use]
-pub fn choose_args(m: &ArgMatches) -> [Option<String>; 3] {
-    [one(m, "--option"), one(m, "--other"), one(m, "--note")]
-}
-
-/// The decision id argument of `show`, `choose` and `withdraw`.
-#[must_use]
-pub fn decision_ref(m: &ArgMatches) -> String {
-    one(m, "decision_id").unwrap_or_default()
-}
-
-/// The `--reason` of `decision withdraw`.
-#[must_use]
-pub fn reason(m: &ArgMatches) -> Option<String> {
-    one(m, "--reason")
-}
 
 /// Whether a reference is already a full id (`_full_id` returns it as it is).
 #[must_use]
@@ -286,17 +193,5 @@ mod tests {
         let code = |prefix: &str| expand_prefix(prefix, &listed).err().map(|e| e.exit_code());
         assert_eq!(code("cccc"), Some(4));
         assert_eq!(code("aaaa"), Some(2));
-    }
-
-    #[test]
-    fn options_split_the_label_from_the_detail() {
-        assert_eq!(
-            parse_option(" SQLite :: embedded ", true),
-            json!({"label": "SQLite", "detail": "embedded", "recommended": true})
-        );
-        assert_eq!(
-            parse_option("Plain", false),
-            json!({"label": "Plain", "detail": "", "recommended": false})
-        );
     }
 }

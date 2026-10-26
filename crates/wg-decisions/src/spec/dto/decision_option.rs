@@ -3,7 +3,7 @@
 use wg_json::Value;
 use wg_model::entity::task::DecisionOption;
 
-use crate::convention::{model, text};
+use wg_wire::convention::{model, text};
 
 /// The OpenAPI component schema this DTO mirrors.
 pub const NAME: &str = "DecisionOptionOut";

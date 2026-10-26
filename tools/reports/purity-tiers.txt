@@ -24,6 +24,13 @@ wg-codeanalysis Pure
 wg-codeparse Shell
 wg-config Pure
 wg-conformance Tooling
+wg-decisions Shell
+wg-decisions::core Core
+wg-decisions::spec Pure
+wg-decisions::service Shell
+wg-decisions::cli Shell
+wg-decisions::http Shell
+wg-decisions::mcp Shell
 wg-demo-agent Shell
 wg-demoproto Pure
 wg-events Core

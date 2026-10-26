@@ -636,6 +636,46 @@ functions; no cycles. Where Python reacts to another area through events or jobs
 
 **What adding a feature touches.** Its own crate, one line in `FEATURES`, and `purity-tiers.txt`.
 
+**Pilot: `wg-decisions` (WG-3781).** The decisions feature is the first crate of this shape. What
+it changed from the text above:
+
+* **Modules as built.** `core.rs` (Core: the former `wg_tasks::decisions` plans, moved whole, so
+  `wg-tasks` no longer has a decisions module); `spec/` (Pure: `args.rs` holds the clap command
+  and the argument readers, since they are functions of `ArgMatches`; `dto/` the DTOs; `sql.rs`
+  the statement text and row decoding; `view.rs` the human views and the prefix lookup;
+  `shapes.rs` the output shapes of the feature's tools); `service/` (Shell: `mod.rs` the `App`
+  entry points, `reads.rs` the `Session` readers); `cli.rs`, `http.rs`, `mcp.rs` (Shell: the
+  handler, the route table, the tool table). The `jobs` table is empty and has no module yet.
+* **Reach.** `App` is a type of `wg-runtime`, and an inherent impl cannot be written in another
+  crate, so the service is free functions over `&mut App`, and the readers free functions over
+  `&mut Session`. Each one is named after its Python method and called by the feature's own
+  tables. Three `App` helpers and `index_written` became `pub` in `wg-runtime` for that.
+* **Descriptor tables.** `FEATURE.cli` is `[cli::GROUP]`, `FEATURE.routes` is `[http::GROUP]` (a
+  `RouteGroup` over `http::SPECS`), `FEATURE.tools` is `mcp::TOOLS`, one `ToolRun` that looks the
+  name up in `mcp::TABLE` (the table of names and bodies).
+* **Front ends.** `wg-cli` lists the feature in `commands::FEATURES`; the decisions group left
+  `GROUPS`. `wg-server` gets its routes from `routes_with(FEATURES)`, and `wg-mcp` answers the
+  feature's tools through `AppBackend.features`. The standalone `wg-mcp` program and its test pass
+  a static list holding the same feature; a later task should let that program read the binary's
+  list rather than name the feature itself.
+* **Route order.** The decision routes now register after the groups that predate the descriptor,
+  so they come after the stacks routes instead of between events and tasks. The route-table test
+  matches by operation id, and no decision path collides with another route.
+* **Output shapes.** The wire catalog (`wg_wire::dto::mcp_outputs`) keeps the shapes of the other
+  tools and no longer holds the decision ones; `wg3738_wire.rs` leaves the three decision tools
+  out of its catalog checks. Moving the catalog check to the features (a `shapes` table on the
+  descriptor, checked in `wg-cli`) is a follow-up, because the descriptor is shared.
+* **Shared helpers.** `text_param` is now a root function of `wg-runtimespec` (the server's stacks
+  routes read path parameters with it), and the task argument helpers of `wg-clispec::task` are
+  `pub`, so the clap readers can use them.
+* **Purity.** Module tiers are used for the first time: `wg-decisions` is a Shell crate with
+  `wg-decisions::core Core`, `wg-decisions::spec Pure`, and `service`, `cli`, `http`, `mcp` Shell.
+  The shell pure-candidate ceiling holds at 2 lines with the feature's argument readers in `spec`.
+* **Not moved.** The row codec of `task_decisions` (`wg-storecodec` `rows_more`), the entity
+  `TaskDecision` and the commit bundle `wg_model::Decision` stay in the base crates, as do the
+  `/api` inventory rows H125 to H130 in `wg-serverspec::operations`, the MCP catalog entries in
+  `wg-mcpspec`, and the `ui open decisions` spec in `wg-uispec`.
+
 ## 5. Migration and cut-over
 
 ### 5.1 Coexistence rules

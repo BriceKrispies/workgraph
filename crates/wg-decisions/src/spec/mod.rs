@@ -3,10 +3,19 @@
 //! and withdraw as decisions over the task world, the output values of every read, and the
 //! readers of the request bodies the interfaces hand over.
 //!
-//! The pure plans are `wg_tasks::decisions`; this module resolves the references, applies the
-//! plan as writes and events in the order the Python service writes them (the decision row, the
-//! comment, the decision events, then the task's tag update with its `task.updated` event) and
-//! assembles the `DecisionOut` and `DecisionWithTaskOut` values.
+//! The pure plans are [`crate::core`]; this module resolves the references, applies the plan as
+//! writes and events in the order the Python service writes them (the decision row, the comment,
+//! the decision events, then the task's tag update with its `task.updated` event) and assembles
+//! the `DecisionOut` and `DecisionWithTaskOut` values.
+//!
+//! The submodules are the feature's Pure spec: [`dto`] (the DTOs), [`sql`] (the statement text and
+//! row decoding) and [`view`] (the human views and the prefix lookup).
+
+pub mod args;
+pub mod dto;
+pub mod shapes;
+pub mod sql;
+pub mod view;
 
 use serde_json::{Map, Value as Json};
 use wg_json::Value;
@@ -14,20 +23,20 @@ use wg_model::entity::{Task, TaskComment, TaskDecision};
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, EventDraft, EventPayload, Write};
 use wg_registry::resolve;
-pub use wg_storecodec::decision_sql::DecisionFilter;
-use wg_storecodec::decision_sql::DecisionWithTask;
+use wg_runtimespec::tasks::requests::{component, run};
+use wg_runtimespec::tasks::writes::tag_writes;
 use wg_storecodec::task_world_sql::TaskWorld;
-use wg_tasks::decisions::{
-    Answer, DecisionPlan, OptionInput, check_answer, check_request, plan_choose, plan_request,
-    plan_withdraw,
-};
 use wg_types::{ErrorCode, Id, Permission, WgError, parse_id};
 use wg_validate::Model;
 use wg_wire::convention::dict;
-use wg_wire::dto::{decision, decision_task, decision_with_task};
 
-use crate::tasks::requests::{component, run};
-use crate::tasks::writes::tag_writes;
+use self::dto::{decision, decision_task, decision_with_task};
+pub use self::sql::DecisionFilter;
+use self::sql::DecisionWithTask;
+use crate::core::{
+    Answer, DecisionPlan, OptionInput, check_answer, check_request, plan_choose, plan_request,
+    plan_withdraw,
+};
 
 /// What a decision on one existing decision reads: the task world of its workspace, the stored
 /// decision row and every decision on its task.
@@ -348,13 +357,6 @@ pub fn choose(
         answer,
     )?;
     Ok(apply(&load.world, stamp, task, plan, false))
-}
-
-/// A text parameter of a validated request (a path parameter, or a tool argument); empty when
-/// there is none.
-#[must_use]
-pub fn text_param<'a>(params: &'a Map<String, Json>, name: &str) -> &'a str {
-    params.get(name).and_then(Json::as_str).unwrap_or_default()
 }
 
 /// `DecisionService.withdraw`: retires the loaded decision.

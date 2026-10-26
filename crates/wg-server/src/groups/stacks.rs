@@ -11,8 +11,8 @@
 use serde_json::Value as Json;
 use wg_json::Value;
 use wg_runtime::App;
-use wg_runtimespec::decisions::text_param;
 use wg_runtimespec::stacks::body_text;
+use wg_runtimespec::text_param;
 use wg_serverspec::groups::STACKS;
 use wg_types::{ErrorCode, WgError};
 

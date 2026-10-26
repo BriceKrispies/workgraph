@@ -17,9 +17,9 @@ use wg_model::stamp::{Stamp, py_repr_str};
 use wg_model::{Task, TaskSlice};
 use wg_types::{CommentKind, ErrorCode, Permission, WgError};
 
-use crate::comments;
-use crate::promote::PARKED_TAG;
-use crate::update::{TaskPatch, UpdatePlan, update_plan};
+use wg_tasks::comments;
+use wg_tasks::promote::PARKED_TAG;
+use wg_tasks::update::{TaskPatch, UpdatePlan, update_plan};
 
 /// Tag a task carries while a decision on it is open.
 pub const NEEDS_DECISION_TAG: &str = "needs-decision";

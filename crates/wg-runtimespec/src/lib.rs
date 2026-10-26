@@ -17,7 +17,6 @@
 pub mod app;
 pub mod automation;
 pub mod context;
-pub mod decisions;
 pub mod effects;
 pub mod events;
 pub mod git;
@@ -33,3 +32,16 @@ pub mod worktrees;
 
 pub use context::{GETUSER_VARIABLES, RequestContext, getuser, timestamp_from_unix_nanos};
 pub use logs::{Level, LogRecord, format_record};
+
+/// A text parameter of a validated request (a path parameter, or a tool argument); empty when
+/// there is none.
+#[must_use]
+pub fn text_param<'a>(
+    params: &'a serde_json::Map<String, serde_json::Value>,
+    name: &str,
+) -> &'a str {
+    params
+        .get(name)
+        .and_then(serde_json::Value::as_str)
+        .unwrap_or_default()
+}

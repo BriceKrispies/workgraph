@@ -9,7 +9,6 @@
 pub mod argv;
 pub mod automation;
 pub mod datetime;
-pub mod decision;
 pub mod failure;
 pub mod git;
 pub mod job;

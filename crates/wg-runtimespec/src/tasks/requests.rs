@@ -93,7 +93,7 @@ fn with_checks(model: Model) -> Model {
 }
 
 /// A request model from the OpenAPI component schema `name`, fields in declaration order.
-pub(crate) fn component(name: &str, order: &[&str]) -> Result<Model, WgError> {
+pub fn component(name: &str, order: &[&str]) -> Result<Model, WgError> {
     component_with(name, order, true)
 }
 
@@ -113,7 +113,7 @@ pub(crate) fn component_with(name: &str, order: &[&str], strip: bool) -> Result<
     Ok(with_checks(model.ordered(order)))
 }
 
-pub(crate) fn run(model: &Model, body: &Value) -> Result<Map<String, Value>, WgError> {
+pub fn run(model: &Model, body: &Value) -> Result<Map<String, Value>, WgError> {
     match validate(model, body) {
         Ok(Value::Object(dump)) => Ok(dump),
         Ok(_) => Err(WgError::new(

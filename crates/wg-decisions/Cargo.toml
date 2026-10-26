@@ -1,0 +1,34 @@
+[package]
+name = "wg-decisions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "the decisions feature: questions tasks wait on, their options and answers (CLI, HTTP, MCP)"
+
+[lints]
+workspace = true
+
+[dependencies]
+clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
+rpds = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-clispec = { path = "../wg-clispec" }
+wg-json = { path = "../wg-json" }
+wg-mcpspec = { path = "../wg-mcpspec" }
+wg-render = { path = "../wg-render" }
+wg-model = { path = "../wg-model" }
+wg-registry = { path = "../wg-registry" }
+wg-runtime = { path = "../wg-runtime" }
+wg-runtimespec = { path = "../wg-runtimespec" }
+wg-serverspec = { path = "../wg-serverspec" }
+wg-store = { path = "../wg-store" }
+wg-storecodec = { path = "../wg-storecodec" }
+wg-tasks = { path = "../wg-tasks" }
+wg-types = { path = "../wg-types" }
+wg-validate = { path = "../wg-validate" }
+wg-wire = { path = "../wg-wire" }
+
+[dev-dependencies]
+uuid = { version = "1", default-features = false, features = ["std", "serde"] }

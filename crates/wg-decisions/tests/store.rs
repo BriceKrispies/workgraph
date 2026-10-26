@@ -10,11 +10,12 @@ use std::path::PathBuf;
 
 use rpds::VectorSync;
 use serde_json::{Value, json};
+use wg_decisions::service::reads;
+use wg_decisions::spec::sql::DecisionFilter;
 use wg_model::entity::{DecisionOption, Task, TaskDecision, Workspace};
 use wg_model::event::TaskDecisionChanged;
 use wg_model::{Decision, EventDraft, EventPayload, JsonObject, Stamp, Write, derive_id};
 use wg_store::{EventQuery, Location, Store};
-use wg_storecodec::decision_sql::DecisionFilter;
 use wg_types::{Actor, Id, TaskKey, TaskPriority, TaskStatus, Timestamp, WgError};
 
 type TestResult = Result<(), Box<dyn Error>>;
@@ -223,9 +224,12 @@ fn a_decision_written_with_apply_decision_reads_back_and_the_queries_find_it() -
     })?;
 
     // Read back: the row as written, the event as appended.
-    let read = store.read(|s| s.decision_by_id(id(0), d1.id))?;
+    let read = store.read(|s| reads::decision_by_id(s, id(0), d1.id))?;
     assert_eq!(read, Some(d1.clone()));
-    assert_eq!(store.read(|s| s.decision_by_id(id(99), d1.id))?, None);
+    assert_eq!(
+        store.read(|s| reads::decision_by_id(s, id(99), d1.id))?,
+        None
+    );
 
     let events = store.read(|s| {
         s.query_events(&EventQuery {
@@ -239,33 +243,42 @@ fn a_decision_written_with_apply_decision_reads_back_and_the_queries_find_it() -
     assert_eq!(events[0].data["version"], json!(1));
 
     // Per task: oldest first. Open count: one open decision on the high-priority task.
-    let for_task = store.read(|s| s.decisions_for_task(open_high.id))?;
+    let for_task = store.read(|s| reads::decisions_for_task(s, open_high.id))?;
     assert_eq!(for_task, vec![d1.clone(), d3.clone()]);
-    assert_eq!(store.read(|s| s.open_decision_count(open_high.id))?, 1);
-    assert_eq!(store.read(|s| s.open_decision_count(archived.id))?, 1);
+    assert_eq!(
+        store.read(|s| reads::open_decision_count(s, open_high.id))?,
+        1
+    );
+    assert_eq!(
+        store.read(|s| reads::open_decision_count(s, archived.id))?,
+        1
+    );
 
     // Open: by task priority (high before low), archived tasks left out.
-    let open = store.read(|s| s.decisions_by_status(id(0), DecisionFilter::Open, 200))?;
+    let open = store.read(|s| reads::decisions_by_status(s, id(0), DecisionFilter::Open, 200))?;
     assert_eq!(open, vec![d1.clone(), d4.clone()]);
 
     // Decided: the answered decision only.
-    let decided = store.read(|s| s.decisions_by_status(id(0), DecisionFilter::Decided, 200))?;
+    let decided =
+        store.read(|s| reads::decisions_by_status(s, id(0), DecisionFilter::Decided, 200))?;
     assert_eq!(decided, vec![d3.clone()]);
 
     // Withdrawn: none. All: newest created first, archived task included, limit respected.
-    let withdrawn = store.read(|s| s.decisions_by_status(id(0), DecisionFilter::Withdrawn, 200))?;
+    let withdrawn =
+        store.read(|s| reads::decisions_by_status(s, id(0), DecisionFilter::Withdrawn, 200))?;
     assert!(withdrawn.is_empty());
-    let all = store.read(|s| s.decisions_by_status(id(0), DecisionFilter::All, 200))?;
+    let all = store.read(|s| reads::decisions_by_status(s, id(0), DecisionFilter::All, 200))?;
     assert_eq!(all, vec![d3.clone(), d2.clone(), d1.clone(), d4.clone()]);
-    let newest_two = store.read(|s| s.decisions_by_status(id(0), DecisionFilter::All, 2))?;
+    let newest_two =
+        store.read(|s| reads::decisions_by_status(s, id(0), DecisionFilter::All, 2))?;
     assert_eq!(newest_two, vec![d3, d2]);
     Ok(())
 }
 
 #[test]
 fn briefs_carry_the_task_and_its_sorted_tags_in_the_same_order_as_the_bare_lists() -> TestResult {
+    use wg_decisions::spec::sql::{DecisionFilter as F, DecisionTask};
     use wg_model::entity::TaskTag;
-    use wg_storecodec::decision_sql::{DecisionFilter as F, DecisionTask};
     use wg_types::TaskKey as Key;
 
     let mut store = store()?;
@@ -292,8 +305,8 @@ fn briefs_carry_the_task_and_its_sorted_tags_in_the_same_order_as_the_bare_lists
         s.apply_write(&Write::insert(newer_high.clone()))
     })?;
 
-    let bare = store.read(|s| s.decisions_by_status(id(0), F::Open, 200))?;
-    let briefs = store.read(|s| s.decisions_by_status_with_task(id(0), F::Open, 200))?;
+    let bare = store.read(|s| reads::decisions_by_status(s, id(0), F::Open, 200))?;
+    let briefs = store.read(|s| reads::decisions_by_status_with_task(s, id(0), F::Open, 200))?;
     let brief_decisions: Vec<TaskDecision> = briefs.iter().map(|b| b.decision.clone()).collect();
     assert_eq!(brief_decisions, bare);
     assert_eq!(bare, vec![newer_high.clone(), older_low.clone()]);
@@ -312,10 +325,10 @@ fn briefs_carry_the_task_and_its_sorted_tags_in_the_same_order_as_the_bare_lists
     );
     assert!(briefs[1].task.tags.is_empty());
 
-    let one = store.read(|s| s.decision_by_id_with_task(id(0), newer_high.id))?;
+    let one = store.read(|s| reads::decision_by_id_with_task(s, id(0), newer_high.id))?;
     assert_eq!(one.map(|b| b.task), Some(first.clone()));
     assert_eq!(
-        store.read(|s| s.decision_by_id_with_task(id(0), id(99)))?,
+        store.read(|s| reads::decision_by_id_with_task(s, id(0), id(99)))?,
         None
     );
     Ok(())

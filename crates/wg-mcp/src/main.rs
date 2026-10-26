@@ -9,6 +9,9 @@ use wg_mcp::{AppBackend, serve_stdio};
 use wg_mcpspec::options::{ServeOptions, Transport};
 use wg_types::{ErrorCode, WgError};
 
+/// The features this program serves: the decisions feature, as the `workgraph` binary lists it.
+static FEATURES: &[&wg_runtime::Feature] = &[&wg_decisions::FEATURE];
+
 const HTTP_REFUSED: &str = "the standalone wg-mcp serves stdio only; \
 `workgraph mcp --transport http` serves the endpoint behind the API token";
 
@@ -18,7 +21,10 @@ fn run(args: &[String]) -> Result<(), WgError> {
         return Err(WgError::new(ErrorCode::WorkgraphError, HTTP_REFUSED));
     }
     let app = wg_runtime::App::open(None)?;
-    let backend = Box::new(AppBackend { app, features: &[] });
+    let backend = Box::new(AppBackend {
+        app,
+        features: FEATURES,
+    });
     let agent = options.agent();
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()

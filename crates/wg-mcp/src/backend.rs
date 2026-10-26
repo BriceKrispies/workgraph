@@ -33,9 +33,6 @@ impl ToolBackend for AppBackend {
         if let Some(result) = crate::run_tools::call(&mut self.app, agent, name, &arguments) {
             return result;
         }
-        if let Some(result) = crate::decision_tools::call(&mut self.app, agent, name, &arguments) {
-            return result;
-        }
         if let Some(answer) = crate::tools::call(&mut self.app, agent, name, &arguments) {
             return answer;
         }

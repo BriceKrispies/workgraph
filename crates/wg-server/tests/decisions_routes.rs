@@ -70,7 +70,7 @@ impl Harness {
                 lan: None,
                 ui: Ui::Dir(ui),
                 mcp: None,
-                routes: groups::routes_with(&[]),
+                routes: groups::routes_with(&[&wg_decisions::FEATURE]),
             },
             app,
         )?;

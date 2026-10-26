@@ -2,7 +2,7 @@
 //! of a task, the lists the decision inbox shows (bare, or with the task each one belongs to), one
 //! decision by id, and the count of a task's open decisions.
 //!
-//! Like [`crate::task_sql`], every statement is a value ([`Statement`]); `wg-store` binds and runs
+//! Like `wg_storecodec::task_sql`, every statement is a value ([`Statement`]); `wg-store` binds and runs
 //! it. The orderings are Python's `DecisionService` ones: open decisions by task priority rank and
 //! then oldest first, with archived and cancelled tasks left out; decided ones by `decided_at`
 //! newest first; the rest newest first. Ties fall back to `id` so a `LIMIT` cuts the same rows
@@ -16,9 +16,9 @@ use wg_model::Table;
 use wg_model::entity::TaskDecision;
 use wg_types::{Id, TaskKey, TaskPriority, TaskStatus, WgError};
 
-use crate::codec::{Cols, Raw, id_sql, text_sql};
-use crate::rows::{TableRow, columns};
-use crate::sql::Statement;
+use wg_storecodec::codec::{Cols, Raw, id_sql, text_sql};
+use wg_storecodec::rows::{TableRow, columns};
+use wg_storecodec::sql::Statement;
 
 /// The status a decision list selects (Python's `DecisionFilter`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

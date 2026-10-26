@@ -2312,6 +2312,7 @@ dependencies = [
  "wg-browser",
  "wg-clispec",
  "wg-codeparse",
+ "wg-decisions",
  "wg-json",
  "wg-mcp",
  "wg-mcpspec",
@@ -2379,6 +2380,31 @@ dependencies = [
  "serde_json",
  "toml",
  "wg-json",
+]
+
+[[package]]
+name = "wg-decisions"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "rpds",
+ "serde_json",
+ "uuid",
+ "wg-clispec",
+ "wg-json",
+ "wg-mcpspec",
+ "wg-model",
+ "wg-registry",
+ "wg-render",
+ "wg-runtime",
+ "wg-runtimespec",
+ "wg-serverspec",
+ "wg-store",
+ "wg-storecodec",
+ "wg-tasks",
+ "wg-types",
+ "wg-validate",
+ "wg-wire",
 ]
 
 [[package]]
@@ -2495,6 +2521,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tokio-util",
+ "wg-decisions",
  "wg-git",
  "wg-json",
  "wg-mcpspec",
@@ -2677,6 +2704,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tower",
+ "wg-decisions",
  "wg-json",
  "wg-model",
  "wg-runtime",

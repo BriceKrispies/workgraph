@@ -6,6 +6,8 @@
     {"cli": ["init"], "json": true},
     {"cli": ["automation", "create", "{\"name\":\"bad event\",\"trigger\":{\"type\":\"event\",\"event_types\":[\"not.real\"]},\"actions\":[{\"type\":\"notify\",\"title\":\"x\"}]}"], "expect_exit": 2},
     {"assert": {"stderr_contains": "error (validation_failed)"}},
+    {"cli": ["automation", "create", "{\"name\":\"no such event\",\"trigger\":{\"type\":\"event\",\"event_types\":[\"no.such.event\"]},\"actions\":[{\"type\":\"notify\",\"title\":\"x\"}]}"], "expect_exit": 2},
+    {"assert": {"stderr_contains": "error (validation_failed): invalid automation rule"}},
     {"cli": ["automation", "create", "{\"name\":\"bad shell\",\"trigger\":{\"type\":\"event\",\"event_types\":[\"task.created\"]},\"actions\":[{\"type\":\"run_shell\",\"command\":\"rm -rf /\"}]}"], "expect_exit": 2},
     {"assert": {"stderr_contains": "error (validation_failed)"}},
     {"cli": ["automation", "list"], "json": true},

@@ -1,0 +1,17 @@
+[package]
+name = "wg-browserspec"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "pure rules of the browser screenshot: discovery order, options, DevTools messages"
+
+[lints]
+workspace = true
+
+[dependencies]
+wg-types = { path = "../wg-types" }
+wg-procspec = { path = "../wg-procspec" }
+serde_json = "1"
+base64 = "0.22"

@@ -11,6 +11,7 @@ wg-analytics Core
 wg-archive Shell
 wg-automation Core
 wg-browser Shell
+wg-browserspec Pure
 wg-cli Shell
 wg-codeanalysis Pure
 wg-codeparse Shell

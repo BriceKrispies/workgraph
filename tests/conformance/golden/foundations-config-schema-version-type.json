@@ -1,0 +1,89 @@
+{
+  "scenario": "foundations-config-schema-version-type",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 7,
+      "stdout": "{\"error\": {\"code\": \"config_error\", \"message\": \"<tmp>/repos\\\\sv-text\\\\config\\\\config.toml has an invalid schema_version: expected an integer, got 'two'\", \"details\": {\"schema_version\": \"two\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 7,
+      "stdout": "{\"error\": {\"code\": \"config_error\", \"message\": \"<tmp>/repos\\\\sv-text\\\\config\\\\config.toml has an invalid schema_version: expected an integer, got 'two'\", \"details\": {\"schema_version\": \"two\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 7,
+      "stdout": "{\"error\": {\"code\": \"config_error\", \"message\": \"<tmp>/repos\\\\sv-float\\\\config\\\\config.toml has an invalid schema_version: expected an integer, got 2.0\", \"details\": {\"schema_version\": 2.0}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 7,
+      "stdout": "{\"error\": {\"code\": \"config_error\", \"message\": \"<tmp>/repos\\\\sv-float\\\\config\\\\config.toml has an invalid schema_version: expected an integer, got 2.0\", \"details\": {\"schema_version\": 2.0}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

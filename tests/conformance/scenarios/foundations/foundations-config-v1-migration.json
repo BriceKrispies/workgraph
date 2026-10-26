@@ -1,0 +1,19 @@
+{
+  "id": "foundations-config-v1-migration",
+  "covers": ["C058", "C061", "C062", "E01"],
+  "setup": [
+    {"git": "init", "repo": "cfg-v1"},
+    {"git": "write", "repo": "cfg-v1", "files": {"config/config.toml": "schema_version = 1\n\n[agents]\nenabled = true\n"}}
+  ],
+  "steps": [
+    {"cli": ["--home", "{repo:cfg-v1}", "config", "show"], "json": true},
+    {"assert": {"json": {"path": "/config/execution/enabled", "equals": true}}},
+    {"cli": ["--home", "{repo:cfg-v1}", "config", "migrate"], "json": true},
+    {"assert": {"file": "{repo:cfg-v1}/config/config.toml", "contains": "schema_version = 2"}},
+    {"cli": ["--home", "{repo:cfg-v1}", "config", "validate"], "json": true},
+    {"assert": {"json": {"path": "/valid", "equals": true}}},
+    {"cli": ["--home", "{repo:cfg-v1}", "config", "show"], "json": true},
+    {"assert": {"json": {"path": "/config/execution/enabled", "equals": true}}}
+  ],
+  "not_observable": []
+}

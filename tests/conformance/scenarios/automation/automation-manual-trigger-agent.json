@@ -1,0 +1,26 @@
+{
+  "id": "automation-manual-trigger-agent",
+  "covers": ["C026", "C035"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Something"], "json": true},
+    {"cli": ["automation", "create", "{\"name\":\"escalate\",\"trigger\":{\"type\":\"manual\"},\"actions\":[{\"type\":\"update_task\",\"priority\":\"critical\"}]}"], "json": true},
+    {"cli": ["automation", "create", "{\"name\":\"event only\",\"trigger\":{\"type\":\"event\",\"event_types\":[\"task.created\"]},\"conditions\":{\"field\":\"task.title\",\"op\":\"matches\",\"value\":\"(?i)bug|crash\"},\"actions\":[{\"type\":\"add_tags\",\"tags\":[\"needs-triage\"]}]}"], "json": true},
+    {"mcp": "automation_trigger", "args": {"rule": "escalate", "task": "WG-1"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "queued"}},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/priority", "equals": "critical"}}},
+    {"mcp": "automation_trigger", "args": {"rule": "event only"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "permission"}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_automation.py::test_manual_trigger_and_agent_restrictions: an agent calling create_rule is refused with PermissionDenied; no MCP tool or CLI command creates a rule as an agent (the MCP server exposes only automation_list and automation_trigger, and the CLI always runs as a human), so the refusal is not reachable through an interface",
+      "covered_by": "CORE-20"
+    }
+  ]
+}

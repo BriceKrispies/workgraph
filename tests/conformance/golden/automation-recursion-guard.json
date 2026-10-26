@@ -1,0 +1,61 @@
+{
+  "scenario": "automation-recursion-guard",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"fractal\",\n  \"description\": \"\",\n  \"enabled\": true,\n  \"trigger\": {\n    \"type\": \"event\",\n    \"event_types\": [\n      \"task.created\"\n    ]\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"type\": \"create_child_tasks\",\n      \"children\": [\n        {\n          \"title\": \"child of {{task.key}}\",\n          \"description\": \"\",\n          \"tags\": []\n        }\n      ],\n      \"sequential\": false,\n      \"inherit_repositories\": true\n    }\n  ],\n  \"retry_max_attempts\": 3,\n  \"max_depth\": 2,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"root\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "drain",
+      "exit": 0,
+      "stdout": "completed=0 failed=0\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"items\": [\n    {\n      \"id\": \"<id:4>\",\n      \"workspace_id\": \"<id:2>\",\n      \"key\": \"WG-3\",\n      \"number\": 3,\n      \"title\": \"child of WG-2\",\n      \"description\": \"\",\n      \"acceptance_criteria\": [],\n      \"status\": \"ready\",\n      \"priority\": \"medium\",\n      \"category\": null,\n      \"tags\": [],\n      \"files\": [],\n      \"project_ids\": [],\n      \"repository_ids\": [],\n      \"parent_id\": \"<id:5>\",\n      \"child_ids\": [],\n      \"depends_on\": [],\n      \"blocks\": [],\n      \"assignee\": null,\n      \"assigned_agent\": null,\n      \"claimed_by\": null,\n      \"claim_expires_at\": null,\n      \"auto_execute\": false,\n      \"estimated_effort\": null,\n      \"links\": [],\n      \"metadata\": {},\n      \"due_at\": null,\n      \"scheduled_at\": null,\n      \"created_by\": \"automation:fractal\",\n      \"version\": 2,\n      \"created_at\": \"<ts:4|Z>\",\n      \"updated_at\": \"<ts:4|Z>\",\n      \"started_at\": null,\n      \"completed_at\": null,\n      \"accepted_at\": null,\n      \"archived_at\": null,\n      \"current_classification_id\": null\n    },\n    {\n      \"id\": \"<id:5>\",\n      \"workspace_id\": \"<id:2>\",\n      \"key\": \"WG-2\",\n      \"number\": 2,\n      \"title\": \"child of WG-1\",\n      \"description\": \"\",\n      \"acceptance_criteria\": [],\n      \"status\": \"ready\",\n      \"priority\": \"medium\",\n      \"category\": null,\n      \"tags\": [],\n      \"files\": [],\n      \"project_ids\": [],\n      \"repository_ids\": [],\n      \"parent_id\": \"<id:3>\",\n      \"child_ids\": [\n        \"<id:4>\"\n      ],\n      \"depends_on\": [],\n      \"blocks\": [],\n      \"assignee\": null,\n      \"assigned_agent\": null,\n      \"claimed_by\": null,\n      \"claim_expires_at\": null,\n      \"auto_execute\": false,\n      \"estimated_effort\": null,\n      \"links\": [],\n      \"metadata\": {},\n      \"due_at\": null,\n      \"scheduled_at\": null,\n      \"created_by\": \"automation:fractal\",\n      \"version\": 2,\n      \"created_at\": \"<ts:3|Z>\",\n      \"updated_at\": \"<ts:3|Z>\",\n      \"started_at\": null,\n      \"completed_at\": null,\n      \"accepted_at\": null,\n      \"archived_at\": null,\n      \"current_classification_id\": null\n    },\n    {\n      \"id\": \"<id:3>\",\n      \"workspace_id\": \"<id:2>\",\n      \"key\": \"WG-1\",\n      \"number\": 1,\n      \"title\": \"root\",\n      \"description\": \"\",\n      \"acceptance_criteria\": [],\n      \"status\": \"backlog\",\n      \"priority\": \"medium\",\n      \"category\": null,\n      \"tags\": [],\n      \"files\": [],\n      \"project_ids\": [],\n      \"repository_ids\": [],\n      \"parent_id\": null,\n      \"child_ids\": [\n        \"<id:5>\"\n      ],\n      \"depends_on\": [],\n      \"blocks\": [],\n      \"assignee\": null,\n      \"assigned_agent\": null,\n      \"claimed_by\": null,\n      \"claim_expires_at\": null,\n      \"auto_execute\": false,\n      \"estimated_effort\": null,\n      \"links\": [],\n      \"metadata\": {},\n      \"due_at\": null,\n      \"scheduled_at\": null,\n      \"created_by\": \"human:Brice\",\n      \"version\": 1,\n      \"created_at\": \"<ts:2|Z>\",\n      \"updated_at\": \"<ts:2|Z>\",\n      \"started_at\": null,\n      \"completed_at\": null,\n      \"accepted_at\": null,\n      \"archived_at\": null,\n      \"current_classification_id\": null\n    }\n  ],\n  \"total\": 3,\n  \"limit\": 50,\n  \"offset\": 0,\n  \"next_offset\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:6>\",\n    \"rule_id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"event\",\n    \"trigger_key\": \"<id:7>\",\n    \"trigger_event_id\": \"<id:7>\",\n    \"depth\": 3,\n    \"dry_run\": false,\n    \"status\": \"skipped\",\n    \"matched\": false,\n    \"reason\": \"automation depth 3 exceeds limit 2 (recursion guard)\",\n    \"condition_trace\": [],\n    \"action_results\": [],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts:5|Z>\",\n    \"finished_at\": null\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

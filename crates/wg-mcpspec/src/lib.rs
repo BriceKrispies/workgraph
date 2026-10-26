@@ -18,6 +18,7 @@ pub mod catalog;
 pub mod options;
 pub mod outcome;
 pub mod permissions;
+pub mod wire;
 
 pub use arguments::{ArgumentsError, check_arguments};
 pub use catalog::{Catalog, ToolSpec};
@@ -25,7 +26,8 @@ pub use outcome::{
     INVALID_PARAMS_MESSAGE, error_result, execution_error_text, has_params_to_parse, read_result,
     respond_to_call, success_result, tool_error_text, unknown_tool_text,
 };
-pub use permissions::agent_permissions;
+pub use permissions::{agent_permissions, require, tool_permissions};
+pub use wire::structured;
 
 /// The server name in `serverInfo`.
 pub const SERVER_NAME: &str = "workgraph";

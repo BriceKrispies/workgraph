@@ -5,6 +5,8 @@
 //! assigned, and the `data` column is stored with sorted keys (`json.dumps(sort_keys=True)`), so
 //! it reads back sorted at every depth, not in the order the payload struct lists them.
 
+use std::collections::BTreeMap;
+
 use serde_json::Value;
 use wg_types::{Id, Timestamp, WgError};
 
@@ -64,9 +66,8 @@ pub fn sort_keys(value: &Value) -> Value {
 }
 
 fn sort_object(map: &JsonObject) -> JsonObject {
-    let mut entries: Vec<(&String, &Value)> = map.iter().collect();
-    entries.sort_by(|a, b| a.0.cmp(b.0));
-    entries
+    map.iter()
+        .collect::<BTreeMap<&String, &Value>>()
         .into_iter()
         .map(|(key, value)| (key.clone(), sort_keys(value)))
         .collect()

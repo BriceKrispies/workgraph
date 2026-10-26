@@ -143,10 +143,12 @@ pub fn objects_sql(items: &VectorSync<JsonObject>) -> Result<Raw, WgError> {
 }
 
 /// A NOT NULL JSON list of decision options, each `{id, label, detail, recommended}`.
-pub fn decision_options_sql(options: &[DecisionOption]) -> Result<Raw, WgError> {
+pub fn decision_options_sql<'a>(
+    options: impl IntoIterator<Item = &'a DecisionOption>,
+) -> Result<Raw, WgError> {
     let list = Value::Array(
         options
-            .iter()
+            .into_iter()
             .map(|option| {
                 let mut object = JsonObject::new();
                 object.insert("id".to_owned(), Value::String(option.id.clone()));
@@ -309,7 +311,7 @@ impl<'a> Cols<'a> {
     }
 
     /// A NOT NULL JSON list of decision options.
-    pub fn decision_options(&self, name: &str) -> Result<Vec<DecisionOption>, WgError> {
+    pub fn decision_options(&self, name: &str) -> Result<VectorSync<DecisionOption>, WgError> {
         self.list(name)?
             .into_iter()
             .map(|item| {

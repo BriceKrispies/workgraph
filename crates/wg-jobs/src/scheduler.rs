@@ -104,32 +104,100 @@ pub struct Candidate<T> {
 /// Interleaves candidates round-robin across projects, so one busy project cannot starve the
 /// others, while the priority rank still decides each round (`_fair_order`).
 pub fn fair_order<T>(candidates: Vec<Candidate<T>>) -> Vec<T> {
-    let mut queues: Vec<(String, VecDeque<Candidate<T>>)> = Vec::new();
-    for candidate in candidates {
-        let key = candidate
-            .project
-            .clone()
-            .unwrap_or_else(|| NO_PROJECT.to_owned());
-        match queues.iter_mut().find(|(name, _)| *name == key) {
-            Some((_, queue)) => queue.push_back(candidate),
-            None => queues.push((key, VecDeque::from([candidate]))),
-        }
+    fair_rounds(group_by_project(candidates))
+}
+
+/// Groups candidates into one queue per project, projects in first-appearance order.
+fn group_by_project<T>(candidates: Vec<Candidate<T>>) -> Vec<VecDeque<Candidate<T>>> {
+    candidates
+        .into_iter()
+        .fold(
+            Vec::<(String, VecDeque<Candidate<T>>)>::new(),
+            push_candidate,
+        )
+        .into_iter()
+        .map(|(_, queue)| queue)
+        .collect()
+}
+
+/// Appends `candidate` to the queue of its project, opening a new queue if the project is unseen.
+fn push_candidate<T>(
+    queues: Vec<(String, VecDeque<Candidate<T>>)>,
+    candidate: Candidate<T>,
+) -> Vec<(String, VecDeque<Candidate<T>>)> {
+    let key = candidate
+        .project
+        .clone()
+        .unwrap_or_else(|| NO_PROJECT.to_owned());
+    let (pending, kept) = queues.into_iter().fold(
+        (
+            Some(candidate),
+            Vec::<(String, VecDeque<Candidate<T>>)>::new(),
+        ),
+        |(pending, kept), (name, queue)| match pending {
+            Some(item) if name == key => (
+                None,
+                kept.into_iter()
+                    .chain([(name, queue.into_iter().chain([item]).collect())])
+                    .collect(),
+            ),
+            pending => (pending, kept.into_iter().chain([(name, queue)]).collect()),
+        },
+    );
+    match pending {
+        Some(item) => kept
+            .into_iter()
+            .chain([(key, VecDeque::from([item]))])
+            .collect(),
+        None => kept,
     }
-    let mut ordered = Vec::new();
-    while queues.iter().any(|(_, queue)| !queue.is_empty()) {
-        let best = queues
-            .iter()
-            .filter_map(|(_, queue)| queue.front().map(|head| head.rank))
-            .min();
-        for (_, queue) in &mut queues {
-            if queue.front().is_some_and(|head| Some(head.rank) == best)
-                && let Some(taken) = queue.pop_front()
-            {
-                ordered.push(taken.item);
+}
+
+/// Emits round after round until every queue is empty (`_fair_order`).
+fn fair_rounds<T>(queues: Vec<VecDeque<Candidate<T>>>) -> Vec<T> {
+    if queues.iter().all(VecDeque::is_empty) {
+        return Vec::new();
+    }
+    let (taken, kept) = fair_round(queues);
+    taken.into_iter().chain(fair_rounds(kept)).collect()
+}
+
+/// One round: the head of every queue whose head has the best rank, in queue order, and the
+/// queues with those heads removed.
+fn fair_round<T>(queues: Vec<VecDeque<Candidate<T>>>) -> (Vec<T>, Vec<VecDeque<Candidate<T>>>) {
+    let best = queues
+        .iter()
+        .filter_map(|queue| queue.front().map(|head| head.rank))
+        .min();
+    queues
+        .into_iter()
+        .fold((Vec::new(), Vec::new()), |(taken, kept), queue| match queue
+            .front()
+            .is_some_and(|head| Some(head.rank) == best)
+        {
+            true => {
+                let (head, rest) = split_head(queue);
+                (
+                    taken
+                        .into_iter()
+                        .chain(head.map(|candidate| candidate.item))
+                        .collect(),
+                    kept.into_iter().chain([rest]).collect(),
+                )
             }
-        }
-    }
-    ordered
+            false => (taken, kept.into_iter().chain([queue]).collect()),
+        })
+}
+
+/// A queue split into its first candidate and the rest, in order.
+fn split_head<T>(queue: VecDeque<Candidate<T>>) -> (Option<Candidate<T>>, VecDeque<Candidate<T>>) {
+    queue.into_iter().fold(
+        (None, VecDeque::new()),
+        |(head, rest), candidate| match head {
+            None => (Some(candidate), rest),
+            Some(_) => (head, rest.into_iter().chain([candidate]).collect()),
+        },
+    )
 }
 
 /// The concurrency slots still free: the configured maximum less the active attempts, never

@@ -105,16 +105,11 @@ pub fn duration_ms(reported: Option<i64>, elapsed_since_start: Option<i64>) -> O
 /// Keeps the usage counters an attempt may record (`sanitize_usage`): known keys with
 /// non-negative numbers, truncated to whole numbers. Anything else is dropped rather than guessed.
 pub fn sanitize_usage(usage: &Map<String, Value>) -> Map<String, Value> {
-    let mut clean = Map::new();
-    for (key, value) in usage {
-        if !USAGE_KEYS.contains(&key.as_str()) {
-            continue;
-        }
-        if let Some(whole) = whole_count(value) {
-            clean.insert(key.clone(), json!(whole));
-        }
-    }
-    clean
+    usage
+        .iter()
+        .filter(|(key, _)| USAGE_KEYS.contains(&key.as_str()))
+        .filter_map(|(key, value)| whole_count(value).map(|whole| (key.clone(), json!(whole))))
+        .collect()
 }
 
 fn whole_count(value: &Value) -> Option<u64> {

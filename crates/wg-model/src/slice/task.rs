@@ -1,5 +1,7 @@
 //! [`TaskSlice`]: tasks and their child rows, with the registry rows they refer to.
 
+use std::collections::BTreeMap;
+
 use rpds::RedBlackTreeMapSync;
 use wg_types::{Id, TaskKey};
 
@@ -101,13 +103,13 @@ impl TaskSlice {
 
     /// The decisions of a task, oldest first (`created_at`, then id).
     pub fn decisions_of(&self, task_id: Id) -> Vec<&TaskDecision> {
-        let mut found: Vec<&TaskDecision> = self
-            .decisions
+        self.decisions
             .values()
             .filter(|row| row.task_id == task_id)
-            .collect();
-        found.sort_by_key(|row| (row.created_at, row.id));
-        found
+            .map(|row| ((row.created_at, row.id), row))
+            .collect::<BTreeMap<_, _>>()
+            .into_values()
+            .collect()
     }
 
     /// The tracker item a task mirrors, if any.

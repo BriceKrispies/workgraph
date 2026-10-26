@@ -146,7 +146,7 @@ pub struct TaskDecision {
     pub workspace_id: Id,
     pub task_id: Id,
     pub question: String,
-    pub options: Vec<DecisionOption>,
+    pub options: VectorSync<DecisionOption>,
     pub status: String,
     pub chosen_option_id: Option<String>,
     pub other_text: Option<String>,

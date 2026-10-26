@@ -807,7 +807,9 @@ fn task_decision(n: u32, task_n: u32, second: u8) -> wg_model::entity::TaskDecis
             label: "A".into(),
             detail: String::new(),
             recommended: true,
-        }],
+        }]
+        .into_iter()
+        .collect(),
         status: "open".into(),
         chosen_option_id: None,
         other_text: None,

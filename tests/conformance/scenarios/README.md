@@ -17,10 +17,17 @@ implementation in a fresh `WORKGRAPH_HOME` and a fresh temporary directory. The 
 
 ## Steps
 
-* `setup` runs before every step, in order. It is the only way to create commits and files:
-  `git init`, `commit` (with `files` and `message`), `branch`, `checkout` (`-b` allowed), `merge`
-  and `worktree`. There is no `rm`, `mv`, `rebase`, `cherry-pick` or `reset`, and no step creates
-  commits, so every commit a scenario needs must be in `setup`, in the order it is made.
+* `setup` runs before every step, in order. It names a typed git operation on a repository
+  (`{"git": "commit", "repo": "api", ...}`). The operations are `init`, `commit`, `write`, `branch`,
+  `checkout` (`-b` allowed), `worktree`, `merge`, `delete`, `move`, `rebase`, `cherry-pick` and
+  `reset`, with the argument shapes that `check_git_op` accepts.
+* A `git` step runs the same operations between steps, in the directory `cwd` instead of a repository
+  name: `{"git": "commit", "cwd": "{var:checkout}", "files": {...}, "message": "..."}`. Use
+  `{repo:<name>}` for a repository, or a saved path for a managed checkout. A git step does not
+  change the most recent `cli` output. A failed git step fails that step only.
+* An `rmtree` step removes a directory tree, for example a managed checkout removed out of band:
+  `{"rmtree": "{var:checkout}"}`. The path must lie inside the sandbox home and must not be the home
+  itself, and a `..` component is refused.
 * Task keys are allocated from the workspace counter, starting at `WG-1` in a fresh home. A setup
   commit message may therefore name a key that a later `task create` step will produce (for example
   `Task-ID: WG-1`), as long as the tasks are created in the same order. Keys are not normalised.
@@ -29,8 +36,11 @@ implementation in a fresh `WORKGRAPH_HOME` and a fresh temporary directory. The 
 * Use `save` with a JSON pointer (`"/items/0/sha"`) to carry a value into later steps as
   `{var:name}`. Placeholders `{repo:<name>}`, `{key:N}` and `{id:N}` resolve from earlier outputs.
 * `assert` steps carry the original Python test's assertions, so a scenario is meaningful without a
-  differential run. `json` equality values may use placeholders. Database assertions (`db`) are
-  skipped by the runner skeleton and must not be relied on yet.
+  differential run. A `json` assertion takes a JSON pointer and exactly one form: `equals`,
+  `not_equals` (the value exists and differs), `absent: true` (the key is not present) or `excludes`
+  (the array at the pointer has no element equal to the value). Values may use placeholders. Use
+  `excludes` for "the list has no such element". Database assertions (`db`) are skipped by the runner
+  skeleton and must not be relied on yet.
 * Assertions on a file path are relative to `{home}` when not absolute. Use `{repo:<name>}` for
   repository files.
 

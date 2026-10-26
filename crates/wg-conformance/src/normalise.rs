@@ -41,6 +41,9 @@ impl Normaliser for FullNormaliser {
         for (s, e, key) in scan(bytes, uuid_at) {
             spans.push((s, e, format!("<id:{}>", numbering.id(&key))));
         }
+        for (s, e, prefix) in scan(bytes, attempt_prefix_at) {
+            spans.push((s, e, format!("<id:{}>", numbering.attempt(&prefix))));
+        }
         for (s, e, key) in scan(bytes, sha_at) {
             spans.push((s, e, format!("<sha:{}>", numbering.sha(&key))));
         }
@@ -113,6 +116,33 @@ fn uuid_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
         _ => bytes[i + k].is_ascii_hexdigit(),
     });
     shape.then(|| (i, end, lower(&bytes[i..end])))
+}
+
+/// The 8-character prefix of an attempt id in a managed branch name, `attempt-<n>-<id8>`
+/// (`wg/<key>/attempt-<n>-<id8>`). Only the prefix is the span. It takes the placeholder of the
+/// full UUID it prefixes, so the branch name and the attempt's `id` agree.
+fn attempt_prefix_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
+    const HEAD: &[u8] = b"attempt-";
+    if !bytes[i..].starts_with(HEAD) || (i > 0 && !matches!(bytes[i - 1], b'/' | b'-' | b'_')) {
+        return None;
+    }
+    let mut p = i + HEAD.len();
+    let digits_from = p;
+    while bytes.get(p).is_some_and(u8::is_ascii_digit) {
+        p += 1;
+    }
+    if p == digits_from || bytes.get(p) != Some(&b'-') {
+        return None;
+    }
+    let start = p + 1;
+    let end = start + 8;
+    if end > bytes.len() || !bounded(bytes, start, end) {
+        return None;
+    }
+    bytes[start..end]
+        .iter()
+        .all(u8::is_ascii_hexdigit)
+        .then(|| (start, end, lower(&bytes[start..end])))
 }
 
 fn sha_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
@@ -312,10 +342,18 @@ impl Numbering {
     fn from_outputs(outputs: &[&str]) -> Self {
         let mut n = Self::default();
         for text in outputs {
-            let bytes = text.as_bytes();
-            for (_, _, key) in scan(bytes, uuid_at) {
+            for (_, _, key) in scan(text.as_bytes(), uuid_at) {
                 n.id(&key);
             }
+        }
+        // Prefixes come after every full UUID of the run, so a prefix finds the UUID it abbreviates.
+        for text in outputs {
+            for (_, _, prefix) in scan(text.as_bytes(), attempt_prefix_at) {
+                n.attempt(&prefix);
+            }
+        }
+        for text in outputs {
+            let bytes = text.as_bytes();
             for (_, _, key) in scan(bytes, sha_at) {
                 n.sha(&key);
             }
@@ -329,6 +367,17 @@ impl Numbering {
     fn id(&mut self, key: &str) -> usize {
         let next = self.ids.len() + 1;
         *self.ids.entry(key.to_owned()).or_insert(next)
+    }
+
+    /// The number of the full UUID that `prefix` abbreviates, or a number of its own when the
+    /// run never shows that UUID.
+    fn attempt(&mut self, prefix: &str) -> usize {
+        let full = self
+            .ids
+            .iter()
+            .find(|(id, _)| id.starts_with(prefix))
+            .map(|(_, n)| *n);
+        full.unwrap_or_else(|| self.id(prefix))
     }
 
     fn sha(&mut self, key: &str) -> usize {
@@ -483,6 +532,33 @@ mod tests {
             "http://127.0.0.1:51234/api token s3cr3t-token at /tmp/abc/x",
         );
         assert_eq!(out, "http://127.0.0.1:<port>/api token <token> at <tmp>/x");
+    }
+
+    #[test]
+    fn attempt_prefixes_take_the_placeholder_of_their_full_uuid() {
+        let attempt = "wg/WG-1/attempt-1-3f2b8c1e";
+        let full_seen_later = format!("{attempt} {ID1}");
+        let r = run("py", &[(full_seen_later.as_str(), "")]);
+        let n = FullNormaliser::default();
+        assert_eq!(
+            n.normalise(&r, &full_seen_later),
+            "wg/WG-1/attempt-1-<id:1> <id:1>"
+        );
+        // The same prefix in another run, with another UUID, still matches its UUID.
+        let other = "11111111-2222-4333-8444-555555555555";
+        let text = format!("wg/WG-1/attempt-1-{} {other}", &other[..8]);
+        let rs = run("rs", &[(text.as_str(), "")]);
+        assert_eq!(n.normalise(&rs, &text), "wg/WG-1/attempt-1-<id:1> <id:1>");
+        // A prefix that no UUID of the run shows gets a number of its own.
+        assert_eq!(
+            n.normalise(&r, "wg/WG-2/attempt-2-abcdef12"),
+            "wg/WG-2/attempt-2-<id:2>"
+        );
+        // Words that merely contain `attempt-` and a short hex run are left alone.
+        assert_eq!(
+            n.normalise(&r, "myattempt-1-3f2b8c1e x attempt-x-3f2b8c1e"),
+            "myattempt-1-3f2b8c1e x attempt-x-3f2b8c1e"
+        );
     }
 
     #[test]

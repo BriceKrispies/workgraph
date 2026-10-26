@@ -1,0 +1,33 @@
+{
+  "id": "automation-event-rule-matches",
+  "covers": ["C026", "C030", "C032", "C033"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["automation", "create", "{\"name\":\"tag bugs\",\"trigger\":{\"type\":\"event\",\"event_types\":[\"task.created\"]},\"conditions\":{\"field\":\"task.title\",\"op\":\"matches\",\"value\":\"(?i)bug|crash\"},\"actions\":[{\"type\":\"add_tags\",\"tags\":[\"needs-triage\"]},{\"type\":\"notify\",\"title\":\"New bug {{task.key}}: {{task.title}}\"}]}"], "json": true},
+    {"assert": {"json": {"path": "/name", "equals": "tag bugs"}}},
+    {"cli": ["task", "create", "Crash on save"], "json": true},
+    {"cli": ["task", "create", "Add button"], "json": true},
+    {"drain": {"max_jobs": 20}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/tags/0", "equals": "needs-triage"}}},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/tags", "equals": []}}},
+    {"cli": ["automation", "runs", "--rule", "tag bugs", "--status", "succeeded"], "json": true},
+    {"assert": {"json": {"path": "/0/condition_trace/0/result", "equals": true}}},
+    {"assert": {"json": {"path": "/0/action_results/0/status", "equals": "succeeded"}}},
+    {"assert": {"json": {"path": "/0/action_results/1/status", "equals": "succeeded"}}},
+    {"cli": ["automation", "runs", "--rule", "tag bugs", "--status", "not_matched"], "json": true},
+    {"assert": {"json": {"path": "/0/status", "equals": "not_matched"}}},
+    {"cli": ["automation", "notifications"], "json": true},
+    {"assert": {"json": {"path": "/0/title", "equals": "New bug WG-1: Crash on save"}}},
+    {"cli": ["automation", "process"], "json": true},
+    {"cli": ["automation", "runs", "--rule", "tag bugs"], "json": true}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_automation.py::test_event_rule_matches_and_is_idempotent: resetting the 'automation' system cursor to 0 and re-processing the whole event log (the 'no duplicate runs' check after a replay) is not reachable, because the CLI cannot write the cursor; the scenario checks only that a second process run leaves the run history as it was",
+      "covered_by": "CORE-20"
+    }
+  ]
+}

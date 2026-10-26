@@ -1,0 +1,54 @@
+{
+  "scenario": "automation-scheduled-rule",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"weekly report\",\n  \"description\": \"\",\n  \"enabled\": true,\n  \"trigger\": {\n    \"type\": \"schedule\",\n    \"event_types\": [],\n    \"interval_seconds\": 3600\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"type\": \"notify\",\n      \"level\": \"info\",\n      \"title\": \"tick {{input.scheduled_for}}\",\n      \"body\": \"\"\n    }\n  ],\n  \"retry_max_attempts\": 3,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": \"<ts:2|Z>\",\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"events\": {\n    \"events\": 2,\n    \"runs\": 0,\n    \"matched\": 0,\n    \"skipped\": 0\n  },\n  \"scheduled\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

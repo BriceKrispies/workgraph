@@ -1,0 +1,16 @@
+{
+  "id": "automation-recursion-guard",
+  "covers": ["C026", "C033"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["automation", "create", "{\"name\":\"fractal\",\"trigger\":{\"type\":\"event\",\"event_types\":[\"task.created\"]},\"actions\":[{\"type\":\"create_child_tasks\",\"children\":[{\"title\":\"child of {{task.key}}\"}]}],\"max_depth\":2}"], "json": true},
+    {"cli": ["task", "create", "root"], "json": true},
+    {"drain": {"max_jobs": 50}},
+    {"cli": ["task", "list"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 3}}},
+    {"cli": ["automation", "runs", "--rule", "fractal", "--status", "skipped"], "json": true},
+    {"assert": {"stdout_contains": "recursion guard"}}
+  ],
+  "not_observable": []
+}

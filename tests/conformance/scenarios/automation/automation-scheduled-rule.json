@@ -1,0 +1,20 @@
+{
+  "id": "automation-scheduled-rule",
+  "covers": ["C026", "C032"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["automation", "create", "{\"name\":\"weekly report\",\"trigger\":{\"type\":\"schedule\",\"interval_seconds\":3600},\"actions\":[{\"type\":\"notify\",\"title\":\"tick {{input.scheduled_for}}\"}]}"], "json": true},
+    {"assert": {"json": {"path": "/name", "equals": "weekly report"}}},
+    {"cli": ["automation", "process"], "json": true},
+    {"assert": {"json": {"path": "/scheduled", "equals": 0}}},
+    {"cli": ["automation", "notifications"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_automation.py::test_scheduled_rule: the due path (a run at now = next_run_at + 1 second returns 1, the immediate second call returns 0, and the 'tick' notification with scheduled_for is emitted) is not reachable, because the CLI cannot choose the processing time and the schedule uses the real clock",
+      "covered_by": "CORE-20"
+    }
+  ]
+}

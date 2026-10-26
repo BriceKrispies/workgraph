@@ -19,6 +19,7 @@ pub mod context;
 pub mod decisions;
 pub mod effects;
 pub mod events;
+pub mod git;
 pub mod logs;
 pub mod registry;
 pub mod settings;

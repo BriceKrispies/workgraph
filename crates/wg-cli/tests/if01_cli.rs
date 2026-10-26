@@ -20,6 +20,7 @@ const IMPLEMENTED: &[&str] = &[
     "mcp",
     "project",
     "workspace",
+    "git",
 ];
 
 /// The hand-written command of an implemented group.

@@ -88,33 +88,43 @@ pub fn openapi_body() -> Result<Vec<u8>, WgError> {
         .map_err(|err| WgError::new(ErrorCode::WorkgraphError, format!("openapi: {err:?}")))
 }
 
-/// `X-Workgraph-Actor`: the acting human's name, cut to 100 characters (`deps.get_ctx`).
-pub fn actor_name(header: Option<&str>) -> Option<String> {
-    header
-        .filter(|name| !name.is_empty())
-        .map(|name| name.chars().take(100).collect())
+/// A header's value as Starlette reads it: each byte is one character (Latin-1), so the text of
+/// a UTF-8 header is its bytes as characters, and any byte is accepted.
+pub fn header_text(bytes: &[u8]) -> String {
+    bytes.iter().map(|&byte| char::from(byte)).collect()
 }
 
-/// `X-Correlation-Id`: used when it is at most 64 characters.
-pub fn correlation_header(header: Option<&str>) -> Option<&str> {
-    header.filter(|id| !id.is_empty() && id.chars().count() <= 64)
+/// `X-Workgraph-Actor`: the acting human's name, cut to 100 characters (`deps.get_ctx`).
+pub fn actor_name(header: Option<&[u8]>) -> Option<String> {
+    header
+        .filter(|name| !name.is_empty())
+        .map(|name| header_text(name).chars().take(100).collect())
+}
+
+/// `X-Correlation-Id`: the text kept when it is at most 64 characters (Python's `len` of the
+/// Latin-1 text, which is the byte count).
+pub fn correlation_header(header: Option<&[u8]>) -> Option<String> {
+    header
+        .filter(|id| !id.is_empty() && id.len() <= 64)
+        .map(header_text)
 }
 
 /// `deps.get_ctx(request)`: `RequestContext.human(actor)` (the login name when the header is
 /// absent) with the request's correlation id. `fresh` is the id drawn for a request without one.
 ///
-/// Python keeps any correlation text up to 64 characters; the runtime's correlation is an id, so
-/// a header that is not one is replaced by `fresh`.
+/// The correlation is the header's text, as Python stores it: the runtime keeps correlation ids
+/// as text, so a header that is not a UUID is kept as it is.
 pub fn request_context(
-    actor: Option<&str>,
-    correlation: Option<&str>,
+    actor: Option<&[u8]>,
+    correlation: Option<&[u8]>,
     login: Option<&str>,
     fresh: wg_types::Id,
 ) -> Result<wg_runtimespec::RequestContext, WgError> {
     let name = actor_name(actor);
-    let correlation = correlation_header(correlation)
-        .and_then(|text| wg_types::parse_id(text).ok())
-        .unwrap_or(fresh);
+    let correlation = correlation_header(correlation).map_or_else(
+        || wg_types::Correlation::from(fresh),
+        wg_types::Correlation::new,
+    );
     wg_runtimespec::RequestContext::human(name.as_deref(), login, correlation)
 }
 
@@ -179,11 +189,25 @@ mod tests {
     #[test]
     fn request_headers() {
         assert_eq!(
-            actor_name(Some(&"x".repeat(150))).map(|n| n.len()),
+            actor_name(Some("x".repeat(150).as_bytes())).map(|n| n.len()),
             Some(100)
         );
-        assert_eq!(actor_name(Some("")), None);
-        assert_eq!(correlation_header(Some(&"c".repeat(65))), None);
-        assert_eq!(correlation_header(Some("abc")), Some("abc"));
+        assert_eq!(actor_name(Some(b"")), None);
+        assert_eq!(correlation_header(Some("c".repeat(65).as_bytes())), None);
+        assert_eq!(
+            correlation_header(Some("c".repeat(64).as_bytes())),
+            Some("c".repeat(64))
+        );
+        assert_eq!(correlation_header(Some(b"")), None);
+        assert_eq!(
+            correlation_header(Some(b"not a uuid")),
+            Some("not a uuid".to_owned())
+        );
+        // UTF-8 bytes are read one character per byte, as Starlette reads them.
+        assert_eq!(
+            correlation_header(Some("caf\u{e9}".as_bytes())),
+            Some("caf\u{c3}\u{a9}".to_owned())
+        );
+        assert_eq!(header_text(&[0xe9]), "\u{e9}");
     }
 }

@@ -23,7 +23,7 @@ pub mod worktree;
 use rpds::VectorSync;
 use serde::{Serialize, Serializer};
 use serde_json::Value;
-use wg_types::{Actor, ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Actor, Correlation, ErrorCode, Id, Timestamp, WgError};
 
 use crate::entity::JsonObject;
 use crate::stamp::Stamp;
@@ -347,7 +347,7 @@ pub struct EventDraft {
     /// `actor` and `actor_kind` columns.
     pub actor: Actor,
     pub occurred_at: Timestamp,
-    pub correlation_id: Id,
+    pub correlation_id: Correlation,
     pub causation_id: Option<Id>,
     pub attempt_id: Option<Id>,
     /// Non-zero inside automation runs: [`EventDraft::data`] then adds the `_automation` key.
@@ -371,7 +371,7 @@ impl EventDraft {
             entity_id,
             actor: stamp.actor.clone(),
             occurred_at: stamp.at,
-            correlation_id: stamp.correlation,
+            correlation_id: stamp.correlation.clone(),
             causation_id: stamp.causation,
             attempt_id: stamp.attempt,
             automation_depth: stamp.automation_depth,

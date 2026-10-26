@@ -45,7 +45,7 @@ pub fn from_model(seq: i64, draft: &EventDraft) -> Result<Value, WgError> {
                 "occurred_at",
                 timestamp(draft.occurred_at, TimeFormat::ModelZ),
             ),
-            ("correlation_id", id(draft.correlation_id)),
+            ("correlation_id", text(draft.correlation_id.as_str())),
             ("causation_id", optional_id(draft.causation_id)),
             ("attempt_id", optional_id(draft.attempt_id)),
             (

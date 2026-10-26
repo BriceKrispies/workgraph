@@ -17,11 +17,59 @@ pub fn validate(model: &Model, input: &Value) -> Result<Value, Vec<ValidationErr
     model_value(model, input, &[])
 }
 
+/// The key of the object that stands for a non-finite float. JSON has no form for `NaN` or
+/// `Infinity`, which `json.loads` still reads as floats, and a `serde_json::Value` cannot hold
+/// one either: the request decoder writes a one-key object under this key, and the validator
+/// reads it back as the float. A client object with exactly this key is taken for one.
+pub const NON_FINITE_KEY: &str = "\u{0}non-finite";
+
+/// The marker object for the non-finite float `number` (`NaN`, `inf` or `-inf`).
+pub fn non_finite_marker(number: f64) -> Value {
+    let text = if number.is_nan() {
+        "NaN"
+    } else if number > 0.0 {
+        "Infinity"
+    } else {
+        "-Infinity"
+    };
+    let mut object = Map::new();
+    object.insert(NON_FINITE_KEY.to_owned(), Value::String(text.to_owned()));
+    Value::Object(object)
+}
+
+/// The float a marker object stands for, or `None` for any other value.
+fn marker_number(input: &Value) -> Option<f64> {
+    let object = input.as_object()?;
+    if object.len() != 1 {
+        return None;
+    }
+    match object.get(NON_FINITE_KEY)?.as_str()? {
+        "NaN" => Some(f64::NAN),
+        "Infinity" => Some(f64::INFINITY),
+        "-Infinity" => Some(f64::NEG_INFINITY),
+        _ => None,
+    }
+}
+
+/// Whether `input` holds a non-finite float anywhere in it. FastAPI renders an error list with
+/// `allow_nan=False`, so an error whose `input` holds one fails the request with a 500, not a 422.
+pub fn holds_non_finite(input: &Value) -> bool {
+    marker_number(input).is_some()
+        || match input {
+            Value::Array(items) => items.iter().any(holds_non_finite),
+            Value::Object(map) => map.values().any(holds_non_finite),
+            _ => false,
+        }
+}
+
 fn one(err: ValidationError) -> Vec<ValidationError> {
     vec![err]
 }
 
 fn value(schema: &Schema, input: &Value, loc: &[Loc]) -> Outcome {
+    if let Some(number) = marker_number(input) {
+        return non_finite(schema, number, input, loc);
+    }
     match schema {
         Schema::Any => Ok(input.clone()),
         Schema::Nullable(inner) => {
@@ -199,6 +247,23 @@ fn bound_message(key: &str, bound: &str) -> String {
     format!("Input should be {relation} {bound}")
 }
 
+/// A non-finite float where the schema expects a value. `Any` takes it (Python keeps the float,
+/// which the output writes as null), a float field checks its bounds, and any other type refuses it.
+fn non_finite(schema: &Schema, number: f64, input: &Value, loc: &[Loc]) -> Outcome {
+    match schema {
+        Schema::Any => Ok(Value::Null),
+        Schema::Nullable(inner) => non_finite(inner, number, input, loc),
+        Schema::Float(rules) => float_bounds(rules, number, input, loc, true),
+        _ => Err(one(error(
+            "float_type",
+            "Input should be a valid number",
+            loc,
+            input,
+            None,
+        ))),
+    }
+}
+
 fn float(rules: &FloatRules, input: &Value, loc: &[Loc]) -> Outcome {
     let number = match input {
         Value::Bool(flag) => f64::from(u8::from(*flag)),
@@ -222,29 +287,42 @@ fn float(rules: &FloatRules, input: &Value, loc: &[Loc]) -> Outcome {
             )));
         }
     };
+    float_bounds(rules, number, input, loc, false)
+}
+
+/// The bounds of a float field. A NaN fails every bound it has when `nan_fails` (Python's
+/// comparisons with NaN are false, so pydantic rejects it), and passes when there are none.
+fn float_bounds(
+    rules: &FloatRules,
+    number: f64,
+    input: &Value,
+    loc: &[Loc],
+    nan_fails: bool,
+) -> Outcome {
+    let nan = nan_fails && number.is_nan();
     let bounds: [(&str, Option<f64>, bool, &str); 4] = [
         (
             "le",
             rules.le,
-            number > rules.le.unwrap_or(f64::INFINITY),
+            nan || number > rules.le.unwrap_or(f64::INFINITY),
             "less_than_equal",
         ),
         (
             "lt",
             rules.lt,
-            number >= rules.lt.unwrap_or(f64::INFINITY),
+            nan || number >= rules.lt.unwrap_or(f64::INFINITY),
             "less_than",
         ),
         (
             "ge",
             rules.ge,
-            number < rules.ge.unwrap_or(f64::NEG_INFINITY),
+            nan || number < rules.ge.unwrap_or(f64::NEG_INFINITY),
             "greater_than_equal",
         ),
         (
             "gt",
             rules.gt,
-            number <= rules.gt.unwrap_or(f64::NEG_INFINITY),
+            nan || number <= rules.gt.unwrap_or(f64::NEG_INFINITY),
             "greater_than",
         ),
     ];

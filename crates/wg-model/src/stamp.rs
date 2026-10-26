@@ -7,7 +7,7 @@
 
 use rpds::RedBlackTreeSetSync;
 use uuid::Builder;
-use wg_types::{Actor, ErrorCode, Id, Permission, Timestamp, WgError};
+use wg_types::{Actor, Correlation, ErrorCode, Id, Permission, Timestamp, WgError};
 
 /// Written by the shell for every decision; the only source of time, ids and the actor.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -21,7 +21,7 @@ pub struct Stamp {
     /// The permissions the actor holds (`ctx.permissions`).
     pub permissions: RedBlackTreeSetSync<Permission>,
     /// `ctx.correlation_id`: shared by every event of one request.
-    pub correlation: Id,
+    pub correlation: Correlation,
     /// `ctx.causation_id`: the event that caused this request, if any.
     pub causation: Option<Id>,
     /// `ctx.attempt_id`: the attempt the request runs under, if any.

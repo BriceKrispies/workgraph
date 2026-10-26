@@ -10,7 +10,7 @@ use std::collections::BTreeSet;
 use rpds::RedBlackTreeSetSync;
 use wg_model::Stamp;
 use wg_types::{
-    Actor, ActorKind, Id, Permission, Timestamp, WgError, default_agent_permissions,
+    Actor, ActorKind, Correlation, Id, Permission, Timestamp, WgError, default_agent_permissions,
     human_permissions, system_permissions,
 };
 
@@ -23,7 +23,7 @@ pub struct RequestContext {
     pub actor: Actor,
     pub permissions: RedBlackTreeSetSync<Permission>,
     /// `correlation_id`: shared by every event of the request.
-    pub correlation: Id,
+    pub correlation: Correlation,
     /// `causation_id`: the event that caused this request.
     pub causation: Option<Id>,
     /// `attempt_id`: the attempt the request runs under.
@@ -42,12 +42,12 @@ impl RequestContext {
         kind: ActorKind,
         name: &str,
         permissions: BTreeSet<Permission>,
-        correlation: Id,
+        correlation: impl Into<Correlation>,
     ) -> Result<Self, WgError> {
         Ok(Self {
             actor: Actor::new(kind, name)?,
             permissions: permission_set(permissions),
-            correlation,
+            correlation: correlation.into(),
             causation: None,
             attempt: None,
             automation_depth: 0,
@@ -59,7 +59,7 @@ impl RequestContext {
     pub fn human(
         name: Option<&str>,
         login: Option<&str>,
-        correlation: Id,
+        correlation: impl Into<Correlation>,
     ) -> Result<Self, WgError> {
         let user = name.filter(|n| !n.is_empty()).or(login).unwrap_or("local");
         Self::new(ActorKind::Human, user, human_permissions(), correlation)
@@ -69,7 +69,7 @@ impl RequestContext {
     pub fn agent(
         name: &str,
         permissions: Option<BTreeSet<Permission>>,
-        correlation: Id,
+        correlation: impl Into<Correlation>,
     ) -> Result<Self, WgError> {
         Self::new(
             ActorKind::Agent,
@@ -80,7 +80,7 @@ impl RequestContext {
     }
 
     /// `RequestContext.system(component)`: `system:<component>` with every permission.
-    pub fn system(component: &str, correlation: Id) -> Result<Self, WgError> {
+    pub fn system(component: &str, correlation: impl Into<Correlation>) -> Result<Self, WgError> {
         Self::new(
             ActorKind::System,
             component,
@@ -94,7 +94,7 @@ impl RequestContext {
         rule_name: &str,
         permissions: BTreeSet<Permission>,
         depth: u32,
-        correlation: Id,
+        correlation: impl Into<Correlation>,
     ) -> Result<Self, WgError> {
         Ok(Self {
             automation_depth: depth,
@@ -134,7 +134,7 @@ impl RequestContext {
             entropy,
             actor: self.actor.clone(),
             permissions: self.permissions.clone(),
-            correlation: self.correlation,
+            correlation: self.correlation.clone(),
             causation: self.causation,
             attempt: self.attempt,
             automation_depth: self.automation_depth,
@@ -199,7 +199,7 @@ mod tests {
         let at = timestamp_from_unix_nanos(1_761_393_600_123_456_789).unwrap();
         let stamp = ctx.stamp(at, [1; 32]);
         assert_eq!(stamp.at.format_db(), "2025-10-25T12:00:00.123456+00:00");
-        assert_eq!(stamp.correlation, id(0));
+        assert_eq!(stamp.correlation, Correlation::from(id(0)));
         assert_eq!(stamp.attempt, Some(id(2)));
         assert_eq!(stamp.actor.to_string(), "system:worker");
     }

@@ -85,7 +85,7 @@ impl World {
             entropy: [self.seed; 32],
             actor: Actor::parse(ACTOR).unwrap_or_else(|e| panic!("{e}")),
             permissions: RedBlackTreeSetSync::new_sync().insert(Permission::TaskWrite),
-            correlation: id(9),
+            correlation: id(9).into(),
             causation: None,
             attempt: None,
             automation_depth: 0,

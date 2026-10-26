@@ -23,4 +23,4 @@ mod validate;
 pub use error::{Loc, ValidationError};
 pub use json_schema::{LoadError, LoadOptions, model_from_json_schema};
 pub use schema::{Check, ChoiceKind, Extra, Field, FloatRules, IntRules, Model, Schema, StrRules};
-pub use validate::validate;
+pub use validate::{NON_FINITE_KEY, holds_non_finite, non_finite_marker, validate};

@@ -2,16 +2,18 @@
 //! against their schemas in the OpenAPI snapshot, then the JSON body against the body schema the
 //! route declares. Every error is collected (path, then query, then body) into one 422; a body
 //! that is not valid JSON fails alone with `json_invalid`, and one that is not text with
-//! FastAPI's 400.
+//! FastAPI's 400. An error that holds a NaN or an infinity cannot be rendered (FastAPI's encoder
+//! refuses it), so the request fails with a 500 instead.
 
 use serde_json::{Map, Value as Json, json};
 use wg_validate::{
-    Extra, Field, LoadOptions, Model, Schema, ValidationError, model_from_json_schema, validate,
+    Extra, Field, LoadOptions, Model, Schema, ValidationError, holds_non_finite,
+    model_from_json_schema, validate,
 };
 
 use crate::form::{query_get, query_getlist};
 use crate::pyjson::{Decoded, loads};
-use crate::reply::{Reply, body_parse_error, validation_reply};
+use crate::reply::{Reply, body_parse_error, internal_error, validation_reply};
 
 /// Where a parameter comes from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -192,9 +194,11 @@ pub fn read_body(body: &[u8], content_type: Option<&str>) -> Result<Option<Json>
         return Ok(None);
     }
     if !is_json_content(content_type) {
-        return Ok(Some(Json::String(
-            String::from_utf8_lossy(body).into_owned(),
-        )));
+        // FastAPI decodes the bytes as UTF-8 strictly; a body that is not UTF-8 is a 500.
+        return match std::str::from_utf8(body) {
+            Ok(text) => Ok(Some(Json::String(text.to_owned()))),
+            Err(_) => Err(internal_error()),
+        };
     }
     match loads(body) {
         Decoded::Value(value) => Ok(Some(value)),
@@ -280,6 +284,8 @@ pub fn check_request(
     };
     if errors.is_empty() {
         Ok(Checked { params, body })
+    } else if errors.iter().any(holds_non_finite) {
+        Err(internal_error())
     } else {
         Err(validation_reply(&errors))
     }
@@ -451,5 +457,104 @@ mod tests {
             "application/merge-patch+json; charset=utf-8"
         )));
         assert!(!is_json_content(Some("text/json")));
+    }
+
+    fn task_body(bytes: &[u8], content_type: Option<&str>) -> Result<Json, (u16, String)> {
+        let doc = openapi();
+        let schema = json!({"$ref": "#/components/schemas/TaskCreate"});
+        let model = model_from_json_schema(&doc, &schema, LoadOptions::default()).unwrap();
+        let declared = Declared {
+            params: Vec::new(),
+            body: Some(BodySpec {
+                schema: Schema::Model(Box::new(model)),
+                required: true,
+            }),
+        };
+        match check_request(&declared, &[], &[], bytes, content_type) {
+            Ok(checked) => Ok(checked.body),
+            Err(reply) => Err((reply.status, body_text(reply))),
+        }
+    }
+
+    #[test]
+    fn non_finite_floats_like_python() {
+        let json = Some("application/json");
+        // Infinity passes `ge=0` and is stored as a float Python writes as null.
+        let accepted = task_body(
+            br#"{"title": "t", "estimated_effort": {"value": Infinity}}"#,
+            json,
+        )
+        .unwrap();
+        assert_eq!(accepted["estimated_effort"]["value"], Json::Null);
+        assert_eq!(accepted["estimated_effort"]["unit"], json!("points"));
+        // NaN and -Infinity fail `ge=0`; FastAPI cannot render an error that holds them: a 500.
+        for body in [
+            r#"{"title": "t", "estimated_effort": {"value": NaN}}"#,
+            r#"{"title": "t", "estimated_effort": {"value": -Infinity}}"#,
+            r#"{"title": "t", "parent": NaN}"#,
+            r#"{"title": "t", "tags": [Infinity]}"#,
+            r#"{"title": "t", "extra": NaN}"#,
+        ] {
+            assert_eq!(
+                task_body(body.as_bytes(), json),
+                Err((500, "Internal Server Error".to_owned())),
+                "{body}"
+            );
+        }
+        // A bare NaN is not a model: the same 500.
+        assert_eq!(
+            task_body(b"NaN", json),
+            Err((500, "Internal Server Error".to_owned()))
+        );
+        // The infinity is accepted, so only the other error (the unit) is reported: a 422 whose
+        // items hold no non-finite value.
+        let (status, text) = task_body(
+            br#"{"title": "t", "estimated_effort": {"value": 1e999, "unit": "bogus"}}"#,
+            json,
+        )
+        .unwrap_err();
+        assert_eq!(status, 422);
+        assert!(
+            text.contains(r#""loc":["body","estimated_effort","unit"]"#),
+            "{text}"
+        );
+    }
+
+    #[test]
+    fn utf16_and_utf32_bodies_like_python() {
+        let json = Some("application/json");
+        let text = r#"{"title": "hé"}"#;
+        let utf16le: Vec<u8> = text.encode_utf16().flat_map(u16::to_le_bytes).collect();
+        let mut with_bom = vec![0xff, 0xfe];
+        with_bom.extend(&utf16le);
+        let checked = task_body(&with_bom, json).unwrap();
+        assert_eq!(checked["title"], json!("h\u{e9}"));
+        let utf32be: Vec<u8> = text
+            .chars()
+            .flat_map(|c| (c as u32).to_be_bytes())
+            .collect();
+        assert_eq!(
+            task_body(&utf32be, json).unwrap()["title"],
+            json!("h\u{e9}")
+        );
+        // A bad JSON body in UTF-16 reports its position in the decoded text.
+        assert_eq!(task_body(b"\xff\xfe{\x00", json).unwrap_err().0, 422);
+        // An odd UTF-16 byte count is not text: the 400.
+        assert_eq!(
+            task_body(&utf16le[..utf16le.len() - 1], json),
+            Err((
+                400,
+                r#"{"detail":"There was an error parsing the body"}"#.to_owned()
+            ))
+        );
+        // A body without a JSON media type is decoded as strict UTF-8: UTF-16 is a 500.
+        assert_eq!(
+            task_body(&with_bom, Some("text/plain")),
+            Err((500, "Internal Server Error".to_owned()))
+        );
+        assert_eq!(
+            task_body(b"\xe9", Some("text/plain")),
+            Err((500, "Internal Server Error".to_owned()))
+        );
     }
 }

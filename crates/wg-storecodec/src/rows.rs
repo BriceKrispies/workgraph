@@ -5,8 +5,6 @@
 //! model's entity structs are the rows (their fields are the columns), so the codecs add no
 //! intermediate type.
 
-use rusqlite::Row as SqlRow;
-use rusqlite::types::Value as Sql;
 use wg_model::entity::{
     ExternalItem, Project, ProjectRepository, Repository, RepositoryCheckout, RepositoryDependency,
     RepositoryRef, RepositoryRemote, Task, TaskComment, TaskDependency, TaskFile, TaskLink,
@@ -16,7 +14,7 @@ use wg_model::{Row, RowKey, Table};
 use wg_types::{TaskKey, WgError};
 
 use crate::codec::{
-    Cols, bool_sql, id_sql, object_sql, opt_id_sql, opt_int_sql, opt_object_sql, opt_text_sql,
+    Cols, Raw, bool_sql, id_sql, object_sql, opt_id_sql, opt_int_sql, opt_object_sql, opt_text_sql,
     opt_ts_sql, strings_sql, text_sql, ts_sql,
 };
 
@@ -25,14 +23,14 @@ pub trait TableRow: Sized {
     const TABLE: Table;
 
     /// The bound parameters, in the order of [`columns`].
-    fn values(&self) -> Result<Vec<Sql>, WgError>;
+    fn values(&self) -> Result<Vec<Raw>, WgError>;
 
     /// Reads the row from a result that selects at least [`columns`].
-    fn decode(cols: &Cols<'_, '_>) -> rusqlite::Result<Self>;
+    fn decode(cols: &Cols<'_>) -> Result<Self, WgError>;
 
-    /// `decode` over a raw rusqlite row, as `query_map` and `query_row` want it.
-    fn from_sql_row(row: &SqlRow<'_>) -> rusqlite::Result<Self> {
-        Self::decode(&Cols::new(row))
+    /// Decodes a row whose values are in [`columns`] order.
+    fn from_raw(values: &[Raw]) -> Result<Self, WgError> {
+        Self::decode(&Cols::new(columns(Self::TABLE), values))
     }
 }
 
@@ -224,7 +222,7 @@ pub const fn primary_key(table: Table) -> &'static [&'static str] {
 }
 
 /// The primary-key values of `key`, in the order of [`primary_key`].
-pub fn key_values(key: &RowKey) -> Vec<Sql> {
+pub fn key_values(key: &RowKey) -> Vec<Raw> {
     match key {
         RowKey::Workspace(id)
         | RowKey::Project(id)
@@ -244,7 +242,7 @@ pub fn key_values(key: &RowKey) -> Vec<Sql> {
             repository_id,
         } => vec![id_sql(*project_id), id_sql(*repository_id)],
         RowKey::TaskFile { task_id, position } => {
-            vec![id_sql(*task_id), Sql::Integer(*position)]
+            vec![id_sql(*task_id), Raw::Int(*position)]
         }
         RowKey::TaskTag { task_id, tag } => vec![id_sql(*task_id), text_sql(tag)],
         RowKey::TaskProject {
@@ -259,7 +257,7 @@ pub fn key_values(key: &RowKey) -> Vec<Sql> {
 }
 
 /// The bound parameters of any row, in the order of [`columns`] for its table.
-pub fn row_values(row: &Row) -> Result<Vec<Sql>, WgError> {
+pub fn row_values(row: &Row) -> Result<Vec<Raw>, WgError> {
     match row {
         Row::Workspace(row) => row.values(),
         Row::Project(row) => row.values(),
@@ -285,14 +283,14 @@ pub fn row_values(row: &Row) -> Result<Vec<Sql>, WgError> {
 impl TableRow for Workspace {
     const TABLE: Table = Table::Workspace;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             text_sql(&self.slug),
             text_sql(&self.name),
             text_sql(&self.description),
             text_sql(&self.key_prefix),
-            Sql::Integer(self.next_task_number),
+            Raw::Int(self.next_task_number),
             object_sql(&self.settings)?,
             opt_ts_sql(self.archived_at),
             ts_sql(self.created_at),
@@ -300,7 +298,7 @@ impl TableRow for Workspace {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(Workspace {
             id: c.id("id")?,
             slug: c.text("slug")?,
@@ -319,7 +317,7 @@ impl TableRow for Workspace {
 impl TableRow for Project {
     const TABLE: Table = Table::Project;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.workspace_id),
@@ -333,7 +331,7 @@ impl TableRow for Project {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(Project {
             id: c.id("id")?,
             workspace_id: c.id("workspace_id")?,
@@ -351,7 +349,7 @@ impl TableRow for Project {
 impl TableRow for ProjectRepository {
     const TABLE: Table = Table::ProjectRepository;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.project_id),
             id_sql(self.repository_id),
@@ -361,7 +359,7 @@ impl TableRow for ProjectRepository {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(ProjectRepository {
             project_id: c.id("project_id")?,
             repository_id: c.id("repository_id")?,
@@ -375,7 +373,7 @@ impl TableRow for ProjectRepository {
 impl TableRow for Repository {
     const TABLE: Table = Table::Repository;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.workspace_id),
@@ -397,7 +395,7 @@ impl TableRow for Repository {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(Repository {
             id: c.id("id")?,
             workspace_id: c.id("workspace_id")?,
@@ -423,7 +421,7 @@ impl TableRow for Repository {
 impl TableRow for RepositoryCheckout {
     const TABLE: Table = Table::RepositoryCheckout;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.repository_id),
@@ -438,7 +436,7 @@ impl TableRow for RepositoryCheckout {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(RepositoryCheckout {
             id: c.id("id")?,
             repository_id: c.id("repository_id")?,
@@ -457,7 +455,7 @@ impl TableRow for RepositoryCheckout {
 impl TableRow for RepositoryRemote {
     const TABLE: Table = Table::RepositoryRemote;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.repository_id),
@@ -469,7 +467,7 @@ impl TableRow for RepositoryRemote {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(RepositoryRemote {
             id: c.id("id")?,
             repository_id: c.id("repository_id")?,
@@ -485,7 +483,7 @@ impl TableRow for RepositoryRemote {
 impl TableRow for RepositoryRef {
     const TABLE: Table = Table::RepositoryRef;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.repository_id),
@@ -495,7 +493,7 @@ impl TableRow for RepositoryRef {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(RepositoryRef {
             id: c.id("id")?,
             repository_id: c.id("repository_id")?,
@@ -509,7 +507,7 @@ impl TableRow for RepositoryRef {
 impl TableRow for RepositoryDependency {
     const TABLE: Table = Table::RepositoryDependency;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.from_repository_id),
@@ -520,7 +518,7 @@ impl TableRow for RepositoryDependency {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(RepositoryDependency {
             id: c.id("id")?,
             from_repository_id: c.id("from_repository_id")?,
@@ -535,12 +533,12 @@ impl TableRow for RepositoryDependency {
 impl TableRow for Task {
     const TABLE: Table = Table::Task;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.workspace_id),
-            Sql::Integer(self.number),
-            Sql::Text(self.key.to_string()),
+            Raw::Int(self.number),
+            Raw::Text(self.key.to_string()),
             text_sql(&self.title),
             text_sql(&self.description),
             text_sql(&self.description_hash),
@@ -559,7 +557,7 @@ impl TableRow for Task {
             opt_ts_sql(self.due_at),
             opt_ts_sql(self.scheduled_at),
             text_sql(&self.created_by),
-            Sql::Integer(self.version),
+            Raw::Int(self.version),
             ts_sql(self.created_at),
             ts_sql(self.updated_at),
             opt_ts_sql(self.started_at),
@@ -570,11 +568,9 @@ impl TableRow for Task {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         let key_text = c.text("key")?;
-        let key = TaskKey::parse(&key_text).map_err(|err| {
-            rusqlite::Error::FromSqlConversionFailure(0, rusqlite::types::Type::Text, Box::new(err))
-        })?;
+        let key = TaskKey::parse(&key_text)?;
         Ok(Task {
             id: c.id("id")?,
             workspace_id: c.id("workspace_id")?,
@@ -613,17 +609,17 @@ impl TableRow for Task {
 impl TableRow for TaskFile {
     const TABLE: Table = Table::TaskFile;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.task_id),
-            Sql::Integer(self.position),
+            Raw::Int(self.position),
             text_sql(&self.path),
             opt_text_sql(&self.anchor),
             text_sql(&self.note),
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(TaskFile {
             task_id: c.id("task_id")?,
             position: c.int("position")?,
@@ -637,11 +633,11 @@ impl TableRow for TaskFile {
 impl TableRow for TaskTag {
     const TABLE: Table = Table::TaskTag;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![id_sql(self.task_id), text_sql(&self.tag)])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(TaskTag {
             task_id: c.id("task_id")?,
             tag: c.text("tag")?,
@@ -652,7 +648,7 @@ impl TableRow for TaskTag {
 impl TableRow for TaskLink {
     const TABLE: Table = Table::TaskLink;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.task_id),
@@ -671,7 +667,7 @@ impl TableRow for TaskLink {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(TaskLink {
             id: c.id("id")?,
             task_id: c.id("task_id")?,
@@ -694,7 +690,7 @@ impl TableRow for TaskLink {
 impl TableRow for TaskComment {
     const TABLE: Table = Table::TaskComment;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.task_id),
@@ -707,7 +703,7 @@ impl TableRow for TaskComment {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(TaskComment {
             id: c.id("id")?,
             task_id: c.id("task_id")?,
@@ -724,7 +720,7 @@ impl TableRow for TaskComment {
 impl TableRow for TaskDependency {
     const TABLE: Table = Table::TaskDependency;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.task_id),
@@ -734,7 +730,7 @@ impl TableRow for TaskDependency {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(TaskDependency {
             id: c.id("id")?,
             task_id: c.id("task_id")?,
@@ -748,7 +744,7 @@ impl TableRow for TaskDependency {
 impl TableRow for TaskRelation {
     const TABLE: Table = Table::TaskRelation;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.source_task_id),
@@ -759,7 +755,7 @@ impl TableRow for TaskRelation {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(TaskRelation {
             id: c.id("id")?,
             source_task_id: c.id("source_task_id")?,
@@ -774,11 +770,11 @@ impl TableRow for TaskRelation {
 impl TableRow for TaskProject {
     const TABLE: Table = Table::TaskProject;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![id_sql(self.task_id), id_sql(self.project_id)])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(TaskProject {
             task_id: c.id("task_id")?,
             project_id: c.id("project_id")?,
@@ -789,7 +785,7 @@ impl TableRow for TaskProject {
 impl TableRow for TaskRepository {
     const TABLE: Table = Table::TaskRepository;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.task_id),
             id_sql(self.repository_id),
@@ -798,7 +794,7 @@ impl TableRow for TaskRepository {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(TaskRepository {
             task_id: c.id("task_id")?,
             repository_id: c.id("repository_id")?,
@@ -811,7 +807,7 @@ impl TableRow for TaskRepository {
 impl TableRow for ExternalItem {
     const TABLE: Table = Table::ExternalItem;
 
-    fn values(&self) -> Result<Vec<Sql>, WgError> {
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
         Ok(vec![
             id_sql(self.id),
             id_sql(self.workspace_id),
@@ -833,7 +829,7 @@ impl TableRow for ExternalItem {
         ])
     }
 
-    fn decode(c: &Cols<'_, '_>) -> rusqlite::Result<Self> {
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
         Ok(ExternalItem {
             id: c.id("id")?,
             workspace_id: c.id("workspace_id")?,

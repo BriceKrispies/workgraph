@@ -8,7 +8,6 @@ use std::error::Error;
 use std::path::PathBuf;
 
 use rpds::VectorSync;
-use rusqlite::params;
 use serde_json::{Value, json};
 use wg_model::entity::{
     ExternalItem, Project, ProjectRepository, Repository, RepositoryCheckout, RepositoryDependency,
@@ -19,7 +18,8 @@ use wg_model::event::{TaskCreated, TaskKeyed};
 use wg_model::{
     Decision, EventDraft, EventPayload, JsonObject, Row, RowKey, Stamp, Table, Write, derive_id,
 };
-use wg_store::{EventQuery, Store, TableRow, fetch, latest_seq, query_events};
+use wg_store::{EventQuery, Location, Raw, Statement, Store};
+use wg_storecodec::columns;
 use wg_types::{
     AccessMode, Actor, CommentKind, ErrorCode, Id, RelationType, TaskKey, TaskPriority, TaskStatus,
     Timestamp, WgError,
@@ -51,8 +51,9 @@ fn schema() -> Result<String, Box<dyn Error>> {
 }
 
 fn store() -> Result<Store, Box<dyn Error>> {
-    let store = Store::open_in_memory()?;
-    store.connection().execute_batch(&schema()?)?;
+    let mut store = Store::open(&Location::Memory)?;
+    let ddl = schema()?;
+    store.write(|session| session.execute_batch(&ddl))?;
     Ok(store)
 }
 
@@ -175,29 +176,40 @@ type RawEvent = (
 
 /// The columns of an event row as SQLite stores them, with `id` left out (Python draws it at
 /// random) and `schema_version` and `data` kept as text.
-fn raw_event(store: &Store, seq: i64) -> Result<(RawEvent, String), Box<dyn Error>> {
-    let row = store.connection().query_row(
-        "SELECT seq, event_type, workspace_id, entity_type, actor, actor_kind, occurred_at, \
-         schema_version, correlation_id, data FROM events WHERE seq = ?1",
-        params![seq],
-        |row| {
-            Ok((
-                (
-                    row.get(0)?,
-                    row.get(1)?,
-                    row.get(2)?,
-                    row.get(3)?,
-                    row.get(4)?,
-                    row.get(5)?,
-                    row.get(6)?,
-                    row.get(7)?,
-                    row.get(8)?,
-                ),
-                row.get::<_, String>(9)?,
-            ))
-        },
-    )?;
-    Ok(row)
+fn raw_event(store: &mut Store, seq: i64) -> Result<(RawEvent, String), Box<dyn Error>> {
+    let statement = Statement {
+        sql: "SELECT seq, event_type, workspace_id, entity_type, actor, actor_kind, occurred_at, \
+              schema_version, correlation_id, data FROM events WHERE seq = ?1"
+            .to_owned(),
+        params: vec![Raw::Int(seq)],
+    };
+    let rows = store.read(|session| session.rows(&statement))?;
+    let row = rows.first().ok_or("no such event")?;
+    let text = |index: usize| match &row[index] {
+        Raw::Text(text) => text.clone(),
+        other => panic!("column {index} is {other:?}"),
+    };
+    let workspace = match &row[2] {
+        Raw::Text(text) => Some(text.clone()),
+        _ => None,
+    };
+    let (Raw::Int(seq), Raw::Int(version)) = (&row[0], &row[7]) else {
+        return Err("integer columns".into());
+    };
+    Ok((
+        (
+            *seq,
+            text(1),
+            workspace,
+            text(3),
+            text(4),
+            text(5),
+            text(6),
+            *version,
+            text(8),
+        ),
+        text(9),
+    ))
 }
 
 /// Rows copied from a database that Python's `record_event` wrote (see the task report): an
@@ -224,7 +236,7 @@ fn appended_event_rows_equal_the_python_written_form() -> TestResult {
     let applied = store.commit_decision(&decision)?;
     assert_eq!(applied.event_seqs, vec![1, 2]);
 
-    let (columns, data) = raw_event(&store, 1)?;
+    let (columns, data) = raw_event(&mut store, 1)?;
     assert_eq!(
         columns,
         (
@@ -244,7 +256,7 @@ fn appended_event_rows_equal_the_python_written_form() -> TestResult {
         r#"{"_automation":{"actor":"automation:rule","depth":1},"acceptance_criteria":["works"],"assignee":"brice","auto_execute":true,"depends_on":[],"description":"body","key":"WG-7","parent_id":null,"priority":"high","project_ids":[],"repository_ids":[],"status":"backlog","tags":["a"],"title":"Ship it \u00e9"}"#
     );
 
-    let (columns, data) = raw_event(&store, 2)?;
+    let (columns, data) = raw_event(&mut store, 2)?;
     assert_eq!(
         columns,
         (
@@ -262,7 +274,7 @@ fn appended_event_rows_equal_the_python_written_form() -> TestResult {
     assert_eq!(data, r#"{"key":"WG-7"}"#);
 
     // Read back, `to_dict` equals Python's `EventRecord.to_dict()` of the same rows.
-    let records = query_events(store.connection(), &EventQuery::default())?;
+    let records = store.read(|s| s.query_events(&EventQuery::default()))?;
     let dicts: Vec<Value> = records.iter().map(|record| record.to_dict()).collect();
     assert_eq!(
         dicts[0],
@@ -284,7 +296,7 @@ fn appended_event_rows_equal_the_python_written_form() -> TestResult {
     );
     assert_eq!(dicts[1]["occurred_at"], "2026-10-25T12:00:06+00:00");
     assert_eq!(dicts[1]["workspace_id"], Value::Null);
-    assert_eq!(latest_seq(store.connection())?, 2);
+    assert_eq!(store.read(|s| s.latest_seq())?, 2);
     Ok(())
 }
 
@@ -309,9 +321,8 @@ fn events_are_read_by_entity_and_by_workspace_after_seq() -> TestResult {
     );
     store.commit_decision(&decision.event(elsewhere))?;
 
-    let conn = store.connection();
-    let seqs = |query: &EventQuery| -> Result<Vec<i64>, WgError> {
-        Ok(query_events(conn, query)?.iter().map(|e| e.seq).collect())
+    let mut seqs = |query: &EventQuery| -> Result<Vec<i64>, WgError> {
+        store.read(|s| Ok(s.query_events(query)?.iter().map(|e| e.seq).collect()))
     };
     assert_eq!(seqs(&EventQuery::by_entity("task", entity))?, vec![1, 2, 3]);
     assert_eq!(seqs(&EventQuery::by_entity("task", other))?, vec![4]);
@@ -334,15 +345,17 @@ fn events_are_read_by_entity_and_by_workspace_after_seq() -> TestResult {
 
 #[test]
 fn old_task_created_payloads_are_upcast_on_read() -> TestResult {
-    let store = store()?;
-    store.connection().execute(
-        "INSERT INTO events (id, workspace_id, event_type, entity_type, entity_id, actor, \
-         actor_kind, occurred_at, correlation_id, schema_version, data) \
-         VALUES (?1, NULL, 'task.created', 'task', ?1, 'human:b', 'human', \
-         '2026-10-25T12:00:00.000000+00:00', ?1, 1, '{\"tags\":\" a, b ,,c\"}')",
-        params![id(1).to_string()],
-    )?;
-    let records = query_events(store.connection(), &EventQuery::default())?;
+    let mut store = store()?;
+    let insert = Statement {
+        sql: "INSERT INTO events (id, workspace_id, event_type, entity_type, entity_id, actor, \
+              actor_kind, occurred_at, correlation_id, schema_version, data) \
+              VALUES (?1, NULL, 'task.created', 'task', ?1, 'human:b', 'human', \
+              '2026-10-25T12:00:00.000000+00:00', ?1, 1, '{\"tags\":\" a, b ,,c\"}')"
+            .to_owned(),
+        params: vec![Raw::Text(id(1).to_string())],
+    };
+    store.write(|s| s.run(&insert))?;
+    let records = store.read(|s| s.query_events(&EventQuery::default()))?;
     assert_eq!(records[0].schema_version, 2);
     assert_eq!(
         Value::Object(records[0].data.clone()),
@@ -355,14 +368,17 @@ fn old_task_created_payloads_are_upcast_on_read() -> TestResult {
 fn events_reject_update_and_delete() -> TestResult {
     let mut store = store()?;
     store.commit_decision(&Decision::new(()).event(created_event(&stamp("human:b", 0), id(10))))?;
-    let conn = store.connection();
     for sql in ["UPDATE events SET actor = 'x'", "DELETE FROM events"] {
-        let err = conn.execute(sql, []).err().map(|e| wg_store::db_error(&e));
+        let statement = Statement {
+            sql: sql.to_owned(),
+            params: Vec::new(),
+        };
+        let err = store.write(|s| s.run(&statement)).err();
         let err = err.ok_or("trigger did not fire")?;
         assert_eq!(err.code, ErrorCode::Conflict, "{sql}");
         assert!(err.message.contains("append-only"), "{err}");
     }
-    assert_eq!(latest_seq(conn)?, 1);
+    assert_eq!(store.read(|s| s.latest_seq())?, 1);
     Ok(())
 }
 
@@ -383,10 +399,17 @@ fn a_failing_write_rolls_back_the_whole_decision() -> TestResult {
         .write(Write::insert(clash));
     let err = store.commit_decision(&decision).err().ok_or("no error")?;
     assert_eq!(err.code, ErrorCode::Conflict);
-    let conn = store.connection();
-    assert!(fetch::<Task>(conn, &RowKey::Task(id(1)))?.is_none());
-    assert_eq!(latest_seq(conn)?, 0);
-    assert!(fetch::<Workspace>(conn, &RowKey::Workspace(id(0)))?.is_some());
+    assert!(
+        store
+            .read(|s| s.fetch::<Task>(&RowKey::Task(id(1))))?
+            .is_none()
+    );
+    assert_eq!(store.read(|s| s.latest_seq())?, 0);
+    assert!(
+        store
+            .read(|s| s.fetch::<Workspace>(&RowKey::Workspace(id(0))))?
+            .is_some()
+    );
     Ok(())
 }
 
@@ -406,7 +429,7 @@ fn versioned_updates_detect_concurrent_changes() -> TestResult {
         ..first.clone()
     };
     store.commit_decision(&Decision::new(()).write(Write::update_versioned(next.clone(), 1)))?;
-    let read = fetch::<Task>(store.connection(), &RowKey::Task(id(1)))?;
+    let read = store.read(|s| s.fetch::<Task>(&RowKey::Task(id(1))))?;
     assert_eq!(read, Some(next.clone()));
 
     // The stored row is now at version 2; an update guarded by 1 fails and changes nothing.
@@ -422,7 +445,7 @@ fn versioned_updates_detect_concurrent_changes() -> TestResult {
     assert_eq!(err.code, ErrorCode::VersionConflict);
     assert_eq!(err.details.get("expected"), Some(&json!(1)));
     assert_eq!(err.details.get("actual"), Some(&json!(2)));
-    let read = fetch::<Task>(store.connection(), &RowKey::Task(id(1)))?;
+    let read = store.read(|s| s.fetch::<Task>(&RowKey::Task(id(1))))?;
     assert_eq!(read, Some(next));
 
     // Updating a row that does not exist is not_found; deleting one is a no-op.
@@ -627,7 +650,7 @@ fn every_table_round_trips() -> TestResult {
     }
     store.commit_decision(&decision)?;
     for row in &rows {
-        assert_eq!(read_back(&store, &row.key())?, Some(row.clone()));
+        assert_eq!(read_back(&mut store, &row.key())?, Some(row.clone()));
     }
 
     // Replace every row; the keyed-only tables stay as they are.
@@ -646,7 +669,7 @@ fn every_table_round_trips() -> TestResult {
             })),
     )?;
     assert_eq!(
-        read_back(&store, &RowKey::Task(id(1)))?,
+        read_back(&mut store, &RowKey::Task(id(1)))?,
         Some(changed.into())
     );
 
@@ -665,62 +688,41 @@ fn every_table_round_trips() -> TestResult {
         RowKey::TaskComment(id(11)),
         RowKey::ExternalItem(id(14)),
     ] {
-        assert_eq!(read_back(&store, &key)?, None, "{key:?}");
+        assert_eq!(read_back(&mut store, &key)?, None, "{key:?}");
     }
     Ok(())
 }
 
 /// Reads one row through its table's codec.
-fn read_back(store: &Store, key: &RowKey) -> Result<Option<Row>, WgError> {
-    let conn = store.connection();
-    Ok(match key.table() {
-        Table::Workspace => fetch::<Workspace>(conn, key)?.map(Row::from),
-        Table::Project => fetch::<Project>(conn, key)?.map(Row::from),
-        Table::ProjectRepository => fetch::<ProjectRepository>(conn, key)?.map(Row::from),
-        Table::Repository => fetch::<Repository>(conn, key)?.map(Row::from),
-        Table::RepositoryCheckout => fetch::<RepositoryCheckout>(conn, key)?.map(Row::from),
-        Table::RepositoryRemote => fetch::<RepositoryRemote>(conn, key)?.map(Row::from),
-        Table::RepositoryRef => fetch::<RepositoryRef>(conn, key)?.map(Row::from),
-        Table::RepositoryDependency => fetch::<RepositoryDependency>(conn, key)?.map(Row::from),
-        Table::Task => fetch::<Task>(conn, key)?.map(Row::from),
-        Table::TaskFile => fetch::<TaskFile>(conn, key)?.map(Row::from),
-        Table::TaskTag => fetch::<TaskTag>(conn, key)?.map(Row::from),
-        Table::TaskLink => fetch::<TaskLink>(conn, key)?.map(Row::from),
-        Table::TaskComment => fetch::<TaskComment>(conn, key)?.map(Row::from),
-        Table::TaskDependency => fetch::<TaskDependency>(conn, key)?.map(Row::from),
-        Table::TaskRelation => fetch::<TaskRelation>(conn, key)?.map(Row::from),
-        Table::TaskProject => fetch::<TaskProject>(conn, key)?.map(Row::from),
-        Table::TaskRepository => fetch::<TaskRepository>(conn, key)?.map(Row::from),
-        Table::ExternalItem => fetch::<ExternalItem>(conn, key)?.map(Row::from),
-    })
+fn read_back(store: &mut Store, key: &RowKey) -> Result<Option<Row>, WgError> {
+    store.read(|s| s.fetch_row(key))
 }
 
 #[test]
 fn json_columns_are_stored_as_python_stores_them() -> TestResult {
     let mut store = store()?;
     store.commit_decision(&Decision::new(()).write(Write::insert(workspace())))?;
-    let (settings, created): (String, String) =
-        store
-            .connection()
-            .query_row("SELECT settings, created_at FROM workspaces", [], |row| {
-                Ok((row.get(0)?, row.get(1)?))
-            })?;
-    assert_eq!(settings, r#"{"a":[true,null,"\u00e9"],"b":1}"#);
-    assert_eq!(created, "2026-10-25T12:00:00.000000+00:00");
-    // Keys of every table's codec are real columns.
+    let statement = Statement {
+        sql: "SELECT settings, created_at FROM workspaces".to_owned(),
+        params: Vec::new(),
+    };
+    let rows = store.read(|s| s.rows(&statement))?;
+    assert_eq!(
+        rows,
+        vec![vec![
+            Raw::Text(r#"{"a":[true,null,"\u00e9"],"b":1}"#.to_owned()),
+            Raw::Text("2026-10-25T12:00:00.000000+00:00".to_owned()),
+        ]]
+    );
+    // Every column the codecs name is a real column of its table.
     for table in Table::ALL {
-        let sql = format!(
-            "SELECT {} FROM {} LIMIT 0",
-            wg_store::rows::columns(*table)
-                .iter()
-                .map(|c| format!("\"{c}\""))
-                .collect::<Vec<_>>()
-                .join(", "),
-            table.name()
-        );
-        store.connection().prepare(&sql)?;
+        let names: Vec<String> = columns(*table).iter().map(|c| format!("\"{c}\"")).collect();
+        let probe = Statement {
+            sql: format!("SELECT {} FROM {} LIMIT 0", names.join(", "), table.name()),
+            params: Vec::new(),
+        };
+        store.read(|s| s.rows(&probe))?;
     }
-    let _ = <Workspace as TableRow>::TABLE;
     Ok(())
 }
 
@@ -732,7 +734,7 @@ fn writes_into_a_python_migrated_database() -> TestResult {
     let Some(path) = std::env::var_os("WG_SH01_DB") else {
         return Ok(());
     };
-    let mut store = Store::open(std::path::Path::new(&path))?;
+    let mut store = Store::open(&Location::File(path.into()))?;
     let decision = Decision::new(())
         .write(Write::insert(workspace()))
         .write(Write::insert(task(1, 1)))

@@ -1,17 +1,16 @@
-//! The append-only `events` log: appending drafts and reading records back.
+//! The `events` log as values: event rows, queries and their statements.
 //!
-//! Mirrors `core/events/log.py`: [`append_event`] is `record_event`, [`query_events`] is
-//! `query_events`, [`EventRecord`] is the dataclass of the same name, and reading upcasts old
+//! Mirrors `core/events/log.py`: [`append_statement`] is `record_event`, [`EventQuery::statement`]
+//! is `query_events`, [`EventRecord`] is the dataclass of the same name, and decoding upcasts old
 //! payloads to the current schema version. The table rejects UPDATE and DELETE with triggers
 //! (migration `0001`), so the store only ever inserts.
 
-use rusqlite::types::Value as Sql;
-use rusqlite::{Connection, params, params_from_iter};
 use serde_json::{Value, json};
 use wg_model::{EventDraft, JsonObject};
 use wg_types::{ErrorCode, Id, Timestamp, WgError};
 
-use crate::codec::{Cols, db_error, id_sql, json_text, opt_id_sql, ts_sql};
+use crate::codec::{Cols, Raw, id_sql, json_text, opt_id_sql, ts_sql};
+use crate::sql::Statement;
 
 /// Python's `DEFAULT_SCHEMA_VERSION`.
 const DEFAULT_SCHEMA_VERSION: i64 = 1;
@@ -106,7 +105,9 @@ fn py_strip(text: &str) -> &str {
     text.trim_matches(|c: char| c.is_whitespace() || ('\u{1c}'..='\u{1f}').contains(&c))
 }
 
-fn decode_record(cols: &Cols<'_, '_>) -> rusqlite::Result<EventRecord> {
+/// Decodes one row selected in [`EVENT_COLUMNS`] order.
+pub fn decode_event(values: &[Raw]) -> Result<EventRecord, WgError> {
+    let cols = Cols::new(EVENT_COLUMNS, values);
     let event_type = cols.text("event_type")?;
     let (schema_version, data) = upcast(
         &event_type,
@@ -131,38 +132,49 @@ fn decode_record(cols: &Cols<'_, '_>) -> rusqlite::Result<EventRecord> {
     })
 }
 
-const EVENT_COLUMNS: &str = "seq, id, workspace_id, event_type, entity_type, entity_id, actor, \
-     actor_kind, occurred_at, correlation_id, causation_id, attempt_id, schema_version, data";
+/// The columns of `events`, in schema order.
+pub const EVENT_COLUMNS: &[&str] = &[
+    "seq",
+    "id",
+    "workspace_id",
+    "event_type",
+    "entity_type",
+    "entity_id",
+    "actor",
+    "actor_kind",
+    "occurred_at",
+    "correlation_id",
+    "causation_id",
+    "attempt_id",
+    "schema_version",
+    "data",
+];
 
-/// Appends one event inside the caller's transaction and returns its `seq`.
-pub fn append_event(conn: &Connection, draft: &EventDraft) -> Result<i64, WgError> {
+/// The insert for one event; `seq` is assigned by the database.
+pub fn append_statement(draft: &EventDraft) -> Result<Statement, WgError> {
     let data = json_text(&Value::Object(draft.data()?))?
         .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, "event data serialised to null"))?;
-    let mut statement = conn
-        .prepare_cached(
-            "INSERT INTO events (id, workspace_id, event_type, entity_type, entity_id, actor, \
-             actor_kind, occurred_at, correlation_id, causation_id, attempt_id, schema_version, \
-             data) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
-        )
-        .map_err(|err| db_error(&err))?;
-    statement
-        .execute(params_from_iter([
+    Ok(Statement {
+        sql: "INSERT INTO events (id, workspace_id, event_type, entity_type, entity_id, actor, \
+              actor_kind, occurred_at, correlation_id, causation_id, attempt_id, schema_version, \
+              data) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)"
+            .to_owned(),
+        params: vec![
             id_sql(draft.id),
             opt_id_sql(draft.workspace_id),
-            Sql::Text(draft.event_type().to_owned()),
-            Sql::Text(draft.entity_type().as_str().to_owned()),
+            Raw::Text(draft.event_type().to_owned()),
+            Raw::Text(draft.entity_type().as_str().to_owned()),
             id_sql(draft.entity_id),
-            Sql::Text(draft.actor.to_string()),
-            Sql::Text(draft.actor.kind().as_str().to_owned()),
+            Raw::Text(draft.actor.to_string()),
+            Raw::Text(draft.actor.kind().as_str().to_owned()),
             ts_sql(draft.occurred_at),
             id_sql(draft.correlation_id),
             opt_id_sql(draft.causation_id),
             opt_id_sql(draft.attempt_id),
-            Sql::Integer(i64::from(draft.schema_version())),
-            Sql::Text(data),
-        ]))
-        .map_err(|err| db_error(&err))?;
-    Ok(conn.last_insert_rowid())
+            Raw::Int(i64::from(draft.schema_version())),
+            Raw::Text(data),
+        ],
+    })
 }
 
 /// The filters of Python's `query_events`. Unset fields do not filter; an empty `entity_ids` or
@@ -223,91 +235,4 @@ impl EventQuery {
             ..EventQuery::default()
         }
     }
-}
-
-/// Runs an [`EventQuery`].
-pub fn query_events(conn: &Connection, query: &EventQuery) -> Result<Vec<EventRecord>, WgError> {
-    let mut clauses: Vec<String> = Vec::new();
-    let mut args: Vec<Sql> = Vec::new();
-    let bind = |args: &mut Vec<Sql>, value: Sql| {
-        args.push(value);
-        args.len()
-    };
-    if let Some(id) = query.workspace_id {
-        let n = bind(&mut args, id_sql(id));
-        clauses.push(format!("workspace_id = ?{n}"));
-    }
-    if let Some(entity_type) = &query.entity_type {
-        let n = bind(&mut args, Sql::Text(entity_type.clone()));
-        clauses.push(format!("entity_type = ?{n}"));
-    }
-    if !query.entity_ids.is_empty() {
-        let marks: Vec<String> = query
-            .entity_ids
-            .iter()
-            .map(|id| format!("?{}", bind(&mut args, id_sql(*id))))
-            .collect();
-        clauses.push(format!("entity_id IN ({})", marks.join(", ")));
-    }
-    if !query.event_types.is_empty() {
-        let marks: Vec<String> = query
-            .event_types
-            .iter()
-            .map(|name| format!("?{}", bind(&mut args, Sql::Text(name.clone()))))
-            .collect();
-        clauses.push(format!("event_type IN ({})", marks.join(", ")));
-    }
-    if let Some(prefix) = query.event_type_prefix.as_ref().filter(|p| !p.is_empty()) {
-        let n = bind(&mut args, Sql::Text(prefix.clone()));
-        clauses.push(format!("event_type LIKE ?{n} || '%'"));
-    }
-    if let Some(actor) = &query.actor {
-        let n = bind(&mut args, Sql::Text(actor.clone()));
-        clauses.push(format!("actor = ?{n}"));
-    }
-    if let Some(id) = query.attempt_id {
-        let n = bind(&mut args, id_sql(id));
-        clauses.push(format!("attempt_id = ?{n}"));
-    }
-    if let Some(id) = query.correlation_id {
-        let n = bind(&mut args, id_sql(id));
-        clauses.push(format!("correlation_id = ?{n}"));
-    }
-    if let Some(seq) = query.after_seq {
-        let n = bind(&mut args, Sql::Integer(seq));
-        clauses.push(format!("seq > ?{n}"));
-    }
-    if let Some(at) = query.since {
-        let n = bind(&mut args, ts_sql(at));
-        clauses.push(format!("occurred_at >= ?{n}"));
-    }
-    if let Some(at) = query.until {
-        let n = bind(&mut args, ts_sql(at));
-        clauses.push(format!("occurred_at < ?{n}"));
-    }
-    let filter = if clauses.is_empty() {
-        String::new()
-    } else {
-        format!(" WHERE {}", clauses.join(" AND "))
-    };
-    let order = if query.descending { "DESC" } else { "ASC" };
-    let limit = bind(&mut args, Sql::Integer(query.limit));
-    let sql =
-        format!("SELECT {EVENT_COLUMNS} FROM events{filter} ORDER BY seq {order} LIMIT ?{limit}");
-    let mut statement = conn.prepare(&sql).map_err(|err| db_error(&err))?;
-    let rows = statement
-        .query_map(params_from_iter(args), |row| decode_record(&Cols::new(row)))
-        .map_err(|err| db_error(&err))?;
-    rows.collect::<Result<Vec<_>, _>>()
-        .map_err(|err| db_error(&err))
-}
-
-/// `latest_seq`: the highest `seq`, or 0 for an empty log.
-pub fn latest_seq(conn: &Connection) -> Result<i64, WgError> {
-    conn.query_row(
-        "SELECT COALESCE(MAX(seq), 0) FROM events",
-        params![],
-        |row| row.get(0),
-    )
-    .map_err(|err| db_error(&err))
 }

@@ -67,7 +67,7 @@ fn config(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), C
             let workspace = state.workspace_ref(option_text(m, "--workspace").as_deref());
             let show = state.app()?.config_show(workspace.as_deref())?;
             let out = view::show_value(&show);
-            state.emit(&out, Some(&|_| view::show_view(&show)))
+            state.emit(&out, Some(&|c| view::show_view(c, &show)))
         }
         Some("path") => {
             let out = state.app()?.config_paths();

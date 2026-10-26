@@ -1,0 +1,14 @@
+{
+  "id": "analytics-invalid-grouping-and-metric-rejected",
+  "covers": ["C012"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Shape check", "--ready"], "json": true},
+    {"cli": ["analytics", "query", "tasks_created", "--by", "model"], "json": true, "expect_exit": 2},
+    {"cli": ["analytics", "query", "DROP TABLE tasks"], "json": true, "expect_exit": 2},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}}
+  ],
+  "not_observable": []
+}

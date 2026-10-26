@@ -1,0 +1,89 @@
+{
+  "scenario": "analytics-retrospective-model-unavailable-fallback",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.providers.ollama.base_url\",\n  \"value\": \"http://127.0.0.1:<port>\",\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.providers.ollama.max_retries\",\n  \"value\": 0,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.providers.ollama.timeout_seconds\",\n  \"value\": 1,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.summarization.provider\",\n  \"value\": \"ollama\",\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.summarization.model\",\n  \"value\": \"qwen\",\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Flaky login\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:3|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"title\": \"Retrospective 2026-10-19 - 2026-10-26\",\n  \"narrative_source\": \"deterministic\",\n  \"content\": \"# Retrospective: 2026-10-19 to 2026-10-26\\n\\n_All numbers are measured from Workgraph records; see the evidence references in brackets._\\n\\n## Work completed\\n\\n- Tasks created: **1**, completion reported: **0**, accepted: **0**.\\n- Median time from creation to acceptance: **n/a** (n=0).\\n\\n## Category breakdown\\n\\n- no accepted tasks in period\\n\\n## Bottlenecks\\n\\n- Currently blocked tasks: 0.\\n\\n## Rework\\n\\n- Median rework ratio (churn / final change): None (n=0).\\n\\n## Agent effectiveness\\n\\n- no agent attempts finished in the period\\n\\n## Cross-repository coordination\\n\\n- Cross-repository tasks: 0 of 0 with code; average repositories per task None.\\n\\n## Quality\\n\\n- Verification pass rate: 0/0 runs passed.\\n\\n## Significant changes\\n\\n- none recorded\\n\\n## Potential improvement opportunities\\n\\n- No significant failure patterns detected.\\n\\n\\n_Model narrative unavailable (ProviderUnavailableError); deterministic report only._\\n\",\n  \"facts\": {\n    \"period\": {\n      \"since\": \"<ts:1|db>\",\n      \"until\": \"<ts:4|db>\",\n      \"project\": null,\n      \"repository\": null\n    },\n    \"tasks\": {\n      \"created\": 1,\n      \"completed\": 0,\n      \"accepted\": 0,\n      \"blocked_now\": 0\n    },\n    \"categories\": {},\n    \"elapsed_ms\": {\n      \"n\": 0,\n      \"mean\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"p95\": null,\n      \"min\": null,\n      \"max\": null,\n      \"sum\": null\n    },\n    \"agents\": [],\n    \"code\": {\n      \"cumulative_churn\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      },\n      \"final_change\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      },\n      \"rework_ratio\": {\n        \"n\": 0,\n        \"mean\": null,\n        \"median\": null,\n        \"p75\": null,\n        \"p90\": null,\n        \"p95\": null,\n        \"min\": null,\n        \"max\": null,\n        \"sum\": null\n      }\n    },\n    \"verification\": {\n      \"numerator\": 0,\n      \"denominator\": 0,\n      \"value\": null,\n      \"n\": 0\n    },\n    \"top_failing_checks\": [],\n    \"coordination\": {\n      \"tasks_with_code\": 0,\n      \"cross_repository_tasks\": 0,\n      \"average_repositories_per_task\": null,\n      \"median_elapsed_ms_cross_repo\": null,\n      \"median_elapsed_ms_single_repo\": null,\n      \"integration_checks\": 0,\n      \"integration_failure_rate\": null\n    },\n    \"coupled_pairs\": [],\n    \"findings\": [],\n    \"significant_changes\": []\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

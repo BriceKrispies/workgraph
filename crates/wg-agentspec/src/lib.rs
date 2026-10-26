@@ -8,15 +8,19 @@
 //!   the final result ([`claude`]);
 //! * the `workgraph.agent.v1` command adapter (P04): placeholder validation and substitution, the
 //!   request payload, line interpretation and the final result ([`command`]);
+//! * the description of an adapter entry, as the registry reports it ([`describe`]);
 //! * small Python-compatible helpers ([`util`]).
 //!
 //! Nothing here touches a file, a process or the clock; `wg-agents` does the I/O.
 
 pub mod claude;
 pub mod command;
+pub mod describe;
 pub mod error;
 pub mod types;
 pub mod util;
+
+pub use describe::{AdapterDescription, describe_adapter};
 
 pub use claude::{
     ClaudeCodeProvider, ClaudeConfig, StreamState, availability_detail, build_argv,

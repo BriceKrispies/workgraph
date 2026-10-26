@@ -3,7 +3,8 @@
 //! The shell lists the workspace's replay tasks, resolves the repository's checkout, runs the
 //! commit analysis and creates the tasks. This module decides, for one commit, whether it is
 //! skipped, already present or to be created, and shapes the task's title, description and
-//! metadata. No golden vector covers the pool; its behaviour is the Python source.
+//! metadata. `golden/expmisc/pool.json` (from `tools/golden/gen_expmisc.py`, which runs the Python
+//! pool with its git and database calls stubbed) pins the index, the step and the shaping.
 
 use crate::briefs::shlex_join;
 use crate::replay::{CLASSIFIER, Features};

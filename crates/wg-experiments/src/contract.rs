@@ -190,19 +190,6 @@ fn argv_lists(value: Option<&Value>, allow_empty: bool) -> bool {
     })
 }
 
-/// Python's `float` text for the out-of-range target in the error message.
-fn py_float(number: f64) -> String {
-    if number.is_nan() {
-        "nan".to_owned()
-    } else if number.is_infinite() {
-        (if number > 0.0 { "inf" } else { "-inf" }).to_owned()
-    } else if number.fract() == 0.0 && number.abs() < 1e16 {
-        format!("{number:.1}")
-    } else {
-        format!("{number}")
-    }
-}
-
 /// The leaf decision, given the contract problems and a lazily computed predictor fit.
 ///
 /// The fit is consulted only when the contract is complete, as the Python source does.
@@ -219,7 +206,7 @@ pub fn decide(
     if !(0.0..=1.0).contains(&target) {
         return Err(format!(
             "target must be between 0 and 1, got {}",
-            py_float(target)
+            wg_json::py_float_repr(target)
         ));
     }
     let verdict = |verdict, reasons: Vec<String>, missing, prediction| ContractVerdict {

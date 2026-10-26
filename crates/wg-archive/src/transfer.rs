@@ -2,25 +2,27 @@
 //! `import_workspace`. The file is a header line and one record per row, each on its own line,
 //! in foreign-key order.
 
-use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use wg_archivespec as spec;
 use wg_store::{Session, Store};
 use wg_types::{ErrorCode, WgError, parse_id};
 
+/// The rows per table, in the order the tables were written or first read.
+pub type TableCounts = Vec<(String, usize)>;
+
 /// What `export_workspace` wrote: the file and the rows per table (tables with rows only).
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ExportReport {
     pub path: PathBuf,
-    pub tables: BTreeMap<String, usize>,
+    pub tables: Vec<(String, usize)>,
 }
 
 /// What `import_workspace` inserted: the workspace id and the rows per table.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ImportReport {
     pub workspace_id: String,
-    pub tables: BTreeMap<String, usize>,
+    pub tables: Vec<(String, usize)>,
 }
 
 /// Writes every record of one workspace to `target` as JSON Lines.
@@ -52,10 +54,10 @@ pub fn export_workspace(
 fn collect_records(
     session: &mut Session<'_>,
     workspace_id: &str,
-) -> Result<(Vec<String>, BTreeMap<String, usize>), WgError> {
+) -> Result<(Vec<String>, TableCounts), WgError> {
     let mut exported = spec::ExportedIds::default();
     let mut lines = Vec::new();
-    let mut tables = BTreeMap::new();
+    let mut tables = Vec::new();
     for table in spec::EXPORT_TABLES {
         let Some(statement) = spec::export_select(table, workspace_id, &exported) else {
             continue;
@@ -66,7 +68,7 @@ fn collect_records(
             lines.push(spec::export_line(table, row)?);
         }
         if !rows.is_empty() {
-            tables.insert(table.name.to_string(), rows.len());
+            tables.push((table.name.to_string(), rows.len()));
         }
     }
     Ok((lines, tables))
@@ -95,11 +97,15 @@ pub fn import_workspace(store: &mut Store, source: &Path) -> Result<ImportReport
                 "this workspace already exists in the target database; nothing was imported",
             ));
         }
-        let mut tables: BTreeMap<String, usize> = BTreeMap::new();
+        let mut tables: Vec<(String, usize)> = Vec::new();
         for line in lines {
             let row = spec::parse_row(line)?;
             session.run(&row.statement())?;
-            *tables.entry(row.table.name.to_string()).or_insert(0) += 1;
+            let name = row.table.name;
+            match tables.iter_mut().find(|(seen, _)| seen.as_str() == name) {
+                Some((_, count)) => *count += 1,
+                None => tables.push((name.to_string(), 1)),
+            }
         }
         for id in session.rows(&spec::task_ids_in(&workspace_id))? {
             if let Some(wg_storecodec::Raw::Text(task)) = id.first() {

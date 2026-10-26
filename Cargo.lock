@@ -2269,6 +2269,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-archive-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde_json",
+ "wg-archive",
+ "wg-archivespec",
+ "wg-clispec",
+ "wg-config",
+ "wg-json",
+ "wg-render",
+ "wg-runtime",
+ "wg-types",
+ "wg-wire",
+]
+
+[[package]]
 name = "wg-archivespec"
 version = "0.1.0"
 dependencies = [
@@ -2346,11 +2363,13 @@ dependencies = [
  "tokio",
  "tokio-util",
  "ureq",
+ "wg-archive-feature",
  "wg-automation-feature",
  "wg-browser",
  "wg-clispec",
  "wg-codeparse",
  "wg-decisions",
+ "wg-events-feature",
  "wg-exec-feature",
  "wg-git-feature",
  "wg-intel-feature",
@@ -2479,6 +2498,24 @@ dependencies = [
  "wg-model",
  "wg-pynum",
  "wg-types",
+]
+
+[[package]]
+name = "wg-events-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde_json",
+ "wg-clispec",
+ "wg-events",
+ "wg-json",
+ "wg-model",
+ "wg-render",
+ "wg-runtime",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

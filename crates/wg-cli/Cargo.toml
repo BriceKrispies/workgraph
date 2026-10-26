@@ -32,6 +32,8 @@ wg-browser = { path = "../wg-browser" }
 wg-clispec = { path = "../wg-clispec" }
 wg-automation-feature = { path = "../wg-automation-feature" }
 wg-exec-feature = { path = "../wg-exec-feature" }
+wg-archive-feature = { path = "../wg-archive-feature" }
+wg-events-feature = { path = "../wg-events-feature" }
 wg-decisions = { path = "../wg-decisions" }
 wg-git-feature = { path = "../wg-git-feature" }
 wg-intel-feature = { path = "../wg-intel-feature" }

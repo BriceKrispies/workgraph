@@ -17,6 +17,10 @@ wg-analytics-feature Shell
 wg-analytics-feature::spec Pure
 wg-analytics-feature::service Shell
 wg-archive Shell
+wg-archive-feature Shell
+wg-archive-feature::spec Pure
+wg-archive-feature::service Shell
+wg-archive-feature::cli Shell
 wg-archivespec Pure
 wg-automation Core
 wg-automation-feature Shell
@@ -42,6 +46,10 @@ wg-decisions::mcp Shell
 wg-demo-agent Shell
 wg-demoproto Pure
 wg-events Core
+wg-events-feature Shell
+wg-events-feature::spec Pure
+wg-events-feature::service Shell
+wg-events-feature::cli Shell
 wg-exec Core
 wg-exec-feature Shell
 wg-exec-feature::spec Pure

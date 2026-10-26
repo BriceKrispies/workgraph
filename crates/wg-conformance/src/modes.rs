@@ -13,31 +13,34 @@ pub struct Loaded {
     pub scenario: Result<Scenario, String>,
 }
 
-/// Load every `*.json` file of a directory (sorted), or one file.
+/// Load every `*.json` file under a directory, recursively (so `scenarios/<area>/` is loaded), or
+/// one file. Files are sorted by their path relative to the directory, which is also the name
+/// a report gives them.
 pub fn load_scenarios(path: &Path) -> Result<Vec<Loaded>, String> {
-    let mut files: Vec<PathBuf> = if path.is_dir() {
-        std::fs::read_dir(path)
-            .map_err(|e| format!("read {}: {e}", path.display()))?
-            .filter_map(Result::ok)
-            .map(|e| e.path())
-            .filter(|p| p.extension().is_some_and(|x| x == "json"))
-            .collect()
+    let mut files: Vec<PathBuf> = Vec::new();
+    if path.is_dir() {
+        collect_json(path, &mut files)?;
     } else {
-        vec![path.to_path_buf()]
-    };
+        files.push(path.to_path_buf());
+    }
     files.sort();
     Ok(files
         .into_iter()
         .map(|p| {
-            let file = p.file_name().map_or_else(
-                || p.display().to_string(),
-                |n| n.to_string_lossy().into_owned(),
-            );
+            let file = if path.is_dir() {
+                p.strip_prefix(path)
+                    .unwrap_or(&p)
+                    .to_string_lossy()
+                    .replace('\\', "/")
+            } else {
+                display_name(&p)
+            };
             let scenario = std::fs::read_to_string(&p)
                 .map_err(|e| format!("read: {e}"))
                 .and_then(|t| parse_scenario(&t))
                 .and_then(|s| {
-                    let stem = file.strip_suffix(".json").unwrap_or(&file);
+                    let name = display_name(&p);
+                    let stem = name.strip_suffix(".json").unwrap_or(&name);
                     if s.id == stem {
                         Ok(s)
                     } else {
@@ -47,6 +50,28 @@ pub fn load_scenarios(path: &Path) -> Result<Vec<Loaded>, String> {
             Loaded { file, scenario }
         })
         .collect())
+}
+
+/// The last component of a scenario path, for error messages and the id check.
+fn display_name(p: &Path) -> String {
+    p.file_name().map_or_else(
+        || p.display().to_string(),
+        |n| n.to_string_lossy().into_owned(),
+    )
+}
+
+/// Collect the `*.json` files under `dir`, descending into subdirectories.
+fn collect_json(dir: &Path, out: &mut Vec<PathBuf>) -> Result<(), String> {
+    let entries = std::fs::read_dir(dir).map_err(|e| format!("read {}: {e}", dir.display()))?;
+    for entry in entries.filter_map(Result::ok) {
+        let p = entry.path();
+        if p.is_dir() {
+            collect_json(&p, out)?;
+        } else if p.extension().is_some_and(|x| x == "json") {
+            out.push(p);
+        }
+    }
+    Ok(())
 }
 
 /// Write a run's step log to `<out>/<implementation>/<scenario>.log.json`.
@@ -108,6 +133,11 @@ pub fn record(
             };
             let result = run_scenario(s, reference).and_then(|r| {
                 write_log(out, &r)?;
+                // A run that fails a step is not a reference: it judges the scenario as failed
+                // and leaves the golden alone, so a broken recording never becomes the baseline.
+                if r.failed() {
+                    return Ok(r);
+                }
                 std::fs::create_dir_all(golden_dir)
                     .map_err(|e| format!("create {}: {e}", golden_dir.display()))?;
                 let mut text =
@@ -167,4 +197,109 @@ pub fn check(
             }
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::compare::Verdict;
+    use crate::normalise::FullNormaliser;
+
+    fn scratch(name: &str) -> PathBuf {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_nanos());
+        std::env::temp_dir().join(format!("wg-modes-{name}-{}-{nanos}", std::process::id()))
+    }
+
+    fn write(path: &Path, text: &str) {
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(path, text).unwrap();
+    }
+
+    /// A scenario whose first step is `git --version`, followed by `after`.
+    fn scenario(id: &str, after: &str) -> String {
+        format!(r#"{{"id":"{id}","covers":[],"steps":[{{"cli":["--version"]}},{after}]}}"#)
+    }
+
+    #[test]
+    fn load_descends_into_area_directories() {
+        let dir = scratch("load");
+        let pass = r#"{"assert":{"exit":0}}"#;
+        write(&dir.join("top.json"), &scenario("top", pass));
+        write(&dir.join("git/one.json"), &scenario("one", pass));
+        write(&dir.join("runs/deep/two.json"), &scenario("two", pass));
+        write(&dir.join("runs/deep/notes.md"), "not a scenario");
+        write(&dir.join("git/wrong.json"), &scenario("other", pass));
+
+        let loaded = load_scenarios(&dir).unwrap();
+        let files: Vec<&str> = loaded.iter().map(|l| l.file.as_str()).collect();
+        assert_eq!(
+            files,
+            [
+                "git/one.json",
+                "git/wrong.json",
+                "runs/deep/two.json",
+                "top.json"
+            ]
+        );
+        assert!(loaded[0].scenario.is_ok());
+        let wrong = loaded[1].scenario.as_ref().unwrap_err();
+        assert!(
+            wrong.contains("must equal the file name `wrong`"),
+            "{wrong}"
+        );
+        assert!(loaded[2].scenario.is_ok() && loaded[3].scenario.is_ok());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn load_of_one_file_keeps_its_plain_name() {
+        let dir = scratch("single");
+        let path = dir.join("git/only.json");
+        write(&path, &scenario("only", r#"{"assert":{"exit":0}}"#));
+        let loaded = load_scenarios(&path).unwrap();
+        assert_eq!(loaded.len(), 1);
+        assert_eq!(loaded[0].file, "only.json");
+        assert!(loaded[0].scenario.is_ok());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn record_writes_a_golden_only_when_the_run_passes() {
+        let dir = scratch("record");
+        write(
+            &dir.join("area/passes.json"),
+            &scenario("passes", r#"{"assert":{"exit":0}}"#),
+        );
+        write(
+            &dir.join("area/fails.json"),
+            &scenario("fails", r#"{"assert":{"exit":7}}"#),
+        );
+        let golden = dir.join("golden");
+        let loaded = load_scenarios(&dir).unwrap();
+        let reference = Implementation::from_command("ref", "git", Vec::new()).unwrap();
+
+        let reports = record(
+            &loaded,
+            &reference,
+            &golden,
+            &FullNormaliser::default(),
+            None,
+        );
+
+        let by_file = |name: &str| reports.iter().find(|r| r.file == name).unwrap();
+        let passed = by_file("area/passes.json");
+        assert_eq!(passed.verdict, Verdict::Equal);
+        assert!(golden.join("passes.json").exists());
+        let failed = by_file("area/fails.json");
+        assert_eq!(failed.verdict, Verdict::Failed);
+        assert!(
+            failed.problems.iter().any(|p| p.contains("step 1")),
+            "{:?}",
+            failed.problems
+        );
+        assert!(!golden.join("fails.json").exists());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 }

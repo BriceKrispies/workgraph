@@ -1,7 +1,8 @@
 //! Git fixture operations for scenario setup (CR-03).
 //!
 //! A scenario's `setup` steps name one of these operations: `init`, `commit`,
-//! `write`, `branch`, `checkout`, `worktree` and `merge`. They run the same git
+//! `write`, `branch`, `checkout`, `worktree`, `merge`, `delete`, `move`, `rebase`,
+//! `cherry-pick` and `reset`. They run the same git
 //! commands as `tests/conftest.py` (`GIT_ENV` and `GitRepo`): the author is
 //! `Test Author`, the committer `Test Committer`, `core.autocrlf` is off, and
 //! every commit or merge is dated `2026-01-01T00:MM:SS+00:00` from a tick that
@@ -108,6 +109,46 @@ impl<'a> Repo<'a> {
         self.git(&["merge", "--no-edit", "-q", branch], Some(&stamp))
     }
 
+    /// `git rm -q -r -- <paths>`: remove paths from the work tree and the index. The removal
+    /// is committed by a later `commit` step, which stages everything.
+    pub fn delete(&self, paths: &[String]) -> Result<Outcome, String> {
+        let mut args = vec!["rm", "-q", "-r", "--"];
+        args.extend(paths.iter().map(String::as_str));
+        self.git(&args, None)
+    }
+
+    /// `git mv -- <from> <to>`. The destination's parent directories are created first, so a
+    /// move into a new directory works the way the Python fixture's file moves do.
+    pub fn move_path(&self, from: &str, to: &str) -> Result<Outcome, String> {
+        let target = self.dir.join(to);
+        if let Some(parent) = target.parent() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| format!("create {}: {e}", parent.display()))?;
+        }
+        self.git(&["mv", "--", from, to], None)
+    }
+
+    /// `git rebase -q <onto>`, dated with the next tick: the rewritten commits take that date.
+    pub fn rebase(&mut self, onto: &str) -> Result<Outcome, String> {
+        let stamp = self.next_stamp();
+        self.git(&["rebase", "-q", onto], Some(&stamp))
+    }
+
+    /// `git cherry-pick <rev>`, dated with the next tick like a commit. (`cherry-pick` has no
+    /// `-q`, unlike `merge` and `rebase`.)
+    pub fn cherry_pick(&mut self, rev: &str) -> Result<Outcome, String> {
+        let stamp = self.next_stamp();
+        self.git(&["cherry-pick", rev], Some(&stamp))
+    }
+
+    /// `git reset -q [<mode>] <rev>`, where `mode` is `--soft`, `--mixed` or `--hard`.
+    pub fn reset(&self, mode: Option<&str>, rev: &str) -> Result<Outcome, String> {
+        let mut args = vec!["reset", "-q"];
+        args.extend(mode);
+        args.push(rev);
+        self.git(&args, None)
+    }
+
     fn write_files(&self, files: &[(String, String)]) -> Result<(), String> {
         for (name, content) in files {
             let path = self.dir.join(name);
@@ -196,5 +237,167 @@ mod tests {
         let mut repo = Repo::new(PathBuf::from("unused"), &mut tick);
         assert_eq!(repo.next_stamp(), "2026-01-01T00:01:02+00:00");
         assert_eq!(tick, 62);
+    }
+
+    /// Run a git command in `dir` and return its trimmed stdout (panics on failure).
+    fn git_out(dir: &Path, args: &[&str]) -> String {
+        let out = Command::new("git")
+            .args(args)
+            .current_dir(dir)
+            .env("GIT_CONFIG_NOSYSTEM", "1")
+            .env("GIT_CONFIG_GLOBAL", global_config_for(dir))
+            .output()
+            .expect("run git");
+        assert!(
+            out.status.success(),
+            "git {args:?}: {}",
+            String::from_utf8_lossy(&out.stderr)
+        );
+        String::from_utf8_lossy(&out.stdout).trim().to_owned()
+    }
+
+    /// A fresh repository with a `base` commit holding `a.txt` and `b.txt`.
+    fn fixture(name: &str) -> (PathBuf, u64) {
+        let dir = scratch(name);
+        let mut tick = 0;
+        let mut repo = Repo::new(dir.clone(), &mut tick);
+        assert_eq!(repo.init().map(|o| o.exit), Ok(0));
+        let files = vec![
+            (
+                "a.txt".to_owned(),
+                "a
+"
+                .to_owned(),
+            ),
+            (
+                "b.txt".to_owned(),
+                "b
+"
+                .to_owned(),
+            ),
+        ];
+        assert_eq!(repo.commit("base", &files, true).map(|o| o.exit), Ok(0));
+        (dir, tick)
+    }
+
+    fn exit_of(r: Result<Outcome, String>) -> i64 {
+        r.expect("git step ran").exit
+    }
+
+    #[test]
+    fn delete_removes_paths_once_committed() {
+        let (dir, mut tick) = fixture("delete");
+        let mut repo = Repo::new(dir.clone(), &mut tick);
+        assert_eq!(exit_of(repo.delete(&["a.txt".to_owned()])), 0);
+        assert_eq!(exit_of(repo.commit("drop a", &[], true)), 0);
+        assert_eq!(git_out(&dir, &["ls-files"]), "b.txt");
+        assert_eq!(exit_of(repo.delete(&["nope.txt".to_owned()])), 128);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn move_creates_destination_directories() {
+        let (dir, mut tick) = fixture("move");
+        let mut repo = Repo::new(dir.clone(), &mut tick);
+        assert_eq!(exit_of(repo.move_path("a.txt", "sub/deep/c.txt")), 0);
+        assert_eq!(exit_of(repo.commit("move a", &[], true)), 0);
+        assert_eq!(
+            git_out(&dir, &["ls-files"]),
+            "b.txt
+sub/deep/c.txt"
+        );
+        assert!(!dir.join("a.txt").exists());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn reset_moves_the_branch_back_with_and_without_a_mode() {
+        let (dir, mut tick) = fixture("reset");
+        let mut repo = Repo::new(dir.clone(), &mut tick);
+        let base = git_out(&dir, &["rev-parse", "HEAD"]);
+        let files = vec![(
+            "c.txt".to_owned(),
+            "c
+"
+            .to_owned(),
+        )];
+        assert_eq!(exit_of(repo.commit("second", &files, true)), 0);
+        assert_eq!(exit_of(repo.reset(Some("--hard"), "HEAD~1")), 0);
+        assert_eq!(git_out(&dir, &["rev-parse", "HEAD"]), base);
+        assert!(!dir.join("c.txt").exists());
+        assert_eq!(exit_of(repo.commit("again", &files, true)), 0);
+        assert_eq!(exit_of(repo.reset(None, &base)), 0);
+        assert_eq!(git_out(&dir, &["rev-parse", "HEAD"]), base);
+        // A mixed reset keeps the work tree, so c.txt is still on disk.
+        assert!(dir.join("c.txt").exists());
+        assert_eq!(exit_of(repo.reset(Some("--bogus"), "HEAD")), 129);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn cherry_pick_applies_a_commit_with_a_fixed_date() {
+        let (dir, mut tick) = fixture("cherry");
+        let mut repo = Repo::new(dir.clone(), &mut tick);
+        assert_eq!(exit_of(repo.checkout("feat", true)), 0);
+        let files = vec![(
+            "feat.txt".to_owned(),
+            "f
+"
+            .to_owned(),
+        )];
+        assert_eq!(exit_of(repo.commit("feature", &files, true)), 0);
+        let feature = git_out(&dir, &["rev-parse", "HEAD"]);
+        assert_eq!(exit_of(repo.checkout("main", false)), 0);
+        assert_eq!(exit_of(repo.cherry_pick(&feature)), 0);
+        assert_eq!(
+            git_out(&dir, &["ls-files"]),
+            "a.txt
+b.txt
+feat.txt"
+        );
+        assert_eq!(
+            git_out(&dir, &["log", "-1", "--format=%cI", "HEAD"]),
+            "2026-01-01T00:00:03Z"
+        );
+        assert_eq!(exit_of(repo.cherry_pick("no-such-rev")), 128);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn rebase_replays_a_branch_onto_the_new_tip() {
+        let (dir, mut tick) = fixture("rebase");
+        let mut repo = Repo::new(dir.clone(), &mut tick);
+        assert_eq!(exit_of(repo.checkout("feat", true)), 0);
+        let files = vec![(
+            "feat.txt".to_owned(),
+            "f
+"
+            .to_owned(),
+        )];
+        assert_eq!(exit_of(repo.commit("feature", &files, true)), 0);
+        assert_eq!(exit_of(repo.checkout("main", false)), 0);
+        let main_files = vec![(
+            "main.txt".to_owned(),
+            "m
+"
+            .to_owned(),
+        )];
+        assert_eq!(exit_of(repo.commit("main moves", &main_files, true)), 0);
+        assert_eq!(exit_of(repo.checkout("feat", false)), 0);
+        assert_eq!(exit_of(repo.rebase("main")), 0);
+        assert_eq!(
+            git_out(&dir, &["log", "--format=%s", "-3"]),
+            "feature
+main moves
+base"
+        );
+        assert_eq!(
+            git_out(&dir, &["ls-files"]),
+            "a.txt
+b.txt
+feat.txt
+main.txt"
+        );
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

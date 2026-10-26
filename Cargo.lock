@@ -689,6 +689,11 @@ dependencies = [
 [[package]]
 name = "wg-registry"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-model",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-render"

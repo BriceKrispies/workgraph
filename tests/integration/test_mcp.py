@@ -11,6 +11,7 @@ from mcp.client.streamable_http import streamable_http_client
 
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.demo.scenario import _free_port, _start_api
+from workgraph.security.permissions import DEFAULT_AGENT_PERMISSIONS, Permission
 
 REQUIRED_TOOLS = {
     "workspace_list",
@@ -304,4 +305,47 @@ async def test_experiment_tools_read_and_classify_with_grant(app, human, ws, hom
         assert unknown.is_error
         missing = await client.call_tool("experiment_get", {"experiment": "no-such-experiment"})
         assert missing.is_error and "not_found" in str(missing.content)
+    assert app.experiments.trial(human, ws, trial.id).failure_cause == "too_big"
+
+
+@pytest.mark.slow
+async def test_streamable_http_applies_grants(app, human, ws):
+    task = app.tasks.create(human, ws, TaskCreate(title="Measured over HTTP"))
+    protocol = {
+        "arms": [{"name": "haiku", "model": "claude-haiku-5-5"}],
+        "brief_template": "leaf-v1",
+        "primary_size": "source_lines",
+        "bands": {"min": 1, "max": 5},
+        "staircase": {"per_visit": 2, "up": 1, "down": 2, "max_reversals": 6, "max_trials": 24},
+        "budget": {"trials": 40},
+    }
+    app.experiments.create(human, ws, "http-exp", "HTTP experiment", None, protocol)
+    app.experiments.freeze(human, ws, "http-exp")
+    trial = app.experiments.add_trial(human, ws, "http-exp", task.key, "haiku", "staircase")
+    app.experiments.start_trial(human, ws, trial.id)
+    app.experiments.record_grade(human, ws, trial.id, "fail")
+    arguments = {"trial": trial.id, "cause": "too_big", "source": "agent"}
+
+    async def classify(grants: frozenset[Permission] | None) -> object:
+        port = _free_port()
+        thread, server = _start_api(app, port, mcp_permissions=grants)
+        try:
+            url = f"http://127.0.0.1:{port}/mcp/"
+            async with (
+                httpx2.AsyncClient(
+                    headers={"Authorization": f"Bearer {app.api_token()}"}, timeout=30
+                ) as http,
+                Client(streamable_http_client(url, http_client=http), read_timeout_seconds=30) as client,
+            ):
+                return await client.call_tool("trial_classify", arguments)
+        finally:
+            server.should_exit = True
+            thread.join(timeout=30)
+
+    denied = await classify(None)
+    assert denied.is_error and "experiment:write" in str(denied.content)
+    assert app.experiments.trial(human, ws, trial.id).failure_cause is None
+    granted = await classify(DEFAULT_AGENT_PERMISSIONS | {Permission.EXPERIMENT_WRITE})
+    assert not granted.is_error
+    assert granted.structured_content["failure_cause"] == "too_big"
     assert app.experiments.trial(human, ws, trial.id).failure_cause == "too_big"

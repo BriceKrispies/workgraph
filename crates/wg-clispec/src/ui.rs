@@ -1,18 +1,11 @@
 //! `workgraph ui screenshot` (`cli/commands/ui.py`): the URLs, the page-ready selector and the
 //! result the command prints.
 
-use clap::{ArgMatches, Command};
+use clap::ArgMatches;
 use wg_json::{PyStr, Value, py_float_repr};
 
 use crate::CliFailure;
 use crate::task::option_text;
-use crate::tree::snapshot_command;
-
-/// The clap command of the `ui` group.
-#[must_use]
-pub fn command() -> Command {
-    snapshot_command("ui")
-}
 
 /// The numeric option `key`: the typed text, else `default`; a bad number is a usage failure.
 ///

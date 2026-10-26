@@ -6,6 +6,7 @@
 //! built from the snapshot (see `wg_clispec::tree`).
 
 pub mod serve;
+pub mod setup;
 pub mod task;
 pub mod ui;
 
@@ -29,4 +30,12 @@ pub struct Group {
 }
 
 /// The implemented groups.
-pub const GROUPS: &[Group] = &[serve::MCP, serve::SERVE, task::GROUP, ui::GROUP];
+pub const GROUPS: &[Group] = &[
+    setup::CONFIG,
+    setup::DOCTOR,
+    setup::INIT,
+    serve::MCP,
+    serve::SERVE,
+    task::GROUP,
+    ui::GROUP,
+];

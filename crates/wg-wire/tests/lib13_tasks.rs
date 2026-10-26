@@ -111,7 +111,9 @@ fn decision_row() -> TaskDecision {
             label: "A".into(),
             detail: String::new(),
             recommended: true,
-        }],
+        }]
+        .into_iter()
+        .collect(),
         status: "open".into(),
         chosen_option_id: None,
         other_text: None,

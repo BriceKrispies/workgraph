@@ -9,6 +9,7 @@
 pub mod argv;
 pub mod failure;
 pub mod servers;
+pub mod setup;
 pub mod snapshot;
 pub mod task;
 pub mod tree;

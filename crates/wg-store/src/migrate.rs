@@ -69,6 +69,24 @@ fn data_statements(
 }
 
 impl Store {
+    /// `PRAGMA integrity_check`: `"ok"`, or the first problem SQLite reports (`workgraph doctor`).
+    pub fn integrity_check(&mut self) -> Result<String, WgError> {
+        self.read(|session| {
+            db!(session
+                .conn
+                .query_row("PRAGMA integrity_check", [], |row| row.get::<_, String>(0)))
+        })
+    }
+
+    /// `PRAGMA journal_mode`: the mode now in force, lower case (`workgraph doctor`).
+    pub fn journal_mode(&mut self) -> Result<String, WgError> {
+        self.read(|session| {
+            db!(session
+                .conn
+                .query_row("PRAGMA journal_mode", [], |row| row.get::<_, String>(0)))
+        })
+    }
+
     /// Python's `current_revision`: the revision in `alembic_version`, `None` when unmigrated.
     pub fn current_revision(&mut self) -> Result<Option<String>, WgError> {
         self.read(recorded)

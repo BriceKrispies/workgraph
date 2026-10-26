@@ -2170,15 +2170,18 @@ dependencies = [
  "ureq",
  "wg-browser",
  "wg-clispec",
+ "wg-codeparse",
  "wg-json",
  "wg-mcp",
  "wg-mcpspec",
  "wg-model",
+ "wg-net",
  "wg-render",
  "wg-runtime",
  "wg-server",
  "wg-serverspec",
  "wg-types",
+ "wg-uispec",
 ]
 
 [[package]]
@@ -2187,6 +2190,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "serde_json",
+ "wg-config",
  "wg-json",
  "wg-model",
  "wg-render",
@@ -2558,6 +2562,16 @@ dependencies = [
  "serde_json",
  "time",
  "uuid",
+]
+
+[[package]]
+name = "wg-uispec"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde_json",
+ "wg-clispec",
+ "wg-json",
 ]
 
 [[package]]

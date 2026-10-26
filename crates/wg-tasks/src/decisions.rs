@@ -8,6 +8,7 @@
 //!
 //! The waiting tags ([`CLEARED_TAGS`]) are dropped once none of the task's decisions is open.
 
+use rpds::VectorSync;
 use serde_json::{Map, json};
 use wg_model::EventPayload;
 use wg_model::entity::{DecisionOption, TaskComment, TaskDecision};
@@ -73,7 +74,7 @@ pub struct DecisionPlan {
 
 /// Fills in missing option ids from position ("a", "b", ...) and refuses duplicates and more
 /// than [`MAX_OPTIONS`] options (`normalize_options`).
-pub fn normalize_options(options: &[OptionInput]) -> Result<Vec<DecisionOption>, WgError> {
+pub fn normalize_options(options: &[OptionInput]) -> Result<VectorSync<DecisionOption>, WgError> {
     if options.len() > MAX_OPTIONS {
         return Err(WgError::new(
             ErrorCode::ValidationFailed,
@@ -81,8 +82,8 @@ pub fn normalize_options(options: &[OptionInput]) -> Result<Vec<DecisionOption>,
         ));
     }
     options.iter().enumerate().try_fold(
-        Vec::with_capacity(options.len()),
-        |out: Vec<DecisionOption>, (position, option)| {
+        VectorSync::new_sync(),
+        |out: VectorSync<DecisionOption>, (position, option)| {
             let id = option
                 .id
                 .as_deref()
@@ -100,7 +101,7 @@ pub fn normalize_options(options: &[OptionInput]) -> Result<Vec<DecisionOption>,
                 detail: option.detail.clone(),
                 recommended: option.recommended,
             };
-            Ok(out.into_iter().chain([row]).collect())
+            Ok(out.push_back(row))
         },
     )
 }

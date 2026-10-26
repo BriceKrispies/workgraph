@@ -8,7 +8,7 @@
 //! The JSON produced here keeps Python's field order, so `to_pretty_json` matches pydantic's
 //! `model_dump_json(indent=2)` byte for byte.
 
-use serde_json::{Map, Value, json};
+use serde_json::{Value, json};
 use wg_types::{ChangeSetItemStatus as I, ChangeSetStatus as C};
 
 use crate::branch::attempt_branch_name;
@@ -42,23 +42,26 @@ pub struct ManifestEntry {
 impl ManifestEntry {
     /// The entry as a JSON object in Python's field order (`model_dump()`).
     pub fn to_json(&self) -> Value {
-        let mut map = Map::new();
-        map.insert("repository_id".into(), json!(self.repository_id));
-        map.insert("repository".into(), json!(self.repository));
-        map.insert("checkout_path".into(), json!(self.checkout_path));
-        map.insert(
-            "source_checkout_path".into(),
-            json!(self.source_checkout_path),
-        );
-        map.insert("sha".into(), json!(self.sha));
-        map.insert("ref".into(), json!(self.ref_name));
-        map.insert("target_ref".into(), json!(self.target_ref));
-        map.insert("access".into(), json!(self.access));
-        map.insert("isolation".into(), json!(self.isolation));
-        map.insert("worktree_id".into(), json!(self.worktree_id));
-        map.insert("branch".into(), json!(self.branch));
-        map.insert("base".into(), self.base.clone().unwrap_or(Value::Null));
-        Value::Object(map)
+        let fields: [(&str, Value); 12] = [
+            ("repository_id", json!(self.repository_id)),
+            ("repository", json!(self.repository)),
+            ("checkout_path", json!(self.checkout_path)),
+            ("source_checkout_path", json!(self.source_checkout_path)),
+            ("sha", json!(self.sha)),
+            ("ref", json!(self.ref_name)),
+            ("target_ref", json!(self.target_ref)),
+            ("access", json!(self.access)),
+            ("isolation", json!(self.isolation)),
+            ("worktree_id", json!(self.worktree_id)),
+            ("branch", json!(self.branch)),
+            ("base", self.base.clone().unwrap_or(Value::Null)),
+        ];
+        Value::Object(
+            fields
+                .into_iter()
+                .map(|(key, value)| (key.to_owned(), value))
+                .collect(),
+        )
     }
 
     /// Reads an entry back from its JSON object (`ManifestEntry.model_validate`). Returns `None`
@@ -387,61 +390,83 @@ pub fn plan_capture(
     observations: &[RepoObservation],
     has_change_set: bool,
 ) -> CapturePlan {
-    let mut outcome = Vec::with_capacity(entries.len());
-    let mut violations = Vec::new();
-    let mut modified_repository_ids = Vec::new();
-    let mut dirty = Vec::new();
-    let mut item_updates = Vec::new();
-    let mut statuses = Vec::new();
-    for (entry, observed) in entries.iter().zip(observations) {
-        let head = observed.head.as_deref();
-        let changed: &[String] = if head.is_some() {
-            &observed.changed_files
-        } else {
-            &[]
-        };
-        let commits: &[String] = if needs_commit_range(entry.sha.as_deref(), head) {
-            &observed.commits
-        } else {
-            &[]
-        };
-        let mut recorded = entry.clone();
-        recorded.sha = observed.head.clone();
-        outcome.push(recorded);
-        if !changed.is_empty() {
-            let kept = changed.iter().take(DIRTY_FILE_LIMIT).cloned().collect();
-            dirty.push((entry.repository.clone(), kept));
-        }
-        if entry.access == "read_only" && (!commits.is_empty() || !changed.is_empty()) {
-            violations.push(Violation {
-                repository: entry.repository.clone(),
-                commits: commits.len(),
-                uncommitted_files: changed.len(),
-            });
-        } else if !commits.is_empty() {
-            modified_repository_ids.push(entry.repository_id.clone());
-        }
-        if entry.access == "read_write" {
-            let (status, detail) = if commits.is_empty() {
-                (I::Pending, Some(NO_COMMITS_DETAIL.to_owned()))
-            } else {
-                (I::Committed, None)
-            };
-            statuses.push(status);
-            item_updates.push(ItemUpdate {
-                repository_id: entry.repository_id.clone(),
-                status,
-                detail,
-            });
-        }
-    }
+    let plans: Vec<EntryPlan> = entries
+        .iter()
+        .zip(observations)
+        .map(|(entry, observed)| plan_entry(entry, observed))
+        .collect();
+    let statuses: Vec<I> = plans
+        .iter()
+        .filter_map(|plan| plan.item_update.as_ref().map(|update| update.status))
+        .collect();
     let change_set_status = has_change_set.then(|| applied_status(&statuses));
     CapturePlan {
-        outcome,
-        violations,
-        modified_repository_ids,
-        dirty,
-        item_updates,
+        outcome: plans.iter().map(|plan| plan.outcome.clone()).collect(),
+        violations: plans
+            .iter()
+            .filter_map(|plan| plan.violation.clone())
+            .collect(),
+        modified_repository_ids: plans
+            .iter()
+            .filter_map(|plan| plan.modified_repository_id.clone())
+            .collect(),
+        dirty: plans.iter().filter_map(|plan| plan.dirty.clone()).collect(),
+        item_updates: plans
+            .iter()
+            .filter_map(|plan| plan.item_update.clone())
+            .collect(),
         change_set_status,
+    }
+}
+
+/// What one manifest entry contributes to a capture plan.
+struct EntryPlan {
+    outcome: ManifestEntry,
+    violation: Option<Violation>,
+    modified_repository_id: Option<String>,
+    dirty: Option<(String, Vec<String>)>,
+    item_update: Option<ItemUpdate>,
+}
+
+/// Plans the capture of one entry from its observation.
+fn plan_entry(entry: &ManifestEntry, observed: &RepoObservation) -> EntryPlan {
+    let head = observed.head.as_deref();
+    let changed: &[String] = if head.is_some() {
+        &observed.changed_files
+    } else {
+        &[]
+    };
+    let commits: &[String] = if needs_commit_range(entry.sha.as_deref(), head) {
+        &observed.commits
+    } else {
+        &[]
+    };
+    let flagged = entry.access == "read_only" && (!commits.is_empty() || !changed.is_empty());
+    let (status, detail) = if commits.is_empty() {
+        (I::Pending, Some(NO_COMMITS_DETAIL.to_owned()))
+    } else {
+        (I::Committed, None)
+    };
+    EntryPlan {
+        outcome: ManifestEntry {
+            sha: observed.head.clone(),
+            ..entry.clone()
+        },
+        violation: flagged.then(|| Violation {
+            repository: entry.repository.clone(),
+            commits: commits.len(),
+            uncommitted_files: changed.len(),
+        }),
+        modified_repository_id: (!flagged && !commits.is_empty())
+            .then(|| entry.repository_id.clone()),
+        dirty: (!changed.is_empty()).then(|| {
+            let kept = changed.iter().take(DIRTY_FILE_LIMIT).cloned().collect();
+            (entry.repository.clone(), kept)
+        }),
+        item_update: (entry.access == "read_write").then(|| ItemUpdate {
+            repository_id: entry.repository_id.clone(),
+            status,
+            detail,
+        }),
     }
 }

@@ -37,7 +37,9 @@ fn decision() -> Result<TaskDecision, Box<dyn Error>> {
                 detail: String::new(),
                 recommended: false,
             },
-        ],
+        ]
+        .into_iter()
+        .collect(),
         status: "open".into(),
         chosen_option_id: None,
         other_text: None,

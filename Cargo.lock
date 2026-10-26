@@ -1230,6 +1230,7 @@ dependencies = [
  "rusqlite",
  "serde_json",
  "wg-conformance",
+ "wg-jobs",
  "wg-model",
  "wg-storecodec",
  "wg-types",

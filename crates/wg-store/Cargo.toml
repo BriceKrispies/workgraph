@@ -12,6 +12,7 @@ workspace = true
 
 [dependencies]
 rusqlite = { version = "0.41", features = ["bundled"] }
+wg-jobs = { path = "../wg-jobs" }
 wg-model = { path = "../wg-model" }
 wg-storecodec = { path = "../wg-storecodec" }
 wg-types = { path = "../wg-types" }

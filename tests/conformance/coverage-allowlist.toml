@@ -1,0 +1,7 @@
+# Contract ids that no scenario or test can observe, each with the reason (CR-07, docs/rust-rewrite.md
+# section 3.5). `wg-conformance coverage` reports an allowlisted id as excluded with its reason, not as
+# uncovered. An id that a scenario or a test marker covers is counted as covered and is not reported.
+#
+# [[exclusion]]
+# id = "C002"
+# reason = "ui screenshot needs a browser; covered by its Python test on machines that have one"

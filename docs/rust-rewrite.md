@@ -724,6 +724,12 @@ contract snapshots stay as the reference the Rust tests compare against.
   the named scenario files.
 * Crate paths are `crates/<crate>/`. Golden vectors live in `golden/<name>/`, scenario files in
   `tests/conformance/scenarios/`.
+* Test marker: a comment `covers: C001, M02` on the line above a test function (Rust `fn` or Python
+  `def`; attributes and decorators may sit between) makes `wg-conformance coverage` count that test
+  as covering the named ids. Rust unit and integration tests and Python tests under `tests/` are read.
+* Allowlist: `tests/conformance/coverage-allowlist.toml` holds `[[exclusion]]` tables with `id` and a
+  non-empty `reason` for ids that no scenario or test can observe; coverage reports them as excluded
+  with the reason, not uncovered.
 
 ### 9.2 Dependency levels and parallel width
 

@@ -3,5 +3,6 @@
 pub mod attempt;
 pub mod branch;
 pub mod change_set;
+pub mod manifest;
 pub mod recovery;
 pub mod stack_base;

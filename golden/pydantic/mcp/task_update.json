@@ -361,6 +361,68 @@
       }
     },
     {
+      "id": "float:expected_version:huge",
+      "input": {
+        "expected_version": 1.5e+300,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:edge",
+      "input": {
+        "expected_version": 9.223372036854776e+18,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:large",
+      "input": {
+        "expected_version": 9.2e+18,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "description": null,
+          "expected_version": 9200000000000000000,
+          "files": null,
+          "priority": null,
+          "reason": null,
+          "remove_tags": null,
+          "status": null,
+          "task": "example",
+          "title": null,
+          "workspace": null
+        }
+      }
+    },
+    {
       "id": "wrong:title:none",
       "input": {
         "task": "example",

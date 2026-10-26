@@ -881,6 +881,65 @@
       }
     },
     {
+      "id": "float:input_tokens:huge",
+      "input": {
+        "input_tokens": 1.5e+300,
+        "outcome": "succeeded",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "input_tokens"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:input_tokens:edge",
+      "input": {
+        "input_tokens": 9.223372036854776e+18,
+        "outcome": "succeeded",
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "input_tokens"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:input_tokens:large",
+      "input": {
+        "input_tokens": 9.2e+18,
+        "outcome": "succeeded",
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "input_tokens": 9200000000000000000,
+          "outcome": "succeeded",
+          "output_tokens": null,
+          "summary": "",
+          "task": "example",
+          "workspace": null
+        }
+      }
+    },
+    {
       "id": "wrong:output_tokens:none",
       "input": {
         "outcome": "succeeded",
@@ -1023,6 +1082,65 @@
             "type": "int_type"
           }
         ]
+      }
+    },
+    {
+      "id": "float:output_tokens:huge",
+      "input": {
+        "outcome": "succeeded",
+        "output_tokens": 1.5e+300,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "output_tokens"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:output_tokens:edge",
+      "input": {
+        "outcome": "succeeded",
+        "output_tokens": 9.223372036854776e+18,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "output_tokens"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:output_tokens:large",
+      "input": {
+        "outcome": "succeeded",
+        "output_tokens": 9.2e+18,
+        "task": "example"
+      },
+      "output": {
+        "ok": {
+          "attempt_id": null,
+          "input_tokens": null,
+          "outcome": "succeeded",
+          "output_tokens": 9200000000000000000,
+          "summary": "",
+          "task": "example",
+          "workspace": null
+        }
       }
     },
     {

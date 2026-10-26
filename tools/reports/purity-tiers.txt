@@ -24,6 +24,7 @@ wg-exec Core
 wg-experiments Core
 wg-git Shell
 wg-gitcore Core
+wg-hash Core
 wg-intel Core
 wg-jobs Core
 wg-json Pure

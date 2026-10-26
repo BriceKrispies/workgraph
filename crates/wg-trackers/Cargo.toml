@@ -12,5 +12,6 @@ workspace = true
 
 [dependencies]
 serde_json = { version = "1", features = ["preserve_order"] }
+wg-hash = { path = "../wg-hash" }
 wg-registry = { path = "../wg-registry" }
 wg-types = { path = "../wg-types" }

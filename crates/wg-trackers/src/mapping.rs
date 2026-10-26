@@ -10,6 +10,7 @@ use crate::adf::adf_to_text;
 use crate::pull_request::{
     PullRequestRef, SOURCE_CUSTOM_FIELD, SOURCE_DEV_PANEL, merge, parse_pull_request_url, urls_in,
 };
+use crate::sync::project_of;
 
 /// The mapping settings of one Jira connection that the mapper reads.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -109,7 +110,7 @@ pub fn map_issue(
     let key = identifier(issue.get("key")).ok_or(MapError::MissingField("key"))?;
     let external_id = identifier(issue.get("id")).ok_or(MapError::MissingField("id"))?;
     let project_key =
-        text(dig(fields, &["project", "key"])).unwrap_or_else(|| project_prefix(&key).to_string());
+        text(dig(fields, &["project", "key"])).unwrap_or_else(|| project_of(&key).to_string());
     Ok(TrackerSnapshot {
         url: format!("{}/browse/{key}", config.base_url.trim_end_matches('/')),
         external_id,
@@ -130,11 +131,6 @@ pub fn map_issue(
         raw: issue.clone(),
         key,
     })
-}
-
-/// The project key of an issue key: everything before the last hyphen.
-fn project_prefix(key: &str) -> &str {
-    key.rsplit_once('-').map_or(key, |(project, _)| project)
 }
 
 /// Walks nested objects by key; `None` as soon as a step is not an object.

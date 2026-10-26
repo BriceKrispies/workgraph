@@ -25,7 +25,10 @@ pub mod outcome;
 pub mod permissions;
 pub mod wire;
 
-pub use accept::{Gate, Reject, SDK_ACCEPT, Verb, gate, not_acceptable_reply, refusal};
+pub use accept::{
+    Gate, Plan, Reject, SDK_ACCEPT, Verb, gate, not_acceptable_reply, plan, refusal, reject_status,
+    verb_of,
+};
 pub use arguments::{ArgumentsError, check_arguments};
 pub use catalog::{Catalog, ToolSpec};
 pub use jsonrpc::not_jsonrpc_reply;

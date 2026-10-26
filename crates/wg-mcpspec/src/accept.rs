@@ -114,3 +114,137 @@ pub fn gate(verb: Verb, accept: &str, body: &[u8]) -> Gate {
         }),
     }
 }
+
+/// The HTTP method of a request as the endpoint's checks see it: only POST and GET are checked.
+#[must_use]
+pub fn verb_of(method: &str) -> Option<Verb> {
+    match method {
+        "POST" => Some(Verb::Post),
+        "GET" => Some(Verb::Get),
+        _ => None,
+    }
+}
+
+/// The HTTP status number of a refusal.
+#[must_use]
+pub const fn reject_status(reject: Reject) -> u16 {
+    match reject {
+        Reject::NotAcceptable => 406,
+        Reject::BadRequest => 400,
+    }
+}
+
+/// The request header named `name` (case-insensitive), first occurrence.
+fn first_header<'a>(headers: &'a [(String, String)], name: &str) -> Option<&'a str> {
+    headers
+        .iter()
+        .find(|(key, _)| key.eq_ignore_ascii_case(name))
+        .map(|(_, value)| value.as_str())
+}
+
+/// What the endpoint does with a POST or GET, described in plain values.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Plan {
+    /// Answer now with this status, these headers and this body.
+    Reply {
+        status: u16,
+        headers: Vec<(String, String)>,
+        body: Vec<u8>,
+    },
+    /// Hand the request to the SDK with its `Accept` header replaced by this value.
+    Forward { accept: &'static str },
+}
+
+/// The whole decision for a request: `headers` are the request's, `fresh_session` is the id to
+/// echo when the request carries none, and `body` is the whole request body. A reply carries the
+/// JSON content type and the session id the Python transport echoes (the request's own, or the
+/// fresh one).
+#[must_use]
+pub fn plan(verb: Verb, headers: &[(String, String)], fresh_session: &str, body: &[u8]) -> Plan {
+    let accept = first_header(headers, "accept").unwrap_or_default();
+    let session = first_header(headers, "mcp-session-id").unwrap_or(fresh_session);
+    match gate(verb, accept, body) {
+        Gate::Forward => Plan::Forward { accept: SDK_ACCEPT },
+        Gate::Reply { reject, body } => Plan::Reply {
+            status: reject_status(reject),
+            headers: vec![
+                ("content-type".to_owned(), "application/json".to_owned()),
+                ("mcp-session-id".to_owned(), session.to_owned()),
+            ],
+            body: body.to_string().into_bytes(),
+        },
+    }
+}
+
+#[cfg(test)]
+mod plan_tests {
+    use super::*;
+
+    fn h(pairs: &[(&str, &str)]) -> Vec<(String, String)> {
+        pairs
+            .iter()
+            .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
+            .collect()
+    }
+
+    #[test]
+    fn only_post_and_get_are_checked() {
+        assert_eq!(verb_of("POST"), Some(Verb::Post));
+        assert_eq!(verb_of("GET"), Some(Verb::Get));
+        assert_eq!(verb_of("DELETE"), None);
+    }
+
+    #[test]
+    fn statuses_are_the_http_numbers() {
+        assert_eq!(reject_status(Reject::NotAcceptable), 406);
+        assert_eq!(reject_status(Reject::BadRequest), 400);
+    }
+
+    #[test]
+    fn an_accepted_request_is_forwarded_with_the_widened_accept() {
+        let body = br#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#;
+        let got = plan(Verb::Post, &h(&[("Accept", "*/*")]), "fresh", body);
+        assert_eq!(got, Plan::Forward { accept: SDK_ACCEPT });
+    }
+
+    #[test]
+    fn a_refused_accept_is_a_406_echoing_the_request_session() {
+        let headers = h(&[("accept", "text/plain"), ("Mcp-Session-Id", "abc")]);
+        match plan(Verb::Post, &headers, "fresh", b"{}") {
+            Plan::Reply {
+                status,
+                headers,
+                body,
+            } => {
+                assert_eq!(status, 406);
+                assert!(headers.contains(&("mcp-session-id".to_owned(), "abc".to_owned())));
+                assert!(
+                    headers.contains(&("content-type".to_owned(), "application/json".to_owned()))
+                );
+                assert!(String::from_utf8_lossy(&body).contains("-32600"));
+            }
+            Plan::Forward { .. } => panic!("forwarded"),
+        }
+    }
+
+    #[test]
+    fn a_missing_accept_and_session_use_empty_accept_and_the_fresh_id() {
+        match plan(Verb::Get, &[], "fresh", b"") {
+            Plan::Reply {
+                status, headers, ..
+            } => {
+                assert_eq!(status, 406);
+                assert!(headers.contains(&("mcp-session-id".to_owned(), "fresh".to_owned())));
+            }
+            Plan::Forward { .. } => panic!("forwarded"),
+        }
+    }
+
+    #[test]
+    fn a_non_jsonrpc_post_body_is_a_400() {
+        match plan(Verb::Post, &h(&[("accept", "*/*")]), "fresh", b"{}") {
+            Plan::Reply { status, .. } => assert_eq!(status, 400),
+            Plan::Forward { .. } => panic!("forwarded"),
+        }
+    }
+}

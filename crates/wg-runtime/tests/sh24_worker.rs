@@ -189,7 +189,7 @@ fn recover_requeues_expired_leases_and_marks_lost_workers() -> TestResult {
         },
     )?;
     std::thread::sleep(Duration::from_millis(20));
-    let report = queue.recover()?;
+    let report = queue.recover(|_| Ok(serde_json::Value::Null))?;
     assert_eq!(report["recovered_jobs"], json!([id.to_string()]));
     assert_eq!(report["lost_workers"], json!(["old-worker"]));
     let job = job_row(&mut queue, id)?;

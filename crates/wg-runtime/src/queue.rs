@@ -209,23 +209,20 @@ impl Queue {
         Ok(())
     }
 
-    /// `worker recover`: expired job leases, lost workers and orphaned worktrees, now.
-    pub fn recover(&mut self) -> Result<Map<String, Value>, WgError> {
+    /// `worker recover`: expired job leases, lost workers and orphaned worktrees, now. The
+    /// worktree pass belongs to the exec feature, so the caller passes it in as `worktrees`
+    /// (`wg_exec_feature::service::worktrees::recovery_json`), which runs as the system.
+    pub fn recover(
+        &mut self,
+        worktrees: impl FnOnce(&mut App) -> Result<Value, WgError>,
+    ) -> Result<Map<String, Value>, WgError> {
         let jobs = self.recover_expired()?;
         let workers = self.mark_lost_workers()?;
-        // The maintenance pass recovers worktrees as the system, as the Python worker does.
-        let worktrees = self
-            .app
-            .worktree_recover(&crate::system_context("worker")?)?;
+        let worktrees = worktrees(&mut self.app)?;
         Ok(json!({
             "recovered_jobs": jobs.iter().map(ToString::to_string).collect::<Vec<_>>(),
             "lost_workers": workers,
-            "worktrees": {
-                "activated": worktrees.activated,
-                "released": worktrees.released,
-                "orphaned": worktrees.orphaned,
-                "unknown_dirs": worktrees.unknown_dirs,
-            },
+            "worktrees": worktrees,
         })
         .as_object()
         .cloned()

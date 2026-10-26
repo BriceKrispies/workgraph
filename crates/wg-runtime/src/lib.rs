@@ -32,7 +32,6 @@ mod stacks;
 mod stamp;
 pub use scope::index_written;
 mod worker;
-mod worktrees;
 
 pub use app::{App, environment, resolve_paths};
 pub use bus::Bus;

@@ -18,7 +18,7 @@ use wg_runtimespec::jobs as view;
 use wg_types::{Id, JobStatus, WgError};
 
 use crate::app::App;
-use crate::stamp::{draw, system_context};
+use crate::stamp::draw;
 
 impl App {
     /// `JobQueue.enqueue`: the id of the new job, or of the job already holding `job.idempotency_key`.
@@ -248,16 +248,17 @@ impl App {
         Ok(view::workers_out(&workers))
     }
 
-    /// `worker recover`: expired job leases, lost workers and orphaned worktrees, now.
-    pub fn worker_recover(&mut self, context: &RequestContext) -> Result<Value, WgError> {
+    /// `worker recover`: expired job leases, lost workers and orphaned worktrees, now. The
+    /// worktree pass belongs to the exec feature, so the caller passes it in as `worktrees`
+    /// (`wg_exec_feature::service::worktrees::recovery_out`), which runs as the system.
+    pub fn worker_recover(
+        &mut self,
+        context: &RequestContext,
+        worktrees: impl FnOnce(&mut App) -> Result<Value, WgError>,
+    ) -> Result<Value, WgError> {
         let recovered = self.recover_expired_as(context)?;
         let lost = self.mark_lost_workers_as(context)?;
-        // The worktree recovery acts as the system, as `worktrees.recover(RequestContext.system("cli"))`.
-        let worktrees = self.worktree_recover(&system_context("cli")?)?;
-        Ok(view::recovery_out(
-            &recovered,
-            &lost,
-            wg_runtimespec::worktrees::recovery_report_out(&worktrees),
-        ))
+        let worktrees = worktrees(self)?;
+        Ok(view::recovery_out(&recovered, &lost, worktrees))
     }
 }

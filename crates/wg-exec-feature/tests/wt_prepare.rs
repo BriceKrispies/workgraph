@@ -3,11 +3,11 @@
 
 use rpds::RedBlackTreeSetSync;
 use serde_json::{Value, json};
+use wg_exec_feature::spec::worktrees::{acquire_lease_decision, prepare_checks};
 use wg_model::entity::{JsonObject, ResourceLease};
 use wg_model::event::WorktreeCreated;
 use wg_model::stamp::Stamp;
 use wg_model::write::{RowKey, Write};
-use wg_runtimespec::worktrees::{acquire_lease_decision, prepare_checks};
 use wg_types::{Actor, ErrorCode, Id, Timestamp, WgError};
 use wg_verify::{ApplicableCheck, CheckSpec};
 

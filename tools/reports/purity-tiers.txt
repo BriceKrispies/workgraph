@@ -42,6 +42,10 @@ wg-demo-agent Shell
 wg-demoproto Pure
 wg-events Core
 wg-exec Core
+wg-exec-feature Shell
+wg-exec-feature::spec Pure
+wg-exec-feature::service Shell
+wg-exec-feature::mcp Shell
 wg-experiments Core
 wg-experiments-feature Shell
 wg-experiments-feature::spec Pure

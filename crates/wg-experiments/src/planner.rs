@@ -204,7 +204,9 @@ pub fn band_rows(graded: &[(Option<i64>, bool)]) -> Result<Vec<BandRow>, ValueEr
 /// `2 ** x` for a log2 size, `None` for `None` (`_lines`).
 #[must_use]
 pub fn lines(x: Option<f64>) -> Option<f64> {
-    x.map(|value| 2.0_f64.powf(value))
+    // `black_box` keeps the base opaque: with a literal 2.0 the optimiser rewrites `pow` as
+    // `exp2`, whose rounding differs from the C `pow` that Python's `2.0 ** x` calls.
+    x.map(|value| std::hint::black_box(2.0_f64).powf(value))
 }
 
 /// One graded trial of the size fit: its task, whether it passed, and its `src_lines` when the

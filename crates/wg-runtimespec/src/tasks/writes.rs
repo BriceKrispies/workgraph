@@ -50,7 +50,7 @@ pub fn enrichment_from(config: &serde_json::Map<String, Json>) -> Enrichment {
 }
 
 /// A stamp with its own ids, for a helper that always draws its first id from slot 0.
-fn substamp(stamp: &Stamp, salt: u32) -> Stamp {
+pub(super) fn substamp(stamp: &Stamp, salt: u32) -> Stamp {
     let a = derive_id(&stamp.entropy, 1_000_000 + salt);
     let b = derive_id(&stamp.entropy, 2_000_000 + salt);
     let entropy: Vec<u8> = a.as_bytes().iter().chain(b.as_bytes()).copied().collect();

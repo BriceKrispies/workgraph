@@ -12,6 +12,7 @@
 //! The pure half (request contexts, effect specifications and outcomes, log lines, the app
 //! context's rules) is `wg-runtimespec`; this crate keeps the I/O.
 
+mod acceptance;
 mod app;
 mod bus;
 mod cycle;

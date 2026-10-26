@@ -83,7 +83,7 @@ impl App {
     }
 
     /// A permission check against a fresh stamp, before anything is looked up.
-    fn require_permission(
+    pub(crate) fn require_permission(
         &mut self,
         context: &RequestContext,
         permission: Permission,

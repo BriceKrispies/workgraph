@@ -1,5 +1,5 @@
 //! `workgraph task create, list, show, update, bulk-update, archive, history, graph, ready,
-//! promote-ready` (IF-05) and `claim, release, complete, progress, result, comment, depend,
+//! promote-ready` (IF-05) and `claim, release, complete, accept, reject, progress, result, comment, depend,
 //! relate, link-repo`. The other `task` commands are placeholders until their groups land.
 //!
 //! The clap command is the snapshot's own tree, so help and parameters match
@@ -129,6 +129,27 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 .app()?
                 .task_complete(&context, ws, &reference, &body)?;
             state.emit(&out, Some(&|c| view::status_line(c, &out)))
+        }
+        Some("accept") => {
+            let (manual, reason, promote) = view::accept_flags(m);
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let app = state.app()?;
+            let out = if promote {
+                app.task_accept_promoting(&context, ws, &reference, manual, &reason)?
+            } else if manual {
+                app.task_accept_manually(&context, ws, &reference, &reason)?
+            } else {
+                app.task_accept(&context, ws, &reference, &reason)?
+            };
+            state.emit(&out, Some(&|c| view::accepted_line(c, &out, promote)))
+        }
+        Some("reject") => {
+            let reason = view::reject_reason(m);
+            let reference = view::option_text(m, "ref").unwrap_or_default();
+            let out = state
+                .app()?
+                .task_reject(&context, ws, &reference, &reason)?;
+            state.emit(&out, Some(&|c| view::rejected_line(c)))
         }
         Some("result") => {
             let body = view::result_body(m)?;

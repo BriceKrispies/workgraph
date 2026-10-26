@@ -880,6 +880,54 @@ pub fn released_line(console: &Console, task: &Value) -> String {
         .text
 }
 
+/// The flags of `task accept`: manual, the reason, and whether to promote the dependents.
+#[must_use]
+pub fn accept_flags(m: &ArgMatches) -> (bool, String, bool) {
+    (
+        option_flag(m, "--manual"),
+        one(m, "--reason").unwrap_or_default(),
+        option_flag(m, "--promote-dependents"),
+    )
+}
+
+/// The reason of `task reject` (required by the command).
+#[must_use]
+pub fn reject_reason(m: &ArgMatches) -> String {
+    one(m, "--reason").unwrap_or_default()
+}
+
+/// The human view of `task accept`; with `--promote-dependents` the output also names the
+/// dependents it moved to ready.
+#[must_use]
+pub fn accepted_line(console: &Console, out: &Value, promote: bool) -> String {
+    let base = format!(
+        "accepted ({}) by {}",
+        s(get(out, "mode")),
+        s(get(out, "actor"))
+    );
+    let line = if promote {
+        let promoted: Vec<String> = items(get(out, "promoted"))
+            .iter()
+            .map(|key| s(Some(key)))
+            .collect();
+        let names = if promoted.is_empty() {
+            "no dependents".to_owned()
+        } else {
+            promoted.join(", ")
+        };
+        format!("{base}; promoted {names}")
+    } else {
+        base
+    };
+    console.print(&line).text
+}
+
+/// The human view of `task reject`.
+#[must_use]
+pub fn rejected_line(console: &Console) -> String {
+    console.print("rejected").text
+}
+
 /// The human view of `task complete` and `task result`.
 #[must_use]
 pub fn status_line(console: &Console, task: &Value) -> String {

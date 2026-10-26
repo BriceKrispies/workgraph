@@ -4,12 +4,10 @@ import json
 from typing import Any
 
 import pytest
-from typer.testing import CliRunner
 
+from tests.helpers import run_cli
 from tests.integration.test_predictor import HAIKU, _seed
 from workgraph.app import Workgraph
-from workgraph.cli.common import STATE
-from workgraph.cli.main import app as cli
 from workgraph.config.paths import AppPaths
 from workgraph.core.context import RequestContext
 from workgraph.core.errors import ValidationFailed
@@ -133,16 +131,9 @@ def test_invalid_target_is_rejected(app, human, ws, fitted):
 def run(home, monkeypatch, tmp_path):
     monkeypatch.setenv("WORKGRAPH_HOME", str(home))
     monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "claude-config"))
-    runner = CliRunner()
 
     def invoke(*args: str, expect: int = 0, json_mode: bool = True) -> object:
-        STATE.json = json_mode
-        STATE.home = None
-        try:
-            result = runner.invoke(cli, list(args), catch_exceptions=False)
-        finally:
-            STATE.close()
-            STATE.json = False
+        result = run_cli(["--json", *args] if json_mode else list(args))
         assert result.exit_code == expect, f"{args}: exit {result.exit_code}\n{result.output}"
         text = result.output.strip()
         if json_mode and text.startswith(("{", "[")):

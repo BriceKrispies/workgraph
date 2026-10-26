@@ -22,6 +22,31 @@ pub fn llm_providers(config: &Map<String, Value>) -> Vec<(&str, &Map<String, Val
     named_objects(config.get("llm").and_then(|llm| llm.get("providers")))
 }
 
+/// The entry of provider `name` in `llm.providers`, if it is configured (`LLMRegistry.get`).
+#[must_use]
+pub fn llm_provider<'a>(
+    config: &'a Map<String, Value>,
+    name: &str,
+) -> Option<&'a Map<String, Value>> {
+    llm_providers(config)
+        .into_iter()
+        .find(|(entry_name, _)| *entry_name == name)
+        .map(|(_, entry)| entry)
+}
+
+/// The `(provider, model)` of the `capability` selection (`classification`, `embeddings` or
+/// `summarization`) under `llm`, when both are set. `LLMRegistry.selection`.
+#[must_use]
+pub fn llm_selection<'a>(
+    config: &'a Map<String, Value>,
+    capability: &str,
+) -> Option<(&'a str, &'a str)> {
+    let selection = config.get("llm")?.get(capability)?;
+    let provider = selection.get("provider")?.as_str()?;
+    let model = selection.get("model")?.as_str()?;
+    Some((provider, model))
+}
+
 /// The adapters of `agents`, in configuration order.
 #[must_use]
 pub fn agent_adapters(config: &Map<String, Value>) -> Vec<(&str, &Map<String, Value>)> {

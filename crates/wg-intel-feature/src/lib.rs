@@ -12,17 +12,19 @@
 //! The feature exports [`FEATURE`]. It has no routes, tools, resources or jobs yet.
 
 pub mod cli;
+pub mod jobs;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The intelligence feature: the `classify` and `search` command groups.
+/// The intelligence feature: the `classify` and `search` command groups and the classification,
+/// embedding and evaluation jobs.
 pub static FEATURE: Feature = Feature {
     name: "intel",
     cli: &[cli::CLASSIFY, cli::SEARCH],
     routes: &[],
     tools: &[],
     resources: &[],
-    jobs: &[],
+    jobs: jobs::JOBS,
 };

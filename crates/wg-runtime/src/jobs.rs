@@ -22,11 +22,7 @@ use crate::stamp::{draw, system_context};
 
 impl App {
     /// `JobQueue.enqueue`: the id of the new job, or of the job already holding `job.idempotency_key`.
-    pub(crate) fn enqueue_as(
-        &mut self,
-        context: &RequestContext,
-        job: &NewJob,
-    ) -> Result<Id, WgError> {
+    pub fn enqueue_as(&mut self, context: &RequestContext, job: &NewJob) -> Result<Id, WgError> {
         let key = job.idempotency_key.clone();
         Ok(self
             .runtime

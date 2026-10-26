@@ -24,7 +24,8 @@ pub struct ClassificationCompleted {
 pub struct ClassificationConfirmed {
     pub category: Option<String>,
     pub classification_id: Id,
-    pub previous: Option<Id>,
+    /// `{"category": ..., "model": ...}` of the former current classification, or null.
+    pub previous: Option<Value>,
 }
 
 /// `classification.disagreement`: the current and the new category, and whether the new one

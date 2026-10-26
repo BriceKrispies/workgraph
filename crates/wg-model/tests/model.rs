@@ -484,25 +484,27 @@ fn strings(value: Option<&Value>) -> BTreeSet<String> {
 
 #[test]
 fn every_family_event_of_the_contract_has_a_payload() -> TestResult {
+    // Every family present in the contract: the registry must name exactly the contract's events.
     let contract = contract_events()?;
+    let expected: BTreeSet<&str> = contract.keys().map(String::as_str).collect();
+    let known: BTreeSet<&str> = EventPayload::EVENT_TYPES.iter().copied().collect();
+    assert_eq!(known, expected, "registry covers the contract's families");
+    assert_eq!(
+        known.len(),
+        EventPayload::EVENT_TYPES.len(),
+        "duplicate type"
+    );
+    // The samples below cover the workspace, project, repository and task families. The other
+    // families are sampled by `lib11_knowledge.rs` and `execution.rs`.
     let families = ["workspace.", "project.", "repository.", "task."];
-    let expected: BTreeSet<&str> = contract
-        .keys()
-        .map(String::as_str)
-        .filter(|name| families.iter().any(|family| name.starts_with(family)))
-        .collect();
-    // The execution families (`attempt.`, `stack.`, `worktree.`) are checked by tests/execution.rs.
-    let known: BTreeSet<&str> = EventPayload::EVENT_TYPES
+    let core_known: BTreeSet<&str> = known
         .iter()
         .copied()
         .filter(|name| families.iter().any(|family| name.starts_with(family)))
         .collect();
-    assert_eq!(known, expected);
-    let all: BTreeSet<&str> = EventPayload::EVENT_TYPES.iter().copied().collect();
-    assert_eq!(all.len(), EventPayload::EVENT_TYPES.len(), "duplicate type");
-    assert_eq!(known.len(), 43);
+    assert_eq!(core_known.len(), 43);
     let sampled: BTreeSet<&str> = samples().iter().map(EventPayload::event_type).collect();
-    assert_eq!(sampled, known, "every event type has a sample");
+    assert_eq!(sampled, core_known, "every event type has a sample");
     Ok(())
 }
 
@@ -760,8 +762,9 @@ fn table_names_are_schema_tables() -> TestResult {
     let names: BTreeSet<&str> = Table::ALL.iter().map(|table| table.name()).collect();
     assert_eq!(names.len(), Table::ALL.len());
     for name in names {
+        let quoted = format!("CREATE TABLE \"{name}\" (");
         assert!(
-            schema.contains(&format!("CREATE TABLE {name} (")),
+            schema.contains(&format!("CREATE TABLE {name} (")) || schema.contains(&quoted),
             "{name} is not a table of schema 0010"
         );
     }

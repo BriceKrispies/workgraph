@@ -112,9 +112,13 @@ pub fn plan_claim(
                     format!("task {} is already claimed by {holder}", task.key),
                 )
                 .with_detail("claimed_by", json!(holder))
+                // `str(task.claim_expires_at)`: a space between date and time, `None` for no lease.
                 .with_detail(
                     "expires_at",
-                    json!(task.claim_expires_at.map(Timestamp::format_z)),
+                    json!(task.claim_expires_at.map_or_else(
+                        || "None".to_owned(),
+                        |expiry| expiry.format_isoformat().replacen('T', " ", 1)
+                    )),
                 ));
             }
             if holder == claimant {
@@ -174,8 +178,7 @@ pub fn plan_release(
         return Err(WgError::new(
             ErrorCode::InvalidTransition,
             format!("task {} is {}, not claimed", task.key, task.status),
-        )
-        .with_detail("status", json!(task.status.as_str())));
+        ));
     }
     if let Some(holder) = task.claimed_by.as_deref()
         && holder != caller.actor
@@ -189,7 +192,9 @@ pub fn plan_release(
     check_task_transition(task.status, TaskStatus::Ready, false, false)?;
     Ok(ReleasePlan {
         previous_claimant: task.claimed_by.clone(),
-        reason: reason.map_or_else(|| REASON_RELEASED.to_owned(), str::to_owned),
+        reason: reason
+            .filter(|text| !text.is_empty())
+            .map_or_else(|| REASON_RELEASED.to_owned(), str::to_owned),
         event_reason: reason.map(str::to_owned),
     })
 }

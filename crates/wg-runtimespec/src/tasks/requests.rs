@@ -92,20 +92,26 @@ fn with_checks(model: Model) -> Model {
 
 /// A request model from the OpenAPI component schema `name`, fields in declaration order.
 fn component(name: &str, order: &[&str]) -> Result<Model, WgError> {
+    component_with(name, order, true)
+}
+
+/// [`component`], with `strip` saying whether the model strips whitespace (`InputSchema` does, a
+/// plain pydantic model does not).
+pub(super) fn component_with(name: &str, order: &[&str], strip: bool) -> Result<Model, WgError> {
     let openapi = wg_wire::contract::openapi()?;
     let schema = &openapi["components"]["schemas"][name];
     let model = model_from_json_schema(
         &openapi,
         schema,
         LoadOptions {
-            strip_whitespace: true,
+            strip_whitespace: strip,
         },
     )
     .map_err(|err| WgError::new(ErrorCode::WorkgraphError, format!("{name}: {err}")))?;
     Ok(with_checks(model.ordered(order)))
 }
 
-fn run(model: &Model, body: &Value) -> Result<Map<String, Value>, WgError> {
+pub(super) fn run(model: &Model, body: &Value) -> Result<Map<String, Value>, WgError> {
     match validate(model, body) {
         Ok(Value::Object(dump)) => Ok(dump),
         Ok(_) => Err(WgError::new(
@@ -299,7 +305,7 @@ pub fn validate_filter(body: &Value) -> Result<Map<String, Value>, WgError> {
     run(&filter_model()?, body)
 }
 
-fn string_of(dump: &Map<String, Value>, key: &str) -> Option<String> {
+pub(super) fn string_of(dump: &Map<String, Value>, key: &str) -> Option<String> {
     dump.get(key).and_then(Value::as_str).map(str::to_owned)
 }
 
@@ -312,7 +318,7 @@ fn strings_of(dump: &Map<String, Value>, key: &str) -> Option<Vec<String>> {
     })
 }
 
-fn object_of(dump: &Map<String, Value>, key: &str) -> Option<Map<String, Value>> {
+pub(super) fn object_of(dump: &Map<String, Value>, key: &str) -> Option<Map<String, Value>> {
     dump.get(key).and_then(Value::as_object).cloned()
 }
 

@@ -1,0 +1,32 @@
+{
+  "id": "task-show",
+  "covers": ["C152", "C165"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Shown task", "-d", "A described task", "-c", "It works", "-t", "show", "--file", "src/shown.py:main"], "json": true},
+    {"cli": ["task", "create", "Shown child", "--parent", "WG-1"], "json": true},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/key", "equals": "WG-1"}}},
+    {"assert": {"json": {"path": "/title", "equals": "Shown task"}}},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}},
+    {"cli": ["task", "show", "WG-1", "WG-2", "-w", "default"], "json": true},
+    {"assert": {"json": {"path": "/items/0/key", "equals": "WG-1"}}},
+    {"assert": {"json": {"path": "/items/1/key", "equals": "WG-2"}}},
+    {"assert": {"json": {"path": "/errors", "equals": []}}},
+    {"cli": ["task", "show", "WG-1", "WG-404"], "json": true, "expect_exit": 4},
+    {"assert": {"json": {"path": "/items/0/key", "equals": "WG-1"}}},
+    {"assert": {"json": {"path": "/errors/0/ref", "equals": "WG-404"}}},
+    {"assert": {"json": {"path": "/errors/0/error/code", "equals": "not_found"}}},
+    {"cli": ["task", "show", "WG-404"], "json": true, "expect_exit": 4},
+    {"assert": {"exit": 4}},
+    {"assert": {"json": {"path": "/error/code", "equals": "not_found"}}},
+    {"cli": ["task", "show", "WG-404", "WG-405"], "json": true, "expect_exit": 4},
+    {"assert": {"json": {"path": "/errors/1/ref", "equals": "WG-405"}}},
+    {"cli": ["task", "show"], "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"cli": ["task", "show", "WG-1"], "expect_exit": 0},
+    {"assert": {"stdout_contains": "Shown task"}}
+  ],
+  "not_observable": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "task-create-options",
+  "covers": ["C099", "C109", "C118", "C152"],
+  "setup": [
+    {"git": "init", "repo": "docs"},
+    {"git": "commit", "repo": "docs", "files": {"desc.md": "Described in a file.\n", "README.md": "# docs\n"}, "message": "docs base"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:docs}"], "json": true},
+    {"cli": ["project", "create", "alpha", "--name", "Alpha", "--repo", "docs"], "json": true},
+    {"cli": ["task", "create", "Every option task", "-d", "@{repo:docs}/desc.md", "-c", "First criterion", "-c", "Second criterion", "-P", "high", "--ready", "-t", "alpha,beta", "-t", "gamma", "--file", "README.md:Install", "--file", "src/app.py", "-p", "alpha", "-r", "docs", "--assignee", "human:brice", "--agent", "claude-code", "--auto-execute", "--due", "2030-01-01T09:00:00"], "json": true, "save": {"first": "/key"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/key", "equals": "WG-1"}}},
+    {"assert": {"json": {"path": "/title", "equals": "Every option task"}}},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}},
+    {"assert": {"json": {"path": "/priority", "equals": "high"}}},
+    {"assert": {"json": {"path": "/description", "equals": "Described in a file."}}},
+    {"assert": {"json": {"path": "/acceptance_criteria", "equals": ["First criterion", "Second criterion"]}}},
+    {"assert": {"json": {"path": "/tags", "equals": ["alpha", "beta", "gamma"]}}},
+    {"assert": {"json": {"path": "/assignee", "equals": "human:brice"}}},
+    {"assert": {"json": {"path": "/auto_execute", "equals": true}}},
+    {"cli": ["task", "create", "Child task", "--parent", "{var:first}", "--depends-on", "{var:first}", "-P", "low", "--no-auto-execute", "-w", "default"], "json": true},
+    {"assert": {"json": {"path": "/key", "equals": "WG-2"}}},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}},
+    {"assert": {"json": {"path": "/auto_execute", "equals": false}}},
+    {"assert": {"json": {"path": "/priority", "equals": "low"}}},
+    {"cli": ["task", "create", "Env workspace task"], "json": true, "env": {"WORKGRAPH_WORKSPACE": "default"}},
+    {"assert": {"json": {"path": "/key", "equals": "WG-3"}}}
+  ],
+  "not_observable": []
+}

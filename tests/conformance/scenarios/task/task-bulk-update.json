@@ -1,0 +1,22 @@
+{
+  "id": "task-bulk-update",
+  "covers": ["C147", "C152"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Bulk one", "-P", "low", "-t", "old"], "json": true},
+    {"cli": ["task", "create", "Bulk two", "-P", "low", "-t", "old"], "json": true},
+    {"cli": ["task", "create", "Bulk three"], "json": true},
+    {"cli": ["task", "bulk-update", "WG-1", "WG-2", "-s", "ready", "-P", "high", "--add-tag", "urgent", "--remove-tag", "old"], "json": true},
+    {"assert": {"exit": 0}},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}},
+    {"assert": {"json": {"path": "/priority", "equals": "high"}}},
+    {"assert": {"json": {"path": "/tags", "equals": ["urgent"]}}},
+    {"cli": ["task", "bulk-update", "WG-3", "WG-404", "--add-tag", "later", "-w", "default"], "json": true, "expect_exit": 3},
+    {"assert": {"exit": 3}},
+    {"cli": ["task", "show", "WG-3"], "json": true},
+    {"assert": {"json": {"path": "/tags", "equals": ["later"]}}}
+  ],
+  "not_observable": []
+}

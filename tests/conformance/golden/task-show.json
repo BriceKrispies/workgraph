@@ -1,0 +1,173 @@
+{
+  "scenario": "task-show",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Shown task\",\n  \"description\": \"A described task\",\n  \"acceptance_criteria\": [\n    \"It works\"\n  ],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [\n    \"show\"\n  ],\n  \"files\": [\n    {\n      \"path\": \"src/shown.py\",\n      \"anchor\": \"main\",\n      \"note\": \"\"\n    }\n  ],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Shown child\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": \"<id:1>\",\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Shown task\",\n  \"description\": \"A described task\",\n  \"acceptance_criteria\": [\n    \"It works\"\n  ],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [\n    \"show\"\n  ],\n  \"files\": [\n    {\n      \"path\": \"src/shown.py\",\n      \"anchor\": \"main\",\n      \"note\": \"\"\n    }\n  ],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [\n    \"<id:3>\"\n  ],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": {\n    \"total_descendants\": 1,\n    \"by_status\": {\n      \"backlog\": 1\n    },\n    \"accepted\": 0,\n    \"progress\": 0.0\n  },\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"items\": [\n    {\n      \"id\": \"<id:1>\",\n      \"workspace_id\": \"<id:2>\",\n      \"key\": \"WG-1\",\n      \"number\": 1,\n      \"title\": \"Shown task\",\n      \"description\": \"A described task\",\n      \"acceptance_criteria\": [\n        \"It works\"\n      ],\n      \"status\": \"backlog\",\n      \"priority\": \"medium\",\n      \"category\": null,\n      \"tags\": [\n        \"show\"\n      ],\n      \"files\": [\n        {\n          \"path\": \"src/shown.py\",\n          \"anchor\": \"main\",\n          \"note\": \"\"\n        }\n      ],\n      \"project_ids\": [],\n      \"repository_ids\": [],\n      \"parent_id\": null,\n      \"child_ids\": [\n        \"<id:3>\"\n      ],\n      \"depends_on\": [],\n      \"blocks\": [],\n      \"assignee\": null,\n      \"assigned_agent\": null,\n      \"claimed_by\": null,\n      \"claim_expires_at\": null,\n      \"auto_execute\": false,\n      \"estimated_effort\": null,\n      \"links\": [],\n      \"metadata\": {},\n      \"due_at\": null,\n      \"scheduled_at\": null,\n      \"created_by\": \"human:Brice\",\n      \"version\": 1,\n      \"created_at\": \"<ts:1|Z>\",\n      \"updated_at\": \"<ts:1|Z>\",\n      \"started_at\": null,\n      \"completed_at\": null,\n      \"accepted_at\": null,\n      \"archived_at\": null,\n      \"current_classification_id\": null,\n      \"relations\": [],\n      \"comments\": [],\n      \"rollup\": {\n        \"total_descendants\": 1,\n        \"by_status\": {\n          \"backlog\": 1\n        },\n        \"accepted\": 0,\n        \"progress\": 0.0\n      },\n      \"dependency_state\": {\n        \"satisfied\": true,\n        \"unsatisfied\": []\n      }\n    },\n    {\n      \"id\": \"<id:3>\",\n      \"workspace_id\": \"<id:2>\",\n      \"key\": \"WG-2\",\n      \"number\": 2,\n      \"title\": \"Shown child\",\n      \"description\": \"\",\n      \"acceptance_criteria\": [],\n      \"status\": \"backlog\",\n      \"priority\": \"medium\",\n      \"category\": null,\n      \"tags\": [],\n      \"files\": [],\n      \"project_ids\": [],\n      \"repository_ids\": [],\n      \"parent_id\": \"<id:1>\",\n      \"child_ids\": [],\n      \"depends_on\": [],\n      \"blocks\": [],\n      \"assignee\": null,\n      \"assigned_agent\": null,\n      \"claimed_by\": null,\n      \"claim_expires_at\": null,\n      \"auto_execute\": false,\n      \"estimated_effort\": null,\n      \"links\": [],\n      \"metadata\": {},\n      \"due_at\": null,\n      \"scheduled_at\": null,\n      \"created_by\": \"human:Brice\",\n      \"version\": 1,\n      \"created_at\": \"<ts:2|Z>\",\n      \"updated_at\": \"<ts:2|Z>\",\n      \"started_at\": null,\n      \"completed_at\": null,\n      \"accepted_at\": null,\n      \"archived_at\": null,\n      \"current_classification_id\": null,\n      \"relations\": [],\n      \"comments\": [],\n      \"rollup\": null,\n      \"dependency_state\": {\n        \"satisfied\": true,\n        \"unsatisfied\": []\n      }\n    }\n  ],\n  \"errors\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "cli",
+      "exit": 4,
+      "stdout": "{\n  \"items\": [\n    {\n      \"id\": \"<id:1>\",\n      \"workspace_id\": \"<id:2>\",\n      \"key\": \"WG-1\",\n      \"number\": 1,\n      \"title\": \"Shown task\",\n      \"description\": \"A described task\",\n      \"acceptance_criteria\": [\n        \"It works\"\n      ],\n      \"status\": \"backlog\",\n      \"priority\": \"medium\",\n      \"category\": null,\n      \"tags\": [\n        \"show\"\n      ],\n      \"files\": [\n        {\n          \"path\": \"src/shown.py\",\n          \"anchor\": \"main\",\n          \"note\": \"\"\n        }\n      ],\n      \"project_ids\": [],\n      \"repository_ids\": [],\n      \"parent_id\": null,\n      \"child_ids\": [\n        \"<id:3>\"\n      ],\n      \"depends_on\": [],\n      \"blocks\": [],\n      \"assignee\": null,\n      \"assigned_agent\": null,\n      \"claimed_by\": null,\n      \"claim_expires_at\": null,\n      \"auto_execute\": false,\n      \"estimated_effort\": null,\n      \"links\": [],\n      \"metadata\": {},\n      \"due_at\": null,\n      \"scheduled_at\": null,\n      \"created_by\": \"human:Brice\",\n      \"version\": 1,\n      \"created_at\": \"<ts:1|Z>\",\n      \"updated_at\": \"<ts:1|Z>\",\n      \"started_at\": null,\n      \"completed_at\": null,\n      \"accepted_at\": null,\n      \"archived_at\": null,\n      \"current_classification_id\": null,\n      \"relations\": [],\n      \"comments\": [],\n      \"rollup\": {\n        \"total_descendants\": 1,\n        \"by_status\": {\n          \"backlog\": 1\n        },\n        \"accepted\": 0,\n        \"progress\": 0.0\n      },\n      \"dependency_state\": {\n        \"satisfied\": true,\n        \"unsatisfied\": []\n      }\n    }\n  ],\n  \"errors\": [\n    {\n      \"ref\": \"WG-404\",\n      \"error\": {\n        \"code\": \"not_found\",\n        \"message\": \"task 'WG-404' not found\",\n        \"details\": {\n          \"ref\": \"WG-404\"\n        }\n      }\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "cli",
+      "exit": 4,
+      "stdout": "{\"error\": {\"code\": \"not_found\", \"message\": \"task 'WG-404' not found\", \"details\": {\"ref\": \"WG-404\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 4,
+      "stdout": "{\n  \"items\": [],\n  \"errors\": [\n    {\n      \"ref\": \"WG-404\",\n      \"error\": {\n        \"code\": \"not_found\",\n        \"message\": \"task 'WG-404' not found\",\n        \"details\": {\n          \"ref\": \"WG-404\"\n        }\n      }\n    },\n    {\n      \"ref\": \"WG-405\",\n      \"error\": {\n        \"code\": \"not_found\",\n        \"message\": \"task 'WG-405' not found\",\n        \"details\": {\n          \"ref\": \"WG-405\"\n        }\n      }\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "Usage: workgraph task show [OPTIONS] {refs}...\nTry 'workgraph task show --help' for help.\n+- Error ---------------------------------------------------------------------+\n| Missing argument 'refs'.                                                    |\n+-----------------------------------------------------------------------------+\n"
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "WG-1\n  id: <id:1>\n  title: Shown task\n  status: backlog\n  priority: medium\n  tags: show\n  children: 1\n  files: 1\n  version: 1\n  created: 2026-10-26 12:51\n  completed: \n  accepted: \n\nA described task\n\nAcceptance criteria\n  - It works\n\nFiles\n  - src/shown.py:main\n\nRollup: 0/1 accepted (0%) {'backlog': 1}\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

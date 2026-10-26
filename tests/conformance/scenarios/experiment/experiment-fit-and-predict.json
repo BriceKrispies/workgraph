@@ -1,0 +1,680 @@
+{
+  "id": "experiment-fit-and-predict",
+  "covers": [
+    "C070",
+    "C074"
+  ],
+  "setup": [
+    {
+      "git": "init",
+      "repo": "lab"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pyproject.toml": "[project]\nname = \"demo\"\nversion = \"0.1.0\"\n",
+        ".gitignore": ".pytest_cache/\n__pycache__/\n",
+        "pkg/__init__.py": "",
+        "pkg/mod.py": "def f():\n    return 1\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n",
+        "flag.txt": "0\n"
+      },
+      "message": "add project"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants a"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "flag.txt": "0\n"
+      },
+      "message": "reset flag after a"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\nB2_0 = 0\nB2_1 = 1\nB2_2 = 2\nB2_3 = 3\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n\n\ndef test_b():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants b"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "flag.txt": "0\n"
+      },
+      "message": "reset flag after b"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\nB2_0 = 0\nB2_1 = 1\nB2_2 = 2\nB2_3 = 3\nC3_0 = 0\nC3_1 = 1\nC3_2 = 2\nC3_3 = 3\nC3_4 = 4\nC3_5 = 5\nC3_6 = 6\nC3_7 = 7\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n\n\ndef test_b():\n    assert True\n\n\ndef test_c():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants c"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "flag.txt": "0\n"
+      },
+      "message": "reset flag after c"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\nB2_0 = 0\nB2_1 = 1\nB2_2 = 2\nB2_3 = 3\nC3_0 = 0\nC3_1 = 1\nC3_2 = 2\nC3_3 = 3\nC3_4 = 4\nC3_5 = 5\nC3_6 = 6\nC3_7 = 7\nD4_0 = 0\nD4_1 = 1\nD4_2 = 2\nD4_3 = 3\nD4_4 = 4\nD4_5 = 5\nD4_6 = 6\nD4_7 = 7\nD4_8 = 8\nD4_9 = 9\nD4_10 = 10\nD4_11 = 11\nD4_12 = 12\nD4_13 = 13\nD4_14 = 14\nD4_15 = 15\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n\n\ndef test_b():\n    assert True\n\n\ndef test_c():\n    assert True\n\n\ndef test_d():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants d"
+    }
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "repo",
+        "register",
+        "{repo:lab}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "scan",
+        "--repo",
+        "lab"
+      ],
+      "json": true,
+      "save": {
+        "sha4": "/0/sha",
+        "sha3": "/1/sha",
+        "sha2": "/2/sha",
+        "sha1": "/3/sha"
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "create",
+        "--repo",
+        "lab",
+        "{var:sha4}",
+        "{var:sha3}",
+        "{var:sha2}",
+        "{var:sha1}",
+        "--validate",
+        "--oracle-template",
+        "[\"python\",\"-c\",\"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"]"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/status",
+          "equals": "created"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "create",
+        "fail-run",
+        "--title",
+        "Fail run",
+        "--protocol",
+        "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":4},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":3},\"oracle_template\":[\"python\",\"-c\",\"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"]}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "freeze",
+        "fail-run"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "next",
+        "fail-run"
+      ],
+      "json": true,
+      "save": {
+        "fail_run_0": "/trial/id"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/reason",
+          "equals": "planned"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:fail_run_0}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:fail_run_0}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "next",
+        "fail-run"
+      ],
+      "json": true,
+      "save": {
+        "fail_run_1": "/trial/id"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/reason",
+          "equals": "planned"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:fail_run_1}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:fail_run_1}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "next",
+        "fail-run"
+      ],
+      "json": true,
+      "save": {
+        "fail_run_2": "/trial/id"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/reason",
+          "equals": "planned"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:fail_run_2}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:fail_run_2}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "next",
+        "fail-run"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/reason",
+          "equals": "budget"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "create",
+        "pass-run",
+        "--title",
+        "Pass run",
+        "--protocol",
+        "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":4},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":3},\"oracle_template\":[\"python\",\"-c\",\"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"],\"setup\":[[\"python\",\"-c\",\"import sys; open(sys.argv[1], 'w').write('1')\",\"{worktree}/flag.txt\"]]}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "freeze",
+        "pass-run"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "next",
+        "pass-run"
+      ],
+      "json": true,
+      "save": {
+        "pass_run_0": "/trial/id"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/reason",
+          "equals": "planned"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:pass_run_0}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:pass_run_0}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "next",
+        "pass-run"
+      ],
+      "json": true,
+      "save": {
+        "pass_run_1": "/trial/id"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/reason",
+          "equals": "planned"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:pass_run_1}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:pass_run_1}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "next",
+        "pass-run"
+      ],
+      "json": true,
+      "save": {
+        "pass_run_2": "/trial/id"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/reason",
+          "equals": "planned"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:pass_run_2}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:pass_run_2}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "next",
+        "pass-run"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/reason",
+          "equals": "budget"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "fit",
+        "--model",
+        "claude-haiku-5-5",
+        "--repo-penalty",
+        "1.0",
+        "--feature-penalty",
+        "0.01",
+        "--samples",
+        "20",
+        "--seed",
+        "3"
+      ],
+      "json": true,
+      "save": {
+        "fit_id": "/id"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/model",
+          "equals": "claude-haiku-5-5"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/n",
+          "equals": 6
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "fit",
+        "--model",
+        "claude-sonnet-5-5"
+      ],
+      "json": true,
+      "expect_exit": 2
+    },
+    {
+      "assert": {
+        "exit": 2
+      }
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Contracted leaf",
+        "-r",
+        "lab"
+      ],
+      "json": true,
+      "save": {
+        "leaf": "/key"
+      }
+    },
+    {
+      "cli": [
+        "task",
+        "update",
+        "{var:leaf}",
+        "--metadata",
+        "{\"contract\":{\"predicted\":{\"src_lines\":8,\"src_files\":1,\"packages\":[\"pkg\"]}}}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "predict",
+        "--model",
+        "claude-haiku-5-5",
+        "--repo",
+        "lab",
+        "--lines",
+        "8",
+        "--files",
+        "1",
+        "--packages",
+        "pkg",
+        "--fit",
+        "{var:fit_id}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/inference",
+          "equals": true
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/fit_id",
+          "equals": "{var:fit_id}"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/repository_known",
+          "equals": true
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/n",
+          "equals": 6
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "predict",
+        "--model",
+        "claude-haiku-5-5",
+        "--repo",
+        "lab",
+        "--lines",
+        "8",
+        "--files",
+        "1",
+        "--packages",
+        ""
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/fit_id",
+          "equals": "{var:fit_id}"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "predict",
+        "--model",
+        "claude-haiku-5-5",
+        "--task",
+        "{var:leaf}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/repository",
+          "equals": "lab"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/fit_id",
+          "equals": "{var:fit_id}"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "predict",
+        "--model",
+        "claude-haiku-5-5",
+        "--task",
+        "{var:leaf}",
+        "--repo",
+        "lab"
+      ],
+      "json": true,
+      "expect_exit": 2
+    },
+    {
+      "assert": {
+        "exit": 2
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "predict",
+        "--model",
+        "claude-haiku-5-5",
+        "--repo",
+        "lab",
+        "--lines",
+        "8"
+      ],
+      "json": true,
+      "expect_exit": 2
+    },
+    {
+      "assert": {
+        "exit": 2
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "predict",
+        "--model",
+        "claude-sonnet-5-5",
+        "--repo",
+        "lab",
+        "--lines",
+        "8",
+        "--files",
+        "1",
+        "--packages",
+        "pkg"
+      ],
+      "json": true,
+      "expect_exit": 4
+    },
+    {
+      "assert": {
+        "exit": 4
+      }
+    }
+  ],
+  "not_observable": []
+}

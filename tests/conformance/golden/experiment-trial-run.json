@@ -1,0 +1,586 @@
+{
+  "scenario": "experiment-trial-run",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"lab\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:1|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\lab\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:2|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:3|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"sha\": \"<sha:2>\",\n    \"parent\": \"<sha:3>\",\n    \"subject\": \"add constants d\",\n    \"body\": \"\",\n    \"test_paths\": [\n      \"tests/test_mod.py\"\n    ],\n    \"source_paths\": [\n      \"pkg/mod.py\"\n    ],\n    \"features\": {\n      \"src_lines\": 16,\n      \"test_lines\": 4,\n      \"src_files\": 1,\n      \"test_files\": 1,\n      \"packages\": [\n        \"\"\n      ],\n      \"band\": 4\n    },\n    \"oracle\": [\n      [\n        \"python\",\n        \"-m\",\n        \"pytest\",\n        \"-q\",\n        \"tests/test_mod.py\"\n      ]\n    ],\n    \"excluded\": []\n  },\n  {\n    \"sha\": \"<sha:4>\",\n    \"parent\": \"<sha:5>\",\n    \"subject\": \"add constants c\",\n    \"body\": \"\",\n    \"test_paths\": [\n      \"tests/test_mod.py\"\n    ],\n    \"source_paths\": [\n      \"pkg/mod.py\"\n    ],\n    \"features\": {\n      \"src_lines\": 8,\n      \"test_lines\": 4,\n      \"src_files\": 1,\n      \"test_files\": 1,\n      \"packages\": [\n        \"\"\n      ],\n      \"band\": 3\n    },\n    \"oracle\": [\n      [\n        \"python\",\n        \"-m\",\n        \"pytest\",\n        \"-q\",\n        \"tests/test_mod.py\"\n      ]\n    ],\n    \"excluded\": []\n  },\n  {\n    \"sha\": \"<sha:6>\",\n    \"parent\": \"<sha:7>\",\n    \"subject\": \"add constants b\",\n    \"body\": \"\",\n    \"test_paths\": [\n      \"tests/test_mod.py\"\n    ],\n    \"source_paths\": [\n      \"pkg/mod.py\"\n    ],\n    \"features\": {\n      \"src_lines\": 4,\n      \"test_lines\": 4,\n      \"src_files\": 1,\n      \"test_files\": 1,\n      \"packages\": [\n        \"\"\n      ],\n      \"band\": 2\n    },\n    \"oracle\": [\n      [\n        \"python\",\n        \"-m\",\n        \"pytest\",\n        \"-q\",\n        \"tests/test_mod.py\"\n      ]\n    ],\n    \"excluded\": []\n  },\n  {\n    \"sha\": \"<sha:8>\",\n    \"parent\": \"<sha:1>\",\n    \"subject\": \"add constants a\",\n    \"body\": \"\",\n    \"test_paths\": [\n      \"tests/test_mod.py\"\n    ],\n    \"source_paths\": [\n      \"pkg/mod.py\"\n    ],\n    \"features\": {\n      \"src_lines\": 2,\n      \"test_lines\": 4,\n      \"src_files\": 1,\n      \"test_files\": 1,\n      \"packages\": [\n        \"\"\n      ],\n      \"band\": 1\n    },\n    \"oracle\": [\n      [\n        \"python\",\n        \"-m\",\n        \"pytest\",\n        \"-q\",\n        \"tests/test_mod.py\"\n      ]\n    ],\n    \"excluded\": []\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"sha\": \"<sha:2>\",\n    \"status\": \"created\",\n    \"task_key\": \"WG-1\",\n    \"reason\": null\n  },\n  {\n    \"sha\": \"<sha:4>\",\n    \"status\": \"created\",\n    \"task_key\": \"WG-2\",\n    \"reason\": null\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"run-fail\",\n  \"title\": \"Run fail\",\n  \"question\": \"Does a no-change trial fail?\",\n  \"status\": \"draft\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"name\": \"haiku\",\n        \"model\": \"claude-haiku-5-5\"\n      }\n    ],\n    \"brief_template\": \"replay-v1\",\n    \"primary_size\": \"src_lines\",\n    \"bands\": {\n      \"min\": 1,\n      \"max\": 4\n    },\n    \"staircase\": {\n      \"per_visit\": 2,\n      \"up\": 1,\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24\n    },\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ]\n  },\n  \"frozen_at\": null,\n  \"created_at\": \"<ts:4|Z>\",\n  \"updated_at\": \"<ts:4|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"run-fail\",\n  \"title\": \"Run fail\",\n  \"question\": \"Does a no-change trial fail?\",\n  \"status\": \"running\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"model\": \"claude-haiku-5-5\",\n        \"name\": \"haiku\"\n      }\n    ],\n    \"bands\": {\n      \"max\": 4,\n      \"min\": 1\n    },\n    \"brief_template\": \"replay-v1\",\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ],\n    \"primary_size\": \"src_lines\",\n    \"staircase\": {\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24,\n      \"per_visit\": 2,\n      \"up\": 1\n    }\n  },\n  \"frozen_at\": \"<ts:5|Z>\",\n  \"created_at\": \"<ts:4|Z>\",\n  \"updated_at\": \"<ts:5|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"experiment_id\": \"<id:4>\",\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-1\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": 4,\n  \"features\": {\n    \"predicted\": {}\n  },\n  \"base_ref\": null,\n  \"worktree_path\": null,\n  \"status\": \"planned\",\n  \"outcome\": null,\n  \"outcome_detail\": {},\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:6|Z>\",\n  \"started_at\": null,\n  \"graded_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"experiment_id\": \"<id:4>\",\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-1\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"live\",\n  \"seq\": 2,\n  \"band\": null,\n  \"features\": {\n    \"predicted\": {}\n  },\n  \"base_ref\": null,\n  \"worktree_path\": null,\n  \"status\": \"planned\",\n  \"outcome\": null,\n  \"outcome_detail\": {},\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:7|Z>\",\n  \"started_at\": null,\n  \"graded_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"arm 'missing' is not in the protocol of run-fail\", \"details\": {\"arms\": [\"haiku\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"phase 'warmup' is not one of: staircase, refine, control, repeat, live\", \"details\": {\"allowed\": [\"staircase\", \"refine\", \"control\", \"repeat\", \"live\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"band 9 is outside the protocol range 1..4\", \"details\": {\"band\": 9, \"min\": 1, \"max\": 4}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"experiment_id\": \"<id:4>\",\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-1\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": 4,\n  \"features\": {\n    \"predicted\": {}\n  },\n  \"base_ref\": null,\n  \"worktree_path\": null,\n  \"status\": \"planned\",\n  \"outcome\": null,\n  \"outcome_detail\": {},\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:6|Z>\",\n  \"started_at\": null,\n  \"graded_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"conflict\", \"message\": \"trial <id:7> is planned; only a running or invalid trial is graded\", \"details\": {\"trial\": \"<id:7>\", \"status\": \"planned\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"trial\": {\n    \"id\": \"<id:5>\",\n    \"experiment_id\": \"<id:4>\",\n    \"task_id\": \"<id:6>\",\n    \"task_key\": \"WG-1\",\n    \"attempt_id\": null,\n    \"subagent_run_id\": null,\n    \"arm\": \"haiku\",\n    \"requested_model\": \"claude-haiku-5-5\",\n    \"actual_model\": null,\n    \"phase\": \"staircase\",\n    \"seq\": 1,\n    \"band\": 4,\n    \"features\": {\n      \"predicted\": {}\n    },\n    \"base_ref\": \"<sha:9>\",\n    \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\94249d2d\",\n    \"status\": \"running\",\n    \"outcome\": null,\n    \"outcome_detail\": {},\n    \"failure_cause\": null,\n    \"failure_cause_source\": null,\n    \"notes\": null,\n    \"created_at\": \"<ts:6|Z>\",\n    \"started_at\": \"<ts:8|Z>\",\n    \"graded_at\": null\n  },\n  \"worktree\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\94249d2d\",\n  \"branch\": \"wg/trial/94249d2d\",\n  \"base_sha\": \"<sha:9>\",\n  \"brief\": \"Task-ID: WG-1\\nTrial-ID: <id:5>\\n\\nYou are working alone in the git worktree <home>\\\\data\\\\worktrees\\\\trials\\\\94249d2d (repository lab), on branch wg/trial/94249d2d. Work only there. Do not push or merge.\\n\\n## Task\\nadd constants d\\n\\n## Tests that must pass\\nThese test files were added or changed for this task and fail now:\\n- tests/test_mod.py\\n\\nMake them pass by changing the code, not the tests. Do not modify, delete or skip these test files.\\n\\nRun them with:\\n    python -c 'import sys; sys.exit(0 if open('\\\"'\\\"'flag.txt'\\\"'\\\"').read().strip() == '\\\"'\\\"'1'\\\"'\\\"' else 1)'\\n\\n## Checks that must also pass\\n    (none)\\n\\n## Rules\\nFollow the repository's own agent instructions (AGENTS.md or CLAUDE.md) if it has them. Commit your work on wg/trial/94249d2d when you are done.\\n\\n## Report\\nReply with what you changed, the output of the test command, and anything you could not finish.\\n\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"conflict\", \"message\": \"trial <id:5> is running; only a planned trial can start\", \"details\": {\"trial\": \"<id:5>\", \"status\": \"running\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"experiment_id\": \"<id:4>\",\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-1\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": 4,\n  \"features\": {\n    \"actual\": {\n      \"band\": null,\n      \"packages\": [],\n      \"src_files\": 0,\n      \"src_lines\": 0,\n      \"test_files\": 0,\n      \"test_lines\": 0\n    },\n    \"predicted\": {}\n  },\n  \"base_ref\": \"<sha:9>\",\n  \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\94249d2d\",\n  \"status\": \"graded\",\n  \"outcome\": \"fail\",\n  \"outcome_detail\": {\n    \"base_sha\": \"<sha:9>\",\n    \"escape_check\": \"no_run\",\n    \"flags\": {},\n    \"gates\": [],\n    \"head_sha\": \"<sha:9>\",\n    \"oracle\": [\n      {\n        \"argv\": [\n          \"python\",\n          \"-c\",\n          \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n        ],\n        \"duration_ms\": <dur>,\n        \"exit\": 1,\n        \"output_tail\": \"\"\n      }\n    ],\n    \"run\": null\n  },\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:6|Z>\",\n  \"started_at\": \"<ts:8|Z>\",\n  \"graded_at\": \"<ts:9|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 33,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 34,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 35,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"experiment_id\": \"<id:4>\",\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-1\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": 4,\n  \"features\": {\n    \"actual\": {\n      \"band\": null,\n      \"packages\": [],\n      \"src_files\": 0,\n      \"src_lines\": 0,\n      \"test_files\": 0,\n      \"test_lines\": 0\n    },\n    \"predicted\": {}\n  },\n  \"base_ref\": \"<sha:9>\",\n  \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\94249d2d\",\n  \"status\": \"graded\",\n  \"outcome\": \"fail\",\n  \"outcome_detail\": {\n    \"base_sha\": \"<sha:9>\",\n    \"escape_check\": \"no_run\",\n    \"flags\": {},\n    \"gates\": [],\n    \"head_sha\": \"<sha:9>\",\n    \"oracle\": [\n      {\n        \"argv\": [\n          \"python\",\n          \"-c\",\n          \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n        ],\n        \"duration_ms\": <dur>,\n        \"exit\": 1,\n        \"output_tail\": \"\"\n      }\n    ],\n    \"run\": null\n  },\n  \"failure_cause\": \"too_big\",\n  \"failure_cause_source\": \"agent\",\n  \"notes\": \"whole feature\",\n  \"created_at\": \"<ts:6|Z>\",\n  \"started_at\": \"<ts:8|Z>\",\n  \"graded_at\": \"<ts:9|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 36,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 37,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 38,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 39,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"failure cause 'nonsense' is not one of: too_big, missing_context, ambiguous_spec, coupling, gaming, gate_gap, harness, budget, wrong_model, other\", \"details\": {\"allowed\": [\"too_big\", \"missing_context\", \"ambiguous_spec\", \"coupling\", \"gaming\", \"gate_gap\", \"harness\", \"budget\", \"wrong_model\", \"other\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 40,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 41,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"failure cause source 'robot' is not one of: human, agent, mechanical\", \"details\": {\"allowed\": [\"human\", \"agent\", \"mechanical\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 42,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 43,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"experiment_id\": \"<id:4>\",\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-1\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": 4,\n  \"features\": {\n    \"actual\": {\n      \"band\": null,\n      \"packages\": [],\n      \"src_files\": 0,\n      \"src_lines\": 0,\n      \"test_files\": 0,\n      \"test_lines\": 0\n    },\n    \"predicted\": {}\n  },\n  \"base_ref\": \"<sha:9>\",\n  \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\94249d2d\",\n  \"status\": \"graded\",\n  \"outcome\": \"fail\",\n  \"outcome_detail\": {\n    \"base_sha\": \"<sha:9>\",\n    \"escape_check\": \"no_run\",\n    \"flags\": {},\n    \"gates\": [],\n    \"head_sha\": \"<sha:9>\",\n    \"oracle\": [\n      {\n        \"argv\": [\n          \"python\",\n          \"-c\",\n          \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n        ],\n        \"duration_ms\": <dur>,\n        \"exit\": 1,\n        \"output_tail\": \"\"\n      }\n    ],\n    \"run\": null\n  },\n  \"failure_cause\": \"too_big\",\n  \"failure_cause_source\": \"agent\",\n  \"notes\": \"whole feature\",\n  \"created_at\": \"<ts:6|Z>\",\n  \"started_at\": \"<ts:8|Z>\",\n  \"graded_at\": \"<ts:9|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 44,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 45,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"run-fail\",\n  \"title\": \"Run fail\",\n  \"question\": \"Does a no-change trial fail?\",\n  \"status\": \"closed\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"model\": \"claude-haiku-5-5\",\n        \"name\": \"haiku\"\n      }\n    ],\n    \"bands\": {\n      \"max\": 4,\n      \"min\": 1\n    },\n    \"brief_template\": \"replay-v1\",\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ],\n    \"primary_size\": \"src_lines\",\n    \"staircase\": {\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24,\n      \"per_visit\": 2,\n      \"up\": 1\n    }\n  },\n  \"frozen_at\": \"<ts:5|Z>\",\n  \"created_at\": \"<ts:4|Z>\",\n  \"updated_at\": \"<ts:10|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 46,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"conflict\", \"message\": \"experiment run-fail is closed; trials change only while it is running\", \"details\": {\"experiment\": \"run-fail\", \"status\": \"closed\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 47,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 48,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"run-pass\",\n  \"title\": \"Run pass\",\n  \"question\": null,\n  \"status\": \"draft\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"name\": \"haiku\",\n        \"model\": \"claude-haiku-5-5\"\n      }\n    ],\n    \"brief_template\": \"replay-v1\",\n    \"primary_size\": \"src_lines\",\n    \"bands\": {\n      \"min\": 1,\n      \"max\": 4\n    },\n    \"staircase\": {\n      \"per_visit\": 2,\n      \"up\": 1,\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24\n    },\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ],\n    \"setup\": [\n      [\n        \"python\",\n        \"-c\",\n        \"import sys; open(sys.argv[1], 'w').write('1')\",\n        \"{worktree}/flag.txt\"\n      ]\n    ]\n  },\n  \"frozen_at\": null,\n  \"created_at\": \"<ts:11|Z>\",\n  \"updated_at\": \"<ts:11|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 49,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"run-pass\",\n  \"title\": \"Run pass\",\n  \"question\": null,\n  \"status\": \"running\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"model\": \"claude-haiku-5-5\",\n        \"name\": \"haiku\"\n      }\n    ],\n    \"bands\": {\n      \"max\": 4,\n      \"min\": 1\n    },\n    \"brief_template\": \"replay-v1\",\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ],\n    \"primary_size\": \"src_lines\",\n    \"setup\": [\n      [\n        \"python\",\n        \"-c\",\n        \"import sys; open(sys.argv[1], 'w').write('1')\",\n        \"{worktree}/flag.txt\"\n      ]\n    ],\n    \"staircase\": {\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24,\n      \"per_visit\": 2,\n      \"up\": 1\n    }\n  },\n  \"frozen_at\": \"<ts:12|Z>\",\n  \"created_at\": \"<ts:11|Z>\",\n  \"updated_at\": \"<ts:12|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 50,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"experiment_id\": \"<id:8>\",\n  \"task_id\": \"<id:10>\",\n  \"task_key\": \"WG-2\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": 3,\n  \"features\": {\n    \"predicted\": {}\n  },\n  \"base_ref\": null,\n  \"worktree_path\": null,\n  \"status\": \"planned\",\n  \"outcome\": null,\n  \"outcome_detail\": {},\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:13|Z>\",\n  \"started_at\": null,\n  \"graded_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 51,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"trial\": {\n    \"id\": \"<id:9>\",\n    \"experiment_id\": \"<id:8>\",\n    \"task_id\": \"<id:10>\",\n    \"task_key\": \"WG-2\",\n    \"attempt_id\": null,\n    \"subagent_run_id\": null,\n    \"arm\": \"haiku\",\n    \"requested_model\": \"claude-haiku-5-5\",\n    \"actual_model\": null,\n    \"phase\": \"staircase\",\n    \"seq\": 1,\n    \"band\": 3,\n    \"features\": {\n      \"predicted\": {}\n    },\n    \"base_ref\": \"<sha:10>\",\n    \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\cd36ade2\",\n    \"status\": \"running\",\n    \"outcome\": null,\n    \"outcome_detail\": {},\n    \"failure_cause\": null,\n    \"failure_cause_source\": null,\n    \"notes\": null,\n    \"created_at\": \"<ts:13|Z>\",\n    \"started_at\": \"<ts:14|Z>\",\n    \"graded_at\": null\n  },\n  \"worktree\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\cd36ade2\",\n  \"branch\": \"wg/trial/cd36ade2\",\n  \"base_sha\": \"<sha:10>\",\n  \"brief\": \"Task-ID: WG-2\\nTrial-ID: <id:9>\\n\\nYou are working alone in the git worktree <home>\\\\data\\\\worktrees\\\\trials\\\\cd36ade2 (repository lab), on branch wg/trial/cd36ade2. Work only there. Do not push or merge.\\n\\n## Task\\nadd constants c\\n\\n## Tests that must pass\\nThese test files were added or changed for this task and fail now:\\n- tests/test_mod.py\\n\\nMake them pass by changing the code, not the tests. Do not modify, delete or skip these test files.\\n\\nRun them with:\\n    python -c 'import sys; sys.exit(0 if open('\\\"'\\\"'flag.txt'\\\"'\\\"').read().strip() == '\\\"'\\\"'1'\\\"'\\\"' else 1)'\\n\\n## Checks that must also pass\\n    (none)\\n\\n## Rules\\nFollow the repository's own agent instructions (AGENTS.md or CLAUDE.md) if it has them. Commit your work on wg/trial/cd36ade2 when you are done.\\n\\n## Report\\nReply with what you changed, the output of the test command, and anything you could not finish.\\n\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 52,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 53,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"experiment_id\": \"<id:8>\",\n  \"task_id\": \"<id:10>\",\n  \"task_key\": \"WG-2\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": 3,\n  \"features\": {\n    \"actual\": {\n      \"band\": null,\n      \"packages\": [],\n      \"src_files\": 0,\n      \"src_lines\": 0,\n      \"test_files\": 0,\n      \"test_lines\": 0\n    },\n    \"predicted\": {}\n  },\n  \"base_ref\": \"<sha:10>\",\n  \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\cd36ade2\",\n  \"status\": \"graded\",\n  \"outcome\": \"pass\",\n  \"outcome_detail\": {\n    \"base_sha\": \"<sha:10>\",\n    \"escape_check\": \"no_run\",\n    \"flags\": {},\n    \"gates\": [],\n    \"head_sha\": \"<sha:10>\",\n    \"oracle\": [\n      {\n        \"argv\": [\n          \"python\",\n          \"-c\",\n          \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n        ],\n        \"duration_ms\": <dur>,\n        \"exit\": 0,\n        \"output_tail\": \"\"\n      }\n    ],\n    \"run\": null\n  },\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:13|Z>\",\n  \"started_at\": \"<ts:14|Z>\",\n  \"graded_at\": \"<ts:15|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 54,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 55,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 56,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 57,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"experiment_id\": \"<id:8>\",\n  \"task_id\": \"<id:10>\",\n  \"task_key\": \"WG-2\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": 3,\n  \"features\": {\n    \"actual\": {\n      \"band\": null,\n      \"packages\": [],\n      \"src_files\": 0,\n      \"src_lines\": 0,\n      \"test_files\": 0,\n      \"test_lines\": 0\n    },\n    \"predicted\": {}\n  },\n  \"base_ref\": \"<sha:10>\",\n  \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\cd36ade2\",\n  \"status\": \"graded\",\n  \"outcome\": \"pass\",\n  \"outcome_detail\": {\n    \"base_sha\": \"<sha:10>\",\n    \"escape_check\": \"no_run\",\n    \"flags\": {},\n    \"gates\": [],\n    \"head_sha\": \"<sha:10>\",\n    \"oracle\": [\n      {\n        \"argv\": [\n          \"python\",\n          \"-c\",\n          \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n        ],\n        \"duration_ms\": <dur>,\n        \"exit\": 0,\n        \"output_tail\": \"\"\n      }\n    ],\n    \"run\": null\n  },\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:13|Z>\",\n  \"started_at\": \"<ts:14|Z>\",\n  \"graded_at\": \"<ts:15|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 58,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 59,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 60,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:11>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"bad-setup\",\n  \"title\": \"Bad setup\",\n  \"question\": null,\n  \"status\": \"draft\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"name\": \"haiku\",\n        \"model\": \"claude-haiku-5-5\"\n      }\n    ],\n    \"brief_template\": \"replay-v1\",\n    \"primary_size\": \"src_lines\",\n    \"bands\": {\n      \"min\": 1,\n      \"max\": 4\n    },\n    \"staircase\": {\n      \"per_visit\": 2,\n      \"up\": 1,\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24\n    },\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ],\n    \"setup\": [\n      [\n        \"python\",\n        \"-c\",\n        \"raise SystemExit(3)\"\n      ]\n    ]\n  },\n  \"frozen_at\": null,\n  \"created_at\": \"<ts:16|Z>\",\n  \"updated_at\": \"<ts:16|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 61,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:11>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"bad-setup\",\n  \"title\": \"Bad setup\",\n  \"question\": null,\n  \"status\": \"running\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"model\": \"claude-haiku-5-5\",\n        \"name\": \"haiku\"\n      }\n    ],\n    \"bands\": {\n      \"max\": 4,\n      \"min\": 1\n    },\n    \"brief_template\": \"replay-v1\",\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ],\n    \"primary_size\": \"src_lines\",\n    \"setup\": [\n      [\n        \"python\",\n        \"-c\",\n        \"raise SystemExit(3)\"\n      ]\n    ],\n    \"staircase\": {\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24,\n      \"per_visit\": 2,\n      \"up\": 1\n    }\n  },\n  \"frozen_at\": \"<ts:17|Z>\",\n  \"created_at\": \"<ts:16|Z>\",\n  \"updated_at\": \"<ts:17|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 62,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:12>\",\n  \"experiment_id\": \"<id:11>\",\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-1\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": null,\n  \"features\": {\n    \"predicted\": {}\n  },\n  \"base_ref\": null,\n  \"worktree_path\": null,\n  \"status\": \"planned\",\n  \"outcome\": null,\n  \"outcome_detail\": {},\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:18|Z>\",\n  \"started_at\": null,\n  \"graded_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 63,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"setup command python -c 'raise SystemExit(3)' exited 3: \", \"details\": {\"command\": [\"python\", \"-c\", \"raise SystemExit(3)\"], \"exit\": 3}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 64,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 65,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:12>\",\n  \"experiment_id\": \"<id:11>\",\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-1\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": null,\n  \"features\": {\n    \"predicted\": {}\n  },\n  \"base_ref\": null,\n  \"worktree_path\": null,\n  \"status\": \"planned\",\n  \"outcome\": null,\n  \"outcome_detail\": {},\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:18|Z>\",\n  \"started_at\": null,\n  \"graded_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 66,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 67,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:13>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"gated\",\n  \"title\": \"Gated\",\n  \"question\": null,\n  \"status\": \"draft\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"name\": \"haiku\",\n        \"model\": \"claude-haiku-5-5\"\n      }\n    ],\n    \"brief_template\": \"replay-v1\",\n    \"primary_size\": \"src_lines\",\n    \"bands\": {\n      \"min\": 1,\n      \"max\": 4\n    },\n    \"staircase\": {\n      \"per_visit\": 2,\n      \"up\": 1,\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24\n    },\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ],\n    \"setup\": [\n      [\n        \"python\",\n        \"-c\",\n        \"import sys; open(sys.argv[1], 'w').write('1')\",\n        \"{worktree}/flag.txt\"\n      ]\n    ],\n    \"gates\": [\n      [\n        \"python\",\n        \"-c\",\n        \"raise SystemExit(1)\"\n      ]\n    ]\n  },\n  \"frozen_at\": null,\n  \"created_at\": \"<ts:19|Z>\",\n  \"updated_at\": \"<ts:19|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 68,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:13>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"gated\",\n  \"title\": \"Gated\",\n  \"question\": null,\n  \"status\": \"running\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"model\": \"claude-haiku-5-5\",\n        \"name\": \"haiku\"\n      }\n    ],\n    \"bands\": {\n      \"max\": 4,\n      \"min\": 1\n    },\n    \"brief_template\": \"replay-v1\",\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"gates\": [\n      [\n        \"python\",\n        \"-c\",\n        \"raise SystemExit(1)\"\n      ]\n    ],\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ],\n    \"primary_size\": \"src_lines\",\n    \"setup\": [\n      [\n        \"python\",\n        \"-c\",\n        \"import sys; open(sys.argv[1], 'w').write('1')\",\n        \"{worktree}/flag.txt\"\n      ]\n    ],\n    \"staircase\": {\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24,\n      \"per_visit\": 2,\n      \"up\": 1\n    }\n  },\n  \"frozen_at\": \"<ts:20|Z>\",\n  \"created_at\": \"<ts:19|Z>\",\n  \"updated_at\": \"<ts:20|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 69,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:14>\",\n  \"experiment_id\": \"<id:13>\",\n  \"task_id\": \"<id:10>\",\n  \"task_key\": \"WG-2\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": null,\n  \"features\": {\n    \"predicted\": {}\n  },\n  \"base_ref\": null,\n  \"worktree_path\": null,\n  \"status\": \"planned\",\n  \"outcome\": null,\n  \"outcome_detail\": {},\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:21|Z>\",\n  \"started_at\": null,\n  \"graded_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 70,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"trial\": {\n    \"id\": \"<id:14>\",\n    \"experiment_id\": \"<id:13>\",\n    \"task_id\": \"<id:10>\",\n    \"task_key\": \"WG-2\",\n    \"attempt_id\": null,\n    \"subagent_run_id\": null,\n    \"arm\": \"haiku\",\n    \"requested_model\": \"claude-haiku-5-5\",\n    \"actual_model\": null,\n    \"phase\": \"staircase\",\n    \"seq\": 1,\n    \"band\": null,\n    \"features\": {\n      \"predicted\": {}\n    },\n    \"base_ref\": \"<sha:10>\",\n    \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\0201b1d3\",\n    \"status\": \"running\",\n    \"outcome\": null,\n    \"outcome_detail\": {},\n    \"failure_cause\": null,\n    \"failure_cause_source\": null,\n    \"notes\": null,\n    \"created_at\": \"<ts:21|Z>\",\n    \"started_at\": \"<ts:22|Z>\",\n    \"graded_at\": null\n  },\n  \"worktree\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\0201b1d3\",\n  \"branch\": \"wg/trial/0201b1d3\",\n  \"base_sha\": \"<sha:10>\",\n  \"brief\": \"Task-ID: WG-2\\nTrial-ID: <id:14>\\n\\nYou are working alone in the git worktree <home>\\\\data\\\\worktrees\\\\trials\\\\0201b1d3 (repository lab), on branch wg/trial/0201b1d3. Work only there. Do not push or merge.\\n\\n## Task\\nadd constants c\\n\\n## Tests that must pass\\nThese test files were added or changed for this task and fail now:\\n- tests/test_mod.py\\n\\nMake them pass by changing the code, not the tests. Do not modify, delete or skip these test files.\\n\\nRun them with:\\n    python -c 'import sys; sys.exit(0 if open('\\\"'\\\"'flag.txt'\\\"'\\\"').read().strip() == '\\\"'\\\"'1'\\\"'\\\"' else 1)'\\n\\n## Checks that must also pass\\n    python -c 'raise SystemExit(1)'\\n\\n## Rules\\nFollow the repository's own agent instructions (AGENTS.md or CLAUDE.md) if it has them. Commit your work on wg/trial/0201b1d3 when you are done.\\n\\n## Report\\nReply with what you changed, the output of the test command, and anything you could not finish.\\n\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 71,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:14>\",\n  \"experiment_id\": \"<id:13>\",\n  \"task_id\": \"<id:10>\",\n  \"task_key\": \"WG-2\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"staircase\",\n  \"seq\": 1,\n  \"band\": null,\n  \"features\": {\n    \"actual\": {\n      \"band\": null,\n      \"packages\": [],\n      \"src_files\": 0,\n      \"src_lines\": 0,\n      \"test_files\": 0,\n      \"test_lines\": 0\n    },\n    \"predicted\": {}\n  },\n  \"base_ref\": \"<sha:10>\",\n  \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\0201b1d3\",\n  \"status\": \"graded\",\n  \"outcome\": \"fail\",\n  \"outcome_detail\": {\n    \"base_sha\": \"<sha:10>\",\n    \"escape_check\": \"no_run\",\n    \"flags\": {},\n    \"gates\": [\n      {\n        \"argv\": [\n          \"python\",\n          \"-c\",\n          \"raise SystemExit(1)\"\n        ],\n        \"duration_ms\": <dur>,\n        \"exit\": 1,\n        \"output_tail\": \"\"\n      }\n    ],\n    \"head_sha\": \"<sha:10>\",\n    \"oracle\": [\n      {\n        \"argv\": [\n          \"python\",\n          \"-c\",\n          \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n        ],\n        \"duration_ms\": <dur>,\n        \"exit\": 0,\n        \"output_tail\": \"\"\n      }\n    ],\n    \"run\": null\n  },\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts:21|Z>\",\n  \"started_at\": \"<ts:22|Z>\",\n  \"graded_at\": \"<ts:23|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 72,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 73,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

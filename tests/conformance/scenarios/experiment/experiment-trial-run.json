@@ -1,0 +1,845 @@
+{
+  "id": "experiment-trial-run",
+  "covers": [
+    "C079",
+    "C080",
+    "C081",
+    "C082",
+    "C083"
+  ],
+  "setup": [
+    {
+      "git": "init",
+      "repo": "lab"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pyproject.toml": "[project]\nname = \"demo\"\nversion = \"0.1.0\"\n",
+        ".gitignore": ".pytest_cache/\n__pycache__/\n",
+        "pkg/__init__.py": "",
+        "pkg/mod.py": "def f():\n    return 1\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n",
+        "flag.txt": "0\n"
+      },
+      "message": "add project"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants a"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "flag.txt": "0\n"
+      },
+      "message": "reset flag after a"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\nB2_0 = 0\nB2_1 = 1\nB2_2 = 2\nB2_3 = 3\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n\n\ndef test_b():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants b"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "flag.txt": "0\n"
+      },
+      "message": "reset flag after b"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\nB2_0 = 0\nB2_1 = 1\nB2_2 = 2\nB2_3 = 3\nC3_0 = 0\nC3_1 = 1\nC3_2 = 2\nC3_3 = 3\nC3_4 = 4\nC3_5 = 5\nC3_6 = 6\nC3_7 = 7\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n\n\ndef test_b():\n    assert True\n\n\ndef test_c():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants c"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "flag.txt": "0\n"
+      },
+      "message": "reset flag after c"
+    },
+    {
+      "git": "commit",
+      "repo": "lab",
+      "files": {
+        "pkg/mod.py": "def f():\n    return 1\nA1_0 = 0\nA1_1 = 1\nB2_0 = 0\nB2_1 = 1\nB2_2 = 2\nB2_3 = 3\nC3_0 = 0\nC3_1 = 1\nC3_2 = 2\nC3_3 = 3\nC3_4 = 4\nC3_5 = 5\nC3_6 = 6\nC3_7 = 7\nD4_0 = 0\nD4_1 = 1\nD4_2 = 2\nD4_3 = 3\nD4_4 = 4\nD4_5 = 5\nD4_6 = 6\nD4_7 = 7\nD4_8 = 8\nD4_9 = 9\nD4_10 = 10\nD4_11 = 11\nD4_12 = 12\nD4_13 = 13\nD4_14 = 14\nD4_15 = 15\n",
+        "tests/test_mod.py": "from pkg.mod import f\n\n\ndef test_f():\n    assert f() == 1\n\n\ndef test_a():\n    assert True\n\n\ndef test_b():\n    assert True\n\n\ndef test_c():\n    assert True\n\n\ndef test_d():\n    assert True\n",
+        "flag.txt": "1\n"
+      },
+      "message": "add constants d"
+    }
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "repo",
+        "register",
+        "{repo:lab}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "scan",
+        "--repo",
+        "lab"
+      ],
+      "json": true,
+      "save": {
+        "sha4": "/0/sha",
+        "sha3": "/1/sha"
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "replay",
+        "create",
+        "--repo",
+        "lab",
+        "{var:sha4}",
+        "{var:sha3}",
+        "--validate",
+        "--oracle-template",
+        "[\"python\",\"-c\",\"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"]"
+      ],
+      "json": true,
+      "save": {
+        "task4": "/0/task_key",
+        "task3": "/1/task_key"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/status",
+          "equals": "created"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/1/status",
+          "equals": "created"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "create",
+        "run-fail",
+        "--title",
+        "Run fail",
+        "--question",
+        "Does a no-change trial fail?",
+        "--protocol",
+        "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":4},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"oracle_template\":[\"python\",\"-c\",\"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"]}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "freeze",
+        "run-fail"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "add",
+        "run-fail",
+        "{var:task4}",
+        "--arm",
+        "haiku",
+        "--phase",
+        "staircase",
+        "--band",
+        "4",
+        "-w",
+        "default"
+      ],
+      "json": true,
+      "save": {
+        "trial_fail": "/id"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "planned"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/band",
+          "equals": 4
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/seq",
+          "equals": 1
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/requested_model",
+          "equals": "claude-haiku-5-5"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "add",
+        "run-fail",
+        "{var:task4}",
+        "--arm",
+        "haiku",
+        "--phase",
+        "live"
+      ],
+      "json": true,
+      "save": {
+        "trial_live": "/id"
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/seq",
+          "equals": 2
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/band",
+          "equals": null
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "add",
+        "run-fail",
+        "{var:task4}",
+        "--arm",
+        "missing",
+        "--phase",
+        "staircase"
+      ],
+      "json": true,
+      "expect_exit": 2
+    },
+    {
+      "assert": {
+        "exit": 2
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "add",
+        "run-fail",
+        "{var:task4}",
+        "--arm",
+        "haiku",
+        "--phase",
+        "warmup"
+      ],
+      "json": true,
+      "expect_exit": 2
+    },
+    {
+      "assert": {
+        "exit": 2
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "add",
+        "run-fail",
+        "{var:task4}",
+        "--arm",
+        "haiku",
+        "--phase",
+        "staircase",
+        "--band",
+        "9"
+      ],
+      "json": true,
+      "expect_exit": 2
+    },
+    {
+      "assert": {
+        "exit": 2
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "show",
+        "{var:trial_fail}",
+        "-w",
+        "default"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "planned"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:trial_live}"
+      ],
+      "json": true,
+      "expect_exit": 3
+    },
+    {
+      "assert": {
+        "exit": 3
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:trial_fail}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/trial/status",
+          "equals": "running"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/trial/id",
+          "equals": "{var:trial_fail}"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:trial_fail}"
+      ],
+      "json": true,
+      "expect_exit": 3
+    },
+    {
+      "assert": {
+        "exit": 3
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:trial_fail}",
+        "--timeout",
+        "600"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "graded"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/outcome",
+          "equals": "fail"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/failure_cause",
+          "equals": null
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "classify",
+        "{var:trial_fail}",
+        "--cause",
+        "too_big",
+        "--source",
+        "agent",
+        "--notes",
+        "whole feature"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/failure_cause",
+          "equals": "too_big"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/failure_cause_source",
+          "equals": "agent"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/notes",
+          "equals": "whole feature"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "classify",
+        "{var:trial_fail}",
+        "--cause",
+        "nonsense",
+        "--source",
+        "agent"
+      ],
+      "json": true,
+      "expect_exit": 2
+    },
+    {
+      "assert": {
+        "exit": 2
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "classify",
+        "{var:trial_fail}",
+        "--cause",
+        "too_big",
+        "--source",
+        "robot"
+      ],
+      "json": true,
+      "expect_exit": 2
+    },
+    {
+      "assert": {
+        "exit": 2
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "show",
+        "{var:trial_fail}",
+        "-w",
+        "default"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/failure_cause",
+          "equals": "too_big"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "close",
+        "run-fail"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "add",
+        "run-fail",
+        "{var:task4}",
+        "--arm",
+        "haiku",
+        "--phase",
+        "repeat"
+      ],
+      "json": true,
+      "expect_exit": 3
+    },
+    {
+      "assert": {
+        "exit": 3
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "create",
+        "run-pass",
+        "--title",
+        "Run pass",
+        "--protocol",
+        "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":4},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"oracle_template\":[\"python\",\"-c\",\"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"],\"setup\":[[\"python\",\"-c\",\"import sys; open(sys.argv[1], 'w').write('1')\",\"{worktree}/flag.txt\"]]}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "freeze",
+        "run-pass"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "add",
+        "run-pass",
+        "{var:task3}",
+        "--arm",
+        "haiku",
+        "--phase",
+        "staircase",
+        "--band",
+        "3"
+      ],
+      "json": true,
+      "save": {
+        "trial_pass": "/id"
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:trial_pass}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/trial/status",
+          "equals": "running"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:trial_pass}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "graded"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/outcome",
+          "equals": "pass"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/failure_cause",
+          "equals": null
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "show",
+        "{var:trial_pass}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/outcome",
+          "equals": "pass"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/task_key",
+          "equals": "{var:task3}"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "create",
+        "bad-setup",
+        "--title",
+        "Bad setup",
+        "--protocol",
+        "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":4},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"oracle_template\":[\"python\",\"-c\",\"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"],\"setup\":[[\"python\",\"-c\",\"raise SystemExit(3)\"]]}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "freeze",
+        "bad-setup"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "add",
+        "bad-setup",
+        "{var:task4}",
+        "--arm",
+        "haiku",
+        "--phase",
+        "staircase"
+      ],
+      "json": true,
+      "save": {
+        "trial_badsetup": "/id"
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:trial_badsetup}"
+      ],
+      "json": true,
+      "expect_exit": 2
+    },
+    {
+      "assert": {
+        "exit": 2
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "show",
+        "{var:trial_badsetup}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "planned"
+        }
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "create",
+        "gated",
+        "--title",
+        "Gated",
+        "--protocol",
+        "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":4},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"oracle_template\":[\"python\",\"-c\",\"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"],\"setup\":[[\"python\",\"-c\",\"import sys; open(sys.argv[1], 'w').write('1')\",\"{worktree}/flag.txt\"]],\"gates\":[[\"python\",\"-c\",\"raise SystemExit(1)\"]]}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "freeze",
+        "gated"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "add",
+        "gated",
+        "{var:task3}",
+        "--arm",
+        "haiku",
+        "--phase",
+        "staircase"
+      ],
+      "json": true,
+      "save": {
+        "trial_gated": "/id"
+      }
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "start",
+        "{var:trial_gated}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "experiment",
+        "trial",
+        "grade",
+        "{var:trial_gated}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/outcome",
+          "equals": "fail"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/failure_cause",
+          "equals": null
+        }
+      }
+    }
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_trials.py::test_correct_implementation_grades_pass, test_edited_test_file_fails_as_gaming, test_stub_in_source_fails_with_stub_flag: they grade an edit the agent makes inside the trial clone, and no scenario step can write into a clone",
+      "covered_by": "TH-06"
+    },
+    {
+      "case": "tests/integration/test_trials.py::test_run_on_other_model_marks_trial_invalid_and_keeps_outcome, test_run_on_pinned_model_keeps_trial_graded: they need a subagent run row written by the transcript ingester, which no scenario step creates",
+      "covered_by": "TH-06"
+    },
+    {
+      "case": "tests/integration/test_trials.py::test_reading_the_source_checkout_fails_as_escaped_clone, test_transcript_confined_to_the_clone_is_not_flagged: the escape check reads an agent transcript file that only a subagent run produces",
+      "covered_by": "TH-06"
+    },
+    {
+      "case": "tests/integration/test_trials.py::test_leaf_start_clones_default_branch_and_renders_leaf_brief, test_correct_leaf_change_passes, test_undeclared_file_fails_as_outside_declared_files, test_leaf_with_incomplete_contract_refuses_to_start: leaf tasks need a metadata contract with files, oracle and checks, and the graded cases need clone edits; this corpus has no leaf fixture",
+      "covered_by": "TH-06"
+    },
+    {
+      "case": "tests/integration/test_trials.py::test_isolated_clone_has_no_alternates_and_no_solution_objects: it probes the clone's object store with a git call that no scenario step makes",
+      "covered_by": "TH-06"
+    },
+    {
+      "case": "tests/integration/test_experiments.py::test_link_run_with_matching_model_keeps_trial_valid, test_link_run_with_other_model_marks_invalid_wrong_model, test_link_from_subagent_run_markers, test_mark_invalid_and_classify_need_running_experiment: link_run and mark_invalid have no CLI command, and linking needs subagent run rows",
+      "covered_by": "CORE-25"
+    },
+    {
+      "case": "tests/integration/test_experiments.py::test_agents_can_read_but_not_mutate: the agent request context exists only in the service API, not on the command line",
+      "covered_by": "CORE-25"
+    }
+  ]
+}

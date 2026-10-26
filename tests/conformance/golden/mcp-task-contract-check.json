@@ -1,0 +1,75 @@
+{
+  "scenario": "mcp-task-contract-check",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Vague goal\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 2,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"verdict\": \"not_delegable\",\n  \"reasons\": [\n    \"no checkable oracle: the task has no contract oracle and no acceptance criteria\"\n  ],\n  \"missing\": [],\n  \"prediction\": null,\n  \"target\": 0.8,\n  \"model\": \"claude-haiku-5-5\"\n}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool task_contract_check: 1 validation error for task_contract_checkArguments\ntarget\n  Input should be less than or equal to 1 [type=less_than_equal, input_value=1.5, input_type=float]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool task_contract_check: {\"error\": {\"code\": \"not_found\", \"message\": \"task 'WG-404' not found\", \"details\": {\"ref\": \"WG-404\"}}}"
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

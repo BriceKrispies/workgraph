@@ -1,0 +1,32 @@
+{
+  "id": "mcp-task-ready-and-promote",
+  "covers": ["M35", "M36"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Base", "ready": true}},
+    {"mcp": "task_create", "args": {"title": "Next", "tags": ["sprint"], "depends_on": ["WG-1"]}},
+    {"mcp": "task_create", "args": {"title": "Later", "tags": ["later"]}},
+    {"mcp": "task_get_ready", "args": {"limit": 10}},
+    {"assert": {"json": {"path": "/tasks/0/key", "equals": "WG-1"}}},
+    {"mcp": "task_promote_ready", "args": {"tags": ["sprint"], "dry_run": true}},
+    {"assert": {"json": {"path": "/dry_run", "equals": true}}},
+    {"mcp": "task_promote_ready", "args": {"all": true, "tags": ["sprint"]}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_promote_ready", "args": {"project": "nothing"}},
+    {"mcp": "task_promote_ready", "args": {}},
+    {"assert": {"exit": 1}},
+    {"cli": ["task", "claim", "WG-1"], "json": true},
+    {"cli": ["task", "complete", "WG-1", "--summary", "done"], "json": true},
+    {"cli": ["task", "accept", "WG-1", "--manual", "--reason", "reviewed by hand"], "json": true},
+    {"mcp": "task_promote_ready", "args": {"tags": ["sprint"], "dry_run": true}},
+    {"assert": {"json": {"path": "/dry_run", "equals": true}}},
+    {"mcp": "task_promote_ready", "args": {"tags": ["sprint"]}},
+    {"mcp": "task_get", "args": {"task": "WG-2"}},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}},
+    {"mcp": "task_promote_ready", "args": {"all": true}},
+    {"mcp": "task_get", "args": {"task": "WG-3"}},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}}
+  ],
+  "not_observable": []
+}

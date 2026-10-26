@@ -18,12 +18,20 @@
     {"assert": {"json": {"path": "/files/0/path", "equals": "bin.dat"}}},
     {"assert": {"json": {"path": "/files/0/binary", "equals": true}}},
     {"cli": ["git", "sync", "ingest"], "json": true},
-    {"assert": {"json": {"path": "/0/new_commits", "equals": 0}}}
+    {"assert": {"json": {"path": "/0/new_commits", "equals": 0}}},
+    {"git": "move", "cwd": "{repo:ingest}", "args": ["src/app.py", "src/core.py"]},
+    {"git": "commit", "cwd": "{repo:ingest}", "message": "rename app"},
+    {"cli": ["git", "sync", "ingest"], "json": true},
+    {"assert": {"json": {"path": "/0/new_commits", "equals": 1}}},
+    {"cli": ["git", "log", "ingest"], "json": true, "save": {"rename_sha": "/items/0/sha"}},
+    {"assert": {"json": {"path": "/items/0/subject", "equals": "rename app"}}},
+    {"cli": ["git", "show", "ingest", "{var:rename_sha}"], "json": true},
+    {"assert": {"json": {"path": "/files/0/change_type", "equals": "R"}}},
+    {"assert": {"json": {"path": "/files/0/old_path", "equals": "src/app.py"}}},
+    {"assert": {"json": {"path": "/files/0/path", "equals": "src/core.py"}}},
+    {"git": "commit", "cwd": "{repo:ingest}", "files": {"notes.txt": "later\n"}, "message": "after the sync"},
+    {"cli": ["git", "sync", "ingest"], "json": true},
+    {"assert": {"json": {"path": "/0/new_commits", "equals": 1}}}
   ],
-  "not_observable": [
-    {
-      "case": "tests/integration/test_git.py::test_commit_ingestion_stats_renames_and_incremental: (a) the rename of src/app.py to src/core.py is detected as change type R with old_path, because the runner's setup operations cannot delete or move files (no git mv or rm); (b) a commit made after an earlier sync is picked up by the next sync (new_commits 1), because setup runs before every step and no step creates commits",
-      "covered_by": "GV-03"
-    }
-  ]
+  "not_observable": []
 }

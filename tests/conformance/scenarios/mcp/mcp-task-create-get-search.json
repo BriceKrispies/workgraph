@@ -1,0 +1,30 @@
+{
+  "id": "mcp-task-create-get-search",
+  "covers": ["M26", "M27", "M29"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Parse the config", "description": "Read the TOML file", "acceptance_criteria": ["config loads"], "priority": "high", "ready": true, "tags": ["config"]}, "save": {"parse": "/key"}},
+    {"assert": {"json": {"path": "/key", "equals": "WG-1"}}},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}},
+    {"assert": {"json": {"path": "/priority", "equals": "high"}}},
+    {"mcp": "task_create", "args": {"title": "Draft the changelog", "tags": ["docs"]}},
+    {"assert": {"json": {"path": "/key", "equals": "WG-2"}}},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}},
+    {"mcp": "task_get", "args": {"task": "WG-1"}},
+    {"assert": {"json": {"path": "/title", "equals": "Parse the config"}}},
+    {"assert": {"json": {"path": "/description", "equals": "Read the TOML file"}}},
+    {"assert": {"json": {"path": "/acceptance_criteria", "equals": ["config loads"]}}},
+    {"mcp": "task_get", "args": {"task": "WG-999"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "task_create", "args": {"title": ""}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_search", "args": {"query": "config", "mode": "lexical", "limit": 5}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "Parse the config"}},
+    {"mcp": "task_search", "args": {"query": "changelog", "mode": "hybrid"}},
+    {"assert": {"stdout_contains": "Draft the changelog"}}
+  ],
+  "not_observable": []
+}

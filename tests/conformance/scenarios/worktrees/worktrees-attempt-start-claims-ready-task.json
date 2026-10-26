@@ -1,0 +1,42 @@
+{
+  "id": "worktrees-attempt-start-claims-ready-task",
+  "covers": ["C022", "C023", "C097", "C118", "C122", "C152", "C165", "C021"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["task", "create", "External work", "--repo", "api", "--ready"], "json": true},
+    {"cli": ["repo", "status", "api"], "json": true, "save": {"head": "/head"}},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester", "--model", "test-model"], "json": true,
+     "save": {"attempt": "/attempt_id"}},
+    {"assert": {"json": {"path": "/task_key", "equals": "WG-1"}}},
+    {"assert": {"json": {"path": "/attempt_number", "equals": 1}}},
+    {"assert": {"json": {"path": "/repositories/0/repository", "equals": "api"}}},
+    {"assert": {"json": {"path": "/repositories/0/base_sha", "equals": "{var:head}"}}},
+    {"assert": {"stdout_contains": "wg/wg-1/attempt-1-"}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "running"}}},
+    {"cli": ["attempt", "show", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "running"}}},
+    {"assert": {"json": {"path": "/provider", "equals": "tester"}}},
+    {"assert": {"json": {"path": "/adapter", "equals": "claude_code_subagent"}}},
+    {"assert": {"json": {"path": "/model", "equals": "test-model"}}},
+    {"cli": ["attempt", "manifests", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/0/kind", "equals": "baseline"}}},
+    {"cli": ["git", "worktrees"], "json": true},
+    {"assert": {"json": {"path": "/0/status", "equals": "active"}}},
+    {"assert": {"json": {"path": "/0/base_sha", "equals": "{var:head}"}}},
+    {"assert": {"stdout_contains": "wg/wg-1/attempt-1-"}},
+    {"cli": ["repo", "status", "api"], "json": true},
+    {"assert": {"json": {"path": "/branch", "equals": "main"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktrees.py::test_attempt_start_claims_ready_task_and_prepares_worktree: the task's claimed_by is asserted to equal the acting human actor; the value is the caller identity, which the runner does not pin, so only the running status is checked.",
+      "covered_by": "CORE-11"
+    }
+  ]
+}

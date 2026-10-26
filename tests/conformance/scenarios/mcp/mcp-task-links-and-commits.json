@@ -1,0 +1,31 @@
+{
+  "id": "mcp-task-links-and-commits",
+  "covers": ["M43", "M44"],
+  "setup": [
+    {"git": "init", "repo": "ledger"},
+    {"git": "commit", "repo": "ledger", "files": {"a.txt": "one\n"}, "message": "Seed the ledger"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:ledger}"], "json": true},
+    {"cli": ["task", "create", "Link target"], "json": true},
+    {"mcp": "task_link_repository", "args": {"task": "WG-1", "repository": "ledger"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "task_link_repository", "args": {"task": "WG-1", "repository": "ledger", "read_only": true}},
+    {"assert": {"exit": 0}},
+    {"mcp": "task_link_repository", "args": {"task": "WG-1", "repository": "no-such-repo"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"cli": ["git", "sync", "ledger"], "json": true},
+    {"cli": ["git", "log", "ledger"], "json": true, "save": {"head": "/items/0/sha"}},
+    {"mcp": "task_link_commit", "args": {"task": "WG-1", "sha": "{var:head}", "repository": "ledger", "note": "manual evidence"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "explicit"}},
+    {"mcp": "task_link_commit", "args": {"task": "WG-1", "sha": "abc"}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_link_commit", "args": {"task": "WG-1", "sha": "0000000000000000000000000000000000000000"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}}
+  ],
+  "not_observable": []
+}

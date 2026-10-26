@@ -1,0 +1,31 @@
+{
+  "id": "mcp-attempt-create-get-list",
+  "covers": ["M47", "M50", "M51"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Attempted", "ready": true}},
+    {"mcp": "task_claim", "args": {"task": "WG-1"}},
+    {"mcp": "attempt_create", "args": {"task": "WG-1", "model": "test-model", "session_id": "session-1"}, "save": {"first": "/id"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/model", "equals": "test-model"}}},
+    {"assert": {"json": {"path": "/session_id", "equals": "session-1"}}},
+    {"mcp": "attempt_create", "args": {"task": "WG-1", "parent_attempt": "{var:first}"}, "save": {"nested": "/id"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "attempt_get", "args": {"attempt_id": "{var:first}"}},
+    {"assert": {"json": {"path": "/id", "equals": "{var:first}"}}},
+    {"mcp": "attempt_get", "args": {"attempt_id": "00000000-0000-0000-0000-000000000000"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "attempt_list", "args": {"task": "WG-1"}},
+    {"assert": {"json": {"path": "/total", "equals": 2}}},
+    {"mcp": "attempt_list", "args": {"provider": "conformance", "limit": 1, "offset": 1}},
+    {"assert": {"json": {"path": "/items/0/id", "equals": "{var:first}"}}},
+    {"mcp": "attempt_list", "args": {"task": "WG-1", "statuses": ["succeeded"]}},
+    {"assert": {"json": {"path": "/total", "equals": 0}}},
+    {"mcp": "attempt_create", "args": {"task": "WG-404"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}}
+  ],
+  "not_observable": []
+}

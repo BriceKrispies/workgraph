@@ -1,0 +1,25 @@
+{
+  "id": "worktrees-parallel-attempts-distinct-branches",
+  "covers": ["C023", "C118", "C152"],
+  "setup": [
+    {"git": "init", "repo": "shared"},
+    {"git": "commit", "repo": "shared", "files": {"README.md": "shared\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:shared}"], "json": true},
+    {"cli": ["task", "create", "First", "--repo", "shared", "--ready"], "json": true},
+    {"cli": ["task", "create", "Second", "--repo", "shared", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1"], "json": true},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "wg/wg-1/attempt-1-"}},
+    {"cli": ["attempt", "start", "WG-2"], "json": true},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "wg/wg-2/attempt-1-"}},
+    {"cli": ["git", "worktrees"], "json": true, "save": {"first": "/0/path"}},
+    {"assert": {"json": {"path": "/0/status", "equals": "active"}}},
+    {"assert": {"json": {"path": "/1/status", "equals": "active"}}},
+    {"assert": {"json": {"path": "/1/path", "not_equals": "{var:first}"}}}
+  ],
+  "not_observable": []
+}

@@ -31,19 +31,20 @@
       "type": "object",
       "required": ["git", "repo"],
       "properties": {
-        "git": {
-          "description": "A typed git operation on the named repository. init, commit and write take no args; branch, merge, rebase and cherry-pick take one rev; checkout takes a branch, or -b and a new branch; worktree takes a path and a branch; move takes a source and a destination; delete takes one or more paths; reset takes a rev, or a mode (--soft, --mixed or --hard) and a rev. commit records the files and message as a commit dated with the next tick; rebase, cherry-pick and merge are dated the same way.",
-          "enum": [
-            "init", "commit", "write", "branch", "checkout", "worktree", "merge",
-            "delete", "move", "rebase", "cherry-pick", "reset"
-          ]
-        },
+        "git": { "$ref": "#/$defs/gitOperation" },
         "repo": { "type": "string", "minLength": 1 },
         "files": { "type": "object", "additionalProperties": { "type": "string" } },
         "message": { "type": "string" },
         "args": { "type": "array", "items": { "type": "string" } }
       },
       "additionalProperties": false
+    },
+    "gitOperation": {
+      "description": "A typed git operation on one repository or checkout. init, commit and write take no args; branch, merge, rebase and cherry-pick take one rev; checkout takes a branch, or -b and a new branch; worktree takes a path and a branch; move takes a source and a destination; delete takes one or more paths; reset takes a rev, or a mode (--soft, --mixed or --hard) and a rev. commit records the files and message as a commit dated with the next tick; rebase, cherry-pick and merge are dated the same way.",
+      "enum": [
+        "init", "commit", "write", "branch", "checkout", "worktree", "merge",
+        "delete", "move", "rebase", "cherry-pick", "reset"
+      ]
     },
     "step": {
       "oneOf": [
@@ -88,8 +89,10 @@
             "http": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
             "path": { "type": "string" },
             "body": {},
+            "headers": { "type": "object", "additionalProperties": { "type": "string" } },
             "save": { "type": "object", "additionalProperties": { "type": "string" } },
-            "max_events": { "type": "integer", "minimum": 1 }
+            "max_events": { "type": "integer", "minimum": 1 },
+            "expect_status": { "type": "integer" }
           }
         },
         {
@@ -101,6 +104,34 @@
               "type": "object",
               "additionalProperties": false,
               "properties": { "max_jobs": { "type": "integer", "minimum": 1 } }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["git", "cwd"],
+          "additionalProperties": false,
+          "properties": {
+            "git": { "$ref": "#/$defs/gitOperation" },
+            "cwd": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The repository or checkout directory. Placeholders such as {repo:name} or {var:name} are resolved; a relative path is taken from the repositories directory of the sandbox."
+            },
+            "args": { "type": "array", "items": { "type": "string" } },
+            "files": { "type": "object", "additionalProperties": { "type": "string" } },
+            "message": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["rmtree"],
+          "additionalProperties": false,
+          "properties": {
+            "rmtree": {
+              "type": "string",
+              "minLength": 1,
+              "description": "A directory tree to remove. It must lie inside the sandbox home (the WORKGRAPH_HOME of the run), and may hold placeholders such as {var:name} or {home}."
             }
           }
         },
@@ -122,9 +153,21 @@
         "stderr_contains": { "type": "string" },
         "json": {
           "type": "object",
-          "required": ["path", "equals"],
+          "required": ["path"],
           "additionalProperties": false,
-          "properties": { "path": { "type": "string" }, "equals": {} }
+          "oneOf": [
+            { "required": ["equals"] },
+            { "required": ["not_equals"] },
+            { "required": ["absent"] },
+            { "required": ["excludes"] }
+          ],
+          "properties": {
+            "path": { "type": "string", "description": "A JSON pointer into the last cli output." },
+            "equals": { "description": "The value at path is equal to this." },
+            "not_equals": { "description": "The value at path exists and is not equal to this." },
+            "absent": { "const": true, "description": "No value exists at path: the key is not present." },
+            "excludes": { "description": "The array at path has no element equal to this." }
+          }
         },
         "file": { "type": "string" },
         "exists": { "type": "boolean" },

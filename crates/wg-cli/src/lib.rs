@@ -13,6 +13,7 @@
 //!   prints results as JSON (`--json`) or through `wg-render`.
 
 pub mod commands;
+pub mod hook;
 mod output;
 mod run;
 

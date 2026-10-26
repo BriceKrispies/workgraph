@@ -18,3 +18,4 @@ wg-exec = { path = "../wg-exec" }
 wg-hash = { path = "../wg-hash" }
 wg-model = { path = "../wg-model" }
 wg-types = { path = "../wg-types" }
+wg-validate = { path = "../wg-validate" }

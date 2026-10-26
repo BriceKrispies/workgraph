@@ -1,0 +1,201 @@
+{
+  "scenario": "mcp-analytics-subagents-agent-time-bottlenecks",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"period\": \"week\",\n  \"window\": {\n    \"since\": null,\n    \"until\": null\n  },\n  \"model\": null,\n  \"by_period\": [],\n  \"by_size\": [],\n  \"totals\": [],\n  \"unlinked_runs\": 0,\n  \"notes\": [\n    \"A task's outcome is its current status: accepted, rejected (a non-accepted acceptance decision), failed or cancelled; anything else is pending\"\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"period\": \"month\",\n  \"window\": {\n    \"since\": \"<ts:1|+00:00>\",\n    \"until\": \"<ts:2|+00:00>\"\n  },\n  \"model\": \"claude-haiku-5-5\",\n  \"by_period\": [],\n  \"by_size\": [],\n  \"totals\": [],\n  \"unlinked_runs\": 0,\n  \"notes\": [\n    \"A task's outcome is its current status: accepted, rejected (a non-accepted acceptance decision), failed or cancelled; anything else is pending\"\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_subagents: invalid date: Invalid isoformat string: 'not-a-date'"
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_subagents: 1 validation error for analytics_subagentsArguments\nperiod\n  Input should be 'week' or 'month' [type=literal_error, input_value='day', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"by\": \"class\",\n  \"window\": {\n    \"since\": null,\n    \"until\": null\n  },\n  \"model\": null,\n  \"totals\": {\n    \"runs\": 0,\n    \"span_seconds\": 0,\n    \"accounted_seconds\": 0,\n    \"tool_seconds\": 0,\n    \"model_seconds\": 0,\n    \"waiting_seconds\": 0,\n    \"polling_seconds\": 0,\n    \"model_share\": null,\n    \"waiting_share\": null,\n    \"polling_share\": null\n  },\n  \"notes\": [\n    \"Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting).\"\n  ],\n  \"rows\": []\n}",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"by\": \"model\",\n  \"window\": {\n    \"since\": \"<ts:1|+00:00>\",\n    \"until\": \"<ts:2|+00:00>\"\n  },\n  \"model\": null,\n  \"totals\": {\n    \"runs\": 0,\n    \"span_seconds\": 0,\n    \"accounted_seconds\": 0,\n    \"tool_seconds\": 0,\n    \"model_seconds\": 0,\n    \"waiting_seconds\": 0,\n    \"polling_seconds\": 0,\n    \"model_share\": null,\n    \"waiting_share\": null,\n    \"polling_share\": null\n  },\n  \"notes\": [\n    \"Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting).\"\n  ],\n  \"rows\": []\n}",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_agent_time: invalid date: Invalid isoformat string: 'yesterday'"
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_agent_time: 1 validation error for analytics_agent_timeArguments\nby\n  Input should be 'class', 'model', 'task' or 'description' [type=literal_error, input_value='color', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"window\": {\n    \"since\": null,\n    \"until\": null\n  },\n  \"totals\": {\n    \"runs\": 0,\n    \"span_seconds\": 0,\n    \"accounted_seconds\": 0,\n    \"tool_seconds\": 0,\n    \"model_seconds\": 0,\n    \"waiting_seconds\": 0,\n    \"polling_seconds\": 0,\n    \"model_share\": null,\n    \"waiting_share\": null,\n    \"polling_share\": null\n  },\n  \"classes\": [],\n  \"slowest_calls\": [],\n  \"concurrency\": {\n    \"peak_during_window\": 0,\n    \"median_at_slowest_calls\": null,\n    \"scope\": \"stopped subagent runs in every workspace on this machine\"\n  },\n  \"by_task\": [],\n  \"notes\": [\n    \"Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting).\"\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"window\": {\n    \"since\": \"<ts:1|+00:00>\",\n    \"until\": null\n  },\n  \"totals\": {\n    \"runs\": 0,\n    \"span_seconds\": 0,\n    \"accounted_seconds\": 0,\n    \"tool_seconds\": 0,\n    \"model_seconds\": 0,\n    \"waiting_seconds\": 0,\n    \"polling_seconds\": 0,\n    \"model_share\": null,\n    \"waiting_share\": null,\n    \"polling_share\": null\n  },\n  \"classes\": [],\n  \"slowest_calls\": [],\n  \"concurrency\": {\n    \"peak_during_window\": 0,\n    \"median_at_slowest_calls\": null,\n    \"scope\": \"stopped subagent runs in every workspace on this machine\"\n  },\n  \"by_task\": [],\n  \"notes\": [\n    \"Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting).\"\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_bottlenecks: invalid date: Invalid isoformat string: 'not-a-date'"
+    },
+    {
+      "index": 24,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_bottlenecks: 1 validation error for analytics_bottlenecksArguments\ntop\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+    },
+    {
+      "index": 27,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "mcp-task-progress-and-result",
+  "covers": ["M45", "M46", "M47"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Report on me", "ready": true}},
+    {"mcp": "task_claim", "args": {"task": "WG-1"}},
+    {"mcp": "attempt_create", "args": {"task": "WG-1", "model": "test-model"}, "save": {"attempt": "/id"}},
+    {"mcp": "task_report_progress", "args": {"task": "WG-1", "message": "halfway", "percent": 50, "attempt_id": "{var:attempt}"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "task_report_progress", "args": {"task": "WG-1", "message": "over the top", "percent": 150}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_report_progress", "args": {"task": "WG-1", "message": ""}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_report_progress", "args": {"task": "WG-404", "message": "lost"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "task_report_result", "args": {"task": "WG-1", "outcome": "maybe", "summary": "unclear"}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_report_result", "args": {"task": "WG-1", "outcome": "succeeded", "summary": "done", "attempt_id": "{var:attempt}", "input_tokens": 10}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/status", "equals": "awaiting_review"}}}
+  ],
+  "not_observable": []
+}

@@ -1,0 +1,166 @@
+{
+  "scenario": "mcp-analytics-report",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Estimated\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 2,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"metrics\": [\n    {\n      \"id\": \"tasks_created\",\n      \"family\": \"throughput\",\n      \"title\": \"Tasks created\",\n      \"definition\": \"Number of tasks created in the period.\",\n      \"unit\": \"tasks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"tasks_completed\",\n      \"family\": \"throughput\",\n      \"title\": \"Tasks completed\",\n      \"definition\": \"Tasks whose completion was reported (entered awaiting verification/review), by completion time. Completion is a claim, not acceptance.\",\n      \"unit\": \"tasks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"completed_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"tasks_accepted\",\n      \"family\": \"throughput\",\n      \"title\": \"Tasks accepted\",\n      \"definition\": \"Tasks accepted (verified or manually accepted), by acceptance time.\",\n      \"unit\": \"tasks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"accepted_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"open_backlog\",\n      \"family\": \"throughput\",\n      \"title\": \"Open tasks\",\n      \"definition\": \"Tasks currently not accepted or cancelled, grouped by creation period.\",\n      \"unit\": \"tasks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"blocked_tasks\",\n      \"family\": \"throughput\",\n      \"title\": \"Blocked tasks\",\n      \"definition\": \"Tasks currently in the blocked state.\",\n      \"unit\": \"tasks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"reopened_tasks\",\n      \"family\": \"quality\",\n      \"title\": \"Reopened tasks\",\n      \"definition\": \"Tasks reopened at least once after acceptance or cancellation.\",\n      \"unit\": \"tasks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"queue_wait\",\n      \"family\": \"execution\",\n      \"title\": \"Queue waiting time\",\n      \"definition\": \"Time between an attempt being queued and starting, per top-level attempt (measured by Workgraph).\",\n      \"unit\": \"ms\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"started_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"execution_duration\",\n      \"family\": \"execution\",\n      \"title\": \"Active execution time\",\n      \"definition\": \"Measured wall-clock duration of finished top-level attempts.\",\n      \"unit\": \"ms\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"finished_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"task_elapsed\",\n      \"family\": \"execution\",\n      \"title\": \"Total task elapsed time\",\n      \"definition\": \"Creation to acceptance, for accepted tasks.\",\n      \"unit\": \"ms\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"accepted_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"cycle_time\",\n      \"family\": \"execution\",\n      \"title\": \"Cycle time\",\n      \"definition\": \"First start (claim/run) to acceptance, for accepted tasks.\",\n      \"unit\": \"ms\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"accepted_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"attempts_per_task\",\n      \"family\": \"execution\",\n      \"title\": \"Attempts per task\",\n      \"definition\": \"Top-level attempts per accepted task that had attempts.\",\n      \"unit\": \"attempts\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"accepted_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"retry_rate\",\n      \"family\": \"execution\",\n      \"title\": \"Retry frequency\",\n      \"definition\": \"Share of top-level attempts that were explicit retries.\",\n      \"unit\": \"ratio\",\n      \"statistic\": \"ratio\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"first_pass_success\",\n      \"family\": \"execution\",\n      \"title\": \"First-pass success\",\n      \"definition\": \"Accepted tasks (with attempts) whose first attempt succeeded and needed no further attempts.\",\n      \"unit\": \"ratio\",\n      \"statistic\": \"ratio\",\n      \"time_column\": \"accepted_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"attempt_success_rate\",\n      \"family\": \"execution\",\n      \"title\": \"Attempt success rate\",\n      \"definition\": \"Succeeded / finished top-level attempts.\",\n      \"unit\": \"ratio\",\n      \"statistic\": \"ratio\",\n      \"time_column\": \"finished_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"attempt_outcomes\",\n      \"family\": \"execution\",\n      \"title\": \"Attempt outcomes\",\n      \"definition\": \"Top-level attempts by status (group by status).\",\n      \"unit\": \"attempts\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"cumulative_churn\",\n      \"family\": \"code\",\n      \"title\": \"Cumulative churn\",\n      \"definition\": \"Lines added + removed across a task's distinct linked non-merge commits (confidence >= 0.5; cherry-picked or rewritten duplicates counted once).\",\n      \"unit\": \"lines\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": [\n        \"Lines changed do not measure difficulty or necessity.\"\n      ]\n    },\n    {\n      \"id\": \"final_change_size\",\n      \"family\": \"code\",\n      \"title\": \"Final change size\",\n      \"definition\": \"Lines added + removed between the attempt baseline and the accepted revision (all repositories).\",\n      \"unit\": \"lines\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"accepted_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"files_touched\",\n      \"family\": \"code\",\n      \"title\": \"Files affected\",\n      \"definition\": \"Distinct file paths touched by a task's linked commits.\",\n      \"unit\": \"files\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"functions_affected\",\n      \"family\": \"code\",\n      \"title\": \"Functions affected\",\n      \"definition\": \"Functions/methods touched (Tree-sitter) summed over a task's analysed commits.\",\n      \"unit\": \"functions\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"rework_ratio\",\n      \"family\": \"code\",\n      \"title\": \"Rework indicator\",\n      \"definition\": \"Cumulative churn divided by final change size; values well above 1 mean code was rewritten during the task.\",\n      \"unit\": \"ratio\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"accepted_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"repeated_file_edits\",\n      \"family\": \"code\",\n      \"title\": \"Repeated edits\",\n      \"definition\": \"Files edited by more than one commit within the same task.\",\n      \"unit\": \"files\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"repository_change_volume\",\n      \"family\": \"code\",\n      \"title\": \"Repository change volume\",\n      \"definition\": \"Lines changed by distinct task-linked commits per repository (a commit shared by several tasks counts once).\",\n      \"unit\": \"lines\",\n      \"statistic\": \"sum\",\n      \"time_column\": \"committed_at\",\n      \"dimensions\": [\n        \"period\",\n        \"repository\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"module_hotspots\",\n      \"family\": \"architecture\",\n      \"title\": \"Module hotspots\",\n      \"definition\": \"Lines changed per module across tasks (group by module).\",\n      \"unit\": \"lines\",\n      \"statistic\": \"sum\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"category\",\n        \"file_class\",\n        \"module\",\n        \"period\",\n        \"project\",\n        \"repository\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"structural_distribution\",\n      \"family\": \"architecture\",\n      \"title\": \"Change by file class\",\n      \"definition\": \"Lines changed by file class (production/test/config/docs).\",\n      \"unit\": \"lines\",\n      \"statistic\": \"sum\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"category\",\n        \"file_class\",\n        \"module\",\n        \"period\",\n        \"project\",\n        \"repository\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"agent_completion_rate\",\n      \"family\": \"agents\",\n      \"title\": \"Agent completion rate\",\n      \"definition\": \"Succeeded / finished top-level attempts, typically grouped by provider and model.\",\n      \"unit\": \"ratio\",\n      \"statistic\": \"ratio\",\n      \"time_column\": \"finished_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": [\n        \"Agents receive different tasks; differences are not caused by the agent alone (selection bias).\"\n      ]\n    },\n    {\n      \"id\": \"agent_duration\",\n      \"family\": \"agents\",\n      \"title\": \"Median agent execution duration\",\n      \"definition\": \"Duration of succeeded top-level attempts.\",\n      \"unit\": \"ms\",\n      \"statistic\": \"distribution\",\n      \"time_column\": \"finished_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"agent_verification_pass_rate\",\n      \"family\": \"agents\",\n      \"title\": \"Verification success\",\n      \"definition\": \"Passed / executed verification runs attached to attempts.\",\n      \"unit\": \"ratio\",\n      \"statistic\": \"ratio\",\n      \"time_column\": \"finished_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"input_tokens\",\n      \"family\": \"agents\",\n      \"title\": \"Input tokens (measured)\",\n      \"definition\": \"Provider-reported input tokens; attempts without measured usage are excluded (see sample size).\",\n      \"unit\": \"tokens\",\n      \"statistic\": \"sum\",\n      \"time_column\": \"finished_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"output_tokens\",\n      \"family\": \"agents\",\n      \"title\": \"Output tokens (measured)\",\n      \"definition\": \"Provider-reported output tokens.\",\n      \"unit\": \"tokens\",\n      \"statistic\": \"sum\",\n      \"time_column\": \"finished_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"cost\",\n      \"family\": \"agents\",\n      \"title\": \"Cost (measured)\",\n      \"definition\": \"Provider-reported cost; never estimated by Workgraph.\",\n      \"unit\": \"usd\",\n      \"statistic\": \"sum\",\n      \"time_column\": \"finished_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"priority\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"verification_pass_rate\",\n      \"family\": \"quality\",\n      \"title\": \"Verification pass rate\",\n      \"definition\": \"Passed / completed verification runs.\",\n      \"unit\": \"ratio\",\n      \"statistic\": \"ratio\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"agent\",\n        \"category\",\n        \"model\",\n        \"period\",\n        \"project\",\n        \"provider\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"check_failures\",\n      \"family\": \"quality\",\n      \"title\": \"Check failures\",\n      \"definition\": \"Failed or errored verification checks (group by kind/check).\",\n      \"unit\": \"checks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"category\",\n        \"check_name\",\n        \"kind\",\n        \"period\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"test_failures\",\n      \"family\": \"quality\",\n      \"title\": \"Test failures\",\n      \"definition\": \"Failed test checks.\",\n      \"unit\": \"checks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"category\",\n        \"check_name\",\n        \"kind\",\n        \"period\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"build_failures\",\n      \"family\": \"quality\",\n      \"title\": \"Build failures\",\n      \"definition\": \"Failed build checks.\",\n      \"unit\": \"checks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"category\",\n        \"check_name\",\n        \"kind\",\n        \"period\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"integration_failures\",\n      \"family\": \"quality\",\n      \"title\": \"Integration failures\",\n      \"definition\": \"Failed cross-repository integration checks.\",\n      \"unit\": \"checks\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"category\",\n        \"check_name\",\n        \"kind\",\n        \"period\",\n        \"project\",\n        \"repository\",\n        \"status\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"regressions\",\n      \"family\": \"quality\",\n      \"title\": \"Regressions linked to previous work\",\n      \"definition\": \"Tasks related to earlier work as regression_of.\",\n      \"unit\": \"relations\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"category\",\n        \"period\",\n        \"project\",\n        \"relation_type\"\n      ],\n      \"caveats\": []\n    },\n    {\n      \"id\": \"follow_up_fixes\",\n      \"family\": \"quality\",\n      \"title\": \"Follow-up fixes\",\n      \"definition\": \"Tasks related to earlier work as follows_up.\",\n      \"unit\": \"relations\",\n      \"statistic\": \"count\",\n      \"time_column\": \"created_at\",\n      \"dimensions\": [\n        \"category\",\n        \"period\",\n        \"project\",\n        \"relation_type\"\n      ],\n      \"caveats\": []\n    }\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"created_by_period\": [\n    {\n      \"period\": \"2026-10-26\",\n      \"value\": 1,\n      \"n\": 1\n    }\n  ],\n  \"accepted_by_period\": [],\n  \"completed_by_period\": [],\n  \"open_by_status\": [\n    {\n      \"status\": \"ready\",\n      \"value\": 1,\n      \"n\": 1\n    }\n  ],\n  \"by_category\": [\n    {\n      \"category\": null,\n      \"value\": 1,\n      \"n\": 1\n    }\n  ],\n  \"execution_duration\": [\n    {\n      \"n\": 0,\n      \"mean\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"p95\": null,\n      \"min\": null,\n      \"max\": null,\n      \"sum\": null\n    }\n  ],\n  \"queue_wait\": [\n    {\n      \"n\": 0,\n      \"mean\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"p95\": null,\n      \"min\": null,\n      \"max\": null,\n      \"sum\": null\n    }\n  ],\n  \"task_elapsed\": [\n    {\n      \"n\": 0,\n      \"mean\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"p95\": null,\n      \"min\": null,\n      \"max\": null,\n      \"sum\": null\n    }\n  ],\n  \"first_pass_success\": [\n    {\n      \"numerator\": 0,\n      \"denominator\": 0,\n      \"value\": null,\n      \"n\": 0\n    }\n  ],\n  \"agents\": [],\n  \"agent_duration\": [],\n  \"churn\": [\n    {\n      \"n\": 0,\n      \"mean\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"p95\": null,\n      \"min\": null,\n      \"max\": null,\n      \"sum\": null\n    }\n  ],\n  \"final_change\": [\n    {\n      \"n\": 0,\n      \"mean\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"p95\": null,\n      \"min\": null,\n      \"max\": null,\n      \"sum\": null\n    }\n  ],\n  \"rework\": [\n    {\n      \"n\": 0,\n      \"mean\": null,\n      \"median\": null,\n      \"p75\": null,\n      \"p90\": null,\n      \"p95\": null,\n      \"min\": null,\n      \"max\": null,\n      \"sum\": null\n    }\n  ],\n  \"check_failures_by_period\": [],\n  \"verification_pass_rate\": [],\n  \"repository_volume\": [],\n  \"module_hotspots\": []\n}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"repositories\": [],\n  \"edges\": [],\n  \"declared_only\": [],\n  \"matrix\": {},\n  \"summary\": {\n    \"tasks_with_code\": 0,\n    \"cross_repository_tasks\": 0,\n    \"average_repositories_per_task\": null,\n    \"median_elapsed_ms_cross_repo\": null,\n    \"median_elapsed_ms_single_repo\": null,\n    \"integration_checks\": 0,\n    \"integration_failure_rate\": null\n  },\n  \"commonly_changed_pairs\": [],\n  \"modules_with_cross_repo_impact\": [],\n  \"coupling_candidates\": [],\n  \"notes\": [\n    \"Observed co-change indicates repositories modified within the same task; it is evidence of coupling, not proof of an architectural dependency.\",\n    \"Coordination durations compare medians of different task populations and do not imply causation.\"\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"generated_at\": \"<ts:3|db>\",\n  \"findings\": [],\n  \"note\": \"Findings are computed deterministically from recorded tasks, attempts, checks and commits.\"\n}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"tasks\": []\n}",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"status\": \"insufficient_data\",\n  \"message\": \"only 0 comparable accepted task(s) found; at least 3 are required\",\n  \"comparable_tasks\": [],\n  \"min_sample\": 3\n}",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_report: estimate requires a task"
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_report: {\"error\": {\"code\": \"not_found\", \"message\": \"task 'WG-404' not found\", \"details\": {\"ref\": \"WG-404\"}}}"
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_report: 1 validation error for analytics_reportArguments\nreport\n  Input should be 'catalog', 'overview', 'coupling', 'failures', 'estimate' or 'history' [type=literal_error, input_value='forecast', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
+    },
+    {
+      "index": 22,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "scenario": "claude-hook-backfill-transcripts",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"parsed\": 0,\n  \"missing\": 1,\n  \"linked\": 0,\n  \"attempts_created\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"parsed\": 0,\n  \"missing\": 1,\n  \"linked\": 0,\n  \"attempts_created\": 0\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

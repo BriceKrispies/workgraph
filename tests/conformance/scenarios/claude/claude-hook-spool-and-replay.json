@@ -1,0 +1,158 @@
+{
+  "id": "claude-hook-spool-and-replay",
+  "covers": [
+    "C050",
+    "C053",
+    "C055",
+    "F09",
+    "O15"
+  ],
+  "setup": [],
+  "steps": [
+    {
+      "cli": [
+        "claude",
+        "hook"
+      ],
+      "stdin": "{\"session_id\": \"sp\", \"transcript_path\": \"/t.jsonl\", \"cwd\": \"/work\", \"hook_event_name\": \"SessionStart\", \"source\": \"startup\"}",
+      "expect_exit": 0
+    },
+    {
+      "cli": [
+        "claude",
+        "status"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingestion/spooled",
+          "equals": 1
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingestion/hook_events",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "cli": [
+        "claude",
+        "replay"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingested",
+          "equals": 1
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/duplicate",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/failed",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "cli": [
+        "claude",
+        "replay"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingested",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/duplicate",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/failed",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "cli": [
+        "claude",
+        "status"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingestion/spooled",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingestion/hook_events",
+          "equals": 1
+        }
+      }
+    },
+    {
+      "cli": [
+        "claude",
+        "sessions"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/external_session_id",
+          "equals": "sp"
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/binding",
+          "equals": "unbound"
+        }
+      }
+    }
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_claude_hooks.py::test_spooling_and_replay: the spool_reason text (it starts with the Python exception class name, DV5) and the spooled file itself. The spool directory has no listing step and file names are random, so no step can open the record",
+      "covered_by": "CORE-22"
+    }
+  ]
+}

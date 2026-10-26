@@ -1,0 +1,94 @@
+{
+  "id": "claude-hook-subprocess-exit-zero",
+  "covers": [
+    "C050",
+    "C054",
+    "C055",
+    "O15"
+  ],
+  "setup": [],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "claude",
+        "hook"
+      ],
+      "stdin": "{\"session_id\": \"proc-1\", \"transcript_path\": \"/t.jsonl\", \"cwd\": \"/work\", \"hook_event_name\": \"SessionStart\", \"source\": \"startup\"}",
+      "expect_exit": 0
+    },
+    {
+      "cli": [
+        "claude",
+        "sessions"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/0/external_session_id",
+          "equals": "proc-1"
+        }
+      }
+    },
+    {
+      "cli": [
+        "claude",
+        "hook"
+      ],
+      "stdin": "{not json",
+      "expect_exit": 0
+    },
+    {
+      "cli": [
+        "claude",
+        "status"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingestion/hook_events",
+          "equals": 2
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingestion/by_event/Invalid",
+          "equals": 1
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingestion/spooled",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/ingestion/spool_failed",
+          "equals": 0
+        }
+      }
+    }
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_claude_hooks.py::test_idempotent_ingestion: a second identical payload with the same received_at is reported as a duplicate. The CLI stamps received_at with the current time, so two hook runs cannot share a dedupe key",
+      "covered_by": "CORE-22"
+    }
+  ]
+}

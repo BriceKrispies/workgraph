@@ -1,0 +1,154 @@
+{
+  "id": "claude-hook-backfill-time-after-stop",
+  "covers": [
+    "C047",
+    "C050",
+    "C018",
+    "C020",
+    "C152",
+    "C099",
+    "P03"
+  ],
+  "setup": [
+    {
+      "git": "init",
+      "repo": "transcripts"
+    },
+    {
+      "git": "write",
+      "repo": "transcripts",
+      "files": {
+        "agent-t1.jsonl": "{\"type\": \"user\", \"timestamp\": \"2026-10-14T11:00:00.000Z\", \"message\": {\"role\": \"user\", \"content\": \"Task-ID: WG-1\\nGo.\"}}\n{\"type\": \"assistant\", \"timestamp\": \"2026-10-14T11:00:04.000Z\", \"message\": {\"id\": \"m1\", \"model\": \"claude-haiku-4-5-20251001\", \"content\": [{\"type\": \"tool_use\", \"id\": \"t1\", \"name\": \"Bash\", \"input\": {\"command\": \"cargo test\"}}]}}\n{\"type\": \"user\", \"timestamp\": \"2026-10-14T11:00:34.000Z\", \"message\": {\"role\": \"user\", \"content\": [{\"type\": \"tool_result\", \"tool_use_id\": \"t1\", \"content\": \"\"}]}}\n"
+      }
+    }
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Timed"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "attempt",
+        "create",
+        "WG-1",
+        "--provider",
+        "claude_code"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "claude",
+        "hook"
+      ],
+      "stdin": "{\"session_id\": \"sess-time\", \"transcript_path\": \"/t.jsonl\", \"cwd\": \"/work\", \"hook_event_name\": \"SessionStart\", \"source\": \"startup\"}",
+      "expect_exit": 0
+    },
+    {
+      "cli": [
+        "claude",
+        "hook"
+      ],
+      "stdin": "{\"session_id\": \"sess-time\", \"transcript_path\": \"/t.jsonl\", \"cwd\": \"/work\", \"hook_event_name\": \"SubagentStart\", \"agent_id\": \"agent-t1\", \"agent_type\": \"general-purpose\"}",
+      "expect_exit": 0
+    },
+    {
+      "cli": [
+        "claude",
+        "hook"
+      ],
+      "stdin": "{\"session_id\": \"sess-time\", \"transcript_path\": \"/t.jsonl\", \"cwd\": \"/work\", \"hook_event_name\": \"SubagentStop\", \"agent_id\": \"agent-t1\", \"agent_type\": \"general-purpose\", \"agent_transcript_path\": \"transcripts/agent-t1.jsonl\"}",
+      "expect_exit": 0
+    },
+    {
+      "cli": [
+        "attempt",
+        "list",
+        "--task",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/telemetry/time/classes/cargo test/seconds",
+          "equals": 30.0
+        }
+      }
+    },
+    {
+      "cli": [
+        "claude",
+        "backfill-time"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/parsed",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/missing",
+          "equals": 0
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/skipped",
+          "equals": 1
+        }
+      }
+    },
+    {
+      "cli": [
+        "attempt",
+        "list",
+        "--task",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/telemetry/time/classes/cargo test/seconds",
+          "equals": 30.0
+        }
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/status",
+          "equals": "running"
+        }
+      }
+    }
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_claude_hooks.py::test_backfill_time_stores_breakdown_once_and_leaves_run_state_alone: the first backfill that parses a run without a breakdown (parsed 1). Every run a hook stop writes already carries its breakdown, and a run cannot be written without a hook, so only the skipped path is reachable",
+      "covered_by": "CORE-22"
+    }
+  ]
+}

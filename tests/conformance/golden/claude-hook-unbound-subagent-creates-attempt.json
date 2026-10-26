@@ -1,0 +1,152 @@
+{
+  "scenario": "claude-hook-unbound-subagent-creates-attempt",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Transcript target\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:3|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"items\": [\n    {\n      \"id\": \"<id:3>\",\n      \"workspace_id\": \"<id:2>\",\n      \"task_id\": \"<id:1>\",\n      \"number\": 1,\n      \"status\": \"succeeded\",\n      \"provider\": \"claude_code\",\n      \"adapter\": \"claude_code_subagent\",\n      \"agent_id\": \"subagent:general-purpose\",\n      \"model\": \"claude-haiku-4-5-20251001\",\n      \"session_id\": \"sess-untracked\",\n      \"parent_attempt_id\": null,\n      \"retry_of_attempt_id\": null,\n      \"rerun_of_attempt_id\": null,\n      \"created_by\": \"system:claude-hooks\",\n      \"created_at\": \"<ts:5|Z>\",\n      \"queued_at\": \"<ts:5|Z>\",\n      \"started_at\": \"<ts:1|Z>\",\n      \"finished_at\": \"<ts:6|Z>\",\n      \"queue_wait_ms\": <dur>,\n      \"duration_ms\": <dur>,\n      \"exit_reason\": \"subagent_stopped\",\n      \"exit_code\": null,\n      \"error\": null,\n      \"summary\": \"done\",\n      \"input_task_version\": 1,\n      \"baseline_manifest_id\": null,\n      \"outcome_manifest_id\": null,\n      \"usage\": {\n        \"cache_creation_input_tokens\": 10,\n        \"cache_read_input_tokens\": 20,\n        \"input_tokens\": 3,\n        \"output_tokens\": 40\n      },\n      \"usage_source\": \"claude_code_transcript\",\n      \"cost_usd\": null,\n      \"cost_source\": null,\n      \"telemetry\": {\n        \"agent_type\": null,\n        \"claude_version\": null,\n        \"description\": null,\n        \"ended_at\": \"<ts:2|Z>\",\n        \"model\": \"claude-haiku-4-5-20251001\",\n        \"models\": {\n          \"claude-haiku-4-5-20251001\": 1\n        },\n        \"prompt_chars\": 26,\n        \"requested_model\": null,\n        \"started_at\": \"<ts:1|Z>\",\n        \"task_keys\": [\n          \"WG-1\"\n        ],\n        \"time\": {\n          \"classes\": {},\n          \"model_seconds\": 1.0,\n          \"slowest\": [],\n          \"span_seconds\": 2.0,\n          \"tool_seconds\": 0,\n          \"version\": 1,\n          \"waiting_seconds\": 0.0\n        },\n        \"tool_errors\": 0,\n        \"tool_uses\": {\n          \"Bash\": 1\n        },\n        \"trial_ids\": [],\n        \"turns\": 1\n      },\n      \"modified_repository_ids\": [],\n      \"config_snapshot\": {},\n      \"environment\": {}\n    }\n  ],\n  \"total\": 1,\n  \"limit\": 50,\n  \"offset\": 0,\n  \"next_offset\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:4>\",\n    \"external_session_id\": \"sess-untracked\",\n    \"binding\": \"unbound\",\n    \"task_id\": null,\n    \"attempt_id\": null,\n    \"cwd\": \"/work\",\n    \"model\": null,\n    \"tool_calls\": 0,\n    \"tool_failures\": 0,\n    \"started_at\": \"<ts:4|db>\",\n    \"ended_at\": null,\n    \"end_reason\": null\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -285,6 +285,8 @@ impl Ctx<'_> {
                 .unwrap_or_else(|| "default".to_owned())),
             ("home", None) => Ok(display(&self.sb.home)),
             ("tmp", None) => Ok(display(&self.sb.tmp)),
+            // The platform path separator, so a scenario that asserts paths runs on every OS.
+            ("sep", None) => Ok(std::path::MAIN_SEPARATOR.to_string()),
             ("repo", Some(r)) => Ok(display(&self.sb.repos.join(r))),
             ("key", Some(a)) => n(a)
                 .and_then(|n| self.keys.get(n - 1).cloned())
@@ -399,6 +401,22 @@ pub(crate) fn run_cli(
     }
     cmd.envs(env_for(imp, sb, extra));
     run_process(&mut cmd, stdin)
+}
+
+/// The JSON document a command printed. In `--json` mode Python first prints a banner line
+/// (`worker <id> started ...`), so when the whole output is not JSON the document starts at the
+/// first later line that begins with `{`. `Null` when there is none.
+fn json_document(stdout: &str) -> Value {
+    let mut start = 0;
+    loop {
+        if let Ok(doc) = serde_json::from_str::<Value>(&stdout[start..]) {
+            return doc;
+        }
+        match stdout[start..].find("\n{") {
+            Some(p) => start += p + 1,
+            None => return Value::Null,
+        }
+    }
 }
 
 fn pointer_text(stdout: &str, ptr: &str) -> Result<String, String> {
@@ -687,7 +705,7 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
                     rec.stderr = o.stderr;
                     return fail(rec, "worker run --once failed".to_owned());
                 }
-                let doc: Value = serde_json::from_str(&o.stdout).unwrap_or(Value::Null);
+                let doc = json_document(&o.stdout);
                 let n = |k: &str| doc.get(k).and_then(Value::as_u64).unwrap_or(0);
                 let (c, f) = (n("completed"), n("failed"));
                 if c + f == 0 {
@@ -976,6 +994,10 @@ mod tests {
             r#"{"a": {x}} {unknown:1}"#
         );
         assert!(ctx.resolve("{key:3}").is_err());
+        assert_eq!(
+            ctx.resolve("{home}{sep}data").unwrap(),
+            format!("{}{}data", display(&sb.home), std::path::MAIN_SEPARATOR)
+        );
         let _ = std::fs::remove_dir_all(&sb.root);
     }
 
@@ -1088,5 +1110,16 @@ mod tests {
         assert!(!inside_home(&sb, &sb.home.join("..").join("elsewhere")));
         assert!(!inside_home(&sb, Path::new("relative/dir")));
         let _ = std::fs::remove_dir_all(&sb.root);
+    }
+
+    #[test]
+    fn drain_reads_the_json_after_the_worker_banner() {
+        let plain = r#"{"completed": 1, "failed": 0}"#;
+        assert_eq!(json_document(plain)["completed"], 1);
+        let banner = "worker DESKTOP-1-2-abcdef started (concurrency 1)\n{\"completed\": 2, \"failed\": 1}\n";
+        let doc = json_document(banner);
+        assert_eq!(doc["completed"], 2);
+        assert_eq!(doc["failed"], 1);
+        assert_eq!(json_document("worker started\nno json here"), Value::Null);
     }
 }

@@ -1297,9 +1297,10 @@ Work lands on the `rust-integration` branch through tested stacks and is merged 
 2. Conformance normalisation (WG-3758 decision, option a): set-like id lists (`depends_on`,
    `blocks`, `child_ids`, `project_ids`, `repository_ids`) are sorted by the normaliser, and
    timestamps written within one command less than ~900 ms apart rank as one instant (fixture
-   dates 1 s apart keep their order). Ordered lists such as `task graph` edges are still compared
-   in order. DV1 is scoped to help and usage-error text, and DV3 to the DuckDB file, so neither can
-   hide other differences.
+   dates 1 s apart keep their order). The `task graph` edges are sorted too, because Python's order
+   follows the random UUIDs of the tasks (WG-3799); graph nodes are sorted by task number and stay in
+   order. Other ordered lists (list outputs) are still compared in order. DV1 is scoped to help and
+   usage-error text, and DV3 to the DuckDB file, so neither can hide other differences.
 3. DV8 and DV9 confirmed; DV10 (LF line endings) added.
 4. `config show` colour matches Python: SGR styling with rich's JSON theme only when stdout is a
    terminal or `FORCE_COLOR` is set; `wg-render` gains a styling layer for it.

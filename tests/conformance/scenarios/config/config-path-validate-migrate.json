@@ -5,9 +5,9 @@
   "steps": [
     {"cli": ["init"], "json": true},
     {"cli": ["config", "path"], "json": true},
-    {"assert": {"json": {"path": "/database", "equals": "{home}\\data\\workgraph.db"}}},
-    {"assert": {"json": {"path": "/data_dir", "equals": "{home}\\data"}}},
-    {"assert": {"json": {"path": "/config_dir", "equals": "{home}\\config"}}},
+    {"assert": {"json": {"path": "/database", "equals": "{home}{sep}data{sep}workgraph.db"}}},
+    {"assert": {"json": {"path": "/data_dir", "equals": "{home}{sep}data"}}},
+    {"assert": {"json": {"path": "/config_dir", "equals": "{home}{sep}config"}}},
     {"cli": ["config", "validate"], "json": true},
     {"assert": {"json": {"path": "/valid", "equals": true}}},
     {"assert": {"json": {"path": "/problems", "equals": []}}},

@@ -40,6 +40,10 @@ pub struct Divergence {
     /// Empty means any text. A divergence names the cases it allows through these, so an entry
     /// for one kind of output does not hide differences in other output.
     pub contains: Vec<String>,
+    /// With `contains`: the substring must occur on both sides of the difference, not on one.
+    /// An entry for help text needs the help text on both sides, so a config error that happens
+    /// to name `Usage:` on one side is not allowed.
+    pub both: bool,
     /// When set, the left or the right text of the difference holds a non-ASCII character.
     pub non_ascii: bool,
 }
@@ -53,11 +57,14 @@ impl Divergence {
         left: &str,
         right: &str,
     ) -> bool {
-        let text_ok = self.contains.is_empty()
-            || self
-                .contains
-                .iter()
-                .any(|s| left.contains(s.as_str()) || right.contains(s.as_str()));
+        let names = |s: &String| {
+            if self.both {
+                left.contains(s.as_str()) && right.contains(s.as_str())
+            } else {
+                left.contains(s.as_str()) || right.contains(s.as_str())
+            }
+        };
+        let text_ok = self.contains.is_empty() || self.contains.iter().any(names);
         let encoding_ok = !self.non_ascii || !left.is_ascii() || !right.is_ascii();
         (self.scenario == "*" || self.scenario == scenario)
             && (self.step.is_none() || self.step == step)
@@ -102,6 +109,10 @@ pub fn parse_divergences(text: &str) -> Result<Vec<Divergence>, String> {
                     })
                     .unwrap_or_default(),
                 contains: strings_of(t, "contains"),
+                both: t
+                    .get("both")
+                    .and_then(toml::Value::as_bool)
+                    .unwrap_or(false),
                 non_ascii: t
                     .get("non_ascii")
                     .and_then(toml::Value::as_bool)
@@ -451,6 +462,30 @@ mod tests {
                 .allowed_by
                 .is_none()
         );
+    }
+
+    #[test]
+    fn both_sides_entries_need_the_text_on_each_side() {
+        let allow = parse_divergences(
+            "[[divergence]]\nid = \"DV1\"\ndecision = \"Q1\"\nfields = [\"stdout\"]\ncontains = [\"Usage:\"]\nboth = true\n",
+        )
+        .unwrap();
+        // Help on both sides: allowed.
+        let help = compare(
+            "s",
+            &obs("Usage: wg [OPTIONS]\n"),
+            &obs("Usage: wg\n"),
+            &allow,
+        );
+        assert_eq!(help[0].allowed_by.as_deref(), Some("DV1"));
+        // A config error on one side that names `Usage:` is not help text on both sides.
+        let config = compare(
+            "s",
+            &obs("Usage: wg\n"),
+            &obs("error: bad config\n"),
+            &allow,
+        );
+        assert!(config[0].allowed_by.is_none());
     }
 
     #[test]

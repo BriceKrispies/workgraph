@@ -4,8 +4,8 @@
 # `scenario` is a scenario id or "*"; `fields` limits the entry to stdout, stderr or exit
 # (all of them when absent). `contains` lists substrings, one of which must occur in the left or
 # right text of a difference before the entry allows it, and `non_ascii = true` allows only
-# differences where one side holds a non-ASCII character. An entry therefore allows the cases it
-# names and nothing else.
+# differences where one side holds a non-ASCII character. With `both = true`, the substring must
+# occur on both sides. An entry therefore allows the cases it names and nothing else.
 
 [[divergence]]
 id = "DV1"
@@ -13,7 +13,8 @@ decision = "Q1"
 scenario = "*"
 fields = ["stdout", "stderr"]
 contains = ["Usage:"]
-description = "--help and usage errors: same content, clap layout instead of Typer's rich boxes (only help and usage text is allowed)"
+both = true
+description = "--help and usage errors: same content, clap layout instead of Typer's rich boxes. Only help and usage text is allowed, and only when both sides carry the usage line (a config error or any other text is not)"
 
 [[divergence]]
 id = "DV2"
@@ -28,7 +29,8 @@ id = "DV3"
 decision = "D12"
 scenario = "*"
 fields = ["file"]
-description = "<data>/analytics.duckdb is not created (analytics run in Rust without DuckDB). A file, not output text: no stdout, stderr or exit difference is allowed by this entry"
+contains = ["analytics.duckdb"]
+description = "<data>/analytics.duckdb is not created (analytics run in Rust without DuckDB). Only the analytics.duckdb file is allowed: a file, not output text, so no stdout, stderr or exit difference, and no other file, is allowed by this entry"
 
 [[divergence]]
 id = "DV4"

@@ -43,6 +43,8 @@ implementation in a fresh `WORKGRAPH_HOME` and a fresh temporary directory. The 
   skeleton and must not be relied on yet.
 * Assertions on a file path are relative to `{home}` when not absolute. Use `{repo:<name>}` for
   repository files.
+* `{sep}` is the platform path separator (`\` on Windows, `/` elsewhere). Build paths with it
+  (`{home}{sep}data`) rather than writing a separator, so a path assertion holds on every OS.
 
 ## Not observable
 

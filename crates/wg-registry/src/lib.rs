@@ -4,5 +4,9 @@
 //! rows a reference can name and maps the returned [`WgError`](wg_types::WgError) to its response.
 
 pub mod boundary;
+pub mod checkout;
+pub mod health;
+pub mod identity;
+pub mod remote;
 pub mod resolve;
 pub mod settings;

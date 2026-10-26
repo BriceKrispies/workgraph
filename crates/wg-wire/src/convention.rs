@@ -68,6 +68,21 @@ pub fn json_object(map: &serde_json::Map<String, Json>) -> Value {
     )
 }
 
+/// A `dict[str, int]` field such as `tasks_by_status`: keys in the order given.
+pub fn counts(pairs: &[(String, i64)]) -> Value {
+    Value::Dict(
+        pairs
+            .iter()
+            .map(|(key, count)| (PyStr::from(key.as_str()), Value::Int(i128::from(*count))))
+            .collect(),
+    )
+}
+
+/// An `int` field.
+pub fn int(count: i64) -> Value {
+    Value::Int(i128::from(count))
+}
+
 /// A model value: the class name and its fields in declaration order.
 pub fn model(name: &str, fields: Vec<(&'static str, Value)>) -> Value {
     Value::Model {

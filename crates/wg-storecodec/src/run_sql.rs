@@ -8,10 +8,11 @@
 //! checks do.
 
 use wg_model::Table;
-use wg_types::{AttemptStatus, Id, Timestamp, WorktreeStatus};
+use wg_model::entity::ManagedWorktree;
+use wg_types::{AttemptStatus, ErrorCode, Id, Timestamp, WgError, WorktreeStatus};
 
-use crate::codec::{Raw, id_sql, text_sql, ts_sql};
-use crate::rows::columns;
+use crate::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
+use crate::rows::{TableRow, columns};
 use crate::sql::Statement;
 
 /// Quotes an identifier.
@@ -55,14 +56,15 @@ pub fn attempt_by_id(id: Id) -> Statement {
     )
 }
 
-/// The attempts of `workspace_id`, newest first (`created_at`, then `number`), narrowed to one
-/// task, to `statuses` and to one `provider`, each when given.
-pub fn attempts_in_workspace(
+/// The `WHERE` clause and parameters of the attempts of `workspace_id` narrowed to one task, to
+/// `statuses` and to one `provider`, each when given. Shared by the list and the count, so the
+/// total is over exactly the rows the list pages through.
+fn attempt_filter(
     workspace_id: Id,
     task_id: Option<Id>,
     statuses: &[AttemptStatus],
     provider: Option<&str>,
-) -> Statement {
+) -> (String, Vec<Raw>) {
     let mut params = vec![id_sql(workspace_id)];
     let mut clause = format!("{} = ?1", quote("workspace_id"));
     if let Some(task_id) = task_id {
@@ -80,12 +82,67 @@ pub fn attempts_in_workspace(
             vec![text_sql(provider)],
         );
     }
+    (clause, params)
+}
+
+/// The attempts of `workspace_id`, newest first (`created_at`, then `number`), narrowed as
+/// [`attempt_filter`] describes.
+pub fn attempts_in_workspace(
+    workspace_id: Id,
+    task_id: Option<Id>,
+    statuses: &[AttemptStatus],
+    provider: Option<&str>,
+) -> Statement {
+    let (clause, params) = attempt_filter(workspace_id, task_id, statuses, provider);
     select(
         Table::AgentAttempt,
         Some(&clause),
         "\"created_at\" DESC, \"number\" DESC",
         params,
     )
+}
+
+/// One page of [`attempts_in_workspace`]: `LIMIT limit OFFSET offset` after the same order.
+pub fn attempts_in_workspace_page(
+    workspace_id: Id,
+    task_id: Option<Id>,
+    statuses: &[AttemptStatus],
+    provider: Option<&str>,
+    limit: i64,
+    offset: i64,
+) -> Statement {
+    let mut statement = attempts_in_workspace(workspace_id, task_id, statuses, provider);
+    let first = statement.params.len() + 1;
+    statement
+        .sql
+        .push_str(&format!(" LIMIT ?{first} OFFSET ?{}", first + 1));
+    statement.params.push(Raw::Int(limit));
+    statement.params.push(Raw::Int(offset));
+    statement
+}
+
+/// The number of rows [`attempts_in_workspace`] lists for the same arguments (the page total).
+pub fn attempts_in_workspace_count(
+    workspace_id: Id,
+    task_id: Option<Id>,
+    statuses: &[AttemptStatus],
+    provider: Option<&str>,
+) -> Statement {
+    let (clause, params) = attempt_filter(workspace_id, task_id, statuses, provider);
+    Statement {
+        sql: format!(
+            "SELECT COUNT(*) FROM {} WHERE {clause}",
+            quote(Table::AgentAttempt.name())
+        ),
+        params,
+    }
+}
+
+/// The offset of the page after `offset` and `limit`, or `None` when the page reaches the total:
+/// `offset + limit` when it is below `total`, as the Python attempts endpoint computes it.
+pub fn next_offset(offset: i64, limit: i64, total: i64) -> Option<i64> {
+    let after = offset + limit;
+    (after < total).then_some(after)
 }
 
 /// The attempts of `task_id`, by number (oldest first), narrowed to `statuses` when given.
@@ -252,4 +309,133 @@ pub fn purgeable_artifacts(retention: &str, created_before: Timestamp) -> Statem
         "\"created_at\", \"id\"",
         vec![text_sql(retention), ts_sql(created_before)],
     )
+}
+
+/// The head a task's latest succeeded attempt recorded for one repository, with the branch it
+/// pushed (`stacks.py`'s `latest_recorded`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecordedHead {
+    pub head_sha: String,
+    pub branch: Option<String>,
+}
+
+/// Decodes a [`latest_recorded_head`] row: `head_sha`, then `branch`.
+pub fn decode_recorded_head(values: &[Raw]) -> Result<RecordedHead, WgError> {
+    static NAMES: [&str; 2] = ["head_sha", "branch"];
+    let cols = Cols::new(&NAMES, values);
+    Ok(RecordedHead {
+        head_sha: cols.text("head_sha")?,
+        branch: cols.opt_text("branch")?,
+    })
+}
+
+/// The newest succeeded attempt's recorded head of `task_id` in `repository_id`: the change-set
+/// item of the newest change set (then the newest attempt number) that has a head SHA. Selects
+/// `head_sha` and `branch`, decoded by [`decode_recorded_head`].
+pub fn latest_recorded_head(task_id: Id, repository_id: Id) -> Statement {
+    Statement {
+        sql: "SELECT i.\"head_sha\", i.\"branch\" FROM \"change_set_items\" AS i \
+              JOIN \"change_sets\" AS c ON c.\"id\" = i.\"change_set_id\" \
+              JOIN \"agent_attempts\" AS a ON a.\"id\" = c.\"attempt_id\" \
+              WHERE c.\"task_id\" = ?1 AND i.\"repository_id\" = ?2 \
+              AND i.\"head_sha\" IS NOT NULL AND a.\"status\" = ?3 \
+              ORDER BY c.\"created_at\" DESC, a.\"number\" DESC LIMIT 1"
+            .to_owned(),
+        params: vec![
+            id_sql(task_id),
+            id_sql(repository_id),
+            text_sql(AttemptStatus::Succeeded.as_str()),
+        ],
+    }
+}
+
+/// A managed worktree with the name of its repository (`worktrees.py`'s worktree listing).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WorktreeWithRepository {
+    pub worktree: ManagedWorktree,
+    pub repository_name: String,
+}
+
+/// Decodes every row of `rows` with `decode`, in order.
+pub fn decode_rows<T>(
+    rows: &[Vec<Raw>],
+    decode: impl Fn(&[Raw]) -> Result<T, WgError>,
+) -> Result<Vec<T>, WgError> {
+    rows.iter().map(|values| decode(values)).collect()
+}
+
+/// Decodes a [`worktrees_with_repository`] row: the worktree's columns in schema order, then
+/// `repository_name`.
+pub fn decode_worktree_with_repository(values: &[Raw]) -> Result<WorktreeWithRepository, WgError> {
+    static NAMES: [&str; 1] = ["repository_name"];
+    let width = columns(Table::ManagedWorktree).len();
+    if values.len() != width + 1 {
+        return Err(WgError::new(
+            ErrorCode::WorkgraphError,
+            format!(
+                "worktree row has {} columns, expected {}",
+                values.len(),
+                width + 1
+            ),
+        ));
+    }
+    let worktree = ManagedWorktree::from_raw(&values[..width])?;
+    let repository_name = Cols::new(&NAMES, &values[width..]).text("repository_name")?;
+    Ok(WorktreeWithRepository {
+        worktree,
+        repository_name,
+    })
+}
+
+/// Every managed worktree, or those of `workspace_id` and of `status` when given, newest first,
+/// each with its repository's name. Decoded by [`decode_worktree_with_repository`].
+pub fn worktrees_with_repository(
+    workspace_id: Option<Id>,
+    status: Option<WorktreeStatus>,
+) -> Statement {
+    let mut params = Vec::new();
+    let mut clause = String::from("1 = 1");
+    if let Some(workspace_id) = workspace_id {
+        params.push(id_sql(workspace_id));
+        clause.push_str(&format!(" AND w.\"workspace_id\" = ?{}", params.len()));
+    }
+    if let Some(status) = status {
+        params.push(text_sql(status.as_str()));
+        clause.push_str(&format!(" AND w.\"status\" = ?{}", params.len()));
+    }
+    let names: Vec<String> = columns(Table::ManagedWorktree)
+        .iter()
+        .map(|c| format!("w.\"{c}\""))
+        .collect();
+    Statement {
+        sql: format!(
+            "SELECT {}, r.\"name\" FROM \"managed_worktrees\" AS w \
+             JOIN \"repositories\" AS r ON r.\"id\" = w.\"repository_id\" \
+             WHERE {clause} ORDER BY w.\"created_at\" DESC, w.\"id\"",
+            names.join(", ")
+        ),
+        params,
+    }
+}
+
+/// The resource leases whose expiry is at or before `now`, by resource key. A lease with no
+/// expiry never expires here.
+pub fn expired_leases(now: Timestamp) -> Statement {
+    select(
+        Table::ResourceLease,
+        Some("\"expires_at\" IS NOT NULL AND \"expires_at\" <= ?1"),
+        "\"resource_key\"",
+        vec![ts_sql(now)],
+    )
+}
+
+/// Deletes the resource leases [`expired_leases`] selects for the same `now`.
+pub fn delete_expired_leases(now: Timestamp) -> Statement {
+    Statement {
+        sql: format!(
+            "DELETE FROM {} WHERE \"expires_at\" IS NOT NULL AND \"expires_at\" <= ?1",
+            quote(Table::ResourceLease.name())
+        ),
+        params: vec![ts_sql(now)],
+    }
 }

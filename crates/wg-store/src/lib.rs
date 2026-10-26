@@ -27,8 +27,10 @@ use wg_types::{ErrorCode, WgError};
 
 use session::db;
 
+pub use run::AttemptPage;
 pub use session::{Applied, Session};
 pub use wg_storecodec::migrations::head_revision;
+pub use wg_storecodec::run_sql::{RecordedHead, WorktreeWithRepository};
 pub use wg_storecodec::{EventQuery, EventRecord, Raw, Statement, TableRow};
 
 /// Python's `BUSY_TIMEOUT_MS`.

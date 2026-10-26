@@ -498,6 +498,263 @@ fn change_sets_and_items() -> TestResult {
 }
 
 #[test]
+fn attempts_page_has_total_and_next_offset() -> TestResult {
+    let mut store = store()?;
+    let mut rows = base_rows();
+    rows.extend([
+        Row::AgentAttempt(attempt(20, 1, 1, AttemptStatus::Failed, "claude-code", 10)),
+        Row::AgentAttempt(attempt(21, 1, 2, AttemptStatus::Succeeded, "command", 20)),
+        Row::AgentAttempt(attempt(
+            22,
+            1,
+            3,
+            AttemptStatus::Succeeded,
+            "claude-code",
+            30,
+        )),
+        Row::AgentAttempt(attempt(23, 1, 4, AttemptStatus::Running, "claude-code", 40)),
+        Row::AgentAttempt(attempt(24, 1, 5, AttemptStatus::Queued, "command", 50)),
+    ]);
+    insert_all(&mut store, rows)?;
+
+    store.read(|session| {
+        // Newest first; the total covers the whole filter, not the page.
+        let first = session.attempts_page(id(0), None, &[], None, 2, 0)?;
+        assert_eq!(first.total, 5);
+        assert_eq!(numbers(&first.items), vec![5, 4]);
+        assert_eq!(first.next_offset, Some(2));
+
+        let middle = session.attempts_page(id(0), None, &[], None, 2, 2)?;
+        assert_eq!(numbers(&middle.items), vec![3, 2]);
+        assert_eq!(middle.next_offset, Some(4));
+
+        let last = session.attempts_page(id(0), None, &[], None, 2, 4)?;
+        assert_eq!(numbers(&last.items), vec![1]);
+        assert_eq!(last.next_offset, None);
+
+        let beyond = session.attempts_page(id(0), None, &[], None, 2, 6)?;
+        assert!(beyond.items.is_empty());
+        assert_eq!(beyond.total, 5);
+        assert_eq!(beyond.next_offset, None);
+
+        // A provider filter changes the total and the paging with it.
+        let claude = session.attempts_page(id(0), None, &[], Some("claude-code"), 2, 0)?;
+        assert_eq!(claude.total, 3);
+        assert_eq!(numbers(&claude.items), vec![4, 3]);
+        assert_eq!(claude.next_offset, Some(2));
+        let claude_last = session.attempts_page(id(0), None, &[], Some("claude-code"), 2, 2)?;
+        assert_eq!(numbers(&claude_last.items), vec![1]);
+        assert_eq!(claude_last.next_offset, None);
+
+        // Status and task filters count the same way.
+        let succeeded =
+            session.attempts_page(id(0), Some(id(1)), &[AttemptStatus::Succeeded], None, 10, 0)?;
+        assert_eq!(succeeded.total, 2);
+        assert_eq!(numbers(&succeeded.items), vec![3, 2]);
+        assert_eq!(succeeded.next_offset, None);
+        let other_task = session.attempts_page(id(0), Some(id(2)), &[], None, 10, 0)?;
+        assert_eq!(other_task.total, 0);
+        assert!(other_task.items.is_empty());
+        Ok(())
+    })?;
+    Ok(())
+}
+
+#[test]
+fn latest_recorded_head_of_a_task() -> TestResult {
+    let mut store = store()?;
+    let mut rows = base_rows();
+    rows.extend([
+        Row::AgentAttempt(attempt(
+            20,
+            1,
+            1,
+            AttemptStatus::Succeeded,
+            "claude-code",
+            10,
+        )),
+        Row::AgentAttempt(attempt(21, 1, 2, AttemptStatus::Failed, "claude-code", 20)),
+        Row::AgentAttempt(attempt(
+            22,
+            1,
+            3,
+            AttemptStatus::Succeeded,
+            "claude-code",
+            30,
+        )),
+        Row::AgentAttempt(attempt(
+            23,
+            1,
+            4,
+            AttemptStatus::Succeeded,
+            "claude-code",
+            40,
+        )),
+        Row::ChangeSet(change_set(50, 1, 20, 31)),
+        Row::ChangeSet(change_set(51, 1, 21, 40)),
+        Row::ChangeSet(change_set(52, 1, 22, 35)),
+        Row::ChangeSet(change_set(53, 1, 23, 33)),
+        Row::ChangeSetItem(ChangeSetItem {
+            head_sha: Some("h1".into()),
+            branch: Some("wg/a".into()),
+            ..change_set_item(60, 50, 70)
+        }),
+        // The failed attempt is newer but does not count.
+        Row::ChangeSetItem(ChangeSetItem {
+            head_sha: Some("h2".into()),
+            branch: Some("wg/b".into()),
+            ..change_set_item(61, 51, 70)
+        }),
+        // Newer than 53 but with no head recorded, so it is skipped.
+        Row::ChangeSetItem(change_set_item(62, 52, 70)),
+        // The newest succeeded change set with a head wins; its branch may be absent.
+        Row::ChangeSetItem(ChangeSetItem {
+            head_sha: Some("h3".into()),
+            branch: None,
+            ..change_set_item(63, 53, 70)
+        }),
+    ]);
+    insert_all(&mut store, rows)?;
+
+    store.read(|session| {
+        let head = session.latest_recorded_head(id(1), id(70))?;
+        assert_eq!(
+            head,
+            Some(wg_store::RecordedHead {
+                head_sha: "h3".into(),
+                branch: None,
+            })
+        );
+        // No item for this repository, or no change set for this task.
+        assert!(session.latest_recorded_head(id(1), id(75))?.is_none());
+        assert!(session.latest_recorded_head(id(2), id(70))?.is_none());
+        Ok(())
+    })?;
+    Ok(())
+}
+
+#[test]
+fn worktrees_listed_with_repository_names() -> TestResult {
+    let mut store = store()?;
+    let mut rows = base_rows();
+    rows.push(Row::Repository(repository(72, "docs")));
+    rows.extend([
+        Row::AgentAttempt(attempt(20, 1, 1, AttemptStatus::Running, "claude-code", 10)),
+        Row::ManagedWorktree(worktree(40, 20, "C:/wt/a", WorktreeStatus::Active)),
+        Row::ManagedWorktree(ManagedWorktree {
+            repository_id: id(72),
+            created_at: at(7),
+            ..worktree(41, 20, "C:/wt/b", WorktreeStatus::Released)
+        }),
+        Row::ManagedWorktree(ManagedWorktree {
+            created_at: at(9),
+            ..worktree(42, 20, "C:/wt/c", WorktreeStatus::Preparing)
+        }),
+    ]);
+    insert_all(&mut store, rows)?;
+
+    store.read(|session| {
+        // Newest first, each with its repository's name.
+        let all = session.worktrees_with_repository(None, None)?;
+        let listed: Vec<(&str, &str)> = all
+            .iter()
+            .map(|w| (w.worktree.path.as_str(), w.repository_name.as_str()))
+            .collect();
+        assert_eq!(
+            listed,
+            vec![
+                ("C:/wt/c", "core"),
+                ("C:/wt/b", "docs"),
+                ("C:/wt/a", "core")
+            ]
+        );
+
+        let active =
+            session.worktrees_with_repository(Some(id(0)), Some(WorktreeStatus::Active))?;
+        assert_eq!(active.len(), 1);
+        assert_eq!(active[0].worktree.id, id(40));
+        assert_eq!(active[0].repository_name, "core");
+        assert_eq!(active[0].worktree.status, WorktreeStatus::Active);
+
+        assert!(
+            session
+                .worktrees_with_repository(Some(id(99)), None)?
+                .is_empty()
+        );
+        Ok(())
+    })?;
+    Ok(())
+}
+
+#[test]
+fn expired_leases_are_swept_at_now() -> TestResult {
+    let mut store = store()?;
+    insert_all(
+        &mut store,
+        vec![
+            Row::ResourceLease(ResourceLease {
+                expires_at: Some(at(10)),
+                ..lease("lock:a", "holder-a")
+            }),
+            Row::ResourceLease(ResourceLease {
+                expires_at: Some(at(30)),
+                ..lease("lock:b", "holder-b")
+            }),
+            // No expiry: never swept.
+            Row::ResourceLease(lease("lock:c", "holder-c")),
+        ],
+    )?;
+
+    store.read(|session| {
+        let expired = session.expired_leases(at(20))?;
+        assert_eq!(
+            expired
+                .iter()
+                .map(|l| l.resource_key.as_str())
+                .collect::<Vec<_>>(),
+            vec!["lock:a"]
+        );
+        Ok(())
+    })?;
+
+    let swept = store.write(|session| session.sweep_expired_leases(at(20)))?;
+    assert_eq!(
+        swept
+            .iter()
+            .map(|l| l.resource_key.as_str())
+            .collect::<Vec<_>>(),
+        vec!["lock:a"]
+    );
+
+    store.read(|session| {
+        assert!(session.lease_by_resource("lock:a")?.is_none());
+        assert!(session.lease_by_resource("lock:b")?.is_some());
+        assert!(session.lease_by_resource("lock:c")?.is_some());
+        Ok(())
+    })?;
+
+    // The bound is inclusive, and a second sweep at the same time removes nothing.
+    assert!(
+        store
+            .write(|session| session.sweep_expired_leases(at(20)))?
+            .is_empty()
+    );
+    let at_expiry = store.write(|session| session.sweep_expired_leases(at(30)))?;
+    assert_eq!(
+        at_expiry
+            .iter()
+            .map(|l| l.resource_key.as_str())
+            .collect::<Vec<_>>(),
+        vec!["lock:b"]
+    );
+    store.read(|session| {
+        assert!(session.lease_by_resource("lock:c")?.is_some());
+        Ok(())
+    })?;
+    Ok(())
+}
+
+#[test]
 fn artifacts_by_owner_and_retention() -> TestResult {
     let mut store = store()?;
     let mut rows = base_rows();

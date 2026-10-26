@@ -9,10 +9,24 @@ use wg_model::entity::{
     AgentAttempt, Artifact, ChangeSet, ChangeSetItem, ManagedWorktree, ResourceLease,
     RevisionManifest,
 };
-use wg_storecodec::{Statement, TableRow, run_sql};
+use wg_storecodec::run_sql::{
+    RecordedHead, WorktreeWithRepository, decode_recorded_head, decode_worktree_with_repository,
+};
+use wg_storecodec::{Raw, Statement, TableRow, run_sql};
 use wg_types::{AttemptStatus, Id, Timestamp, WgError, WorktreeStatus};
 
 use crate::Session;
+
+/// One page of attempts, as the Python attempts endpoint returns it: the items, the total over
+/// the whole filter, and the offset of the next page when there is one.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AttemptPage {
+    pub items: Vec<AgentAttempt>,
+    pub total: i64,
+    pub limit: i64,
+    pub offset: i64,
+    pub next_offset: Option<i64>,
+}
 
 /// Runs `statement` and decodes the first row, if there is one.
 fn one<T: TableRow>(
@@ -146,6 +160,91 @@ impl Session<'_> {
     /// The artifacts of `attempt_id`, oldest first.
     pub fn artifacts_of_attempt(&mut self, attempt_id: Id) -> Result<Vec<Artifact>, WgError> {
         many(self, &run_sql::artifacts_of_attempt(attempt_id))
+    }
+
+    /// One page of [`Session::attempts_in_workspace`] with the total over the whole filter. The
+    /// count and the page run in this session, so they see the same rows.
+    pub fn attempts_page(
+        &mut self,
+        workspace_id: Id,
+        task_id: Option<Id>,
+        statuses: &[AttemptStatus],
+        provider: Option<&str>,
+        limit: i64,
+        offset: i64,
+    ) -> Result<AttemptPage, WgError> {
+        let total = self
+            .rows(&run_sql::attempts_in_workspace_count(
+                workspace_id,
+                task_id,
+                statuses,
+                provider,
+            ))?
+            .first()
+            .and_then(|row| row.first())
+            .map(|value| match value {
+                Raw::Int(count) => Ok(*count),
+                other => Err(WgError::new(
+                    wg_types::ErrorCode::WorkgraphError,
+                    format!("attempt count is not an integer: {other:?}"),
+                )),
+            })
+            .transpose()?
+            .unwrap_or(0);
+        let items = many(
+            self,
+            &run_sql::attempts_in_workspace_page(
+                workspace_id,
+                task_id,
+                statuses,
+                provider,
+                limit,
+                offset,
+            ),
+        )?;
+        Ok(AttemptPage {
+            items,
+            total,
+            limit,
+            offset,
+            next_offset: run_sql::next_offset(offset, limit, total),
+        })
+    }
+
+    /// The head the newest succeeded attempt of `task_id` recorded in `repository_id`, with its
+    /// branch, if it touched that repository.
+    pub fn latest_recorded_head(
+        &mut self,
+        task_id: Id,
+        repository_id: Id,
+    ) -> Result<Option<RecordedHead>, WgError> {
+        let rows = self.rows(&run_sql::latest_recorded_head(task_id, repository_id))?;
+        rows.first()
+            .map(|values| decode_recorded_head(values))
+            .transpose()
+    }
+
+    /// Every managed worktree, or those of `workspace_id` and `status` when given, newest first,
+    /// each with its repository's name.
+    pub fn worktrees_with_repository(
+        &mut self,
+        workspace_id: Option<Id>,
+        status: Option<WorktreeStatus>,
+    ) -> Result<Vec<WorktreeWithRepository>, WgError> {
+        let rows = self.rows(&run_sql::worktrees_with_repository(workspace_id, status))?;
+        run_sql::decode_rows(&rows, decode_worktree_with_repository)
+    }
+
+    /// The resource leases that have expired at `now`, by resource key.
+    pub fn expired_leases(&mut self, now: Timestamp) -> Result<Vec<ResourceLease>, WgError> {
+        many(self, &run_sql::expired_leases(now))
+    }
+
+    /// Deletes the leases that have expired at `now` and returns them, as the lease sweep does.
+    pub fn sweep_expired_leases(&mut self, now: Timestamp) -> Result<Vec<ResourceLease>, WgError> {
+        let expired = self.expired_leases(now)?;
+        self.run(&run_sql::delete_expired_leases(now))?;
+        Ok(expired)
     }
 
     /// The unpurged artifacts of `retention` created before `created_before`, oldest first.

@@ -4,8 +4,9 @@
 //! reachability facts, and passes them in as plain values. Every function here decides; none
 //! reads or writes a database.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
+use rpds::{HashTrieSet, Vector};
 use serde_json::{Value, json};
 use wg_types::TaskPriority;
 
@@ -30,35 +31,39 @@ fn referenced_keys(snap: &TrackerSnapshot) -> impl Iterator<Item = &str> {
 /// one a reference resolves to, and the earlier one still keeps its own place in the input.
 #[must_use]
 pub fn dependency_order(snaps: &[TrackerSnapshot]) -> Vec<&TrackerSnapshot> {
-    let mut by_key: HashMap<&str, usize> = HashMap::new();
-    for (index, snap) in snaps.iter().enumerate() {
-        by_key.insert(snap.key.as_str(), index);
-    }
-    let mut visited: HashSet<&str> = HashSet::new();
-    let mut order = Vec::with_capacity(snaps.len());
-    for index in 0..snaps.len() {
-        visit(index, snaps, &by_key, &mut visited, &mut order);
-    }
-    order.into_iter().map(|index| &snaps[index]).collect()
+    // Later snapshots overwrite earlier ones with the same key, as `HashMap::insert` does.
+    let by_key: HashMap<&str, usize> = snaps
+        .iter()
+        .enumerate()
+        .map(|(index, snap)| (snap.key.as_str(), index))
+        .collect();
+    let (_, order) = (0..snaps.len()).fold((HashTrieSet::new(), Vector::new()), |state, index| {
+        visit(index, snaps, &by_key, state)
+    });
+    order.iter().map(|&index| &snaps[index]).collect()
 }
 
+/// Visits one snapshot: its referenced snapshots first, then itself. The state holds the keys
+/// already visited and the order so far; both are persistent, so each step returns a new state.
 fn visit<'a>(
     index: usize,
     snaps: &'a [TrackerSnapshot],
     by_key: &HashMap<&str, usize>,
-    visited: &mut HashSet<&'a str>,
-    order: &mut Vec<usize>,
-) {
+    state: (HashTrieSet<&'a str>, Vector<usize>),
+) -> (HashTrieSet<&'a str>, Vector<usize>) {
     let snap = &snaps[index];
-    if !visited.insert(snap.key.as_str()) {
-        return;
+    let key = snap.key.as_str();
+    let (visited, order) = state;
+    if visited.contains(&key) {
+        return (visited, order);
     }
-    for reference in referenced_keys(snap) {
-        if let Some(&target) = by_key.get(reference) {
-            visit(target, snaps, by_key, visited, order);
-        }
-    }
-    order.push(index);
+    let visited = visited.insert(key);
+    let (visited, order) = referenced_keys(snap)
+        .filter_map(|reference| by_key.get(reference).copied())
+        .fold((visited, order), |state, target| {
+            visit(target, snaps, by_key, state)
+        });
+    (visited, order.push_back(index))
 }
 
 /// The Workgraph rows a snapshot's links point at, resolved by the shell.
@@ -182,38 +187,37 @@ pub fn field_updates(
     parent: Option<ParentFields>,
     is_ancestor: impl FnOnce() -> bool,
 ) -> FieldUpdates {
-    let mut updates = FieldUpdates::default();
-    if snap.title != task.title {
-        updates.title = Some(snap.title.clone());
-    }
-    if snap.description != task.description {
-        updates.description = Some(snap.description.clone());
-    }
-    if snap.priority != task.priority {
-        updates.priority = Some(snap.priority);
-    }
-    if snap.assignee.as_deref() != task.assignee {
-        updates.assignee = Some(snap.assignee.clone());
-    }
-    match parent {
-        None => {
-            if snap.parent_key.is_none() && task.parent_id.is_some() {
-                updates.clear_parent = true;
-            }
-        }
+    let (clear_parent, parent_key, errors) = match parent {
+        None => (
+            snap.parent_key.is_none() && task.parent_id.is_some(),
+            None,
+            Vec::new(),
+        ),
         Some(parent) if Some(parent.id) != task.parent_id => {
             if parent.id == task.id || is_ancestor() {
-                updates.errors.push(format!(
-                    "{}: parent {} would create a hierarchy cycle",
-                    task.key, parent.key
-                ));
+                (
+                    false,
+                    None,
+                    vec![format!(
+                        "{}: parent {} would create a hierarchy cycle",
+                        task.key, parent.key
+                    )],
+                )
             } else {
-                updates.parent_key = Some(parent.key.to_string());
+                (false, Some(parent.key.to_string()), Vec::new())
             }
         }
-        Some(_) => {}
+        Some(_) => (false, None, Vec::new()),
+    };
+    FieldUpdates {
+        title: (snap.title != task.title).then(|| snap.title.clone()),
+        description: (snap.description != task.description).then(|| snap.description.clone()),
+        priority: (snap.priority != task.priority).then_some(snap.priority),
+        assignee: (snap.assignee.as_deref() != task.assignee).then(|| snap.assignee.clone()),
+        clear_parent,
+        parent_key,
+        errors,
     }
-    updates
 }
 
 /// A dependency row of a task, as the shell reads it.
@@ -251,27 +255,40 @@ pub fn dependency_plan(
     blockers: &[BlockerTask],
     would_cycle: impl Fn(&str) -> bool,
 ) -> DependencyPlan {
-    let mut plan = DependencyPlan::default();
-    for blocker in blockers {
-        if existing.iter().any(|dep| dep.depends_on_id == blocker.id) {
-            continue;
-        }
-        if would_cycle(blocker.id) {
-            plan.errors.push(format!(
+    // Each blocker not yet depended on, with whether depending on it would close a cycle.
+    let verdicts: Vec<(&BlockerTask, bool)> = blockers
+        .iter()
+        .filter(|blocker| !existing.iter().any(|dep| dep.depends_on_id == blocker.id))
+        .map(|blocker| (blocker, would_cycle(blocker.id)))
+        .collect();
+    let add = verdicts
+        .iter()
+        .filter(|(_, cycle)| !cycle)
+        .map(|(blocker, _)| blocker.id.to_string())
+        .collect();
+    let errors = verdicts
+        .iter()
+        .filter(|(_, cycle)| *cycle)
+        .map(|(blocker, _)| {
+            format!(
                 "{task_key}: blocked by {} would create a dependency cycle",
                 blocker.key
-            ));
-        } else {
-            plan.add.push(blocker.id.to_string());
-        }
+            )
+        })
+        .collect();
+    let remove = existing
+        .iter()
+        .filter(|dep| {
+            dep.sync_created
+                && !blockers
+                    .iter()
+                    .any(|blocker| blocker.id == dep.depends_on_id)
+        })
+        .map(|dep| dep.depends_on_id.to_string())
+        .collect();
+    DependencyPlan {
+        add,
+        remove,
+        errors,
     }
-    for dep in existing {
-        let wanted = blockers
-            .iter()
-            .any(|blocker| blocker.id == dep.depends_on_id);
-        if !wanted && dep.sync_created {
-            plan.remove.push(dep.depends_on_id.to_string());
-        }
-    }
-    plan
 }

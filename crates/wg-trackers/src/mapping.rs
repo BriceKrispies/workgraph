@@ -135,11 +135,8 @@ pub fn map_issue(
 
 /// Walks nested objects by key; `None` as soon as a step is not an object.
 fn dig<'a>(value: &'a Value, keys: &[&str]) -> Option<&'a Value> {
-    let mut current = value;
-    for key in keys {
-        current = current.get(*key)?;
-    }
-    Some(current)
+    keys.iter()
+        .try_fold(value, |current, key| current.get(*key))
 }
 
 /// The text of a required identifier (`str(issue["key"])`): strings as they are, numbers as text.
@@ -189,18 +186,16 @@ fn status_category(key: Option<&Value>) -> StatusCategory {
 }
 
 fn blocked_by_keys(links: Option<&Value>) -> Vec<String> {
-    let mut keys = BTreeSet::new();
-    for link in links.and_then(Value::as_array).into_iter().flatten() {
-        if dig(link, &["type", "name"]).and_then(Value::as_str) != Some("Blocks") {
-            continue;
-        }
-        if let Some(key) = link
-            .get("inwardIssue")
-            .and_then(|issue| text(issue.get("key")))
-        {
-            keys.insert(key);
-        }
-    }
+    let keys: BTreeSet<String> = links
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter(|link| dig(link, &["type", "name"]).and_then(Value::as_str) == Some("Blocks"))
+        .filter_map(|link| {
+            link.get("inwardIssue")
+                .and_then(|issue| text(issue.get("key")))
+        })
+        .collect();
     keys.into_iter().collect()
 }
 
@@ -241,9 +236,8 @@ fn offset_with_colon(text: &str) -> String {
     let Some(tail) = text.get(len.saturating_sub(5)..) else {
         return text.to_string();
     };
-    let mut bytes = tail.bytes();
-    let sign_ok = matches!(bytes.next(), Some(b'+' | b'-'));
-    if tail.len() == 5 && sign_ok && bytes.all(|b| b.is_ascii_digit()) {
+    let sign_ok = matches!(tail.bytes().next(), Some(b'+' | b'-'));
+    if tail.len() == 5 && sign_ok && tail.bytes().skip(1).all(|b| b.is_ascii_digit()) {
         format!("{}:{}", &text[..len - 2], &text[len - 2..])
     } else {
         text.to_string()
@@ -257,51 +251,45 @@ fn pull_requests(
     dev_pull_requests: &[Value],
     config: &MappingConfig,
 ) -> Vec<PullRequestRef> {
-    let mut found = Vec::new();
-    for field_id in &config.pr_fields {
-        let mut texts = Vec::new();
-        collect_strings(fields.get(field_id.as_str()), &mut texts);
-        for value_text in texts {
-            for url in urls_in(value_text) {
-                let trimmed = url.trim_end_matches(['.', ',', ';', ':', '!', '?']);
-                if let Some(reference) = parse_pull_request_url(trimmed) {
-                    found.push(PullRequestRef {
-                        sources: vec![SOURCE_CUSTOM_FIELD],
-                        ..reference
-                    });
-                }
-            }
-        }
-    }
-    if config.dev_panel {
-        for entry in dev_pull_requests {
+    let from_fields = config
+        .pr_fields
+        .iter()
+        .flat_map(|field_id| collect_strings(fields.get(field_id.as_str())))
+        .flat_map(urls_in)
+        .filter_map(|url| {
+            let trimmed = url.trim_end_matches(['.', ',', ';', ':', '!', '?']);
+            parse_pull_request_url(trimmed)
+        })
+        .map(|reference| PullRequestRef {
+            sources: vec![SOURCE_CUSTOM_FIELD],
+            ..reference
+        });
+    let from_dev_panel = dev_pull_requests
+        .iter()
+        .filter(|_| config.dev_panel)
+        .filter_map(|entry| {
             let url = string_or_empty(entry.get("url"));
-            if let Some(reference) = parse_pull_request_url(&url) {
-                found.push(PullRequestRef {
-                    sources: vec![SOURCE_DEV_PANEL],
-                    title: string_or_empty(entry.get("name")),
-                    ..reference
-                });
-            }
-        }
-    }
-    merge(found)
+            parse_pull_request_url(&url).map(|reference| PullRequestRef {
+                sources: vec![SOURCE_DEV_PANEL],
+                title: string_or_empty(entry.get("name")),
+                ..reference
+            })
+        });
+    merge(from_fields.chain(from_dev_panel).collect())
 }
 
 /// Every string inside a field value: plain strings, lists, ADF trees and `{"url": ...}` objects.
-fn collect_strings<'a>(value: Option<&'a Value>, out: &mut Vec<&'a str>) {
+fn collect_strings(value: Option<&Value>) -> Vec<&str> {
     match value {
-        Some(Value::String(s)) => out.push(s),
-        Some(Value::Object(map)) => {
-            for item in map.values() {
-                collect_strings(Some(item), out);
-            }
-        }
-        Some(Value::Array(items)) => {
-            for item in items {
-                collect_strings(Some(item), out);
-            }
-        }
-        _ => {}
+        Some(Value::String(s)) => vec![s.as_str()],
+        Some(Value::Object(map)) => map
+            .values()
+            .flat_map(|item| collect_strings(Some(item)))
+            .collect(),
+        Some(Value::Array(items)) => items
+            .iter()
+            .flat_map(|item| collect_strings(Some(item)))
+            .collect(),
+        _ => Vec::new(),
     }
 }

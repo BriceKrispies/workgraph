@@ -2490,6 +2490,7 @@ version = "0.1.0"
 name = "wg-trackers"
 version = "0.1.0"
 dependencies = [
+ "rpds",
  "serde_json",
  "wg-hash",
  "wg-registry",

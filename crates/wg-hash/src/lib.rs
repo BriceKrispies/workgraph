@@ -21,59 +21,70 @@ const INITIAL_STATE: [u32; 8] = [
 /// The SHA-256 digest of `data`, as 64 lowercase hex digits.
 #[must_use]
 pub fn sha256_hex(data: &[u8]) -> String {
-    let mut message = data.to_vec();
+    // Padding: 0x80, zeros until the length is 56 mod 64, then the 64-bit big-endian bit length.
     let bit_len = (data.len() as u64).wrapping_mul(8);
-    message.push(0x80);
-    while message.len() % 64 != 56 {
-        message.push(0);
-    }
-    message.extend_from_slice(&bit_len.to_be_bytes());
+    let zeros = (119 - data.len() % 64) % 64;
+    let message: Vec<u8> = data
+        .iter()
+        .copied()
+        .chain(std::iter::once(0x80))
+        .chain(std::iter::repeat_n(0, zeros))
+        .chain(bit_len.to_be_bytes())
+        .collect();
 
-    let mut state = INITIAL_STATE;
-    for block in message.chunks_exact(64) {
-        compress(&mut state, block);
-    }
-    state.iter().map(|word| format!("{word:08x}")).collect()
+    message
+        .chunks_exact(64)
+        .fold(INITIAL_STATE, compress)
+        .iter()
+        .map(|word| format!("{word:08x}"))
+        .collect()
 }
 
-fn compress(state: &mut [u32; 8], block: &[u8]) {
-    let mut w = [0u32; 64];
-    for (i, word) in block.chunks_exact(4).enumerate() {
-        w[i] = u32::from_be_bytes([word[0], word[1], word[2], word[3]]);
-    }
-    for i in 16..64 {
+fn compress(state: [u32; 8], block: &[u8]) -> [u32; 8] {
+    let w = schedule(block);
+    let rounds = (0..64).fold(state, |s, i| round(s, K[i], w[i]));
+    std::array::from_fn(|i| state[i].wrapping_add(rounds[i]))
+}
+
+/// The 64-word message schedule for one 512-bit block.
+fn schedule(block: &[u8]) -> [u32; 64] {
+    let first_sixteen: [u32; 64] = std::array::from_fn(|i| {
+        if i < 16 {
+            u32::from_be_bytes([
+                block[4 * i],
+                block[4 * i + 1],
+                block[4 * i + 2],
+                block[4 * i + 3],
+            ])
+        } else {
+            0
+        }
+    });
+    (16..64).fold(first_sixteen, |w, i| {
         let s0 = w[i - 15].rotate_right(7) ^ w[i - 15].rotate_right(18) ^ (w[i - 15] >> 3);
         let s1 = w[i - 2].rotate_right(17) ^ w[i - 2].rotate_right(19) ^ (w[i - 2] >> 10);
-        w[i] = w[i - 16]
+        let next = w[i - 16]
             .wrapping_add(s0)
             .wrapping_add(w[i - 7])
             .wrapping_add(s1);
-    }
+        std::array::from_fn(|j| if j == i { next } else { w[j] })
+    })
+}
 
-    let [mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut h] = *state;
-    for i in 0..64 {
-        let s1 = e.rotate_right(6) ^ e.rotate_right(11) ^ e.rotate_right(25);
-        let choose = (e & f) ^ (!e & g);
-        let t1 = h
-            .wrapping_add(s1)
-            .wrapping_add(choose)
-            .wrapping_add(K[i])
-            .wrapping_add(w[i]);
-        let s0 = a.rotate_right(2) ^ a.rotate_right(13) ^ a.rotate_right(22);
-        let majority = (a & b) ^ (a & c) ^ (b & c);
-        let t2 = s0.wrapping_add(majority);
-        h = g;
-        g = f;
-        f = e;
-        e = d.wrapping_add(t1);
-        d = c;
-        c = b;
-        b = a;
-        a = t1.wrapping_add(t2);
-    }
-    for (slot, value) in state.iter_mut().zip([a, b, c, d, e, f, g, h]) {
-        *slot = slot.wrapping_add(value);
-    }
+/// One compression round over the working variables `[a, b, c, d, e, f, g, h]`.
+fn round(vars: [u32; 8], k: u32, w: u32) -> [u32; 8] {
+    let [a, b, c, d, e, f, g, h] = vars;
+    let s1 = e.rotate_right(6) ^ e.rotate_right(11) ^ e.rotate_right(25);
+    let choose = (e & f) ^ (!e & g);
+    let t1 = h
+        .wrapping_add(s1)
+        .wrapping_add(choose)
+        .wrapping_add(k)
+        .wrapping_add(w);
+    let s0 = a.rotate_right(2) ^ a.rotate_right(13) ^ a.rotate_right(22);
+    let majority = (a & b) ^ (a & c) ^ (b & c);
+    let t2 = s0.wrapping_add(majority);
+    [t1.wrapping_add(t2), a, b, c, d.wrapping_add(t1), e, f, g]
 }
 
 #[cfg(test)]

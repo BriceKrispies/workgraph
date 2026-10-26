@@ -73,10 +73,6 @@ KNOWN_GAPS: dict[str, str] = {
     "experiment_predict:ok": "needs task metadata contract.predicted, which only the experiment pipeline writes",
 }
 
-# The HTTP transport ignores --grant (`workgraph mcp --transport http` builds the app with the
-# default agent permissions), so permission-gated calls there come back permission_denied.
-HTTP_PERMISSION_NOTE = "permission_denied"
-
 
 def _first(sc: dict[str, Any], *paths: tuple[str, ...]) -> Any:
     """Return the first value found at any of the key paths in a structured result."""
@@ -714,11 +710,9 @@ def run_transport(transport: str, scratch: Path, grants: list[str]) -> list[dict
 
 
 def _problem(transport: str, label: str, detail: str) -> None:
-    """Record a step that missed its kind. Known gaps and the HTTP grant limit are not failures."""
+    """Record a step that missed its kind. Known gaps are not failures."""
     if label in KNOWN_GAPS:
         PROBLEMS.append(f"known gap {transport} {label}: {KNOWN_GAPS[label]}")
-    elif transport == "http" and HTTP_PERMISSION_NOTE in detail:
-        PROBLEMS.append(f"http permission gap {label}: --grant is not applied to the HTTP transport")
     else:
         PROBLEMS.append(f"{transport} {label}: {detail}")
 

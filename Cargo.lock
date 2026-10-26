@@ -2389,6 +2389,7 @@ dependencies = [
  "wg-trackers-feature",
  "wg-types",
  "wg-uispec",
+ "wg-verify-feature",
 ]
 
 [[package]]
@@ -2531,15 +2532,19 @@ dependencies = [
 name = "wg-exec-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rpds",
  "serde_json",
  "time",
+ "wg-clispec",
  "wg-exec",
  "wg-git",
+ "wg-jobs",
  "wg-json",
  "wg-mcpspec",
  "wg-model",
  "wg-registry",
+ "wg-render",
  "wg-runtime",
  "wg-runtimespec",
  "wg-store",
@@ -3150,14 +3155,22 @@ dependencies = [
 name = "wg-verify-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rpds",
  "serde_json",
+ "wg-clispec",
+ "wg-jobs",
+ "wg-json",
  "wg-model",
+ "wg-registry",
+ "wg-render",
  "wg-runtime",
  "wg-store",
  "wg-storecodec",
+ "wg-tasks",
  "wg-types",
  "wg-verify",
+ "wg-wire",
 ]
 
 [[package]]

@@ -227,12 +227,24 @@ pub fn failure_from_model(
     run: &VerificationRun,
     task_key: &str,
 ) -> Value {
+    failure_row(check, run.id, run.task_id, run.attempt_id, task_key)
+}
+
+/// [`failure_from_model`] from the parts the joined failure query returns: the check, its run,
+/// the run's attempt and the task (`task_id` and `task_key` of the joined task row).
+pub fn failure_row(
+    check: &VerificationCheckResult,
+    run_id: Id,
+    task_id: Id,
+    attempt_id: Option<Id>,
+    task_key: &str,
+) -> Value {
     dict(vec![
         ("check_result_id", id(check.id)),
-        ("run_id", id(run.id)),
-        ("task_id", id(run.task_id)),
+        ("run_id", id(run_id)),
+        ("task_id", id(task_id)),
         ("task_key", text(task_key)),
-        ("attempt_id", optional_id(run.attempt_id)),
+        ("attempt_id", optional_id(attempt_id)),
         ("check", text(&check.name)),
         ("kind", text(&check.kind)),
         ("required", Value::Bool(check.required)),

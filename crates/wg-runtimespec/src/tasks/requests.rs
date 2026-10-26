@@ -53,6 +53,8 @@ fn check_for(model: &str, field: &str) -> Option<Check> {
         }
         ("TaskCreate", "files") | ("TaskUpdate", "files" | "add_files") => Some(Check::Files),
         ("TaskFileIn", "anchor") => Some(Check::EmptyToNone),
+        ("WorkspaceCreate", "slug") => Some(Check::Slug),
+        ("WorkspaceCreate", "key_prefix") => Some(Check::KeyPrefix),
         _ => None,
     }
 }
@@ -91,7 +93,7 @@ fn with_checks(model: Model) -> Model {
 }
 
 /// A request model from the OpenAPI component schema `name`, fields in declaration order.
-fn component(name: &str, order: &[&str]) -> Result<Model, WgError> {
+pub(crate) fn component(name: &str, order: &[&str]) -> Result<Model, WgError> {
     let openapi = wg_wire::contract::openapi()?;
     let schema = &openapi["components"]["schemas"][name];
     let model = model_from_json_schema(
@@ -105,7 +107,7 @@ fn component(name: &str, order: &[&str]) -> Result<Model, WgError> {
     Ok(with_checks(model.ordered(order)))
 }
 
-fn run(model: &Model, body: &Value) -> Result<Map<String, Value>, WgError> {
+pub(crate) fn run(model: &Model, body: &Value) -> Result<Map<String, Value>, WgError> {
     match validate(model, body) {
         Ok(Value::Object(dump)) => Ok(dump),
         Ok(_) => Err(WgError::new(

@@ -19,6 +19,7 @@ pub mod context;
 pub mod effects;
 pub mod logs;
 pub mod settings;
+pub mod setup;
 pub mod tasks;
 
 pub use context::{GETUSER_VARIABLES, RequestContext, getuser, timestamp_from_unix_nanos};

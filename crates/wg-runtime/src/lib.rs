@@ -19,9 +19,10 @@ mod effects;
 mod handlers;
 mod logging;
 mod queue;
+mod setup;
 mod stamp;
-mod worker;
 mod tasks;
+mod worker;
 
 pub use app::{App, environment};
 pub use bus::Bus;
@@ -30,9 +31,11 @@ pub use effects::{HttpClient, Interpreter, write_atomic};
 pub use handlers::{Handler, HandlerError, HandlerRegistry, HandlerResult, JobContext};
 pub use logging::{JsonLayer, LogSettings, RotatingFile, configure_logging, json_layer};
 pub use queue::Queue;
+pub use setup::Diagnosis;
 pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
+pub use wg_runtimespec::setup::InitRequest;
 pub use wg_runtimespec::tasks::reads::{GraphRequest, Shown};
 pub use wg_runtimespec::{Level, RequestContext};
 pub use worker::{RunOptions, Summary, Worker, WorkerOptions};

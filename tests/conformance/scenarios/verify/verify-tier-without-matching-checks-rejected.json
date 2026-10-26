@@ -1,0 +1,18 @@
+{
+  "id": "verify-tier-without-matching-checks-rejected",
+  "covers": ["C099", "C118", "C152", "C172", "C175"],
+  "setup": [
+    {"git": "init", "repo": "only"},
+    {"git": "commit", "repo": "only", "files": {"README.md": "# only\n"}, "message": "initial commit"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:only}"], "json": true},
+    {"cli": ["task", "create", "Full only", "--repo", "only", "--ready"], "json": true},
+    {"cli": ["verify", "config", "ci", "--scope-type", "repository", "--scope", "only", "--check", "{\"name\": \"unit tests\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}"], "json": true},
+    {"cli": ["verify", "run", "WG-1", "--tier", "fast"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"stdout_contains": "no fast verification checks"}}
+  ],
+  "not_observable": []
+}

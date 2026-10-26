@@ -1,0 +1,21 @@
+{
+  "id": "verify-tier-unfiltered-runs-every-check",
+  "covers": ["C099", "C118", "C152", "C172", "C175"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "# svc\n"}, "message": "initial commit"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["verify", "config", "ci", "--scope-type", "repository", "--scope", "svc", "--check", "{\"name\": \"lint\", \"kind\": \"lint\", \"tier\": \"fast\", \"command\": [\"python\", \"-c\", \"print('lint ok')\"]}", "--check", "{\"name\": \"unit tests\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}"], "json": true},
+    {"cli": ["task", "create", "Tiered checks", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["verify", "run", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/required_passed", "equals": true}}},
+    {"assert": {"json": {"path": "/checks/0/name", "equals": "lint"}}},
+    {"assert": {"json": {"path": "/checks/1/name", "equals": "unit tests"}}},
+    {"assert": {"db": "verification_check_results", "where": {"name": "lint"}, "count": 1}},
+    {"assert": {"db": "verification_check_results", "where": {"name": "unit tests"}, "count": 1}}
+  ],
+  "not_observable": []
+}

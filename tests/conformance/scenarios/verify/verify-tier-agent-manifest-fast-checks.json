@@ -1,0 +1,24 @@
+{
+  "id": "verify-tier-agent-manifest-fast-checks",
+  "covers": ["C023", "C060", "C099", "C118", "C152", "C172"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "# svc\n"}, "message": "initial commit"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["verify", "config", "ci", "--scope-type", "repository", "--scope", "svc", "--check", "{\"name\": \"lint\", \"kind\": \"lint\", \"tier\": \"fast\", \"command\": [\"python\", \"-c\", \"print('lint ok')\"]}", "--check", "{\"name\": \"unit tests\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}"], "json": true},
+    {"cli": ["task", "create", "Tiered checks", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/agent_checks/0/name", "equals": "lint"}}},
+    {"assert": {"json": {"path": "/agent_checks/0/command", "equals": ["python", "-c", "print('lint ok')"]}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_verification_tiers.py::test_agent_manifest_lists_fast_checks_for_the_agent: the manifest's full verification list ({lint, unit tests}) and the equality of each fast check's repository with the first verification entry's repository are not in the attempt start output, which carries only agent_checks; the test's attempt is also created in the queued state, not through attempt start",
+      "covered_by": "CORE-13"
+    }
+  ]
+}

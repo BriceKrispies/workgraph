@@ -258,8 +258,11 @@ needs a browser and is covered by its Python test only on machines that have one
 | DV5 | Texts that only exist because the implementation is Python: exception class names in `spool_reason` and in the message of an unexpected error (exit 1), traceback text in logs, logger names | not contracts; the error envelope and codes are unchanged |
 | DV6 | Parquet export bytes | compared by reading both files back (schema, row values) |
 | DV7 | Last-ulp differences in statistics computed through `exp`/`log` | CPython and Rust may reach different libm implementations; tolerance `1e-12` relative, only for the listed fields (Q9) |
-| DV8 | `doctor` check `python` reports `not required (native binary)` and always passes. Python runs the check `sys.version_info >= (3, 12)` and prints the interpreter version. Proposed, needs user confirmation | the Rust binary has no Python runtime to version-check; the check keeps its name and position in the list |
-| DV9 | `doctor` has no `web frontend build` check. Python warns when `static/index.html` is missing. Proposed, needs user confirmation | the web UI is embedded in the binary at build time, so there is no static directory that can be missing |
+| DV8 | `doctor` check `python` reports `not required (native binary)` and always passes. Python runs the check `sys.version_info >= (3, 12)` and prints the interpreter version. Confirmed by the user 2026-10-26 | the Rust binary has no Python runtime to version-check; the check keeps its name and position in the list |
+| DV9 | `doctor` has no `web frontend build` check. Python warns when `static/index.html` is missing. Confirmed by the user 2026-10-26 | the web UI is embedded in the binary at build time, so there is no static directory that can be missing |
+| DV10 | Line endings: Rust writes `
+` on every platform. Python writes `
+` to redirected stdout on Windows (text-mode streams). The normaliser compares CRLF and LF as equal. Decided 2026-10-26 | no consumer parses the line terminator; JSON parsers accept both |
 
 ---
 
@@ -1291,3 +1294,12 @@ Work lands on the `rust-integration` branch through tested stacks and is merged 
 1. Restructure into vertical feature crates (D15, 4.16, tasks FC-01 to FC-12) before porting the
    remaining interface groups. A feature owns its slice from SQL to CLI, HTTP and MCP; purity tiers
    are assigned per module, so the per-layer pure/shell crate pairs are retired.
+2. Conformance normalisation (WG-3758 decision, option a): set-like id lists (`depends_on`,
+   `blocks`, `child_ids`, `project_ids`, `repository_ids`) are sorted by the normaliser, and
+   timestamps written within one command less than ~900 ms apart rank as one instant (fixture
+   dates 1 s apart keep their order). Ordered lists such as `task graph` edges are still compared
+   in order. DV1 is scoped to help and usage-error text, and DV3 to the DuckDB file, so neither can
+   hide other differences.
+3. DV8 and DV9 confirmed; DV10 (LF line endings) added.
+4. `config show` colour matches Python: SGR styling with rich's JSON theme only when stdout is a
+   terminal or `FORCE_COLOR` is set; `wg-render` gains a styling layer for it.

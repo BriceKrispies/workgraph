@@ -36,6 +36,7 @@ wg-pyrand Pure
 wg-registry Core
 wg-render Pure
 wg-runtime Shell
+wg-runtimespec Pure
 wg-server Shell
 wg-stacks Core
 wg-store Shell

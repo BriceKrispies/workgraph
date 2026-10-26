@@ -1,0 +1,25 @@
+[package]
+name = "wg-runtimespec"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "pure half of the runtime: request contexts, stamps, log records, effect specs and outcomes"
+
+[lints]
+workspace = true
+
+[dependencies]
+base64 = "0.22"
+rpds = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+time = { version = "0.3", default-features = false, features = ["std"] }
+tracing-core = "0.1"
+wg-config = { path = "../wg-config" }
+wg-json = { path = "../wg-json" }
+wg-model = { path = "../wg-model" }
+wg-procspec = { path = "../wg-procspec" }
+wg-storecodec = { path = "../wg-storecodec" }
+wg-types = { path = "../wg-types" }
+wg-validate = { path = "../wg-validate" }

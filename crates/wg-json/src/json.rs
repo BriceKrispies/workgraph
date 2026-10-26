@@ -38,6 +38,8 @@ struct Layout {
     sort_keys: bool,
     ensure_ascii: bool,
     allow_nan: bool,
+    /// Compact output with Python's default separators `", "` and `": "` (no indent given).
+    spaced: bool,
 }
 
 /// O01: the CLI `--json` output, `json.dumps(to_jsonable(v), indent=2, default=str) + "\n"`.
@@ -50,6 +52,7 @@ pub fn cli_json(value: &Value) -> Result<String, DumpError> {
             sort_keys: false,
             ensure_ascii: true,
             allow_nan: true,
+            spaced: false,
         },
     )?;
     text.push('\n');
@@ -66,6 +69,7 @@ pub fn http_json(value: &Value) -> Result<String, DumpError> {
             sort_keys: false,
             ensure_ascii: false,
             allow_nan: false,
+            spaced: false,
         },
     )
 }
@@ -83,9 +87,26 @@ pub fn db_json(value: &Value) -> Result<Option<String>, DumpError> {
             sort_keys: true,
             ensure_ascii: true,
             allow_nan: true,
+            spaced: false,
         },
     )
     .map(Some)
+}
+
+/// O14: one log line's JSON, `json.dumps(payload, default=str)` (the `JsonFormatter` of
+/// `core/logging.py`): Python's default separators, `ensure_ascii`, NaN allowed, keys in order.
+pub fn log_json(value: &Value) -> Result<String, DumpError> {
+    let node = to_node(value, Dialect::Db, false)?;
+    render(
+        &node,
+        Layout {
+            pretty: false,
+            sort_keys: false,
+            ensure_ascii: true,
+            allow_nan: true,
+            spaced: true,
+        },
+    )
 }
 
 /// `to_jsonable` for the CLI and HTTP dialects, and `default=str` for the CLI and DB dialects.
@@ -198,7 +219,7 @@ impl Writer {
                 self.out.push('[');
                 for (i, item) in items.iter().enumerate() {
                     if i > 0 {
-                        self.out.push(',');
+                        self.comma();
                     }
                     self.newline(depth + 1);
                     self.node(item, depth + 1)?;
@@ -218,12 +239,12 @@ impl Writer {
                 self.out.push('{');
                 for (i, pair) in ordered.into_iter().enumerate() {
                     if i > 0 {
-                        self.out.push(',');
+                        self.comma();
                     }
                     self.newline(depth + 1);
                     self.string(&pair.0);
                     self.out.push(':');
-                    if self.layout.pretty {
+                    if self.layout.pretty || self.layout.spaced {
                         self.out.push(' ');
                     }
                     self.node(&pair.1, depth + 1)?;
@@ -233,6 +254,13 @@ impl Writer {
             }
         }
         Ok(())
+    }
+
+    fn comma(&mut self) {
+        self.out.push(',');
+        if self.layout.spaced {
+            self.out.push(' ');
+        }
     }
 
     fn newline(&mut self, depth: usize) {

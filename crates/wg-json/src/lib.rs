@@ -1,8 +1,9 @@
-//! wg-json: the three JSON dialects and timestamp formats.
+//! wg-json: the JSON dialects and timestamp formats.
 //!
 //! * [`cli_json`] is O01, the CLI `--json` output.
 //! * [`http_json`] is O06, the HTTP response body.
 //! * [`db_json`] is O10, the JSON text stored in DB columns.
+//! * [`log_json`] is O14, one JSON log line.
 //!
 //! UTC datetimes are `wg_types::Timestamp`, and the formats of a UTC value come from its methods.
 //! [`LocalDateTime`] holds the naive and non-UTC datetimes that `Timestamp` cannot represent.
@@ -15,6 +16,6 @@ mod json;
 mod text;
 mod value;
 
-pub use json::{cli_json, db_json, http_json};
+pub use json::{cli_json, db_json, http_json, log_json};
 pub use text::{isoformat, py_float_repr, when};
 pub use value::{Date, DumpError, LocalDateTime, PyStr, Value};

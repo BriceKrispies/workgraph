@@ -10,7 +10,19 @@ use wg_render::{Console, escape};
 
 use crate::task::{flag, get, items, many, number, one, python, s, when};
 use crate::tree::{SNAPSHOT_JSON, placeholder};
-use crate::{CliFailure, Snapshot};
+use crate::{CliFailure, Snapshot, Usage};
+
+/// Click's usage line of `job list`.
+const JOB_LIST: Usage = Usage {
+    usage: "workgraph job list [OPTIONS]",
+    command: "workgraph job list",
+};
+
+/// Click's usage line of `worker run`.
+const WORKER_RUN: Usage = Usage {
+    usage: "workgraph worker run [OPTIONS]",
+    command: "workgraph worker run",
+};
 
 /// The clap command of the `job` group: the snapshot's own tree.
 #[must_use]
@@ -36,7 +48,7 @@ pub fn concurrency(m: &ArgMatches) -> Result<Option<usize>, CliFailure> {
     match one(m, "--concurrency") {
         None => Ok(None),
         Some(_) => {
-            let value = number(m, "--concurrency", 0)?;
+            let value = number(m, "--concurrency", 0, WORKER_RUN)?;
             usize::try_from(value).map(Some).map_err(|_| {
                 CliFailure::fail(
                     format!("Invalid value for '--concurrency': {value} is out of range."),
@@ -82,7 +94,10 @@ pub fn kind_filter(m: &ArgMatches) -> Option<String> {
 
 /// `--limit` and `--offset` of `job list`.
 pub fn page(m: &ArgMatches) -> Result<(i64, i64), CliFailure> {
-    Ok((number(m, "--limit", 50)?, number(m, "--offset", 0)?))
+    Ok((
+        number(m, "--limit", 50, JOB_LIST)?,
+        number(m, "--offset", 0, JOB_LIST)?,
+    ))
 }
 
 /// `job_id` of the single-job commands.

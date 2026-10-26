@@ -3,8 +3,11 @@ from __future__ import annotations
 import json
 
 import pytest
+from typer.testing import CliRunner
 
 from tests.helpers import run_cli, run_cli_process
+from workgraph.cli.common import STATE
+from workgraph.cli.main import app as cli
 
 
 @pytest.fixture

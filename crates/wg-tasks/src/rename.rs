@@ -287,6 +287,9 @@ pub struct RepositoryChange {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ConfigChange {
     pub name: String,
+    /// The scope the config is saved back to: `project` or `repository`, and the record's id.
+    pub scope_type: String,
+    pub scope_id: Id,
     pub sites: usize,
     pub checks: Value,
     /// Absolute paths whose spelling changed, as `(before, after)`. The shell keeps the pairs where
@@ -375,6 +378,8 @@ pub fn plan_rename(
             let (checks, sites) = term.deep(&config.checks);
             (sites > 0).then(|| ConfigChange {
                 name: config.name.clone(),
+                scope_type: config.scope_type.clone(),
+                scope_id: config.scope_id,
                 sites,
                 path_rewrites: path_rewrites(&config.checks, &checks),
                 checks,

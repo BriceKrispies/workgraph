@@ -48,7 +48,7 @@ fn index_written<R>(
 
 impl App {
     /// `TaskService._workspace_id`: the named workspace, else the default one.
-    fn workspace_or_default(&mut self, workspace: Option<&str>) -> Result<Id, WgError> {
+    pub(crate) fn workspace_or_default(&mut self, workspace: Option<&str>) -> Result<Id, WgError> {
         match workspace {
             Some(reference) => self.workspace_id(reference),
             None => self.default_workspace_id(),
@@ -101,7 +101,23 @@ impl App {
     ) -> Result<Value, WgError> {
         let dump = validate_update(body)?;
         let given = body.as_object().cloned().unwrap_or_default();
-        self.update_checked(context, workspace, reference, &dump, &given)
+        let enrich = writes::enrichment_from(&self.config()?);
+        self.update_checked(context, workspace, reference, &dump, &given, enrich)
+    }
+
+    /// `TaskService.update(..., enrich=False)`: a text change that queues no reclassification or
+    /// re-embedding (the words changed, not the task).
+    pub(crate) fn task_update_plain(
+        &mut self,
+        context: &RequestContext,
+        workspace: Option<&str>,
+        reference: &str,
+        body: &Json,
+    ) -> Result<Value, WgError> {
+        let dump = validate_update(body)?;
+        let given = body.as_object().cloned().unwrap_or_default();
+        let enrich = writes::Enrichment::default();
+        self.update_checked(context, workspace, reference, &dump, &given, enrich)
     }
 
     fn update_checked(
@@ -111,9 +127,9 @@ impl App {
         reference: &str,
         dump: &Map<String, Json>,
         given: &Map<String, Json>,
+        enrich: writes::Enrichment,
     ) -> Result<Value, WgError> {
         let read = read_update(dump, given)?;
-        let enrich = writes::enrichment_from(&self.config()?);
         let scope = self.workspace_or_all(workspace)?;
         Ok(self
             .runtime
@@ -156,13 +172,14 @@ impl App {
                     .collect()
             })
             .unwrap_or_default();
+        let enrich = writes::enrichment_from(&self.config()?);
         let outcomes = refs
             .into_iter()
             .map(|reference| {
                 let mut shared = update.clone();
                 shared.insert("expected_version".to_owned(), Json::Null);
                 let done = self
-                    .update_checked(context, workspace, &reference, &shared, &given)
+                    .update_checked(context, workspace, &reference, &shared, &given, enrich)
                     .and_then(|out| {
                         key_of(&out).ok_or_else(|| {
                             WgError::new(ErrorCode::WorkgraphError, "a task output has no key")

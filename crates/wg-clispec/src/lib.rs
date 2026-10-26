@@ -8,6 +8,7 @@
 
 pub mod argv;
 pub mod failure;
+pub mod registry;
 pub mod setup;
 pub mod snapshot;
 pub mod task;

@@ -9,7 +9,7 @@ from typer.testing import CliRunner
 from workgraph.cli.common import STATE
 from workgraph.cli.main import app as cli
 from workgraph.core.errors import ValidationFailed
-from workgraph.core.models.schemas import ClaimRequest, TaskCreate, TaskFilter
+from workgraph.core.models.schemas import ClaimRequest, TaskCreate, TaskFilter, TaskUpdate
 from workgraph.core.services import breakdown
 
 SOURCE = "docs/plan.md"
@@ -108,7 +108,7 @@ def test_import_creates_tasks_with_metadata_tags_and_status(app, human, ws):
     assert rows["V2"]["status"] == "backlog"
 
     v1 = app.tasks.get(human, ws, rows["V1"]["key"])
-    assert v1.metadata == {"breakdown_id": "V1", "breakdown_doc": f"{SOURCE}#Breakdown"}
+    assert v1.metadata.items() >= {"breakdown_id": "V1", "breakdown_doc": f"{SOURCE}#Breakdown"}.items()
     assert v1.title == "Parse the input"
     assert sorted(v1.tags) == ["imported", "tier-mid"]
     assert v1.depends_on == [app.tasks.get(human, ws, rows["V4"]["key"]).id]
@@ -312,3 +312,27 @@ def test_cli_import_breakdown_table_output(cli_run, tmp_path: Path):
     )
     assert "dry run" in text
     assert "nothing changed" in text
+
+
+def test_rerun_keeps_description_edited_since_import(app, human, ws):
+    first = _run(app, human, ws)
+    keys = {row["id"]: row["key"] for row in first["tasks"]}
+    app.tasks.update(human, ws, keys["V2"], TaskUpdate(description="Hand-written note."))
+
+    edited = PLAN.replace("Write the report.", "Write the full report.")
+    result = _run(app, human, ws, edited)
+
+    assert app.tasks.get(human, ws, keys["V2"]).description == "Hand-written note."
+    assert result["kept_descriptions"] == [
+        {"id": "V2", "key": keys["V2"], "reason": "description edited since import"}
+    ]
+    assert _by_id(result)["V2"]["action"] == "unchanged"
+    assert "Define the schema." in app.tasks.get(human, ws, keys["V4"]).description
+
+
+def test_rerun_after_no_edit_is_idempotent_with_digest_recorded(app, human, ws):
+    first = _run(app, human, ws)
+    assert all(row["action"] == "created" for row in first["tasks"])
+    second = _run(app, human, ws)
+    assert all(row["action"] == "unchanged" for row in second["tasks"])
+    assert second["kept_descriptions"] == []

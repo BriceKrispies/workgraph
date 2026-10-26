@@ -557,6 +557,8 @@ def _render_breakdown(result: dict[str, Any]) -> None:
         console.print(
             f"[yellow]unresolved[/yellow] {item['id']} depends on {item['dependency']!r}: {item['reason']}"
         )
+    for item in result.get("kept_descriptions", []):
+        console.print(f"[yellow]kept[/yellow] {item['key'] or item['id']}: {item['reason']}; not overwritten")
     counts = result["counts"]
     console.print(
         f"{counts['created']} created, {counts['updated']} updated, {counts['unchanged']} unchanged; "

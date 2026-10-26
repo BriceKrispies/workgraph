@@ -158,6 +158,69 @@ def test_duplicate_ids_are_refused():
         parse_items(section_lines(doc, "S"))
 
 
+# Shaped like section 9 of docs/rust-rewrite.md: each "### 9.x" subsection has its own prose, bold
+# ranged blocks and tables, and a table may sit under its subheading with no bold header above it.
+SUBSECTION_DOC = """\
+## 9. Breakdown
+
+### 9.1 First
+
+Prose for first.
+
+**AA-01 to AA-02 Alpha** (each: alpha work).
+
+| Id | Name |
+| --- | --- |
+| AA-01 | one |
+| AA-02 | two |
+
+### 9.2 Second
+
+Prose for second.
+
+**BB-01 to BB-02 Beta** (each: beta work).
+
+| Id | Name |
+| --- | --- |
+| BB-01 | three |
+| BB-02 | four |
+
+### 9.3 Third
+
+Prose for third.
+
+| Id | Commands |
+| --- | --- |
+| CC-01 | `init` |
+"""
+
+
+def test_row_description_has_only_its_own_subsection_prose():
+    items = {item.id: item for item in parse_items(section_lines(SUBSECTION_DOC, "9. Breakdown"))}
+    assert set(items) == {"AA-01", "AA-02", "BB-01", "BB-02", "CC-01"}
+    aa = items["AA-02"].description
+    assert "Prose for first." in aa and "(each: alpha work)" in aa
+    assert "second" not in aa and "Beta" not in aa and "beta work" not in aa
+    assert "9.2" not in aa and "third" not in aa
+    bb = items["BB-01"].description
+    assert "Prose for second." in bb and "(each: beta work)" in bb
+    assert "first" not in bb and "alpha" not in bb and "third" not in bb
+    cc = items["CC-01"].description
+    assert cc == "Prose for third.\n\n| CC-01 | `init` |"
+
+
+def test_summary_table_under_subheading_is_not_a_task_table():
+    doc = "## 9\n\n### 9.2 Levels\n\n| Level | Tasks | Count |\n| --- | --- | --- |\n| L0 | FD-01, CF-01 | 2 |\n"
+    assert parse_items(section_lines(doc, "9")) == []
+
+
+def test_table_under_subheading_without_bold_header_is_a_task_table():
+    items = {item.id: item for item in parse_items(section_lines(SUBSECTION_DOC, "9. Breakdown"))}
+    assert items["CC-01"].title == "9.3 Third: `init`"
+    assert items["CC-01"].block is None
+    assert items["AA-01"].block == "AA-01"
+
+
 def test_deps_and_tier_columns_apply_per_row():
     # Shaped like the interface tables of docs/rust-rewrite.md: a Deps column and a Tier column.
     doc = """\

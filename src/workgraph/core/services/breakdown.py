@@ -3,13 +3,17 @@
 A planning document lists its tasks as bold headers at the start of a line (``**V1. Title**``,
 ``**FD-01 Title**``). A ranged header (``**GV-01 to GV-21 Name**``) is followed by a markdown table
 whose first column holds one id per task; each row becomes one task titled ``Name: <second column>``.
-The text under a header, up to the next header, is the description. A ``Depends on:`` or ``Deps:``
+The text under a header, up to the next header, is the description. A markdown subheading ends the
+blocks above it, and a table with no bold header above it is a task table of its own under its
+subheading's prose. A ``Depends on:`` or ``Deps:``
 list names other ids (ranges such as ``SC-01 to SC-36`` expand) or existing task keys. Anything else
 in such a list is reported as an unresolved dependency and stays in the description. ``Tier: mid``
 and ``Tier: top`` become the tags ``tier-mid`` and ``tier-top``.
 
 Every created task carries ``metadata = {"breakdown_id": ID, "breakdown_doc": "<source>#<section>"}``.
-A re-run updates the tasks it finds with that metadata instead of creating them again.
+A re-run updates the tasks it finds with that metadata instead of creating them again. The metadata
+also holds a digest of the description the import last wrote; a description that differs from it was
+edited since, so a re-run keeps it and reports it under ``kept_descriptions``.
 
 The markdown is validated before anything changes. Each service call commits on its own, as for
 triage verdicts. A dry run plans the same actions and changes nothing.
@@ -17,6 +21,7 @@ triage verdicts. A dry run plans the same actions and changes nothing.
 
 from __future__ import annotations
 
+import hashlib
 import re
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
@@ -45,6 +50,9 @@ PHRASE_PREFIX = "all-prefixes:"
 DEP_COLUMNS = ("deps", "dependencies", "depends on")  # header names of a table's dependency column
 
 TIER_TAGS = ("tier-mid", "tier-top")
+# Metadata key: digest of the description the import last wrote. A task whose description no longer
+# matches it was edited by someone else, and a re-run keeps that text.
+DESCRIPTION_DIGEST = "breakdown_description_sha256"
 NO_DEPS = frozenset({"none", "-", "—"})  # "none" and dashes in a Deps cell
 
 
@@ -218,6 +226,64 @@ def _blocks(lines: list[str]) -> list[tuple[str, str | None, str, list[str]]]:
     return blocks
 
 
+def _subsections(lines: list[str]) -> list[tuple[str, list[str]]]:
+    """Split a section at its markdown subheadings: (heading text, lines under it up to the next one).
+
+    The first part holds the lines before any subheading, with an empty heading. Headings in code fences
+    are text. A subheading ends the bold blocks above it, so a block's prose and table never reach into
+    a sibling subsection.
+    """
+    parts: list[tuple[str, list[str]]] = [("", [])]
+    for _index, line, fenced in _fence_toggles(lines):
+        match = None if fenced else HEADING_RE.match(line)
+        if match:
+            parts.append((match.group(2), []))
+        else:
+            parts[-1][1].append(line)
+    return parts
+
+
+def _lead(lines: list[str]) -> list[str]:
+    """The lines of a subsection before its first bold header (outside code fences)."""
+    lead: list[str] = []
+    for _index, line, fenced in _fence_toggles(lines):
+        if not fenced and HEADER_RE.match(line):
+            break
+        lead.append(line)
+    return lead
+
+
+def _row_items(
+    rows: list[tuple[str, list[str], dict[str, int]]],
+    prose: str,
+    title_prefix: str,
+    block: str | None,
+    deps: list[str],
+    tiers: list[str],
+) -> list[Item]:
+    """One item per table row: the row's own cells, under the prose of the subsection that holds the table."""
+    items: list[Item] = []
+    for line, cells, columns in rows:
+        row_name = cells[1] if len(cells) > 1 and cells[1] else ""
+        # A "Deps" or "Tier" column, when the table has one, applies to its row only.
+        row_deps, row_tiers = _row_fields(cells, columns)
+        if title_prefix and row_name:
+            title = f"{title_prefix}: {row_name}"
+        else:
+            title = row_name or title_prefix
+        items.append(
+            Item(
+                id=cells[0],
+                title=title,
+                description=(prose + "\n\n" + line.strip()).strip(),
+                tier_tags=_unique([*tiers, *row_tiers]),
+                deps=_unique([*deps, *row_deps]),
+                block=block,
+            )
+        )
+    return items
+
+
 def _expand_phrases(items: list[Item]) -> None:
     """Replace each "all X and Y tasks" dependency with the section's ids having those prefixes.
 
@@ -239,39 +305,44 @@ def _expand_phrases(items: list[Item]) -> None:
 def parse_items(lines: list[str]) -> list[Item]:
     """Turn the lines of one section into the tasks it describes, in document order."""
     items: list[Item] = []
-    for block_id, range_end, name, body in _blocks(lines):
-        if range_end is None:
-            deps, tiers = _text_fields(body)
-            items.append(
-                Item(
-                    id=block_id,
-                    title=name,
-                    description="\n".join(body).strip(),
-                    tier_tags=tiers,
-                    deps=deps,
+    for heading, body in _subsections(lines):
+        # A table before the subsection's first bold header is a task table of its own (no block name).
+        # The prose of a subsection (its lines before the first bold header) is shared by its rows. The
+        # section's own preamble, above any subheading, is not: it belongs to no subsection.
+        # Only a table headed "Id" is a task table; a summary table (such as the level counts) is not.
+        lead = _lead(body)
+        lead_rows = [
+            row
+            for row in _table_rows([line for line in lead if line.lstrip().startswith("|")])
+            if row[2].get("id") == 0
+        ]
+        shared = (
+            "\n".join(line for line in lead if not line.lstrip().startswith("|")).strip() if heading else ""
+        )
+        if lead_rows:
+            deps, tiers = _text_fields(shared.splitlines())
+            items.extend(_row_items(lead_rows, shared, heading, None, deps, tiers))
+        for block_id, range_end, name, block_body in _blocks(body):
+            if range_end is None:
+                deps, tiers = _text_fields(block_body)
+                items.append(
+                    Item(
+                        id=block_id,
+                        title=name,
+                        description="\n".join(block_body).strip(),
+                        tier_tags=tiers,
+                        deps=deps,
+                    )
                 )
-            )
-            continue
-        table = [line for line in body if line.lstrip().startswith("|")]
-        prose = "\n".join(line for line in body if not line.lstrip().startswith("|")).strip()
-        deps, tiers = _text_fields(prose.splitlines())
-        rows = _table_rows(table)
-        if not rows:
-            raise ValidationFailed(f"ranged block {block_id} to {range_end} ({name}) has no table rows")
-        for line, cells, columns in rows:
-            row_name = cells[1] if len(cells) > 1 and cells[1] else ""
-            # A "Deps" or "Tier" column, when the table has one, applies to its row only.
-            row_deps, row_tiers = _row_fields(cells, columns)
-            items.append(
-                Item(
-                    id=cells[0],
-                    title=f"{name}: {row_name}" if row_name else name,
-                    description=(prose + "\n\n" + line.strip()).strip(),
-                    tier_tags=_unique([*tiers, *row_tiers]),
-                    deps=_unique([*deps, *row_deps]),
-                    block=block_id,
-                )
-            )
+                continue
+            table = [line for line in block_body if line.lstrip().startswith("|")]
+            block_prose = "\n".join(line for line in block_body if not line.lstrip().startswith("|")).strip()
+            prose = "\n\n".join(text for text in (shared, block_prose) if text)
+            deps, tiers = _text_fields(prose.splitlines())
+            rows = _table_rows(table)
+            if not rows:
+                raise ValidationFailed(f"ranged block {block_id} to {range_end} ({name}) has no table rows")
+            items.extend(_row_items(rows, prose, name, block_id, deps, tiers))
     _expand_phrases(items)
     seen: set[str] = set()
     for item in items:
@@ -294,6 +365,10 @@ class _Plan:
     ready: bool
     status: str  # the status after the import
     key: str | None = None
+
+
+def _digest(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def _unique(values: Iterable[str]) -> list[str]:
@@ -387,6 +462,7 @@ def import_breakdown(
         return ref[1].id in current.depends_on
 
     plans: list[_Plan] = []
+    kept: list[dict[str, str]] = []
     for item in items:
         current = existing.get(item.id)
         desired = _unique([*extra_tags, *item.tier_tags])
@@ -401,8 +477,18 @@ def import_breakdown(
         else:
             if current.title != item.title:
                 changes["title"] = item.title
-            if current.description != item.description:
+            digest = _digest(item.description)
+            recorded = (current.metadata or {}).get(DESCRIPTION_DIGEST)
+            if current.description == item.description:
+                if recorded != digest:
+                    changes["metadata"] = {DESCRIPTION_DIGEST: digest}  # adopt the import record
+            elif recorded == _digest(current.description):
+                # Unchanged since the last import: the document's text replaces it.
                 changes["description"] = item.description
+                changes["metadata"] = {DESCRIPTION_DIGEST: digest}
+            else:
+                # Edited since the import, or imported before records existed: keep it and report it.
+                kept.append({"id": item.id, "key": current.key, "reason": "description edited since import"})
             if parent_task is not None and current.parent_id != parent_task.id:
                 changes["parent"] = parent
             add_tags = [t for t in desired if t not in current.tags]
@@ -456,6 +542,7 @@ def import_breakdown(
         "tasks": rows,
         "map": dict(keys),
         "unresolved": unresolved,
+        "kept_descriptions": kept,
         "counts": counts,
     }
 
@@ -483,7 +570,11 @@ def _apply(
                     parent=parent,
                     projects=[project] if project else [],
                     repositories=[repository] if repository else [],
-                    metadata={"breakdown_id": plan.item.id, "breakdown_doc": doc_ref},
+                    metadata={
+                        "breakdown_id": plan.item.id,
+                        "breakdown_doc": doc_ref,
+                        DESCRIPTION_DIGEST: _digest(plan.item.description),
+                    },
                 ),
             )
             plan.key = out.key

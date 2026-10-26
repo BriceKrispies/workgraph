@@ -27,31 +27,10 @@ fn scratch(name: &str) -> Result<PathBuf, Box<dyn Error>> {
     Ok(dir)
 }
 
-fn schema() -> Result<String, Box<dyn Error>> {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../contracts/schema-0011.sql");
-    let text = std::fs::read_to_string(path)?;
-    let wanted: Vec<&str> = text
-        .split("\n\n")
-        .map(str::trim)
-        .filter(|block| {
-            (block.starts_with("CREATE TABLE") && !block.starts_with("CREATE TABLE 'task_fts_"))
-                || block.starts_with("CREATE VIRTUAL TABLE")
-                || block.starts_with("CREATE TRIGGER")
-        })
-        .collect();
-    Ok(wanted.join(";\n"))
-}
-
-/// A Workgraph home with the schema created, and a queue on it.
+/// A Workgraph home and a queue on it; opening the app migrates the database to head.
 fn home(name: &str) -> Result<(PathBuf, Queue), Box<dyn Error>> {
     let dir = scratch(name)?;
-    let mut queue = Queue::open(Some(&dir), "test")?;
-    let ddl = schema()?;
-    queue
-        .app
-        .runtime
-        .store
-        .write(|session| session.execute_batch(&ddl))?;
+    let queue = Queue::open(Some(&dir), "test")?;
     Ok((dir, queue))
 }
 

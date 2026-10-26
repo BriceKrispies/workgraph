@@ -767,6 +767,170 @@ pub fn archived_line(console: &Console, task: &Value, undo: bool) -> String {
         .text
 }
 
+// ------------------------------------------- claim, release, complete, reports, links
+
+/// The `ClaimRequest` of `task claim`.
+pub fn claim_body(m: &ArgMatches) -> Result<Json, CliFailure> {
+    Ok(json!({
+        "agent": one(m, "--agent"),
+        "lease_minutes": number(m, "--lease-minutes", 120)?,
+    }))
+}
+
+/// The optional `ReasonBody` of `task release`: no body without `--reason`.
+#[must_use]
+pub fn release_body(m: &ArgMatches) -> Json {
+    match one(m, "--reason") {
+        None => Json::Null,
+        Some(reason) => json!({ "reason": reason }),
+    }
+}
+
+/// The `CompleteBody` of `task complete`.
+#[must_use]
+pub fn complete_body(m: &ArgMatches) -> Json {
+    json!({
+        "summary": one(m, "--summary").unwrap_or_default(),
+        "attempt_id": one(m, "--attempt"),
+    })
+}
+
+/// The `ResultReport` of `task result`; an outcome other than `succeeded` or `failed` is the
+/// CLI's own usage error (exit 2), raised before anything is read or written.
+pub fn result_body(m: &ArgMatches) -> Result<Json, CliFailure> {
+    let outcome = one(m, "outcome").unwrap_or_default();
+    if outcome != "succeeded" && outcome != "failed" {
+        return Err(CliFailure::fail("outcome must be succeeded or failed", 2));
+    }
+    Ok(json!({
+        "outcome": outcome,
+        "summary": one(m, "--summary").unwrap_or_default(),
+        "attempt_id": one(m, "--attempt"),
+    }))
+}
+
+/// The `ProgressReport` of `task progress`; `--percent` is a float, as typer reads it.
+pub fn progress_body(m: &ArgMatches) -> Result<Json, CliFailure> {
+    let percent = match one(m, "--percent") {
+        None => Json::Null,
+        Some(text) => {
+            let parsed: f64 = text.trim().parse().map_err(|_| {
+                CliFailure::fail(
+                    format!("Invalid value for '--percent': {text:?} is not a valid float."),
+                    2,
+                )
+            })?;
+            json!(parsed)
+        }
+    };
+    Ok(json!({
+        "message": one(m, "message").unwrap_or_default(),
+        "percent": percent,
+        "attempt_id": one(m, "--attempt"),
+    }))
+}
+
+/// The `CommentCreate` of `task comment`.
+#[must_use]
+pub fn comment_body(m: &ArgMatches) -> Json {
+    json!({ "body": one(m, "body").unwrap_or_default() })
+}
+
+/// The `DependencyBody` of `task depend`.
+#[must_use]
+pub fn dependency_body(depends_on: &str) -> Json {
+    json!({ "depends_on": depends_on })
+}
+
+/// The `RelationCreate` of `task relate`.
+#[must_use]
+pub fn relation_body(m: &ArgMatches) -> Json {
+    json!({
+        "target": one(m, "target").unwrap_or_default(),
+        "relation_type": one(m, "--type").unwrap_or_else(|| "relates_to".to_owned()),
+    })
+}
+
+/// The `RepoBody` of `task link-repo`.
+#[must_use]
+pub fn repo_body(m: &ArgMatches) -> Json {
+    json!({
+        "repository": one(m, "repository").unwrap_or_default(),
+        "access": one(m, "--access"),
+    })
+}
+
+/// The human view of `task claim`.
+#[must_use]
+pub fn claimed_line(console: &Console, task: &Value) -> String {
+    console
+        .print(&format!(
+            "claimed {} until {}",
+            s(get(task, "key")),
+            when(get(task, "claim_expires_at"))
+        ))
+        .text
+}
+
+/// The human view of `task release`.
+#[must_use]
+pub fn released_line(console: &Console, task: &Value) -> String {
+    console
+        .print(&format!("released {}", s(get(task, "key"))))
+        .text
+}
+
+/// The human view of `task complete` and `task result`.
+#[must_use]
+pub fn status_line(console: &Console, task: &Value) -> String {
+    console
+        .print(&format!(
+            "{} is now {}",
+            s(get(task, "key")),
+            s(get(task, "status"))
+        ))
+        .text
+}
+
+/// A fixed line of the human view (`comment added`, `progress recorded`).
+#[must_use]
+pub fn note_line(console: &Console, text: &str) -> String {
+    console.print(text).text
+}
+
+/// The human view of `task depend`.
+#[must_use]
+pub fn depend_line(console: &Console, task: &Value) -> String {
+    console
+        .print(&format!(
+            "{} depends on {} task(s); status {}",
+            s(get(task, "key")),
+            items(get(task, "depends_on")).len(),
+            s(get(task, "status"))
+        ))
+        .text
+}
+
+/// The human view of `task relate`.
+#[must_use]
+pub fn related_line(console: &Console, relation: &Value) -> String {
+    console
+        .print(&format!("related ({})", s(get(relation, "relation_type"))))
+        .text
+}
+
+/// The human view of `task link-repo`.
+#[must_use]
+pub fn linked_line(console: &Console, task: &Value) -> String {
+    console
+        .print(&format!(
+            "{} touches {} repositories",
+            s(get(task, "key")),
+            items(get(task, "repository_ids")).len()
+        ))
+        .text
+}
+
 fn summary(data: Option<&Value>) -> String {
     let Some(data) = data else {
         return String::new();

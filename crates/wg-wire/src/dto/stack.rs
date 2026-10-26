@@ -34,6 +34,24 @@ pub fn from_model<'a>(
     repositories: impl IntoIterator<Item = (&'a StackRepository, &'a str)>,
     items: impl IntoIterator<Item = (&'a StackItem, &'a Task)>,
 ) -> Value {
+    with_tips(
+        stack,
+        parent,
+        repositories
+            .into_iter()
+            .map(|(row, name)| (row, name, None)),
+        items,
+    )
+}
+
+/// A stack with the integration tip of each repository (`StackService._with_tips`): the third
+/// member of a repository is the tip its prepared worktree reports, `None` without one.
+pub fn with_tips<'a>(
+    stack: &Stack,
+    parent: &Task,
+    repositories: impl IntoIterator<Item = (&'a StackRepository, &'a str, Option<&'a str>)>,
+    items: impl IntoIterator<Item = (&'a StackItem, &'a Task)>,
+) -> Value {
     model(
         NAME,
         vec![
@@ -48,7 +66,7 @@ pub fn from_model<'a>(
                 Value::List(
                     repositories
                         .into_iter()
-                        .map(|(row, name)| stack_repository::from_model(row, name))
+                        .map(|(row, name, tip)| stack_repository::with_tip(row, name, tip))
                         .collect(),
                 ),
             ),

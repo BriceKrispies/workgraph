@@ -108,6 +108,10 @@ fn bound_text(bound: f64) -> String {
     format!("{bound}")
 }
 
+/// Pydantic accepts an integral float as an int only strictly inside the i64 range: `2**63` and
+/// `-2**63` are `int_parsing_size`, while the largest float below `2**63` is accepted.
+const I64_FLOAT_LIMIT: f64 = 9_223_372_036_854_775_808.0;
+
 fn int_value(input: &Value, loc: &[Loc]) -> Result<i64, Vec<ValidationError>> {
     let parsing = |msg: &str, kind: &str| one(error(kind, msg, loc, input, None));
     match input {
@@ -117,10 +121,15 @@ fn int_value(input: &Value, loc: &[Loc]) -> Result<i64, Vec<ValidationError>> {
                 return Ok(int);
             }
             match number.as_f64() {
-                Some(float)
-                    if float.is_finite() && float.fract() == 0.0 && float.abs() < 9.2e18 =>
-                {
-                    Ok(float as i64)
+                Some(float) if float.is_finite() && float.fract() == 0.0 => {
+                    if float.abs() < I64_FLOAT_LIMIT {
+                        Ok(float as i64)
+                    } else {
+                        Err(parsing(
+                            "Unable to parse input string as an integer, exceeded maximum size",
+                            "int_parsing_size",
+                        ))
+                    }
                 }
                 _ => Err(parsing(
                     "Input should be a valid integer, got a number with a fractional part",

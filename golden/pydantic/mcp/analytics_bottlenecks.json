@@ -420,6 +420,63 @@
       }
     },
     {
+      "id": "float:top:huge",
+      "input": {
+        "top": 1.5e+300
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "top"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:top:edge",
+      "input": {
+        "top": 9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "top"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:top:large",
+      "input": {
+        "top": 9.2e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 100
+            },
+            "input": 9.2e+18,
+            "loc": [
+              "top"
+            ],
+            "msg": "Input should be less than or equal to 100",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
       "id": "ge:top",
       "input": {
         "top": 0

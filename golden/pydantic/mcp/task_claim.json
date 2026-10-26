@@ -306,6 +306,66 @@
       }
     },
     {
+      "id": "float:lease_minutes:huge",
+      "input": {
+        "lease_minutes": 1.5e+300,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:lease_minutes:edge",
+      "input": {
+        "lease_minutes": 9.223372036854776e+18,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:lease_minutes:large",
+      "input": {
+        "lease_minutes": 9.2e+18,
+        "task": "example"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 10080
+            },
+            "input": 9.2e+18,
+            "loc": [
+              "lease_minutes"
+            ],
+            "msg": "Input should be less than or equal to 10080",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
       "id": "ge:lease_minutes",
       "input": {
         "lease_minutes": 0,

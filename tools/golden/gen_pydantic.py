@@ -9,8 +9,9 @@ Writes ``golden/pydantic/`` (run ``uv run python tools/golden/gen_pydantic.py``)
 Each file holds a ``base`` payload that validates and a list of ``cases``. A case is one payload plus the
 result Python produces: ``{"ok": <model_dump(mode="json")>}`` or ``{"errors": [...]}``, where each error
 keeps Pydantic's ``type``, ``loc``, ``msg``, ``input`` and ``ctx`` (``url`` is dropped). Probes per field:
-missing, one wrong value per common JSON type, the field's own bounds just outside their limits, and an
-invalid string or list of strings for validators such as slug and tag patterns. Each model also gets an
+missing, one wrong value per common JSON type, the field's own bounds just outside their limits, an
+invalid string or list of strings for validators such as slug and tag patterns, and for integer fields
+integral floats around the i64 range. Each model also gets an
 unknown key and a non-object body.
 
 Output is deterministic: sorted keys, ``\\n`` line endings, UTF-8.
@@ -48,6 +49,13 @@ WRONG_TYPE_PROBES: list[tuple[str, Any]] = [
     ("str", "x"),
     ("list", ["a"]),
     ("dict", {"k": 1}),
+]
+# Floats probed on integer fields: far outside the i64 range (Pydantic: int_parsing_size), exactly 2**63
+# (also int_parsing_size, the range is open), and a large integral float inside it (accepted as an int).
+INT_FLOAT_PROBES: list[tuple[str, float]] = [
+    ("huge", 1.5e300),
+    ("edge", 9.223372036854776e18),
+    ("large", 9.2e18),
 ]
 INVALID_TEXT = "Not valid!"
 BASE_TEXT = "example"
@@ -203,6 +211,9 @@ def _cases(model: type[BaseModel], fields: dict[str, Any]) -> tuple[dict[str, An
             add(f"missing:{name}", {k: v for k, v in base.items() if k != key})
         for label, value in WRONG_TYPE_PROBES:
             add(f"wrong:{name}:{label}", {**base, key: value})
+        if _unwrap(field.annotation) is int:
+            for label, value in INT_FLOAT_PROBES:
+                add(f"float:{name}:{label}", {**base, key: value})
         sample = base.get(key, _field_sample(field))
         if isinstance(sample, str):
             add(f"invalid:{name}", {**base, key: INVALID_TEXT})

@@ -313,6 +313,63 @@
       }
     },
     {
+      "id": "float:limit:huge",
+      "input": {
+        "limit": 1.5e+300
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:limit:edge",
+      "input": {
+        "limit": 9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:limit:large",
+      "input": {
+        "limit": 9.2e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "le": 200
+            },
+            "input": 9.2e+18,
+            "loc": [
+              "limit"
+            ],
+            "msg": "Input should be less than or equal to 200",
+            "type": "less_than_equal"
+          }
+        ]
+      }
+    },
+    {
       "id": "ge:limit",
       "input": {
         "limit": 0

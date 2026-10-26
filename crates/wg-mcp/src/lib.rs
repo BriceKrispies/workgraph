@@ -5,9 +5,10 @@
 //! `rmcp`'s transports around a [`handler::WgMcp`] that answers from the snapshot descriptors and
 //! hands each validated tool call to a [`backend::ToolBackend`].
 //!
-//! * [`serve_stdio`] and [`serve_http`] run one transport each;
-//! * [`http_router`] is the `/mcp/` router `wg-server` mounts, built from the same
-//!   [`backend::Agent`] (the same `--grant` permissions) as the stdio transport (WG-3734).
+//! * [`serve_stdio`] runs the stdio transport;
+//! * [`http_router`] is the `/mcp/` router `wg-server` mounts behind its bearer-token and Host/Origin
+//!   checks, built from the same [`backend::Agent`] (the same `--grant` permissions) as the stdio
+//!   transport (WG-3734). There is no unauthenticated HTTP listener here (WG-3764).
 
 pub mod backend;
 mod decision_tools;
@@ -18,4 +19,4 @@ pub mod transport;
 
 pub use backend::{Agent, AppBackend, ToolBackend};
 pub use handler::WgMcp;
-pub use transport::{http_router, serve_http, serve_stdio};
+pub use transport::{http_router, serve_stdio};

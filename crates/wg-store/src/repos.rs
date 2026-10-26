@@ -5,12 +5,12 @@
 //! through the session and decodes the rows with the table codecs. Writes go through the generic
 //! [`Session::apply_write`] and [`Session::apply_decision`] like every other family.
 
-use wg_model::RowKey;
 use wg_model::entity::task::Task;
 use wg_model::entity::{
     Project, ProjectRepository, Repository, RepositoryCheckout, RepositoryDependency,
     RepositoryRef, RepositoryRemote, Workspace,
 };
+use wg_model::{RegistrySlice, Row, RowKey, Write};
 use wg_storecodec::{Statement, repo_sql};
 use wg_types::{Id, WgError};
 
@@ -151,6 +151,40 @@ impl Session<'_> {
         to: Id,
     ) -> Result<Option<RepositoryDependency>, WgError> {
         one(self, &repo_sql::dependency_between(from, to))
+    }
+
+    /// The registry slice a decision on workspaces and projects reads: every workspace and, with
+    /// `workspace_id`, that workspace's projects with their memberships and its repositories
+    /// (archived ones included, as reference resolution needs them).
+    pub fn registry_world(&mut self, workspace_id: Option<Id>) -> Result<RegistrySlice, WgError> {
+        let workspaces = self.workspaces()?;
+        let scoped = match workspace_id {
+            Some(scope) => {
+                let mut rows: Vec<Row> = Vec::new();
+                for project in self.projects(scope, true)? {
+                    rows.extend(
+                        self.project_repositories(project.id)?
+                            .into_iter()
+                            .map(Row::from),
+                    );
+                    rows.push(Row::Project(project));
+                }
+                rows.extend(
+                    self.repositories(scope, None, true)?
+                        .into_iter()
+                        .map(Row::from),
+                );
+                rows
+            }
+            None => Vec::new(),
+        };
+        let writes: Vec<Write> = workspaces
+            .into_iter()
+            .map(Row::from)
+            .chain(scoped)
+            .map(Write::Insert)
+            .collect();
+        Ok(RegistrySlice::default().apply_all(&writes))
     }
 
     /// The workspace row whose id is `workspace_id`, if any.

@@ -1,39 +1,30 @@
-//! `wg-mcp`: the MCP server as a program, for the conformance replay and for hosts that run it
-//! apart from the `workgraph` binary. Flags as `workgraph mcp`: `--transport stdio|http`,
-//! `--agent-name`, `--grant` (repeatable), `--host`, `--port`; a leading `mcp` word is skipped.
+//! `wg-mcp`: the MCP server over stdio as a program, for the conformance replay and for hosts that
+//! run it apart from the `workgraph` binary. Flags as `workgraph mcp`: `--agent-name`, `--grant`
+//! (repeatable); a leading `mcp` word is skipped. The HTTP transport is served only by
+//! `workgraph mcp --transport http`, behind the API token (WG-3764).
 
 use std::process::ExitCode;
 
-use tokio_util::sync::CancellationToken;
-use wg_mcp::{AppBackend, serve_http, serve_stdio};
+use wg_mcp::{AppBackend, serve_stdio};
 use wg_mcpspec::options::{ServeOptions, Transport};
-use wg_types::WgError;
+use wg_types::{ErrorCode, WgError};
+
+const HTTP_REFUSED: &str = "the standalone wg-mcp serves stdio only; \
+`workgraph mcp --transport http` serves the endpoint behind the API token";
 
 fn run(args: &[String]) -> Result<(), WgError> {
     let options = ServeOptions::parse(args)?;
+    if options.transport == Transport::Http {
+        return Err(WgError::new(ErrorCode::WorkgraphError, HTTP_REFUSED));
+    }
     let app = wg_runtime::App::open(None)?;
     let backend = Box::new(AppBackend(app));
     let agent = options.agent();
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
-        .map_err(|err| WgError::new(wg_types::ErrorCode::WorkgraphError, err.to_string()))?;
-    runtime.block_on(async {
-        match options.transport {
-            Transport::Stdio => serve_stdio(agent, backend).await,
-            Transport::Http => {
-                let listener = std::net::TcpListener::bind((options.host.as_str(), options.port))
-                    .map_err(|err| {
-                    WgError::new(wg_types::ErrorCode::WorkgraphError, err.to_string())
-                })?;
-                eprintln!(
-                    "MCP Streamable HTTP on http://{}:{}/mcp/",
-                    options.host, options.port
-                );
-                serve_http(listener, agent, backend, CancellationToken::new()).await
-            }
-        }
-    })
+        .map_err(|err| WgError::new(ErrorCode::WorkgraphError, err.to_string()))?;
+    runtime.block_on(serve_stdio(agent, backend))
 }
 
 fn main() -> ExitCode {

@@ -7,6 +7,7 @@
 
 arch-lint Tooling
 wg-agents Shell
+wg-agentspec Pure
 wg-analytics Core
 wg-archive Shell
 wg-archivespec Pure
@@ -48,6 +49,7 @@ wg-store Shell
 wg-storecodec Pure
 wg-tasks Core
 wg-telemetry Core
+wg-telemetryspec Pure
 wg-trackers Core
 wg-types Core
 wg-uispec Pure

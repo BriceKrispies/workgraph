@@ -21,7 +21,9 @@ mod effects;
 mod handlers;
 mod logging;
 mod queue;
+mod registry;
 mod setup;
+mod stacks;
 mod stamp;
 mod tasks;
 mod worker;
@@ -38,7 +40,11 @@ pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
 pub use wg_runtimespec::decisions::{DecisionFilter, filter_of as decision_filter};
+pub use wg_runtimespec::registry::{
+    project_create_body, project_option_body, workspace_create_body,
+};
 pub use wg_runtimespec::setup::InitRequest;
 pub use wg_runtimespec::tasks::reads::{GraphRequest, Shown};
 pub use wg_runtimespec::{Level, RequestContext};
+pub use wg_tasks::rename::Term;
 pub use worker::{RunOptions, Summary, Worker, WorkerOptions};

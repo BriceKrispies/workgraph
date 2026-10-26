@@ -3,6 +3,7 @@
 use base64::Engine;
 use serde_json::{Value, json};
 use wg_types::{ErrorCode, WgError};
+use wg_validate::pydantic::py_repr;
 
 use crate::options::CaptureOptions;
 
@@ -128,12 +129,14 @@ pub fn wait_timeout_error(
     wait_for: Option<&str>,
     wait_gone: Option<&str>,
 ) -> WgError {
+    // Python prints each selector with `repr(str)`, as `{wait_for!r}` in `integrations/browser.py`.
+    let quoted = |selector: &str| py_repr(&Value::String(selector.to_owned()));
     let mut waits = vec!["page load".to_owned()];
     if let Some(selector) = wait_for {
-        waits.push(format!("'{selector}' to appear"));
+        waits.push(format!("{} to appear", quoted(selector)));
     }
     if let Some(selector) = wait_gone {
-        waits.push(format!("'{selector}' to disappear"));
+        waits.push(format!("{} to disappear", quoted(selector)));
     }
     WgError::new(
         ErrorCode::ProviderUnavailable,
@@ -291,6 +294,15 @@ mod tests {
         assert_eq!(
             err.message,
             "timed out after 5s waiting for page load and 'main' to appear and '[aria-busy=\"true\"]' to disappear at http://x/"
+        );
+    }
+
+    #[test]
+    fn timeout_message_quotes_selectors_like_python_repr() {
+        let err = wait_timeout_error(3.0, "http://x/", None, Some("a[title='x']"));
+        assert_eq!(
+            err.message,
+            "timed out after 3s waiting for page load and \"a[title='x']\" to disappear at http://x/"
         );
     }
 

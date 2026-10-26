@@ -10,7 +10,16 @@ use wg_clispec::{Snapshot, diff_commands};
 
 /// Top-level groups whose clap tree must equal the snapshot. Each group task adds its name.
 const IMPLEMENTED: &[&str] = &[
-    "config", "doctor", "init", "task", "decision", "ui", "serve", "mcp",
+    "config",
+    "doctor",
+    "init",
+    "task",
+    "decision",
+    "ui",
+    "serve",
+    "mcp",
+    "project",
+    "workspace",
 ];
 
 /// The hand-written command of an implemented group.
@@ -121,33 +130,32 @@ fn missing_argument_is_a_usage_error() {
 
 #[test]
 fn unimplemented_command_reports_itself_in_human_mode() {
-    let out = workgraph(&["task", "claim", "WG-1"]);
+    let out = workgraph(&["analytics", "overview"]);
     assert_eq!(out.status.code(), Some(1));
     assert!(out.stdout.is_empty());
     let err = text(&out.stderr);
     assert!(err.starts_with("error:"), "{err}");
-    assert!(err.contains("workgraph task claim"), "{err}");
+    assert!(err.contains("workgraph analytics overview"), "{err}");
 }
 
 #[test]
 fn json_is_stripped_wherever_it_appears() {
     let expected = concat!(
         "{\"error\": {\"code\": \"cli_error\", \"message\": ",
-        "\"`workgraph task claim` is not implemented in this build of the Rust rewrite yet\", ",
+        "\"`workgraph analytics overview` is not implemented in this build of the Rust rewrite yet\", ",
         "\"details\": {}}}\n"
     );
     for args in [
-        vec!["--json", "task", "claim", "WG-1"],
-        vec!["task", "--json", "claim", "WG-1"],
-        vec!["task", "claim", "WG-1", "--json"],
+        vec!["--json", "analytics", "overview"],
+        vec!["analytics", "--json", "overview"],
+        vec!["analytics", "overview", "--json"],
         vec![
             "--home",
             "somewhere",
             "-w",
             "main",
-            "task",
-            "claim",
-            "WG-1",
+            "analytics",
+            "overview",
             "--json",
         ],
     ] {

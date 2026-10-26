@@ -27,4 +27,6 @@ wg-validate = { path = "../wg-validate" }
 wg-wire = { path = "../wg-wire" }
 
 [dev-dependencies]
+rpds = "1"
 wg-model = { path = "../wg-model" }
+wg-store = { path = "../wg-store" }

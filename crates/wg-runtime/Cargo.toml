@@ -19,7 +19,6 @@ tracing-core = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false, features = ["registry", "std"] }
 wg-config = { path = "../wg-config" }
 wg-git = { path = "../wg-git" }
-wg-gitcore = { path = "../wg-gitcore" }
 wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }
 wg-model = { path = "../wg-model" }

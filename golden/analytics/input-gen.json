@@ -2272,6 +2272,388 @@
     ]
    ]
   },
+  "events": {
+   "columns": [
+    "seq",
+    "workspace_id",
+    "event_type",
+    "entity_id",
+    "actor",
+    "occurred_at",
+    "data"
+   ],
+   "rows": [
+    [
+     8,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-1",
+     "human:golden",
+     "2026-01-18T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     11,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-2",
+     "human:golden",
+     "2026-01-20T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     14,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-3",
+     "human:golden",
+     "2026-01-22T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     17,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-4",
+     "human:golden",
+     "2026-01-24T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     20,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-5",
+     "human:golden",
+     "2026-01-26T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     23,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-6",
+     "human:golden",
+     "2026-01-28T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     26,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-7",
+     "human:golden",
+     "2026-01-30T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     29,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-8",
+     "human:golden",
+     "2026-02-01T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     32,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-9",
+     "human:golden",
+     "2026-02-03T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     35,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-10",
+     "human:golden",
+     "2026-02-05T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     38,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-11",
+     "human:golden",
+     "2026-02-07T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     41,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-12",
+     "human:golden",
+     "2026-02-09T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     44,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-13",
+     "human:golden",
+     "2026-02-11T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     47,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-14",
+     "human:golden",
+     "2026-02-13T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     50,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-15",
+     "human:golden",
+     "2026-02-15T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     53,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-16",
+     "human:golden",
+     "2026-02-17T21:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     76,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-3",
+     "human:golden",
+     "2026-03-21T15:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by human:golden\",\"to\":\"claimed\",\"version\":3}"
+    ],
+    [
+     78,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-3",
+     "human:golden",
+     "2026-03-22T15:00:00.000000+00:00",
+     "{\"attempt_id\":null,\"from\":\"claimed\",\"reason\":\"completion reported\",\"to\":\"awaiting_review\",\"version\":4}"
+    ],
+    [
+     79,
+     "workspaces:1",
+     "task.completed",
+     "task:WG-3",
+     "human:golden",
+     "2026-03-22T21:00:00.000000+00:00",
+     "{\"next_status\":\"awaiting_review\",\"summary\":\"\",\"verification_configured\":false}"
+    ],
+    [
+     80,
+     "workspaces:1",
+     "task.accepted",
+     "task:WG-3",
+     "human:golden",
+     "2026-03-23T09:00:00.000000+00:00",
+     "{\"manifest_id\":null,\"mode\":\"manual\",\"reason\":\"golden\",\"verification_run_id\":null}"
+    ],
+    [
+     81,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-3",
+     "human:golden",
+     "2026-03-23T21:00:00.000000+00:00",
+     "{\"from\":\"awaiting_review\",\"reason\":\"manual acceptance\",\"to\":\"accepted\",\"version\":5}"
+    ],
+    [
+     91,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-5",
+     "human:golden",
+     "2026-04-02T21:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by human:golden\",\"to\":\"claimed\",\"version\":3}"
+    ],
+    [
+     93,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-5",
+     "human:golden",
+     "2026-04-03T21:00:00.000000+00:00",
+     "{\"attempt_id\":null,\"from\":\"claimed\",\"reason\":\"completion reported\",\"to\":\"awaiting_review\",\"version\":4}"
+    ],
+    [
+     94,
+     "workspaces:1",
+     "task.completed",
+     "task:WG-5",
+     "human:golden",
+     "2026-04-04T03:00:00.000000+00:00",
+     "{\"next_status\":\"awaiting_review\",\"summary\":\"\",\"verification_configured\":false}"
+    ],
+    [
+     95,
+     "workspaces:1",
+     "task.accepted",
+     "task:WG-5",
+     "human:golden",
+     "2026-04-04T15:00:00.000000+00:00",
+     "{\"manifest_id\":null,\"mode\":\"manual\",\"reason\":\"golden\",\"verification_run_id\":null}"
+    ],
+    [
+     96,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-5",
+     "human:golden",
+     "2026-04-05T03:00:00.000000+00:00",
+     "{\"from\":\"awaiting_review\",\"reason\":\"manual acceptance\",\"to\":\"accepted\",\"version\":5}"
+    ],
+    [
+     107,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-7",
+     "human:golden",
+     "2026-04-16T15:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by human:golden\",\"to\":\"claimed\",\"version\":3}"
+    ],
+    [
+     109,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-7",
+     "human:golden",
+     "2026-04-17T15:00:00.000000+00:00",
+     "{\"attempt_id\":null,\"from\":\"claimed\",\"reason\":\"completion reported\",\"to\":\"awaiting_review\",\"version\":4}"
+    ],
+    [
+     110,
+     "workspaces:1",
+     "task.completed",
+     "task:WG-7",
+     "human:golden",
+     "2026-04-17T21:00:00.000000+00:00",
+     "{\"next_status\":\"awaiting_review\",\"summary\":\"\",\"verification_configured\":false}"
+    ],
+    [
+     111,
+     "workspaces:1",
+     "task.accepted",
+     "task:WG-7",
+     "human:golden",
+     "2026-04-18T09:00:00.000000+00:00",
+     "{\"manifest_id\":null,\"mode\":\"manual\",\"reason\":\"golden\",\"verification_run_id\":null}"
+    ],
+    [
+     112,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-7",
+     "human:golden",
+     "2026-04-18T21:00:00.000000+00:00",
+     "{\"from\":\"awaiting_review\",\"reason\":\"manual acceptance\",\"to\":\"accepted\",\"version\":5}"
+    ],
+    [
+     117,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-8",
+     "human:golden",
+     "2026-04-24T09:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by human:golden\",\"to\":\"claimed\",\"version\":3}"
+    ],
+    [
+     119,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-8",
+     "human:golden",
+     "2026-04-25T09:00:00.000000+00:00",
+     "{\"attempt_id\":null,\"from\":\"claimed\",\"reason\":\"completion reported\",\"to\":\"awaiting_review\",\"version\":4}"
+    ],
+    [
+     120,
+     "workspaces:1",
+     "task.completed",
+     "task:WG-8",
+     "human:golden",
+     "2026-04-25T15:00:00.000000+00:00",
+     "{\"next_status\":\"awaiting_review\",\"summary\":\"\",\"verification_configured\":false}"
+    ],
+    [
+     121,
+     "workspaces:1",
+     "task.accepted",
+     "task:WG-8",
+     "human:golden",
+     "2026-04-26T03:00:00.000000+00:00",
+     "{\"manifest_id\":null,\"mode\":\"manual\",\"reason\":\"golden\",\"verification_run_id\":null}"
+    ],
+    [
+     122,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-8",
+     "human:golden",
+     "2026-04-26T15:00:00.000000+00:00",
+     "{\"from\":\"awaiting_review\",\"reason\":\"manual acceptance\",\"to\":\"accepted\",\"version\":5}"
+    ],
+    [
+     162,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-16",
+     "human:golden",
+     "2026-06-05T15:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by human:golden\",\"to\":\"claimed\",\"version\":3}"
+    ],
+    [
+     164,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-16",
+     "human:golden",
+     "2026-06-06T15:00:00.000000+00:00",
+     "{\"attempt_id\":null,\"from\":\"claimed\",\"reason\":\"completion reported\",\"to\":\"awaiting_review\",\"version\":4}"
+    ],
+    [
+     165,
+     "workspaces:1",
+     "task.completed",
+     "task:WG-16",
+     "human:golden",
+     "2026-06-06T21:00:00.000000+00:00",
+     "{\"next_status\":\"awaiting_review\",\"summary\":\"\",\"verification_configured\":false}"
+    ],
+    [
+     166,
+     "workspaces:1",
+     "task.accepted",
+     "task:WG-16",
+     "human:golden",
+     "2026-06-07T09:00:00.000000+00:00",
+     "{\"manifest_id\":null,\"mode\":\"manual\",\"reason\":\"golden\",\"verification_run_id\":null}"
+    ],
+    [
+     167,
+     "workspaces:1",
+     "task.status_changed",
+     "task:WG-16",
+     "human:golden",
+     "2026-06-07T21:00:00.000000+00:00",
+     "{\"from\":\"awaiting_review\",\"reason\":\"manual acceptance\",\"to\":\"accepted\",\"version\":5}"
+    ]
+   ]
+  },
   "project_repositories": {
    "columns": [
     "project_id",

@@ -9,3 +9,13 @@ description = "rusqlite connection setup, migrations, row codecs, SQL"
 
 [lints]
 workspace = true
+
+[dependencies]
+rusqlite = { version = "0.41", features = ["bundled"] }
+wg-model = { path = "../wg-model" }
+wg-storecodec = { path = "../wg-storecodec" }
+wg-types = { path = "../wg-types" }
+
+[dev-dependencies]
+rpds = { version = "1", features = ["serde"] }
+serde_json = { version = "1", features = ["preserve_order"] }

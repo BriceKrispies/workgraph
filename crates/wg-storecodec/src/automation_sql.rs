@@ -154,14 +154,16 @@ fn run_filter(
     sql
 }
 
-/// The runs of `workspace_id`, newest first, narrowed to `rule_id` and `status` when given.
+/// The runs of `workspace_id`, newest first, narrowed to `rule_id` and `status` when given. Runs
+/// recorded by one decision share its clock reading, so ties are broken by insertion order (newest
+/// insertion first), which is the order Python's per-row timestamps give.
 pub fn runs(workspace_id: Id, rule_id: Option<Id>, status: Option<&str>, page: Page) -> Statement {
     let mut params = Vec::new();
     let filter = run_filter(&mut params, workspace_id, rule_id, status);
     let limit = page.clause(&mut params);
     Statement {
         sql: format!(
-            "SELECT {} FROM {} AS r{filter} ORDER BY r.\"created_at\" DESC, r.\"id\" DESC{limit}",
+            "SELECT {} FROM {} AS r{filter} ORDER BY r.\"created_at\" DESC, r.rowid DESC{limit}",
             select_list(Table::AutomationRun, Some("r")),
             quote(Table::AutomationRun.name())
         ),
@@ -184,7 +186,7 @@ pub fn runs_with_rule(
         sql: format!(
             "SELECT {}, rule.\"name\" AS \"rule_name\" FROM {} AS r \
              JOIN {} AS rule ON rule.\"id\" = r.\"rule_id\"{filter} \
-             ORDER BY r.\"created_at\" DESC, r.\"id\" DESC{limit}",
+             ORDER BY r.\"created_at\" DESC, r.rowid DESC{limit}",
             select_list(Table::AutomationRun, Some("r")),
             quote(Table::AutomationRun.name()),
             quote(Table::AutomationRule.name())

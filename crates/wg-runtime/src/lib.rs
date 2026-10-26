@@ -14,6 +14,7 @@
 
 mod acceptance;
 mod app;
+mod automation;
 mod bus;
 mod cycle;
 mod decisions;
@@ -48,6 +49,7 @@ pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
 pub use wg_registry::admin::Patch as RepositoryPatch;
+pub use wg_runtimespec::automation::catalog as automation_catalog;
 pub use wg_runtimespec::decisions::{DecisionFilter, filter_of as decision_filter};
 pub use wg_runtimespec::jobs::{unknown_job_kind, worker_summary_out};
 pub use wg_runtimespec::registry::{

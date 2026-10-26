@@ -14,6 +14,8 @@ workspace = true
 getrandom = "0.4"
 time = { version = "0.3", default-features = false, features = ["std", "local-offset"] }
 rpds = "1"
+wg-automation = { path = "../wg-automation" }
+wg-storecodec = { path = "../wg-storecodec" }
 serde_json = { version = "1", features = ["preserve_order"] }
 tracing = "0.1"
 tracing-core = "0.1"
@@ -32,7 +34,6 @@ wg-registry = { path = "../wg-registry" }
 wg-runtimespec = { path = "../wg-runtimespec" }
 wg-stacks = { path = "../wg-stacks" }
 wg-store = { path = "../wg-store" }
-wg-storecodec = { path = "../wg-storecodec" }
 wg-wire = { path = "../wg-wire" }
 wg-tasks = { path = "../wg-tasks" }
 wg-telemetry = { path = "../wg-telemetry" }

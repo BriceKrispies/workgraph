@@ -17,6 +17,10 @@ impl EventQuery {
             let n = bind(&mut args, id_sql(id));
             clauses.push(format!("workspace_id = ?{n}"));
         }
+        if let Some(id) = self.id {
+            let n = bind(&mut args, id_sql(id));
+            clauses.push(format!("id = ?{n}"));
+        }
         if let Some(entity_type) = &self.entity_type {
             let n = bind(&mut args, Raw::Text(entity_type.clone()));
             clauses.push(format!("entity_type = ?{n}"));

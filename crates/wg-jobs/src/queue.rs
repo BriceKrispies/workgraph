@@ -130,6 +130,12 @@ pub fn backoff_delay(base_seconds: f64, attempt: i64, cap_seconds: f64) -> f64 {
 
 /// Inserts a job, or returns the id of the job already holding its idempotency key (in any status).
 pub fn enqueue(slice: &QueueSlice, job: &NewJob, stamp: &Stamp) -> Decision<Id> {
+    enqueue_as(slice, job, stamp.id(0), stamp)
+}
+
+/// [`enqueue`] with the id of a new job given by the caller. A decision that enqueues several jobs
+/// takes one id per job from its stamp, since every job of a stamp otherwise gets the same id.
+pub fn enqueue_as(slice: &QueueSlice, job: &NewJob, id: Id, stamp: &Stamp) -> Decision<Id> {
     let existing = job.idempotency_key.as_deref().and_then(|key| {
         slice
             .jobs
@@ -139,7 +145,6 @@ pub fn enqueue(slice: &QueueSlice, job: &NewJob, stamp: &Stamp) -> Decision<Id> 
     match existing {
         Some(row) => Decision::new(row.id),
         None => {
-            let id = stamp.id(0);
             let row = Job {
                 id,
                 workspace_id: job.workspace_id,

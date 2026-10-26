@@ -16,6 +16,7 @@ const IMPLEMENTED: &[&str] = &[
     "repo",
     "task",
     "decision",
+    "automation",
     "ui",
     "serve",
     "mcp",

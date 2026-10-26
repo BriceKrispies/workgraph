@@ -25,6 +25,7 @@ pub type Group = CliGroup;
 pub const FEATURES: &[&Feature] = &[
     &wg_tasks_feature::FEATURE,
     &wg_decisions::FEATURE,
+    &wg_experiments_feature::FEATURE,
     &wg_registry_feature::FEATURE,
     &wg_automation_feature::FEATURE,
 ];

@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import os
-import sys
-
 import httpx2
 import pytest
 from mcp import Client
-from mcp.client.stdio import StdioServerParameters
 from mcp.client.streamable_http import streamable_http_client
 
+from tests.helpers import mcp_stdio_params
 from workgraph.core.models.schemas import RepositoryRegister, TaskCreate
 from workgraph.demo.scenario import _free_port, _start_api
 
@@ -79,11 +76,7 @@ REQUIRED_TOOLS = {
 async def test_stdio_server_discovery_invocation_and_persistence(app, human, ws, home, make_repo):
     repo = make_repo("mcp-repo")
     app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
-    params = StdioServerParameters(
-        command=sys.executable,
-        args=["-m", "workgraph", "mcp", "--agent-name", "tester"],
-        env={**os.environ, "WORKGRAPH_HOME": str(home)},
-    )
+    params = mcp_stdio_params(home)
     async with Client(params, read_timeout_seconds=60) as client:
         tools = {t.name: t for t in (await client.list_tools()).tools}
         assert set(tools) >= REQUIRED_TOOLS
@@ -146,11 +139,7 @@ async def test_stdio_server_discovery_invocation_and_persistence(app, human, ws,
 
 @pytest.mark.slow
 async def test_task_files_round_trip_over_mcp(app, human, ws, home):
-    params = StdioServerParameters(
-        command=sys.executable,
-        args=["-m", "workgraph", "mcp", "--agent-name", "tester"],
-        env={**os.environ, "WORKGRAPH_HOME": str(home)},
-    )
+    params = mcp_stdio_params(home)
     async with Client(params, read_timeout_seconds=60) as client:
         created = await client.call_tool(
             "task_create",
@@ -183,13 +172,8 @@ async def test_stack_mutations_need_stack_write(app, human, ws, home, make_repo)
     repo = make_repo("stack-mcp")
     app.repositories.register(human, ws, RepositoryRegister(path=str(repo.path)))
 
-    def stdio(*grants: str) -> StdioServerParameters:
-        args = ["-m", "workgraph", "mcp", "--agent-name", "tester"]
-        for grant in grants:
-            args += ["--grant", grant]
-        return StdioServerParameters(
-            command=sys.executable, args=args, env={**os.environ, "WORKGRAPH_HOME": str(home)}
-        )
+    def stdio(*grants: str):
+        return mcp_stdio_params(home, grants=grants)
 
     async with Client(stdio(), read_timeout_seconds=60) as client:
         parent = await client.call_tool("task_create", {"title": "Stacked", "repositories": ["stack-mcp"]})
@@ -272,13 +256,8 @@ async def test_experiment_tools_read_and_classify_with_grant(app, human, ws, hom
     app.experiments.start_trial(human, ws, trial.id)
     app.experiments.record_grade(human, ws, trial.id, "fail")
 
-    def stdio(*grants: str) -> StdioServerParameters:
-        args = ["-m", "workgraph", "mcp", "--agent-name", "tester"]
-        for grant in grants:
-            args += ["--grant", grant]
-        return StdioServerParameters(
-            command=sys.executable, args=args, env={**os.environ, "WORKGRAPH_HOME": str(home)}
-        )
+    def stdio(*grants: str):
+        return mcp_stdio_params(home, grants=grants)
 
     async with Client(stdio(), read_timeout_seconds=60) as client:
         listed = await client.call_tool("experiment_list", {})

@@ -16,6 +16,7 @@ mod classify;
 mod decisions;
 mod git;
 mod jobs;
+mod automation;
 mod migrate;
 mod repos;
 mod run;

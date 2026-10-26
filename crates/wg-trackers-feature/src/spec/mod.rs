@@ -3,7 +3,9 @@
 //! reply. The clap command is in [`args`], the human views in [`view`].
 
 pub mod args;
+pub mod run;
 pub mod sql;
+pub mod sync;
 pub mod view;
 
 use serde_json::{Map, Value as Json};

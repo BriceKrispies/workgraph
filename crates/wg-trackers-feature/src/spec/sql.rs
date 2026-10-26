@@ -85,3 +85,17 @@ pub fn unresolved_pull_request_repos(connection: &str) -> Statement {
         params: vec![text_sql(connection), text_sql(PULL_REQUEST_KIND)],
     }
 }
+
+/// The keys among `keys` that a task of `workspace` already has. `keys` is not empty.
+pub fn known_task_keys(workspace: Id, keys: &[String]) -> Statement {
+    let marks: Vec<String> = (2..keys.len() + 2).map(|n| format!("?{n}")).collect();
+    Statement {
+        sql: format!(
+            "SELECT \"key\" FROM \"tasks\" WHERE \"workspace_id\" = ?1 AND \"key\" IN ({})",
+            marks.join(", ")
+        ),
+        params: std::iter::once(id_sql(workspace))
+            .chain(keys.iter().map(|key| text_sql(key)))
+            .collect(),
+    }
+}

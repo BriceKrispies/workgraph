@@ -1,0 +1,467 @@
+{
+  "exchanges": [
+    {
+      "case": "authorized",
+      "id": "X1",
+      "request": {
+        "body": null,
+        "headers": {
+          "authorization": "Bearer <token>"
+        },
+        "method": "GET",
+        "path": "/api/openapi.json"
+      },
+      "response": {
+        "body": {
+          "$ref": "contracts/openapi.json"
+        },
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "application/json",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "no token",
+      "id": "X1",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/api/openapi.json"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "unauthorized",
+            "message": "missing or invalid API token"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer"
+        },
+        "status": 401
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "authorized",
+      "id": "X2",
+      "request": {
+        "body": null,
+        "headers": {
+          "authorization": "Bearer <token>"
+        },
+        "method": "GET",
+        "path": "/api/docs"
+      },
+      "response": {
+        "body": "\n    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <link type=\"text/css\" rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css\">\n    <link rel=\"shortcut icon\" href=\"https://fastapi.tiangolo.com/img/favicon.png\">\n    <title>Workgraph - Swagger UI</title>\n    </head>\n    <body>\n    <div id=\"swagger-ui\">\n    </div>\n    <script src=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js\"></script>\n    <!-- `SwaggerUIBundle` is now available on the page -->\n    <script>\n    const ui = SwaggerUIBundle({\n        url: '/api/openapi.json',\n    \"dom_id\": \"#swagger-ui\",\n\"layout\": \"BaseLayout\",\n\"deepLinking\": true,\n\"showExtensions\": true,\n\"showCommonExtensions\": true,\noauth2RedirectUrl: window.location.origin + '/docs/oauth2-redirect',\n    presets: [\n        SwaggerUIBundle.presets.apis,\n        SwaggerUIBundle.SwaggerUIStandalonePreset\n        ],\n    })\n    </script>\n    </body>\n    </html>\n    ",
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "no token",
+      "id": "X2",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/api/docs"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "unauthorized",
+            "message": "missing or invalid API token"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer"
+        },
+        "status": 401
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "no token",
+      "id": "X3",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/docs/oauth2-redirect"
+      },
+      "response": {
+        "body": "\n    <!doctype html>\n    <html lang=\"en-US\">\n    <head>\n        <title>Swagger UI: OAuth2 Redirect</title>\n    </head>\n    <body>\n    <script>\n        'use strict';\n        function run () {\n            var oauth2 = window.opener.swaggerUIRedirectOauth2;\n            var sentState = oauth2.state;\n            var redirectUrl = oauth2.redirectUrl;\n            var isValid, qp, arr;\n\n            if (/code|token|error/.test(window.location.hash)) {\n                qp = window.location.hash.substring(1).replace('?', '&');\n            } else {\n                qp = location.search.substring(1);\n            }\n\n            arr = qp.split(\"&\");\n            arr.forEach(function (v,i,_arr) { _arr[i] = '\"' + v.replace('=', '\":\"') + '\"';});\n            qp = qp ? JSON.parse('{' + arr.join() + '}',\n                    function (key, value) {\n                        return key === \"\" ? value : decodeURIComponent(value);\n                    }\n            ) : {};\n\n            isValid = qp.state === sentState;\n\n            if ((\n              oauth2.auth.schema.get(\"flow\") === \"accessCode\" ||\n              oauth2.auth.schema.get(\"flow\") === \"authorizationCode\" ||\n              oauth2.auth.schema.get(\"flow\") === \"authorization_code\"\n            ) && !oauth2.auth.code) {\n                if (!isValid) {\n                    oauth2.errCb({\n                        authId: oauth2.auth.name,\n                        source: \"auth\",\n                        level: \"warning\",\n                        message: \"Authorization may be unsafe, passed state was changed in server. The passed state wasn't returned from auth server.\"\n                    });\n                }\n\n                if (qp.code) {\n                    delete oauth2.state;\n                    oauth2.auth.code = qp.code;\n                    oauth2.callback({auth: oauth2.auth, redirectUrl: redirectUrl});\n                } else {\n                    let oauthErrorMsg;\n                    if (qp.error) {\n                        oauthErrorMsg = \"[\"+qp.error+\"]: \" +\n                            (qp.error_description ? qp.error_description+ \". \" : \"no accessCode received from the server. \") +\n                            (qp.error_uri ? \"More info: \"+qp.error_uri : \"\");\n                    }\n\n                    oauth2.errCb({\n                        authId: oauth2.auth.name,\n                        source: \"auth\",\n                        level: \"error\",\n                        message: oauthErrorMsg || \"[Authorization failed]: no accessCode received from the server.\"\n                    });\n                }\n            } else {\n                oauth2.callback({auth: oauth2.auth, token: qp, isValid: isValid, redirectUrl: redirectUrl});\n            }\n            window.close();\n        }\n\n        if (document.readyState !== 'loading') {\n            run();\n        } else {\n            document.addEventListener('DOMContentLoaded', function () {\n                run();\n            });\n        }\n    </script>\n    </body>\n    </html>\n        ",
+        "headers": {
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "loopback client, no pairing needed",
+      "id": "X4",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "",
+        "headers": {
+          "location": "/",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 303
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "loopback client, no pairing needed",
+      "id": "X5",
+      "request": {
+        "body": "code=ABCD-EFGH",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        "method": "POST",
+        "path": "/pair"
+      },
+      "response": {
+        "body": "",
+        "headers": {
+          "location": "/",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 303
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "no token",
+      "id": "X6",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "POST",
+        "path": "/mcp/"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "unauthorized",
+            "message": "missing or invalid API token"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer"
+        },
+        "status": 401
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "authorized, body is not JSON-RPC",
+      "id": "X6",
+      "request": {
+        "body": "{}",
+        "headers": {
+          "authorization": "Bearer <token>",
+          "content-type": "application/json"
+        },
+        "method": "POST",
+        "path": "/mcp/"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": -32602,
+            "message": "Validation error: 11 validation errors for union[JSONRPCRequest,JSONRPCNotification,JSONRPCResponse,JSONRPCError]\nJSONRPCRequest.jsonrpc\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCRequest.id\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCRequest.method\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCNotification.jsonrpc\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCNotification.method\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCResponse.jsonrpc\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCResponse.id\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCResponse.result\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCError.jsonrpc\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCError.id\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nJSONRPCError.error\n  Field required [type=missing, input_value={}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing"
+          },
+          "id": null,
+          "jsonrpc": "2.0"
+        },
+        "headers": {
+          "content-type": "application/json",
+          "mcp-session-id": "<session>",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 400
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "web UI not built, root",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/"
+      },
+      "response": {
+        "body": "<!doctype html><html><head><meta charset='utf-8'><title>Workgraph</title></head><body><h1>Workgraph API is running</h1><p>The web UI has not been built. Run <code>bun install --cwd web</code> and <code>bun run --cwd web build</code>, then reload.</p><p>API: <code>/api/v1</code></p></body></html>",
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "web UI not built, deep path",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/tasks/WG-1"
+      },
+      "response": {
+        "body": "<!doctype html><html><head><meta charset='utf-8'><title>Workgraph</title></head><body><h1>Workgraph API is running</h1><p>The web UI has not been built. Run <code>bun install --cwd web</code> and <code>bun run --cwd web build</code>, then reload.</p><p>API: <code>/api/v1</code></p></body></html>",
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "text/html; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "api path, no token",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/api/v1/nope"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "unauthorized",
+            "message": "missing or invalid API token"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "www-authenticate": "Bearer"
+        },
+        "status": 401
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "api path, authorized",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {
+          "authorization": "Bearer <token>"
+        },
+        "method": "GET",
+        "path": "/api/v1/nope"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "not_found",
+            "message": "/api/v1/nope not found"
+          }
+        },
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "application/json",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 404
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "mcp-prefixed path, authorized",
+      "id": "X7",
+      "request": {
+        "body": null,
+        "headers": {
+          "authorization": "Bearer <token>"
+        },
+        "method": "GET",
+        "path": "/mcpx"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "not_found",
+            "message": "/mcpx not found"
+          }
+        },
+        "headers": {
+          "content-type": "application/json",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 404
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "GET-only route, POST",
+      "id": "405",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "POST",
+        "path": "/api/v1/health"
+      },
+      "response": {
+        "body": {
+          "detail": "Method Not Allowed"
+        },
+        "headers": {
+          "allow": "GET",
+          "cache-control": "no-store",
+          "content-type": "application/json",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 405
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "foreign Host header",
+      "id": "421",
+      "request": {
+        "body": null,
+        "headers": {
+          "host": "evil.example"
+        },
+        "method": "GET",
+        "path": "/pair"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "forbidden_host",
+            "message": "host 'evil.example' not allowed"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 421
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "invalid query integer",
+      "id": "422",
+      "request": {
+        "body": null,
+        "headers": {
+          "authorization": "Bearer <token>"
+        },
+        "method": "GET",
+        "path": "/api/v1/ws/default/events?limit=abc"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "validation_failed",
+            "details": {
+              "errors": [
+                {
+                  "input": "abc",
+                  "loc": [
+                    "query",
+                    "limit"
+                  ],
+                  "msg": "Input should be a valid integer, unable to parse string as an integer",
+                  "type": "int_parsing"
+                }
+              ]
+            },
+            "message": "invalid request"
+          }
+        },
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "application/json",
+          "referrer-policy": "no-referrer",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 422
+      },
+      "state": "loopback, web UI not built"
+    },
+    {
+      "case": "foreign Origin on a state-changing request",
+      "id": "403",
+      "request": {
+        "body": "{}",
+        "headers": {
+          "authorization": "Bearer <token>",
+          "content-type": "application/json",
+          "origin": "http://evil.example"
+        },
+        "method": "POST",
+        "path": "/api/v1/ws/default/tasks"
+      },
+      "response": {
+        "body": {
+          "error": {
+            "code": "forbidden_origin",
+            "message": "origin http://evil.example not allowed"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "status": 403
+      },
+      "state": "loopback, web UI not built"
+    }
+  ]
+}

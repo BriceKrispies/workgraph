@@ -1,0 +1,92 @@
+{
+  "exchanges": [
+    {
+      "case": "stream from after_seq 0: domain events, then a queue snapshot",
+      "id": "O08",
+      "request": {
+        "body": null,
+        "headers": {},
+        "method": "GET",
+        "path": "/api/v1/ws/default/events/stream?after_seq=0"
+      },
+      "response": {
+        "events": [
+          {
+            "data": {
+              "actor": "human:<user>",
+              "actor_kind": "human",
+              "attempt_id": null,
+              "causation_id": null,
+              "correlation_id": "<uuid>",
+              "data": {
+                "key_prefix": "WG",
+                "name": "Default",
+                "slug": "default"
+              },
+              "entity_id": "<uuid>",
+              "entity_type": "workspace",
+              "event_type": "workspace.created",
+              "id": "<uuid>",
+              "occurred_at": "<ts>",
+              "schema_version": 1,
+              "seq": 1,
+              "workspace_id": "<uuid>"
+            },
+            "event": "domain",
+            "id": "1"
+          },
+          {
+            "data": {
+              "actor": "human:<user>",
+              "actor_kind": "human",
+              "attempt_id": null,
+              "causation_id": null,
+              "correlation_id": "<uuid>",
+              "data": {
+                "acceptance_criteria": [],
+                "assignee": null,
+                "auto_execute": false,
+                "depends_on": [],
+                "description": "",
+                "key": "WG-1",
+                "parent_id": null,
+                "priority": "medium",
+                "project_ids": [],
+                "repository_ids": [],
+                "status": "backlog",
+                "tags": [],
+                "title": "HTTP recording event"
+              },
+              "entity_id": "<uuid>",
+              "entity_type": "task",
+              "event_type": "task.created",
+              "id": "<uuid>",
+              "occurred_at": "<ts>",
+              "schema_version": 2,
+              "seq": 2,
+              "workspace_id": "<uuid>"
+            },
+            "event": "domain",
+            "id": "2"
+          },
+          {
+            "data": {
+              "queued": 2
+            },
+            "event": "queue"
+          }
+        ],
+        "headers": {
+          "cache-control": "no-store",
+          "content-type": "text/event-stream; charset=utf-8",
+          "referrer-policy": "no-referrer",
+          "x-accel-buffering": "no",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "DENY"
+        },
+        "status": 200
+      },
+      "state": "loopback, web UI not built"
+    }
+  ]
+}

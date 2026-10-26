@@ -154,6 +154,14 @@ impl App {
             .map_err(|err| merged_config_failure(slug, err))
     }
 
+    /// `ConfigStore.save_global(config)`: writes the configuration to `config.toml` atomically,
+    /// with its `null` members left out (`exclude_none=True`).
+    pub fn save_config(&self, config: &Map<String, Value>) -> Result<(), WgError> {
+        let path = PathBuf::from(self.paths.config_file().as_str());
+        let text = wg_config::render(&wg_config::strip_none(config));
+        write_atomic(&path, text.as_bytes()).map_err(|err| io_error("write", &path, &err))
+    }
+
     /// `Workgraph.api_token(create=...)`: the token in `<config>/api-token`, generated as
     /// `secrets.token_urlsafe(32)` and written atomically when missing and `create` is set.
     pub fn api_token(&self, create: bool) -> Result<String, WgError> {

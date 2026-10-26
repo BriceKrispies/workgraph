@@ -1,0 +1,152 @@
+//! Pydantic's `str(ValidationError)`: the text the Python API and SDK put in a validation message.
+//!
+//! ```text
+//! 1 validation error for task_getArguments
+//! task
+//!   Input should be a valid string [type=string_type, input_value=5, input_type=int]
+//!     For further information visit https://errors.pydantic.dev/2.14/v/string_type
+//! ```
+
+use serde_json::Value;
+use wg_json::py_float_repr;
+
+use crate::error::{Loc, ValidationError};
+
+/// The Pydantic version whose documentation links the error text carries (the recorded one).
+const PYDANTIC_DOCS: &str = "https://errors.pydantic.dev/2.14/v";
+
+/// The longest `input_value` repr Pydantic prints before it elides the middle.
+const REPR_LIMIT: usize = 50;
+
+/// `str(ValidationError)` for a model named `title` with these errors.
+pub fn error_text(title: &str, errors: &[ValidationError]) -> String {
+    let count = errors.len();
+    let plural = if count == 1 { "" } else { "s" };
+    let mut out = format!("{count} validation error{plural} for {title}");
+    for error in errors {
+        let loc: Vec<String> = error
+            .loc
+            .iter()
+            .map(|step| match step {
+                Loc::Key(key) => key.clone(),
+                Loc::Index(index) => index.to_string(),
+            })
+            .collect();
+        if !loc.is_empty() {
+            out.push('\n');
+            out.push_str(&loc.join("."));
+        }
+        out.push_str(&format!(
+            "\n  {} [type={}, input_value={}, input_type={}]",
+            error.msg,
+            error.kind,
+            truncated_repr(&error.input),
+            type_name(&error.input),
+        ));
+        out.push_str(&format!(
+            "\n    For further information visit {PYDANTIC_DOCS}/{}",
+            error.kind
+        ));
+    }
+    out
+}
+
+/// Python's type name of a JSON value, as `input_type=` shows it.
+fn type_name(value: &Value) -> &'static str {
+    match value {
+        Value::Null => "NoneType",
+        Value::Bool(_) => "bool",
+        Value::Number(n) if n.is_f64() => "float",
+        Value::Number(_) => "int",
+        Value::String(_) => "str",
+        Value::Array(_) => "list",
+        Value::Object(_) => "dict",
+    }
+}
+
+/// Pydantic keeps the first 25 and the last 24 characters of a repr longer than 50.
+fn truncated_repr(value: &Value) -> String {
+    let repr = py_repr(value);
+    let chars: Vec<char> = repr.chars().collect();
+    if chars.len() <= REPR_LIMIT {
+        return repr;
+    }
+    let head: String = chars[..25].iter().collect();
+    let tail: String = chars[chars.len() - 24..].iter().collect();
+    format!("{head}...{tail}")
+}
+
+/// `repr()` of the Python value a JSON value decodes to.
+pub fn py_repr(value: &Value) -> String {
+    match value {
+        Value::Null => "None".to_string(),
+        Value::Bool(true) => "True".to_string(),
+        Value::Bool(false) => "False".to_string(),
+        Value::Number(n) => match (n.is_f64(), n.as_f64()) {
+            (true, Some(float)) => py_float_repr(float),
+            _ => n.to_string(),
+        },
+        Value::String(text) => str_repr(text),
+        Value::Array(items) => {
+            let parts: Vec<String> = items.iter().map(py_repr).collect();
+            format!("[{}]", parts.join(", "))
+        }
+        Value::Object(map) => {
+            let parts: Vec<String> = map
+                .iter()
+                .map(|(key, item)| format!("{}: {}", str_repr(key), py_repr(item)))
+                .collect();
+            format!("{{{}}}", parts.join(", "))
+        }
+    }
+}
+
+/// `repr(str)`: single quotes unless the text has a single quote and no double quote.
+fn str_repr(text: &str) -> String {
+    let quote = if text.contains('\'') && !text.contains('"') {
+        '"'
+    } else {
+        '\''
+    };
+    let mut out = String::new();
+    out.push(quote);
+    for ch in text.chars() {
+        match ch {
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            c if c == quote => {
+                out.push('\\');
+                out.push(c);
+            }
+            c if (c as u32) < 0x20 || c as u32 == 0x7f => {
+                out.push_str(&format!("\\x{:02x}", c as u32));
+            }
+            c => out.push(c),
+        }
+    }
+    out.push(quote);
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn repr_follows_python() {
+        assert_eq!(
+            py_repr(&json!({"a": [1, 2.5, null, true], "b": "it's"})),
+            "{'a': [1, 2.5, None, True], 'b': \"it's\"}"
+        );
+    }
+
+    #[test]
+    fn long_repr_is_elided() {
+        let long = Value::String("a".repeat(80));
+        let text = truncated_repr(&long);
+        assert_eq!(text.chars().count(), 25 + 3 + 24);
+    }
+}

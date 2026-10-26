@@ -45,6 +45,36 @@
       "schema_version": 1,
       "tool_summary": {
         "command_head": "curl"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "PostToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": "sess-1",
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": {
+          "command": "curl -H 'Authorization: Bearer eeeeeeeeeeee' https://example.invalid",
+          "description": "fetch"
+        },
+        "tool_name": "Bash",
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
       }
     },
     {
@@ -92,6 +122,39 @@
       "schema_version": 1,
       "tool_summary": {
         "file_path": "src/a.py"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "PostToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": "sess-2",
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": {
+          "api_key": "sk-aaaaaaaaaaaaaaaaaaaa",
+          "file_path": "src/a.py",
+          "new_string": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+        },
+        "tool_name": "Edit",
+        "tool_response": {
+          "output": "done qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+        },
+        "tool_use_id": null,
+        "transcript_path": null
       }
     },
     {
@@ -146,6 +209,39 @@
       "schema_version": 1,
       "tool_summary": {
         "file_path": "src/lib.rs"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "PreToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": {
+          "file_path": "src/lib.rs",
+          "offset": 3
+        },
+        "tool_name": "Read",
+        "tool_response": [
+          "a",
+          "b"
+        ],
+        "tool_use_id": null,
+        "transcript_path": null
       }
     },
     {
@@ -175,7 +271,34 @@
         }
       },
       "schema_version": 1,
-      "tool_summary": {}
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "UserPromptSubmit",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
     },
     {
       "config": "capture_default_max",
@@ -202,7 +325,34 @@
         "prompt": "[REDACTED] and WG-7"
       },
       "schema_version": 1,
-      "tool_summary": {}
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "UserPromptSubmit",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
     },
     {
       "config": "default",
@@ -233,7 +383,34 @@
         "task_description": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx... [truncated 500 chars]"
       },
       "schema_version": 1,
-      "tool_summary": {}
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": "ghp_cccccccccccccccccccccccccccccccccccc",
+        "hook_event_name": "Stop",
+        "is_interrupt": null,
+        "last_assistant_message": "key sk-ant-bbbbbbbbbbbbbbbbbbbb done",
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
     },
     {
       "config": "default",
@@ -273,6 +450,35 @@
       "schema_version": 1,
       "tool_summary": {
         "mcp_server": "workgraph"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "PostToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": {
+          "task": "WG-1"
+        },
+        "tool_name": "mcp__workgraph__task_get",
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
       }
     },
     {
@@ -315,6 +521,35 @@
       "schema_version": 1,
       "tool_summary": {
         "command_head": "cargo"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": "exit 1",
+        "hook_event_name": "PostToolUseFailure",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": {
+          "command": "  cargo   test -p x"
+        },
+        "tool_name": "Bash",
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
       }
     },
     {
@@ -345,7 +580,34 @@
         }
       },
       "schema_version": 1,
-      "tool_summary": {}
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "Invalid",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
     },
     {
       "config": "default",
@@ -376,7 +638,34 @@
         "source": "startup"
       },
       "schema_version": 2,
-      "tool_summary": {}
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "SessionStart",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": "p-1",
+        "reason": null,
+        "session_id": null,
+        "source": "startup",
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
     },
     {
       "config": "capture_default_max",
@@ -423,6 +712,41 @@
       "schema_version": 1,
       "tool_summary": {
         "file_path": "x.env"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "PostToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": {
+          "content": {
+            "db": {
+              "Password": "abc",
+              "host": "localhost"
+            }
+          },
+          "file_path": "x.env"
+        },
+        "tool_name": "Write",
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
       }
     },
     {
@@ -456,7 +780,260 @@
         "message": "hello"
       },
       "schema_version": 1,
-      "tool_summary": {}
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "Notification",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "5b66861ba1af25edb7ff8a2ff1b9c0149739483c4476fcd70677e9942b07889e",
+      "id": "dedupe_key_hashes_integers_beyond_64_bits",
+      "normalised_payload_event": "PostToolUse",
+      "record": {
+        "payload": {
+          "hook_event_name": "PostToolUse",
+          "session_id": "sess-big",
+          "tool_input": {
+            "huge": 123456789012345678901234567890,
+            "n": 1180591620717411303424,
+            "negative": -36893488147419103232
+          },
+          "tool_name": "Edit",
+          "tool_response": {
+            "output": 18446744073709551616,
+            "small": 7
+          }
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "hook_event_name": "PostToolUse",
+        "session_id": "sess-big",
+        "tool_input": {
+          "summary": {
+            "huge": {
+              "type": "int"
+            },
+            "n": {
+              "type": "int"
+            },
+            "negative": {
+              "type": "int"
+            }
+          }
+        },
+        "tool_name": "Edit",
+        "tool_response": {
+          "summary": {
+            "output": {
+              "type": "int"
+            },
+            "small": {
+              "type": "int"
+            }
+          }
+        }
+      },
+      "schema_version": 1,
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "PostToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": "sess-big",
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": {
+          "huge": 123456789012345678901234567890,
+          "n": 1180591620717411303424,
+          "negative": -36893488147419103232
+        },
+        "tool_name": "Edit",
+        "tool_response": {
+          "output": 18446744073709551616,
+          "small": 7
+        },
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "be0147061b269c2e4460ef9588ad8ff629a862a773659cf0e82872dcbd498154",
+      "id": "lax_string_numbers_and_bools_are_coerced",
+      "normalised_payload_event": "PostToolUseFailure",
+      "record": {
+        "payload": {
+          "duration_ms": "12",
+          "error": "exit 2",
+          "hook_event_name": "PostToolUseFailure",
+          "is_interrupt": "yes",
+          "tool_input": {
+            "command": "ls -la"
+          },
+          "tool_name": "Bash"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "duration_ms": "12",
+        "error": "exit 2",
+        "hook_event_name": "PostToolUseFailure",
+        "is_interrupt": "yes",
+        "tool_input": {
+          "summary": {
+            "command": {
+              "length": 6,
+              "type": "str"
+            }
+          }
+        },
+        "tool_name": "Bash"
+      },
+      "schema_version": 1,
+      "tool_summary": {
+        "command_head": "ls"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": 12,
+        "error": "exit 2",
+        "hook_event_name": "PostToolUseFailure",
+        "is_interrupt": true,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": {
+          "command": "ls -la"
+        },
+        "tool_name": "Bash",
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "config": "default",
+      "config_values": {
+        "capture_tool_payloads": false,
+        "max_payload_chars": 4000
+      },
+      "dedupe_key": "483c52305d445e2e61751116d27732b86620e9a13662b7efb5a46eef49244417",
+      "id": "integral_float_duration_is_an_int",
+      "normalised_payload_event": "PostToolUse",
+      "record": {
+        "payload": {
+          "duration_ms": 2.0,
+          "hook_event_name": "PostToolUse",
+          "tool_name": "Read"
+        },
+        "received_at": "2026-10-14T08:54:31+00:00"
+      },
+      "sanitized": {
+        "_workgraph": {
+          "schema_version": 1,
+          "source": "direct"
+        },
+        "duration_ms": 2.0,
+        "hook_event_name": "PostToolUse",
+        "tool_name": "Read"
+      },
+      "schema_version": 1,
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": 2,
+        "error": null,
+        "hook_event_name": "PostToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": "Read",
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
     },
     {
       "config": "default",
@@ -480,7 +1057,34 @@
         "hook_event_name": "Stop"
       },
       "schema_version": 1,
-      "tool_summary": {}
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "Stop",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
     },
     {
       "config": "default",
@@ -512,7 +1116,34 @@
         ]
       },
       "schema_version": 1,
-      "tool_summary": {}
+      "tool_summary": {},
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "Invalid",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
     }
   ],
   "file": "hook_payload.json",
@@ -548,6 +1179,468 @@
         "WG-3",
         "NYN-44"
       ]
+    }
+  ],
+  "validation_cases": [
+    {
+      "id": "minimal_payload_defaults",
+      "outcome": "ok",
+      "raw": {
+        "hook_event_name": "Stop"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "Stop",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "id": "lax_int_from_string",
+      "outcome": "ok",
+      "raw": {
+        "duration_ms": "12",
+        "hook_event_name": "PostToolUse"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": 12,
+        "error": null,
+        "hook_event_name": "PostToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "id": "lax_int_from_integral_float",
+      "outcome": "ok",
+      "raw": {
+        "duration_ms": 2.0,
+        "hook_event_name": "PostToolUse"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": 2,
+        "error": null,
+        "hook_event_name": "PostToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "errors": [
+        {
+          "input": 1.5,
+          "loc": [
+            "duration_ms"
+          ],
+          "msg": "Input should be a valid integer, got a number with a fractional part",
+          "type": "int_from_float"
+        }
+      ],
+      "id": "int_from_fractional_float_rejected",
+      "outcome": "error",
+      "raw": {
+        "duration_ms": 1.5,
+        "hook_event_name": "PostToolUse"
+      }
+    },
+    {
+      "errors": [
+        {
+          "input": "12.5",
+          "loc": [
+            "duration_ms"
+          ],
+          "msg": "Input should be a valid integer, unable to parse string as an integer",
+          "type": "int_parsing"
+        }
+      ],
+      "id": "int_from_non_numeric_string_rejected",
+      "outcome": "error",
+      "raw": {
+        "duration_ms": "12.5",
+        "hook_event_name": "PostToolUse"
+      }
+    },
+    {
+      "id": "int_beyond_64_bits_accepted",
+      "outcome": "ok",
+      "raw": {
+        "duration_ms": 1180591620717411303424,
+        "hook_event_name": "PostToolUse"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": 1180591620717411303424,
+        "error": null,
+        "hook_event_name": "PostToolUse",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "id": "lax_bool_from_yes",
+      "outcome": "ok",
+      "raw": {
+        "hook_event_name": "Stop",
+        "is_interrupt": "yes"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "Stop",
+        "is_interrupt": true,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "id": "lax_bool_from_zero",
+      "outcome": "ok",
+      "raw": {
+        "hook_event_name": "Stop",
+        "stop_hook_active": 0
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "Stop",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": false,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "errors": [
+        {
+          "input": "maybe",
+          "loc": [
+            "stop_hook_active"
+          ],
+          "msg": "Input should be a valid boolean, unable to interpret input",
+          "type": "bool_parsing"
+        }
+      ],
+      "id": "bool_from_unknown_word_rejected",
+      "outcome": "error",
+      "raw": {
+        "hook_event_name": "Stop",
+        "stop_hook_active": "maybe"
+      }
+    },
+    {
+      "errors": [
+        {
+          "input": 7,
+          "loc": [
+            "session_id"
+          ],
+          "msg": "Input should be a valid string",
+          "type": "string_type"
+        }
+      ],
+      "id": "str_field_from_int_rejected",
+      "outcome": "error",
+      "raw": {
+        "hook_event_name": "Stop",
+        "session_id": 7
+      }
+    },
+    {
+      "errors": [
+        {
+          "input": [
+            "a"
+          ],
+          "loc": [
+            "cwd"
+          ],
+          "msg": "Input should be a valid string",
+          "type": "string_type"
+        }
+      ],
+      "id": "str_field_from_list_rejected",
+      "outcome": "error",
+      "raw": {
+        "cwd": [
+          "a"
+        ],
+        "hook_event_name": "Stop"
+      }
+    },
+    {
+      "errors": [
+        {
+          "input": null,
+          "loc": [
+            "hook_event_name"
+          ],
+          "msg": "Input should be a valid string",
+          "type": "string_type"
+        }
+      ],
+      "id": "event_name_null_rejected",
+      "outcome": "error",
+      "raw": {
+        "hook_event_name": null
+      }
+    },
+    {
+      "errors": [
+        {
+          "input": 3,
+          "loc": [
+            "hook_event_name"
+          ],
+          "msg": "Input should be a valid string",
+          "type": "string_type"
+        }
+      ],
+      "id": "event_name_int_rejected",
+      "outcome": "error",
+      "raw": {
+        "hook_event_name": 3
+      }
+    },
+    {
+      "id": "any_fields_accept_anything",
+      "outcome": "ok",
+      "raw": {
+        "hook_event_name": "Stop",
+        "model": 5,
+        "tool_input": [
+          1,
+          {
+            "a": null
+          }
+        ]
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "Stop",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": 5,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": [
+          1,
+          {
+            "a": null
+          }
+        ],
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "id": "extra_fields_tolerated",
+      "outcome": "ok",
+      "raw": {
+        "future": {
+          "x": 1
+        },
+        "hook_event_name": "Stop"
+      },
+      "validated": {
+        "agent_id": null,
+        "agent_transcript_path": null,
+        "agent_type": null,
+        "cwd": null,
+        "duration_ms": null,
+        "error": null,
+        "hook_event_name": "Stop",
+        "is_interrupt": null,
+        "last_assistant_message": null,
+        "model": null,
+        "permission_mode": null,
+        "prompt_id": null,
+        "reason": null,
+        "session_id": null,
+        "source": null,
+        "stop_hook_active": null,
+        "task_description": null,
+        "task_id": null,
+        "task_subject": null,
+        "teammate_name": null,
+        "tool_input": null,
+        "tool_name": null,
+        "tool_response": null,
+        "tool_use_id": null,
+        "transcript_path": null
+      }
+    },
+    {
+      "errors": [
+        {
+          "input": 1,
+          "loc": [
+            "session_id"
+          ],
+          "msg": "Input should be a valid string",
+          "type": "string_type"
+        },
+        {
+          "input": [
+            1
+          ],
+          "loc": [
+            "cwd"
+          ],
+          "msg": "Input should be a valid string",
+          "type": "string_type"
+        },
+        {
+          "input": "x",
+          "loc": [
+            "is_interrupt"
+          ],
+          "msg": "Input should be a valid boolean, unable to interpret input",
+          "type": "bool_parsing"
+        }
+      ],
+      "id": "several_errors_in_field_order",
+      "outcome": "error",
+      "raw": {
+        "cwd": [
+          1
+        ],
+        "hook_event_name": "Stop",
+        "is_interrupt": "x",
+        "session_id": 1
+      }
     }
   ],
   "vector": "telemetry",

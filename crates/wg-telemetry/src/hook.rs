@@ -127,9 +127,12 @@ pub fn schema_version(raw: &Map<String, Value>) -> u8 {
     }
 }
 
-/// Runs the normalisation steps of `process_record` on one record. `source` is `direct` or `spool`.
+/// Runs the normalisation steps of `process_record` on one record. `validated` is the hook object of the
+/// record (see [`hook_object`]) after the shell's Pydantic-exact validation (`wg-telemetryspec`), as
+/// `HookPayload.model_dump(mode="json")` gives it. `source` is `direct` or `spool`.
 pub fn normalise(
     record: &Value,
+    validated: &Map<String, Value>,
     config: CaptureConfig,
     source: &str,
 ) -> Result<Normalised, PayloadError> {
@@ -139,7 +142,7 @@ pub fn normalise(
         .cloned()
         .unwrap_or_else(|| json!({}));
     let raw = hook_object(payload);
-    let fields = validate(&raw)?;
+    let fields = fields_of(validated);
     let key = dedupe_key(record);
     let version = schema_version(&raw);
     let sanitized = sanitize(&raw, config)
@@ -165,8 +168,8 @@ pub fn normalise(
 }
 
 /// The payload as a hook object: a dict with `hook_event_name`, else the `Invalid` wrap that keeps the
-/// original value under `original`.
-fn hook_object(payload: Value) -> Map<String, Value> {
+/// original value under `original`. The shell validates this object before [`normalise`].
+pub fn hook_object(payload: Value) -> Map<String, Value> {
     match payload {
         Value::Object(map) if map.contains_key("hook_event_name") => map,
         original => [
@@ -195,85 +198,48 @@ fn parse_received(text: &str) -> Result<Timestamp, PayloadError> {
     })
 }
 
-/// Pydantic-style validation of the common hook fields. A string field takes a string or null; `hook_event_name`
-/// must be a string; the bool and integer fields take their Python lax forms.
-pub fn validate(raw: &Map<String, Value>) -> Result<HookFields, PayloadError> {
-    Ok(HookFields {
-        hook_event_name: required_str(raw, "hook_event_name")?,
-        session_id: opt_str(raw, "session_id")?,
-        transcript_path: opt_str(raw, "transcript_path")?,
-        cwd: opt_str(raw, "cwd")?,
-        permission_mode: opt_str(raw, "permission_mode")?,
-        prompt_id: opt_str(raw, "prompt_id")?,
-        agent_id: opt_str(raw, "agent_id")?,
-        agent_type: opt_str(raw, "agent_type")?,
-        source: opt_str(raw, "source")?,
-        reason: opt_str(raw, "reason")?,
-        model: raw.get("model").cloned().unwrap_or(Value::Null),
-        tool_name: opt_str(raw, "tool_name")?,
-        tool_use_id: opt_str(raw, "tool_use_id")?,
-        tool_input: raw.get("tool_input").cloned().unwrap_or(Value::Null),
-        tool_response: raw.get("tool_response").cloned().unwrap_or(Value::Null),
-        error: opt_str(raw, "error")?,
-        is_interrupt: opt_bool(raw, "is_interrupt")?,
-        duration_ms: opt_int(raw, "duration_ms")?,
-        agent_transcript_path: opt_str(raw, "agent_transcript_path")?,
-        last_assistant_message: opt_str(raw, "last_assistant_message")?,
-        stop_hook_active: opt_bool(raw, "stop_hook_active")?,
-        task_id: opt_str(raw, "task_id")?,
-        task_subject: opt_str(raw, "task_subject")?,
-        task_description: opt_str(raw, "task_description")?,
-        teammate_name: opt_str(raw, "teammate_name")?,
-    })
-}
-
-fn error(field: &str, expected: &str) -> PayloadError {
-    PayloadError {
-        field: field.to_owned(),
-        message: format!("input should be {expected}"),
+/// The common hook fields of a validated hook object (the output of `wg-telemetryspec`). Validation has already
+/// run, so every field reads its validated value or its default: a string field is a string or `None`.
+pub fn fields_of(validated: &Map<String, Value>) -> HookFields {
+    HookFields {
+        hook_event_name: text(validated, "hook_event_name").unwrap_or_default(),
+        session_id: text(validated, "session_id"),
+        transcript_path: text(validated, "transcript_path"),
+        cwd: text(validated, "cwd"),
+        permission_mode: text(validated, "permission_mode"),
+        prompt_id: text(validated, "prompt_id"),
+        agent_id: text(validated, "agent_id"),
+        agent_type: text(validated, "agent_type"),
+        source: text(validated, "source"),
+        reason: text(validated, "reason"),
+        model: value(validated, "model"),
+        tool_name: text(validated, "tool_name"),
+        tool_use_id: text(validated, "tool_use_id"),
+        tool_input: value(validated, "tool_input"),
+        tool_response: value(validated, "tool_response"),
+        error: text(validated, "error"),
+        is_interrupt: flag(validated, "is_interrupt"),
+        duration_ms: validated.get("duration_ms").and_then(Value::as_i64),
+        agent_transcript_path: text(validated, "agent_transcript_path"),
+        last_assistant_message: text(validated, "last_assistant_message"),
+        stop_hook_active: flag(validated, "stop_hook_active"),
+        task_id: text(validated, "task_id"),
+        task_subject: text(validated, "task_subject"),
+        task_description: text(validated, "task_description"),
+        teammate_name: text(validated, "teammate_name"),
     }
 }
 
-fn required_str(raw: &Map<String, Value>, key: &str) -> Result<String, PayloadError> {
-    match raw.get(key) {
-        Some(Value::String(text)) => Ok(text.clone()),
-        _ => Err(error(key, "a valid string")),
-    }
+fn text(map: &Map<String, Value>, key: &str) -> Option<String> {
+    map.get(key).and_then(Value::as_str).map(str::to_owned)
 }
 
-fn opt_str(raw: &Map<String, Value>, key: &str) -> Result<Option<String>, PayloadError> {
-    match raw.get(key) {
-        None | Some(Value::Null) => Ok(None),
-        Some(Value::String(text)) => Ok(Some(text.clone())),
-        Some(_) => Err(error(key, "a valid string")),
-    }
+fn flag(map: &Map<String, Value>, key: &str) -> Option<bool> {
+    map.get(key).and_then(Value::as_bool)
 }
 
-fn opt_bool(raw: &Map<String, Value>, key: &str) -> Result<Option<bool>, PayloadError> {
-    match raw.get(key) {
-        None | Some(Value::Null) => Ok(None),
-        Some(Value::Bool(flag)) => Ok(Some(*flag)),
-        Some(Value::Number(number)) if number.as_i64() == Some(0) => Ok(Some(false)),
-        Some(Value::Number(number)) if number.as_i64() == Some(1) => Ok(Some(true)),
-        Some(_) => Err(error(key, "a valid boolean")),
-    }
-}
-
-fn opt_int(raw: &Map<String, Value>, key: &str) -> Result<Option<i64>, PayloadError> {
-    match raw.get(key) {
-        None | Some(Value::Null) => Ok(None),
-        Some(Value::Number(number)) => number
-            .as_i64()
-            .or_else(|| {
-                number
-                    .as_f64()
-                    .filter(|x| x.fract() == 0.0)
-                    .map(|x| x as i64)
-            })
-            .map(Some)
-            .ok_or_else(|| error(key, "a valid integer")),
-        Some(_) => Err(error(key, "a valid integer")),
-    }
+fn value(map: &Map<String, Value>, key: &str) -> Value {
+    map.get(key).cloned().unwrap_or(Value::Null)
 }
 
 /// The redacted, bounded copy of a payload (`_sanitize`). The caller appends the `_workgraph` stamp.

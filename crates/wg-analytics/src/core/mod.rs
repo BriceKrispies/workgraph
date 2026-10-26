@@ -4,6 +4,7 @@
 
 pub mod bases;
 pub mod coupling;
+pub mod failures;
 pub mod metrics;
 pub mod period;
 pub mod query;

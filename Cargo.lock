@@ -2280,6 +2280,7 @@ dependencies = [
  "rpds",
  "serde_json",
  "wg-pyrand",
+ "wg-types",
 ]
 
 [[package]]

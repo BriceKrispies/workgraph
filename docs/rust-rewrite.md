@@ -381,6 +381,10 @@ need FFI or Windows APIs, `clippy::unwrap_used` and `expect_used` denied outside
 | `arch-lint` | Tooling | purity tiers and the `Core` rules (copied from noether, section 4.6) | `syn` |
 | `wg-conformance` | Tooling | the differential runner, normaliser, drivers, database dump, coverage report | `serde_json`, `rusqlite` |
 
+Section 4.16 (D15) supersedes the per-layer pure/shell crate pairs that grew beside this table
+(`wg-runtimespec`, `wg-storecodec`, `wg-clispec`, `wg-serverspec`, `wg-mcpspec`): feature code moves
+into the feature crates, which become the unit of ownership from the store to the interfaces.
+
 Dependency direction: `Core` crates depend only on `Core` crates and the allowlist; `Pure` crates on
 `Core` and `Pure`; shell crates on anything below them; `wg-cli`, `wg-server` and `wg-mcp` on
 `wg-runtime`. No `Core` or `Pure` crate depends on a shell crate. The three interfaces never contain
@@ -564,6 +568,71 @@ and DV3 records the missing cache file.
 
 ---
 
+### 4.16 Feature crates (decision D15, 2026-10-26)
+
+**Problem.** The crates in 4.3 that sit between the domain crates and the binaries grew sideways
+during implementation: `wg-runtimespec` (Pure) and `wg-runtime` (Shell), `wg-storecodec` and
+`wg-store`, `wg-clispec` and `wg-cli`, `wg-serverspec` and `wg-server`, `wg-mcpspec` and `wg-mcp`.
+Each has one module per feature (`automation`, `decisions`, `git`, `jobs`, `repos`, `stacks`,
+`tasks`, `worktrees`, ...), so one feature is spread over up to eight crates. WG-3563 (`automation`)
+touched `wg-automation`, `wg-jobs`, `wg-storecodec`, `wg-store`, `wg-runtimespec`, `wg-runtime`,
+`wg-clispec` and `wg-cli`. The pairs exist only because purity tiers are assigned per crate, so the
+pure half and the `&mut` half of every layer need separate crates. The registry lists every feature
+edits (`GROUPS`, the `IMPLEMENTED` lists, route and tool tables, `wg-runtime` re-exports) caused
+most stack conflicts, and one feature was implemented twice in different layers (WG-3772's
+`land_stack` beside `acceptance.rs`).
+
+**Shape.** A feature is one crate that owns its whole vertical slice. The domain crates of 4.3 are
+the feature crates; they grow instead of new crates appearing. Inside a feature crate:
+
+| Module | Tier | Holds |
+| --- | --- | --- |
+| `core` (and submodules) | Core | the decisions and queries over slices (what the domain crate holds today) |
+| `spec` | Pure | request parsing, reply shaping, the feature's DTOs and its SQL statement text (today's per-feature modules of `wg-runtimespec`, `wg-storecodec`, `wg-wire`) |
+| `service` | Shell | the load-decide-apply glue: free functions over `&mut App` / `&mut Session` (today's per-feature modules of `wg-runtime` and `wg-store`), under the shell logic ceiling |
+| `cli`, `http`, `mcp` | Shell | the feature's clap group, routes and tools, each a table of `fn` pointers into `service` (today's per-feature modules of `wg-clispec`, `wg-cli`, `wg-serverspec`, `wg-server`, `wg-mcp`) |
+| `jobs` | Shell | the feature's job handlers and maintenance steps |
+
+Each feature crate exports one value:
+
+```rust
+pub static FEATURE: Feature = Feature {
+    name: "decisions",
+    cli: &[cli::GROUP],          // clap builder + handler, as `wg_cli::commands::Group` today
+    routes: &[http::ROUTES],     // `RouteSpec` + handler, as `wg_server::groups` today
+    tools: &[mcp::TOOLS],        // descriptor name + handler
+    resources: &[],
+    jobs: &[],                   // job kind + handler
+};
+```
+
+`Feature` and the handler signatures live in `wg-runtime`, so a feature depends on it and never on
+a front end. `wg-cli`, `wg-server`, `wg-mcp` and the worker are generic: they take `&[&Feature]`
+and keep only what is not a feature (argv handling, `--json` stripping, security middleware,
+transports, the worker loop). The binary holds the one ordered list `FEATURES`. Order is explicit
+rather than distributed registration (`linkme`, `inventory`) because CLI help order and route order
+are contracts, and the snapshot tests compare them. The `IMPLEMENTED` lists of the clap-tree, route
+and tool coverage tests are derived from `FEATURES`, not maintained by hand.
+
+**Base crates** stay horizontal and contain no feature code: `wg-types`, `wg-model`, `wg-events`,
+`wg-json`, `wg-validate`, `wg-render`, `wg-config`, `wg-wire` (envelope, conventions, shared DTOs),
+`wg-store` (connection, migrations, session, codecs, query building; every migration stays here,
+since the schema is one database), `wg-runtime` (`App`, stamping, the cycle, effects, bus, worker
+loop, logging, `Feature`), and the effect adapters (`wg-git`, `wg-proc`, `wg-net`, `wg-agents`,
+`wg-codeparse`, `wg-archive`, `wg-browser`).
+
+**Purity by module.** `tools/reports/purity-tiers.txt` accepts `crate::module Tier` lines beside
+crate lines. A feature crate lists every top-level module; an unlisted module fails the gate, as an
+unlisted crate does. A `Core` module may only refer to `Core` crates, the allowlist and other `Core`
+modules (arch-lint checks `use` items and paths, not just `Cargo.toml`). The shell logic ceiling is
+measured over the `Shell` modules. The pure/shell crate pairs then have no reason to exist.
+
+**Between features.** Feature crates form a DAG: `decisions` depends on `tasks`, `stacks` on
+`tasks`, `exec` and `verify`, and so on. A feature calls a lower feature's `service` or `core`
+functions; no cycles. Where Python reacts to another area through events or jobs, Rust does too.
+
+**What adding a feature touches.** Its own crate, one line in `FEATURES`, and `purity-tiers.txt`.
+
 ## 5. Migration and cut-over
 
 ### 5.1 Coexistence rules
@@ -676,6 +745,7 @@ contract snapshots stay as the reference the Rust tests compare against.
 | D12 | Analytics computed in pure Rust instead of DuckDB |
 | D13 | The demo uses a companion binary `workgraph-demo-agent` for its scripted agent and checks |
 | D14 | Python's unit tests of pure functions become golden vectors and Rust unit tests in the crate that owns the logic |
+| D15 | Vertical feature crates: each feature owns its core, spec, service and interface modules; purity tiers apply per module; front ends and the worker collect one ordered `FEATURES` list (4.16, user decision 2026-10-26) |
 
 ---
 
@@ -1174,6 +1244,29 @@ HTTP route groups (each: the routes registered and in the OpenAPI snapshot, SC-3
 | CO-04 | Retire Python (5.4) | CO-02, CO-03, user's decision Q12 |
 | CO-05 | Documentation rewrite: `README.md`, `architecture.md`, `testing.md`, `getting-started.md`, `extending.md`, `troubleshooting.md` describe the Rust implementation; this document's status updated | CO-04 |
 
+### 9.12 Feature crates (D15)
+
+These come before the remaining interface groups of 9.9: every group not yet ported depends on
+FC-03 and is written directly in the feature-crate shape, inside its feature's crate, so nothing
+new lands in the per-layer crates. A move task carries the feature's modules out of every layer
+crate, deletes them there, and changes no behaviour. Its acceptance is the existing tests of that
+feature passing unchanged (moved, not rewritten) plus the gates.
+
+| Id | Task | Deps | Tier |
+| --- | --- | --- | --- |
+| FC-01 | `Feature` descriptor in `wg-runtime` (CLI groups, routes, tools, resources, job handlers as `fn` tables); `wg-cli`, `wg-server`, `wg-mcp` and the worker collect from `&[&Feature]` beside today's tables; the `IMPLEMENTED` lists of the clap-tree, route and tool coverage tests derived from the list | none | mid |
+| FC-02 | arch-lint: `crate::module Tier` lines in `purity-tiers.txt`, unlisted modules of a listed feature crate fail, `Core` modules checked on `use` items and paths, shell ceiling measured over `Shell` modules | none | mid |
+| FC-03 | Pilot: `wg-decisions` from the decision code in `wg-runtimespec`, `wg-runtime`, `wg-storecodec`, `wg-store`, `wg-clispec`, `wg-serverspec`, `wg-server`, `wg-mcp` and `wg-wire`; Python `test_decisions.py` in Rust mode and the HTTP replay unchanged; 4.16 amended with anything the pilot changes | FC-01, FC-02 | mid |
+| FC-04 | Move `tasks` (including `acceptance.rs` task acceptance) into `wg-tasks` | FC-03 | mid |
+| FC-05 | Move `registry`, `repos`, `settings`, `setup` into `wg-registry` | FC-03 | haiku |
+| FC-06 | Move `git` and `git_sync` into the git feature crate (`wg-gitcore` grows) | FC-05 | haiku |
+| FC-07 | Move `worktrees` and the attempt/run modules into `wg-exec` | FC-04, FC-05 | haiku |
+| FC-08 | Move `stacks` and stack landing into `wg-stacks`, and reconcile WG-3772's executor with the landing in `acceptance.rs` into one implementation | FC-04, FC-07 | top |
+| FC-09 | Move job handlers out of `wg-runtime` into their features' `jobs` modules; `HandlerRegistry::standard()` assembled from `FEATURES` | FC-03 | mid |
+| FC-10 | Move `automation` into `wg-automation` | FC-09 | haiku |
+| FC-11 | Move the remaining per-area store modules (experiments, analytics, classify, search, sessions and hooks, external/trackers, verification) into their feature crates | FC-03 | haiku |
+| FC-12 | Retire the per-layer crates: whatever is left of `wg-runtimespec`, `wg-storecodec`, `wg-clispec`, `wg-serverspec`, `wg-mcpspec` is base code and moves into the base crates or stays as a renamed base crate; 4.3's table rewritten to the final layout | FC-04 to FC-11 | mid |
+
 ## 11. Decisions from the user (2026-10-25)
 
 The user adopted the recommended answers to the open questions:
@@ -1192,3 +1285,9 @@ The user adopted the recommended answers to the open questions:
 12. The side-by-side period ends after one complete real stack-landing cycle on the Rust binary with zero divergence reports.
 
 Work lands on the `rust-integration` branch through tested stacks and is merged into `main` (the live checkout) only at green waves.
+
+## 12. Decisions from the user (2026-10-26)
+
+1. Restructure into vertical feature crates (D15, 4.16, tasks FC-01 to FC-12) before porting the
+   remaining interface groups. A feature owns its slice from SQL to CLI, HTTP and MCP; purity tiers
+   are assigned per module, so the per-layer pure/shell crate pairs are retired.

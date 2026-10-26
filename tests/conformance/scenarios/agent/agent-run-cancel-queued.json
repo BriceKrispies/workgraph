@@ -1,0 +1,36 @@
+{
+  "id": "agent-run-cancel-queued",
+  "covers": ["C020", "C125", "C127", "C131"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "llm.classification.provider", "heuristic"], "json": true},
+    {"cli": ["config", "set", "llm.classification.model", "heuristic-v1"], "json": true},
+    {"cli": ["config", "set", "llm.auto_embed", "false"], "json": true},
+    {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
+    {"cli": ["agent", "add-command", "scripted", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg={manifest}"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["task", "create", "Cancel me", "--repo", "api", "--ready"], "json": true},
+    {"cli": ["run", "start", "WG-1", "--agent", "scripted", "--no-wait"], "json": true, "save": {"first": "/id"}},
+    {"assert": {"json": {"path": "/status", "equals": "queued"}}},
+    {"cli": ["run", "cancel", "{var:first}", "--reason", "operator stopped it"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "cancelled"}}},
+    {"assert": {"json": {"path": "/exit_reason", "equals": "cancelled"}}},
+    {"assert": {"json": {"path": "/error", "equals": "operator stopped it"}}},
+    {"cli": ["run", "start", "WG-1", "--agent", "scripted", "--no-wait", "-w", "default"], "json": true, "save": {"second": "/id"}},
+    {"cli": ["run", "cancel", "{var:second}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "cancelled"}}},
+    {"assert": {"json": {"path": "/error", "equals": "cancelled by operator"}}},
+    {"drain": {"max_jobs": 5}},
+    {"cli": ["run", "get", "{var:first}"], "json": true},
+    {"assert": {"json": {"path": "/attempt/status", "equals": "cancelled"}}},
+    {"cli": ["attempt", "list", "--task", "WG-1", "--status", "cancelled"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 2}}},
+    {"cli": ["run", "cancel", "{var:first}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "cancelled"}}}
+  ],
+  "not_observable": []
+}

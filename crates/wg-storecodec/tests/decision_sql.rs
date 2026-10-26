@@ -198,3 +198,50 @@ fn get_by_id_is_scoped_to_the_workspace_and_open_count_to_the_task() -> TestResu
     );
     Ok(())
 }
+
+#[test]
+fn brief_rows_decode_the_decision_then_the_task_brief() -> TestResult {
+    use wg_storecodec::decision_sql::{
+        DecisionFilter, attach_tags, decisions_by_status_with_task, decode_decision_with_task,
+        decode_task_tag, task_tags_of,
+    };
+    let ws = id("11111111-1111-4111-8111-111111111111")?;
+    let statement = decisions_by_status_with_task(ws, DecisionFilter::Open, 5);
+    assert!(
+        statement
+            .sql
+            .contains("t.\"key\", t.\"title\", t.\"status\", t.\"priority\", t.\"description\"")
+    );
+    assert!(statement.sql.ends_with("LIMIT ?4"));
+
+    let mut values = decision()?.values()?;
+    values.extend([
+        Raw::Text("WG-7".into()),
+        Raw::Text("title".into()),
+        Raw::Text("ready".into()),
+        Raw::Text("high".into()),
+        Raw::Text("body".into()),
+    ]);
+    let mut rows = vec![decode_decision_with_task(&values)?];
+    assert_eq!(rows[0].task.key.to_string(), "WG-7");
+    assert_eq!(rows[0].task.status, wg_types::TaskStatus::Ready);
+    assert_eq!(rows[0].task.priority, wg_types::TaskPriority::High);
+    assert!(rows[0].task.tags.is_empty());
+
+    let tag_row = [
+        Raw::Text(decision()?.task_id.to_string()),
+        Raw::Text("ops".into()),
+    ];
+    let tag = decode_task_tag(&tag_row)?;
+    attach_tags(&mut rows, &[tag]);
+    assert_eq!(rows[0].task.tags, vec!["ops".to_owned()]);
+
+    let empty = task_tags_of(&[]);
+    assert!(empty.sql.contains("1 = 0") && empty.params.is_empty());
+    let two = task_tags_of(&[ws, id("22222222-2222-4222-8222-222222222222")?]);
+    assert!(
+        two.sql
+            .ends_with("IN (?1, ?2) ORDER BY \"task_id\", \"tag\"")
+    );
+    Ok(())
+}

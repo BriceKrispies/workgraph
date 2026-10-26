@@ -261,3 +261,62 @@ fn a_decision_written_with_apply_decision_reads_back_and_the_queries_find_it() -
     assert_eq!(newest_two, vec![d3, d2]);
     Ok(())
 }
+
+#[test]
+fn briefs_carry_the_task_and_its_sorted_tags_in_the_same_order_as_the_bare_lists() -> TestResult {
+    use wg_model::entity::TaskTag;
+    use wg_storecodec::decision_sql::{DecisionFilter as F, DecisionTask};
+    use wg_types::TaskKey as Key;
+
+    let mut store = store()?;
+    let mut tagged = task(1, TaskPriority::High, false);
+    tagged.title = "tagged".into();
+    tagged.description = "why".into();
+    let plain = task(2, TaskPriority::Low, false);
+    store.write(|s| {
+        s.apply_write(&Write::insert(workspace()))?;
+        s.apply_write(&Write::insert(tagged.clone()))?;
+        s.apply_write(&Write::insert(plain.clone()))?;
+        for tag in ["zeta", "alpha"] {
+            s.apply_write(&Write::insert(TaskTag {
+                task_id: tagged.id,
+                tag: tag.into(),
+            }))?;
+        }
+        Ok(())
+    })?;
+    let older_low = decision(30, 2, 4, "open");
+    let newer_high = decision(31, 1, 8, "open");
+    store.write(|s| {
+        s.apply_write(&Write::insert(older_low.clone()))?;
+        s.apply_write(&Write::insert(newer_high.clone()))
+    })?;
+
+    let bare = store.read(|s| s.decisions_by_status(id(0), F::Open, 200))?;
+    let briefs = store.read(|s| s.decisions_by_status_with_task(id(0), F::Open, 200))?;
+    let brief_decisions: Vec<TaskDecision> = briefs.iter().map(|b| b.decision.clone()).collect();
+    assert_eq!(brief_decisions, bare);
+    assert_eq!(bare, vec![newer_high.clone(), older_low.clone()]);
+
+    let first = &briefs[0].task;
+    assert_eq!(
+        first,
+        &DecisionTask {
+            key: ok(Key::parse("WG-1")),
+            title: "tagged".into(),
+            status: TaskStatus::Ready,
+            priority: TaskPriority::High,
+            description: "why".into(),
+            tags: vec!["alpha".into(), "zeta".into()],
+        }
+    );
+    assert!(briefs[1].task.tags.is_empty());
+
+    let one = store.read(|s| s.decision_by_id_with_task(id(0), newer_high.id))?;
+    assert_eq!(one.map(|b| b.task), Some(first.clone()));
+    assert_eq!(
+        store.read(|s| s.decision_by_id_with_task(id(0), id(99)))?,
+        None
+    );
+    Ok(())
+}

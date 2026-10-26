@@ -795,3 +795,57 @@ fn permissions_set_is_persistent() {
     let empty: RedBlackTreeSetSync<Permission> = RedBlackTreeSetSync::new_sync();
     assert!(empty.is_empty());
 }
+
+fn task_decision(n: u32, task_n: u32, second: u8) -> wg_model::entity::TaskDecision {
+    wg_model::entity::TaskDecision {
+        id: id(n),
+        workspace_id: id(0),
+        task_id: id(task_n),
+        question: format!("question {n}?"),
+        options: vec![wg_model::entity::DecisionOption {
+            id: "a".into(),
+            label: "A".into(),
+            detail: String::new(),
+            recommended: true,
+        }],
+        status: "open".into(),
+        chosen_option_id: None,
+        other_text: None,
+        note: None,
+        decided_by: None,
+        decided_at: None,
+        created_by: "human:brice".into(),
+        created_at: at(second),
+        updated_at: at(second),
+        version: 1,
+    }
+}
+
+#[test]
+fn task_slice_folds_decision_writes_by_id() -> TestResult {
+    let base = TaskSlice::default();
+    let first = task_decision(20, 1, 9);
+    let second = task_decision(21, 1, 3);
+    let other_task = task_decision(22, 2, 4);
+    let slice = base.apply_all(&[
+        Write::insert(first.clone()),
+        Write::insert(second.clone()),
+        Write::insert(other_task.clone()),
+    ]);
+    assert_eq!(slice.decisions.get(&id(20)), Some(&first));
+    // Oldest first, regardless of insertion order.
+    assert_eq!(slice.decisions_of(id(1)), vec![&second, &first]);
+    assert_eq!(slice.decisions_of(id(2)), vec![&other_task]);
+    // A whole-row update replaces the row by id; the earlier slice is unchanged (values).
+    let mut answered = first.clone();
+    answered.status = "decided".into();
+    answered.version = 2;
+    let updated = slice.apply(&Write::update(answered.clone()));
+    assert_eq!(updated.decisions.get(&id(20)), Some(&answered));
+    assert_eq!(slice.decisions.get(&id(20)), Some(&first));
+    assert!(base.decisions.is_empty());
+    // Deleting by key removes exactly that row.
+    let removed = updated.apply(&Write::delete(RowKey::TaskDecision(id(21))));
+    assert_eq!(removed.decisions_of(id(1)), vec![&answered]);
+    Ok(())
+}

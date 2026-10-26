@@ -4,8 +4,8 @@ use rpds::RedBlackTreeMapSync;
 use wg_types::{Id, TaskKey};
 
 use crate::entity::{
-    ExternalItem, Task, TaskComment, TaskDependency, TaskFile, TaskLink, TaskProject, TaskRelation,
-    TaskRepository, TaskTag,
+    ExternalItem, Task, TaskComment, TaskDecision, TaskDependency, TaskFile, TaskLink, TaskProject,
+    TaskRelation, TaskRepository, TaskTag,
 };
 use crate::slice::{RegistrySlice, children};
 use crate::write::{Row, RowKey, Write};
@@ -28,6 +28,8 @@ pub struct TaskSlice {
     /// Keyed `(task_id, repository_id)`.
     pub task_repositories: RedBlackTreeMapSync<(Id, Id), TaskRepository>,
     pub external_items: RedBlackTreeMapSync<Id, ExternalItem>,
+    /// Keyed by decision id. Decisions of a task are the rows whose `task_id` is that task.
+    pub decisions: RedBlackTreeMapSync<Id, TaskDecision>,
 }
 
 impl TaskSlice {
@@ -95,6 +97,17 @@ impl TaskSlice {
     /// The repository memberships of a task, by repository id.
     pub fn repositories_of(&self, task_id: Id) -> impl Iterator<Item = &TaskRepository> {
         children(&self.task_repositories, task_id)
+    }
+
+    /// The decisions of a task, oldest first (`created_at`, then id).
+    pub fn decisions_of(&self, task_id: Id) -> Vec<&TaskDecision> {
+        let mut found: Vec<&TaskDecision> = self
+            .decisions
+            .values()
+            .filter(|row| row.task_id == task_id)
+            .collect();
+        found.sort_by_key(|row| (row.created_at, row.id));
+        found
     }
 
     /// The tracker item a task mirrors, if any.
@@ -170,6 +183,10 @@ impl TaskSlice {
                 external_items: self.external_items.insert(row.id, row.clone()),
                 ..self.clone()
             },
+            Row::TaskDecision(row) => TaskSlice {
+                decisions: self.decisions.insert(row.id, row.clone()),
+                ..self.clone()
+            },
             _ => TaskSlice {
                 registry: self.registry.apply(write),
                 ..self.clone()
@@ -223,6 +240,10 @@ impl TaskSlice {
             },
             RowKey::ExternalItem(id) => TaskSlice {
                 external_items: self.external_items.remove(id),
+                ..self.clone()
+            },
+            RowKey::TaskDecision(id) => TaskSlice {
+                decisions: self.decisions.remove(id),
                 ..self.clone()
             },
             _ => TaskSlice {

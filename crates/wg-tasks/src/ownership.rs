@@ -84,10 +84,12 @@ pub fn is_tracker_key(key: &str) -> bool {
     let Some((prefix, number)) = key.split_once('-') else {
         return false;
     };
-    let mut chars = prefix.chars();
-    let prefix_ok = matches!(chars.next(), Some(c) if c.is_ascii_uppercase())
+    let prefix_ok = matches!(prefix.chars().next(), Some(c) if c.is_ascii_uppercase())
         && prefix.len() <= 10
-        && chars.all(|c| c.is_ascii_uppercase() || c.is_ascii_digit());
+        && prefix
+            .chars()
+            .skip(1)
+            .all(|c| c.is_ascii_uppercase() || c.is_ascii_digit());
     prefix_ok && !number.is_empty() && number.chars().all(|c| c.is_ascii_digit())
 }
 

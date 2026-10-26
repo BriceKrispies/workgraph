@@ -66,20 +66,26 @@ impl Term {
 
     /// `text` with the term renamed, and how many sites changed.
     pub fn apply(&self, text: &str) -> (String, usize) {
-        let mut masked = text.to_owned();
-        for (i, token) in self.keep.iter().enumerate() {
-            masked = masked.replace(token.as_str(), &mask(i));
-        }
-        let mut total = 0;
-        for (old, new, after) in self.spellings() {
-            let (next, count) = substitute(&masked, &old, &new, after);
-            masked = next;
-            total += count;
-        }
-        for (i, token) in self.keep.iter().enumerate() {
-            masked = masked.replace(&mask(i), token);
-        }
-        (masked, total)
+        let masked = self
+            .keep
+            .iter()
+            .enumerate()
+            .fold(text.to_owned(), |masked, (i, token)| {
+                masked.replace(token.as_str(), &mask(i))
+            });
+        let (masked, total) =
+            self.spellings()
+                .iter()
+                .fold((masked, 0), |(masked, total), (old, new, after)| {
+                    let (next, count) = substitute(&masked, old, new, *after);
+                    (next, total + count)
+                });
+        let restored = self
+            .keep
+            .iter()
+            .enumerate()
+            .fold(masked, |masked, (i, token)| masked.replace(&mask(i), token));
+        (restored, total)
     }
 
     /// Renames inside a JSON value: every string, and every object key.
@@ -90,27 +96,32 @@ impl Term {
                 (Value::String(out), sites)
             }
             Value::Array(items) => {
-                let mut total = 0;
-                let out = items
-                    .iter()
-                    .map(|item| {
-                        let (renamed, sites) = self.deep(item);
-                        total += sites;
-                        renamed
-                    })
-                    .collect();
-                (Value::Array(out), total)
+                let parts: Vec<(Value, usize)> = items.iter().map(|item| self.deep(item)).collect();
+                let total = parts.iter().map(|(_, sites)| sites).sum();
+                (
+                    Value::Array(parts.into_iter().map(|(item, _)| item).collect()),
+                    total,
+                )
             }
             Value::Object(map) => {
-                let mut out = Map::new();
-                let mut total = 0;
-                for (key, item) in map {
-                    let (new_key, key_sites) = self.apply(key);
-                    let (new_item, item_sites) = self.deep(item);
-                    out.insert(new_key, new_item);
-                    total += key_sites + item_sites;
-                }
-                (Value::Object(out), total)
+                let parts: Vec<(String, Value, usize)> = map
+                    .iter()
+                    .map(|(key, item)| {
+                        let (new_key, key_sites) = self.apply(key);
+                        let (new_item, item_sites) = self.deep(item);
+                        (new_key, new_item, key_sites + item_sites)
+                    })
+                    .collect();
+                let total = parts.iter().map(|(_, _, sites)| sites).sum();
+                (
+                    Value::Object(
+                        parts
+                            .into_iter()
+                            .map(|(key, item, _)| (key, item))
+                            .collect::<Map<String, Value>>(),
+                    ),
+                    total,
+                )
             }
             other => (other.clone(), 0),
         }
@@ -145,41 +156,36 @@ fn is_name(word: &str) -> bool {
 
 /// Python's `word[:1].upper() + word[1:].lower()`; the words are ASCII.
 fn title(word: &str) -> String {
-    let mut chars = word.chars();
-    match chars.next() {
-        None => String::new(),
-        Some(first) => {
-            let mut out = first.to_ascii_uppercase().to_string();
-            out.push_str(&chars.as_str().to_ascii_lowercase());
-            out
-        }
-    }
+    let (first, rest) = word.split_at(word.len().min(1));
+    format!(
+        "{}{}",
+        first.to_ascii_uppercase(),
+        rest.to_ascii_lowercase()
+    )
 }
 
 /// Replaces every non-overlapping, boundary-respecting match of `old` with `new`, scanning left to
 /// right like `re.subn`. Lookbehind and lookahead are written out by hand: the `regex` crate has
 /// no lookaround.
 fn substitute(text: &str, old: &str, new: &str, after: After) -> (String, usize) {
-    let mut out = String::with_capacity(text.len());
-    let mut emitted = 0;
-    let mut pos = 0;
-    let mut count = 0;
-    while let Some(found) = text[pos..].find(old) {
-        let start = pos + found;
-        let end = start + old.len();
-        if before_ok(text, start) && after_ok(text, end, after) {
-            out.push_str(&text[emitted..start]);
-            out.push_str(new);
-            emitted = end;
-            pos = end;
-            count += 1;
-        } else {
-            // `old` starts with an ASCII letter, so the next byte is a char boundary.
-            pos = start + 1;
-        }
-    }
-    out.push_str(&text[emitted..]);
-    (out, count)
+    // Every offset where `old` starts is a candidate; `old` starts with an ASCII letter, so each
+    // offset is a char boundary. A rejected candidate resumes the scan one byte on, an accepted
+    // one at its end, which is what `pos` tracks.
+    let (out, emitted, _, count) = (0..text.len())
+        .filter(|&start| text.as_bytes()[start..].starts_with(old.as_bytes()))
+        .fold(
+            (String::with_capacity(text.len()), 0, 0, 0),
+            |(out, emitted, pos, count), start| {
+                let end = start + old.len();
+                if start >= pos && before_ok(text, start) && after_ok(text, end, after) {
+                    let out = format!("{out}{}{new}", &text[emitted..start]);
+                    (out, end, end, count + 1)
+                } else {
+                    (out, emitted, pos, count)
+                }
+            },
+        );
+    (format!("{out}{}", &text[emitted..]), count)
 }
 
 /// Not preceded by an ASCII letter, or preceded by the escape `\n` or `\t` (a boundary).
@@ -327,66 +333,81 @@ pub fn plan_rename(
     configs: &[ConfigRecord],
     tasks: &[TaskRecord],
 ) -> RenamePlan {
-    let mut plan = RenamePlan::default();
-
-    for repo in repositories {
-        let (name, name_sites) = term.apply(&repo.name);
-        let (description, description_sites) = term.apply(&repo.description);
-        if name_sites + description_sites == 0 {
-            continue;
-        }
-        plan.repositories.push(RepositoryChange {
-            id: repo.id,
-            old_name: repo.name.clone(),
-            new_name: name.clone(),
-            description_sites,
-            name: (name_sites > 0).then_some(name),
-            description: (description_sites > 0).then_some(description),
-        });
-    }
+    let repository_changes: Vec<RepositoryChange> = repositories
+        .iter()
+        .filter_map(|repo| {
+            let (name, name_sites) = term.apply(&repo.name);
+            let (description, description_sites) = term.apply(&repo.description);
+            (name_sites + description_sites > 0).then(|| RepositoryChange {
+                id: repo.id,
+                old_name: repo.name.clone(),
+                new_name: name.clone(),
+                description_sites,
+                name: (name_sites > 0).then_some(name),
+                description: (description_sites > 0).then_some(description),
+            })
+        })
+        .collect();
 
     let (slug, slug_sites) = term.apply(&project.slug);
     let (name, name_sites) = term.apply(&project.name);
     let (description, description_sites) = term.apply(&project.description);
-    if slug_sites + name_sites + description_sites > 0 {
-        plan.project = Some(ProjectChange {
-            id: project.id,
-            old_slug: project.slug.clone(),
-            new_slug: slug.clone(),
-            old_name: project.name.clone(),
-            new_name: name.clone(),
-            slug: (slug_sites > 0).then_some(slug),
-            name: (name_sites > 0).then_some(name),
-            description: (description_sites > 0).then_some(description),
-        });
-    }
+    let project_change = (slug_sites + name_sites + description_sites > 0).then(|| ProjectChange {
+        id: project.id,
+        old_slug: project.slug.clone(),
+        new_slug: slug.clone(),
+        old_name: project.name.clone(),
+        new_name: name.clone(),
+        slug: (slug_sites > 0).then_some(slug),
+        name: (name_sites > 0).then_some(name),
+        description: (description_sites > 0).then_some(description),
+    });
 
     let in_scope = |config: &ConfigRecord| {
         (config.scope_type == "project" && config.scope_id == project.id)
             || (config.scope_type == "repository"
                 && repositories.iter().any(|repo| repo.id == config.scope_id))
     };
-    for config in configs.iter().filter(|config| in_scope(config)) {
-        let (checks, sites) = term.deep(&config.checks);
-        if sites == 0 {
-            continue;
-        }
-        let path_rewrites = path_rewrites(&config.checks, &checks);
-        plan.verification_configs.push(ConfigChange {
-            name: config.name.clone(),
-            sites,
-            checks,
-            path_rewrites,
-        });
-    }
+    let config_changes: Vec<ConfigChange> = configs
+        .iter()
+        .filter(|config| in_scope(config))
+        .filter_map(|config| {
+            let (checks, sites) = term.deep(&config.checks);
+            (sites > 0).then(|| ConfigChange {
+                name: config.name.clone(),
+                sites,
+                path_rewrites: path_rewrites(&config.checks, &checks),
+                checks,
+            })
+        })
+        .collect();
 
-    for task in tasks {
-        plan_task(term, task, &mut plan);
+    let outcomes: Vec<TaskOutcome> = tasks.iter().map(|task| plan_task(term, task)).collect();
+    RenamePlan {
+        project: project_change,
+        repositories: repository_changes,
+        verification_configs: config_changes,
+        tags_renamed: outcomes.iter().map(|outcome| outcome.tags_renamed).sum(),
+        closed_kept: outcomes
+            .iter()
+            .filter(|outcome| outcome.closed_kept)
+            .count(),
+        tasks: outcomes
+            .into_iter()
+            .filter_map(|outcome| outcome.change)
+            .collect(),
     }
-    plan
 }
 
-fn plan_task(term: &Term, task: &TaskRecord, plan: &mut RenamePlan) {
+/// What planning one task yields: its change when something changes, the tag sites counted for
+/// the report, and whether it is a closed task that mentions the term.
+struct TaskOutcome {
+    change: Option<TaskChange>,
+    tags_renamed: usize,
+    closed_kept: bool,
+}
+
+fn plan_task(term: &Term, task: &TaskRecord) -> TaskOutcome {
     let closed = is_closed(task.status, task.archived);
     let renamed_tags: Vec<String> = task.tags.iter().map(|tag| term.apply(tag).0).collect();
     let tag_sites = renamed_tags
@@ -394,116 +415,125 @@ fn plan_task(term: &Term, task: &TaskRecord, plan: &mut RenamePlan) {
         .zip(&task.tags)
         .filter(|(new, old)| new != old)
         .count();
+    let tags = (tag_sites > 0).then_some(renamed_tags);
 
-    let mut change = TaskChange {
-        id: task.id,
-        key: task.key.clone(),
-        status: task.status,
-        closed,
-        version: task.version,
-        fields: Vec::new(),
-        tags: None,
-        title: None,
-        description: None,
-        acceptance_criteria: None,
-        files: None,
-    };
-    if tag_sites > 0 {
-        change.tags = Some(renamed_tags);
-        change.fields.push(("tags", tag_sites));
-    }
+    // Closed records keep their words; a mention is counted, the text is left alone.
+    let closed_kept = closed && text_sites(term, task) > 0;
 
-    if closed {
-        // Closed records keep their words; a mention is counted, the text is left alone.
-        if text_sites(term, task) > 0 {
-            plan.closed_kept += 1;
-        }
-    } else {
-        let (title, n) = term.apply(&task.title);
-        if n > 0 {
-            change.title = Some(title);
-            change.fields.push(("title", n));
-        }
-        let (description, n) = term.apply(&task.description);
-        if n > 0 {
-            change.description = Some(description);
-            change.fields.push(("description", n));
-        }
-        let criteria: Vec<(String, usize)> = task
-            .acceptance_criteria
-            .iter()
-            .map(|c| term.apply(c))
-            .collect();
-        let criteria_sites: usize = criteria.iter().map(|(_, n)| n).sum();
-        if criteria_sites > 0 {
-            change.acceptance_criteria = Some(criteria.into_iter().map(|(c, _)| c).collect());
-            change.fields.push(("acceptance_criteria", criteria_sites));
-        }
-        let files: Vec<(FileRecord, usize)> = task
-            .files
-            .iter()
-            .map(|file| {
-                let (path, path_sites) = term.apply(&file.path);
-                let (anchor, anchor_sites) = term.apply(file.anchor.as_deref().unwrap_or(""));
-                let record = FileRecord {
-                    path,
-                    anchor: (!anchor.is_empty()).then_some(anchor),
-                    note: file.note.clone(),
-                };
-                (record, path_sites + anchor_sites)
-            })
-            .collect();
-        let file_sites: usize = files.iter().map(|(_, n)| n).sum();
-        if file_sites > 0 {
-            change.files = Some(files.into_iter().map(|(f, _)| f).collect());
-            change.fields.push(("files", file_sites));
-        }
-    }
+    let title = (!closed)
+        .then(|| term.apply(&task.title))
+        .filter(|(_, n)| *n > 0);
+    let description = (!closed)
+        .then(|| term.apply(&task.description))
+        .filter(|(_, n)| *n > 0);
+    let criteria = (!closed)
+        .then(|| {
+            let criteria: Vec<(String, usize)> = task
+                .acceptance_criteria
+                .iter()
+                .map(|c| term.apply(c))
+                .collect();
+            let sites: usize = criteria.iter().map(|(_, n)| n).sum();
+            (
+                criteria.into_iter().map(|(c, _)| c).collect::<Vec<_>>(),
+                sites,
+            )
+        })
+        .filter(|(_, n)| *n > 0);
+    let files = (!closed)
+        .then(|| {
+            let files: Vec<(FileRecord, usize)> = task
+                .files
+                .iter()
+                .map(|file| {
+                    let (path, path_sites) = term.apply(&file.path);
+                    let (anchor, anchor_sites) = term.apply(file.anchor.as_deref().unwrap_or(""));
+                    let record = FileRecord {
+                        path,
+                        anchor: (!anchor.is_empty()).then_some(anchor),
+                        note: file.note.clone(),
+                    };
+                    (record, path_sites + anchor_sites)
+                })
+                .collect();
+            let sites: usize = files.iter().map(|(_, n)| n).sum();
+            (files.into_iter().map(|(f, _)| f).collect::<Vec<_>>(), sites)
+        })
+        .filter(|(_, n)| *n > 0);
 
-    if change.fields.is_empty() {
-        return;
+    let fields: Vec<(&'static str, usize)> = [
+        ("tags", (tag_sites > 0).then_some(tag_sites)),
+        ("title", title.as_ref().map(|(_, n)| *n)),
+        ("description", description.as_ref().map(|(_, n)| *n)),
+        ("acceptance_criteria", criteria.as_ref().map(|(_, n)| *n)),
+        ("files", files.as_ref().map(|(_, n)| *n)),
+    ]
+    .into_iter()
+    .filter_map(|(name, sites)| sites.map(|n| (name, n)))
+    .collect();
+
+    if fields.is_empty() {
+        return TaskOutcome {
+            change: None,
+            tags_renamed: 0,
+            closed_kept,
+        };
     }
-    plan.tags_renamed += tag_sites;
-    plan.tasks.push(change);
+    TaskOutcome {
+        change: Some(TaskChange {
+            id: task.id,
+            key: task.key.clone(),
+            status: task.status,
+            closed,
+            version: task.version,
+            fields,
+            tags,
+            title: title.map(|(text, _)| text),
+            description: description.map(|(text, _)| text),
+            acceptance_criteria: criteria.map(|(items, _)| items),
+            files: files.map(|(items, _)| items),
+        }),
+        tags_renamed: tag_sites,
+        closed_kept,
+    }
 }
 
 /// Every text a closed task carries that a mention of the term could sit in.
 fn text_sites(term: &Term, task: &TaskRecord) -> usize {
-    let mut texts: Vec<&str> = vec![task.title.as_str(), task.description.as_str()];
-    texts.extend(task.acceptance_criteria.iter().map(String::as_str));
-    for file in &task.files {
-        texts.push(file.path.as_str());
-        texts.push(file.anchor.as_deref().unwrap_or(""));
-    }
-    texts.iter().map(|text| term.apply(text).1).sum()
+    [task.title.as_str(), task.description.as_str()]
+        .into_iter()
+        .chain(task.acceptance_criteria.iter().map(String::as_str))
+        .chain(
+            task.files
+                .iter()
+                .flat_map(|file| [file.path.as_str(), file.anchor.as_deref().unwrap_or("")]),
+        )
+        .map(|text| term.apply(text).1)
+        .sum()
 }
 
 /// Candidate `(before, after)` absolute-path rewrites in a structural diff of a config's checks.
 /// Strings are compared where they sit; lists zip by position, objects by their values in order.
 pub fn path_rewrites(before: &Value, after: &Value) -> Vec<(String, String)> {
-    let mut out = Vec::new();
-    collect_path_rewrites(before, after, &mut out);
-    out
-}
-
-fn collect_path_rewrites(before: &Value, after: &Value, out: &mut Vec<(String, String)>) {
     match (before, after) {
         (Value::String(b), Value::String(a)) => {
             if b != a && is_absolute(a) {
-                out.push((b.clone(), a.clone()));
+                vec![(b.clone(), a.clone())]
+            } else {
+                Vec::new()
             }
         }
-        (Value::Array(b), Value::Array(a)) => {
-            for (b, a) in b.iter().zip(a) {
-                collect_path_rewrites(b, a, out);
-            }
-        }
-        (Value::Object(b), Value::Object(a)) => {
-            for (b, a) in b.values().zip(a.values()) {
-                collect_path_rewrites(b, a, out);
-            }
-        }
-        _ => {}
+        (Value::Array(b), Value::Array(a)) => b
+            .iter()
+            .zip(a)
+            .flat_map(|(b, a)| path_rewrites(b, a))
+            .collect(),
+        (Value::Object(b), Value::Object(a)) => b
+            .values()
+            .zip(a.values())
+            .flat_map(|(b, a)| path_rewrites(b, a))
+            .collect(),
+        _ => Vec::new(),
     }
 }
 

@@ -3,6 +3,8 @@
 //! The shell reads the workspace's next number, writes the rows and event it is given, and moves
 //! the task to ready when `ready` is set (that transition goes through the dependency gate).
 
+use std::collections::BTreeSet;
+
 use rpds::VectorSync;
 use wg_model::entity::{JsonObject, Task, TaskDependency, TaskProject, TaskRepository, TaskTag};
 use wg_model::event::TaskCreated;
@@ -93,38 +95,46 @@ pub fn create_plan(
     };
 
     let actor = stamp.actor.to_string();
-    let mut ids = stamp.ids();
-    let (task_id, next) = ids.next();
-    ids = next;
+    let (task_id, ids) = stamp.ids().next();
 
     let tags = dedup(&new.tags);
     let project_ids = dedup(&new.projects);
-    let mut sorted_projects = project_ids.clone();
-    sorted_projects.sort();
+    let sorted_projects: Vec<Id> = project_ids
+        .iter()
+        .copied()
+        .collect::<BTreeSet<Id>>()
+        .into_iter()
+        .collect();
 
-    let mut repositories: Vec<RepositoryLink> = Vec::new();
-    for link in &new.repositories {
-        if !repositories
+    let repositories: Vec<RepositoryLink> =
+        new.repositories
             .iter()
-            .any(|seen| seen.repository_id == link.repository_id)
-        {
-            repositories.push(link.clone());
-        }
-    }
+            .fold(Vec::new(), |seen: Vec<RepositoryLink>, link| {
+                if seen
+                    .iter()
+                    .any(|seen| seen.repository_id == link.repository_id)
+                {
+                    seen
+                } else {
+                    seen.into_iter().chain([link.clone()]).collect()
+                }
+            });
 
     let depends_on = dedup(&new.depends_on);
-    let mut dependencies = Vec::with_capacity(depends_on.len());
-    for depends_on_id in &depends_on {
-        let (id, next) = ids.next();
-        ids = next;
-        dependencies.push(TaskDependency {
-            id,
-            task_id,
-            depends_on_id: *depends_on_id,
-            created_by: actor.clone(),
-            created_at: stamp.at,
-        });
-    }
+    let (dependencies, _) = depends_on.iter().fold(
+        (Vec::with_capacity(depends_on.len()), ids),
+        |(dependencies, ids): (Vec<TaskDependency>, _), depends_on_id| {
+            let (id, ids) = ids.next();
+            let row = TaskDependency {
+                id,
+                task_id,
+                depends_on_id: *depends_on_id,
+                created_by: actor.clone(),
+                created_at: stamp.at,
+            };
+            (dependencies.into_iter().chain([row]).collect(), ids)
+        },
+    );
 
     let task = Task {
         id: task_id,
@@ -209,11 +219,13 @@ pub fn create_plan(
 
 /// The values in first-seen order without repeats (`dict.fromkeys`).
 fn dedup<T: Clone + PartialEq>(values: &[T]) -> Vec<T> {
-    let mut out: Vec<T> = Vec::with_capacity(values.len());
-    for value in values {
-        if !out.contains(value) {
-            out.push(value.clone());
-        }
-    }
-    out
+    values
+        .iter()
+        .fold(Vec::with_capacity(values.len()), |out, value| {
+            if out.contains(value) {
+                out
+            } else {
+                out.into_iter().chain([value.clone()]).collect()
+            }
+        })
 }

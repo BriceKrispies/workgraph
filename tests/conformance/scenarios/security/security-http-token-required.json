@@ -1,0 +1,16 @@
+{
+  "id": "security-http-token-required",
+  "covers": ["H001", "H003"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"http": "GET", "path": "/api/v1/health", "headers": {"authorization": ""}, "expect_status": 200},
+    {"assert": {"json": {"path": "/status", "equals": "ok"}}},
+    {"http": "GET", "path": "/api/v1/workspaces", "headers": {"authorization": ""}, "expect_status": 401},
+    {"assert": {"json": {"path": "/error/code", "equals": "unauthorized"}}},
+    {"http": "GET", "path": "/api/v1/workspaces", "headers": {"authorization": "Bearer nope"}, "expect_status": 401},
+    {"assert": {"json": {"path": "/error/code", "equals": "unauthorized"}}},
+    {"http": "GET", "path": "/api/v1/workspaces", "expect_status": 200}
+  ],
+  "not_observable": []
+}

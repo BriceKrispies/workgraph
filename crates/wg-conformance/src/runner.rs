@@ -613,9 +613,23 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
             method,
             path,
             body,
+            headers,
             max_events,
+            expect_status,
             save,
-        } => http_step(ctx, index, method, path, body.as_ref(), *max_events, save),
+        } => http_step(
+            ctx,
+            index,
+            HttpCall {
+                method,
+                path,
+                body: body.as_ref(),
+                headers,
+                max_events: *max_events,
+                expect_status: *expect_status,
+                save,
+            },
+        ),
         Step::Drain { max_jobs } => {
             let mut rec = record(index, "drain", format!("max_jobs {max_jobs}"));
             let (mut done, mut failed) = (0u64, 0u64);
@@ -665,19 +679,43 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
     }
 }
 
-/// Run one `http` step against the sandbox's `serve`, which starts on first use. The bearer
-/// token is sent on every step. The exit field holds the HTTP status; the output is the body,
-/// or with `max_events` the captured events, one JSON object per line.
-fn http_step(
-    ctx: &mut Ctx<'_>,
-    index: usize,
-    method: &str,
-    path: &str,
-    body: Option<&Value>,
+/// One `http` step as written in a scenario, borrowed from the step.
+struct HttpCall<'a> {
+    method: &'a str,
+    path: &'a str,
+    body: Option<&'a Value>,
+    headers: &'a [(String, String)],
     max_events: Option<usize>,
-    save: &[(String, String)],
-) -> StepRecord {
+    expect_status: Option<i64>,
+    save: &'a [(String, String)],
+}
+
+/// Run one `http` step against the sandbox's `serve`, which starts on first use. Unless the step
+/// names its own `authorization` header, the bearer token is sent. The exit field holds the HTTP
+/// status; the output is the body, or with `max_events` the captured events, one JSON object per
+/// line. The response becomes the last output, so `json` assertions and `{last:...}` read the body.
+/// Placeholders `{port}` and `{token}` resolve to the running server's port and API token.
+fn http_step(ctx: &mut Ctx<'_>, index: usize, call: HttpCall<'_>) -> StepRecord {
+    let HttpCall {
+        method,
+        path,
+        body,
+        headers,
+        max_events,
+        expect_status,
+        save,
+    } = call;
     let rec = record(index, "http", format!("{method} {path}"));
+    if ctx.server.is_none() {
+        match http::Server::start(ctx.imp, ctx.sb) {
+            Ok(s) => {
+                ctx.vars.insert("port".to_owned(), s.port.to_string());
+                ctx.vars.insert("token".to_owned(), s.token.clone());
+                ctx.server = Some(s);
+            }
+            Err(e) => return fail(rec, e),
+        }
+    }
     let path = match ctx.resolve(path) {
         Ok(p) => p,
         Err(e) => return fail(rec, e),
@@ -686,34 +724,39 @@ fn http_step(
         Ok(b) => b,
         Err(e) => return fail(rec, e),
     };
-    let (payload, mut headers): (Option<Vec<u8>>, Vec<(String, String)>) = match body {
-        None => (None, Vec::new()),
-        Some(Value::String(text)) => (Some(text.into_bytes()), Vec::new()),
-        Some(json) => (
-            Some(json.to_string().into_bytes()),
-            vec![("content-type".to_owned(), "application/json".to_owned())],
-        ),
-    };
-    if ctx.server.is_none() {
-        match http::Server::start(ctx.imp, ctx.sb) {
-            Ok(s) => ctx.server = Some(s),
+    let mut user_headers = Vec::with_capacity(headers.len());
+    for (name, value) in headers {
+        match ctx.resolve(value) {
+            Ok(v) => user_headers.push((name.clone(), v)),
             Err(e) => return fail(rec, e),
         }
     }
+    let has = |list: &[(String, String)], name: &str| {
+        list.iter().any(|(n, _)| n.eq_ignore_ascii_case(name))
+    };
+    let (payload, json_body): (Option<Vec<u8>>, bool) = match body {
+        None => (None, false),
+        Some(Value::String(text)) => (Some(text.into_bytes()), false),
+        Some(json) => (Some(json.to_string().into_bytes()), true),
+    };
+    let mut all: Vec<(String, String)> = Vec::new();
     let Some(server) = ctx.server.as_ref() else {
         return fail(rec, "serve did not start".to_owned());
     };
-    headers.insert(
-        0,
-        (
+    if !has(&user_headers, "authorization") {
+        all.push((
             "authorization".to_owned(),
             format!("Bearer {}", server.token),
-        ),
-    );
+        ));
+    }
+    all.extend(user_headers.iter().cloned());
+    if json_body && !has(&user_headers, "content-type") {
+        all.push(("content-type".to_owned(), "application/json".to_owned()));
+    }
     let req = http::Request {
         method,
         path: &path,
-        headers: &headers,
+        headers: &all,
         body: payload.as_deref(),
     };
     let exchange = match http::send(server.port, &req, max_events) {
@@ -730,28 +773,33 @@ fn http_step(
     } else {
         text.clone()
     };
+    let status = i64::from(exchange.status);
+    let rec = StepRecord {
+        exit: Some(status),
+        stdout: stdout.clone(),
+        ..rec
+    };
     scan_keys(&text, &mut ctx.keys);
     scan_ids(&text, &mut ctx.ids);
+    ctx.last = Some(Outcome {
+        exit: status,
+        stdout,
+        stderr: String::new(),
+    });
     for (name, ptr) in save {
         match pointer_text(&text, ptr) {
             Ok(v) => {
                 ctx.vars.insert(name.clone(), v);
             }
-            Err(e) => {
-                return fail(
-                    StepRecord {
-                        exit: Some(i64::from(exchange.status)),
-                        stdout,
-                        ..rec
-                    },
-                    format!("save {name}: {e}"),
-                );
-            }
+            Err(e) => return fail(rec, format!("save {name}: {e}")),
         }
     }
+    if let Some(want) = expect_status
+        && status != want
+    {
+        return fail(rec, format!("HTTP status {status}, wanted {want}"));
+    }
     StepRecord {
-        exit: Some(i64::from(exchange.status)),
-        stdout,
         status: Status::Passed,
         ..rec
     }

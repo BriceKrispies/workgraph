@@ -1,0 +1,28 @@
+{
+  "id": "security-cli-serve-binding",
+  "covers": ["C134"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["serve", "--host", "192.0.2.10"], "expect_exit": 2},
+    {"assert": {"stderr_contains": "--allow-remote"}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_api.py::test_lan_mode_requires_pairing_before_handing_out_the_token: the LAN listener on the private address, the /pair form, the device cookie and the token injection; the runner's serve always runs with --local and every client connects from 127.0.0.1, so no LAN client address can be presented",
+      "covered_by": "IF-41"
+    },
+    {
+      "case": "tests/integration/test_api.py::test_lan_mode_rejects_public_clients_and_locks_pairing: a public client address is refused with forbidden_client and ten wrong codes lock pairing with 429; the runner cannot present a non-loopback client address and its serve never runs with LAN enabled",
+      "covered_by": "IF-41"
+    },
+    {
+      "case": "tests/integration/test_api.py::test_lan_networks_narrow_the_allowed_clients: LanAccess.client_allowed with server.lan_networks is a unit-level check with no command or route that reaches it",
+      "covered_by": "IF-41"
+    },
+    {
+      "case": "tests/integration/test_api.py::test_lan_mode_requires_pairing_before_handing_out_the_token (--allow-remote path): with --allow-remote and a non-loopback host serve binds the address and runs until stopped, so a step cannot observe the bound listener",
+      "covered_by": "IF-40"
+    }
+  ]
+}

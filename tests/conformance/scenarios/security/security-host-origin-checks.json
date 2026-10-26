@@ -1,0 +1,22 @@
+{
+  "id": "security-host-origin-checks",
+  "covers": ["H003", "H024"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"http": "GET", "path": "/api/v1/workspaces", "headers": {"host": "evil.example.com"}, "expect_status": 421},
+    {"assert": {"json": {"path": "/error/code", "equals": "forbidden_host"}}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks", "body": {"title": "x"},
+     "headers": {"origin": "https://attacker.example"}, "expect_status": 403},
+    {"assert": {"json": {"path": "/error/code", "equals": "forbidden_origin"}}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks", "body": {"title": "x"},
+     "headers": {"origin": "http://127.0.0.1:{var:port}"}, "expect_status": 201},
+    {"assert": {"json": {"path": "/title", "equals": "x"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_api.py::test_dns_rebinding_and_origin_protection: the same-origin response must carry no access-control-allow-origin header; the step log keeps the status and body only, so response headers cannot be asserted",
+      "covered_by": "IF-40"
+    }
+  ]
+}

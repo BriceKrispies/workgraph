@@ -1,0 +1,61 @@
+{
+  "scenario": "security-http-token-required",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"status\":\"ok\",\"version\":\"0.1.0\"}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 401,
+      "stdout": "{\"error\":{\"code\":\"unauthorized\",\"message\":\"missing or invalid API token\"}}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 401,
+      "stdout": "{\"error\":{\"code\":\"unauthorized\",\"message\":\"missing or invalid API token\"}}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[{\"id\":\"<id:1>\",\"slug\":\"default\",\"name\":\"Default\",\"description\":\"\",\"key_prefix\":\"WG\",\"settings\":{},\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:1|Z>\",\"archived_at\":null}]",
+      "stderr": ""
+    }
+  ]
+}

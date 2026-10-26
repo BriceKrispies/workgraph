@@ -25,7 +25,7 @@ implementation in a fresh `WORKGRAPH_HOME` and a fresh temporary directory. The 
   commit message may therefore name a key that a later `task create` step will produce (for example
   `Task-ID: WG-1`), as long as the tasks are created in the same order. Keys are not normalised.
 * `cli` steps set `json: true` in almost every case, so the Python human renderer (which depends on
-  width) is not part of the observed output. Each `json` assertion reads the most recent `cli` output.
+  width) is not part of the observed output. Each `json` assertion reads the most recent `cli` or `http` output (see the `http` note below).
 * Use `save` with a JSON pointer (`"/items/0/sha"`) to carry a value into later steps as
   `{var:name}`. Placeholders `{repo:<name>}`, `{key:N}` and `{id:N}` resolve from earlier outputs.
 * `assert` steps carry the original Python test's assertions, so a scenario is meaningful without a
@@ -33,6 +33,14 @@ implementation in a fresh `WORKGRAPH_HOME` and a fresh temporary directory. The 
   skipped by the runner skeleton and must not be relied on yet.
 * Assertions on a file path are relative to `{home}` when not absolute. Use `{repo:<name>}` for
   repository files.
+* `http` steps take `headers` (an object of header name to value) and `expect_status` (checked
+  like `expect_exit`). Unless the step names its own `authorization` header, the API bearer token
+  is sent; `"authorization": ""` sends an empty header, which is how a request without a token is
+  made. A Host or Origin header can be given the same way. An `http` step becomes the last output:
+  its exit is the HTTP status and its stdout the body (or the events with `max_events`), so `json`
+  and `stdout_contains` assertions read the body and `{last:...}` reads it too.
+* `{var:port}` is the port of the step's `serve` and `{var:token}` its API token; they are set by
+  the first `http` step. Use them for an Origin that names the server, or a `?token=` query.
 
 ## Not observable
 

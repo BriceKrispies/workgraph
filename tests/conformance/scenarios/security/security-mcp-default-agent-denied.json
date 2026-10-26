@@ -1,0 +1,33 @@
+{
+  "id": "security-mcp-default-agent-denied",
+  "covers": ["M12", "M52"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Guarded", "--ready"], "json": true},
+    {"mcp": "run_start", "args": {"task": "WG-1"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "permission"}},
+    {"mcp": "stack_create", "args": {"parent": "WG-1"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "stack:write"}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_mcp.py::test_experiment_tools_read_and_classify_with_grant: the denied trial_classify (experiment:write) needs a frozen experiment with a graded trial, which the Python test creates through the service layer",
+      "covered_by": "SC-31"
+    },
+    {
+      "case": "tests/integration/test_mcp.py::test_experiment_tools_read_and_classify_with_grant: the granted trial_classify needs --grant experiment:write on the mcp step, which the runner does not pass",
+      "covered_by": "SC-33"
+    },
+    {
+      "case": "tests/integration/test_mcp.py::test_stack_mutations_need_stack_write: the stack_create and stack_add_item calls that succeed under the stack:write grant need --grant on the mcp step, which the runner does not pass",
+      "covered_by": "SC-28"
+    },
+    {
+      "case": "tests/integration/test_mcp.py::test_streamable_http_applies_grants: the grant applies to the Streamable HTTP transport at /mcp/, which needs MCP session headers and a serve with grants, neither of which the runner provides",
+      "covered_by": "IF-40"
+    }
+  ]
+}

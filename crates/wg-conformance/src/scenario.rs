@@ -56,8 +56,12 @@ pub enum Step {
         method: String,
         path: String,
         body: Option<Value>,
+        /// Extra request headers. A header named `authorization` replaces the default bearer token.
+        headers: Vec<(String, String)>,
         /// Read the response as server-sent events and stop after this many.
         max_events: Option<usize>,
+        /// The HTTP status the response must have, checked like `expect_exit` on `cli`.
+        expect_status: Option<i64>,
         save: Vec<(String, String)>,
     },
     Drain {
@@ -350,7 +354,19 @@ fn parse_step(v: &Value, at: &str) -> Res<Step> {
             })
         }
         "http" => {
-            only_keys(m, &["http", "path", "body", "save", "max_events"], at)?;
+            only_keys(
+                m,
+                &[
+                    "http",
+                    "path",
+                    "body",
+                    "headers",
+                    "save",
+                    "max_events",
+                    "expect_status",
+                ],
+                at,
+            )?;
             let method = string(&m["http"], &format!("{at}.http"))?;
             if !["GET", "POST", "PUT", "PATCH", "DELETE"].contains(&method.as_str()) {
                 return Err(format!("{at}.http: unknown method `{method}`"));
@@ -369,11 +385,34 @@ fn parse_step(v: &Value, at: &str) -> Res<Step> {
                         .ok_or_else(|| format!("{at}.max_events: expected an integer >= 1"))?,
                 ),
             };
+            let headers = match m.get("headers") {
+                None => Vec::new(),
+                Some(h) => str_map(h, &format!("{at}.headers"))?
+                    .into_iter()
+                    .map(|(name, value)| {
+                        let here = format!("{at}.headers.{name}");
+                        if name.is_empty()
+                            || !name.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-')
+                        {
+                            return Err(format!("{here}: not a header name"));
+                        }
+                        if value.contains(['\r', '\n']) {
+                            return Err(format!("{here}: header values cannot hold line breaks"));
+                        }
+                        Ok((name, value))
+                    })
+                    .collect::<Res<Vec<_>>>()?,
+            };
             Ok(Step::Http {
                 method,
                 path,
                 body: m.get("body").cloned(),
+                headers,
                 max_events,
+                expect_status: m
+                    .get("expect_status")
+                    .map(|e| integer(e, &format!("{at}.expect_status")))
+                    .transpose()?,
                 save: save(m)?,
             })
         }
@@ -510,10 +549,39 @@ mod tests {
                 method: "GET".into(),
                 path: "/api/v1/ws/default/events/stream".into(),
                 body: None,
+                headers: vec![],
                 max_events: Some(3),
+                expect_status: None,
                 save: vec![("first".into(), "/0/data/seq".into())],
             }
         );
+        let text = r#"{"id":"a","covers":[],"steps":[
+          {"http": "GET", "path": "/", "headers": {"authorization": "", "Host": "evil.example"},
+           "expect_status": 401}]}"#;
+        let s = parse_scenario(text).unwrap();
+        assert_eq!(
+            s.steps[0],
+            Step::Http {
+                method: "GET".into(),
+                path: "/".into(),
+                body: None,
+                headers: vec![
+                    ("authorization".into(), String::new()),
+                    ("Host".into(), "evil.example".into()),
+                ],
+                max_events: None,
+                expect_status: Some(401),
+                save: vec![],
+            }
+        );
+        for bad in [
+            r#"{"http":"GET","path":"/","headers":{"bad name":"x"}}"#,
+            r#"{"http":"GET","path":"/","headers":{"x-a":"b\r\nc: d"}}"#,
+            r#"{"http":"GET","path":"/","headers":{"x-a":3}}"#,
+        ] {
+            let text = format!(r#"{{"id":"a","covers":[],"steps":[{bad}]}}"#);
+            assert!(parse_scenario(&text).is_err(), "{bad} should be refused");
+        }
         assert!(
             parse_scenario(
                 r#"{"id":"a","covers":[],"steps":[{"http":"GET","path":"/","max_events":0}]}"#

@@ -39,6 +39,11 @@ pub mod stack_create;
 pub mod stack_item;
 pub mod stack_item_add;
 pub mod stack_repository;
+pub mod attempt;
+pub mod job;
+pub mod project;
+pub mod scheduler;
+pub mod worker;
 pub mod workspace;
 pub mod workspace_summary;
 

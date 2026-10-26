@@ -115,6 +115,15 @@ impl Store {
         Ok(value)
     }
 
+    /// Copies the whole database into a new file at `target` with SQLite's online backup API, so
+    /// the copy is consistent while other connections write (`_sqlite_backup`).
+    pub fn backup_to(&mut self, target: &std::path::Path) -> Result<(), WgError> {
+        let mut dst = db!(Connection::open(target))?;
+        let backup = db!(rusqlite::backup::Backup::new(&self.conn, &mut dst))?;
+        db!(backup.step(-1))?;
+        Ok(())
+    }
+
     /// Applies a decision's writes and events in one write transaction. The caller performs the
     /// decision's effects afterwards.
     pub fn commit_decision<R>(&mut self, decision: &Decision<R>) -> Result<Applied, WgError> {

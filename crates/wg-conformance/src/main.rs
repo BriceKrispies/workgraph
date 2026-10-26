@@ -4,14 +4,16 @@ use std::io::Write as _;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use wg_conformance::compare::{FileReport, parse_divergences, report_json, report_text, tally};
+use wg_conformance::coverage::{coverage, inventory_ids};
 use wg_conformance::dbdump::canonical_dump;
 use wg_conformance::modes::{check, diff, load_scenarios, record};
 use wg_conformance::normalise::FullNormaliser;
 use wg_conformance::runner::Implementation;
 
-const USAGE: &str = "usage: wg-conformance <validate|diff|record|check> [options]
+const USAGE: &str = "usage: wg-conformance <validate|diff|record|check|coverage> [options]
        wg-conformance dbdump DATABASE [-o FILE]   canonical database dump (as dbdump.py dump)
   --scenarios PATH     scenario directory or file (default tests/conformance/scenarios)
+  --contracts FILE     contract inventory for coverage (default docs/rust-rewrite-contracts.md)
   --python COMMAND     reference implementation command line (diff, record)
   --rust COMMAND       candidate implementation command line (diff, check)
   --golden DIR         golden directory (default tests/conformance/golden)
@@ -23,6 +25,7 @@ const USAGE: &str = "usage: wg-conformance <validate|diff|record|check> [options
 struct Options {
     mode: String,
     scenarios: PathBuf,
+    contracts: PathBuf,
     python: Option<String>,
     rust: Option<String>,
     golden: PathBuf,
@@ -38,6 +41,7 @@ fn parse_args(args: Vec<String>) -> Result<Options, String> {
     let mut o = Options {
         mode,
         scenarios: "tests/conformance/scenarios".into(),
+        contracts: "docs/rust-rewrite-contracts.md".into(),
         python: None,
         rust: None,
         golden: "tests/conformance/golden".into(),
@@ -50,6 +54,7 @@ fn parse_args(args: Vec<String>) -> Result<Options, String> {
         let mut value = || it.next().ok_or_else(|| format!("{flag} needs a value"));
         match flag.as_str() {
             "--scenarios" => o.scenarios = value()?.into(),
+            "--contracts" => o.contracts = value()?.into(),
             "--python" => o.python = Some(value()?),
             "--rust" => o.rust = Some(value()?),
             "--golden" => o.golden = value()?.into(),
@@ -123,6 +128,40 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
     })
 }
 
+/// `coverage`: which contract ids of the inventory the scenario corpus covers (CR-07).
+/// Returns whether the corpus is clean: every scenario loads and names only inventory ids.
+fn coverage_mode(o: &Options) -> Result<bool, String> {
+    let markdown = std::fs::read_to_string(&o.contracts)
+        .map_err(|e| format!("read {}: {e}", o.contracts.display()))?;
+    let inventory = inventory_ids(&markdown);
+    let loaded = if o.scenarios.exists() {
+        load_scenarios(&o.scenarios)?
+    } else {
+        Vec::new()
+    };
+    let mut covers = Vec::new();
+    let mut invalid = Vec::new();
+    for item in &loaded {
+        match &item.scenario {
+            Ok(s) => covers.push((s.id.clone(), s.covers.clone())),
+            Err(e) => invalid.push(format!("{}: {e}", item.file)),
+        }
+    }
+    let joined = coverage(&inventory, &covers);
+    print!(
+        "{}",
+        wg_conformance::coverage::report_text(&joined, &invalid)
+    );
+    if let Some(path) = &o.report {
+        let mut text =
+            serde_json::to_string_pretty(&wg_conformance::coverage::report_json(&joined, &invalid))
+                .unwrap_or_default();
+        text.push('\n');
+        std::fs::write(path, text).map_err(|e| format!("write {}: {e}", path.display()))?;
+    }
+    Ok(invalid.is_empty() && joined.unknown.is_empty())
+}
+
 /// `dbdump DATABASE [-o FILE]`: the same output as `tools/contracts/dbdump.py dump`.
 fn dbdump(args: &[String]) -> ExitCode {
     let mut database = None;
@@ -186,6 +225,19 @@ fn main() -> ExitCode {
             return ExitCode::from(2);
         }
     };
+    if options.mode == "coverage" {
+        return match coverage_mode(&options) {
+            Ok(true) => ExitCode::SUCCESS,
+            Ok(false) => ExitCode::from(1),
+            Err(e) => {
+                eprintln!(
+                    "error: {e}
+{USAGE}"
+                );
+                ExitCode::from(2)
+            }
+        };
+    }
     match run(&options) {
         Ok(reports) => {
             print!("{}", report_text(&options.mode, &reports));

@@ -3,7 +3,7 @@
 
 use serde_json::{Map, Value as Json};
 use wg_json::{PyStr, Value, log_json, py_float_repr};
-use wg_render::Console;
+use wg_render::{Console, cell_len, char_cells};
 use wg_types::WgError;
 use wg_wire::error::{CLI_ERROR_CODE, error_body, error_envelope};
 
@@ -12,6 +12,9 @@ pub const EXIT_UNEXPECTED: u8 = 1;
 
 /// Exit code of an interrupted command (`KeyboardInterrupt`).
 pub const EXIT_INTERRUPTED: u8 = 130;
+
+/// Exit code of a usage error (Click's, kept by clap).
+pub const EXIT_USAGE: u8 = 2;
 
 /// What a command ended with when it did not succeed.
 #[derive(Clone, Debug, PartialEq)]
@@ -28,6 +31,17 @@ pub enum CliFailure {
     Exit(u8),
     /// The command was interrupted.
     Interrupted,
+    /// A usage error that Click raises while it parses the options (`BadParameter`): the usage
+    /// line and the `Try` line, then the message in a panel. Click writes it as text even with
+    /// `--json`.
+    Usage {
+        /// The usage line after `Usage: `, such as `workgraph task create [OPTIONS] {title}`.
+        usage: String,
+        /// The command named in the `Try ... --help` line.
+        command: String,
+        /// The `Invalid value for ...` message.
+        message: String,
+    },
 }
 
 impl CliFailure {
@@ -47,6 +61,7 @@ impl CliFailure {
         match self {
             Self::Domain(error) => error.code.exit_code(),
             Self::Fail { code, .. } | Self::Exit(code) => *code,
+            Self::Usage { .. } => EXIT_USAGE,
             Self::Interrupted => EXIT_INTERRUPTED,
         }
     }
@@ -73,6 +88,16 @@ pub fn report(failure: &CliFailure, json: bool, console: &Console) -> Report {
     let code = failure.exit_code();
     let (stdout, stderr) = match failure {
         CliFailure::Exit(_) | CliFailure::Interrupted => (String::new(), String::new()),
+        CliFailure::Usage {
+            usage,
+            command,
+            message,
+        } => (
+            String::new(),
+            // rich's console on a legacy Windows console reports one cell less than the width
+            // (`Console.size`), and that is the ASCII panel's width there.
+            usage_text(usage, command, message, console.width().saturating_sub(1)),
+        ),
         CliFailure::Domain(error) if json => (envelope_line(&error_envelope(error)), String::new()),
         CliFailure::Fail {
             message, details, ..
@@ -117,6 +142,73 @@ pub fn report(failure: &CliFailure, json: bool, console: &Console) -> Report {
         stderr,
         code,
     }
+}
+
+/// Click's usage error for a panel `width` cells wide: the usage line, the `Try` line, then the
+/// message in an ASCII panel titled `Error` (the box Python draws when its output is not UTF-8).
+fn usage_text(usage: &str, command: &str, message: &str, width: usize) -> String {
+    let inner = width.saturating_sub(4).max(1);
+    let mut out = format!(
+        "Usage: {usage}
+Try '{command} --help' for help.
+"
+    );
+    out.push_str(&format!(
+        "+- Error {}+
+",
+        "-".repeat(width.saturating_sub(10))
+    ));
+    for line in wrap_cells(message, inner) {
+        let padding = inner.saturating_sub(cell_len(&line.chars().collect::<Vec<_>>()));
+        out.push_str(&format!(
+            "| {line}{} |
+",
+            " ".repeat(padding)
+        ));
+    }
+    out.push_str(&format!(
+        "+{}+
+",
+        "-".repeat(width.saturating_sub(2))
+    ));
+    out
+}
+
+/// Greedy word wrap of `text` to `width` cells. Words are split at single spaces; a word wider
+/// than a line is cut where it no longer fits.
+fn wrap_cells(text: &str, width: usize) -> Vec<String> {
+    let mut lines: Vec<String> = Vec::new();
+    let mut current = String::new();
+    let mut current_cells = 0;
+    for word in text.split(' ') {
+        let word_cells = cell_len(&word.chars().collect::<Vec<_>>());
+        let gap = usize::from(!current.is_empty());
+        if current_cells + gap + word_cells <= width {
+            if gap == 1 {
+                current.push(' ');
+            }
+            current.push_str(word);
+            current_cells += gap + word_cells;
+            continue;
+        }
+        if !current.is_empty() {
+            lines.push(std::mem::take(&mut current));
+        }
+        current_cells = 0;
+        for c in word.chars() {
+            let cells = char_cells(c);
+            if current_cells + cells > width && !current.is_empty() {
+                lines.push(std::mem::take(&mut current));
+                current_cells = 0;
+            }
+            current.push(c);
+            current_cells += cells;
+        }
+    }
+    if !current.is_empty() || lines.is_empty() {
+        lines.push(current);
+    }
+    lines
 }
 
 /// `json.dumps(envelope)` plus a newline (O02: compact, Python's default separators).

@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 from starlette.testclient import TestClient
 
+from tests.helpers import api_client
 from workgraph.api.app import create_app
 from workgraph.api.security import DEVICE_COOKIE, PAIRING_MAX_FAILURES, LanAccess
 from workgraph.core.models.schemas import RepositoryRegister
@@ -14,19 +15,14 @@ BUILT_UI = (Path(__file__).parents[2] / "src" / "workgraph" / "api" / "static" /
 
 
 @pytest.fixture
-def client(app, ws, monkeypatch):
-    monkeypatch.setenv("WORKGRAPH_ALLOWED_HOSTS", "testserver")
-    asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=True)
-    token = app.api_token()
-    with TestClient(asgi, base_url="http://testserver") as c:
-        c.headers["Authorization"] = f"Bearer {token}"
+def client(app, ws):
+    with api_client(app) as c:
+        c.headers["Authorization"] = f"Bearer {app.api_token()}"
         yield c
 
 
-def test_health_is_public_but_api_requires_token(app, ws, monkeypatch):
-    monkeypatch.setenv("WORKGRAPH_ALLOWED_HOSTS", "testserver")
-    asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=False)
-    with TestClient(asgi, base_url="http://testserver") as c:
+def test_health_is_public_but_api_requires_token(app, ws):
+    with api_client(app) as c:
         assert c.get("/api/v1/health").json()["status"] == "ok"
         r = c.get("/api/v1/workspaces")
         assert r.status_code == 401 and r.json()["error"]["code"] == "unauthorized"
@@ -143,11 +139,9 @@ def test_automation_jobs_and_runs_endpoints(client, app, human, ws):
     assert started.status_code == 403  # execution is opt-in
 
 
-def test_sse_stream_requires_token_and_streams(app, ws, monkeypatch):
-    monkeypatch.setenv("WORKGRAPH_ALLOWED_HOSTS", "testserver")
-    asgi = create_app(app, host="127.0.0.1", port=8765, with_mcp=False)
+def test_sse_stream_requires_token_and_streams(app, ws):
     token = app.api_token()
-    with TestClient(asgi, base_url="http://testserver") as c:
+    with api_client(app) as c:
         assert c.get("/api/v1/ws/main/events/stream").status_code == 401
         with c.stream(
             "GET", "/api/v1/ws/main/events/stream", params={"token": token, "after_seq": 0, "max_events": 2}

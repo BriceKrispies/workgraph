@@ -12,16 +12,18 @@
 
 pub mod events;
 pub mod meta_settings;
+pub mod tasks;
 
 use crate::route::ApiRoute;
 
 /// The groups whose routes are registered.
-pub const IMPLEMENTED: &[&str] = &["meta-settings", "IF-49"];
+pub const IMPLEMENTED: &[&str] = &["meta-settings", "IF-44", "IF-49"];
 
 /// Every registered API route, from the implemented groups.
 pub fn routes() -> Vec<ApiRoute> {
     let mut table = Vec::new();
     meta_settings::register(&mut table);
     events::register(&mut table);
+    tasks::register(&mut table);
     table
 }

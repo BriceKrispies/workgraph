@@ -396,3 +396,24 @@ pub fn event_out(event: &EventRecord) -> Value {
         ],
     )
 }
+
+/// `Page[AttemptOut]`: one page of a task's attempts.
+#[must_use]
+pub fn attempts_page_out(
+    items: &[wg_model::entity::AgentAttempt],
+    total: i64,
+    limit: i64,
+    offset: i64,
+    next_offset: Option<i64>,
+) -> Value {
+    page::from_model(
+        items
+            .iter()
+            .map(wg_wire::dto::attempt::from_model)
+            .collect(),
+        total,
+        limit,
+        offset,
+        next_offset,
+    )
+}

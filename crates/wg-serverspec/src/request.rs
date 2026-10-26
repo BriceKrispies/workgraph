@@ -257,6 +257,9 @@ pub fn check_body(spec: &BodySpec, body: Option<&Json>) -> Result<Json, Vec<Json
 pub struct Checked {
     pub params: Map<String, Json>,
     pub body: Json,
+    /// The body as the client sent it (`null` when absent), before defaults were filled in: a
+    /// route that tells a field left out from one set to null reads it (`exclude_unset`).
+    pub given: Json,
 }
 
 /// The whole of FastAPI's request validation: the reply that ends the request, or the values.
@@ -272,6 +275,7 @@ pub fn check_request(
         None => None,
     };
     let (params, mut errors) = check_params(&declared.params, path_params, query);
+    let given = read.clone().unwrap_or(Json::Null);
     let body = match &declared.body {
         Some(spec) => match check_body(spec, read.as_ref()) {
             Ok(value) => value,
@@ -283,7 +287,11 @@ pub fn check_request(
         None => Json::Null,
     };
     if errors.is_empty() {
-        Ok(Checked { params, body })
+        Ok(Checked {
+            params,
+            body,
+            given,
+        })
     } else if errors.iter().any(holds_non_finite) {
         Err(internal_error())
     } else {

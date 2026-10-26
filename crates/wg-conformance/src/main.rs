@@ -12,6 +12,7 @@ use wg_conformance::runner::Implementation;
 
 const USAGE: &str = "usage: wg-conformance <validate|diff|record|check|coverage> [options]
        wg-conformance dbdump DATABASE [-o FILE]   canonical database dump (as dbdump.py dump)
+       wg-conformance mcp-replay --command COMMAND [--transcript FILE]   replay the CF-03 stdio transcript
   --scenarios PATH     scenario directory or file (default tests/conformance/scenarios)
   --contracts FILE     contract inventory for coverage (default docs/rust-rewrite-contracts.md)
   --allowlist FILE     coverage exclusions with reasons (default tests/conformance/coverage-allowlist.toml, optional)
@@ -274,6 +275,9 @@ fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.first().map(String::as_str) == Some("dbdump") {
         return dbdump(&args[1..]);
+    }
+    if args.first().map(String::as_str) == Some("mcp-replay") {
+        return wg_conformance::mcp::replay_command(&args[1..]);
     }
     let options = match parse_args(args) {
         Ok(o) => o,

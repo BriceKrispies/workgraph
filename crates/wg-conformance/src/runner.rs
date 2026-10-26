@@ -151,6 +151,8 @@ struct Ctx<'a> {
     last: Option<Outcome>,
     /// Commit tick per repository name, so each repository's dates count from its own first commit.
     git_ticks: BTreeMap<String, u64>,
+    /// The stdio MCP session of `mcp` steps, started by the first one and dropped with the context.
+    mcp: Option<crate::mcp::StdioClient>,
 }
 
 fn display(p: &Path) -> String {
@@ -563,12 +565,28 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
             rec.status = Status::Passed;
             rec
         }
-        Step::Mcp { tool, .. } => skipped(
-            index,
-            "mcp",
-            tool.clone(),
-            "the MCP driver is not part of the runner skeleton",
-        ),
+        Step::Mcp { tool, args } => {
+            let rec = record(index, "mcp", tool.clone());
+            let args = match ctx.resolve_value(args) {
+                Ok(a) => a,
+                Err(e) => return fail(rec, e),
+            };
+            let program = ctx.imp.program.clone();
+            let imp_args = crate::mcp::mcp_args(&ctx.imp.args, &[]);
+            let env = env_for(ctx.imp, ctx.sb, &[]);
+            let dir = ctx.sb.tmp.clone();
+            let (rec, outcome) = crate::mcp::tool_step(
+                &mut ctx.mcp,
+                || crate::mcp::StdioClient::start(&program, &imp_args, &env, &dir),
+                rec,
+                tool,
+                &args,
+            );
+            if let Some(o) = outcome {
+                ctx.remember(o);
+            }
+            rec
+        }
         Step::Http { method, path, .. } => skipped(
             index,
             "http",
@@ -643,6 +661,7 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
         ids: Vec::new(),
         last: None,
         git_ticks: BTreeMap::new(),
+        mcp: None,
     };
     let mut steps = Vec::new();
     let mut setup_ok = true;
@@ -676,6 +695,8 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
             steps.push(run_step(&mut ctx, i, step));
         }
     }
+    // Stop any MCP server before its sandbox is removed.
+    drop(ctx);
     let roots = vec![
         (display(&sb.repos), "<tmp>/repos"),
         (display(&sb.home), "<home>"),
@@ -704,6 +725,7 @@ mod tests {
             ids: Vec::new(),
             last: None,
             git_ticks: BTreeMap::new(),
+            mcp: None,
         }
     }
 

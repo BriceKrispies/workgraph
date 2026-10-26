@@ -28,11 +28,11 @@ pub fn command() -> clap::Command {
 /// Reads a file named by an `@file` option: the text, or the reason it could not be read.
 pub type ReadFile<'a> = &'a dyn Fn(&str) -> Result<String, String>;
 
-fn one(m: &ArgMatches, id: &str) -> Option<String> {
+pub(crate) fn one(m: &ArgMatches, id: &str) -> Option<String> {
     m.try_get_one::<String>(id).ok().flatten().cloned()
 }
 
-fn many(m: &ArgMatches, id: &str) -> Vec<String> {
+pub(crate) fn many(m: &ArgMatches, id: &str) -> Vec<String> {
     m.try_get_many::<String>(id)
         .ok()
         .flatten()
@@ -40,7 +40,7 @@ fn many(m: &ArgMatches, id: &str) -> Vec<String> {
         .unwrap_or_default()
 }
 
-fn flag(m: &ArgMatches, id: &str) -> bool {
+pub(crate) fn flag(m: &ArgMatches, id: &str) -> bool {
     m.try_get_one::<bool>(id)
         .ok()
         .flatten()
@@ -48,7 +48,7 @@ fn flag(m: &ArgMatches, id: &str) -> bool {
         .unwrap_or(false)
 }
 
-fn number(m: &ArgMatches, id: &str, default: i64) -> Result<i64, CliFailure> {
+pub(crate) fn number(m: &ArgMatches, id: &str, default: i64) -> Result<i64, CliFailure> {
     match one(m, id) {
         None => Ok(default),
         Some(text) => text.trim().parse().map_err(|_| {
@@ -323,7 +323,7 @@ pub fn option_flag(m: &ArgMatches, id: &str) -> bool {
 
 // ---------------------------------------------------------------- views
 
-fn get<'a>(value: &'a Value, name: &str) -> Option<&'a Value> {
+pub(crate) fn get<'a>(value: &'a Value, name: &str) -> Option<&'a Value> {
     match value {
         Value::Model { fields, .. } => fields
             .iter()
@@ -337,7 +337,7 @@ fn get<'a>(value: &'a Value, name: &str) -> Option<&'a Value> {
     }
 }
 
-fn items(value: Option<&Value>) -> &[Value] {
+pub(crate) fn items(value: Option<&Value>) -> &[Value] {
     match value {
         Some(Value::List(items)) => items,
         _ => &[],
@@ -345,7 +345,7 @@ fn items(value: Option<&Value>) -> &[Value] {
 }
 
 /// Python `str()` of a scalar output value.
-fn python(value: &Value) -> String {
+pub(crate) fn python(value: &Value) -> String {
     match value {
         Value::Null => "None".to_owned(),
         Value::Bool(true) => "True".to_owned(),
@@ -390,11 +390,11 @@ fn repr(value: &Value) -> String {
     }
 }
 
-fn s(value: Option<&Value>) -> String {
+pub(crate) fn s(value: Option<&Value>) -> String {
     value.map(python).unwrap_or_default()
 }
 
-fn opt(value: Option<&Value>) -> Option<String> {
+pub(crate) fn opt(value: Option<&Value>) -> Option<String> {
     match value {
         None | Some(Value::Null) => None,
         Some(other) => Some(python(other)),
@@ -402,7 +402,7 @@ fn opt(value: Option<&Value>) -> Option<String> {
 }
 
 /// `when()`: `YYYY-MM-DD HH:MM`, or nothing.
-fn when(value: Option<&Value>) -> String {
+pub(crate) fn when(value: Option<&Value>) -> String {
     match value {
         Some(Value::DateTime(at)) => at.format_display(),
         _ => String::new(),
@@ -414,7 +414,7 @@ fn count(value: Option<&Value>) -> Option<String> {
     (length > 0).then(|| length.to_string())
 }
 
-fn truncate(text: &str, width: usize) -> String {
+pub(crate) fn truncate(text: &str, width: usize) -> String {
     text.chars().take(width).collect()
 }
 

@@ -24,3 +24,6 @@ wg-serverspec = { path = "../wg-serverspec" }
 wg-types = { path = "../wg-types" }
 wg-validate = { path = "../wg-validate" }
 wg-wire = { path = "../wg-wire" }
+
+[dev-dependencies]
+wg-model = { path = "../wg-model" }

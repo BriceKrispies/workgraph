@@ -9,38 +9,20 @@
 use wg_json::Value;
 use wg_runtime::App;
 use wg_runtimespec::settings::{meta_inputs, patch_values, patched_config, settings_workspace};
-use wg_serverspec::groups::{META_SETTINGS, body_spec};
+use wg_serverspec::groups::META_SETTINGS;
 use wg_types::{ErrorCode, Permission, WgError};
 use wg_wire::convention::{json_object, json_value};
 use wg_wire::dto::{health, settings as settings_dto};
 
-use crate::route::{Answer, ApiRequest, ApiRoute, handler};
+use super::bind;
+use crate::route::{ApiRequest, ApiRoute};
 
 /// The version the documents report (`workgraph.__version__`).
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Registers the group's routes into `table`, in the group's order.
 pub fn register(table: &mut Vec<ApiRoute>) {
-    let openapi = wg_wire::contract::openapi().ok();
-    for spec in &META_SETTINGS {
-        let body = spec
-            .body
-            .as_ref()
-            .and_then(|body| openapi.as_ref().and_then(|doc| body_spec(doc, body)));
-        let id = spec.id;
-        table.push(ApiRoute {
-            id,
-            method: spec.method,
-            path: spec.path,
-            status: spec.status,
-            query: spec.query,
-            body,
-            handler: handler(move |server, request| async move {
-                let value = server.blocking(move |app| run(app, id, request)).await?;
-                Ok(Answer::Json(value))
-            }),
-        });
-    }
+    bind(table, &META_SETTINGS, run);
 }
 
 /// One operation on the application context: the request in, the document out. The

@@ -111,6 +111,22 @@ fn letter(position: usize) -> String {
     char::from(b'a'.saturating_add(offset)).to_string()
 }
 
+/// The checks `request` makes before it looks the task up: the question is not blank, and the
+/// options normalize. Returns the trimmed question and the normalized options.
+pub fn check_request(
+    question: &str,
+    options: &[OptionInput],
+) -> Result<(String, Vec<DecisionOption>), WgError> {
+    let question = question.trim();
+    if question.is_empty() {
+        return Err(WgError::new(
+            ErrorCode::ValidationFailed,
+            "question must not be empty",
+        ));
+    }
+    Ok((question.to_owned(), normalize_options(options)?))
+}
+
 /// Opens a decision on `task` and tags the task `needs-decision` (`request`). An empty `options`
 /// list means a free-text answer.
 pub fn plan_request(
@@ -121,14 +137,8 @@ pub fn plan_request(
     options: &[OptionInput],
 ) -> Result<DecisionPlan, WgError> {
     stamp.require(&[Permission::TaskWrite])?;
-    let question = question.trim();
-    if question.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "question must not be empty",
-        ));
-    }
-    let normalized = normalize_options(options)?;
+    let (question, normalized) = check_request(question, options)?;
+    let question = question.as_str();
     let (id, _) = stamp.ids().next();
     let decision = TaskDecision {
         id,
@@ -161,18 +171,9 @@ pub fn plan_request(
     })
 }
 
-/// Answers a decision with an option or free text (`choose`). An answered decision may be
-/// answered again; a withdrawn one may not. `decisions` is every decision on `task`, `decision`
-/// the one being answered (its stored row).
-pub fn plan_choose(
-    stamp: &Stamp,
-    tasks: &TaskSlice,
-    task: &Task,
-    decisions: &[TaskDecision],
-    decision: &TaskDecision,
-    answer: Answer<'_>,
-) -> Result<DecisionPlan, WgError> {
-    stamp.require(&[Permission::TaskWrite])?;
+/// The checks `choose` makes before it looks the decision up: exactly one of `option_id` and
+/// `other_text`, and a non-blank `other_text`.
+pub fn check_answer(answer: Answer<'_>) -> Result<(), WgError> {
     if answer.option_id.is_some() == answer.other_text.is_some() {
         return Err(WgError::new(
             ErrorCode::ValidationFailed,
@@ -185,6 +186,22 @@ pub fn plan_choose(
             "other_text must not be empty",
         ));
     }
+    Ok(())
+}
+
+/// Answers a decision with an option or free text (`choose`). An answered decision may be
+/// answered again; a withdrawn one may not. `decisions` is every decision on `task`, `decision`
+/// the one being answered (its stored row).
+pub fn plan_choose(
+    stamp: &Stamp,
+    tasks: &TaskSlice,
+    task: &Task,
+    decisions: &[TaskDecision],
+    decision: &TaskDecision,
+    answer: Answer<'_>,
+) -> Result<DecisionPlan, WgError> {
+    stamp.require(&[Permission::TaskWrite])?;
+    check_answer(answer)?;
     if decision.status == "withdrawn" {
         return Err(WgError::new(
             ErrorCode::ValidationFailed,

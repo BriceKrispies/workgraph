@@ -15,6 +15,7 @@
 mod app;
 mod bus;
 mod cycle;
+mod decisions;
 mod effects;
 mod handlers;
 mod logging;
@@ -33,6 +34,7 @@ pub use queue::Queue;
 pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
+pub use wg_runtimespec::decisions::{DecisionFilter, filter_of as decision_filter};
 pub use wg_runtimespec::tasks::reads::{GraphRequest, Shown};
 pub use wg_runtimespec::{Level, RequestContext};
 pub use worker::{RunOptions, Summary, Worker, WorkerOptions};

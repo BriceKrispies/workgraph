@@ -11,6 +11,32 @@ pub const NAME: &str = "DecisionTaskOut";
 /// The fields in Python declaration order.
 pub const FIELDS: [&str; 6] = ["key", "title", "status", "priority", "tags", "description"];
 
+/// The brief of a decision's task as the decision query reads it: key, title, status, priority,
+/// description and tags (in the order given).
+pub fn from_brief(
+    key: &str,
+    title: &str,
+    status: &str,
+    priority: &str,
+    description: &str,
+    tags: &[String],
+) -> Value {
+    model(
+        NAME,
+        vec![
+            ("key", text(key)),
+            ("title", text(title)),
+            ("status", text(status)),
+            ("priority", text(priority)),
+            (
+                "tags",
+                Value::List(tags.iter().map(|tag| text(tag)).collect()),
+            ),
+            ("description", text(description)),
+        ],
+    )
+}
+
 /// The task's key, title, status, priority, tags (in the order given) and description.
 pub fn from_model(task: &Task, tags: &[TaskTag]) -> Value {
     model(

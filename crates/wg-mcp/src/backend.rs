@@ -25,6 +25,9 @@ impl ToolBackend for AppBackend {
         if let Some(result) = crate::run_tools::call(&mut self.0, agent, name, &arguments) {
             return result;
         }
+        if let Some(result) = crate::decision_tools::call(&mut self.0, agent, name, &arguments) {
+            return result;
+        }
         Err(WgError::new(
             ErrorCode::WorkgraphError,
             format!("tool {name} is not wired yet"),

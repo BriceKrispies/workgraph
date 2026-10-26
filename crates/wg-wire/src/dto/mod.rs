@@ -45,6 +45,15 @@ pub mod task_link;
 pub mod task_rollup;
 pub mod verification;
 pub mod worker;
+pub mod agents;
+pub mod automation;
+pub mod claude;
+pub mod event;
+pub mod health;
+pub mod llm;
+pub mod notification;
+pub mod project;
+pub mod settings;
 pub mod workspace;
 pub mod workspace_summary;
 
@@ -107,5 +116,6 @@ pub fn implemented() -> Vec<(&'static str, &'static [&'static str])> {
         (stack_repository::NAME, stack_repository::FIELDS.as_slice()),
         (stack_create::NAME, stack_create::FIELDS.as_slice()),
         (stack_item_add::NAME, stack_item_add::FIELDS.as_slice()),
+        (event::NAME, event::FIELDS.as_slice()),
     ]
 }

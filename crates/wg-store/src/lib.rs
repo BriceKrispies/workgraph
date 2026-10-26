@@ -13,6 +13,7 @@
 //! Later tasks add the migration runner and the per-entity queries on top of this base.
 
 mod session;
+mod tasks;
 
 use std::path::PathBuf;
 use std::time::Duration;

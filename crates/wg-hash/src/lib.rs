@@ -1,7 +1,10 @@
-//! wg-hash: SHA-256 digests, in-crate so that `Core` crates need no external dependency.
+//! wg-hash: SHA-256 and BLAKE2b digests, in-crate so that `Core` crates need no external
+//! dependency.
 //!
-//! The digest matches Python's `hashlib.sha256(...).hexdigest()` byte for byte. It is used for
-//! the task content hash (`wg-tasks`) and the tracker snapshot digest (`wg-trackers`).
+//! The digests match Python's `hashlib.sha256(...).hexdigest()` and `hashlib.blake2b(...)` byte
+//! for byte. SHA-256 is used for the task content hash (`wg-tasks`), the tracker snapshot digest
+//! (`wg-trackers`) and classifier input hashes (`wg-intel`); BLAKE2b for the feature hashing of
+//! `wg-intel`.
 
 const K: [u32; 64] = [
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -87,6 +90,138 @@ fn round(vars: [u32; 8], k: u32, w: u32) -> [u32; 8] {
     [t1.wrapping_add(t2), a, b, c, d.wrapping_add(t1), e, f, g]
 }
 
+const BLAKE2B_IV: [u64; 8] = [
+    0x6a09e667f3bcc908,
+    0xbb67ae8584caa73b,
+    0x3c6ef372fe94f82b,
+    0xa54ff53a5f1d36f1,
+    0x510e527fade682d1,
+    0x9b05688c2b3e6c1f,
+    0x1f83d9abfb41bd6b,
+    0x5be0cd19137e2179,
+];
+
+/// BLAKE2b message schedules (RFC 7693, section 2.7); rounds 10 and 11 reuse rows 0 and 1.
+const BLAKE2B_SIGMA: [[usize; 16]; 10] = [
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    [14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3],
+    [11, 8, 12, 0, 5, 2, 15, 13, 10, 14, 3, 6, 7, 1, 9, 4],
+    [7, 9, 3, 1, 13, 12, 11, 14, 2, 6, 5, 10, 4, 0, 15, 8],
+    [9, 0, 5, 7, 2, 4, 10, 15, 14, 1, 11, 12, 6, 8, 3, 13],
+    [2, 12, 6, 10, 0, 11, 8, 3, 4, 13, 7, 5, 15, 14, 1, 9],
+    [12, 5, 1, 15, 14, 13, 4, 10, 0, 7, 6, 3, 9, 2, 8, 11],
+    [13, 11, 7, 14, 12, 1, 3, 9, 5, 0, 15, 4, 8, 6, 2, 10],
+    [6, 15, 14, 9, 11, 3, 0, 8, 12, 2, 13, 7, 1, 4, 10, 5],
+    [10, 2, 8, 4, 7, 6, 1, 5, 15, 11, 9, 14, 3, 12, 13, 0],
+];
+
+/// The BLAKE2b digest of `data` with `out_len` bytes (1 to 64; other values are clamped), as
+/// `hashlib.blake2b(data, digest_size=out_len).digest()` produces it.
+#[must_use]
+pub fn blake2b(data: &[u8], out_len: usize) -> Vec<u8> {
+    let out_len = out_len.clamp(1, 64);
+    let chunks: Vec<&[u8]> = if data.is_empty() {
+        vec![&[]]
+    } else {
+        data.chunks(128).collect()
+    };
+    let last = chunks.len() - 1;
+    let initial: [u64; 8] = std::array::from_fn(|i| {
+        if i == 0 {
+            BLAKE2B_IV[0] ^ (0x0101_0000 ^ out_len as u64)
+        } else {
+            BLAKE2B_IV[i]
+        }
+    });
+    let state = chunks
+        .iter()
+        .enumerate()
+        .fold(initial, |h, (index, chunk)| {
+            let is_last = index == last;
+            let counter = if is_last {
+                data.len() as u64
+            } else {
+                (index as u64 + 1) * 128
+            };
+            let block: Vec<u8> = chunk
+                .iter()
+                .copied()
+                .chain(std::iter::repeat_n(0, 128 - chunk.len()))
+                .collect();
+            blake2b_compress(h, &block, counter, is_last)
+        });
+    state
+        .iter()
+        .flat_map(|word| word.to_le_bytes())
+        .take(out_len)
+        .collect()
+}
+
+/// One BLAKE2b compression of a 128-byte block (`block` is zero padded to that length).
+fn blake2b_compress(h: [u64; 8], block: &[u8], counter: u64, is_last: bool) -> [u64; 8] {
+    let m: [u64; 16] = std::array::from_fn(|i| {
+        u64::from_le_bytes(std::array::from_fn(|j| {
+            block.get(8 * i + j).copied().unwrap_or(0)
+        }))
+    });
+    let v: [u64; 16] = std::array::from_fn(|i| match i {
+        0..8 => h[i],
+        12 => BLAKE2B_IV[4] ^ counter,
+        14 if is_last => !BLAKE2B_IV[6],
+        _ => BLAKE2B_IV[i - 8],
+    });
+    let worked = (0..12).fold(v, |acc, round| {
+        blake2b_round(acc, &m, &BLAKE2B_SIGMA[round % 10])
+    });
+    std::array::from_fn(|i| h[i] ^ worked[i] ^ worked[i + 8])
+}
+
+/// The eight quarter-round index sets of one BLAKE2b round: four columns, then four diagonals.
+const BLAKE2B_MIXES: [(usize, usize, usize, usize); 8] = [
+    (0, 4, 8, 12),
+    (1, 5, 9, 13),
+    (2, 6, 10, 14),
+    (3, 7, 11, 15),
+    (0, 5, 10, 15),
+    (1, 6, 11, 12),
+    (2, 7, 8, 13),
+    (3, 4, 9, 14),
+];
+
+fn blake2b_round(v: [u64; 16], m: &[u64; 16], sigma: &[usize; 16]) -> [u64; 16] {
+    BLAKE2B_MIXES
+        .iter()
+        .enumerate()
+        .fold(v, |acc, (k, &(a, b, c, d))| {
+            blake2b_mix(acc, [a, b, c, d], m[sigma[2 * k]], m[sigma[2 * k + 1]])
+        })
+}
+
+/// The BLAKE2b G mixing function on the working vector at indices `[a, b, c, d]`.
+fn blake2b_mix(v: [u64; 16], [a, b, c, d]: [usize; 4], x: u64, y: u64) -> [u64; 16] {
+    let va = v[a].wrapping_add(v[b]).wrapping_add(x);
+    let vd = (v[d] ^ va).rotate_right(32);
+    let vc = v[c].wrapping_add(vd);
+    let vb = (v[b] ^ vc).rotate_right(24);
+    let va = va.wrapping_add(vb).wrapping_add(y);
+    let vd = (vd ^ va).rotate_right(16);
+    let vc = vc.wrapping_add(vd);
+    let vb = (vb ^ vc).rotate_right(63);
+    std::array::from_fn(|i| {
+        if i == a {
+            va
+        } else if i == b {
+            vb
+        } else if i == c {
+            vc
+        } else if i == d {
+            vd
+        } else {
+            v[i]
+        }
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -104,6 +239,22 @@ mod tests {
         assert_eq!(
             sha256_hex(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"),
             "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+        );
+    }
+
+    #[test]
+    fn blake2b_matches_hashlib() {
+        // Python: hashlib.blake2b(data, digest_size=n).hexdigest()
+        let hex = |bytes: Vec<u8>| bytes.iter().map(|b| format!("{b:02x}")).collect::<String>();
+        assert_eq!(hex(blake2b(b"", 8)), "e4a6a0577479b2b4");
+        assert_eq!(
+            hex(blake2b(b"abc", 64)),
+            "ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d1\
+             7d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923"
+        );
+        assert_eq!(
+            hex(blake2b(&vec![b'a'; 300], 20)),
+            "c9c4a2f8df7d9546fad021510f72ee0ae1b15058"
         );
     }
 

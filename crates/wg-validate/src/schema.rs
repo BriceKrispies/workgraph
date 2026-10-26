@@ -19,13 +19,13 @@ pub struct StrRules {
     pub strip: bool,
 }
 
-/// Integer bounds (`ge`, `gt`, `le`, `lt`).
+/// Integer bounds (`ge`, `gt`, `le`, `lt`). 128 bits, the width `wg-json` holds integers in.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct IntRules {
-    pub ge: Option<i64>,
-    pub gt: Option<i64>,
-    pub le: Option<i64>,
-    pub lt: Option<i64>,
+    pub ge: Option<i128>,
+    pub gt: Option<i128>,
+    pub le: Option<i128>,
+    pub lt: Option<i128>,
 }
 
 /// Float bounds (`ge`, `gt`, `le`, `lt`).

@@ -25,23 +25,46 @@ fn root() -> PathBuf {
 
 type ClassRow = (String, Option<String>, Vec<String>);
 
-/// Field names of every class of the Python source, in declaration order. A subclass lists the
-/// fields of its base first, as Pydantic keeps them.
+/// The Python sources that declare request and response models: the schemas module, the
+/// analytics service (`AnalyticsFilters`) and the API route modules (`ops.py` and the others hold
+/// the request bodies local to a route).
+fn python_sources() -> Option<Vec<String>> {
+    let mut paths = vec![
+        root().join("src/workgraph/core/models/schemas.py"),
+        root().join("src/workgraph/analytics/service.py"),
+    ];
+    let mut routes: Vec<PathBuf> = fs::read_dir(root().join("src/workgraph/api/routes"))
+        .ok()?
+        .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+        .filter(|path| path.extension().is_some_and(|ext| ext == "py"))
+        .collect();
+    routes.sort();
+    paths.extend(routes);
+    paths
+        .iter()
+        .map(|path| fs::read_to_string(path).ok())
+        .collect()
+}
+
+/// Field names of every class of the Python sources, in declaration order. A subclass lists the
+/// fields of its base first, as Pydantic keeps them. When two modules declare the same class name
+/// the first (schemas.py) wins.
 fn python_fields() -> Option<Vec<(String, Vec<String>)>> {
-    let text = fs::read_to_string(root().join("src/workgraph/core/models/schemas.py")).ok()?;
     let mut classes: Vec<ClassRow> = Vec::new();
-    // A top-level statement (a function, a decorator) ends the class body before it.
-    let mut in_body = false;
-    for line in text.lines() {
-        if let Some((name, base)) = class_header(line) {
-            classes.push((name, base, Vec::new()));
-            in_body = true;
-        } else if line.starts_with(|c: char| !c.is_whitespace()) {
-            in_body = false;
-        } else if let (true, Some(field), Some(last)) =
-            (in_body, field_name(line), classes.last_mut())
-        {
-            last.2.push(field);
+    for text in python_sources()? {
+        // A top-level statement (a function, a decorator) ends the class body before it.
+        let mut in_body = false;
+        for line in text.lines() {
+            if let Some((name, base)) = class_header(line) {
+                classes.push((name, base, Vec::new()));
+                in_body = true;
+            } else if line.starts_with(|c: char| !c.is_whitespace()) {
+                in_body = false;
+            } else if let (true, Some(field), Some(last)) =
+                (in_body, field_name(line), classes.last_mut())
+            {
+                last.2.push(field);
+            }
         }
     }
     Some(

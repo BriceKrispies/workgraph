@@ -218,7 +218,11 @@ fn events_carry_the_stored_columns_in_python_order() {
         "{text}"
     );
     assert!(text.contains(r#""causation_id":null"#), "{text}");
-    assert!(text.contains(r#""data":{"slug":"p","name":"P""#), "{text}");
+    // The `data` column is stored with sorted keys, so it reads back sorted.
+    assert!(
+        text.contains(r#""data":{"name":"P","repository_ids":[],"slug":"p"}"#),
+        "{text}"
+    );
 }
 
 #[test]
@@ -294,7 +298,7 @@ fn settings_meta_and_health_documents() {
 
     let meta = health::meta(
         "0.1.0",
-        "default",
+        Some("default"),
         true,
         false,
         &["claude".to_string()],

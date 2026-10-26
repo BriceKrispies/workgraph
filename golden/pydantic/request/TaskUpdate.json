@@ -208,6 +208,642 @@
       }
     },
     {
+      "id": "float:expected_version:huge",
+      "input": {
+        "expected_version": 1.5e+300
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5e+300,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:edge",
+      "input": {
+        "expected_version": 9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.223372036854776e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:min_edge",
+      "input": {
+        "expected_version": -9.223372036854776e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": -9.223372036854776e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:above_i64",
+      "input": {
+        "expected_version": 9.3e+18
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 9.3e+18,
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float:expected_version:large",
+      "input": {
+        "expected_version": 9.2e+18
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 9200000000000000000,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "bigint:expected_version:above_i64",
+      "input": {
+        "expected_version": 9223372036854775808
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 9223372036854775808,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "bigint:expected_version:below_i64",
+      "input": {
+        "expected_version": -9223372036854775809
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": -9223372036854775809,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "bigint:expected_version:i128_max",
+      "input": {
+        "expected_version": 170141183460469231731687303715884105727
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 170141183460469231731687303715884105727,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "bigint:expected_version:i128_min",
+      "input": {
+        "expected_version": -170141183460469231731687303715884105728
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": -170141183460469231731687303715884105728,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "numstr:expected_version:point_zero",
+      "input": {
+        "expected_version": "5.0"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 5,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "numstr:expected_version:zeros_fraction",
+      "input": {
+        "expected_version": "5.00"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 5,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "numstr:expected_version:sign",
+      "input": {
+        "expected_version": "+7"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 7,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "numstr:expected_version:padded",
+      "input": {
+        "expected_version": " 12 "
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 12,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "numstr:expected_version:underscores",
+      "input": {
+        "expected_version": "1_000"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 1000,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "numstr:expected_version:exponent",
+      "input": {
+        "expected_version": "1e18"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "1e18",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "numstr:expected_version:fraction",
+      "input": {
+        "expected_version": "5.5"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "5.5",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "numstr:expected_version:trailing_point",
+      "input": {
+        "expected_version": "12."
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "12.",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "numstr:expected_version:hex",
+      "input": {
+        "expected_version": "0x10"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "0x10",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "numstr:expected_version:empty",
+      "input": {
+        "expected_version": ""
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "numstr:expected_version:sign_only",
+      "input": {
+        "expected_version": "-"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "-",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "numstr:expected_version:big",
+      "input": {
+        "expected_version": "9223372036854775808"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 9223372036854775808,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "numstr:expected_version:big_point_zero",
+      "input": {
+        "expected_version": "99999999999999999999.0"
+      },
+      "output": {
+        "ok": {
+          "acceptance_criteria": null,
+          "add_files": null,
+          "add_tags": null,
+          "assigned_agent": null,
+          "assignee": null,
+          "auto_execute": null,
+          "clear_parent": false,
+          "description": null,
+          "due_at": null,
+          "estimated_effort": null,
+          "expected_version": 99999999999999999999,
+          "files": null,
+          "metadata": null,
+          "parent": null,
+          "priority": null,
+          "projects": null,
+          "reason": null,
+          "remove_tags": null,
+          "scheduled_at": null,
+          "status": null,
+          "tags": null,
+          "title": null
+        }
+      }
+    },
+    {
+      "id": "numstr:expected_version:double_underscore",
+      "input": {
+        "expected_version": "1__0"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "1__0",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "numstr:expected_version:fraction_underscore",
+      "input": {
+        "expected_version": "5.0_0"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "5.0_0",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "numstr:expected_version:arabic_digits",
+      "input": {
+        "expected_version": "١٢"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "١٢",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Input should be a valid integer, unable to parse string as an integer",
+            "type": "int_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "numstr:expected_version:too_many_digits",
+      "input": {
+        "expected_version": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+            "loc": [
+              "expected_version"
+            ],
+            "msg": "Unable to parse input string as an integer, exceeded maximum size",
+            "type": "int_parsing_size"
+          }
+        ]
+      }
+    },
+    {
       "id": "wrong:title:none",
       "input": {
         "title": null

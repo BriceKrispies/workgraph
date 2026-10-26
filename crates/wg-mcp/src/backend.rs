@@ -21,6 +21,11 @@ pub struct AppBackend(pub wg_runtime::App);
 
 impl ToolBackend for AppBackend {
     fn call_tool(&mut self, agent: &Agent, name: &str, arguments: Value) -> Result<Value, WgError> {
+        // Dispatch: each tool group answers the names it owns. The IF-33 attempt, run and git
+        // tools come first (M47 to M56), then the workspace, project and repository tools.
+        if let Some(result) = crate::run_tools::call(&mut self.0, agent, name, &arguments) {
+            return result;
+        }
         match crate::tools::call(&mut self.0, agent, name, &arguments) {
             Some(answer) => answer,
             None => Err(WgError::new(

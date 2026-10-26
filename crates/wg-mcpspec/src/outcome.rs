@@ -84,6 +84,9 @@ pub fn success_result(structured: &Value) -> Value {
 }
 
 /// The `resources/read` result for a JSON document `text` read from `uri`.
+///
+/// The recorded reply's item has `uri`, `mimeType` and `text`, which is what `rmcp`'s resource
+/// contents type requires (`wg3738_resources` test).
 pub fn read_result(uri: &str, text: &str) -> Value {
     json!({"contents": [{"uri": uri, "mimeType": "application/json", "text": text}]})
 }

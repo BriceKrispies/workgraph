@@ -10,8 +10,6 @@
 //! holding the question and the normalised option objects. The decision record itself belongs to
 //! `decisions` (WG-3690); this module does not create one.
 
-use std::collections::BTreeSet;
-
 use serde_json::{Map, Value};
 use wg_types::{ErrorCode, Id, TaskPriority, TaskStatus, WgError};
 
@@ -299,84 +297,123 @@ pub fn plan_triage<F>(entries: &[Value], source: Option<&str>, lookup: F) -> Tri
 where
     F: Fn(&str) -> Result<TriageTarget, WgError>,
 {
-    let mut plan = TriagePlan::default();
-    let mut seen: BTreeSet<String> = BTreeSet::new();
+    let parsed: Vec<Result<Entry, String>> = entries.iter().map(parse_entry).collect();
+    // The normalised key of every element that parsed; a repeat of an earlier one is a duplicate
+    // even when its lookup then fails.
+    let keys: Vec<Option<String>> = parsed
+        .iter()
+        .map(|entry| entry.as_ref().ok().map(|e| e.key.trim().to_uppercase()))
+        .collect();
 
-    for (index, value) in entries.iter().enumerate() {
-        let raw_key = raw_field(value, "key");
-        let raw_verdict = raw_field(value, "verdict");
-        let fail = |error: String| Failure {
-            index,
-            key: raw_key.clone(),
-            verdict: raw_verdict.clone(),
-            error,
-        };
+    let outcomes: Vec<Outcome> = parsed
+        .into_iter()
+        .enumerate()
+        .map(|(index, parsed)| {
+            let value = &entries[index];
+            let raw_key = raw_field(value, "key");
+            let raw_verdict = raw_field(value, "verdict");
+            let fail = |error: String| {
+                Outcome::Failed(Failure {
+                    index,
+                    key: raw_key.clone(),
+                    verdict: raw_verdict.clone(),
+                    error,
+                })
+            };
 
-        let entry = match parse_entry(value) {
-            Ok(entry) => entry,
-            Err(problem) => {
-                plan.errors.push(fail(problem));
-                continue;
+            let entry = match parsed {
+                Ok(entry) => entry,
+                Err(problem) => return fail(problem),
+            };
+            if keys[index].is_some() && keys[..index].contains(&keys[index]) {
+                return fail(format!("duplicate key {} in file", entry.key));
             }
-        };
-        if !seen.insert(entry.key.trim().to_uppercase()) {
-            plan.errors
-                .push(fail(format!("duplicate key {} in file", entry.key)));
-            continue;
-        }
 
-        let target = match lookup(&entry.key) {
-            Ok(target) => target,
-            Err(error) => {
-                plan.errors.push(fail(error.message));
-                continue;
-            }
-        };
+            let target = match lookup(&entry.key) {
+                Ok(target) => target,
+                Err(error) => return fail(error.message),
+            };
 
-        let existing: Vec<&str> = target
-            .tags
-            .iter()
-            .map(String::as_str)
-            .filter(|tag| tag.starts_with(TRIAGE_TAG_PREFIX))
-            .collect();
-        if let Some(first) = existing.first() {
-            let pending: Vec<&str> = existing
+            let existing: Vec<&str> = target
+                .tags
                 .iter()
-                .map(|tag| &tag[TRIAGE_TAG_PREFIX.len()..])
+                .map(String::as_str)
+                .filter(|tag| tag.starts_with(TRIAGE_TAG_PREFIX))
                 .collect();
-            let all_pending = pending
-                .iter()
-                .all(|name| Verdict::parse(name).is_some_and(Verdict::is_pending));
-            if pending.contains(&entry.verdict.as_str()) || !all_pending {
-                plan.skipped.push(Skipped {
-                    key: target.key.clone(),
-                    verdict: entry.verdict,
-                    reason: format!("already triaged ({first})"),
-                });
-                continue;
+            if let Some(first) = existing.first() {
+                let pending: Vec<&str> = existing
+                    .iter()
+                    .map(|tag| &tag[TRIAGE_TAG_PREFIX.len()..])
+                    .collect();
+                let all_pending = pending
+                    .iter()
+                    .all(|name| Verdict::parse(name).is_some_and(Verdict::is_pending));
+                if pending.contains(&entry.verdict.as_str()) || !all_pending {
+                    return Outcome::Skipped(Skipped {
+                        key: target.key.clone(),
+                        verdict: entry.verdict,
+                        reason: format!("already triaged ({first})"),
+                    });
+                }
             }
-        }
 
-        let cancelling = entry.verdict.cancels() || entry.verdict == Verdict::Open;
-        if cancelling
-            && check_task_transition(target.status, TaskStatus::Cancelled, false, false).is_err()
-        {
-            plan.errors.push(fail(format!(
-                "cannot move {} from {} to cancelled",
-                target.key, target.status
-            )));
-            continue;
-        }
+            let cancelling = entry.verdict.cancels() || entry.verdict == Verdict::Open;
+            if cancelling
+                && check_task_transition(target.status, TaskStatus::Cancelled, false, false)
+                    .is_err()
+            {
+                return fail(format!(
+                    "cannot move {} from {} to cancelled",
+                    target.key, target.status
+                ));
+            }
 
-        plan.planned.push(PlannedVerdict {
-            index,
-            key: target.key.clone(),
-            verdict: entry.verdict,
-            action: entry.verdict.action(),
-            steps: build_steps(&entry, &target, source),
-        });
+            Outcome::Planned(PlannedVerdict {
+                index,
+                key: target.key.clone(),
+                verdict: entry.verdict,
+                action: entry.verdict.action(),
+                steps: build_steps(&entry, &target, source),
+            })
+        })
+        .collect();
+
+    let (planned, rest): (Vec<Outcome>, Vec<Outcome>) = outcomes
+        .into_iter()
+        .partition(|outcome| matches!(outcome, Outcome::Planned(_)));
+    let (skipped, errors): (Vec<Outcome>, Vec<Outcome>) = rest
+        .into_iter()
+        .partition(|outcome| matches!(outcome, Outcome::Skipped(_)));
+    TriagePlan {
+        planned: planned
+            .into_iter()
+            .filter_map(|outcome| match outcome {
+                Outcome::Planned(planned) => Some(planned),
+                _ => None,
+            })
+            .collect(),
+        skipped: skipped
+            .into_iter()
+            .filter_map(|outcome| match outcome {
+                Outcome::Skipped(skipped) => Some(skipped),
+                _ => None,
+            })
+            .collect(),
+        errors: errors
+            .into_iter()
+            .filter_map(|outcome| match outcome {
+                Outcome::Failed(failure) => Some(failure),
+                _ => None,
+            })
+            .collect(),
     }
-    plan
+}
+
+/// What planning one element of the file came to.
+enum Outcome {
+    Planned(PlannedVerdict),
+    Skipped(Skipped),
+    Failed(Failure),
 }
 
 /// A field of a verdict as written; `null` when the element is not an object or lacks it.
@@ -416,18 +453,7 @@ pub fn parse_entry(value: &Value) -> Result<Entry, String> {
         Some(other) => other.to_string(),
     };
 
-    let mut entry = Entry {
-        key,
-        verdict,
-        summary,
-        evidence,
-        rewrites: Vec::new(),
-        duplicates: Vec::new(),
-        decision: None,
-        command: None,
-    };
-
-    if verdict == Verdict::Open {
+    let (rewrites, duplicates) = if verdict == Verdict::Open {
         let rewrites = match object.get("rewrites") {
             None => Vec::new(),
             Some(Value::Array(items)) => items.clone(),
@@ -442,24 +468,41 @@ pub fn parse_entry(value: &Value) -> Result<Entry, String> {
                 "open verdict needs at least one rewrite or a duplicate_of task".to_owned(),
             );
         }
-        for (i, rewrite) in rewrites.iter().enumerate() {
-            entry.rewrites.push(parse_rewrite(i, rewrite)?);
-        }
-        entry.duplicates = duplicates;
-    }
+        let parsed = rewrites
+            .iter()
+            .enumerate()
+            .map(|(i, rewrite)| parse_rewrite(i, rewrite))
+            .collect::<Result<Vec<_>, _>>()?;
+        (parsed, duplicates)
+    } else {
+        (Vec::new(), Vec::new())
+    };
 
-    if verdict == Verdict::NeedsDecision && object.contains_key("decision") {
-        entry.decision = decision_of(object.get("decision").unwrap_or(&Value::Null))?;
-    }
+    let decision = if verdict == Verdict::NeedsDecision && object.contains_key("decision") {
+        decision_of(object.get("decision").unwrap_or(&Value::Null))?
+    } else {
+        None
+    };
 
-    if verdict == Verdict::NeedsRun {
-        entry.command = Some(
+    let command = if verdict == Verdict::NeedsRun {
+        Some(
             text_field(object.get("command"))
                 .ok_or("needs-run verdict needs a command")?
                 .to_owned(),
-        );
-    }
-    Ok(entry)
+        )
+    } else {
+        None
+    };
+    Ok(Entry {
+        key,
+        verdict,
+        summary,
+        evidence,
+        rewrites,
+        duplicates,
+        decision,
+        command,
+    })
 }
 
 const OPEN_LISTS: &str = "rewrites must be a list and duplicate_of a list of task keys";
@@ -533,11 +576,9 @@ fn decision_of(value: &Value) -> Result<Option<Decision>, String> {
 /// A bare option label becomes `{"label": ...}`; an option object is kept as written.
 fn option_spec(option: Value) -> Value {
     match option {
-        Value::String(label) => {
-            let mut object = Map::new();
-            object.insert("label".to_owned(), Value::String(label));
-            Value::Object(object)
-        }
+        Value::String(label) => Value::Object(
+            std::iter::once(("label".to_owned(), Value::String(label))).collect::<Map<_, _>>(),
+        ),
         other => other,
     }
 }
@@ -605,59 +646,56 @@ fn option_problem(option: &Value) -> Option<String> {
 }
 
 fn build_steps(entry: &Entry, target: &TriageTarget, source: Option<&str>) -> Vec<Step> {
-    let mut steps = Vec::new();
     // A pending verdict being replaced: drop its tags so the task carries only the new one. The
     // plain `needs-decision` tag goes too, but only when triage set it.
-    let mut stale: Vec<String> = target
+    let triage_tags: Vec<String> = target
         .tags
         .iter()
         .filter(|tag| tag.starts_with(TRIAGE_TAG_PREFIX))
         .cloned()
         .collect();
-    if stale.iter().any(|tag| tag == "triage:needs-decision")
-        && target.tags.iter().any(|tag| tag == "needs-decision")
-    {
-        stale.push("needs-decision".to_owned());
-    }
-    if !stale.is_empty() {
-        steps.push(Step::RemoveTags(stale));
-    }
+    let drops_plain = triage_tags.iter().any(|tag| tag == "triage:needs-decision")
+        && target.tags.iter().any(|tag| tag == "needs-decision");
+    let stale: Vec<String> = triage_tags
+        .into_iter()
+        .chain(drops_plain.then(|| "needs-decision".to_owned()))
+        .collect();
+    let removal = (!stale.is_empty()).then(|| Step::RemoveTags(stale));
 
     let summary = entry.summary.as_str();
     let evidence = entry.evidence.as_slice();
     let verdict = entry.verdict.as_str();
-    match entry.verdict {
-        Verdict::Resolved | Verdict::Obsolete => {
-            steps.push(Step::Comment(comment_body(
-                source,
-                verdict,
-                summary,
-                evidence,
-                &[],
-            )));
-            steps.push(Step::AddTags(vec![format!("{TRIAGE_TAG_PREFIX}{verdict}")]));
-            steps.push(Step::Cancel(format!("triage: {verdict}")));
-        }
+    let steps: Vec<Step> = match entry.verdict {
+        Verdict::Resolved | Verdict::Obsolete => vec![
+            Step::Comment(comment_body(source, verdict, summary, evidence, &[])),
+            Step::AddTags(vec![format!("{TRIAGE_TAG_PREFIX}{verdict}")]),
+            Step::Cancel(format!("triage: {verdict}")),
+        ],
         Verdict::Open => {
-            for rewrite in &entry.rewrites {
-                steps.push(Step::CreateFollowUp(follow_up(entry, target, rewrite)));
-            }
-            for duplicate in &entry.duplicates {
-                steps.push(Step::MarkDuplicate {
-                    target: duplicate.clone(),
-                });
-            }
             let superseded = Superseded {
                 source: source.map(str::to_owned),
                 summary: summary.to_owned(),
                 evidence: evidence.to_vec(),
                 duplicates: entry.duplicates.clone(),
             };
-            steps.push(Step::CommentSuperseded(superseded.clone()));
-            steps.push(Step::AddTags(vec![format!(
-                "{TRIAGE_TAG_PREFIX}superseded"
-            )]));
-            steps.push(Step::CancelSuperseded(superseded));
+            entry
+                .rewrites
+                .iter()
+                .map(|rewrite| Step::CreateFollowUp(follow_up(entry, target, rewrite)))
+                .chain(
+                    entry
+                        .duplicates
+                        .iter()
+                        .map(|duplicate| Step::MarkDuplicate {
+                            target: duplicate.clone(),
+                        }),
+                )
+                .chain([
+                    Step::CommentSuperseded(superseded.clone()),
+                    Step::AddTags(vec![format!("{TRIAGE_TAG_PREFIX}superseded")]),
+                    Step::CancelSuperseded(superseded),
+                ])
+                .collect()
         }
         Verdict::NeedsDecision => {
             let question = match &entry.decision {
@@ -670,74 +708,82 @@ fn build_steps(entry: &Entry, target: &TriageTarget, source: Option<&str>) -> Ve
                 .map(|question| format!("Decision: {question}"))
                 .into_iter()
                 .collect();
-            steps.push(Step::Comment(comment_body(
+            let request = match &entry.decision {
+                Some(Decision::Structured { question, options }) => Some(Step::RequestDecision {
+                    question: question.clone(),
+                    options: options.clone(),
+                }),
+                _ => None,
+            };
+            [Step::Comment(comment_body(
                 source,
                 "needs a decision",
                 summary,
                 evidence,
                 &blocks,
-            )));
-            if let Some(Decision::Structured { question, options }) = &entry.decision {
-                steps.push(Step::RequestDecision {
-                    question: question.clone(),
-                    options: options.clone(),
-                });
-            }
-            steps.push(Step::AddTags(vec![
+            ))]
+            .into_iter()
+            .chain(request)
+            .chain([Step::AddTags(vec![
                 "needs-decision".to_owned(),
                 format!("{TRIAGE_TAG_PREFIX}needs-decision"),
-            ]));
+            ])])
+            .collect()
         }
         Verdict::NeedsRun => {
             let command = entry.command.as_deref().unwrap_or_default();
             let blocks = [format!("Confirm with: {command}")];
-            steps.push(Step::Comment(comment_body(
-                source,
-                "needs a run to confirm",
-                summary,
-                evidence,
-                &blocks,
-            )));
-            steps.push(Step::AddTags(vec![format!("{TRIAGE_TAG_PREFIX}needs-run")]));
+            vec![
+                Step::Comment(comment_body(
+                    source,
+                    "needs a run to confirm",
+                    summary,
+                    evidence,
+                    &blocks,
+                )),
+                Step::AddTags(vec![format!("{TRIAGE_TAG_PREFIX}needs-run")]),
+            ]
         }
-        Verdict::Unclear => {
-            steps.push(Step::Comment(comment_body(
-                source,
-                "unclear",
-                summary,
-                evidence,
-                &[],
-            )));
-            steps.push(Step::AddTags(vec![format!("{TRIAGE_TAG_PREFIX}unclear")]));
-        }
-    }
-    steps
+        Verdict::Unclear => vec![
+            Step::Comment(comment_body(source, "unclear", summary, evidence, &[])),
+            Step::AddTags(vec![format!("{TRIAGE_TAG_PREFIX}unclear")]),
+        ],
+    };
+    removal.into_iter().chain(steps).collect()
 }
 
 /// Builds one follow-up from a rewrite: the original's priority, projects and repositories; its
 /// tags minus the dropped and `kind:` ones, plus `triaged` and the scope.
 fn follow_up(entry: &Entry, target: &TriageTarget, rewrite: &Rewrite) -> FollowUp {
-    let mut description = rewrite.description.clone();
-    if !rewrite.files.is_empty() {
-        description.push_str(&format!("\n\n**Files:** {}", rewrite.files.join(", ")));
-    }
-    description.push_str(&format!(
-        "\n\nTriaged from {}: {}",
-        target.key, entry.summary
-    ));
+    let files_block = if rewrite.files.is_empty() {
+        String::new()
+    } else {
+        format!("\n\n**Files:** {}", rewrite.files.join(", "))
+    };
+    let description = format!(
+        "{}{files_block}\n\nTriaged from {}: {}",
+        rewrite.description, target.key, entry.summary
+    );
 
-    let mut tags: Vec<String> = target
+    let tags: Vec<String> = target
         .tags
         .iter()
         .filter(|tag| tag.as_str() != DROPPED_TAG && !tag.starts_with(KIND_TAG_PREFIX))
         .cloned()
-        .collect();
-    tags.push("triaged".to_owned());
-    if let Some(size) = &rewrite.size {
-        tags.push(format!("scope:{}", legacy_size(size)));
-    }
-    let mut seen = BTreeSet::new();
-    tags.retain(|tag| seen.insert(tag.clone()));
+        .chain(["triaged".to_owned()])
+        .chain(
+            rewrite
+                .size
+                .as_ref()
+                .map(|size| format!("scope:{}", legacy_size(size))),
+        )
+        .fold(Vec::new(), |out, tag| {
+            if out.contains(&tag) {
+                out
+            } else {
+                out.into_iter().chain([tag]).collect()
+            }
+        });
 
     FollowUp {
         title: rewrite.title.clone(),
@@ -769,17 +815,15 @@ pub fn comment_body(
         Some(source) if !source.is_empty() => format!("Triage ({source}): "),
         _ => "Triage: ".to_owned(),
     };
-    let mut text = format!("{head}{lead}. {summary}").trim_end().to_owned();
-    for block in blocks {
-        text.push_str("\n\n");
-        text.push_str(block);
-    }
-    if !evidence.is_empty() {
-        text.push_str("\n\nEvidence:\n");
+    let lead_line = format!("{head}{lead}. {summary}").trim_end().to_owned();
+    let block_text: String = blocks.iter().map(|block| format!("\n\n{block}")).collect();
+    let evidence_text = if evidence.is_empty() {
+        String::new()
+    } else {
         let lines: Vec<String> = evidence.iter().map(|line| format!("- {line}")).collect();
-        text.push_str(&lines.join("\n"));
-    }
-    text
+        format!("\n\nEvidence:\n{}", lines.join("\n"))
+    };
+    format!("{lead_line}{block_text}{evidence_text}")
 }
 
 /// A rewrite size mapped to the scope vocabulary; legacy sizes keep the scope they always meant.

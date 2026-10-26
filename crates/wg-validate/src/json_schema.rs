@@ -54,14 +54,15 @@ fn count(schema: &Value, key: &str) -> Option<usize> {
         .and_then(|n| usize::try_from(n).ok())
 }
 
-fn int_bound(schema: &Value, key: &str) -> Option<i64> {
+fn int_bound(schema: &Value, key: &str) -> Option<i128> {
     let bound = schema.get(key)?;
-    bound.as_i64().or_else(|| {
-        // A float-typed bound (`1.0`) on an integer field, which FastAPI's schema generator emits.
+    // The literal text parses for every integer bound; a float-typed bound (`1.0`) on an integer
+    // field, which FastAPI's schema generator emits, falls through to the float reading.
+    bound.to_string().parse::<i128>().ok().or_else(|| {
         bound
             .as_f64()
             .filter(|float| float.fract() == 0.0 && float.abs() < 9.0e15)
-            .map(|float| float as i64)
+            .map(|float| float as i128)
     })
 }
 

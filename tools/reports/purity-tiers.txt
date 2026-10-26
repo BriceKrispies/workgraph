@@ -9,6 +9,7 @@ arch-lint Tooling
 wg-agents Shell
 wg-analytics Core
 wg-archive Shell
+wg-archivespec Pure
 wg-automation Core
 wg-browser Shell
 wg-browserspec Pure

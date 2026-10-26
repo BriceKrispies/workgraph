@@ -33,7 +33,7 @@ use syn::spanned::Spanned;
 use syn::visit::{self, Visit};
 
 use crate::is_test_gated;
-use crate::purity::{TierTable, impl_item_attrs, item_attrs, trait_item_attrs};
+use crate::purity::{TierTable, UseMap, impl_item_attrs, item_attrs, trait_item_attrs};
 
 /// The `Core` rules that differ between repositories, read from
 /// `tools/reports/core-rules.toml`.
@@ -171,9 +171,11 @@ pub(crate) fn check_crate(
 ) -> Vec<String> {
     let mut findings = Vec::new();
     for (path, ast) in files.iter().filter(|f| !is_test_gated(&f.1.attrs)) {
+        let uses = UseMap::of_file(ast);
         let mut scan = CoreScan {
             path: path.as_str(),
             banned: &rules.banned_calls,
+            uses: &uses,
             found: Vec::new(),
         };
         scan.visit_file(ast);
@@ -191,6 +193,8 @@ pub(crate) fn check_crate(
 struct CoreScan<'a> {
     path: &'a str,
     banned: &'a [String],
+    /// The file's imports, so a renamed or `use`-imported name resolves.
+    uses: &'a UseMap,
     found: Vec<Finding>,
 }
 
@@ -244,9 +248,17 @@ impl<'ast> Visit<'ast> for CoreScan<'_> {
 
     fn visit_path(&mut self, node: &'ast syn::Path) {
         let segments: Vec<String> = node.segments.iter().map(|s| s.ident.to_string()).collect();
-        let joined = segments.join("::");
+        let resolved: Vec<String> = self
+            .uses
+            .resolve(&segments)
+            .iter()
+            .map(|full| full.join("::"))
+            .collect();
         for banned in self.banned {
-            if joined == *banned || joined.ends_with(&format!("::{banned}")) {
+            if resolved
+                .iter()
+                .any(|joined| joined == banned || joined.ends_with(&format!("::{banned}")))
+            {
                 let line = node.span().start().line;
                 let text = format!("`{banned}`: clock and entropy come in through `Stamp`");
                 self.flag(4, line, text);
@@ -662,6 +674,27 @@ mod tests {
                    pub fn e() { let _ = uuid::Uuid::new_v4(); }\n";
         let found = check("wg-x", &[("crates/wg-x/src/lib.rs", src)], NO_DEPS);
         assert_eq!(hits(&found, 4), 5, "{found:?}");
+    }
+
+    #[test]
+    fn rule4_fires_through_every_use_import_form() {
+        let cases = [
+            "use std::time::Instant as I;\npub fn a() { let _ = I::now(); }\n",
+            "use std::time as t;\npub fn a() { let _ = t::SystemTime::now(); }\n",
+            "use std::time::{SystemTime, Duration};\npub fn a() { let _ = SystemTime::now(); }\n",
+            "use time::OffsetDateTime as O;\npub fn a() { let _ = O::now_utc(); }\n",
+            "use time::OffsetDateTime::now_utc;\npub fn a() { let _ = now_utc(); }\n",
+            "use time::OffsetDateTime::now_utc as n;\npub fn a() { let _ = n(); }\n",
+            "use uuid::Uuid as U;\npub fn a() { let _ = U::new_v4(); }\n",
+            "use uuid::Uuid::new_v4;\npub fn a() { let _ = new_v4(); }\n",
+            "use uuid::{Uuid as U, Version};\npub fn a() { let _ = U::new_v4(); }\n",
+            "use std::time::*;\npub fn a() { let _ = Instant::now(); }\n",
+            "use std::time::{self as t};\npub fn a() { let _ = t::Instant::now(); }\n",
+        ];
+        for src in cases {
+            let found = check("wg-x", &[("crates/wg-x/src/lib.rs", src)], NO_DEPS);
+            assert_eq!(hits(&found, 4), 1, "{src}: {found:?}");
+        }
     }
 
     #[test]

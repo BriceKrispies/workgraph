@@ -12,7 +12,7 @@ use wg_types::{ErrorCode, Id, Timestamp, WgError};
 
 use crate::codec::{Raw, bool_sql, id_sql, text_sql, ts_sql};
 use crate::rows::{TableRow, columns};
-use crate::sql::Statement;
+use crate::sql::{Statement, quote, select_list};
 
 /// The statuses a run holds while it counts against a rule's rate limit (the Python
 /// `_rate_limited` query: live, non-dry runs).
@@ -53,23 +53,6 @@ fn bind(params: &mut Vec<Raw>, value: Raw) -> String {
     format!("?{}", params.len())
 }
 
-/// The table's columns, quoted and qualified by `alias` when one is given.
-fn select_list(table: Table, alias: Option<&str>) -> String {
-    columns(table)
-        .iter()
-        .map(|column| match alias {
-            Some(alias) => format!("{alias}.\"{column}\""),
-            None => format!("\"{column}\""),
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
-
-/// The quoted table name.
-fn quoted(table: Table) -> String {
-    format!("\"{}\"", table.name())
-}
-
 /// The rule in `workspace_id` named `name`.
 pub fn rule_by_name(workspace_id: Id, name: &str) -> Statement {
     let mut params = Vec::new();
@@ -79,7 +62,7 @@ pub fn rule_by_name(workspace_id: Id, name: &str) -> Statement {
         sql: format!(
             "SELECT {} FROM {} WHERE \"workspace_id\" = {ws} AND \"name\" = {name}",
             select_list(Table::AutomationRule, None),
-            quoted(Table::AutomationRule)
+            quote(Table::AutomationRule.name())
         ),
         params,
     }
@@ -93,7 +76,7 @@ pub fn rules(workspace_id: Id) -> Statement {
         sql: format!(
             "SELECT {} FROM {} WHERE \"workspace_id\" = {ws} ORDER BY \"name\"",
             select_list(Table::AutomationRule, None),
-            quoted(Table::AutomationRule)
+            quote(Table::AutomationRule.name())
         ),
         params,
     }
@@ -112,7 +95,7 @@ pub fn enabled_rules_of_trigger(trigger_type: &str) -> Statement {
              AND json_extract(\"trigger\", '$.type') = {trigger} \
              ORDER BY \"workspace_id\", \"name\"",
             select_list(Table::AutomationRule, None),
-            quoted(Table::AutomationRule)
+            quote(Table::AutomationRule.name())
         ),
         params,
     }
@@ -128,7 +111,7 @@ pub fn run_by_trigger(rule_id: Id, trigger_key: &str) -> Statement {
         sql: format!(
             "SELECT {} FROM {} WHERE \"rule_id\" = {rule} AND \"trigger_key\" = {key}",
             select_list(Table::AutomationRun, None),
-            quoted(Table::AutomationRun)
+            quote(Table::AutomationRun.name())
         ),
         params,
     }
@@ -144,7 +127,7 @@ pub fn run_by_trigger_key(trigger_key: &str) -> Statement {
             "SELECT {} FROM {} WHERE \"trigger_key\" = {key} \
              ORDER BY \"created_at\", \"id\" LIMIT 1",
             select_list(Table::AutomationRun, None),
-            quoted(Table::AutomationRun)
+            quote(Table::AutomationRun.name())
         ),
         params,
     }
@@ -180,7 +163,7 @@ pub fn runs(workspace_id: Id, rule_id: Option<Id>, status: Option<&str>, page: P
         sql: format!(
             "SELECT {} FROM {} AS r{filter} ORDER BY r.\"created_at\" DESC, r.\"id\" DESC{limit}",
             select_list(Table::AutomationRun, Some("r")),
-            quoted(Table::AutomationRun)
+            quote(Table::AutomationRun.name())
         ),
         params,
     }
@@ -203,8 +186,8 @@ pub fn runs_with_rule(
              JOIN {} AS rule ON rule.\"id\" = r.\"rule_id\"{filter} \
              ORDER BY r.\"created_at\" DESC, r.\"id\" DESC{limit}",
             select_list(Table::AutomationRun, Some("r")),
-            quoted(Table::AutomationRun),
-            quoted(Table::AutomationRule)
+            quote(Table::AutomationRun.name()),
+            quote(Table::AutomationRule.name())
         ),
         params,
     }
@@ -248,7 +231,7 @@ pub fn live_run_count(rule_id: Id, since: Timestamp) -> Statement {
         sql: format!(
             "SELECT COUNT(*) FROM {} WHERE \"rule_id\" = {rule} AND \"dry_run\" = {dry} \
              AND \"status\" IN ({statuses}) AND \"created_at\" > {since}",
-            quoted(Table::AutomationRun)
+            quote(Table::AutomationRun.name())
         ),
         params,
     }
@@ -261,7 +244,7 @@ pub fn notifications(workspace_id: Id, unread_only: bool, page: Page) -> Stateme
     let mut sql = format!(
         "SELECT {} FROM {} WHERE \"workspace_id\" = {ws}",
         select_list(Table::Notification, None),
-        quoted(Table::Notification)
+        quote(Table::Notification.name())
     );
     if unread_only {
         sql.push_str(" AND \"read_at\" IS NULL");
@@ -281,7 +264,7 @@ pub fn reports(workspace_id: Id, page: Page) -> Statement {
             "SELECT {} FROM {} WHERE \"workspace_id\" = {ws} \
              ORDER BY \"created_at\" DESC, \"id\" DESC{limit}",
             select_list(Table::Report, None),
-            quoted(Table::Report)
+            quote(Table::Report.name())
         ),
         params,
     }
@@ -296,7 +279,7 @@ pub fn finding_by_fingerprint(workspace_id: Id, fingerprint: &str) -> Statement 
         sql: format!(
             "SELECT {} FROM {} WHERE \"workspace_id\" = {ws} AND \"fingerprint\" = {fingerprint}",
             select_list(Table::Finding, None),
-            quoted(Table::Finding)
+            quote(Table::Finding.name())
         ),
         params,
     }

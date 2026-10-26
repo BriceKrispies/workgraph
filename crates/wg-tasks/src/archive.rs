@@ -54,14 +54,15 @@ pub fn archive_plan(
     let fields = BTreeSet::from(["archived"]);
     guard_tracker_owned(&stamp.actor, task, &fields, tracked_by(tasks, task.id))?;
 
-    let mut next = task.clone();
-    next.version += 1;
-    let change = if archived {
-        next.archived_at = Some(stamp.at);
-        ArchiveChange::Archived
+    let (archived_at, change) = if archived {
+        (Some(stamp.at), ArchiveChange::Archived)
     } else {
-        next.archived_at = None;
-        ArchiveChange::Unarchived
+        (None, ArchiveChange::Unarchived)
+    };
+    let next = Task {
+        version: task.version + 1,
+        archived_at,
+        ..task.clone()
     };
     Ok(ArchivePlan { task: next, change })
 }

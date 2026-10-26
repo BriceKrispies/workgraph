@@ -91,165 +91,152 @@ pub fn update_plan(
     patch: &TaskPatch,
 ) -> Result<UpdatePlan, WgError> {
     check_version(task, patch.expected_version)?;
-    let mut next = task.clone();
-    let mut log: Vec<(&'static str, Value, Value)> = Vec::new();
 
-    if let Some(title) = &patch.title {
-        replace(&mut log, "title", &mut next.title, title, text);
-    }
-    if let Some(description) = &patch.description {
-        replace(
-            &mut log,
-            "description",
-            &mut next.description,
-            description,
-            text,
-        );
-    }
-    if let Some(criteria) = &patch.acceptance_criteria {
-        let before: Vec<String> = next.acceptance_criteria.iter().cloned().collect();
-        if before != *criteria {
-            log.push(("acceptance_criteria", json!(before), json!(criteria)));
-            next.acceptance_criteria = criteria.iter().cloned().collect();
-        }
-    }
-    if let Some(assignee) = &patch.assignee {
-        replace(&mut log, "assignee", &mut next.assignee, assignee, opt_text);
-    }
-    if let Some(agent) = &patch.assigned_agent {
-        replace(
-            &mut log,
-            "assigned_agent",
-            &mut next.assigned_agent,
-            agent,
-            opt_text,
-        );
-    }
-    if let Some(auto_execute) = patch.auto_execute {
-        replace(
-            &mut log,
-            "auto_execute",
-            &mut next.auto_execute,
-            &auto_execute,
-            flag,
-        );
-    }
-    if let Some(due_at) = &patch.due_at {
-        replace(&mut log, "due_at", &mut next.due_at, due_at, timestamp_json);
-    }
-    if let Some(scheduled_at) = &patch.scheduled_at {
-        replace(
-            &mut log,
-            "scheduled_at",
-            &mut next.scheduled_at,
-            scheduled_at,
-            timestamp_json,
-        );
-    }
-    if let Some(priority) = patch.priority {
-        replace(
-            &mut log,
-            "priority",
-            &mut next.priority,
-            &priority,
-            priority_json,
-        );
-    }
-    if let Some(effort) = &patch.estimated_effort {
-        replace(
-            &mut log,
-            "estimated_effort",
-            &mut next.estimated_effort,
-            &Some(effort.clone()),
-            opt_object,
-        );
-    }
-    if let Some(metadata) = &patch.metadata {
-        let mut merged = next.metadata.clone();
-        for (key, value) in metadata {
-            merged.insert(key.clone(), value.clone());
-        }
-        replace(&mut log, "metadata", &mut next.metadata, &merged, object);
-    }
+    let title = pick(&patch.title, &task.title);
+    let description = pick(&patch.description, &task.description);
+    let assignee = pick(&patch.assignee, &task.assignee);
+    let assigned_agent = pick(&patch.assigned_agent, &task.assigned_agent);
+    let auto_execute = pick(&patch.auto_execute, &task.auto_execute);
+    let due_at = pick(&patch.due_at, &task.due_at);
+    let scheduled_at = pick(&patch.scheduled_at, &task.scheduled_at);
+    let priority = pick(&patch.priority, &task.priority);
+    let estimated_effort = patch
+        .estimated_effort
+        .clone()
+        .map_or_else(|| task.estimated_effort.clone(), Some);
+    // Keys given replace the stored ones; other keys stay.
+    let metadata = patch.metadata.as_ref().map_or_else(
+        || task.metadata.clone(),
+        |given| {
+            task.metadata
+                .iter()
+                .chain(given.iter())
+                .map(|(key, value)| (key.clone(), value.clone()))
+                .collect()
+        },
+    );
+
+    let criteria_before: Vec<String> = task.acceptance_criteria.iter().cloned().collect();
+    let criteria_after: Vec<String> = patch
+        .acceptance_criteria
+        .clone()
+        .unwrap_or_else(|| criteria_before.clone());
 
     let current_tags: Vec<String> = tasks.tags_of(task.id).map(str::to_owned).collect();
-    let mut new_tags = patch.tags.clone().unwrap_or_else(|| current_tags.clone());
-    for tag in &patch.add_tags {
-        if !new_tags.contains(tag) {
-            new_tags.push(tag.clone());
-        }
-    }
-    if !patch.remove_tags.is_empty() {
-        new_tags.retain(|tag| !patch.remove_tags.contains(tag));
-    }
-    let tags = if new_tags != current_tags {
-        log.push(("tags", json!(current_tags), json!(new_tags)));
-        Some(dedup(&new_tags))
+    let with_added = patch.add_tags.iter().fold(
+        patch.tags.clone().unwrap_or_else(|| current_tags.clone()),
+        |tags, tag| {
+            if tags.contains(tag) {
+                tags
+            } else {
+                tags.into_iter().chain([tag.clone()]).collect()
+            }
+        },
+    );
+    let new_tags: Vec<String> = if patch.remove_tags.is_empty() {
+        with_added
     } else {
-        None
+        with_added
+            .into_iter()
+            .filter(|tag| !patch.remove_tags.contains(tag))
+            .collect()
     };
+    let tags = (new_tags != current_tags).then(|| dedup(&new_tags));
 
     let current = current_files(tasks, task.id);
-    let mut new_files = patch.files.clone().unwrap_or_else(|| current.clone());
-    new_files = add_files(new_files, &patch.add_files);
-    let files = if new_files != current {
-        log.push((
-            "files",
-            Value::Array(current.iter().map(FileInput::to_json).collect()),
-            Value::Array(new_files.iter().map(FileInput::to_json).collect()),
-        ));
-        Some(file_rows(task.id, &new_files))
-    } else {
+    let new_files = add_files(
+        patch.files.clone().unwrap_or_else(|| current.clone()),
+        &patch.add_files,
+    );
+    let files = (new_files != current).then(|| file_rows(task.id, &new_files));
+
+    let project_change = patch.projects.as_ref().and_then(|wanted| {
+        let before: Vec<Id> = tasks
+            .task_projects
+            .values()
+            .filter(|link| link.task_id == task.id)
+            .map(|link| link.project_id)
+            .collect::<BTreeSet<Id>>()
+            .into_iter()
+            .collect();
+        let after: Vec<Id> = dedup(wanted)
+            .into_iter()
+            .collect::<BTreeSet<Id>>()
+            .into_iter()
+            .collect();
+        (before != after).then_some((before, after))
+    });
+
+    let parent_id = if patch.clear_parent && task.parent_id.is_some() {
         None
-    };
-
-    let projects = match &patch.projects {
-        Some(wanted) => {
-            let mut before: Vec<Id> = tasks
-                .task_projects
-                .values()
-                .filter(|link| link.task_id == task.id)
-                .map(|link| link.project_id)
-                .collect();
-            before.sort();
-            let mut after: Vec<Id> = dedup(wanted);
-            after.sort();
-            if before != after {
-                log.push(("project_ids", ids_json(&before), ids_json(&after)));
-                Some(after)
-            } else {
-                None
-            }
-        }
-        None => None,
-    };
-
-    if patch.clear_parent && task.parent_id.is_some() {
-        replace(
-            &mut log,
-            "parent_id",
-            &mut next.parent_id,
-            &None,
-            parent_json,
-        );
     } else if let Some(parent) = patch.parent {
         check_set_parent(tasks, task.id, parent)?;
-        replace(
-            &mut log,
-            "parent_id",
-            &mut next.parent_id,
-            &Some(parent),
-            parent_json,
-        );
-    }
+        Some(parent)
+    } else {
+        task.parent_id
+    };
 
-    let new_hash = content_hash(&next.title, &next.description);
-    let material_change = new_hash != next.description_hash;
-    if material_change {
-        next.description_hash = new_hash;
-    }
+    let new_hash = content_hash(&title, &description);
+    let material_change = new_hash != task.description_hash;
 
-    let mut touched: BTreeSet<&str> = log
+    // The change record, in the order the fields are listed.
+    let log: Vec<LogEntry> = [
+        diff("title", &task.title, &title, text),
+        diff("description", &task.description, &description, text),
+        (criteria_before != criteria_after).then(|| {
+            (
+                "acceptance_criteria",
+                json!(criteria_before),
+                json!(criteria_after),
+            )
+        }),
+        diff("assignee", &task.assignee, &assignee, opt_text),
+        diff(
+            "assigned_agent",
+            &task.assigned_agent,
+            &assigned_agent,
+            opt_text,
+        ),
+        diff("auto_execute", &task.auto_execute, &auto_execute, flag),
+        diff("due_at", &task.due_at, &due_at, timestamp_json),
+        diff(
+            "scheduled_at",
+            &task.scheduled_at,
+            &scheduled_at,
+            timestamp_json,
+        ),
+        diff("priority", &task.priority, &priority, priority_json),
+        diff(
+            "estimated_effort",
+            &task.estimated_effort,
+            &estimated_effort,
+            opt_object,
+        ),
+        diff("metadata", &task.metadata, &metadata, object),
+        tags.as_ref()
+            .map(|_| ("tags", json!(current_tags), json!(new_tags))),
+        files.as_ref().map(|_| {
+            (
+                "files",
+                Value::Array(current.iter().map(FileInput::to_json).collect()),
+                Value::Array(new_files.iter().map(FileInput::to_json).collect()),
+            )
+        }),
+        project_change
+            .as_ref()
+            .map(|(before, after)| ("project_ids", ids_json(before), ids_json(after))),
+        diff("parent_id", &task.parent_id, &parent_id, parent_json),
+    ]
+    .into_iter()
+    .flatten()
+    .collect();
+    let projects = project_change.map(|(_, after)| after);
+
+    let closed = [TaskStatus::Accepted, TaskStatus::Cancelled];
+    let status_touched = patch.status.is_some_and(|target| {
+        target != task.status && (closed.contains(&target) || closed.contains(&task.status))
+    });
+    let touched: BTreeSet<&str> = log
         .iter()
         .map(|(field, _, _)| {
             if *field == "parent_id" {
@@ -258,13 +245,8 @@ pub fn update_plan(
                 *field
             }
         })
+        .chain(status_touched.then_some("status"))
         .collect();
-    if let Some(target) = patch.status {
-        let closed = [TaskStatus::Accepted, TaskStatus::Cancelled];
-        if target != task.status && (closed.contains(&target) || closed.contains(&task.status)) {
-            touched.insert("status");
-        }
-    }
     guard_tracker_owned(&stamp.actor, task, &touched, tracked_by(tasks, task.id))?;
 
     if patch.status == Some(TaskStatus::Claimed) {
@@ -279,19 +261,40 @@ pub fn update_plan(
         .fold(Changes::new(), |acc, (field, before, after)| {
             acc.with(field, before, after)
         });
-    let event = if changes.is_empty() {
-        None
-    } else {
-        next.version += 1;
-        next.updated_at = stamp.at;
-        Some(TaskUpdated {
-            key: task.key.clone(),
-            changes: changes.clone(),
-            material_change,
-            reason: patch.reason.clone(),
-            version: next.version,
-        })
+    let changed = !changes.is_empty();
+    let next = Task {
+        title,
+        description,
+        acceptance_criteria: criteria_after.iter().cloned().collect(),
+        assignee,
+        assigned_agent,
+        auto_execute,
+        due_at,
+        scheduled_at,
+        priority,
+        estimated_effort,
+        metadata,
+        parent_id,
+        description_hash: if material_change {
+            new_hash
+        } else {
+            task.description_hash.clone()
+        },
+        version: if changed {
+            task.version + 1
+        } else {
+            task.version
+        },
+        updated_at: if changed { stamp.at } else { task.updated_at },
+        ..task.clone()
     };
+    let event = changed.then(|| TaskUpdated {
+        key: task.key.clone(),
+        changes: changes.clone(),
+        material_change,
+        reason: patch.reason.clone(),
+        version: next.version,
+    });
 
     Ok(UpdatePlan {
         task: next,
@@ -305,18 +308,22 @@ pub fn update_plan(
     })
 }
 
-/// Sets `slot` to `new` when they differ, recording `[before, after]` under `field`.
-fn replace<T: Clone + PartialEq>(
-    log: &mut Vec<(&'static str, Value, Value)>,
+/// One recorded change: the field, and its value before and after.
+type LogEntry = (&'static str, Value, Value);
+
+/// The patched value when the patch gives one, else the stored one.
+fn pick<T: Clone>(patch: &Option<T>, current: &T) -> T {
+    patch.clone().unwrap_or_else(|| current.clone())
+}
+
+/// The `[before, after]` record of a field, when the two differ.
+fn diff<T: PartialEq>(
     field: &'static str,
-    slot: &mut T,
+    old: &T,
     new: &T,
     encode: fn(&T) -> Value,
-) {
-    if *slot != *new {
-        log.push((field, encode(slot), encode(new)));
-        *slot = new.clone();
-    }
+) -> Option<LogEntry> {
+    (old != new).then(|| (field, encode(old), encode(new)))
 }
 
 fn text(value: &String) -> Value {
@@ -357,11 +364,13 @@ fn ids_json(ids: &[Id]) -> Value {
 
 /// The values in first-seen order without repeats (`dict.fromkeys`).
 fn dedup<T: Clone + PartialEq>(values: &[T]) -> Vec<T> {
-    let mut out: Vec<T> = Vec::with_capacity(values.len());
-    for value in values {
-        if !out.contains(value) {
-            out.push(value.clone());
-        }
-    }
-    out
+    values
+        .iter()
+        .fold(Vec::with_capacity(values.len()), |out, value| {
+            if out.contains(value) {
+                out
+            } else {
+                out.into_iter().chain([value.clone()]).collect()
+            }
+        })
 }

@@ -5,31 +5,11 @@
 //! [`Session::apply_write`] and [`Session::apply_decision`] like every other family.
 
 use wg_model::entity::{Stack, StackItem, StackRepository};
-use wg_storecodec::{Statement, TableRow, stack_sql};
+use wg_storecodec::stack_sql;
 use wg_types::{Id, WgError};
 
 use crate::Session;
-
-/// Runs `statement` and decodes the first row, if there is one.
-fn one<T: TableRow>(
-    session: &mut Session<'_>,
-    statement: &Statement,
-) -> Result<Option<T>, WgError> {
-    session
-        .rows(statement)?
-        .first()
-        .map(|values| T::from_raw(values))
-        .transpose()
-}
-
-/// Runs `statement` and decodes every row, in the order the query returns them.
-fn many<T: TableRow>(session: &mut Session<'_>, statement: &Statement) -> Result<Vec<T>, WgError> {
-    session
-        .rows(statement)?
-        .iter()
-        .map(|values| T::from_raw(values))
-        .collect()
-}
+use crate::query::{many, one};
 
 impl Session<'_> {
     /// The stack whose id is `stack_id`, if there is one.

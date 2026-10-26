@@ -598,9 +598,11 @@ fn sites_from_ast(ast: &syn::File, code: &[usize], mut_traits: &BTreeSet<String>
     if is_test_gated(&ast.attrs) {
         return Vec::new();
     }
+    let uses = UseMap::of_file(ast);
     let mut collector = FnCollector {
         mut_traits,
         code,
+        uses: &uses,
         sites: Vec::new(),
     };
     collector.visit_file(ast);
@@ -610,6 +612,7 @@ fn sites_from_ast(ast: &syn::File, code: &[usize], mut_traits: &BTreeSet<String>
 struct FnCollector<'a> {
     mut_traits: &'a BTreeSet<String>,
     code: &'a [usize],
+    uses: &'a UseMap,
     sites: Vec<FnSite>,
 }
 
@@ -620,6 +623,7 @@ impl FnCollector<'_> {
             found: Vec::new(),
             let_depth: 0,
             trait_impl: false,
+            uses: self.uses,
         };
         if sig_has_mut_ref(sig) {
             scan.pure(span_lines(sig).0, "`&mut` in the signature of a function");
@@ -835,11 +839,13 @@ fn file_violations(file: &Path, mut_traits: &BTreeSet<String>) -> Vec<Violation>
         // A file gated as a whole (`#![cfg(test)]`) is test code end to end.
         Some(ast) if is_test_gated(&ast.attrs) => Vec::new(),
         Some(ast) => {
+            let uses = UseMap::of_file(&ast);
             let mut scan = Scan {
                 mut_traits,
                 found: Vec::new(),
                 let_depth: 0,
                 trait_impl: false,
+                uses: &uses,
             };
             scan.visit_file(&ast);
             scan.found
@@ -1013,12 +1019,16 @@ fn use_paths(tree: &syn::UseTree, prefix: &mut Vec<String>, out: &mut Vec<Vec<St
         }
         syn::UseTree::Name(n) => {
             let mut path = prefix.clone();
-            path.push(n.ident.to_string());
+            if n.ident != "self" {
+                path.push(n.ident.to_string());
+            }
             out.push(path);
         }
         syn::UseTree::Rename(r) => {
             let mut path = prefix.clone();
-            path.push(r.ident.to_string());
+            if r.ident != "self" {
+                path.push(r.ident.to_string());
+            }
             out.push(path);
         }
         syn::UseTree::Glob(_) => out.push(prefix.clone()),
@@ -1026,6 +1036,217 @@ fn use_paths(tree: &syn::UseTree, prefix: &mut Vec<String>, out: &mut Vec<Vec<St
             for item in &g.items {
                 use_paths(item, prefix, out);
             }
+        }
+    }
+}
+
+/// The `use` declarations of one file, for resolving a name written at a call
+/// site back to the full path it was imported from. Scoping is ignored: a `use`
+/// anywhere in the file (also inside a function or module) maps its name for the
+/// whole file, which can only over-report, never miss an import.
+#[derive(Debug, Default, Clone)]
+pub(crate) struct UseMap {
+    /// Local name (the last segment, or the `as` rename) to the imported path.
+    names: BTreeMap<String, Vec<String>>,
+    /// Prefixes of glob imports (`use std::fs::*` gives `std::fs`).
+    globs: Vec<Vec<String>>,
+}
+
+/// Names a glob import of `prefix` is known to bring into scope, for the banned
+/// path classes. A glob hides which names a call site uses, so only these
+/// well-known I/O names (and, for `std`, the banned module names) are resolved.
+fn glob_members(prefix: &[String]) -> &'static [&'static str] {
+    let last = prefix.last().map(String::as_str).unwrap_or("");
+    let std_rooted = matches!(prefix.first().map(String::as_str), Some("std" | "core"));
+    if prefix.len() == 1 && std_rooted {
+        return BANNED_STD_MODULES;
+    }
+    if prefix.first().is_some_and(|s| s == "rand") {
+        return &[
+            "random",
+            "thread_rng",
+            "rng",
+            "Rng",
+            "RngCore",
+            "SeedableRng",
+            "StdRng",
+            "SmallRng",
+            "ThreadRng",
+            "OsRng",
+            "gen_range",
+            "rngs",
+            "seq",
+            "distributions",
+            "prelude",
+        ];
+    }
+    if !std_rooted {
+        return &[];
+    }
+    match last {
+        "fs" => &[
+            "File",
+            "OpenOptions",
+            "DirEntry",
+            "ReadDir",
+            "Metadata",
+            "Permissions",
+            "read",
+            "read_to_string",
+            "read_dir",
+            "read_link",
+            "write",
+            "copy",
+            "rename",
+            "remove_file",
+            "remove_dir",
+            "remove_dir_all",
+            "create_dir",
+            "create_dir_all",
+            "metadata",
+            "symlink_metadata",
+            "canonicalize",
+            "hard_link",
+            "set_permissions",
+            "exists",
+        ],
+        "process" => &[
+            "Command",
+            "Child",
+            "Stdio",
+            "ExitStatus",
+            "Output",
+            "exit",
+            "abort",
+            "id",
+        ],
+        "env" => &[
+            "var",
+            "vars",
+            "var_os",
+            "vars_os",
+            "args",
+            "args_os",
+            "current_dir",
+            "set_var",
+            "remove_var",
+            "set_current_dir",
+            "current_exe",
+            "temp_dir",
+            "home_dir",
+        ],
+        "net" => &[
+            "TcpStream",
+            "TcpListener",
+            "UdpSocket",
+            "SocketAddr",
+            "ToSocketAddrs",
+            "IpAddr",
+            "Ipv4Addr",
+            "Ipv6Addr",
+        ],
+        "time" => &["SystemTime", "Instant", "UNIX_EPOCH"],
+        "thread" => &[
+            "spawn",
+            "sleep",
+            "scope",
+            "Builder",
+            "JoinHandle",
+            "current",
+            "yield_now",
+            "park",
+            "available_parallelism",
+        ],
+        _ => &[],
+    }
+}
+
+impl UseMap {
+    /// Collects the `use` items of the non-test code of a file.
+    pub(crate) fn of_file(ast: &syn::File) -> Self {
+        let mut collector = UseCollector(Self::default());
+        collector.visit_file(ast);
+        collector.0
+    }
+
+    fn add(&mut self, tree: &syn::UseTree, prefix: &mut Vec<String>) {
+        match tree {
+            syn::UseTree::Path(p) => {
+                prefix.push(p.ident.to_string());
+                self.add(&p.tree, prefix);
+                prefix.pop();
+            }
+            syn::UseTree::Name(n) => {
+                let mut path = prefix.clone();
+                if n.ident == "self" {
+                    // `use std::fs::{self}` imports `std::fs` under `fs`.
+                    if let Some(name) = path.last().cloned() {
+                        self.names.insert(name, path);
+                    }
+                } else {
+                    path.push(n.ident.to_string());
+                    self.names.insert(n.ident.to_string(), path);
+                }
+            }
+            syn::UseTree::Rename(r) => {
+                let mut path = prefix.clone();
+                if r.ident != "self" {
+                    path.push(r.ident.to_string());
+                }
+                if r.rename != "_" {
+                    self.names.insert(r.rename.to_string(), path);
+                }
+            }
+            syn::UseTree::Glob(_) => self.globs.push(prefix.clone()),
+            syn::UseTree::Group(g) => {
+                for item in &g.items {
+                    self.add(item, prefix);
+                }
+            }
+        }
+    }
+
+    /// Every full path `segs` could stand for: the path as written, plus its
+    /// first segment replaced by what that name imports, plus each glob prefix
+    /// that is known to bring the first segment into scope.
+    pub(crate) fn resolve(&self, segs: &[String]) -> Vec<Vec<String>> {
+        let mut out = vec![segs.to_vec()];
+        let Some(first) = segs.first() else {
+            return out;
+        };
+        if let Some(full) = self.names.get(first) {
+            let mut path = full.clone();
+            path.extend_from_slice(&segs[1..]);
+            out.push(path);
+        } else {
+            for glob in &self.globs {
+                if glob_members(glob).contains(&first.as_str()) {
+                    let mut path = glob.clone();
+                    path.extend_from_slice(segs);
+                    out.push(path);
+                }
+            }
+        }
+        out
+    }
+}
+
+struct UseCollector(UseMap);
+
+impl<'ast> Visit<'ast> for UseCollector {
+    fn visit_item(&mut self, node: &'ast syn::Item) {
+        if is_test_gated(item_attrs(node)) {
+            return;
+        }
+        if let syn::Item::Use(u) = node {
+            self.0.add(&u.tree, &mut Vec::new());
+        }
+        visit::visit_item(self, node);
+    }
+
+    fn visit_impl_item(&mut self, node: &'ast syn::ImplItem) {
+        if !is_test_gated(impl_item_attrs(node)) {
+            visit::visit_impl_item(self, node);
         }
     }
 }
@@ -1058,6 +1279,8 @@ struct Scan<'a> {
     let_depth: usize,
     /// Whether the impl being visited implements a trait.
     trait_impl: bool,
+    /// The file's imports, so `fs::read` after `use std::fs` is `std::fs::read`.
+    uses: &'a UseMap,
 }
 
 impl Scan<'_> {
@@ -1078,27 +1301,41 @@ impl Scan<'_> {
     }
 
     /// `Pure` rules on a path, whether it is an expression, a type or a `use`.
+    /// The path is checked as written and as its imports resolve it.
     fn check_path(&mut self, segs: &[String], line: usize) {
-        if let Some(name) = segs
-            .iter()
-            .find(|s| INTERIOR_MUT.contains(&s.as_str()) || s.starts_with("Atomic"))
-        {
-            self.pure(line, format!("interior-mutability type `{name}`"));
-        }
-        let std_module = segs
-            .windows(2)
-            .find(|w| {
-                matches!(w[0].as_str(), "std" | "core")
-                    && BANNED_STD_MODULES.contains(&w[1].as_str())
-            })
-            .map(|w| w[1].clone());
-        if let Some(module) = std_module {
-            self.pure(line, format!("use of `std::{module}`"));
-        }
-        if segs.first().is_some_and(|s| s == "rand") {
-            self.pure(line, "use of `rand`");
+        let mut seen = BTreeSet::new();
+        for full in self.uses.resolve(segs) {
+            for text in path_findings(&full) {
+                if seen.insert(text.clone()) {
+                    self.pure(line, text);
+                }
+            }
         }
     }
+}
+
+/// The `Pure` findings on one fully resolved path.
+fn path_findings(segs: &[String]) -> Vec<String> {
+    let mut out = Vec::new();
+    if let Some(name) = segs
+        .iter()
+        .find(|s| INTERIOR_MUT.contains(&s.as_str()) || s.starts_with("Atomic"))
+    {
+        out.push(format!("interior-mutability type `{name}`"));
+    }
+    let std_module = segs
+        .windows(2)
+        .find(|w| {
+            matches!(w[0].as_str(), "std" | "core") && BANNED_STD_MODULES.contains(&w[1].as_str())
+        })
+        .map(|w| w[1].clone());
+    if let Some(module) = std_module {
+        out.push(format!("use of `std::{module}`"));
+    }
+    if segs.first().is_some_and(|s| s == "rand") {
+        out.push("use of `rand`".to_string());
+    }
+    out
 }
 
 impl<'ast> Visit<'ast> for Scan<'_> {
@@ -1501,6 +1738,111 @@ mod tests { fn helper() {} }
         );
         assert_eq!(sites[2].line, 3);
         assert_eq!(sites[2].loc, 1);
+    }
+
+    /// Findings of a whole file, as `file_violations` computes them.
+    fn violations_of(src: &str) -> Vec<Violation> {
+        let ast = syn::parse_file(src).unwrap();
+        let uses = UseMap::of_file(&ast);
+        let mut scan = Scan {
+            mut_traits: &BTreeSet::new(),
+            found: Vec::new(),
+            let_depth: 0,
+            trait_impl: false,
+            uses: &uses,
+        };
+        scan.visit_file(&ast);
+        scan.found
+    }
+
+    /// Every import form of every banned path class: the call site only names
+    /// the imported item, yet the function must have a Pure violation of its own.
+    const IMPORT_FIXTURES: &[(&str, &str)] = &[
+        ("use std::fs;", "fs::read(p)"),
+        ("use std::fs::File;", "File::open(p)"),
+        ("use std::{fs, process::Command};", "fs::read(p)"),
+        ("use std::{fs, process::Command};", "Command::new(p)"),
+        ("use std::fs as f;", "f::read(p)"),
+        ("use std::fs::File as F;", "F::open(p)"),
+        ("use std::fs::*;", "read(p)"),
+        ("use std::fs::*;", "File::open(p)"),
+        ("use std::fs::{self};", "fs::read(p)"),
+        ("use std::fs::{self as f};", "f::read(p)"),
+        ("use std::{io, fs::{read, File}};", "read(p)"),
+        ("use std::*;", "fs::read(p)"),
+        ("use core::*;", "time::Duration::ZERO"),
+        ("use std::process;", "process::exit(1)"),
+        ("use std::process::exit;", "exit(1)"),
+        ("use std::process::*;", "exit(1)"),
+        ("use std::env;", "env::var(p)"),
+        ("use std::env::var as v;", "v(p)"),
+        ("use std::env::*;", "args()"),
+        ("use std::net::TcpStream;", "TcpStream::connect(p)"),
+        ("use std::net as n;", "n::TcpStream::connect(p)"),
+        ("use std::net::*;", "TcpStream::connect(p)"),
+        ("use std::time::SystemTime;", "SystemTime::now()"),
+        ("use std::time::SystemTime as T;", "T::now()"),
+        ("use std::time as t;", "t::SystemTime::now()"),
+        ("use std::time::*;", "Instant::now()"),
+        ("use std::thread;", "thread::sleep(d)"),
+        ("use std::thread::sleep;", "sleep(d)"),
+        ("use std::thread::*;", "spawn(f)"),
+        ("use rand::random;", "random()"),
+        ("use rand as r;", "r::random()"),
+        ("use rand::{thread_rng, Rng};", "thread_rng()"),
+        ("use rand::*;", "thread_rng()"),
+        ("use rand::rngs::StdRng as S;", "S::from_entropy()"),
+        ("use std::cell::RefCell as Cell2;", "Cell2::new(1)"),
+        ("use std::sync::atomic::AtomicU8 as A;", "A::new(1)"),
+        ("use std::sync::{Mutex as M, Arc};", "M::new(1)"),
+    ];
+
+    #[test]
+    fn use_imported_banned_paths_are_found_at_the_call_site() {
+        for (import, call) in IMPORT_FIXTURES {
+            // The function sits in its own file with the import, and the call
+            // is a statement so the body, not the `use`, must carry the finding.
+            let src = format!("{import}\nfn f(p: &str, d: u8, f: u8) {{ let _ = {call}; }}\n");
+            let sites = sites_of(&src);
+            assert!(
+                !sites[0].facts.pure_ok,
+                "`{import}` then `{call}` is still a pure candidate"
+            );
+            assert!(
+                violations_of(&src).iter().any(|v| v.line == 2),
+                "`{import}` then `{call}` has no violation on the call line"
+            );
+        }
+    }
+
+    #[test]
+    fn a_function_inside_a_block_import_is_found_too() {
+        let src = "fn f(p: &str) { use std::fs; let _ = fs::read(p); }\n";
+        assert!(!sites_of(src)[0].facts.pure_ok);
+    }
+
+    #[test]
+    fn full_paths_and_local_shadows_keep_their_old_verdicts() {
+        // A full path was always found.
+        assert!(
+            !sites_of("fn f(p: &str) { let _ = std::fs::read(p); }\n")[0]
+                .facts
+                .pure_ok
+        );
+        // `fs` here is a crate module, not `std::fs`, and a name that no import
+        // maps stays clean.
+        let clean = "use crate::fs;\nuse std::collections::BTreeMap;\n\
+                     fn f(p: &str) { let _ = fs::read(p); }\n\
+                     fn g(m: &BTreeMap<u8, u8>) -> usize { m.len() }\n\
+                     fn h(p: &str) -> usize { read(p) }\n";
+        assert!(sites_of(clean).iter().all(|s| s.facts.pure_ok));
+    }
+
+    #[test]
+    fn test_gated_imports_do_not_taint_other_code() {
+        let src = "#[cfg(test)]\nmod tests { use std::fs; }\n\
+                   fn f(p: &str) { let _ = fs::read(p); }\n";
+        assert!(sites_of(src)[0].facts.pure_ok);
     }
 
     #[test]

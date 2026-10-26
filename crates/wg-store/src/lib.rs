@@ -21,6 +21,7 @@ mod external;
 mod git;
 mod jobs;
 mod migrate;
+mod query;
 mod repos;
 mod run;
 mod search;
@@ -112,6 +113,15 @@ impl Store {
         let value = body(&mut Session { conn: &tx })?;
         db!(tx.commit())?;
         Ok(value)
+    }
+
+    /// Copies the whole database into a new file at `target` with SQLite's online backup API, so
+    /// the copy is consistent while other connections write (`_sqlite_backup`).
+    pub fn backup_to(&mut self, target: &std::path::Path) -> Result<(), WgError> {
+        let mut dst = db!(Connection::open(target))?;
+        let backup = db!(rusqlite::backup::Backup::new(&self.conn, &mut dst))?;
+        db!(backup.step(-1))?;
+        Ok(())
     }
 
     /// Applies a decision's writes and events in one write transaction. The caller performs the

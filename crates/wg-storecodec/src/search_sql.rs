@@ -13,8 +13,7 @@ use wg_model::Table;
 use wg_types::{Id, Timestamp, WgError};
 
 use crate::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
-use crate::rows::columns;
-use crate::sql::Statement;
+use crate::sql::{Statement, select_list};
 
 /// `search/service.py` fetches `limit * LEXICAL_OVERFETCH` candidates, because rows outside the
 /// filters' scope are dropped after the query.
@@ -216,7 +215,7 @@ pub fn task_embedding(task_id: Id, provider: &str, model: &str) -> Statement {
         sql: format!(
             "SELECT {} FROM \"task_embeddings\" WHERE \"task_id\" = ?1 AND \"provider\" = ?2 \
              AND \"model\" = ?3 LIMIT 1",
-            select_list(Table::TaskEmbedding)
+            select_list(Table::TaskEmbedding, None)
         ),
         params: vec![id_sql(task_id), text_sql(provider), text_sql(model)],
     }
@@ -251,13 +250,4 @@ impl TaskVector {
             vector: cols.blob("vector")?,
         })
     }
-}
-
-/// `SELECT <task_embeddings columns>` in schema order, unqualified.
-fn select_list(table: Table) -> String {
-    columns(table)
-        .iter()
-        .map(|column| format!("\"{column}\""))
-        .collect::<Vec<_>>()
-        .join(", ")
 }

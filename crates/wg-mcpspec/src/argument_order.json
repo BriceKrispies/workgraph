@@ -1,0 +1,420 @@
+{
+ "tools": {
+  "workspace_list": [],
+  "workspace_get": [
+   "workspace"
+  ],
+  "project_list": [
+   "workspace"
+  ],
+  "project_get": [
+   "project",
+   "workspace"
+  ],
+  "repository_list": [
+   "workspace",
+   "project"
+  ],
+  "repository_get": [
+   "repository",
+   "workspace"
+  ],
+  "repository_register": [
+   "path",
+   "name",
+   "read_only",
+   "workspace"
+  ],
+  "repository_status": [
+   "repository",
+   "workspace"
+  ],
+  "stack_get": [
+   "parent",
+   "workspace"
+  ],
+  "stack_list": [
+   "workspace",
+   "include_inactive"
+  ],
+  "stack_history": [
+   "parent",
+   "workspace"
+  ],
+  "stack_create": [
+   "parent",
+   "workspace"
+  ],
+  "stack_add_item": [
+   "parent",
+   "task",
+   "workspace"
+  ],
+  "stack_remove_item": [
+   "parent",
+   "task",
+   "workspace"
+  ],
+  "stack_integrate": [
+   "parent",
+   "workspace"
+  ],
+  "stack_verify": [
+   "parent",
+   "workspace"
+  ],
+  "experiment_list": [
+   "workspace",
+   "status"
+  ],
+  "experiment_get": [
+   "experiment",
+   "workspace"
+  ],
+  "experiment_next": [
+   "experiment",
+   "workspace"
+  ],
+  "experiment_report": [
+   "experiment",
+   "workspace"
+  ],
+  "experiment_fit": [
+   "model",
+   "repo_penalty",
+   "feature_penalty",
+   "samples",
+   "seed",
+   "workspace"
+  ],
+  "experiment_predict": [
+   "model",
+   "task",
+   "repository",
+   "src_lines",
+   "src_files",
+   "packages",
+   "fit",
+   "workspace"
+  ],
+  "trial_classify": [
+   "trial",
+   "cause",
+   "source",
+   "notes",
+   "workspace"
+  ],
+  "trial_start": [
+   "trial",
+   "workspace"
+  ],
+  "trial_grade": [
+   "trial",
+   "timeout",
+   "workspace"
+  ],
+  "task_create": [
+   "title",
+   "description",
+   "acceptance_criteria",
+   "priority",
+   "ready",
+   "tags",
+   "files",
+   "projects",
+   "repositories",
+   "parent",
+   "depends_on",
+   "workspace"
+  ],
+  "task_get": [
+   "task",
+   "workspace"
+  ],
+  "task_contract_check": [
+   "task",
+   "model",
+   "target",
+   "workspace"
+  ],
+  "task_search": [
+   "query",
+   "mode",
+   "limit",
+   "workspace"
+  ],
+  "task_list": [
+   "statuses",
+   "priorities",
+   "project",
+   "repository",
+   "tags",
+   "file",
+   "category",
+   "parent",
+   "text",
+   "sort",
+   "descending",
+   "limit",
+   "offset",
+   "workspace"
+  ],
+  "task_update": [
+   "task",
+   "expected_version",
+   "title",
+   "description",
+   "status",
+   "priority",
+   "add_tags",
+   "remove_tags",
+   "acceptance_criteria",
+   "files",
+   "add_files",
+   "reason",
+   "workspace"
+  ],
+  "task_claim": [
+   "task",
+   "lease_minutes",
+   "workspace"
+  ],
+  "task_release": [
+   "task",
+   "reason",
+   "workspace"
+  ],
+  "task_complete": [
+   "task",
+   "summary",
+   "attempt_id",
+   "workspace"
+  ],
+  "task_get_ready": [
+   "project",
+   "repository",
+   "limit",
+   "workspace"
+  ],
+  "task_promote_ready": [
+   "tags",
+   "project",
+   "all",
+   "dry_run",
+   "workspace"
+  ],
+  "task_import_breakdown": [
+   "markdown",
+   "section",
+   "source",
+   "parent",
+   "tags",
+   "project",
+   "repository",
+   "dry_run",
+   "workspace"
+  ],
+  "task_add_dependency": [
+   "task",
+   "depends_on",
+   "workspace"
+  ],
+  "task_remove_dependency": [
+   "task",
+   "depends_on",
+   "workspace"
+  ],
+  "task_add_relation": [
+   "task",
+   "target",
+   "relation_type",
+   "workspace"
+  ],
+  "task_add_comment": [
+   "task",
+   "body",
+   "workspace"
+  ],
+  "task_request_decision": [
+   "task",
+   "question",
+   "options",
+   "workspace"
+  ],
+  "decision_list": [
+   "status",
+   "limit",
+   "workspace"
+  ],
+  "task_decisions": [
+   "task",
+   "workspace"
+  ],
+  "task_get_history": [
+   "task",
+   "limit",
+   "workspace"
+  ],
+  "task_get_attempts": [
+   "task",
+   "limit",
+   "offset",
+   "workspace"
+  ],
+  "task_link_repository": [
+   "task",
+   "repository",
+   "read_only",
+   "workspace"
+  ],
+  "task_link_commit": [
+   "task",
+   "sha",
+   "repository",
+   "note",
+   "workspace"
+  ],
+  "task_report_progress": [
+   "task",
+   "message",
+   "percent",
+   "attempt_id",
+   "workspace"
+  ],
+  "task_report_result": [
+   "task",
+   "outcome",
+   "summary",
+   "attempt_id",
+   "input_tokens",
+   "output_tokens",
+   "workspace"
+  ],
+  "attempt_create": [
+   "task",
+   "model",
+   "session_id",
+   "parent_attempt",
+   "workspace"
+  ],
+  "attempt_start": [
+   "task",
+   "model",
+   "adapter",
+   "isolation",
+   "workspace"
+  ],
+  "attempt_submit": [
+   "attempt",
+   "status",
+   "summary",
+   "error"
+  ],
+  "attempt_get": [
+   "attempt_id"
+  ],
+  "attempt_list": [
+   "task",
+   "statuses",
+   "provider",
+   "limit",
+   "offset",
+   "workspace"
+  ],
+  "run_start": [
+   "task",
+   "agent",
+   "model",
+   "workspace"
+  ],
+  "run_get": [
+   "attempt_id",
+   "events"
+  ],
+  "run_cancel": [
+   "attempt_id",
+   "reason"
+  ],
+  "git_get_changes": [
+   "task",
+   "min_confidence",
+   "workspace"
+  ],
+  "git_get_task_diff": [
+   "task",
+   "repository",
+   "max_bytes",
+   "workspace"
+  ],
+  "classification_get": [
+   "task",
+   "workspace"
+  ],
+  "classification_request": [
+   "task",
+   "workspace"
+  ],
+  "analytics_query": [
+   "metric",
+   "group_by",
+   "period",
+   "project",
+   "repository",
+   "category",
+   "provider",
+   "model",
+   "workspace"
+  ],
+  "analytics_report": [
+   "report",
+   "task",
+   "workspace"
+  ],
+  "analytics_subagents": [
+   "period",
+   "since",
+   "until",
+   "model",
+   "workspace"
+  ],
+  "analytics_agent_time": [
+   "since",
+   "until",
+   "by",
+   "model",
+   "workspace"
+  ],
+  "analytics_bottlenecks": [
+   "since",
+   "until",
+   "top",
+   "workspace"
+  ],
+  "automation_list": [
+   "workspace"
+  ],
+  "automation_trigger": [
+   "rule",
+   "task",
+   "workspace"
+  ]
+ },
+ "defs": {
+  "DecisionOptionIn": [
+   "id",
+   "label",
+   "detail",
+   "recommended"
+  ],
+  "FailureCause": [],
+  "FailureCauseSource": [],
+  "RelationType": [],
+  "TaskFileIn": [
+   "path",
+   "anchor",
+   "note"
+  ],
+  "TaskPriority": [],
+  "TaskStatus": []
+ }
+}

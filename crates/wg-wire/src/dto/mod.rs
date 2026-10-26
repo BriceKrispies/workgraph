@@ -17,7 +17,9 @@ pub mod analytics_query;
 pub mod analytics_query_out;
 pub mod analytics_report_entry;
 pub mod attempt;
+pub mod attempt_dicts;
 pub mod automation;
+pub mod bodies;
 pub mod classification_disagreement;
 pub mod classification_evaluation;
 pub mod classification_job;
@@ -25,6 +27,7 @@ pub mod classification_out;
 pub mod classification_task;
 pub mod claude;
 pub mod comment;
+pub mod commit_link;
 pub mod contract_check;
 pub mod coupling_out;
 pub mod decision;
@@ -46,6 +49,7 @@ pub mod graph_node;
 pub mod health;
 pub mod job;
 pub mod llm;
+pub mod mcp_outputs;
 pub mod mcp_shapes;
 pub mod metric_definition;
 pub mod notification;
@@ -88,7 +92,7 @@ pub mod workspace_summary;
 
 /// The DTOs that exist: the OpenAPI component schema name and the field names in order.
 pub fn implemented() -> Vec<(&'static str, &'static [&'static str])> {
-    vec![
+    let mut list = vec![
         (workspace::NAME, workspace::FIELDS.as_slice()),
         (project::NAME, project::FIELDS.as_slice()),
         (
@@ -146,5 +150,25 @@ pub fn implemented() -> Vec<(&'static str, &'static [&'static str])> {
         (stack_create::NAME, stack_create::FIELDS.as_slice()),
         (stack_item_add::NAME, stack_item_add::FIELDS.as_slice()),
         (event::NAME, event::FIELDS.as_slice()),
-    ]
+        (
+            analytics_compare_body::NAME,
+            analytics_compare_body::FIELDS.as_slice(),
+        ),
+        (
+            analytics_estimate_body::NAME,
+            analytics_estimate_body::FIELDS.as_slice(),
+        ),
+        (
+            analytics_export_body::NAME,
+            analytics_export_body::FIELDS.as_slice(),
+        ),
+        (
+            analytics_filters::NAME,
+            analytics_filters::FIELDS.as_slice(),
+        ),
+        (analytics_query::NAME, analytics_query::FIELDS.as_slice()),
+        (retro_body::NAME, retro_body::FIELDS.as_slice()),
+    ];
+    list.extend(bodies::ALL.iter().map(|body| (body.name, body.fields)));
+    list
 }

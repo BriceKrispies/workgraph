@@ -5,6 +5,8 @@
 //! Each function decides and returns a plan; the shell applies the status change through
 //! [`check_task_transition`] and the dependency gate, then writes the event rows the plan names.
 
+use std::collections::BTreeMap;
+
 use serde_json::{Value, json};
 use time::Duration;
 use wg_model::{Task, TaskSlice};
@@ -98,40 +100,40 @@ pub fn plan_claim(
     check_version(task, expected_version)?;
     let claimant = agent.map_or_else(|| caller.to_owned(), |name| format!("agent:{name}"));
     let expires_at = lease_expiry(now, lease_minutes)?;
-    let mut release_expired = None;
-    let mut from = task.status;
 
-    if matches!(task.status, TaskStatus::Claimed | TaskStatus::Running)
-        && let Some(holder) = task.claimed_by.as_deref()
-    {
-        let lease_valid = task.claim_expires_at.is_none_or(|expiry| expiry > now);
-        if holder != claimant && lease_valid {
+    let (release_expired, from) =
+        if matches!(task.status, TaskStatus::Claimed | TaskStatus::Running)
+            && let Some(holder) = task.claimed_by.as_deref()
+        {
+            let lease_valid = task.claim_expires_at.is_none_or(|expiry| expiry > now);
+            if holder != claimant && lease_valid {
+                return Err(WgError::new(
+                    ErrorCode::ResourceBusy,
+                    format!("task {} is already claimed by {holder}", task.key),
+                )
+                .with_detail("claimed_by", json!(holder))
+                .with_detail(
+                    "expires_at",
+                    json!(task.claim_expires_at.map(Timestamp::format_z)),
+                ));
+            }
+            if holder == claimant {
+                return Ok(ClaimPlan::Renew { expires_at });
+            }
+            // An expired foreign claim is released before the task is re-claimed.
+            (Some(holder.to_owned()), TaskStatus::Ready)
+        } else if !matches!(task.status, TaskStatus::Ready | TaskStatus::Failed) {
             return Err(WgError::new(
-                ErrorCode::ResourceBusy,
-                format!("task {} is already claimed by {holder}", task.key),
+                ErrorCode::InvalidTransition,
+                format!(
+                    "task {} is {}; only ready (or failed) tasks can be claimed",
+                    task.key, task.status
+                ),
             )
-            .with_detail("claimed_by", json!(holder))
-            .with_detail(
-                "expires_at",
-                json!(task.claim_expires_at.map(Timestamp::format_z)),
-            ));
-        }
-        if holder == claimant {
-            return Ok(ClaimPlan::Renew { expires_at });
-        }
-        // An expired foreign claim is released before the task is re-claimed.
-        release_expired = Some(holder.to_owned());
-        from = TaskStatus::Ready;
-    } else if !matches!(task.status, TaskStatus::Ready | TaskStatus::Failed) {
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!(
-                "task {} is {}; only ready (or failed) tasks can be claimed",
-                task.key, task.status
-            ),
-        )
-        .with_detail("status", json!(task.status.as_str())));
-    }
+            .with_detail("status", json!(task.status.as_str())));
+        } else {
+            (None, task.status)
+        };
 
     if !blockers.is_empty() {
         let keys: Vec<String> = blockers.iter().map(|b| b.key.to_string()).collect();
@@ -195,16 +197,17 @@ pub fn plan_release(
 /// The claimed tasks whose lease ended before `now`, by task number (`release_expired_claims`).
 /// The shell moves each one to ready with [`REASON_LEASE_EXPIRED`].
 pub fn expired_claims(tasks: &TaskSlice, now: Timestamp) -> Vec<&Task> {
-    let mut expired: Vec<&Task> = tasks
+    tasks
         .tasks
         .values()
         .filter(|task| {
             task.status == TaskStatus::Claimed
                 && task.claim_expires_at.is_some_and(|expiry| expiry < now)
         })
-        .collect();
-    expired.sort_by_key(|task| task.number);
-    expired
+        .map(|task| (task.number, task))
+        .collect::<BTreeMap<_, _>>()
+        .into_values()
+        .collect()
 }
 
 /// The completion decision of `complete`: agent-declared, never accepted.

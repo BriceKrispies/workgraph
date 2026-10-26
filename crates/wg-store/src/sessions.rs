@@ -9,34 +9,10 @@ use wg_model::entity::{
     AgentAttempt, AgentInternalTask, AgentSession, Artifact, SessionBinding, SubagentRun, ToolEvent,
 };
 use wg_storecodec::session_sql::{self, HookEventCount, SessionSummary, StoppedRunOwner};
-use wg_storecodec::{Statement, TableRow};
 use wg_types::{Id, Timestamp, WgError};
 
 use crate::Session;
-
-/// Runs `statement` and decodes the first row, if there is one.
-fn first_row<T: TableRow>(
-    session: &mut Session<'_>,
-    statement: &Statement,
-) -> Result<Option<T>, WgError> {
-    session
-        .rows(statement)?
-        .first()
-        .map(|values| T::from_raw(values))
-        .transpose()
-}
-
-/// Runs `statement` and decodes every row, in the order the query returns them.
-fn all_rows<T: TableRow>(
-    session: &mut Session<'_>,
-    statement: &Statement,
-) -> Result<Vec<T>, WgError> {
-    session
-        .rows(statement)?
-        .iter()
-        .map(|values| T::from_raw(values))
-        .collect()
-}
+use crate::query::{many, one};
 
 impl Session<'_> {
     /// The agent session of `provider` with `external_session_id`, if one is recorded.
@@ -45,7 +21,7 @@ impl Session<'_> {
         provider: &str,
         external_session_id: &str,
     ) -> Result<Option<AgentSession>, WgError> {
-        first_row(
+        one(
             self,
             &session_sql::agent_session_by_external(provider, external_session_id),
         )
@@ -72,7 +48,7 @@ impl Session<'_> {
         session_id: Id,
         external_agent_id: &str,
     ) -> Result<Option<SubagentRun>, WgError> {
-        first_row(
+        one(
             self,
             &session_sql::subagent_run_by_external(session_id, external_agent_id),
         )
@@ -90,7 +66,7 @@ impl Session<'_> {
         session_id: Id,
         external_task_id: &str,
     ) -> Result<Option<AgentInternalTask>, WgError> {
-        first_row(
+        one(
             self,
             &session_sql::internal_task_by_external(session_id, external_task_id),
         )
@@ -101,7 +77,7 @@ impl Session<'_> {
         &mut self,
         external_session_id: &str,
     ) -> Result<Option<SessionBinding>, WgError> {
-        first_row(
+        one(
             self,
             &session_sql::active_binding_by_external(external_session_id),
         )
@@ -109,7 +85,7 @@ impl Session<'_> {
 
     /// The active bindings that carry a working-directory prefix, oldest first.
     pub fn active_cwd_bindings(&mut self) -> Result<Vec<SessionBinding>, WgError> {
-        all_rows(self, &session_sql::active_cwd_bindings())
+        many(self, &session_sql::active_cwd_bindings())
     }
 
     /// The active bindings an unbind names (see [`session_sql::active_bindings`]).
@@ -118,7 +94,7 @@ impl Session<'_> {
         binding_id: Option<Id>,
         cwd_prefix: Option<&str>,
     ) -> Result<Vec<SessionBinding>, WgError> {
-        all_rows(self, &session_sql::active_bindings(binding_id, cwd_prefix))
+        many(self, &session_sql::active_bindings(binding_id, cwd_prefix))
     }
 
     /// Marks the bindings with `ids` inactive; returns how many rows changed.
@@ -154,12 +130,12 @@ impl Session<'_> {
 
     /// The tool events of one hook event, in `occurred_at` order.
     pub fn tool_events_for_hook(&mut self, hook_event_id: Id) -> Result<Vec<ToolEvent>, WgError> {
-        all_rows(self, &session_sql::tool_events_for_hook(hook_event_id))
+        many(self, &session_sql::tool_events_for_hook(hook_event_id))
     }
 
     /// The subagent runs that have stopped (`stopped = true`) or not, by `id`.
     pub fn subagent_runs_by_stop(&mut self, stopped: bool) -> Result<Vec<SubagentRun>, WgError> {
-        all_rows(self, &session_sql::subagent_runs_by_stop(stopped))
+        many(self, &session_sql::subagent_runs_by_stop(stopped))
     }
 
     /// The number of subagent runs that have stopped (or not).
@@ -181,7 +157,7 @@ impl Session<'_> {
         &mut self,
         limit: Option<i64>,
     ) -> Result<Vec<SubagentRun>, WgError> {
-        all_rows(self, &session_sql::subagent_runs_needing_model(limit))
+        many(self, &session_sql::subagent_runs_needing_model(limit))
     }
 
     /// Subagent runs with a transcript, by `id`, up to `limit` when given.
@@ -189,12 +165,12 @@ impl Session<'_> {
         &mut self,
         limit: Option<i64>,
     ) -> Result<Vec<SubagentRun>, WgError> {
-        all_rows(self, &session_sql::subagent_runs_with_transcript(limit))
+        many(self, &session_sql::subagent_runs_with_transcript(limit))
     }
 
     /// Subagent runs whose telemetry text contains `text` (a prefilter; see the storecodec builder).
     pub fn subagent_runs_mentioning(&mut self, text: &str) -> Result<Vec<SubagentRun>, WgError> {
-        all_rows(self, &session_sql::subagent_runs_mentioning(text))
+        many(self, &session_sql::subagent_runs_mentioning(text))
     }
 
     /// The newest open attempt of `task_id` that no subagent run is bound to, if there is one.
@@ -202,7 +178,7 @@ impl Session<'_> {
         &mut self,
         task_id: Id,
     ) -> Result<Option<AgentAttempt>, WgError> {
-        first_row(self, &session_sql::open_attempt_for_subagent(task_id))
+        one(self, &session_sql::open_attempt_for_subagent(task_id))
     }
 
     /// The ids of hook events whose payload is due for purge (received before `cutoff`, not yet
@@ -226,7 +202,7 @@ impl Session<'_> {
         &mut self,
         cutoff: Timestamp,
     ) -> Result<Vec<Artifact>, WgError> {
-        all_rows(self, &session_sql::telemetry_artifacts_to_purge(cutoff))
+        many(self, &session_sql::telemetry_artifacts_to_purge(cutoff))
     }
 
     /// Stamps `purged_at` on the artifacts with `ids`; returns the rows changed. An empty `ids`

@@ -4,33 +4,13 @@
 //! decodes the rows with the table codecs.
 
 use wg_model::entity::ExternalItem;
+use wg_storecodec::Raw;
 use wg_storecodec::experiment_sql::int_scalar;
 use wg_storecodec::external_sql;
-use wg_storecodec::{Raw, Statement, TableRow};
 use wg_types::{Id, WgError};
 
 use crate::Session;
-
-/// Runs `statement` and decodes the first row, if there is one.
-fn one<T: TableRow>(
-    session: &mut Session<'_>,
-    statement: &Statement,
-) -> Result<Option<T>, WgError> {
-    session
-        .rows(statement)?
-        .first()
-        .map(|values| T::from_raw(values))
-        .transpose()
-}
-
-/// Runs `statement` and decodes every row, in the order the query returns them.
-fn many<T: TableRow>(session: &mut Session<'_>, statement: &Statement) -> Result<Vec<T>, WgError> {
-    session
-        .rows(statement)?
-        .iter()
-        .map(|values| T::from_raw(values))
-        .collect()
-}
+use crate::query::{many, one};
 
 impl Session<'_> {
     /// The external item of `task_id`, if the task is tracked.

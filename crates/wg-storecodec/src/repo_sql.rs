@@ -9,20 +9,7 @@ use wg_model::Table;
 use wg_types::{ErrorCode, Id, WgError};
 
 use crate::codec::{Raw, id_sql, text_sql};
-use crate::rows::columns;
-use crate::sql::Statement;
-
-/// The table's columns, quoted and qualified by `alias` when one is given.
-fn select_list(table: Table, alias: Option<&str>) -> String {
-    columns(table)
-        .iter()
-        .map(|column| match alias {
-            Some(alias) => format!("{alias}.\"{column}\""),
-            None => format!("\"{column}\""),
-        })
-        .collect::<Vec<_>>()
-        .join(", ")
-}
+use crate::sql::{Statement, select_list};
 
 /// `?1, ?2, ...` for `count` placeholders starting at `first`, or `NULL` when there are none (an
 /// `IN (NULL)` list matches nothing, which is what an empty value list should match).

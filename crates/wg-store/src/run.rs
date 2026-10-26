@@ -12,10 +12,11 @@ use wg_model::entity::{
 use wg_storecodec::run_sql::{
     RecordedHead, WorktreeWithRepository, decode_recorded_head, decode_worktree_with_repository,
 };
-use wg_storecodec::{Raw, Statement, TableRow, run_sql};
+use wg_storecodec::{Raw, run_sql};
 use wg_types::{AttemptStatus, Id, Timestamp, WgError, WorktreeStatus};
 
 use crate::Session;
+use crate::query::{many, one};
 
 /// One page of attempts, as the Python attempts endpoint returns it: the items, the total over
 /// the whole filter, and the offset of the next page when there is one.
@@ -26,27 +27,6 @@ pub struct AttemptPage {
     pub limit: i64,
     pub offset: i64,
     pub next_offset: Option<i64>,
-}
-
-/// Runs `statement` and decodes the first row, if there is one.
-fn one<T: TableRow>(
-    session: &mut Session<'_>,
-    statement: &Statement,
-) -> Result<Option<T>, WgError> {
-    session
-        .rows(statement)?
-        .first()
-        .map(|values| T::from_raw(values))
-        .transpose()
-}
-
-/// Runs `statement` and decodes every row, in the order the query returns them.
-fn many<T: TableRow>(session: &mut Session<'_>, statement: &Statement) -> Result<Vec<T>, WgError> {
-    session
-        .rows(statement)?
-        .iter()
-        .map(|values| T::from_raw(values))
-        .collect()
 }
 
 impl Session<'_> {

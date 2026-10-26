@@ -6,31 +6,10 @@
 
 use wg_model::entity::{Experiment, ExperimentTrial, PredictorFit};
 use wg_storecodec::experiment_sql::{self, TrialWithTaskKey};
-use wg_storecodec::{Statement, TableRow};
 use wg_types::{Id, WgError};
 
 use crate::Session;
-
-/// Runs `statement` and decodes the first row, if there is one.
-fn one<T: TableRow>(
-    session: &mut Session<'_>,
-    statement: &Statement,
-) -> Result<Option<T>, WgError> {
-    session
-        .rows(statement)?
-        .first()
-        .map(|values| T::from_raw(values))
-        .transpose()
-}
-
-/// Runs `statement` and decodes every row, in the order the query returns them.
-fn many<T: TableRow>(session: &mut Session<'_>, statement: &Statement) -> Result<Vec<T>, WgError> {
-    session
-        .rows(statement)?
-        .iter()
-        .map(|values| T::from_raw(values))
-        .collect()
-}
+use crate::query::{many, one};
 
 impl Session<'_> {
     /// The experiment whose id is `experiment_id`, if there is one.

@@ -209,5 +209,13 @@ fn compact_is_a_dry_run_by_default_and_recover_reports_its_passes() {
     let recovered = json(&home, &["worker", "recover"], 0);
     assert_eq!(recovered["recovered_jobs"], serde_json::json!([]));
     assert_eq!(recovered["lost_workers"], serde_json::json!([]));
-    assert_eq!(recovered["worktrees"], "not ported");
+    assert_eq!(
+        recovered["worktrees"],
+        serde_json::json!({
+            "activated": [],
+            "released": [],
+            "orphaned": [],
+            "unknown_dirs": [],
+        })
+    );
 }

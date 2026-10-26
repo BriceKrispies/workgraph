@@ -304,7 +304,7 @@ fn samples() -> Vec<EventPayload> {
         }),
         EventPayload::WorktreeRemoved(WorktreeRemoved {
             path: "/wt/a".to_owned(),
-            branch_kept: true,
+            branch_kept: "wg/wg-1/attempt-1-0a1b2c3d".to_owned(),
         }),
         EventPayload::WorktreeRecovered(WorktreeRecovered {
             activated: 1,

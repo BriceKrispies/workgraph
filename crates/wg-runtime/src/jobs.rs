@@ -10,7 +10,7 @@ use wg_jobs::dispatch::{STALE_WORKER_SECONDS, WorkerSettings};
 use wg_jobs::queue::{JobFilter, NewJob};
 use wg_jobs::retention::compact_artifacts;
 use wg_jobs::workers::mark_lost_workers;
-use wg_json::{PyStr, Value};
+use wg_json::Value;
 use wg_model::{Decision, Effect, FsOp, Row, Write};
 use wg_registry::boundary::is_within;
 use wg_runtimespec::RequestContext;
@@ -18,10 +18,7 @@ use wg_runtimespec::jobs as view;
 use wg_types::{Id, JobStatus, WgError};
 
 use crate::app::App;
-use crate::stamp::draw;
-
-/// What `worker recover` reports for the worktree service, which is not ported yet.
-const WORKTREES_NOT_PORTED: &str = "not ported";
+use crate::stamp::{draw, system_context};
 
 impl App {
     /// `JobQueue.enqueue`: the id of the new job, or of the job already holding `job.idempotency_key`.
@@ -251,15 +248,16 @@ impl App {
         Ok(view::workers_out(&workers))
     }
 
-    /// `worker recover`: expired job leases and lost workers, now. The worktree service's
-    /// recovery is not ported, so its entry reports [`WORKTREES_NOT_PORTED`].
+    /// `worker recover`: expired job leases, lost workers and orphaned worktrees, now.
     pub fn worker_recover(&mut self, context: &RequestContext) -> Result<Value, WgError> {
         let recovered = self.recover_expired_as(context)?;
         let lost = self.mark_lost_workers_as(context)?;
+        // The worktree recovery acts as the system, as `worktrees.recover(RequestContext.system("cli"))`.
+        let worktrees = self.worktree_recover(&system_context("cli")?)?;
         Ok(view::recovery_out(
             &recovered,
             &lost,
-            Value::Str(PyStr::from(WORKTREES_NOT_PORTED)),
+            wg_runtimespec::worktrees::recovery_report_out(&worktrees),
         ))
     }
 }

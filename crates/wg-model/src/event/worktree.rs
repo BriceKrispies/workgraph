@@ -24,7 +24,8 @@ pub struct WorktreeCreated {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct WorktreeRemoved {
     pub path: String,
-    pub branch_kept: bool,
+    /// The worktree's branch, which removal keeps (Python writes the branch name here, not a flag).
+    pub branch_kept: String,
 }
 
 /// `worktree.recovered`: how many worktree directories recovery touched, by outcome.

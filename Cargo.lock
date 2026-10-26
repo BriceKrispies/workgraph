@@ -2436,6 +2436,7 @@ dependencies = [
  "tracing-core",
  "tracing-subscriber",
  "wg-config",
+ "wg-git",
  "wg-jobs",
  "wg-json",
  "wg-model",

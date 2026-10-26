@@ -209,15 +209,23 @@ impl Queue {
         Ok(())
     }
 
-    /// `worker recover`: expired job leases and lost workers, now. Orphaned worktrees are the
-    /// worktree service's and are reported as not ported.
+    /// `worker recover`: expired job leases, lost workers and orphaned worktrees, now.
     pub fn recover(&mut self) -> Result<Map<String, Value>, WgError> {
         let jobs = self.recover_expired()?;
         let workers = self.mark_lost_workers()?;
+        // The maintenance pass recovers worktrees as the system, as the Python worker does.
+        let worktrees = self
+            .app
+            .worktree_recover(&crate::system_context("worker")?)?;
         Ok(json!({
             "recovered_jobs": jobs.iter().map(ToString::to_string).collect::<Vec<_>>(),
             "lost_workers": workers,
-            "worktrees": "not ported",
+            "worktrees": {
+                "activated": worktrees.activated,
+                "released": worktrees.released,
+                "orphaned": worktrees.orphaned,
+                "unknown_dirs": worktrees.unknown_dirs,
+            },
         })
         .as_object()
         .cloned()

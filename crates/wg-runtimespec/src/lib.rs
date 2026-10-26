@@ -25,6 +25,7 @@ pub mod registry;
 pub mod settings;
 pub mod setup;
 pub mod tasks;
+pub mod worktrees;
 
 pub use context::{GETUSER_VARIABLES, RequestContext, getuser, timestamp_from_unix_nanos};
 pub use logs::{Level, LogRecord, format_record};

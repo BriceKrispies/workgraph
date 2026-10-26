@@ -14,6 +14,7 @@ pub mod rows;
 mod rows_more;
 pub mod run_sql;
 pub mod sql;
+pub mod stack_sql;
 pub mod task_sql;
 
 pub use codec::{Cols, DbFailure, Raw, db_error};

@@ -48,10 +48,14 @@ fn fresh_database_matches_the_python_schema_at_0001() -> TestResult {
 #[test]
 fn upgrade_is_idempotent_and_head_resolves() -> TestResult {
     let mut store = Store::open(&Location::Memory)?;
-    assert_eq!(store.upgrade("head")?, vec!["0001"]);
+    let all: Vec<String> = (1..=11).map(|n| format!("{n:04}")).collect();
+    assert_eq!(
+        store.upgrade("head")?,
+        all.iter().map(String::as_str).collect::<Vec<_>>()
+    );
     assert!(store.upgrade("head")?.is_empty());
     assert!(store.is_up_to_date()?);
-    assert_eq!(head_revision(), Some("0001"));
+    assert_eq!(head_revision(), Some("0011"));
     Ok(())
 }
 
@@ -73,6 +77,7 @@ fn opens_a_database_python_migrated() -> TestResult {
     let mut store = Store::open(&Location::File(path))?;
     assert_eq!(store.current_revision()?.as_deref(), Some("0001"));
     assert!(store.upgrade("0001")?.is_empty());
+    assert_eq!(store.upgrade("head")?.len(), 10);
     assert!(store.is_up_to_date()?);
     drop(store);
     std::fs::remove_dir_all(&dir)?;

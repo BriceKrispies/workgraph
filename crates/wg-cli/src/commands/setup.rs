@@ -1,8 +1,7 @@
 //! `workgraph init`, `doctor` and `config show, path, validate, migrate, set` (IF-02).
 //!
 //! The clap commands are the snapshot's own; each handler reads the options with
-//! `wg_clispec::setup`, calls one `App` entry point and prints the result. `doctor
-//! --verify-events` needs the event projection, which is not ported yet.
+//! `wg_clispec::setup`, calls one `App` entry point and prints the result.
 
 use clap::ArgMatches;
 use wg_clispec::setup as view;
@@ -47,21 +46,12 @@ fn init(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(), Cl
     state.emit(&out, Some(&|c| view::init_view(c, &out)))
 }
 
-fn doctor(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
-    if view::verify_events(m) {
-        return Err(CliFailure::fail(
-            format!(
-                "{} --verify-events: the event projection is not ported yet",
-                not_implemented_message(path)
-            ),
-            1,
-        ));
-    }
+fn doctor(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
     let languages = wg_codeparse::available_languages()
         .into_iter()
         .map(str::to_owned)
         .collect();
-    let diagnosis = state.app()?.doctor(languages)?;
+    let diagnosis = state.app()?.doctor(languages, view::verify_events(m))?;
     let out = diagnosis.result;
     state.emit(&out, Some(&|c| view::doctor_view(c, &out)))?;
     if diagnosis.healthy {

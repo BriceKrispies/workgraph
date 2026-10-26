@@ -8,16 +8,19 @@ use std::path::{Path, PathBuf};
 
 use serde_json::{Map, Value as Json};
 use wg_config::ConfigFiles;
+use wg_events::{task_states, verify_task_projection};
 use wg_json::Value;
+use wg_model::StoredEvent;
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::app::{config_failure, io_error};
 use wg_runtimespec::setup::{
-    DoctorFacts, InitFacts, InitRequest, doctor_checks, doctor_result, healthy, init_result,
-    init_workspace, init_workspace_request, migrate_result, paths_result, show_json,
+    DoctorFacts, EventProjection, InitFacts, InitRequest, doctor_checks, doctor_result, healthy,
+    init_result, init_workspace, init_workspace_request, migrate_result, paths_result, show_json,
     workspace_file,
 };
 use wg_store::head_revision;
-use wg_types::WgError;
+use wg_storecodec::EventQuery;
+use wg_types::{ErrorCode, WgError};
 
 use crate::app::App;
 use crate::effects::write_atomic;
@@ -253,8 +256,17 @@ impl App {
 
     /// `doctor`: the checks the native build can run. `languages` are the tree-sitter grammars
     /// that load, which the caller asks of the code parser.
-    pub fn doctor(&mut self, languages: Vec<String>) -> Result<Diagnosis, WgError> {
+    pub fn doctor(
+        &mut self,
+        languages: Vec<String>,
+        verify_events: bool,
+    ) -> Result<Diagnosis, WgError> {
         let config = self.config()?;
+        let event_projections = if verify_events {
+            Some(self.event_projections()?)
+        } else {
+            None
+        };
         let facts = DoctorFacts {
             git: git_version(),
             current_revision: self.runtime.store.current_revision()?,
@@ -286,12 +298,46 @@ impl App {
                 .copied()
                 .unwrap_or(0),
             spooled_events: spooled_count(Path::new(self.paths.spool_dir().as_str())),
+            event_projections,
         };
         let checks = doctor_checks(&facts);
         Ok(Diagnosis {
             result: doctor_result(&checks),
             healthy: healthy(&checks),
         })
+    }
+
+    /// `events verify` for each active workspace (`history.verify_task_projection`), in slug
+    /// order: each workspace's task events replayed against its task rows.
+    fn event_projections(&mut self) -> Result<Vec<EventProjection>, WgError> {
+        let workspaces = self.runtime.store.read(|session| session.workspaces())?;
+        workspaces
+            .into_iter()
+            .filter(|workspace| workspace.archived_at.is_none())
+            .map(|workspace| {
+                let (events, tasks) = self.runtime.store.read(|session| {
+                    let events = session.query_events(&EventQuery {
+                        workspace_id: Some(workspace.id),
+                        entity_type: Some("task".to_owned()),
+                        limit: 10_000_000,
+                        ..EventQuery::default()
+                    })?;
+                    let world = session.task_world(Some(workspace.id), &[])?;
+                    Ok((events, world.tasks))
+                })?;
+                let report = verify_task_projection(
+                    events.into_iter().map(StoredEvent::from).collect(),
+                    &task_states(&tasks),
+                )
+                .map_err(|error| WgError::new(ErrorCode::WorkgraphError, error.to_string()))?;
+                Ok(EventProjection {
+                    slug: workspace.slug,
+                    tasks: report.tasks,
+                    events: report.events,
+                    mismatches: report.mismatches.into_iter().map(|(key, _)| key).collect(),
+                })
+            })
+            .collect()
     }
 }
 

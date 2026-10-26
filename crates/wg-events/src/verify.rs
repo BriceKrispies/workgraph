@@ -2,8 +2,10 @@
 //! events, then compare each task's replayed state with its current-state row. A task whose row
 //! differs in any compared field, or that has no `task.created` event, is a mismatch.
 
+use rpds::RedBlackTreeMapSync;
 use serde_json::{Value, json};
-use wg_model::{JsonObject, StoredEvent};
+use wg_model::{JsonObject, StoredEvent, TaskSlice};
+use wg_pynum::stable_sort_by;
 use wg_types::Id;
 
 use crate::projection::{ProjectedTask, ProjectionError, project_tasks};
@@ -147,5 +149,67 @@ pub fn verify_task_projection(
         tasks: tables.len(),
         events: count,
         mismatches,
+    })
+}
+
+/// The current-state rows of a workspace's tasks, in task-number order: the order the table scan
+/// of `verify_task_projection` meets them, so mismatches come out in that order.
+#[must_use]
+pub fn task_states(tasks: &TaskSlice) -> Vec<TaskState> {
+    let tags = grouped(tasks.tags.iter().map(|(key, tag)| (key.0, tag.tag.clone())));
+    let projects = grouped(
+        tasks
+            .task_projects
+            .iter()
+            .map(|(key, _)| (key.0, key.1.to_string())),
+    );
+    let repositories = grouped(
+        tasks
+            .task_repositories
+            .iter()
+            .map(|(key, _)| (key.0, key.1.to_string())),
+    );
+    let dependencies = grouped(
+        tasks
+            .dependencies
+            .iter()
+            .map(|(_, dependency)| (dependency.task_id, dependency.depends_on_id.to_string())),
+    );
+    let by_number = stable_sort_by(tasks.tasks.values(), |a, b| a.number.cmp(&b.number));
+    by_number
+        .into_iter()
+        .map(|task| {
+            let linked = |map: &RedBlackTreeMapSync<Id, Vec<String>>| {
+                map.get(&task.id).cloned().unwrap_or_default()
+            };
+            TaskState {
+                id: task.id,
+                key: task.key.to_string(),
+                title: task.title.clone(),
+                description: task.description.clone(),
+                status: task.status.to_string(),
+                priority: task.priority.to_string(),
+                tags: linked(&tags),
+                project_ids: linked(&projects),
+                repository_ids: linked(&repositories),
+                parent_id: task.parent_id.as_ref().map(ToString::to_string),
+                depends_on: linked(&dependencies),
+                archived: task.archived_at.is_some(),
+            }
+        })
+        .collect()
+}
+
+/// Groups `(task, value)` pairs by task, keeping each task's values in the order given.
+fn grouped(pairs: impl Iterator<Item = (Id, String)>) -> RedBlackTreeMapSync<Id, Vec<String>> {
+    pairs.fold(RedBlackTreeMapSync::new_sync(), |groups, (task, value)| {
+        let values: Vec<String> = groups
+            .get(&task)
+            .cloned()
+            .unwrap_or_default()
+            .into_iter()
+            .chain(std::iter::once(value))
+            .collect();
+        groups.insert(task, values)
     })
 }

@@ -27,6 +27,7 @@ wg-git = { path = "../wg-git" }
 wg-gitcore = { path = "../wg-gitcore" }
 wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }
+wg-events = { path = "../wg-events" }
 wg-model = { path = "../wg-model" }
 wg-net = { path = "../wg-net" }
 wg-proc = { path = "../wg-proc" }

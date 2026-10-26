@@ -50,6 +50,7 @@ wg-tasks Core
 wg-telemetry Core
 wg-trackers Core
 wg-types Core
+wg-uispec Pure
 wg-validate Pure
 wg-verify Core
 wg-wire Pure

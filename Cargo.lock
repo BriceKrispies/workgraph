@@ -2147,9 +2147,11 @@ dependencies = [
  "wg-clispec",
  "wg-json",
  "wg-model",
+ "wg-net",
  "wg-render",
  "wg-runtime",
  "wg-types",
+ "wg-uispec",
 ]
 
 [[package]]
@@ -2521,6 +2523,16 @@ dependencies = [
  "serde_json",
  "time",
  "uuid",
+]
+
+[[package]]
+name = "wg-uispec"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde_json",
+ "wg-clispec",
+ "wg-json",
 ]
 
 [[package]]

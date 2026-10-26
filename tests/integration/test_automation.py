@@ -185,3 +185,21 @@ def test_invalid_rules_rejected(app, human, ws):
         app.automation.create_rule(human, ws, rule(trigger={"type": "event", "event_types": ["not.real"]}))
     with pytest.raises(ValidationFailed):
         app.automation.create_rule(human, ws, rule(actions=[{"type": "run_shell", "command": "rm -rf /"}]))
+
+
+def test_unknown_trigger_event_is_a_422_over_http(app, human, ws):
+    from tests.helpers import api_client
+
+    bad = rule(name="bad trigger", trigger={"type": "event", "event_types": ["no.such.event"]})
+    with pytest.raises(ValidationFailed) as caught:
+        app.automation.create_rule(human, ws, bad)
+    message = caught.value.details["errors"][0]["msg"]
+    assert "unknown trigger events ['no.such.event']" in message
+    assert "task.created" in message
+    with api_client(app, with_mcp=False) as c:
+        c.headers["Authorization"] = f"Bearer {app.api_token()}"
+        response = c.post("/api/v1/ws/main/automation/rules", json=bad)
+    assert response.status_code == 422
+    error = response.json()["error"]
+    assert error["code"] == "validation_failed"
+    assert error["details"]["errors"][0]["msg"] == message

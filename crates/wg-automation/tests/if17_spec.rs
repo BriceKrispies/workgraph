@@ -61,6 +61,31 @@ fn an_event_trigger_needs_a_known_event_type() {
 
 // covers: C026
 #[test]
+fn an_unknown_event_type_is_refused_with_the_known_list() {
+    let errors = refused(&json!({
+        "name": "bad event",
+        "trigger": {"type": "event", "event_types": ["no.such.event"]},
+        "actions": [{"type": "notify", "title": "x"}],
+    }));
+    let known = "['attempt.failed', 'classification.completed', 'git.commit_ingested', \
+        'repository.changes_detected', 'task.accepted', 'task.became_ready', 'task.completed', \
+        'task.created', 'task.status_changed', 'task.updated', 'verification.completed']";
+    let message =
+        format!("Value error, unknown trigger events ['no.such.event']; allowed: {known}");
+    assert_eq!(errors.len(), 1);
+    assert_eq!(errors[0]["msg"], json!(message));
+    assert_eq!(
+        errors[0]["ctx"]["error"],
+        json!(message.trim_start_matches("Value error, "))
+    );
+    assert_eq!(
+        errors[0]["input"],
+        json!({"type": "event", "event_types": ["no.such.event"]})
+    );
+}
+
+// covers: C026
+#[test]
 fn empty_actions_and_a_bare_event_trigger_are_both_reported() {
     let errors = refused(&json!({
         "name": "bad",

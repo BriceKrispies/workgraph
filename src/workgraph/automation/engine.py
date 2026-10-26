@@ -22,6 +22,7 @@ Safety:
 from __future__ import annotations
 
 import builtins
+import json
 from dataclasses import replace
 from datetime import datetime, timedelta
 from typing import Any
@@ -197,8 +198,10 @@ class AutomationService(Service):
         try:
             return RuleSpec.model_validate(data)
         except ValidationError as exc:
+            # exc.json() renders each error's ctx (which may hold the raised ValueError) as JSON-safe
+            # data; exc.errors() would leave that exception object in the HTTP error body.
             raise ValidationFailed(
-                "invalid automation rule", details={"errors": exc.errors(include_url=False)}
+                "invalid automation rule", details={"errors": json.loads(exc.json(include_url=False))}
             ) from exc
 
     def _check_privileged(self, ctx: RequestContext, spec: RuleSpec) -> None:

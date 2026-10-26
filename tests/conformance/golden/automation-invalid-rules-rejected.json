@@ -39,12 +39,26 @@
     {
       "index": 5,
       "kind": "cli",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "error (validation_failed): invalid automation rule\n"
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
       "exit": 0,
       "stdout": "[]\n",
       "stderr": ""
     },
     {
-      "index": 6,
+      "index": 8,
       "kind": "assert",
       "exit": null,
       "stdout": "",

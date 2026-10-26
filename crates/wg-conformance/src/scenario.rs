@@ -56,6 +56,9 @@ pub enum Step {
         method: String,
         path: String,
         body: Option<Value>,
+        /// Read the response as server-sent events and stop after this many.
+        max_events: Option<usize>,
+        save: Vec<(String, String)>,
     },
     Drain {
         max_jobs: u64,
@@ -299,8 +302,7 @@ fn parse_step(v: &Value, at: &str) -> Res<Step> {
             })
         }
         "http" => {
-            only_keys(m, &["http", "path", "body", "save"], at)?;
-            save(m)?;
+            only_keys(m, &["http", "path", "body", "save", "max_events"], at)?;
             let method = string(&m["http"], &format!("{at}.http"))?;
             if !["GET", "POST", "PUT", "PATCH", "DELETE"].contains(&method.as_str()) {
                 return Err(format!("{at}.http: unknown method `{method}`"));
@@ -310,10 +312,21 @@ fn parse_step(v: &Value, at: &str) -> Res<Step> {
                     .ok_or_else(|| format!("{at}: missing `path`"))?,
                 &format!("{at}.path"),
             )?;
+            let max_events = match m.get("max_events") {
+                None => None,
+                Some(n) => Some(
+                    n.as_u64()
+                        .and_then(|n| usize::try_from(n).ok())
+                        .filter(|n| *n >= 1)
+                        .ok_or_else(|| format!("{at}.max_events: expected an integer >= 1"))?,
+                ),
+            };
             Ok(Step::Http {
                 method,
                 path,
                 body: m.get("body").cloned(),
+                max_events,
+                save: save(m)?,
             })
         }
         "drain" => {
@@ -433,6 +446,32 @@ mod tests {
         let s = parse_scenario(SAMPLE).unwrap();
         assert_eq!(s.steps.len(), 6);
         assert_eq!(s.setup.len(), 2);
+    }
+
+    #[test]
+    fn http_steps_take_max_events_and_save() {
+        let text = r#"{"id":"a","covers":[],"steps":[
+          {"http": "GET", "path": "/api/v1/ws/default/events/stream", "max_events": 3,
+           "save": {"first": "/0/data/seq"}},
+          {"http": "POST", "path": "/x", "body": {"a": 1}}
+        ]}"#;
+        let s = parse_scenario(text).unwrap();
+        assert_eq!(
+            s.steps[0],
+            Step::Http {
+                method: "GET".into(),
+                path: "/api/v1/ws/default/events/stream".into(),
+                body: None,
+                max_events: Some(3),
+                save: vec![("first".into(), "/0/data/seq".into())],
+            }
+        );
+        assert!(
+            parse_scenario(
+                r#"{"id":"a","covers":[],"steps":[{"http":"GET","path":"/","max_events":0}]}"#
+            )
+            .is_err()
+        );
     }
 
     #[test]

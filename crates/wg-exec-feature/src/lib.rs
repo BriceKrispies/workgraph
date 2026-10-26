@@ -15,16 +15,21 @@
 //!
 //! The feature exports [`FEATURE`]; the binary collects it into its ordered feature list.
 
+pub mod cli;
 pub mod mcp;
 pub mod service;
 pub mod spec;
 
-use wg_runtime::Feature;
+use wg_runtime::{CliGroup, Feature};
 
-/// The exec feature: its tools. It has no CLI groups, routes, resources or jobs yet.
+/// The exec feature's command groups: `attempt` (the read commands; the write commands are not
+/// ported yet).
+pub const CLI: &[CliGroup] = &[cli::attempt::GROUP];
+
+/// The exec feature: its command groups and tools. It has no routes, resources or jobs yet.
 pub static FEATURE: Feature = Feature {
     name: "exec",
-    cli: &[],
+    cli: CLI,
     routes: &[],
     tools: mcp::TOOLS,
     resources: &[],

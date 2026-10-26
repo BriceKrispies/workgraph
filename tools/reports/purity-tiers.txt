@@ -55,6 +55,7 @@ wg-exec-feature Shell
 wg-exec-feature::spec Pure
 wg-exec-feature::service Shell
 wg-exec-feature::mcp Shell
+wg-exec-feature::cli Shell
 wg-experiments Core
 wg-experiments-feature Shell
 wg-experiments-feature::spec Pure

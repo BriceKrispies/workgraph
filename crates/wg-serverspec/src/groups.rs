@@ -32,8 +32,9 @@ pub struct RouteSpec {
     pub body: Option<BodyRef>,
 }
 
-/// The meta and settings group: health and meta (H001, H002), settings (H117, H118).
-pub const META_SETTINGS: [RouteSpec; 4] = [
+/// The meta group: health and meta (H001, H002). The settings routes (H117, H118) are the registry
+/// feature's.
+pub const META_SETTINGS: [RouteSpec; 2] = [
     RouteSpec {
         id: "H001",
         method: "GET",
@@ -49,26 +50,6 @@ pub const META_SETTINGS: [RouteSpec; 4] = [
         status: 200,
         query: &[],
         body: None,
-    },
-    RouteSpec {
-        id: "H117",
-        method: "GET",
-        path: "/api/v1/settings",
-        status: 200,
-        query: &["workspace"],
-        body: None,
-    },
-    RouteSpec {
-        id: "H118",
-        method: "PATCH",
-        path: "/api/v1/settings",
-        status: 200,
-        query: &[],
-        body: Some(BodyRef {
-            component: "SettingsPatch",
-            required: true,
-            strip: false,
-        }),
     },
 ];
 
@@ -459,7 +440,7 @@ mod tests {
     #[test]
     fn the_meta_settings_table_has_the_operations_of_its_group() {
         let ids: Vec<&str> = META_SETTINGS.iter().map(|spec| spec.id).collect();
-        assert_eq!(ids, ["H001", "H002", "H117", "H118"]);
+        assert_eq!(ids, ["H001", "H002"]);
         for spec in &META_SETTINGS {
             assert_eq!(crate::operations::group_of(spec.id), "meta-settings");
         }
@@ -516,16 +497,5 @@ mod tests {
                 assert!(body_spec(&openapi, body).is_some(), "{}", spec.id);
             }
         }
-    }
-
-    #[test]
-    fn the_settings_patch_body_loads_from_the_snapshot() {
-        let openapi = wg_wire::contract::openapi().unwrap_or_default();
-        let body = META_SETTINGS[3].body.unwrap_or(BodyRef {
-            component: "",
-            required: false,
-            strip: false,
-        });
-        assert!(body_spec(&openapi, &body).is_some());
     }
 }

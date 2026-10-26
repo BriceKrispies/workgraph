@@ -7,7 +7,7 @@ use wg_types::WgError;
 use crate::Session;
 
 /// Runs `statement` and decodes the first row, if there is one.
-pub(crate) fn one<T: TableRow>(
+pub fn one<T: TableRow>(
     session: &mut Session<'_>,
     statement: &Statement,
 ) -> Result<Option<T>, WgError> {
@@ -19,7 +19,7 @@ pub(crate) fn one<T: TableRow>(
 }
 
 /// Runs `statement` and decodes every row, in the order the query returns them.
-pub(crate) fn many<T: TableRow>(
+pub fn many<T: TableRow>(
     session: &mut Session<'_>,
     statement: &Statement,
 ) -> Result<Vec<T>, WgError> {

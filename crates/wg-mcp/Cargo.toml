@@ -24,6 +24,7 @@ wg-runtimespec = { path = "../wg-runtimespec" }
 wg-mcpspec = { path = "../wg-mcpspec" }
 wg-model = { path = "../wg-model" }
 wg-registry = { path = "../wg-registry" }
+wg-registry-feature = { path = "../wg-registry-feature" }
 wg-runtime = { path = "../wg-runtime" }
 wg-store = { path = "../wg-store" }
 wg-types = { path = "../wg-types" }

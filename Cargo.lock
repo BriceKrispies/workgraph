@@ -2318,6 +2318,7 @@ dependencies = [
  "wg-mcpspec",
  "wg-model",
  "wg-net",
+ "wg-registry-feature",
  "wg-render",
  "wg-runtime",
  "wg-server",
@@ -2527,6 +2528,7 @@ dependencies = [
  "wg-mcpspec",
  "wg-model",
  "wg-registry",
+ "wg-registry-feature",
  "wg-runtime",
  "wg-runtimespec",
  "wg-store",
@@ -2614,6 +2616,34 @@ dependencies = [
  "wg-jobs",
  "wg-model",
  "wg-types",
+]
+
+[[package]]
+name = "wg-registry-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "rpds",
+ "serde_json",
+ "wg-clispec",
+ "wg-codeparse",
+ "wg-config",
+ "wg-events",
+ "wg-git",
+ "wg-json",
+ "wg-mcpspec",
+ "wg-model",
+ "wg-registry",
+ "wg-render",
+ "wg-runtime",
+ "wg-runtimespec",
+ "wg-serverspec",
+ "wg-store",
+ "wg-storecodec",
+ "wg-tasks",
+ "wg-types",
+ "wg-validate",
+ "wg-wire",
 ]
 
 [[package]]
@@ -2707,6 +2737,7 @@ dependencies = [
  "wg-decisions",
  "wg-json",
  "wg-model",
+ "wg-registry-feature",
  "wg-runtime",
  "wg-runtimespec",
  "wg-serverspec",

@@ -14,7 +14,7 @@ use wg_model::entity::session::AgentSession;
 use wg_model::event::project::ProjectCreated;
 use wg_model::event::{EventDraft, EventPayload};
 use wg_types::{Actor, ActorKind, Id, Timestamp, parse_id};
-use wg_wire::dto::{agents, automation, claude, event, health, llm, notification, settings};
+use wg_wire::dto::{agents, automation, claude, event, health, llm, notification};
 
 fn root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
@@ -282,13 +282,7 @@ fn claude_status_document_and_its_parts() {
 }
 
 #[test]
-fn settings_meta_and_health_documents() {
-    let config = Value::Dict(Vec::new());
-    let get = settings::settings(config.clone(), "cfg.toml", "data");
-    assert_eq!(names(&get), settings::FIELDS);
-    assert_eq!(names(&get_paths(&get)), settings::PATH_FIELDS);
-    assert_eq!(names(&settings::patched(config)), settings::PATCH_FIELDS);
-
+fn health_and_meta_documents() {
     let report = health::health("0.1.0");
     assert_eq!(names(&report), health::HEALTH_FIELDS);
     assert_eq!(
@@ -306,18 +300,6 @@ fn settings_meta_and_health_documents() {
         Value::Dict(Vec::new()),
     );
     assert_eq!(names(&meta), health::META_FIELDS);
-}
-
-/// The `paths` object of a settings document.
-fn get_paths(document: &Value) -> Value {
-    match document {
-        Value::Dict(fields) => fields
-            .iter()
-            .find(|(key, _)| key_text(key) == "paths")
-            .map(|(_, value)| value.clone())
-            .expect("paths"),
-        other => panic!("not a dict: {other:?}"),
-    }
 }
 
 #[test]

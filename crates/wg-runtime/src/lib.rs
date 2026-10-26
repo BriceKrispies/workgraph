@@ -27,9 +27,6 @@ mod hooks;
 mod jobs;
 mod logging;
 mod queue;
-mod registry;
-mod repos;
-mod setup;
 mod stacks;
 mod stamp;
 mod tasks;
@@ -50,19 +47,11 @@ pub use handlers::{Handler, HandlerError, HandlerRegistry, HandlerResult, JobCon
 pub use hooks::{Failure, IngestResult, IngestStatus, ReplayCounts, ingest_direct, spool_record};
 pub use logging::{JsonLayer, LogSettings, RotatingFile, configure_logging, json_layer};
 pub use queue::Queue;
-pub use repos::repository_out;
-pub use setup::Diagnosis;
 pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
-pub use wg_registry::admin::Patch as RepositoryPatch;
 pub use wg_runtimespec::automation::catalog as automation_catalog;
 pub use wg_runtimespec::jobs::{unknown_job_kind, worker_summary_out};
-pub use wg_runtimespec::registry::{
-    project_create_body, project_option_body, workspace_create_body,
-};
-pub use wg_runtimespec::repos::RegisterInput;
-pub use wg_runtimespec::setup::InitRequest;
 pub use wg_runtimespec::tasks::reads::{GraphRequest, Shown};
 pub use wg_runtimespec::{Level, RequestContext};
 pub use wg_tasks::rename::Term;

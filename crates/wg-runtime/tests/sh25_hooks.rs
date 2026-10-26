@@ -36,7 +36,21 @@ fn home(name: &str) -> Result<Home, Box<dyn Error>> {
     std::fs::create_dir_all(&dir)?;
     let mut app = App::open(Some(&dir))?;
     let ctx = human_context(Some("tester"))?;
-    app.workspace_create(&ctx, &json!({"slug": "main", "name": "Main"}), true)?;
+    // The workspace the registry feature creates, and its default (`WorkspaceService.create`).
+    let dump = object(json!({
+        "slug": "main",
+        "name": "Main",
+        "description": "",
+        "key_prefix": "WG",
+    }));
+    app.runtime.decide(
+        &ctx,
+        |session| session.registry_world(None),
+        |slice, stamp| wg_registry::workspaces::create(slice, stamp, &dump),
+    )?;
+    let mut config = app.config()?;
+    config.insert("default_workspace".to_owned(), json!("main"));
+    app.save_config(&config)?;
     Ok(Home { app, ctx, dir })
 }
 

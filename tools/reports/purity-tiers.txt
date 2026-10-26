@@ -52,6 +52,12 @@ wg-procspec Pure
 wg-pyrand Pure
 wg-pynum Pure
 wg-registry Core
+wg-registry-feature Shell
+wg-registry-feature::spec Pure
+wg-registry-feature::service Shell
+wg-registry-feature::cli Shell
+wg-registry-feature::http Shell
+wg-registry-feature::mcp Shell
 wg-render Pure
 wg-runtime Shell
 wg-runtimespec Pure

@@ -1,5 +1,5 @@
-//! The meta and settings group (plan IF-42, first part): `GET /api/v1/health` (H001), `GET
-//! /api/v1/meta` (H002), `GET` and `PATCH /api/v1/settings` (H117, H118).
+//! The meta group (plan IF-42, first part): `GET /api/v1/health` (H001) and `GET /api/v1/meta`
+//! (H002). The settings routes (H117, H118) are the registry feature's.
 //!
 //! The table of operations is `wg-serverspec`'s ([`META_SETTINGS`]); the rules are
 //! `wg-runtimespec`'s and the documents are `wg-wire`'s. This module is the glue: it binds each
@@ -8,11 +8,11 @@
 
 use wg_json::Value;
 use wg_runtime::App;
-use wg_runtimespec::settings::{meta_inputs, patch_values, patched_config, settings_workspace};
+use wg_runtimespec::settings::meta_inputs;
 use wg_serverspec::groups::META_SETTINGS;
-use wg_types::{ErrorCode, Permission, WgError};
-use wg_wire::convention::{json_object, json_value};
-use wg_wire::dto::{health, settings as settings_dto};
+use wg_types::{ErrorCode, WgError};
+use wg_wire::convention::json_value;
+use wg_wire::dto::health;
 
 use super::bind;
 use crate::route::ApiRoute;
@@ -26,9 +26,8 @@ pub fn register(table: &mut Vec<ApiRoute>) {
     bind(table, &META_SETTINGS, run);
 }
 
-/// One operation on the application context: the request in, the document out. The
-/// permission checks come first, as the Python routes make them.
-fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {
+/// One operation on the application context: the request in, the document out.
+fn run(app: &mut App, id: &str, _request: RouteRequest) -> Result<Value, WgError> {
     match id {
         "H001" => Ok(health::health(VERSION)),
         "H002" => {
@@ -42,24 +41,6 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
                 json_value(&inputs.classification),
                 json_value(&inputs.embeddings),
             ))
-        }
-        "H117" => {
-            request.context.require(&[Permission::WorkspaceRead])?;
-            let config = app.config()?;
-            let slug = settings_workspace(&request.params, &config);
-            let effective = app.effective_config(slug.as_deref())?;
-            Ok(settings_dto::settings(
-                json_object(&effective),
-                app.paths.config_file().as_str(),
-                app.paths.data_dir().as_str(),
-            ))
-        }
-        "H118" => {
-            request.context.require(&[Permission::ConfigManage])?;
-            let current = app.config()?;
-            let next = patched_config(&current, &patch_values(&request.body))?;
-            app.save_config(&next)?;
-            Ok(settings_dto::patched(json_object(&next)))
         }
         other => Err(WgError::new(
             ErrorCode::WorkgraphError,

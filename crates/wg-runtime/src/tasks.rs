@@ -125,7 +125,7 @@ impl App {
 
     /// `TaskService.update(..., enrich=False)`: a text change that queues no reclassification or
     /// re-embedding (the words changed, not the task).
-    pub(crate) fn task_update_plain(
+    pub fn task_update_plain(
         &mut self,
         context: &RequestContext,
         workspace: Option<&str>,

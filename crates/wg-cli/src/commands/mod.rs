@@ -8,10 +8,7 @@
 pub mod automation;
 pub mod git;
 pub mod job;
-pub mod registry;
-pub mod repo;
 pub mod serve;
-pub mod setup;
 pub mod task;
 pub mod ui;
 pub mod worker;
@@ -27,14 +24,10 @@ pub type Group = CliGroup;
 
 /// The features of this binary, in the order their command groups are dispatched and listed as
 /// implemented. A feature task adds its crate's `Feature` here.
-pub const FEATURES: &[&Feature] = &[&wg_decisions::FEATURE];
+pub const FEATURES: &[&Feature] = &[&wg_decisions::FEATURE, &wg_registry_feature::FEATURE];
 
 /// The implemented groups that predate the feature descriptor, in CLI help order.
 pub const GROUPS: &[Group] = &[
-    repo::GROUP,
-    setup::CONFIG,
-    setup::DOCTOR,
-    setup::INIT,
     serve::MCP,
     serve::SERVE,
     job::GROUP,
@@ -42,7 +35,5 @@ pub const GROUPS: &[Group] = &[
     automation::GROUP,
     task::GROUP,
     ui::GROUP,
-    registry::PROJECT,
-    registry::WORKSPACE,
     worker::GROUP,
 ];

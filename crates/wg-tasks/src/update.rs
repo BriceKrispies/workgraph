@@ -12,6 +12,7 @@ use wg_model::event::{Changes, TaskUpdated};
 use wg_model::stamp::Stamp;
 use wg_types::{ErrorCode, Id, TaskPriority, TaskStatus, Timestamp, WgError};
 
+use crate::claims::check_version;
 use crate::content::content_hash;
 use crate::files::{FileInput, add_files, current_files, file_rows};
 use crate::hierarchy::check_set_parent;
@@ -80,22 +81,6 @@ pub struct UpdatePlan {
     pub status: Option<TaskStatus>,
     /// The `task.updated` event; `None` when nothing changed.
     pub event: Option<TaskUpdated>,
-}
-
-/// The stored version must match `expected` when the caller gave one.
-pub fn check_version(task: &Task, expected: Option<i64>) -> Result<(), WgError> {
-    match expected {
-        Some(expected) if expected != task.version => Err(WgError::new(
-            ErrorCode::VersionConflict,
-            format!(
-                "task {} was modified concurrently (expected version {expected}, found {}); re-read and retry",
-                task.key, task.version
-            ),
-        )
-        .with_detail("expected", json!(expected))
-        .with_detail("actual", json!(task.version))),
-        _ => Ok(()),
-    }
 }
 
 /// Plans an update of `task` (a row of `tasks`) with `patch`.

@@ -1,0 +1,173 @@
+{
+  "scenario": "job-enqueue-list-show-stats",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:1>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:1>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:2>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"total\": 2,\n  \"items\": [\n    {\n      \"id\": \"<id:2>\",\n      \"kind\": \"noop\",\n      \"status\": \"queued\",\n      \"attempts\": 0,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:2|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:3|db>\"\n    },\n    {\n      \"id\": \"<id:1>\",\n      \"kind\": \"noop\",\n      \"status\": \"queued\",\n      \"attempts\": 0,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:1|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:1|db>\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"total\": 2,\n  \"items\": [\n    {\n      \"id\": \"<id:1>\",\n      \"kind\": \"noop\",\n      \"status\": \"queued\",\n      \"attempts\": 0,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:1|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:1|db>\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"kind\": \"noop\",\n  \"status\": \"queued\",\n  \"payload\": {\n    \"n\": 1\n  },\n  \"result\": null,\n  \"attempts\": 0,\n  \"max_attempts\": 5,\n  \"run_at\": \"<ts:1|db>\",\n  \"lease_owner\": null,\n  \"lease_expires_at\": null,\n  \"last_error\": null,\n  \"error_kind\": null,\n  \"resource_keys\": [],\n  \"cancel_requested\": false,\n  \"created_at\": \"<ts:1|db>\",\n  \"finished_at\": null,\n  \"runs\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"queued\": 2\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"cli_error\", \"message\": \"unknown job kind 'no_such_kind'; known: agent_run, analyze_commits, automation_action, classify_task, compact_telemetry, compute_change_surface, decompose_task, embed_task, evaluate_classifier, failure_analysis, generate_report, git_sync, noop, stack_integrate, stack_verify, tracker_sync, verify\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

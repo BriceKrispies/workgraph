@@ -1,0 +1,145 @@
+{
+  "scenario": "git-sync-workspace-and-full",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"alpha\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:1|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\alpha\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:1|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"beta\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:2>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:3|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:5>\",\n      \"path\": \"<tmp>/repos\\\\beta\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:4|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:4|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"repository_id\": \"<id:1>\",\n    \"repository\": \"alpha\",\n    \"mode\": \"incremental\",\n    \"new_commits\": 1,\n    \"refs_changed\": 1,\n    \"marked_unreachable\": 0,\n    \"restored_reachable\": 0,\n    \"equivalences\": 0,\n    \"links_created\": 0,\n    \"shallow\": false,\n    \"head_refs\": 1\n  },\n  {\n    \"repository_id\": \"<id:4>\",\n    \"repository\": \"beta\",\n    \"mode\": \"incremental\",\n    \"new_commits\": 1,\n    \"refs_changed\": 1,\n    \"marked_unreachable\": 0,\n    \"restored_reachable\": 0,\n    \"equivalences\": 0,\n    \"links_created\": 0,\n    \"shallow\": false,\n    \"head_refs\": 1\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"repository_id\": \"<id:1>\",\n    \"repository\": \"alpha\",\n    \"mode\": \"full\",\n    \"new_commits\": 0,\n    \"refs_changed\": 0,\n    \"marked_unreachable\": 0,\n    \"restored_reachable\": 0,\n    \"equivalences\": 0,\n    \"links_created\": 0,\n    \"shallow\": false,\n    \"head_refs\": 1\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"repository_id\": \"<id:4>\",\n    \"repository\": \"beta\",\n    \"mode\": \"incremental\",\n    \"new_commits\": 0,\n    \"refs_changed\": 0,\n    \"marked_unreachable\": 0,\n    \"restored_reachable\": 0,\n    \"equivalences\": 0,\n    \"links_created\": 0,\n    \"shallow\": false,\n    \"head_refs\": 1\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

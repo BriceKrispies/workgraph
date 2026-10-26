@@ -1,0 +1,26 @@
+{
+  "id": "git-worktrees-status-and-cleanup",
+  "covers": ["C088", "C097", "C118"],
+  "setup": [
+    {"git": "init", "repo": "managed"},
+    {"git": "commit", "repo": "managed", "files": {"README.md": "managed\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:managed}"], "json": true},
+    {"cli": ["git", "worktrees"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}},
+    {"cli": ["git", "worktrees", "--status", "active", "-w", "default"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}},
+    {"cli": ["git", "cleanup-worktrees"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}},
+    {"cli": ["git", "cleanup-worktrees", "--apply"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktrees.py: managed worktrees with rows in each lifecycle state, and cleanup removing a released clean one. Creating a managed worktree needs an attempt start, which the CLI steps here do not reach; this scenario only sees the empty listing and the empty dry run and apply",
+      "covered_by": "SC-02"
+    }
+  ]
+}

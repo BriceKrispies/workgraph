@@ -1,0 +1,27 @@
+{
+  "id": "job-cancel-retry",
+  "covers": ["C100", "C102", "C104", "C105"],
+  "setup": [
+    {"git": "init", "repo": "cancel"},
+    {"git": "commit", "repo": "cancel", "files": {"README.md": "cancel\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["job", "enqueue", "noop"], "json": true, "save": {"job": "/job_id"}},
+    {"cli": ["job", "cancel", "{var:job}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "cancelled"}}},
+    {"cli": ["job", "show", "{var:job}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "cancelled"}}},
+    {"cli": ["job", "retry", "{var:job}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "queued"}}},
+    {"cli": ["job", "show", "{var:job}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "queued"}}},
+    {"cli": ["job", "retry", "{var:job}"], "json": true},
+    {"assert": {"exit": 3}},
+    {"cli": ["job", "cancel", "job-does-not-exist"], "json": true},
+    {"assert": {"exit": 4}},
+    {"cli": ["job", "show", "job-does-not-exist"], "json": true},
+    {"assert": {"exit": 4}}
+  ],
+  "not_observable": []
+}

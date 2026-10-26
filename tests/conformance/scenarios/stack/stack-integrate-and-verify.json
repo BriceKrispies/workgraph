@@ -1,0 +1,24 @@
+{
+  "id": "stack-integrate-and-verify",
+  "covers": ["C136", "C138", "C139", "C144", "C118"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"cli": ["stack", "create", "WG-1"], "json": true},
+    {"cli": ["stack", "integrate", "WG-1"], "json": true, "save": {"integration_job": "/jobs/0/job_id"}},
+    {"assert": {"json": {"path": "/jobs/0/repository", "equals": "svc"}}},
+    {"cli": ["stack", "verify", "WG-1"], "json": true, "save": {"verify_job": "/job_id"}},
+    {"assert": {"json": {"path": "/stack", "equals": "WG-1"}}},
+    {"cli": ["stack", "history", "WG-1"], "json": true},
+    {"assert": {"stdout_contains": "stack.created"}},
+    {"cli": ["stack", "integrate", "WG-99"], "json": true},
+    {"assert": {"exit": 4}}
+  ],
+  "not_observable": []
+}

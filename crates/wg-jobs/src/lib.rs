@@ -12,6 +12,7 @@ pub mod limits;
 pub mod maintenance;
 pub mod queue;
 pub mod retention;
+pub mod scheduler;
 pub mod trackers;
 pub mod workers;
 

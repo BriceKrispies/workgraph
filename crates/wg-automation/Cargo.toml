@@ -9,3 +9,9 @@ description = "rule catalog, matching, templates, depth and rate limits, cron"
 
 [lints]
 workspace = true
+
+[dependencies]
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+time = { version = "0.3", default-features = false, features = ["std"] }
+wg-types = { path = "../wg-types" }

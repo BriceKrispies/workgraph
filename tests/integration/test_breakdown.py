@@ -192,6 +192,41 @@ def test_rerun_promotes_backlog_task_once_dependency_is_accepted(app, human, ws)
     assert app.tasks.get(human, ws, _by_id(first)["A1"]["key"]).status == "ready"
 
 
+TABLE_PLAN = """\
+## Tables
+
+**IF-01 to IF-03 Interface** (each: a module)
+
+| Id | Commands | Contracts | Deps | Tier |
+| --- | --- | --- | --- | --- |
+| IF-01 | `init` | C001 | none | mid |
+| IF-02 | `doctor` | C002 | none | mid |
+| IF-03 | `status` | C003 | IF-01 | top |
+"""
+
+
+def test_rerun_adds_missing_table_dependency_as_update(app, human, ws):
+    first = _run(app, human, ws, TABLE_PLAN, section="Tables")
+    assert first["unresolved"] == []
+    assert _by_id(first)["IF-02"]["status"] == "ready"
+    keys = {row["id"]: row["key"] for row in first["tasks"]}
+
+    edited = TABLE_PLAN.replace(
+        "| IF-02 | `doctor` | C002 | none | mid |", "| IF-02 | `doctor` | C002 | IF-01 | mid |"
+    )
+    second = _run(app, human, ws, edited, section="Tables")
+
+    rows = _by_id(second)
+    assert rows["IF-02"]["action"] == "updated"
+    assert rows["IF-01"]["action"] == "unchanged"
+    assert rows["IF-03"]["action"] == "unchanged"
+    assert second["counts"]["updated"] == 1
+    assert second["counts"]["created"] == 0
+    assert len(_all_tasks(app, human, ws)) == len(first["tasks"])
+    assert app.tasks.get(human, ws, keys["IF-02"]).depends_on == [app.tasks.get(human, ws, keys["IF-01"]).id]
+    assert app.tasks.get(human, ws, keys["IF-02"]).title == "Interface: `doctor`"
+
+
 def test_dry_run_creates_nothing_and_reports_the_plan(app, human, ws):
     result = _run(app, human, ws, dry_run=True)
 

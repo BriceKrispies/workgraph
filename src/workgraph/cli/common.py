@@ -71,7 +71,12 @@ class CliConsole(Console):
 
     @property
     def legacy_windows(self) -> bool:
-        return self._legacy_windows_flag and self._file_is_terminal()
+        flag = getattr(self, "_legacy_windows_flag", False)
+        if "_file" not in vars(self):
+            # rich's __init__ reads this while deriving the COLUMNS width, before it assigns
+            # the output stream. Keep rich's own value there; the terminal check applies later.
+            return bool(flag)
+        return flag and self._file_is_terminal()
 
     @legacy_windows.setter
     def legacy_windows(self, value: bool) -> None:

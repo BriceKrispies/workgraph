@@ -281,6 +281,29 @@ def test_cli_console_skips_legacy_windows_path_off_a_terminal():
     assert stream.getvalue() == "task ok\n"
 
 
+def test_cli_console_constructs_with_columns_set(monkeypatch):
+    # rich reads legacy_windows inside Console.__init__ when COLUMNS is set, before _file exists.
+    from workgraph.cli.common import CliConsole
+
+    monkeypatch.setenv("COLUMNS", "120")
+    console = CliConsole(highlight=False)
+    assert console.legacy_windows is False
+    assert console.width in (119, 120)
+
+
+def test_human_cli_runs_with_columns_env(run, home):
+    run("init")
+    env = {**os.environ, "COLUMNS": "120", "WORKGRAPH_HOME": str(home), "NO_COLOR": "1"}
+    proc = subprocess.run(
+        [sys.executable, "-m", "workgraph", "-w", "default", "task", "list"],
+        env=env,
+        capture_output=True,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stderr.decode("utf-8", "replace")
+    assert b"Traceback" not in proc.stderr
+
+
 def test_console_script_help():
     proc = run_cli(["--help"], env={"PYTHONIOENCODING": "utf-8"})
     assert proc.exit_code == 0 and "task" in proc.stdout and "analytics" in proc.stdout

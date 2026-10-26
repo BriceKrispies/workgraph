@@ -598,7 +598,7 @@ fn a_file_spec_splits_path_and_anchor_after_a_drive_letter() {
     assert!(is_file_spec("src/lib.rs:Thing"));
 }
 
-// covers: CORE-05
+// Plan task CORE-05.
 #[test]
 fn a_verdict_entry_keeps_its_key_as_written() {
     let parsed: Entry =

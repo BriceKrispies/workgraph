@@ -95,9 +95,14 @@ fn files_of(store: &ConfigFiles) -> Value {
     Value::Object(files)
 }
 
+/// `ConfigStore.validate_files` over the store, with the generator's file names.
+fn validate_files(store: &ConfigFiles) -> Result<Vec<String>, ConfigError> {
+    store.validate_files("config.toml", |slug| format!("workspaces/{slug}.toml"))
+}
+
 /// The outcome of `_load_action`: validate every file, then the global configuration.
 fn load_outcome(store: &ConfigFiles) -> Value {
-    match store.validate_files() {
+    match validate_files(store) {
         Err(error) => config_error_json(&error),
         Ok(problems) => match store.load_global() {
             Ok(cfg) => {
@@ -110,7 +115,7 @@ fn load_outcome(store: &ConfigFiles) -> Value {
 
 /// The outcome of `_key_result`: as `_load_action`, but reporting only the value at the key.
 fn key_outcome(store: &ConfigFiles, key: &str) -> Value {
-    match store.validate_files() {
+    match validate_files(store) {
         Err(error) => config_error_json(&error),
         Ok(problems) => match store.load_global() {
             Ok(cfg) => {
@@ -123,7 +128,7 @@ fn key_outcome(store: &ConfigFiles, key: &str) -> Value {
 
 /// The outcome of `_merge_action`: validate every file, then the configuration for the workspace.
 fn merge_outcome(store: &ConfigFiles) -> Value {
-    match store.validate_files() {
+    match validate_files(store) {
         Err(error) => config_error_json(&error),
         Ok(problems) => match store.effective(Some(SLUG)) {
             Ok(effective) => {

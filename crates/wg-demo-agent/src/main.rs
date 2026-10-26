@@ -29,7 +29,7 @@ fn main() -> ExitCode {
 }
 
 fn run_agent(args: &[String]) -> i32 {
-    let parsed = match agent::AgentArgs::parse(args) {
+    let parsed = match wg_demoproto::AgentArgs::parse(args) {
         Ok(parsed) => parsed,
         Err(message) => {
             eprintln!("workgraph-demo-agent: {message}");

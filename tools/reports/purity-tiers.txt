@@ -16,6 +16,7 @@ wg-codeparse Shell
 wg-config Pure
 wg-conformance Tooling
 wg-demo-agent Shell
+wg-demoproto Pure
 wg-events Core
 wg-exec Core
 wg-experiments Core

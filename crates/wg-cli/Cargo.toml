@@ -34,6 +34,7 @@ wg-automation-feature = { path = "../wg-automation-feature" }
 wg-exec-feature = { path = "../wg-exec-feature" }
 wg-decisions = { path = "../wg-decisions" }
 wg-git-feature = { path = "../wg-git-feature" }
+wg-intel-feature = { path = "../wg-intel-feature" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }
 wg-trackers-feature = { path = "../wg-trackers-feature" }
 wg-registry-feature = { path = "../wg-registry-feature" }

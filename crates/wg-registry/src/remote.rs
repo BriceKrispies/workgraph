@@ -43,38 +43,29 @@ fn scp_colon_to_slash(value: &str) -> String {
 
 /// Removes every `:digits/` (the `re.sub(r":\d+/", "/")` of Python), scanning left to right.
 fn drop_port_segments(value: &str) -> String {
-    let bytes = value.as_bytes();
-    let mut out = String::with_capacity(value.len());
-    let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i] == b':' {
-            let digits_end = (i + 1..bytes.len())
-                .find(|&j| !bytes[j].is_ascii_digit())
-                .unwrap_or(bytes.len());
-            if digits_end > i + 1 && bytes.get(digits_end) == Some(&b'/') {
-                out.push('/');
-                i = digits_end + 1;
-                continue;
+    // Each piece after a colon starts a candidate: a run of digits followed by `/` is a port.
+    value
+        .split(':')
+        .enumerate()
+        .map(|(index, piece)| {
+            if index == 0 {
+                return piece.to_owned();
             }
-        }
-        // `value` is valid UTF-8 and ':' is ASCII, so byte-wise copying of the rest is sound.
-        let next = value[i..].chars().next().map_or(1, char::len_utf8);
-        out.push_str(&value[i..i + next]);
-        i += next;
-    }
-    out
+            let digits = piece.bytes().take_while(u8::is_ascii_digit).count();
+            match piece.as_bytes().get(digits) {
+                Some(b'/') if digits > 0 => format!("/{}", &piece[digits + 1..]),
+                _ => format!(":{piece}"),
+            }
+        })
+        .collect()
 }
 
 /// The canonical `host/path` form of a remote URL: surrounding whitespace, the scheme, the
 /// credentials and a trailing `.git` removed, and the host lower-cased.
 pub fn normalize_remote_url(url: &str) -> String {
-    let mut value = url.trim();
-    if let Some(rest) = strip_scheme(value) {
-        value = rest;
-    }
-    value = strip_credentials(value);
-    let value = scp_colon_to_slash(value);
-    let value = drop_port_segments(&value);
+    let trimmed = url.trim();
+    let value = strip_scheme(trimmed).unwrap_or(trimmed);
+    let value = drop_port_segments(&scp_colon_to_slash(strip_credentials(value)));
     let value = value.trim_end_matches('/');
     let value = value.strip_suffix(".git").unwrap_or(value);
     match value.split_once('/') {

@@ -61,7 +61,7 @@ fn collect_records(
             continue;
         };
         let rows = session.rows(&statement)?;
-        exported.record(table.name, spec::ids_of(table, &rows));
+        exported = exported.record(table.name, spec::ids_of(table, &rows));
         for row in &rows {
             lines.push(spec::export_line(table, row)?);
         }

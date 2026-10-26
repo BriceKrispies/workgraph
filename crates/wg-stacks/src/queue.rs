@@ -3,8 +3,9 @@
 //! and `item_rows`, `_sequence` and `_settled` in `integrations/git/stack_verification.py`.
 //! Database reads and job enqueueing stay in the shell; these functions take the rows as values.
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
+use rpds::HashTrieMap;
 use serde_json::{Map, Value};
 use wg_types::{StackItemState, TaskPriority};
 
@@ -35,27 +36,50 @@ impl ItemDetail {
             Some(Ok(Value::Object(map))) => map,
             _ => Map::new(),
         };
-        let mut detail = ItemDetail::default();
-        for (key, value) in parsed {
-            match (key.as_str(), value) {
-                ("merges", Value::Object(map)) => detail.merges = map,
-                ("conflicts", Value::Object(map)) => detail.conflicts = map,
-                ("merges" | "conflicts", _) => {}
-                (_, value) => {
-                    detail.other.insert(key, value);
-                }
-            }
+        let object_or_empty = |key: &str| match parsed.get(key) {
+            Some(Value::Object(map)) => map.clone(),
+            _ => Map::new(),
+        };
+        let merges = object_or_empty("merges");
+        let conflicts = object_or_empty("conflicts");
+        let other = parsed
+            .iter()
+            .filter(|(key, _)| !matches!(key.as_str(), "merges" | "conflicts"))
+            .map(|(key, value)| (key.clone(), value.clone()))
+            .collect();
+        ItemDetail {
+            other,
+            merges,
+            conflicts,
         }
-        detail
     }
 
     /// The detail as a JSON object with `merges` and `conflicts` always present. The shell
     /// serialises it with sorted keys (`dump_detail`).
     pub fn to_value(&self) -> Value {
-        let mut map = self.other.clone();
-        map.insert("merges".into(), Value::Object(self.merges.clone()));
-        map.insert("conflicts".into(), Value::Object(self.conflicts.clone()));
-        Value::Object(map)
+        // Keys already in `other` keep their place, as an insert would leave them; the two
+        // sections not in `other` follow in that order.
+        let section = |key: &str| {
+            Value::Object(if key == "merges" {
+                self.merges.clone()
+            } else {
+                self.conflicts.clone()
+            })
+        };
+        let entries = self
+            .other
+            .iter()
+            .map(|(key, value)| match key.as_str() {
+                "merges" | "conflicts" => (key.clone(), section(key.as_str())),
+                _ => (key.clone(), value.clone()),
+            })
+            .chain(
+                ["merges", "conflicts"]
+                    .into_iter()
+                    .filter(|key| !self.other.contains_key(*key))
+                    .map(|key| (key.to_owned(), section(key))),
+            );
+        Value::Object(entries.collect())
     }
 }
 
@@ -72,15 +96,24 @@ pub struct QueueItem {
 
 /// `item_rows` order: `ORDER BY merge_order IS NULL, merge_order, Task.number`.
 pub fn ordered_items(items: &[QueueItem]) -> Vec<&QueueItem> {
-    let mut sorted: Vec<&QueueItem> = items.iter().collect();
-    sorted.sort_by_key(|item| {
-        (
-            item.merge_order.is_none(),
-            item.merge_order.unwrap_or(0),
-            item.number,
-        )
-    });
-    sorted
+    // The position is part of the key, so equal sort keys keep their input order (a stable sort).
+    items
+        .iter()
+        .enumerate()
+        .map(|(index, item)| {
+            (
+                (
+                    item.merge_order.is_none(),
+                    item.merge_order.unwrap_or(0),
+                    item.number,
+                    index,
+                ),
+                item,
+            )
+        })
+        .collect::<BTreeMap<_, _>>()
+        .into_values()
+        .collect()
 }
 
 /// `_sequence`: keys of the items whose merges are on the integration branch, in merge order.
@@ -138,57 +171,76 @@ pub fn next_due(
         .iter()
         .map(|i| (i.task_id.as_str(), i.state))
         .collect();
-    let mut prerequisites: HashMap<&str, Vec<&str>> = HashMap::new();
-    for (dependent, prerequisite) in edges {
-        if states.contains_key(dependent.as_str()) && states.contains_key(prerequisite.as_str()) {
-            prerequisites
-                .entry(dependent)
-                .or_default()
-                .push(prerequisite);
-        }
-    }
-    let mut depths: HashMap<&str, i64> = HashMap::new();
-    items
+    let in_stack: Vec<(&str, &str)> = edges
+        .iter()
+        .filter(|(dependent, prerequisite)| {
+            states.contains_key(dependent.as_str()) && states.contains_key(prerequisite.as_str())
+        })
+        .map(|(dependent, prerequisite)| (dependent.as_str(), prerequisite.as_str()))
+        .collect();
+    let due = items
         .iter()
         .filter(|i| i.state == S::Ready && !processed.contains(&i.id))
         .filter(|i| {
-            prerequisites.get(i.task_id.as_str()).is_none_or(|ps| {
-                ps.iter()
-                    .all(|p| matches!(states[p], S::Merged | S::Verified))
-            })
-        })
-        .map(|i| {
-            let depth = depth_of(&i.task_id, &prerequisites, &mut depths, 0);
-            (
+            prerequisites_of(&in_stack, &i.task_id)
+                .iter()
+                .all(|p| matches!(states[p], S::Merged | S::Verified))
+        });
+    // The depth memo is threaded through the fold, so each task's depth is computed once.
+    let (_, best) = due.fold(
+        (HashTrieMap::new(), None),
+        |(memo, best): (HashTrieMap<&str, i64>, Option<DueKey>), i| {
+            let (depth, memo) = depth_of(&i.task_id, &in_stack, memo, 0);
+            let candidate = (
                 (depth, priority_rank(i.priority), i.updated_at, i.number),
                 i.id.clone(),
-            )
-        })
-        .min()
-        .map(|(_, id)| id)
+            );
+            let best = match best {
+                Some(current) if current <= candidate => Some(current),
+                _ => Some(candidate),
+            };
+            (memo, best)
+        },
+    );
+    best.map(|(_, id)| id)
+}
+
+/// The sort key of a due candidate, with its item id: the smallest one wins.
+type DueKey = ((i64, i64, i64, i64), String);
+
+/// The prerequisites of `task` among the in-stack edges, in edge order.
+fn prerequisites_of<'a>(edges: &[(&'a str, &'a str)], task: &str) -> Vec<&'a str> {
+    edges
+        .iter()
+        .filter(|(dependent, _)| *dependent == task)
+        .map(|(_, prerequisite)| *prerequisite)
+        .collect()
 }
 
 /// Dependency depth: 0 without prerequisites, else one more than the deepest prerequisite.
-/// `guard` stops a dependency cycle from recursing forever (the Python would overflow).
+/// `guard` stops a dependency cycle from recursing forever (the Python would overflow). Returns
+/// the depth with the memo extended by every depth computed on the way.
 fn depth_of<'a>(
     task: &'a str,
-    prerequisites: &HashMap<&'a str, Vec<&'a str>>,
-    depths: &mut HashMap<&'a str, i64>,
+    edges: &[(&'a str, &'a str)],
+    memo: HashTrieMap<&'a str, i64>,
     guard: usize,
-) -> i64 {
-    if let Some(d) = depths.get(task) {
-        return *d;
+) -> (i64, HashTrieMap<&'a str, i64>) {
+    if let Some(depth) = memo.get(task) {
+        return (*depth, memo);
     }
-    let depth = match prerequisites.get(task) {
-        Some(ps) if !ps.is_empty() && guard < 10_000 => {
-            1 + ps
-                .iter()
-                .map(|p| depth_of(p, prerequisites, depths, guard + 1))
-                .max()
-                .unwrap_or(0)
-        }
-        _ => 0,
+    let prerequisites = prerequisites_of(edges, task);
+    let (depth, memo) = if !prerequisites.is_empty() && guard < 10_000 {
+        let (deepest, memo) = prerequisites.iter().fold(
+            (None, memo),
+            |(deepest, memo): (Option<i64>, HashTrieMap<&'a str, i64>), prerequisite| {
+                let (depth, memo) = depth_of(prerequisite, edges, memo, guard + 1);
+                (Some(deepest.map_or(depth, |d| d.max(depth))), memo)
+            },
+        );
+        (1 + deepest.unwrap_or(0), memo)
+    } else {
+        (0, memo)
     };
-    depths.insert(task, depth);
-    depth
+    (depth, memo.insert(task, depth))
 }

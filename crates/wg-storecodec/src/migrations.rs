@@ -184,14 +184,16 @@ pub const INSERT_TASK_LINK: &str = "INSERT INTO task_links (id, task_id, kind, p
 /// skipped; so is a repeated `system:id`.
 ///
 /// `tasks` is `(task id, external_refs text)` in table order. The task id is copied as text, as
-/// Python copies it (fixture databases hold ids that are not UUIDs). `new_id` supplies the link
-/// ids (the shell generates them, as everywhere else) and `now` stamps both timestamps.
+/// Python copies it (fixture databases hold ids that are not UUIDs). `ids` supplies the link ids
+/// in statement order (the shell generates them, as everywhere else; it must be endless or hold
+/// one id per link) and `now` stamps both timestamps.
 pub fn external_ref_links(
     tasks: &[(String, Option<String>)],
     now: Timestamp,
-    new_id: &mut dyn FnMut() -> Id,
+    ids: impl IntoIterator<Item = Id>,
 ) -> Result<Vec<Statement>, WgError> {
     let stamp = now.format_db();
+    let mut ids = ids.into_iter();
     let mut statements = Vec::new();
     for (task_id, raw) in tasks {
         let refs = match raw.as_deref() {
@@ -224,10 +226,16 @@ pub fn external_ref_links(
             if system.is_empty() || ref_id.is_empty() || !seen.insert(normalized.clone()) {
                 continue;
             }
+            let Some(link_id) = ids.next() else {
+                return Err(WgError::new(
+                    ErrorCode::WorkgraphError,
+                    "external_ref_links ran out of link ids",
+                ));
+            };
             statements.push(Statement {
                 sql: INSERT_TASK_LINK.to_owned(),
                 params: vec![
-                    Raw::Text(new_id().to_string()),
+                    Raw::Text(link_id.to_string()),
                     Raw::Text(task_id.clone()),
                     Raw::Text("external_ref".to_owned()),
                     Raw::Text(system),

@@ -4,6 +4,8 @@
 //! The shell runs the lookups (by checkout path, by fingerprint, by normalised remote) and passes
 //! their results in; this module decides which result wins and what name a new repository gets.
 
+use std::collections::BTreeSet;
+
 use wg_model::py_repr_str;
 use wg_types::{ErrorCode, Id, WgError};
 
@@ -29,13 +31,11 @@ impl MatchedBy {
 /// The identity fingerprint of a history: its root-commit SHAs, sorted, unique and joined with
 /// commas. `None` when there are no root commits (an empty repository).
 pub fn fingerprint(root_commits: &[String]) -> Option<String> {
-    let mut roots: Vec<&str> = root_commits.iter().map(String::as_str).collect();
-    roots.sort_unstable();
-    roots.dedup();
+    let roots: BTreeSet<&str> = root_commits.iter().map(String::as_str).collect();
     if roots.is_empty() {
         None
     } else {
-        Some(roots.join(","))
+        Some(roots.into_iter().collect::<Vec<_>>().join(","))
     }
 }
 
@@ -85,12 +85,16 @@ pub fn new_repository_name(
             ),
         ));
     }
-    let mut suffix = 2_u32;
-    loop {
-        let candidate = format!("{name}-{suffix}");
-        if !taken.contains(&candidate.as_str()) {
-            return Ok(candidate);
-        }
-        suffix += 1;
-    }
+    (2_u32..)
+        .map(|suffix| format!("{name}-{suffix}"))
+        .find(|candidate| !taken.contains(&candidate.as_str()))
+        .ok_or_else(|| {
+            WgError::new(
+                ErrorCode::Conflict,
+                format!(
+                    "repository name {} is already registered",
+                    py_repr_str(name)
+                ),
+            )
+        })
 }

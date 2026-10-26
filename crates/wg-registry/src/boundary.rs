@@ -7,6 +7,8 @@
 //! module compares them lexically. `\` is a separator, as on Windows. A path with a drive letter
 //! is compared case-insensitively, as Windows paths are.
 
+use std::iter::once;
+
 use serde_json::Value;
 use wg_model::{JsonObject, py_repr_str};
 use wg_types::{ErrorCode, WgError};
@@ -51,21 +53,18 @@ fn split_root(path: &str) -> (String, &str) {
 fn lexical(path: &str) -> Lexical {
     let slashed = path.replace('\\', "/");
     let (root, rest) = split_root(&slashed);
-    let mut parts: Vec<String> = Vec::new();
-    for part in rest.split('/') {
-        match part {
-            "" | "." => {}
+    let parts = rest
+        .split('/')
+        .fold(Vec::new(), |parts: Vec<String>, part| match part {
+            "" | "." => parts,
             ".." => match parts.last() {
-                Some(last) if last != ".." => {
-                    parts.pop();
-                }
+                Some(last) if last != ".." => parts[..parts.len() - 1].to_vec(),
                 // Above an anchored root there is nothing further up; the root stays.
-                _ if !root.is_empty() => {}
-                _ => parts.push("..".to_owned()),
+                _ if !root.is_empty() => parts,
+                _ => parts.into_iter().chain(once("..".to_owned())).collect(),
             },
-            other => parts.push(other.to_owned()),
-        }
-    }
+            other => parts.into_iter().chain(once(other.to_owned())).collect(),
+        });
     Lexical { root, parts }
 }
 

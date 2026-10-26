@@ -86,7 +86,7 @@ fn external_refs_yield_one_link_per_distinct_system_and_id() -> TestResult {
         {"system": "github", "id": 7, "url": null}
     ]"#;
     let tasks = [(TASK.to_owned(), Some(raw.to_owned()))];
-    let statements = external_ref_links(&tasks, now()?, &mut counter())?;
+    let statements = external_ref_links(&tasks, now()?, std::iter::repeat_with(counter()))?;
     assert_eq!(
         links(&statements),
         [
@@ -124,15 +124,15 @@ fn empty_and_non_list_refs_yield_nothing() -> TestResult {
             Some(r#"{"system": "github", "id": "1"}"#.to_owned()),
         ),
     ];
-    assert!(external_ref_links(&tasks, now()?, &mut counter())?.is_empty());
+    assert!(external_ref_links(&tasks, now()?, std::iter::repeat_with(counter()))?.is_empty());
     Ok(())
 }
 
 #[test]
 fn malformed_refs_fail_the_migration() -> TestResult {
     let tasks = [(TASK.to_owned(), Some("[oops".to_owned()))];
-    assert!(external_ref_links(&tasks, now()?, &mut counter()).is_err());
+    assert!(external_ref_links(&tasks, now()?, std::iter::repeat_with(counter())).is_err());
     let tasks = [(TASK.to_owned(), Some("7".to_owned()))];
-    assert!(external_ref_links(&tasks, now()?, &mut counter()).is_err());
+    assert!(external_ref_links(&tasks, now()?, std::iter::repeat_with(counter())).is_err());
     Ok(())
 }

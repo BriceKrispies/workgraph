@@ -53,7 +53,7 @@ fn external_ref_links_of(session: &mut Session<'_>) -> Result<Vec<Statement>, Wg
         )))
         .and_then(|rows| rows.collect::<Result<Vec<_>, _>>()))?;
     let now = Timestamp::from_offset_datetime(OffsetDateTime::now_utc())?;
-    external_ref_links(&tasks, now, &mut Uuid::new_v4)
+    external_ref_links(&tasks, now, std::iter::repeat_with(Uuid::new_v4))
 }
 
 /// Runs a revision's data step, returning the statements that write its rows. They run after the

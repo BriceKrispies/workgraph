@@ -14,6 +14,7 @@
 
 mod migrate;
 mod session;
+mod tasks;
 
 use std::path::PathBuf;
 use std::time::Duration;

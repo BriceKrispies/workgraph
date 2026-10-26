@@ -12,6 +12,7 @@ pub mod query;
 pub mod rows;
 mod rows_more;
 pub mod sql;
+pub mod task_sql;
 
 pub use codec::{Cols, DbFailure, Raw, db_error};
 pub use events::{EVENT_COLUMNS, EventQuery, EventRecord, append_statement, decode_event};

@@ -718,6 +718,11 @@ version = "0.1.0"
 [[package]]
 name = "wg-exec"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-tasks",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-experiments"

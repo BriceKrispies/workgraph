@@ -227,6 +227,7 @@ impl Session<'_> {
             TaskProject,
             TaskRepository,
             ExternalItem,
+            TaskDecision,
             Commit,
             CommitFileChange,
             CommitSymbol,

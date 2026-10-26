@@ -1,5 +1,5 @@
 {
-  "count": 129,
+  "count": 132,
   "events": {
     "agent_session.bound": {
       "data_keys": [
@@ -1273,6 +1273,45 @@
         "status",
         "tags",
         "title"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.decision_chosen": {
+      "data_keys": [
+        "decision_id",
+        "key",
+        "question",
+        "version"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.decision_requested": {
+      "data_keys": [
+        "decision_id",
+        "key",
+        "question",
+        "version"
+      ],
+      "data_open": false,
+      "entity_types": [
+        "task"
+      ],
+      "optional_data_keys": []
+    },
+    "task.decision_withdrawn": {
+      "data_keys": [
+        "decision_id",
+        "key",
+        "question",
+        "version"
       ],
       "data_open": false,
       "entity_types": [

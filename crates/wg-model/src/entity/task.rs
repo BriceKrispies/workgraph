@@ -262,6 +262,12 @@ impl TaskRepository {
     }
 }
 
+impl TaskDecision {
+    pub fn row_key(&self) -> RowKey {
+        RowKey::TaskDecision(self.id)
+    }
+}
+
 impl ExternalItem {
     pub fn row_key(&self) -> RowKey {
         RowKey::ExternalItem(self.id)
@@ -319,6 +325,12 @@ impl From<TaskProject> for Row {
 impl From<TaskRepository> for Row {
     fn from(row: TaskRepository) -> Self {
         Row::TaskRepository(row)
+    }
+}
+
+impl From<TaskDecision> for Row {
+    fn from(row: TaskDecision) -> Self {
+        Row::TaskDecision(row)
     }
 }
 

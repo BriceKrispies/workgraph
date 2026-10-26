@@ -211,3 +211,15 @@ pub struct TaskChangeSurfaceComputed {
     pub insertions: i64,
     pub deletions: i64,
 }
+
+/// `task.decision_requested`, `task.decision_chosen` and `task.decision_withdrawn`: the decision
+/// the event is about. `question` is the first 500 characters; `version` is the decision's version
+/// after the change.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct TaskDecisionChanged {
+    #[serde(serialize_with = "ser::task_key")]
+    pub key: TaskKey,
+    pub decision_id: Id,
+    pub question: String,
+    pub version: i64,
+}

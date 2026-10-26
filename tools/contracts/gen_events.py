@@ -53,6 +53,18 @@ MANUAL: dict[str, dict[str, Any]] = {
         "entity_types": ["attempt"],
         "data_keys": ["duration_ms", "error", "exit_code", "exit_reason", "from", "status", "task_id"],
     },
+    "task.decision_requested": {
+        "entity_types": ["task"],
+        "data_keys": ["decision_id", "key", "question", "version"],
+    },
+    "task.decision_chosen": {
+        "entity_types": ["task"],
+        "data_keys": ["decision_id", "key", "question", "version"],
+    },
+    "task.decision_withdrawn": {
+        "entity_types": ["task"],
+        "data_keys": ["decision_id", "key", "question", "version"],
+    },
     "task.comment_added": {
         "entity_types": ["task"],
         "data_keys": ["comment_id", "excerpt", "kind"],

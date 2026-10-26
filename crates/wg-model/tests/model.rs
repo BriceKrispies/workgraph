@@ -13,10 +13,10 @@ use wg_model::event::{
     RepositoryCheckoutLost, RepositoryCheckoutRemoved, RepositoryDependencyDeclared,
     RepositoryHealthChanged, RepositoryRemoved, RepositoryUpdated, TaskAccepted,
     TaskChangeSurfaceComputed, TaskClaimed, TaskCommentRecorded, TaskCommitLinked,
-    TaskCommitUnlinked, TaskCompleted, TaskCreated, TaskDecomposed, TaskDependencyChanged,
-    TaskEscalated, TaskKeyed, TaskRejected, TaskRelationAdded, TaskReleased, TaskReopened,
-    TaskRepositoryLinked, TaskRepositoryUnlinked, TaskStatusChanged, TaskSynced, TaskUpdated,
-    WorkspaceArchived, WorkspaceCreated, WorkspaceSettingsChanged,
+    TaskCommitUnlinked, TaskCompleted, TaskCreated, TaskDecisionChanged, TaskDecomposed,
+    TaskDependencyChanged, TaskEscalated, TaskKeyed, TaskRejected, TaskRelationAdded, TaskReleased,
+    TaskReopened, TaskRepositoryLinked, TaskRepositoryUnlinked, TaskStatusChanged, TaskSynced,
+    TaskUpdated, WorkspaceArchived, WorkspaceCreated, WorkspaceSettingsChanged,
 };
 use wg_model::{
     Changes, Decision, EventDraft, EventPayload, IdSeq, JsonObject, RowKey, Stamp, StrMap, Table,
@@ -250,6 +250,15 @@ fn changes() -> Changes {
     Changes::new().with("title", json!("old"), json!("new"))
 }
 
+fn decision() -> TaskDecisionChanged {
+    TaskDecisionChanged {
+        key: key("WG-1"),
+        decision_id: id(4),
+        question: "Ship it?".into(),
+        version: 1,
+    }
+}
+
 fn key(text: &str) -> TaskKey {
     ok(TaskKey::parse(text))
 }
@@ -456,6 +465,9 @@ fn samples() -> Vec<EventPayload> {
             insertions: 10,
             deletions: 2,
         }),
+        EventPayload::TaskDecisionRequested(decision()),
+        EventPayload::TaskDecisionChosen(decision()),
+        EventPayload::TaskDecisionWithdrawn(decision()),
     ]
 }
 
@@ -502,7 +514,7 @@ fn every_family_event_of_the_contract_has_a_payload() -> TestResult {
         .copied()
         .filter(|name| families.iter().any(|family| name.starts_with(family)))
         .collect();
-    assert_eq!(core_known.len(), 43);
+    assert_eq!(core_known.len(), 46);
     let sampled: BTreeSet<&str> = samples().iter().map(EventPayload::event_type).collect();
     assert_eq!(sampled, core_known, "every event type has a sample");
     Ok(())
@@ -758,14 +770,14 @@ fn decisions_compose_in_order() {
 
 #[test]
 fn table_names_are_schema_tables() -> TestResult {
-    let schema = std::fs::read_to_string(repo_root().join("contracts/schema-0010.sql"))?;
+    let schema = std::fs::read_to_string(repo_root().join("contracts/schema-0011.sql"))?;
     let names: BTreeSet<&str> = Table::ALL.iter().map(|table| table.name()).collect();
     assert_eq!(names.len(), Table::ALL.len());
     for name in names {
         let quoted = format!("CREATE TABLE \"{name}\" (");
         assert!(
             schema.contains(&format!("CREATE TABLE {name} (")) || schema.contains(&quoted),
-            "{name} is not a table of schema 0010"
+            "{name} is not a table of schema 0011"
         );
     }
     Ok(())

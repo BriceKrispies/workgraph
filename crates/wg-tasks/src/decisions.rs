@@ -8,8 +8,10 @@
 //!
 //! The waiting tags ([`CLEARED_TAGS`]) are dropped once none of the task's decisions is open.
 
-use serde_json::{Map, Value, json};
+use serde_json::{Map, json};
+use wg_model::EventPayload;
 use wg_model::entity::{DecisionOption, TaskComment, TaskDecision};
+use wg_model::event::{TaskCommentRecorded, TaskDecisionChanged};
 use wg_model::stamp::{Stamp, py_repr_str};
 use wg_model::{Task, TaskSlice};
 use wg_types::{CommentKind, ErrorCode, Permission, WgError};
@@ -30,10 +32,6 @@ pub const MAX_OPTIONS: usize = 26;
 /// Characters of the question kept in a decision event's payload.
 pub const EVENT_QUESTION_CHARS: usize = 500;
 
-pub const EVENT_REQUESTED: &str = "task.decision_requested";
-pub const EVENT_CHOSEN: &str = "task.decision_chosen";
-pub const EVENT_WITHDRAWN: &str = "task.decision_withdrawn";
-
 /// One option as the caller gives it. `id` of `None` (or empty) is filled from the position.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct OptionInput {
@@ -51,11 +49,10 @@ pub struct Answer<'a> {
     pub note: Option<&'a str>,
 }
 
-/// An event the shell appends, in the order the plan lists it. `data` is the payload.
-#[derive(Debug, Clone, PartialEq)]
+/// An event the shell appends, in the order the plan lists it. The payload names its event type.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PlannedEvent {
-    pub event_type: &'static str,
-    pub data: Value,
+    pub payload: EventPayload,
 }
 
 /// What a decision change writes. The shell applies it in one transaction, in this order:
@@ -148,7 +145,7 @@ pub fn plan_request(
         updated_at: stamp.at,
         version: 1,
     };
-    let event = decision_event(EVENT_REQUESTED, task, &decision);
+    let event = decision_event(EventPayload::TaskDecisionRequested, task, &decision);
     let tags = if has_tag(tasks, task, NEEDS_DECISION_TAG) {
         None
     } else {
@@ -244,7 +241,11 @@ pub fn plan_choose(
         body.push_str(&format!("\n\nNote: {note}"));
     }
     let (comment, mut events) = comment_plan(stamp, task, body);
-    events.push(decision_event(EVENT_CHOSEN, task, &next));
+    events.push(decision_event(
+        EventPayload::TaskDecisionChosen,
+        task,
+        &next,
+    ));
     let tags = release(stamp, tasks, task, decisions, &next)?;
     Ok(DecisionPlan {
         decision: next,
@@ -284,7 +285,11 @@ pub fn plan_withdraw(
         body.push_str(&format!("\n\nReason: {reason}"));
     }
     let (comment, mut events) = comment_plan(stamp, task, body);
-    events.push(decision_event(EVENT_WITHDRAWN, task, &next));
+    events.push(decision_event(
+        EventPayload::TaskDecisionWithdrawn,
+        task,
+        &next,
+    ));
     let tags = release(stamp, tasks, task, decisions, &next)?;
     Ok(DecisionPlan {
         decision: next,
@@ -322,31 +327,33 @@ fn comment_plan(stamp: &Stamp, task: &Task, body: String) -> (TaskComment, Vec<P
         created_at: stamp.at,
     };
     let event = PlannedEvent {
-        event_type: comments::event_type(CommentKind::Comment),
-        data: comments::comment_event_data(
-            comment.id,
-            CommentKind::Comment,
-            &comment.body,
-            &Map::new(),
-        ),
+        payload: EventPayload::TaskCommentAdded(TaskCommentRecorded {
+            comment_id: comment.id,
+            kind: CommentKind::Comment,
+            excerpt: comments::excerpt(&comment.body),
+            extra: Map::new(),
+        }),
     };
     (comment, vec![event])
 }
 
 /// The payload of a decision event. `question` is cut to [`EVENT_QUESTION_CHARS`] characters.
-fn decision_event(event_type: &'static str, task: &Task, decision: &TaskDecision) -> PlannedEvent {
+fn decision_event(
+    payload: fn(TaskDecisionChanged) -> EventPayload,
+    task: &Task,
+    decision: &TaskDecision,
+) -> PlannedEvent {
     let question: String = decision
         .question
         .chars()
         .take(EVENT_QUESTION_CHARS)
         .collect();
     PlannedEvent {
-        event_type,
-        data: json!({
-            "key": task.key.to_string(),
-            "decision_id": decision.id.to_string(),
-            "question": question,
-            "version": decision.version,
+        payload: payload(TaskDecisionChanged {
+            key: task.key.clone(),
+            decision_id: decision.id,
+            question,
+            version: decision.version,
         }),
     }
 }

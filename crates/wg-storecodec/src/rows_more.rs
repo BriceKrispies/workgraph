@@ -9,15 +9,32 @@ use wg_model::{Row, RowKey, Table};
 use wg_types::WgError;
 
 use crate::codec::{
-    Cols, Raw, blob_sql, bool_sql, id_sql, object_sql, objects_sql, opt_id_sql, opt_int_sql,
-    opt_object_sql, opt_real_sql, opt_text_sql, opt_ts_sql, real_sql, strings_sql, text_sql,
-    ts_sql, values_sql,
+    Cols, Raw, blob_sql, bool_sql, decision_options_sql, id_sql, object_sql, objects_sql,
+    opt_id_sql, opt_int_sql, opt_object_sql, opt_real_sql, opt_text_sql, opt_ts_sql, real_sql,
+    strings_sql, text_sql, ts_sql, values_sql,
 };
 use crate::rows::TableRow;
 
 /// Columns of the tables beyond the first 18, in schema order; empty for those 18.
 pub(crate) const fn columns_more(table: Table) -> &'static [&'static str] {
     match table {
+        Table::TaskDecision => &[
+            "id",
+            "workspace_id",
+            "task_id",
+            "question",
+            "options",
+            "status",
+            "chosen_option_id",
+            "other_text",
+            "note",
+            "decided_by",
+            "decided_at",
+            "created_by",
+            "created_at",
+            "updated_at",
+            "version",
+        ],
         Table::Commit => &[
             "id",
             "repository_id",
@@ -690,7 +707,8 @@ pub(crate) const fn primary_key_more(table: Table) -> &'static [&'static str] {
 /// Primary-key values of keys of the tables beyond the first 18; empty for those 18.
 pub(crate) fn key_values_more(key: &RowKey) -> Vec<Raw> {
     match key {
-        RowKey::Commit(id)
+        RowKey::TaskDecision(id)
+        | RowKey::Commit(id)
         | RowKey::CommitFileChange(id)
         | RowKey::CommitSymbol(id)
         | RowKey::CommitAnalysis(id)
@@ -766,6 +784,7 @@ pub(crate) fn key_values_more(key: &RowKey) -> Vec<Raw> {
 /// Bound parameters of rows of the tables beyond the first 18; empty for those 18.
 pub(crate) fn row_values_more(row: &Row) -> Result<Vec<Raw>, WgError> {
     match row {
+        Row::TaskDecision(row) => row.values(),
         Row::Commit(row) => row.values(),
         Row::CommitFileChange(row) => row.values(),
         Row::CommitSymbol(row) => row.values(),
@@ -830,6 +849,50 @@ pub(crate) fn row_values_more(row: &Row) -> Result<Vec<Raw>, WgError> {
         | Row::TaskProject(_)
         | Row::TaskRepository(_)
         | Row::ExternalItem(_) => Ok(Vec::new()),
+    }
+}
+
+impl TableRow for TaskDecision {
+    const TABLE: Table = Table::TaskDecision;
+
+    fn values(&self) -> Result<Vec<Raw>, WgError> {
+        Ok(vec![
+            id_sql(self.id),
+            id_sql(self.workspace_id),
+            id_sql(self.task_id),
+            text_sql(&self.question),
+            decision_options_sql(&self.options)?,
+            text_sql(&self.status),
+            opt_text_sql(&self.chosen_option_id),
+            opt_text_sql(&self.other_text),
+            opt_text_sql(&self.note),
+            opt_text_sql(&self.decided_by),
+            opt_ts_sql(self.decided_at),
+            text_sql(&self.created_by),
+            ts_sql(self.created_at),
+            ts_sql(self.updated_at),
+            Raw::Int(self.version),
+        ])
+    }
+
+    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
+        Ok(TaskDecision {
+            id: c.id("id")?,
+            workspace_id: c.id("workspace_id")?,
+            task_id: c.id("task_id")?,
+            question: c.text("question")?,
+            options: c.decision_options("options")?,
+            status: c.text("status")?,
+            chosen_option_id: c.opt_text("chosen_option_id")?,
+            other_text: c.opt_text("other_text")?,
+            note: c.opt_text("note")?,
+            decided_by: c.opt_text("decided_by")?,
+            decided_at: c.opt_ts("decided_at")?,
+            created_by: c.text("created_by")?,
+            created_at: c.ts("created_at")?,
+            updated_at: c.ts("updated_at")?,
+            version: c.int("version")?,
+        })
     }
 }
 

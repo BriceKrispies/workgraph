@@ -1,0 +1,19 @@
+{
+  "id": "git-shared-repository-projects",
+  "covers": ["C109", "C116", "C118"],
+  "setup": [
+    {"git": "init", "repo": "shared-sdk"},
+    {"git": "commit", "repo": "shared-sdk", "files": {"README.md": "sdk\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:shared-sdk}"], "json": true},
+    {"cli": ["project", "create", "alpha", "--name", "Alpha", "--repo", "shared-sdk"], "json": true},
+    {"cli": ["project", "create", "beta", "--name", "Beta", "--repo", "shared-sdk"], "json": true},
+    {"cli": ["repo", "list", "--project", "alpha"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "shared-sdk"}}},
+    {"cli": ["repo", "list", "--project", "beta"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "shared-sdk"}}}
+  ],
+  "not_observable": []
+}

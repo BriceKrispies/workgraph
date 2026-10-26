@@ -1,0 +1,23 @@
+{
+  "id": "git-deep-checkout-sync",
+  "covers": ["C092", "C095", "C118"],
+  "setup": [
+    {"git": "init", "repo": "deep-nested-checkout-segment-segment-segment-segment-segment-segment-segment-segment"},
+    {"git": "commit", "repo": "deep-nested-checkout-segment-segment-segment-segment-segment-segment-segment-segment", "files": {"README.md": "base\n"}, "message": "initial"},
+    {"git": "commit", "repo": "deep-nested-checkout-segment-segment-segment-segment-segment-segment-segment-segment", "files": {"a.txt": "a\n"}, "message": "second"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:deep-nested-checkout-segment-segment-segment-segment-segment-segment-segment-segment}"], "json": true},
+    {"cli": ["git", "sync", "deep-nested-checkout-segment-segment-segment-segment-segment-segment-segment-segment"], "json": true},
+    {"assert": {"json": {"path": "/0/new_commits", "equals": 2}}},
+    {"cli": ["git", "log", "deep-nested-checkout-segment-segment-segment-segment-segment-segment-segment-segment"], "json": true},
+    {"assert": {"json": {"path": "/items/0/subject", "equals": "second"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_git.py::test_revision_ranges_work_in_deeply_nested_checkouts: the Python test calls the Git wrapper's rev-list with a base..head range directly, with the checkout path pushed past MAX_PATH so that path plus range exceeds 260 characters. The scenario syncs a checkout whose name is 84 characters, which is the observable effect, but the MAX_PATH condition is not reproduced: git init fails in setup when the sandbox root under TEMP plus the name is longer than 260 characters, and the runner does not choose the root",
+      "covered_by": "SH-15"
+    }
+  ]
+}

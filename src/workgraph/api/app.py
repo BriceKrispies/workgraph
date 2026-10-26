@@ -27,6 +27,7 @@ from workgraph.api.security import (
 from workgraph.app import Workgraph
 from workgraph.core.errors import WorkgraphError
 from workgraph.core.logging import get_logger
+from workgraph.security.permissions import Permission
 
 log = get_logger("api")
 
@@ -77,6 +78,7 @@ def create_app(
     port: int = 8765,
     with_mcp: bool = True,
     mcp_agent: str = "mcp-http-client",
+    mcp_permissions: frozenset[Permission] | None = None,
     lan: LanAccess | None = None,
 ) -> ASGIApp:
     token = app.api_token()
@@ -84,7 +86,7 @@ def create_app(
     if with_mcp:
         from workgraph.mcp.server import build_server
 
-        mcp_server = build_server(app, agent_name=mcp_agent)
+        mcp_server = build_server(app, agent_name=mcp_agent, permissions=mcp_permissions)
 
     @contextlib.asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncGenerator[None]:

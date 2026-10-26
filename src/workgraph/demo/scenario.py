@@ -40,6 +40,7 @@ from workgraph.core.models.schemas import (
     WorkspaceCreate,
 )
 from workgraph.demo import scripted_agent
+from workgraph.security.permissions import Permission
 
 REPOS: dict[str, dict[str, str]] = {
     "auth-service": {
@@ -657,12 +658,14 @@ def run_demo(home: Path, *, log: Callable[[str], None] = print) -> DemoReport:
     return report
 
 
-def _start_api(app: Workgraph, port: int) -> tuple[threading.Thread, Any]:
+def _start_api(
+    app: Workgraph, port: int, mcp_permissions: frozenset[Permission] | None = None
+) -> tuple[threading.Thread, Any]:
     import uvicorn
 
     from workgraph.api.app import create_app
 
-    asgi = create_app(app, host="127.0.0.1", port=port, with_mcp=True)
+    asgi = create_app(app, host="127.0.0.1", port=port, with_mcp=True, mcp_permissions=mcp_permissions)
     server = uvicorn.Server(uvicorn.Config(asgi, host="127.0.0.1", port=port, log_level="warning"))
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()

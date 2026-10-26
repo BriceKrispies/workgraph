@@ -141,7 +141,9 @@ fn gv07_hook_normalisation_matches_python() {
         let id = str_field(&case, "id");
         let from = "hook_payload.json cases";
         let config = cap(&case["config_values"]);
-        let normalised = normalise(&case["record"], config, "direct")
+        // The validated fields come from the golden case: Pydantic's validation is checked in wg-telemetryspec.
+        let validated = case["validated"].as_object().cloned().unwrap_or_default();
+        let normalised = normalise(&case["record"], &validated, config, "direct")
             .unwrap_or_else(|error| panic!("case {id} rejected: {error:?}"));
         check(
             id,
@@ -226,10 +228,11 @@ fn gv07_breakdown_matches_python() {
     for case in cases(&document, "breakdown") {
         let id = str_field(&case, "id");
         let records = case["records"].as_array().cloned().unwrap_or_default();
+        let offset = case["local_offset_seconds"].as_i64().unwrap_or(0) as i32;
         check(
             id,
             str_field(&case, "from"),
-            &breakdown(&records),
+            &breakdown(&records, offset),
             &case["expected"],
         );
     }
@@ -249,7 +252,8 @@ fn gv07_transcript_matches_python() {
                 .collect()
         });
         let sidecar = (!case["sidecar"].is_null()).then(|| case["sidecar"].to_string());
-        let stats = parse_transcript(lines.as_deref(), sidecar.as_deref());
+        // The transcript cases carry offset-aware timestamps only, so the local offset is not read.
+        let stats = parse_transcript(lines.as_deref(), sidecar.as_deref(), 0);
         let actual = stats.map_or(Value::Null, |stats| stats.to_json());
         if case["expected"].is_null() {
             assert!(

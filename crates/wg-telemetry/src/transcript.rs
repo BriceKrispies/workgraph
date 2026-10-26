@@ -234,10 +234,12 @@ fn tool_uses_of(number: usize, message_id: &str, content: Option<&Value>) -> Vec
 
 /// Parses a subagent transcript. `None` when the lines are missing (the file was absent or unreadable).
 /// `sidecar_text` is the `agent-<id>.meta.json` text when present; a sidecar that is not a JSON object
-/// contributes nothing.
+/// contributes nothing. `local_offset_seconds` is the local zone's offset for naive timestamps in the time
+/// breakdown.
 pub fn parse_transcript(
     lines: Option<&[String]>,
     sidecar_text: Option<&str>,
+    local_offset_seconds: i32,
 ) -> Option<TranscriptStats> {
     let lines = lines?;
     let parsed = records(lines);
@@ -364,7 +366,7 @@ pub fn parse_transcript(
         requested_model: text_field(&meta, "model"),
         description: text_field(&meta, "description"),
         agent_type: text_field(&meta, "agentType"),
-        time: breakdown(&all),
+        time: breakdown(&all, local_offset_seconds),
     })
 }
 

@@ -1,0 +1,23 @@
+{
+  "id": "analytics-retrospective-with-model-narrative",
+  "covers": ["C012", "C013", "C060", "C145", "C148", "C150", "C152", "C162"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "llm.summarization.provider", "\"heuristic\""], "json": true},
+    {"cli": ["config", "set", "llm.summarization.model", "\"heuristic-v1\""], "json": true},
+    {"cli": ["task", "create", "Done thing", "--ready"], "json": true},
+    {"cli": ["task", "claim", "WG-1"], "json": true},
+    {"cli": ["task", "complete", "WG-1", "--summary", "done"], "json": true},
+    {"cli": ["task", "accept", "WG-1", "--manual", "--reason", "ok"], "json": true},
+    {"cli": ["task", "create", "fix"], "json": true},
+    {"cli": ["task", "relate", "WG-2", "WG-1", "--type", "regression_of"], "json": true},
+    {"cli": ["analytics", "retrospective"], "json": true},
+    {"assert": {"json": {"path": "/narrative_source", "equals": "model:heuristic/heuristic-v1"}}},
+    {"assert": {"stdout_contains": "model-generated interpretation"}},
+    {"assert": {"json": {"path": "/facts/tasks/created", "equals": 2}}},
+    {"cli": ["analytics", "query", "regressions"], "json": true},
+    {"assert": {"json": {"path": "/rows/0/value", "equals": 1}}}
+  ],
+  "not_observable": []
+}

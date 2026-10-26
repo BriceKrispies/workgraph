@@ -1,0 +1,25 @@
+{
+  "id": "analytics-retrospective-model-unavailable-fallback",
+  "covers": ["C012", "C013", "C060", "C152"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "llm.providers.ollama.base_url", "\"http://127.0.0.1:9\""], "json": true},
+    {"cli": ["config", "set", "llm.providers.ollama.max_retries", "0"], "json": true},
+    {"cli": ["config", "set", "llm.providers.ollama.timeout_seconds", "1"], "json": true},
+    {"cli": ["config", "set", "llm.summarization.provider", "\"ollama\""], "json": true},
+    {"cli": ["config", "set", "llm.summarization.model", "\"qwen\""], "json": true},
+    {"cli": ["task", "create", "Flaky login", "--ready"], "json": true},
+    {"cli": ["analytics", "retrospective", "--days", "7"], "json": true},
+    {"assert": {"json": {"path": "/narrative_source", "equals": "deterministic"}}},
+    {"assert": {"stdout_contains": "Retrospective"}},
+    {"assert": {"stdout_contains": "Model narrative unavailable"}},
+    {"assert": {"json": {"path": "/facts/tasks/created", "equals": 1}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_analytics.py::test_failures_and_retrospective_fallback: the failures report, which must show a frequently_failing_test finding (three attempts linked to a failing verification check) and a retry_loop finding; the runner has no portable failing check command (the Python test uses sys.executable) and no step that starts or retries a run",
+      "covered_by": "GV-15"
+    }
+  ]
+}

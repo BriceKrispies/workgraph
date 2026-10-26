@@ -1,0 +1,327 @@
+{
+  "scenario": "analytics-throughput-and-agent-metrics",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Task 0\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Task 1\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:4|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Task 2\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:6|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Task 3\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:7|Z>\",\n  \"updated_at\": \"<ts:8|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-5\",\n  \"number\": 5,\n  \"title\": \"Task 4\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:9|Z>\",\n  \"updated_at\": \"<ts:10|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:1>\",\n  \"number\": 1,\n  \"status\": \"running\",\n  \"provider\": \"alpha\",\n  \"adapter\": \"alpha\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:11|Z>\",\n  \"queued_at\": \"<ts:11|Z>\",\n  \"started_at\": \"<ts:11|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:1>\",\n  \"number\": 1,\n  \"status\": \"succeeded\",\n  \"provider\": \"alpha\",\n  \"adapter\": \"alpha\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:11|Z>\",\n  \"queued_at\": \"<ts:11|Z>\",\n  \"started_at\": \"<ts:11|Z>\",\n  \"finished_at\": \"<ts:12|Z>\",\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": <dur>,\n  \"exit_reason\": \"reported\",\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:3>\",\n  \"number\": 1,\n  \"status\": \"running\",\n  \"provider\": \"alpha\",\n  \"adapter\": \"alpha\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:13|Z>\",\n  \"queued_at\": \"<ts:13|Z>\",\n  \"started_at\": \"<ts:13|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:3>\",\n  \"number\": 1,\n  \"status\": \"succeeded\",\n  \"provider\": \"alpha\",\n  \"adapter\": \"alpha\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:13|Z>\",\n  \"queued_at\": \"<ts:13|Z>\",\n  \"started_at\": \"<ts:13|Z>\",\n  \"finished_at\": \"<ts:14|Z>\",\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": <dur>,\n  \"exit_reason\": \"reported\",\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:4>\",\n  \"number\": 1,\n  \"status\": \"running\",\n  \"provider\": \"alpha\",\n  \"adapter\": \"alpha\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:15|Z>\",\n  \"queued_at\": \"<ts:15|Z>\",\n  \"started_at\": \"<ts:15|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:4>\",\n  \"number\": 1,\n  \"status\": \"succeeded\",\n  \"provider\": \"alpha\",\n  \"adapter\": \"alpha\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:15|Z>\",\n  \"queued_at\": \"<ts:15|Z>\",\n  \"started_at\": \"<ts:15|Z>\",\n  \"finished_at\": \"<ts:16|Z>\",\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": <dur>,\n  \"exit_reason\": \"reported\",\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:5>\",\n  \"number\": 1,\n  \"status\": \"running\",\n  \"provider\": \"beta\",\n  \"adapter\": \"beta\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:18|Z>\",\n  \"queued_at\": \"<ts:17|Z>\",\n  \"started_at\": \"<ts:17|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:5>\",\n  \"number\": 1,\n  \"status\": \"succeeded\",\n  \"provider\": \"beta\",\n  \"adapter\": \"beta\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:18|Z>\",\n  \"queued_at\": \"<ts:17|Z>\",\n  \"started_at\": \"<ts:17|Z>\",\n  \"finished_at\": \"<ts:19|Z>\",\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": <dur>,\n  \"exit_reason\": \"reported\",\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:11>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:6>\",\n  \"number\": 1,\n  \"status\": \"running\",\n  \"provider\": \"beta\",\n  \"adapter\": \"beta\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:21|Z>\",\n  \"queued_at\": \"<ts:20|Z>\",\n  \"started_at\": \"<ts:20|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:11>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:6>\",\n  \"number\": 1,\n  \"status\": \"succeeded\",\n  \"provider\": \"beta\",\n  \"adapter\": \"beta\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:21|Z>\",\n  \"queued_at\": \"<ts:20|Z>\",\n  \"started_at\": \"<ts:20|Z>\",\n  \"finished_at\": \"<ts:22|Z>\",\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": <dur>,\n  \"exit_reason\": \"reported\",\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:12>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:1>\",\n  \"number\": 2,\n  \"status\": \"running\",\n  \"provider\": \"alpha\",\n  \"adapter\": \"alpha\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:23|Z>\",\n  \"queued_at\": \"<ts:23|Z>\",\n  \"started_at\": \"<ts:23|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:12>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:1>\",\n  \"number\": 2,\n  \"status\": \"failed\",\n  \"provider\": \"alpha\",\n  \"adapter\": \"alpha\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": \"m1\",\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:23|Z>\",\n  \"queued_at\": \"<ts:23|Z>\",\n  \"started_at\": \"<ts:23|Z>\",\n  \"finished_at\": \"<ts:24|Z>\",\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": <dur>,\n  \"exit_reason\": \"reported\",\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 2,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Task 0\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"human:Brice\",\n  \"claim_expires_at\": \"<ts:42|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:25|Z>\",\n  \"started_at\": \"<ts:25|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Task 0\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:26|Z>\",\n  \"started_at\": \"<ts:25|Z>\",\n  \"completed_at\": \"<ts:26|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:13>\",\n  \"task_id\": \"<id:1>\",\n  \"attempt_id\": \"<id:7>\",\n  \"verification_run_id\": null,\n  \"decision\": \"accepted\",\n  \"mode\": \"manual\",\n  \"reason\": \"ok\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:27|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Task 1\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"human:Brice\",\n  \"claim_expires_at\": \"<ts:43|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:29|Z>\",\n  \"started_at\": \"<ts:28|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Task 1\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:30|Z>\",\n  \"started_at\": \"<ts:28|Z>\",\n  \"completed_at\": \"<ts:30|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:14>\",\n  \"task_id\": \"<id:3>\",\n  \"attempt_id\": \"<id:8>\",\n  \"verification_run_id\": null,\n  \"decision\": \"accepted\",\n  \"mode\": \"manual\",\n  \"reason\": \"ok\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:31|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Task 2\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"human:Brice\",\n  \"claim_expires_at\": \"<ts:44|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:33|Z>\",\n  \"started_at\": \"<ts:32|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Task 2\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:34|Z>\",\n  \"started_at\": \"<ts:32|Z>\",\n  \"completed_at\": \"<ts:34|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:15>\",\n  \"task_id\": \"<id:4>\",\n  \"attempt_id\": \"<id:9>\",\n  \"verification_run_id\": null,\n  \"decision\": \"accepted\",\n  \"mode\": \"manual\",\n  \"reason\": \"ok\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:35|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"tasks_created\",\n    \"family\": \"throughput\",\n    \"title\": \"Tasks created\",\n    \"definition\": \"Number of tasks created in the period.\",\n    \"unit\": \"tasks\",\n    \"statistic\": \"count\",\n    \"time_column\": \"created_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"query\": {\n    \"metric\": \"tasks_created\",\n    \"group_by\": [],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"value\": 5,\n      \"n\": 5\n    }\n  ],\n  \"sample_size\": 5,\n  \"provenance\": {\n    \"sql\": \"SELECT COUNT(*) AS value, COUNT(*) AS n FROM (\\n        SELECT tf.*, tf.workspace_id AS ws, tf.project_id AS project, tf.category AS category,\\n               tf.priority AS priority, tf.status AS status, tf.assigned_agent AS agent\\n        FROM task_facts tf WHERE tf.archived_at IS NULL\\n    ) WHERE ws = ? AND (TRUE) LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:36|db>\"\n  },\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"tasks_accepted\",\n    \"family\": \"throughput\",\n    \"title\": \"Tasks accepted\",\n    \"definition\": \"Tasks accepted (verified or manually accepted), by acceptance time.\",\n    \"unit\": \"tasks\",\n    \"statistic\": \"count\",\n    \"time_column\": \"accepted_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"query\": {\n    \"metric\": \"tasks_accepted\",\n    \"group_by\": [],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"value\": 3,\n      \"n\": 3\n    }\n  ],\n  \"sample_size\": 3,\n  \"provenance\": {\n    \"sql\": \"SELECT COUNT(*) AS value, COUNT(*) AS n FROM (\\n        SELECT tf.*, tf.workspace_id AS ws, tf.project_id AS project, tf.category AS category,\\n               tf.priority AS priority, tf.status AS status, tf.assigned_agent AS agent\\n        FROM task_facts tf WHERE tf.archived_at IS NULL\\n    ) WHERE ws = ? AND (accepted_at IS NOT NULL) LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:37|db>\"\n  },\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"agent_completion_rate\",\n    \"family\": \"agents\",\n    \"title\": \"Agent completion rate\",\n    \"definition\": \"Succeeded / finished top-level attempts, typically grouped by provider and model.\",\n    \"unit\": \"ratio\",\n    \"statistic\": \"ratio\",\n    \"time_column\": \"finished_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"model\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"provider\",\n      \"status\"\n    ],\n    \"caveats\": [\n      \"Agents receive different tasks; differences are not caused by the agent alone (selection bias).\"\n    ]\n  },\n  \"query\": {\n    \"metric\": \"agent_completion_rate\",\n    \"group_by\": [\n      \"provider\",\n      \"model\"\n    ],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"provider\": \"alpha\",\n      \"model\": \"m1\",\n      \"numerator\": 3,\n      \"denominator\": 4,\n      \"value\": 0.75,\n      \"n\": 4\n    },\n    {\n      \"provider\": \"beta\",\n      \"model\": \"m1\",\n      \"numerator\": 2,\n      \"denominator\": 2,\n      \"value\": 1.0,\n      \"n\": 2\n    }\n  ],\n  \"sample_size\": 6,\n  \"provenance\": {\n    \"sql\": \"SELECT provider, model, COUNT(*) FILTER (WHERE status = 'succeeded') AS numerator, COUNT(*) AS denominator, (COUNT(*) FILTER (WHERE status = 'succeeded'))::DOUBLE / NULLIF(COUNT(*), 0) AS value, COUNT(*) AS n FROM (\\n        SELECT af.*, af.workspace_id AS ws, af.project_id AS project, af.category AS category,\\n               af.priority AS priority, af.status AS status, af.provider AS provider, af.provider AS agent,\\n               COALESCE(af.model, '(unspecified)') AS model\\n        FROM attempt_facts af WHERE af.parent_attempt_id IS NULL\\n    ) WHERE ws = ? AND (status IN ('succeeded','failed','timed_out','cancelled','abandoned')) GROUP BY provider, model ORDER BY provider, model LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:38|db>\"\n  },\n  \"notes\": [\n    \"Agents receive different tasks; differences are not caused by the agent alone (selection bias).\",\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 33,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 34,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 35,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 36,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 37,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"first_pass_success\",\n    \"family\": \"execution\",\n    \"title\": \"First-pass success\",\n    \"definition\": \"Accepted tasks (with attempts) whose first attempt succeeded and needed no further attempts.\",\n    \"unit\": \"ratio\",\n    \"statistic\": \"ratio\",\n    \"time_column\": \"accepted_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"query\": {\n    \"metric\": \"first_pass_success\",\n    \"group_by\": [],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"numerator\": 2,\n      \"denominator\": 3,\n      \"value\": 0.666667,\n      \"n\": 3\n    }\n  ],\n  \"sample_size\": 3,\n  \"provenance\": {\n    \"sql\": \"SELECT COUNT(*) FILTER (WHERE attempts = 1 AND first_attempt_status = 'succeeded') AS numerator, COUNT(*) AS denominator, (COUNT(*) FILTER (WHERE attempts = 1 AND first_attempt_status = 'succeeded'))::DOUBLE / NULLIF(COUNT(*), 0) AS value, COUNT(*) AS n FROM (\\n        SELECT tf.*, tf.workspace_id AS ws, tf.project_id AS project, tf.category AS category,\\n               tf.priority AS priority, tf.status AS status, tf.assigned_agent AS agent\\n        FROM task_facts tf WHERE tf.archived_at IS NULL\\n    ) WHERE ws = ? AND (accepted_at IS NOT NULL AND attempts > 0) LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:39|db>\"\n  },\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 38,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 39,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 40,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"tasks_created\",\n    \"family\": \"throughput\",\n    \"title\": \"Tasks created\",\n    \"definition\": \"Number of tasks created in the period.\",\n    \"unit\": \"tasks\",\n    \"statistic\": \"count\",\n    \"time_column\": \"created_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"query\": {\n    \"metric\": \"tasks_created\",\n    \"group_by\": [\n      \"period\"\n    ],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"period\": \"2026-10-26\",\n      \"value\": 5,\n      \"n\": 5\n    }\n  ],\n  \"sample_size\": 5,\n  \"provenance\": {\n    \"sql\": \"SELECT date_trunc('week', created_at) AS period, COUNT(*) AS value, COUNT(*) AS n FROM (\\n        SELECT tf.*, tf.workspace_id AS ws, tf.project_id AS project, tf.category AS category,\\n               tf.priority AS priority, tf.status AS status, tf.assigned_agent AS agent\\n        FROM task_facts tf WHERE tf.archived_at IS NULL\\n    ) WHERE ws = ? AND (TRUE) GROUP BY period ORDER BY period LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:40|db>\"\n  },\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 41,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 42,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"cost\",\n    \"family\": \"agents\",\n    \"title\": \"Cost (measured)\",\n    \"definition\": \"Provider-reported cost; never estimated by Workgraph.\",\n    \"unit\": \"usd\",\n    \"statistic\": \"sum\",\n    \"time_column\": \"finished_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"model\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"provider\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"query\": {\n    \"metric\": \"cost\",\n    \"group_by\": [],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [\n    {\n      \"value\": null,\n      \"n\": 0\n    }\n  ],\n  \"sample_size\": 0,\n  \"provenance\": {\n    \"sql\": \"SELECT SUM(cost_usd) AS value, COUNT(*) AS n FROM (\\n        SELECT af.*, af.workspace_id AS ws, af.project_id AS project, af.category AS category,\\n               af.priority AS priority, af.status AS status, af.provider AS provider, af.provider AS agent,\\n               COALESCE(af.model, '(unspecified)') AS model\\n        FROM attempt_facts af WHERE af.parent_attempt_id IS NULL\\n    ) WHERE ws = ? AND (cost_source IS NOT NULL AND cost_usd IS NOT NULL) LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:41|db>\"\n  },\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 43,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 44,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 45,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

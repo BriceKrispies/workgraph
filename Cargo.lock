@@ -2308,7 +2308,6 @@ dependencies = [
  "serde_json",
  "wg-json",
  "wg-pyrand",
- "wg-types",
 ]
 
 [[package]]

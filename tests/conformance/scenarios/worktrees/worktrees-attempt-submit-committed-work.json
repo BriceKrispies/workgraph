@@ -1,0 +1,35 @@
+{
+  "id": "worktrees-attempt-submit-committed-work",
+  "covers": ["C022", "C023", "C097", "C118", "C152"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["task", "create", "External work", "--repo", "api", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true, "save": {"attempt": "/attempt_id"}},
+    {"cli": ["git", "worktrees"], "json": true, "save": {"checkout": "/0/path"}},
+    {"assert": {"json": {"path": "/0/status", "equals": "active"}}},
+    {"git": "commit", "cwd": "{var:checkout}", "files": {"feature.txt": "agent work\n"}, "message": "agent: feature.txt"},
+    {"cli": ["attempt", "submit", "{var:attempt}", "--summary", "added the feature"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "succeeded"}}},
+    {"assert": {"json": {"path": "/verification", "equals": null}}},
+    {"assert": {"json": {"path": "/task_status", "equals": "awaiting_review"}}},
+    {"assert": {"json": {"path": "/attempt_status", "equals": "succeeded"}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "awaiting_review"}}},
+    {"cli": ["git", "changes", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/commits/0/subject", "equals": "agent: feature.txt"}}},
+    {"cli": ["git", "worktrees"], "json": true},
+    {"assert": {"json": {"path": "/0/status", "equals": "released"}}},
+    {"assert": {"file": "{var:checkout}/feature.txt", "contains": "agent work"}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktrees.py::test_attempt_submit_concludes_committed_work_for_review: the change-set item head_sha is asserted to equal the agent commit's sha; the change-set item has no CLI output and the git step records no sha, so only the commit listing of git changes is checked.",
+      "covered_by": "CORE-11"
+    }
+  ]
+}

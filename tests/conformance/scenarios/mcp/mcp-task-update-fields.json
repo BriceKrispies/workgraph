@@ -1,0 +1,30 @@
+{
+  "id": "mcp-task-update-fields",
+  "covers": ["M27", "M31"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Old title", "tags": ["a", "b"]}},
+    {"mcp": "task_update", "args": {"task": "WG-1", "title": "New title", "priority": "critical", "add_tags": ["c"], "remove_tags": ["a"], "acceptance_criteria": ["done"], "add_files": [{"path": "src/a.py"}]}},
+    {"assert": {"exit": 0}},
+    {"mcp": "task_get", "args": {"task": "WG-1"}},
+    {"assert": {"json": {"path": "/title", "equals": "New title"}}},
+    {"assert": {"json": {"path": "/priority", "equals": "critical"}}},
+    {"assert": {"json": {"path": "/tags", "equals": ["b", "c"]}}},
+    {"assert": {"json": {"path": "/acceptance_criteria", "equals": ["done"]}}},
+    {"mcp": "task_update", "args": {"task": "WG-1", "status": "blocked", "reason": "waiting on the API"}},
+    {"assert": {"json": {"path": "/status", "equals": "blocked"}}},
+    {"mcp": "task_update", "args": {"task": "WG-1", "expected_version": 999, "title": "Stale write"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "version"}},
+    {"mcp": "task_update", "args": {"task": "WG-1", "status": "accepted"}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_update", "args": {"task": "WG-404", "title": "Nothing"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "task_update", "args": {"task": "WG-1", "files": []}},
+    {"mcp": "task_get", "args": {"task": "WG-1"}},
+    {"assert": {"json": {"path": "/files", "equals": []}}}
+  ],
+  "not_observable": []
+}

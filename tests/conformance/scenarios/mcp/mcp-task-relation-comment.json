@@ -1,0 +1,24 @@
+{
+  "id": "mcp-task-relation-comment",
+  "covers": ["M39", "M40"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Crash on save"}},
+    {"mcp": "task_create", "args": {"title": "Crash on save again"}},
+    {"mcp": "task_add_relation", "args": {"task": "WG-2", "target": "WG-1", "relation_type": "duplicates"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "task_add_relation", "args": {"task": "WG-2", "target": "WG-1", "relation_type": "blocks"}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_add_relation", "args": {"task": "WG-2", "target": "WG-404"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "task_add_comment", "args": {"task": "WG-1", "body": "Reproduced on Windows"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "task_get", "args": {"task": "WG-1"}},
+    {"assert": {"stdout_contains": "Reproduced on Windows"}},
+    {"mcp": "task_add_comment", "args": {"task": "WG-1", "body": ""}},
+    {"assert": {"exit": 1}}
+  ],
+  "not_observable": []
+}

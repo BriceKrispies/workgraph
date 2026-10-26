@@ -1,0 +1,55 @@
+{
+  "id": "worktrees-cross-repo-manifest",
+  "covers": ["C023", "C021", "C122", "C152", "C118"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"},
+    {"git": "init", "repo": "lib"},
+    {"git": "commit", "repo": "lib", "files": {"README.md": "lib\n"}, "message": "initial"},
+    {"git": "init", "repo": "docs"},
+    {"git": "commit", "repo": "docs", "files": {"README.md": "docs\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["repo", "register", "{repo:lib}"], "json": true},
+    {"cli": ["repo", "register", "{repo:docs}", "--read-only"], "json": true},
+    {"cli": ["task", "create", "Cross repo", "--repo", "api", "--repo", "lib", "--repo", "docs", "--ready"], "json": true},
+    {"cli": ["repo", "status", "api"], "json": true, "save": {"api_head": "/head"}},
+    {"cli": ["repo", "status", "lib"], "json": true, "save": {"lib_head": "/head"}},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true, "save": {"attempt": "/attempt_id"}},
+    {"assert": {"stdout_contains": "\"repository\": \"api\""}},
+    {"assert": {"stdout_contains": "\"repository\": \"lib\""}},
+    {"assert": {"stdout_contains": "\"repository\": \"docs\""}},
+    {"assert": {"stdout_contains": "{var:api_head}"}},
+    {"assert": {"stdout_contains": "{var:lib_head}"}},
+    {"assert": {"stdout_contains": "\"branch\": null"}},
+    {"assert": {"stdout_contains": "wg/wg-1/attempt-1-"}},
+    {"assert": {"file": "{home}/data/worktrees/{var:attempt}/api/README.md", "exists": true}},
+    {"assert": {"file": "{home}/data/worktrees/{var:attempt}/lib/README.md", "exists": true}},
+    {"assert": {"file": "{home}/data/worktrees/{var:attempt}/docs/README.md", "exists": true}},
+    {"cli": ["attempt", "manifests", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/0/kind", "equals": "baseline"}}},
+    {"assert": {"stdout_contains": "\"isolation\": \"worktree\""}},
+    {"assert": {"stdout_contains": "\"isolation\": \"snapshot\""}},
+    {"assert": {"stdout_contains": "\"access\": \"read_only\""}},
+    {"assert": {"stdout_contains": "\"access\": \"read_write\""}},
+    {"assert": {"stdout_contains": "{var:api_head}"}},
+    {"cli": ["repo", "status", "api"], "json": true},
+    {"assert": {"json": {"path": "/branch", "equals": "main"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktrees.py::test_prepare_worktrees_manifest_and_change_set: the agent commit in the api worktree, the write into the read-only docs snapshot, the capture_outcome commits and violations, the change-set statuses (partially_applied, committed, pending) and the link_attempt_commits count all need a commit or a write inside a managed checkout after attempt start, and no step can make one.",
+      "covered_by": "CORE-11"
+    },
+    {
+      "case": "tests/integration/test_worktrees.py::test_prepare_worktrees_manifest_and_change_set: release with remove=True keeps the dirty docs checkout and removes the clean api one, with the branch kept; every managed checkout here stays clean and no step dirties one, so the keep-dirty half cannot be observed.",
+      "covered_by": "CORE-13"
+    },
+    {
+      "case": "tests/integration/test_worktrees.py::test_prepare_worktrees_manifest_and_change_set: each manifest entry is asserted as one repository with its own isolation, access, branch and sha; the Python output lists the entries in an order that changes between runs, and the assertion language has no way to address an entry by repository name, so only the presence of each value is checked and the pairing is not.",
+      "covered_by": "CORE-13"
+    }
+  ]
+}

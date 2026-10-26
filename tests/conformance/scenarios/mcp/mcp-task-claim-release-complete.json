@@ -1,0 +1,28 @@
+{
+  "id": "mcp-task-claim-release-complete",
+  "covers": ["M32", "M33", "M34"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Claimable", "ready": true}},
+    {"mcp": "task_create", "args": {"title": "Not ready yet"}},
+    {"mcp": "task_claim", "args": {"task": "WG-1", "lease_minutes": 30}},
+    {"assert": {"json": {"path": "/status", "equals": "claimed"}}},
+    {"assert": {"json": {"path": "/claimed_by", "equals": "agent:conformance"}}},
+    {"mcp": "task_claim", "args": {"task": "WG-2"}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_claim", "args": {"task": "WG-1", "lease_minutes": 0}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_release", "args": {"task": "WG-2"}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_release", "args": {"task": "WG-1", "reason": "pausing"}},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}},
+    {"mcp": "task_claim", "args": {"task": "WG-1"}},
+    {"mcp": "task_complete", "args": {"task": "WG-1", "summary": "all good"}},
+    {"assert": {"json": {"path": "/status", "equals": "awaiting_review"}}},
+    {"mcp": "task_complete", "args": {"task": "WG-404", "summary": "nope"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}}
+  ],
+  "not_observable": []
+}

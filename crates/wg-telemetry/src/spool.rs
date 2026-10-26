@@ -2,11 +2,15 @@
 //! file name it gets, and what a failed replay does to it (`hook_cli.py` and `HookIngestor.replay_spool`).
 
 use serde_json::{Map, Value, json};
+use wg_validate::pyjson::{Decoded, error_text, loads_text};
 
 use crate::hook::INVALID_EVENT;
 use crate::ingest::HookEnv;
 use crate::json::{dumps_ordered, py_str};
 use crate::redact::redact;
+
+/// The largest stdin `claude hook` ingests; a read takes one byte more to see that input is over it.
+pub const MAX_INPUT_BYTES: usize = 8 * 1024 * 1024;
 
 /// The bound on a payload kept in a spooled record.
 pub const SPOOL_PAYLOAD_CHARS: usize = 20_000;
@@ -40,6 +44,24 @@ pub fn invalid_payload(error: &str, input: &[u8]) -> Value {
 /// The payload of input over the size limit: the `Oversized` event with its size.
 pub fn oversized_payload(size: usize) -> Value {
     json!({"hook_event_name": "Oversized", "size": size})
+}
+
+/// The payload `claude hook` takes from its stdin bytes (`run_hook`): input over [`MAX_INPUT_BYTES`] is
+/// the `Oversized` event; otherwise the UTF-8 text (invalid bytes replaced) is parsed as `json.loads` does,
+/// empty text counting as `{}`, and text that is not JSON is the `Invalid` event with CPython's message.
+pub fn payload_from_input(input: &[u8]) -> Value {
+    if input.len() > MAX_INPUT_BYTES {
+        return oversized_payload(input.len());
+    }
+    let lossy = String::from_utf8_lossy(input);
+    let text: &str = if lossy.is_empty() { "{}" } else { &lossy };
+    match loads_text(text) {
+        Decoded::Value(value) => value,
+        Decoded::Invalid { message, position } => {
+            invalid_payload(&error_text(text, message, position), input)
+        }
+        Decoded::NotText => invalid_payload("not text", input),
+    }
 }
 
 /// `f"{type}: {message}"[:500]`: the failure text a spooled record keeps.

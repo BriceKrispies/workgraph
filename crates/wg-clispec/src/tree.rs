@@ -88,9 +88,12 @@ pub fn to_args(param: &ParamSpec) -> Vec<Arg> {
         }
         return args;
     }
+    // Click takes the token after a value-taking option as its value whatever it looks like, so
+    // `-d '- step one'` and `--arg --mode` are values, not options.
     arg = arg
         .value_name(upper(&key))
         .num_args(1)
+        .allow_hyphen_values(true)
         .action(if param.multiple {
             ArgAction::Append
         } else {

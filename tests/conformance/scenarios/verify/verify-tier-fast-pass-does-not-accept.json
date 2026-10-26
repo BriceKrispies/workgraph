@@ -1,0 +1,23 @@
+{
+  "id": "verify-tier-fast-pass-does-not-accept",
+  "covers": ["C099", "C118", "C148", "C150", "C152", "C165", "C172", "C175"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "# svc\n"}, "message": "initial commit"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["verify", "config", "ci", "--scope-type", "repository", "--scope", "svc", "--check", "{\"name\": \"lint\", \"kind\": \"lint\", \"tier\": \"fast\", \"command\": [\"python\", \"-c\", \"print('lint ok')\"]}", "--check", "{\"name\": \"unit tests\", \"command\": [\"python\", \"-c\", \"print('1 passed')\"]}"], "json": true},
+    {"cli": ["task", "create", "Tiered checks", "--repo", "svc", "--ready"], "json": true},
+    {"cli": ["task", "claim", "WG-1", "--agent", "alice"], "json": true},
+    {"cli": ["task", "complete", "WG-1", "-m", "finished"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "awaiting_verification"}}},
+    {"cli": ["verify", "run", "WG-1", "--tier", "fast"], "json": true},
+    {"assert": {"json": {"path": "/required_passed", "equals": true}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "awaiting_verification"}}},
+    {"assert": {"db": "task_acceptances", "where": {}, "count": 0}}
+  ],
+  "not_observable": []
+}

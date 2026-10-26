@@ -1,0 +1,14 @@
+{
+  "id": "verify-failure-signature-from-full-log",
+  "covers": ["C099", "C152", "C172", "C175"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Cargo log", "--ready"], "json": true},
+    {"cli": ["verify", "config", "ci", "--scope-type", "workspace", "--check", "{\"name\": \"cargo test\", \"parser\": \"cargo\", \"command\": [\"python\", \"-c\", \"print('     Running unittests src/lib.rs (target/debug/deps/demo-0123456789abcdef)'); print('test a::b ... FAILED'); [print('noise') for _ in range(500)]; raise SystemExit(1)\"]}"], "json": true},
+    {"cli": ["verify", "run", "WG-1"], "json": true, "expect_exit": 3},
+    {"assert": {"json": {"path": "/checks/0/status", "equals": "failed"}}},
+    {"assert": {"json": {"path": "/checks/0/failure_signatures", "equals": ["test:demo::a::b"]}}}
+  ],
+  "not_observable": []
+}

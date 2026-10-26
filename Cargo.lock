@@ -2427,7 +2427,6 @@ dependencies = [
  "wg-json",
  "wg-pynum",
  "wg-pyrand",
- "wg-types",
 ]
 
 [[package]]

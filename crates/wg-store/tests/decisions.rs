@@ -155,7 +155,7 @@ fn decision(n: u32, task_n: u32, second: u8, status: &str) -> TaskDecision {
         workspace_id: id(0),
         task_id: id(task_n),
         question: format!("question {n}?"),
-        options: options(),
+        options: options().into_iter().collect(),
         status: status.into(),
         chosen_option_id: None,
         other_text: None,

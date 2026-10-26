@@ -133,28 +133,27 @@ impl TraceEntry {
 
 /// The value at a dotted path, through objects only. `None` is the missing marker.
 pub fn resolve<'a>(context: &'a Value, path: &str) -> Option<&'a Value> {
-    let mut current = context;
-    for part in path.split('.') {
-        match current {
-            Value::Object(map) => current = map.get(part)?,
-            _ => return None,
-        }
-    }
-    Some(current)
+    path.split('.')
+        .try_fold(context, |current, part| match current {
+            Value::Object(map) => map.get(part),
+            _ => None,
+        })
 }
 
 /// `^[a-z_][a-z0-9_]*(\.[a-z0-9_]+)*$`, checked without a regex.
 fn valid_field(field: &str) -> bool {
-    let mut segments = field.split('.');
-    let first_ok = segments.next().is_some_and(|first| {
-        let mut chars = first.chars();
-        chars
+    let first_ok = field.split('.').next().is_some_and(|first| {
+        first
+            .chars()
             .next()
             .is_some_and(|c| c.is_ascii_lowercase() || c == '_')
-            && chars.all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
+            && first
+                .chars()
+                .skip(1)
+                .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
     });
     first_ok
-        && segments.all(|segment| {
+        && field.split('.').skip(1).all(|segment| {
             !segment.is_empty()
                 && segment
                     .chars()
@@ -165,18 +164,17 @@ fn valid_field(field: &str) -> bool {
 /// Keeps the first error with the strongest precedence: a bad pattern beats a shape error,
 /// because Python raises it immediately while the shape errors are collected.
 fn combine<T>(results: Vec<Result<T, ConditionError>>) -> Result<Vec<T>, ConditionError> {
-    let mut values = Vec::with_capacity(results.len());
-    let mut invalid: Option<ConditionError> = None;
-    for result in results {
-        match result {
-            Ok(value) => values.push(value),
-            Err(error @ ConditionError::BadPattern(_)) => return Err(error),
-            Err(error) => invalid = invalid.or(Some(error)),
-        }
-    }
-    match invalid {
-        Some(error) => Err(error),
-        None => Ok(values),
+    let errors: Vec<ConditionError> = results
+        .iter()
+        .filter_map(|result| result.as_ref().err().cloned())
+        .collect();
+    let chosen = errors
+        .iter()
+        .find(|error| matches!(error, ConditionError::BadPattern(_)))
+        .or_else(|| errors.first());
+    match chosen {
+        Some(error) => Err(error.clone()),
+        None => Ok(results.into_iter().filter_map(Result::ok).collect()),
     }
 }
 
@@ -350,8 +348,8 @@ fn container_or_empty(expected: &Value) -> Value {
     }
 }
 
-/// Evaluates one predicate against the context, recording the outcome in `trace`.
-fn evaluate_predicate(predicate: &Predicate, context: &Value, trace: &mut Vec<TraceEntry>) -> bool {
+/// Evaluates one predicate against the context, with the trace entry recording the outcome.
+fn evaluate_predicate(predicate: &Predicate, context: &Value) -> (bool, TraceEntry) {
     let actual = resolve(context, &predicate.field);
     let result = match predicate.op {
         Operator::Exists => actual.is_some_and(|value| !value.is_null()),
@@ -361,41 +359,58 @@ fn evaluate_predicate(predicate: &Predicate, context: &Value, trace: &mut Vec<Tr
             Some(value) => compare_op(value, op, &predicate.value),
         },
     };
-    trace.push(TraceEntry {
+    let entry = TraceEntry {
         field: predicate.field.clone(),
         op: predicate.op,
         expected: predicate.value.clone(),
         actual: actual.cloned(),
         result,
-    });
-    result
+    };
+    (result, entry)
 }
 
-/// Evaluates a validated condition. An absent condition is true. Each predicate reached is
-/// appended to `trace`; short-circuiting stops the trace where Python's does.
-pub fn evaluate(
-    condition: Option<&Condition>,
-    context: &Value,
-    trace: &mut Vec<TraceEntry>,
-) -> bool {
+/// Appends `more` to `trace`, keeping order.
+fn extend_trace(trace: Vec<TraceEntry>, more: Vec<TraceEntry>) -> Vec<TraceEntry> {
+    trace.into_iter().chain(more).collect()
+}
+
+/// Evaluates a validated condition and returns its result with the trace of the predicates
+/// reached. An absent condition is true. Short-circuiting stops the trace where Python's does.
+pub fn evaluate(condition: Option<&Condition>, context: &Value) -> (bool, Vec<TraceEntry>) {
     let Some(condition) = condition else {
-        return true;
+        return (true, Vec::new());
     };
     if let Some(predicate) = &condition.predicate {
-        return evaluate_predicate(predicate, context, trace);
+        let (result, entry) = evaluate_predicate(predicate, context);
+        return (result, vec![entry]);
     }
     if let Some(all) = &condition.all {
-        return all
-            .iter()
-            .all(|child| evaluate(Some(child), context, trace));
+        // Stops at the first false child; `Err` carries the trace up to it.
+        let outcome = all.iter().try_fold(Vec::new(), |trace, child| {
+            let (result, more) = evaluate(Some(child), context);
+            let trace = extend_trace(trace, more);
+            if result { Ok(trace) } else { Err(trace) }
+        });
+        return match outcome {
+            Ok(trace) => (true, trace),
+            Err(trace) => (false, trace),
+        };
     }
     if let Some(any) = &condition.any {
-        return any
-            .iter()
-            .any(|child| evaluate(Some(child), context, trace));
+        // Stops at the first true child; `Err` carries the trace up to it.
+        let outcome = any.iter().try_fold(Vec::new(), |trace, child| {
+            let (result, more) = evaluate(Some(child), context);
+            let trace = extend_trace(trace, more);
+            if result { Err(trace) } else { Ok(trace) }
+        });
+        return match outcome {
+            Ok(trace) => (false, trace),
+            Err(trace) => (true, trace),
+        };
     }
     if let Some(inner) = &condition.not {
-        return !evaluate(Some(inner), context, trace);
+        let (result, trace) = evaluate(Some(inner), context);
+        return (!result, trace);
     }
-    true
+    (true, Vec::new())
 }

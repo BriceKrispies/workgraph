@@ -47,48 +47,49 @@ fn number(text: &str) -> u64 {
 }
 
 fn parse_field(spec: &str, low: u64, high: u64) -> Result<BTreeSet<u64>, WgError> {
-    let mut values = BTreeSet::new();
-    for item in spec.split(',') {
-        let mut part = item;
-        let mut step = 1;
-        if let Some((head, step_text)) = part.split_once('/') {
+    spec.split(',')
+        .map(|item| parse_item(item, low, high))
+        .collect::<Result<Vec<BTreeSet<u64>>, WgError>>()
+        .map(|sets| sets.into_iter().flatten().collect())
+}
+
+/// One comma-separated item of a field: `*`, `N`, `N-M`, each optionally with `/step`.
+fn parse_item(item: &str, low: u64, high: u64) -> Result<BTreeSet<u64>, WgError> {
+    let (part, step) = match item.split_once('/') {
+        Some((head, step_text)) => {
             if !is_digits(step_text) || number(step_text) == 0 {
                 return Err(invalid(format!(
                     "invalid cron step {}",
                     str_repr(step_text)
                 )));
             }
-            step = number(step_text);
-            part = head;
+            (head, number(step_text))
         }
-        let (start, end) = if part == "*" {
-            (low, high)
-        } else if let Some((first, last)) = part.split_once('-') {
-            if !(is_digits(first) && is_digits(last)) {
-                return Err(invalid(format!("invalid cron range {}", str_repr(part))));
-            }
-            (number(first), number(last))
-        } else if is_digits(part) {
-            (number(part), number(part))
-        } else {
-            return Err(invalid(format!("invalid cron field {}", str_repr(part))));
-        };
-        if start < low || end > high || start > end {
-            return Err(invalid(format!(
-                "cron value {} outside {low}-{high}",
-                str_repr(part)
-            )));
+        None => (item, 1),
+    };
+    let (start, end) = if part == "*" {
+        (low, high)
+    } else if let Some((first, last)) = part.split_once('-') {
+        if !(is_digits(first) && is_digits(last)) {
+            return Err(invalid(format!("invalid cron range {}", str_repr(part))));
         }
-        let mut value = start;
-        while value <= end {
-            values.insert(value);
-            match value.checked_add(step) {
-                Some(next) => value = next,
-                None => break,
-            }
-        }
+        (number(first), number(last))
+    } else if is_digits(part) {
+        (number(part), number(part))
+    } else {
+        return Err(invalid(format!("invalid cron field {}", str_repr(part))));
+    };
+    if start < low || end > high || start > end {
+        return Err(invalid(format!(
+            "cron value {} outside {low}-{high}",
+            str_repr(part)
+        )));
     }
-    Ok(values)
+    Ok(
+        std::iter::successors(Some(start), |value| value.checked_add(step))
+            .take_while(|value| *value <= end)
+            .collect(),
+    )
 }
 
 impl Cron {
@@ -133,17 +134,16 @@ impl Cron {
     pub fn next_after(&self, moment: OffsetDateTime) -> Result<OffsetDateTime, WgError> {
         let truncated = moment.replace_nanosecond(0).unwrap_or(moment);
         let truncated = truncated.replace_second(0).unwrap_or(truncated);
-        let mut candidate = truncated.checked_add(Duration::minutes(1));
-        for _ in 0..SEARCH_LIMIT_MINUTES {
-            let Some(current) = candidate else { break };
-            if self.matches(current) {
-                return Ok(current);
-            }
-            candidate = current.checked_add(Duration::minutes(1));
-        }
-        Err(invalid(format!(
-            "cron expression {} never fires",
-            str_repr(&self.expression)
-        )))
+        std::iter::successors(truncated.checked_add(Duration::minutes(1)), |current| {
+            current.checked_add(Duration::minutes(1))
+        })
+        .take(usize::try_from(SEARCH_LIMIT_MINUTES).unwrap_or(usize::MAX))
+        .find(|current| self.matches(*current))
+        .ok_or_else(|| {
+            invalid(format!(
+                "cron expression {} never fires",
+                str_repr(&self.expression)
+            ))
+        })
     }
 }

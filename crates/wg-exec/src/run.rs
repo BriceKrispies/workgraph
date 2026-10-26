@@ -150,11 +150,10 @@ pub fn blocks_new_attempt(status: A) -> bool {
 
 /// The resource keys the run's job locks: the run slot, the agent, and in place the task's repos.
 pub fn resource_keys(agent: &str, isolation: &str, task_id: &str) -> Vec<String> {
-    let mut keys = vec!["run".to_owned(), format!("agent:{agent}")];
-    if isolation == "in_place" {
-        keys.push(format!("exclusive:task-repos:{task_id}"));
-    }
-    keys
+    ["run".to_owned(), format!("agent:{agent}")]
+        .into_iter()
+        .chain((isolation == "in_place").then(|| format!("exclusive:task-repos:{task_id}")))
+        .collect()
 }
 
 /// Checks the isolation an external start asks for.
@@ -223,32 +222,36 @@ impl RerunPlan {
 pub const RERUN_NOTE: &str =
     "Agent/model execution is nondeterministic: inputs are reproduced, outputs may differ.";
 
+/// The baseline revision an entry is pinned to, when it is still available.
+fn pinned_sha(entry: &BaselineEntry) -> Option<&String> {
+    entry.sha.as_ref().filter(|_| entry.revision_available)
+}
+
 /// Plans a rerun: entries whose revision is still available are pinned to it, the rest start from
 /// the current head and are reported missing.
 pub fn rerun_plan(entries: &[BaselineEntry]) -> RerunPlan {
-    let mut plan = RerunPlan {
-        repositories: Vec::new(),
-        missing: Vec::new(),
-    };
-    for entry in entries {
-        let pinned = entry.sha.as_ref().filter(|_| entry.revision_available);
-        if pinned.is_none() {
-            plan.missing.push(MissingRevision {
+    RerunPlan {
+        repositories: entries
+            .iter()
+            .map(|entry| RepoRequest {
+                repository_id: entry.repository_id.clone(),
+                access: entry.access.clone(),
+                target_ref: pinned_sha(entry).cloned(),
+            })
+            .collect(),
+        missing: entries
+            .iter()
+            .filter(|entry| pinned_sha(entry).is_none())
+            .map(|entry| MissingRevision {
                 repository: if entry.repository.is_empty() {
                     "?".to_owned()
                 } else {
                     entry.repository.clone()
                 },
                 sha: entry.sha.clone().unwrap_or_else(|| "None".to_owned()),
-            });
-        }
-        plan.repositories.push(RepoRequest {
-            repository_id: entry.repository_id.clone(),
-            access: entry.access.clone(),
-            target_ref: pinned.cloned(),
-        });
+            })
+            .collect(),
     }
-    plan
 }
 
 /// What `cancel` does to an attempt (`cancel`).
@@ -460,16 +463,24 @@ pub fn usage_fields(
     cost_usd: Option<f64>,
     adapter: &str,
 ) -> Map<String, Value> {
-    let mut fields = Map::new();
-    if !usage.is_empty() {
-        fields.insert("usage".into(), Value::Object(usage.clone()));
-        fields.insert("usage_source".into(), json!(format!("{adapter}_reported")));
-    }
-    if let Some(cost) = cost_usd {
-        fields.insert("cost_usd".into(), json!(cost));
-        fields.insert("cost_source".into(), json!(format!("{adapter}_reported")));
-    }
-    fields
+    let usage_part = (!usage.is_empty()).then(|| {
+        [
+            ("usage", Value::Object(usage.clone())),
+            ("usage_source", json!(format!("{adapter}_reported"))),
+        ]
+    });
+    let cost_part = cost_usd.map(|cost| {
+        [
+            ("cost_usd", json!(cost)),
+            ("cost_source", json!(format!("{adapter}_reported"))),
+        ]
+    });
+    usage_part
+        .into_iter()
+        .chain(cost_part)
+        .flatten()
+        .map(|(key, value)| (key.to_owned(), value))
+        .collect()
 }
 
 /// What capturing and attributing the attempt's changes found.
@@ -527,21 +538,28 @@ pub fn conclude(
     ) {
         return Ok(Conclusion::Succeeded);
     }
-    let mut text = error.unwrap_or("").to_owned();
-    if facts.has_violations() {
+    let own_error = error.unwrap_or("").to_owned();
+    let with_violations = if facts.has_violations() {
         let violations = facts.violations.as_deref().unwrap_or("");
-        text = format!("read-only repositories were modified: {violations}. {text}")
+        format!("read-only repositories were modified: {violations}. {own_error}")
             .trim()
-            .to_owned();
-    }
-    if let Some(capture) = &facts.capture_error {
-        text = format!("could not record the attempt's changes: {capture}. {text}")
-            .trim()
-            .to_owned();
-    }
-    if text.is_empty() {
-        text = "agent failed".to_owned();
-    }
+            .to_owned()
+    } else {
+        own_error
+    };
+    let with_capture = match &facts.capture_error {
+        Some(capture) => {
+            format!("could not record the attempt's changes: {capture}. {with_violations}")
+                .trim()
+                .to_owned()
+        }
+        None => with_violations,
+    };
+    let text = if with_capture.is_empty() {
+        "agent failed".to_owned()
+    } else {
+        with_capture
+    };
     Ok(Conclusion::Failed {
         attempt,
         exit_reason: failure_exit_reason(status, facts.capture_error.is_some()),

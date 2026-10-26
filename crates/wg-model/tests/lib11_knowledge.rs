@@ -425,7 +425,8 @@ fn knowledge_tables_are_schema_tables_with_their_names() -> TestResult {
         Table::PredictorFit,
     ];
     // 18 base tables, 15 execution tables (`execution.rs`), then the knowledge tables.
-    assert_eq!(Table::ALL.len(), 18 + 15 + knowledge.len());
+    // 18 base tables plus task_decisions, 15 execution tables, then the knowledge tables.
+    assert_eq!(Table::ALL.len(), 19 + 15 + knowledge.len());
     for table in knowledge {
         let name = table.name();
         let plain = format!("CREATE TABLE {name} (");

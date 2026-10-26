@@ -453,8 +453,8 @@ fn execution_tables_are_in_the_table_registry() {
     for table in execution {
         assert!(Table::ALL.contains(&table), "{table:?} is listed");
     }
-    // 18 base tables, 15 execution tables, 31 knowledge tables (`lib11_knowledge.rs`).
-    assert_eq!(Table::ALL.len(), 64);
+    // 18 base tables (with task_decisions, 19), 15 execution tables, 31 knowledge tables (`lib11_knowledge.rs`).
+    assert_eq!(Table::ALL.len(), 65);
     assert_eq!(Table::StackRepository.name(), "stack_repositories");
     assert_eq!(Table::JobResourceClaim.name(), "job_resource_claims");
 }

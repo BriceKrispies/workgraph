@@ -6,11 +6,13 @@
 //! built from the snapshot (see `wg_clispec::tree`).
 
 pub mod decision;
+pub mod job;
 pub mod registry;
 pub mod serve;
 pub mod setup;
 pub mod task;
 pub mod ui;
+pub mod worker;
 
 use clap::{ArgMatches, Command};
 use wg_clispec::CliFailure;
@@ -39,8 +41,10 @@ pub const GROUPS: &[Group] = &[
     serve::MCP,
     serve::SERVE,
     decision::GROUP,
+    job::GROUP,
     task::GROUP,
     ui::GROUP,
     registry::PROJECT,
     registry::WORKSPACE,
+    worker::GROUP,
 ];

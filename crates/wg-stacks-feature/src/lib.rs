@@ -8,7 +8,8 @@
 //!   its results;
 //! * [`service`] (Shell): free functions over `&mut App`, the load-decide-apply glue of the commands
 //!   the application does not serve yet (`eject`);
-//! * [`cli`] (Shell): the clap group, a dispatch over [`service`] and [`spec::view`].
+//! * [`cli`] (Shell): the clap group, a dispatch over [`service`] and [`spec::view`];
+//! * [`mcp`] (Shell): the stack tools (M09 to M16), each a call of [`service`] under the agent.
 //!
 //! The landing implementation (`stack land`, the rebuild of integration branches) moves into this
 //! crate with its own feature task; until then this crate calls what the application provides.
@@ -16,18 +17,19 @@
 //! The feature exports [`FEATURE`]; the binary collects it into its ordered feature list.
 
 pub mod cli;
+pub mod mcp;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The stacks feature: its CLI group. It has no routes, tools, resources or jobs of its own; the
-/// `/stacks` routes and the integration and verification jobs are served by the application.
+/// The stacks feature: its CLI group and its tools. It has no routes, resources or jobs of its own;
+/// the `/stacks` routes and the integration and verification jobs are served by the application.
 pub static FEATURE: Feature = Feature {
     name: "stacks",
     cli: &[cli::GROUP],
     routes: &[],
-    tools: &[],
+    tools: mcp::TOOLS,
     resources: &[],
     jobs: &[],
     maintenance: &[],

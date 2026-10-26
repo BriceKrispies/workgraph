@@ -15,9 +15,13 @@ clap = { version = "4.5", default-features = false, features = ["std", "help", "
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-clispec = { path = "../wg-clispec" }
 wg-json = { path = "../wg-json" }
+wg-mcpspec = { path = "../wg-mcpspec" }
 wg-registry = { path = "../wg-registry" }
 wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
 wg-stacks = { path = "../wg-stacks" }
 wg-store = { path = "../wg-store" }
 wg-types = { path = "../wg-types" }
+
+[dev-dependencies]
+wg-model = { path = "../wg-model" }

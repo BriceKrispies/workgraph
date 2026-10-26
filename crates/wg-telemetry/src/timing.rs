@@ -217,11 +217,29 @@ fn micros(at: Timestamp) -> i128 {
     at.to_offset_datetime().unix_timestamp_nanos() / 1000
 }
 
-/// Parses a record timestamp; `Z` means UTC. Anything that is not an offset-aware ISO timestamp is `None`.
-pub fn parse_timestamp(value: &Value) -> Option<Timestamp> {
-    value
-        .as_str()
-        .and_then(|text| Timestamp::parse_iso(&text.replace('Z', "+00:00")).ok())
+/// Parses a record timestamp; `Z` means UTC. A naive value (no offset) is the system's local time, as
+/// `datetime.timestamp()` reads it, so it is read here with `local_offset_seconds`, the offset of the local
+/// zone that the shell reads from the clock. `None` for anything that is not an ISO timestamp, or for a
+/// local offset that is not a whole number of minutes.
+pub fn parse_timestamp(value: &Value, local_offset_seconds: i32) -> Option<Timestamp> {
+    let text = value.as_str()?.replace('Z', "+00:00");
+    let has_offset = text.get(10..).is_some_and(|rest| rest.contains(['+', '-']));
+    let aware = if has_offset {
+        text
+    } else {
+        format!("{text}{}", offset_text(local_offset_seconds)?)
+    };
+    Timestamp::parse_iso(&aware).ok()
+}
+
+/// The `±HH:MM` text of a UTC offset in seconds, or `None` when it is not a whole number of minutes.
+fn offset_text(seconds: i32) -> Option<String> {
+    if seconds % 60 != 0 {
+        return None;
+    }
+    let sign = if seconds < 0 { '-' } else { '+' };
+    let minutes = seconds.unsigned_abs() / 60;
+    Some(format!("{sign}{:02}:{:02}", minutes / 60, minutes % 60))
 }
 
 /// One timed event of a transcript: a user or assistant message with its timestamp.
@@ -440,7 +458,8 @@ fn class_entries(state: &State) -> Vec<(String, f64, u64)> {
 }
 
 /// The time breakdown of one transcript from its parsed records. Non-object records are ignored.
-pub fn breakdown(records: &[Value]) -> Value {
+/// `local_offset_seconds` is the local zone's offset, used for naive timestamps (see [`parse_timestamp`]).
+pub fn breakdown(records: &[Value], local_offset_seconds: i32) -> Value {
     let table = compile_table();
     let events: BTreeMap<(i128, usize), Event> = records
         .iter()
@@ -456,7 +475,7 @@ pub fn breakdown(records: &[Value]) -> Value {
             if message.get("model").and_then(Value::as_str) == Some(SYNTHETIC_MODEL) {
                 return None;
             }
-            let at = parse_timestamp(record.get("timestamp")?)?;
+            let at = parse_timestamp(record.get("timestamp")?, local_offset_seconds)?;
             let assistant = record.get("type").and_then(Value::as_str) == Some("assistant");
             Some(Event {
                 at,

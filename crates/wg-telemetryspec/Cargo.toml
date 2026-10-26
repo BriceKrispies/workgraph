@@ -1,0 +1,15 @@
+[package]
+name = "wg-telemetryspec"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "the Claude Code hook payload model, validated with Pydantic's rules"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order", "arbitrary_precision"] }
+wg-validate = { path = "../wg-validate" }

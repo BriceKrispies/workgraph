@@ -2560,6 +2560,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-telemetryspec"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-validate",
+]
+
+[[package]]
 name = "wg-trackers"
 version = "0.1.0"
 dependencies = [

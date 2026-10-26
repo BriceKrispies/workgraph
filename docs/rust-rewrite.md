@@ -260,9 +260,7 @@ needs a browser and is covered by its Python test only on machines that have one
 | DV7 | Last-ulp differences in statistics computed through `exp`/`log` | CPython and Rust may reach different libm implementations; tolerance `1e-12` relative, only for the listed fields (Q9) |
 | DV8 | `doctor` check `python` reports `not required (native binary)` and always passes. Python runs the check `sys.version_info >= (3, 12)` and prints the interpreter version. Confirmed by the user 2026-10-26 | the Rust binary has no Python runtime to version-check; the check keeps its name and position in the list |
 | DV9 | `doctor` has no `web frontend build` check. Python warns when `static/index.html` is missing. Confirmed by the user 2026-10-26 | the web UI is embedded in the binary at build time, so there is no static directory that can be missing |
-| DV10 | Line endings: Rust writes `
-` on every platform. Python writes `
-` to redirected stdout on Windows (text-mode streams). The normaliser compares CRLF and LF as equal. Decided 2026-10-26 | no consumer parses the line terminator; JSON parsers accept both |
+| DV10 | Line endings: Rust writes `\n` on every platform. Python writes `\r\n` to redirected stdout on Windows (text-mode streams). The normaliser compares CRLF and LF as equal. Decided 2026-10-26 | no consumer parses the line terminator; JSON parsers accept both |
 
 ---
 

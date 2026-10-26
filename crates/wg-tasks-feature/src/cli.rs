@@ -8,6 +8,7 @@
 
 use crate::service;
 use crate::spec::args::*;
+use crate::spec::contract::contract_target;
 use crate::spec::reads::GraphRequest;
 use crate::spec::view::*;
 use clap::ArgMatches;
@@ -166,6 +167,20 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             let reference = option_text(m, "ref").unwrap_or_default();
             let out = service::task_comment(state.app()?, &context, ws, &reference, &body)?;
             state.emit(&out, Some(&|c| note_line(c, "comment added")))
+        }
+        Some("contract-check") => {
+            let reference = option_text(m, "ref").unwrap_or_default();
+            let model = one(m, "--model").unwrap_or_default();
+            let target = contract_target(one(m, "--target"))?;
+            let out = service::contract::task_contract_check(
+                state.app()?,
+                &context,
+                ws,
+                &reference,
+                &model,
+                target,
+            )?;
+            state.emit(&out, Some(&|c| contract_view(c, &out)))
         }
         Some("depend") => {
             let reference = option_text(m, "ref").unwrap_or_default();

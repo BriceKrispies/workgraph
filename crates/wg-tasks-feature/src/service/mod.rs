@@ -5,6 +5,7 @@
 //! feature's `cli`, `http` and `mcp` tables.
 
 pub mod acceptance;
+pub mod contract;
 pub mod rename;
 
 use crate::spec::bodies::{

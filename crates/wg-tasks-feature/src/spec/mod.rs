@@ -17,6 +17,7 @@ pub mod acceptance;
 pub mod args;
 pub mod bodies;
 pub mod claims;
+pub mod contract;
 pub mod links;
 pub mod query;
 pub mod reads;

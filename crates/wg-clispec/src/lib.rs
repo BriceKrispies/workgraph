@@ -7,6 +7,7 @@
 //! clap tree built from it, the exit-code mapping and the text of error reports (contracts O02 and O05).
 
 pub mod argv;
+pub mod automation;
 pub mod decision;
 pub mod failure;
 pub mod registry;

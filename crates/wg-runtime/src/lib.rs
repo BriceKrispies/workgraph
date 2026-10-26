@@ -13,6 +13,7 @@
 //! context's rules) is `wg-runtimespec`; this crate keeps the I/O.
 
 mod app;
+mod automation;
 mod bus;
 mod cycle;
 mod decisions;
@@ -37,6 +38,7 @@ pub use setup::Diagnosis;
 pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
+pub use wg_runtimespec::automation::catalog as automation_catalog;
 pub use wg_runtimespec::decisions::{DecisionFilter, filter_of as decision_filter};
 pub use wg_runtimespec::registry::{
     project_create_body, project_option_body, workspace_create_body,

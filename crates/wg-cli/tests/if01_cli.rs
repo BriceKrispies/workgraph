@@ -15,6 +15,7 @@ const IMPLEMENTED: &[&str] = &[
     "init",
     "task",
     "decision",
+    "automation",
     "ui",
     "serve",
     "mcp",

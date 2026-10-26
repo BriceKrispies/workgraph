@@ -5,6 +5,7 @@
 //! `contracts/cli.json`. A top-level command or group that is not listed here is a placeholder
 //! built from the snapshot (see `wg_clispec::tree`).
 
+pub mod automation;
 pub mod decision;
 pub mod registry;
 pub mod serve;
@@ -39,6 +40,7 @@ pub const GROUPS: &[Group] = &[
     serve::MCP,
     serve::SERVE,
     decision::GROUP,
+    automation::GROUP,
     task::GROUP,
     ui::GROUP,
     registry::PROJECT,

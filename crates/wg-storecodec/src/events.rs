@@ -204,6 +204,8 @@ pub fn append_statement(draft: &EventDraft) -> Result<Statement, WgError> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct EventQuery {
     pub workspace_id: Option<Id>,
+    /// The event with this id (`Event.id == id`), for lookups by the id a caller was given.
+    pub id: Option<Id>,
     pub entity_type: Option<String>,
     pub entity_ids: Vec<Id>,
     pub event_types: Vec<String>,
@@ -223,6 +225,7 @@ impl Default for EventQuery {
     fn default() -> Self {
         EventQuery {
             workspace_id: None,
+            id: None,
             entity_type: None,
             entity_ids: Vec::new(),
             event_types: Vec::new(),

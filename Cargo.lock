@@ -2435,6 +2435,7 @@ dependencies = [
  "tracing",
  "tracing-core",
  "tracing-subscriber",
+ "wg-automation",
  "wg-config",
  "wg-jobs",
  "wg-json",
@@ -2443,6 +2444,7 @@ dependencies = [
  "wg-registry",
  "wg-runtimespec",
  "wg-store",
+ "wg-storecodec",
  "wg-tasks",
  "wg-types",
 ]
@@ -2456,6 +2458,7 @@ dependencies = [
  "serde_json",
  "time",
  "tracing-core",
+ "wg-automation",
  "wg-config",
  "wg-exec",
  "wg-jobs",

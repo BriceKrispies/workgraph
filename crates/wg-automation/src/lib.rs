@@ -8,6 +8,8 @@
 pub mod condition;
 pub mod cron;
 pub mod guard;
+pub mod plan;
 pub mod py;
 pub mod rules;
+pub mod spec;
 pub mod template;

@@ -6,14 +6,39 @@
 //! [`Session::apply_write`] and [`Session::apply_decision`] like every other family.
 
 use wg_model::entity::{AutomationRule, AutomationRun, Finding, Notification, Report};
-use wg_storecodec::Raw;
 use wg_storecodec::automation_sql::{self, Page, RuleRun};
+use wg_storecodec::{EventQuery, EventRecord, Raw};
 use wg_types::{ErrorCode, Id, Timestamp, WgError};
 
 use crate::Session;
 use crate::query::{many, one};
 
 impl Session<'_> {
+    /// The event with `id`, if one exists (`select(Event).where(Event.id == id)`).
+    pub fn automation_event(&mut self, id: Id) -> Result<Option<EventRecord>, WgError> {
+        let query = EventQuery {
+            id: Some(id),
+            limit: 1,
+            ..EventQuery::default()
+        };
+        Ok(self.query_events(&query)?.into_iter().next())
+    }
+
+    /// The events after cursor `after_seq`, oldest first, at most `limit` of them: what the
+    /// automation cursor has not yet processed (`Event.seq > cursor`).
+    pub fn automation_events_after(
+        &mut self,
+        after_seq: i64,
+        limit: i64,
+    ) -> Result<Vec<EventRecord>, WgError> {
+        let query = EventQuery {
+            after_seq: Some(after_seq),
+            limit,
+            ..EventQuery::default()
+        };
+        self.query_events(&query)
+    }
+
     /// The rule in `workspace_id` named `name`, if any.
     pub fn automation_rule_by_name(
         &mut self,

@@ -13,6 +13,8 @@ workspace = true
 [dependencies]
 getrandom = "0.4"
 rpds = "1"
+wg-automation = { path = "../wg-automation" }
+wg-storecodec = { path = "../wg-storecodec" }
 serde_json = { version = "1", features = ["preserve_order"] }
 tracing = "0.1"
 tracing-core = "0.1"

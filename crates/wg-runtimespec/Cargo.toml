@@ -16,6 +16,7 @@ rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 time = { version = "0.3", default-features = false, features = ["std"] }
 tracing-core = "0.1"
+wg-automation = { path = "../wg-automation" }
 wg-config = { path = "../wg-config" }
 wg-exec = { path = "../wg-exec" }
 wg-json = { path = "../wg-json" }

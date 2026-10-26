@@ -2350,6 +2350,7 @@ dependencies = [
  "wg-clispec",
  "wg-codeparse",
  "wg-decisions",
+ "wg-intel-feature",
  "wg-json",
  "wg-mcp",
  "wg-mcpspec",
@@ -2549,11 +2550,17 @@ dependencies = [
 name = "wg-intel-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rpds",
  "serde_json",
+ "wg-clispec",
  "wg-intel",
+ "wg-json",
  "wg-model",
+ "wg-registry",
+ "wg-render",
  "wg-runtime",
+ "wg-runtimespec",
  "wg-store",
  "wg-storecodec",
  "wg-types",

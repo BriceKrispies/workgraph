@@ -182,6 +182,95 @@ pub fn disagreements_view(console: &Console, rows: &Value) -> String {
         .text
 }
 
+/// The keys of a dictionary value, in order, as text.
+fn dict_keys(value: Option<&Value>) -> Vec<String> {
+    match value {
+        Some(Value::Dict(entries)) => entries
+            .iter()
+            .map(|(key, _)| {
+                key.code_points()
+                    .iter()
+                    .filter_map(|point| char::from_u32(*point))
+                    .collect()
+            })
+            .collect(),
+        _ => Vec::new(),
+    }
+}
+
+/// `classify evaluate`: the evaluation as key/value lines, then the confusion matrix with the
+/// expected labels down and the predicted labels across.
+#[must_use]
+pub fn evaluation_view(console: &Console, result: &Value) -> String {
+    let model = format!(
+        "{}/{}",
+        fstr(get(result, "provider")),
+        fstr(get(result, "model"))
+    );
+    let pairs = [
+        ("model", Some(model)),
+        ("samples", opt(get(result, "sample_size"))),
+        ("failures", opt(get(result, "failures"))),
+        ("accuracy", opt(get(result, "accuracy"))),
+        ("macro F1", opt(get(result, "macro_f1"))),
+    ];
+    let refs: Vec<(&str, Option<&str>)> = pairs
+        .iter()
+        .map(|(key, value)| (*key, value.as_deref()))
+        .collect();
+    let mut out = console.kv(&refs, Some("evaluation")).text;
+    let confusion = get(result, "confusion");
+    let labels = dict_keys(confusion);
+    let rows: Vec<Vec<String>> = labels
+        .iter()
+        .map(|expected| {
+            let row = confusion.and_then(|matrix| get(matrix, expected));
+            std::iter::once(expected.clone())
+                .chain(labels.iter().map(|predicted| {
+                    row.and_then(|counts| get(counts, predicted))
+                        .map_or_else(|| "0".to_owned(), python)
+                }))
+                .collect()
+        })
+        .collect();
+    let headers: Vec<&str> = std::iter::once("expected \\ predicted")
+        .chain(labels.iter().map(String::as_str))
+        .collect();
+    out.push_str(&console.table(&rows, &headers, None).text);
+    out
+}
+
+/// `search --similar-to`: one row per similar task, its score, status, category, title and linked
+/// commit count, titled with the method.
+#[must_use]
+pub fn similar_view(console: &Console, result: &Value) -> String {
+    let rows: Vec<Vec<String>> = items(get(result, "similar"))
+        .iter()
+        .map(|entry| {
+            let score = match get(entry, "score") {
+                Some(Value::Float(score)) => format!("{score:.3}"),
+                other => cell(other),
+            };
+            vec![
+                s(get(entry, "key")),
+                score,
+                cell(get(entry, "status")),
+                cell(get(entry, "category")),
+                truncate(&s(get(entry, "title")), 60),
+                items(get(entry, "implementation")).len().to_string(),
+            ]
+        })
+        .collect();
+    let title = format!("similar ({})", s(get(result, "method")));
+    console
+        .table(
+            &rows,
+            &["task", "score", "status", "category", "title", "commits"],
+            Some(&title),
+        )
+        .text
+}
+
 /// `search`: the hits as a table titled with the mode, and the note under it.
 #[must_use]
 pub fn search_view(console: &Console, result: &Value) -> String {

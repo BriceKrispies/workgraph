@@ -107,7 +107,7 @@ fn run_classify(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result
                 option_text(m, "--provider").as_deref(),
                 option_text(m, "--model").as_deref(),
             )?;
-            state.emit(&out, Some(&|_| write_view::evaluation_lines(&out)))
+            state.emit(&out, Some(&|c| view::evaluation_view(c, &out)))
         }
         Some("evaluations") => {
             let out = entry::classify_evaluations(state.app()?, &context, ws)?;
@@ -138,7 +138,7 @@ fn run_search(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<
             reference,
             limit,
         )?;
-        return state.emit(&out, Some(&|_| write_view::similar_lines(&out)));
+        return state.emit(&out, Some(&|c| view::similar_view(c, &out)));
     }
     let request = SearchRequest {
         query: search.query,

@@ -9,7 +9,8 @@ use serde_json::Value as Json;
 use wg_intel::{
     CATEGORIES, PROMPT_VERSION, RunStatus, SYSTEM_PROMPT, TaskText, apply_current,
     confirm as confirm_plan, evaluation_result, evaluation_row, gold_label, model_row,
-    output_schema, promote as promote_plan, truncate, validate_classification,
+    output_schema, promote as promote_plan, schema_error_text, truncate, validate_classification,
+    validate_classification_errors,
 };
 use wg_jobs::queue::NewJob;
 use wg_model::entity::{
@@ -65,12 +66,10 @@ type Loaded = (Task, Vec<String>);
 
 /// The task with `id` and its tags (`session.get(Task, ...)` plus the tag rows).
 pub fn load_task(session: &mut Session<'_>, id: Id) -> Result<Loaded, WgError> {
-    let world = session.task_world(None, &[])?;
-    let task = world
-        .tasks
-        .task(id)
-        .cloned()
+    let task = session
+        .fetch::<Task>(&RowKey::Task(id))?
         .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("task {id} not found")))?;
+    let world = session.task_world(Some(task.workspace_id), &[])?;
     let tags = world.tasks.tags_of(id).map(str::to_owned).collect();
     Ok((task, tags))
 }
@@ -132,7 +131,15 @@ pub fn request(
         ..NewJob::new(CLASSIFY_JOB)
     };
     let job_id = app.enqueue_as(context, &job)?;
-    Ok((job_id, task, "queued".to_owned()))
+    let status = app
+        .runtime
+        .store
+        .read(|session| session.job(job_id))?
+        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("job {job_id} not found")))?
+        .status
+        .as_str()
+        .to_owned();
+    Ok((job_id, task, status))
 }
 
 /// `ClassificationService.run_classification`: classifies the task with the classification
@@ -188,7 +195,7 @@ pub fn run_classification(
     match outcome {
         Ok(Generation { data, duration_ms }) => {
             let duration = i64::try_from(duration_ms).unwrap_or(i64::MAX);
-            match validate_classification(&Json::Object(data.clone())) {
+            match validate_classification_errors(&Json::Object(data.clone())) {
                 Ok(parsed) => record_success(
                     app,
                     context,
@@ -198,18 +205,14 @@ pub fn run_classification(
                     duration,
                     options.promote,
                 ),
-                Err(keys) => record_failure(
+                Err(errors) => record_failure(
                     app,
                     context,
                     &run,
                     "invalid_output",
                     &format!(
                         "output failed schema validation: {}",
-                        keys.iter()
-                            .take(3)
-                            .cloned()
-                            .collect::<Vec<String>>()
-                            .join(", ")
+                        schema_error_text(&errors)
                     ),
                     Some(&data),
                     Some(duration),

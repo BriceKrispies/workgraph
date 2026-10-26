@@ -1,6 +1,7 @@
 //! The human lines of the classification writes and of the search writes (`classify request`,
-//! `confirm`, `promote`, `reclassify`, `gold`, `evaluate`, `search --reindex` and `--similar-to`),
-//! as the Python commands print them. Each takes the reply the service built.
+//! `confirm`, `promote`, `reclassify`, `gold`, `search --reindex`), as the Python commands print
+//! them. Each takes the reply the service built. The `evaluate` and `search --similar-to` outputs
+//! are tables, in [`crate::spec::view`].
 
 use wg_json::{PyStr, Value};
 
@@ -38,11 +39,6 @@ fn shown(value: Option<&Value>) -> String {
         Some(Value::Bool(flag)) => if *flag { "True" } else { "False" }.to_owned(),
         Some(other) => format!("{other:?}"),
     }
-}
-
-/// The first `count` characters of a member, as the listings cut them.
-fn cut(value: Option<&Value>, count: usize) -> String {
-    shown(value).chars().take(count).collect()
 }
 
 /// `classify request` (queued): the job id.
@@ -97,57 +93,4 @@ pub fn gold_added_line(out: &Value) -> String {
 #[must_use]
 pub fn reindex_line(out: &Value) -> String {
     format!("queued {}", shown(member(out, "enqueued")))
-}
-
-/// `classify evaluate`: the model, the sample size, the failures, the accuracy and the macro F1.
-#[must_use]
-pub fn evaluation_lines(out: &Value) -> String {
-    [
-        format!(
-            "model: {}/{}",
-            shown(member(out, "provider")),
-            shown(member(out, "model")),
-        ),
-        format!("samples: {}", shown(member(out, "sample_size"))),
-        format!("failures: {}", shown(member(out, "failures"))),
-        format!("accuracy: {}", shown(member(out, "accuracy"))),
-        format!("macro F1: {}", shown(member(out, "macro_f1"))),
-    ]
-    .join("\n")
-}
-
-/// `search --similar-to`: one line per similar task, with its score, status, category, title and
-/// the number of linked commits.
-#[must_use]
-pub fn similar_lines(out: &Value) -> String {
-    let header = format!("similar ({})", shown(member(out, "method")));
-    let rows = match member(out, "similar") {
-        Some(Value::List(items)) => items
-            .iter()
-            .map(|item| {
-                let commits = match member(item, "implementation") {
-                    Some(Value::List(commits)) => commits.len(),
-                    _ => 0,
-                };
-                let score = match member(item, "score") {
-                    Some(Value::Float(number)) => format!("{number:.3}"),
-                    other => shown(other),
-                };
-                format!(
-                    "{}  {}  {}  {}  {}  {}",
-                    shown(member(item, "key")),
-                    score,
-                    shown(member(item, "status")),
-                    cut(member(item, "category"), 60),
-                    cut(member(item, "title"), 60),
-                    commits,
-                )
-            })
-            .collect::<Vec<String>>(),
-        _ => Vec::new(),
-    };
-    std::iter::once(header)
-        .chain(rows)
-        .collect::<Vec<String>>()
-        .join("\n")
 }

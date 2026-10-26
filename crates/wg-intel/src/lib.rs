@@ -36,6 +36,7 @@ pub use heuristic::{
 };
 pub use search::{FusedHit, RRF_K, cosine, fuse};
 pub use taxonomy::{
-    CATEGORIES, CATEGORY_DESCRIPTIONS, COMPLEXITY, PROMPT_VERSION, SYSTEM_PROMPT, TAXONOMY_VERSION,
-    build_prompt, input_hash, validate_classification,
+    CATEGORIES, CATEGORY_DESCRIPTIONS, COMPLEXITY, PROMPT_VERSION, SYSTEM_PROMPT, SchemaError,
+    TAXONOMY_VERSION, build_prompt, input_hash, schema_error_text, validate_classification,
+    validate_classification_errors,
 };

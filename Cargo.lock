@@ -2250,6 +2250,7 @@ name = "wg-gitcore"
 version = "0.1.0"
 dependencies = [
  "regex",
+ "rpds",
  "serde_json",
  "wg-types",
 ]

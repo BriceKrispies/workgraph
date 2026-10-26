@@ -1,5 +1,7 @@
 //! `git status --porcelain=v2 --branch -z` records.
 
+use rpds::Vector;
+
 /// The working tree as `git status --porcelain=v2 --branch -z` reports it.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct WorkingTreeStatus {
@@ -18,58 +20,87 @@ pub struct WorkingTreeStatus {
 /// is followed by its original path as a separate field. An unmerged (`u`) entry counts as both
 /// staged and unstaged, as the Python integration reads it.
 pub fn parse_status_porcelain_v2(output: &str) -> WorkingTreeStatus {
-    let mut status = WorkingTreeStatus::default();
     let entries: Vec<&str> = output.split('\0').collect();
-    let mut i = 0;
-    while i < entries.len() {
-        let entry = entries[i];
-        i += 1;
-        if entry.is_empty() {
-            continue;
-        }
-        if let Some(oid) = entry.strip_prefix("# branch.oid ") {
-            status.head = if oid == "(initial)" {
-                None
+    // A renamed entry is followed by its original path as a field of its own. That field is
+    // not an entry, so it is dropped here before the entries are read.
+    let (kept, _) = entries.iter().fold(
+        (Vector::<&str>::new(), false),
+        |(kept, is_origin_path), entry| {
+            if is_origin_path {
+                (kept, false)
             } else {
-                Some(oid.to_owned())
-            };
-        } else if let Some(head) = entry.strip_prefix("# branch.head ") {
-            status.branch = if head == "(detached)" {
-                None
-            } else {
-                Some(head.to_owned())
-            };
-        } else if let Some(ab) = entry.strip_prefix("# branch.ab ") {
-            let mut parts = ab.split(' ');
-            status.ahead = parts
-                .next()
-                .and_then(|value| value.trim_start_matches('+').parse().ok());
-            status.behind = parts
-                .next()
-                .and_then(|value| value.trim_start_matches('-').parse().ok());
-        } else if entry.starts_with("1 ") || entry.starts_with("u ") || entry.starts_with("2 ") {
+                (kept.push_back(*entry), entry.starts_with("2 "))
+            }
+        },
+    );
+    let kept: Vec<&str> = kept.iter().copied().collect();
+
+    // The last header line of each kind wins, as a later line overwrites an earlier one.
+    let head = kept
+        .iter()
+        .filter_map(|entry| entry.strip_prefix("# branch.oid "))
+        .next_back()
+        .and_then(|oid| (oid != "(initial)").then(|| oid.to_owned()));
+    let branch = kept
+        .iter()
+        .filter_map(|entry| entry.strip_prefix("# branch.head "))
+        .next_back()
+        .and_then(|head| (head != "(detached)").then(|| head.to_owned()));
+    let ab: Vec<&str> = kept
+        .iter()
+        .filter_map(|entry| entry.strip_prefix("# branch.ab "))
+        .next_back()
+        .map(|ab| ab.split(' ').collect())
+        .unwrap_or_default();
+    let ahead = ab
+        .first()
+        .and_then(|value| value.trim_start_matches('+').parse().ok());
+    let behind = ab
+        .get(1)
+        .and_then(|value| value.trim_start_matches('-').parse().ok());
+
+    // Each change record gives its staged and unstaged codes and its path.
+    let changes: Vec<(char, char, &str)> = kept
+        .iter()
+        .filter(|entry| {
+            entry.starts_with("1 ") || entry.starts_with("u ") || entry.starts_with("2 ")
+        })
+        .filter_map(|entry| {
             let renamed = entry.starts_with("2 ");
             let fields: Vec<&str> = entry.splitn(if renamed { 10 } else { 9 }, ' ').collect();
             let (Some(xy), Some(path)) = (fields.get(1), fields.last()) else {
-                continue;
+                return None;
             };
-            if renamed {
-                i += 1; // the original path follows as its own NUL-terminated field
-            }
-            let mut codes = xy.chars();
-            let staged = codes.next().unwrap_or('.');
-            let unstaged = codes.next().unwrap_or('.');
-            if staged != '.' {
-                status.staged.push((*path).to_owned());
-            }
-            if unstaged != '.' {
-                status.unstaged.push((*path).to_owned());
-            }
-        } else if let Some(path) = entry.strip_prefix("? ") {
-            status.untracked.push(path.to_owned());
-        }
+            let staged = xy.chars().next().unwrap_or('.');
+            let unstaged = xy.chars().nth(1).unwrap_or('.');
+            Some((staged, unstaged, *path))
+        })
+        .collect();
+    let staged = changes
+        .iter()
+        .filter(|(staged, _, _)| *staged != '.')
+        .map(|(_, _, path)| (*path).to_owned())
+        .collect();
+    let unstaged = changes
+        .iter()
+        .filter(|(_, unstaged, _)| *unstaged != '.')
+        .map(|(_, _, path)| (*path).to_owned())
+        .collect();
+    let untracked = kept
+        .iter()
+        .filter_map(|entry| entry.strip_prefix("? "))
+        .map(str::to_owned)
+        .collect();
+
+    WorkingTreeStatus {
+        branch,
+        head,
+        ahead,
+        behind,
+        staged,
+        unstaged,
+        untracked,
     }
-    status
 }
 
 #[cfg(test)]

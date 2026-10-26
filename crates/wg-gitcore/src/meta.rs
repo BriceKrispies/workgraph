@@ -78,30 +78,32 @@ pub fn parse_trailers(raw: &str) -> Vec<Trailer> {
 /// Parses the records of `git log --format=META_FORMAT`. An empty date field is `None`; a date
 /// that is not an ISO 8601 timestamp with an offset is an error.
 pub fn parse_meta(output: &str) -> Result<Vec<CommitMeta>, WgError> {
-    let mut commits = Vec::new();
-    for record in output.split('\x1e') {
-        if record.trim().is_empty() {
-            continue;
-        }
-        let fields: Vec<&str> = record.splitn(11, '\x1f').collect();
-        let [sha, tree, parents, an, ae, ad, cn, ce, cd, trailers, body] = fields.as_slice() else {
-            continue;
-        };
-        commits.push(CommitMeta {
-            sha: sha.trim().to_owned(),
-            tree: tree.trim().to_owned(),
-            parents: parents.split_whitespace().map(str::to_owned).collect(),
-            author_name: (*an).to_owned(),
-            author_email: (*ae).to_owned(),
-            authored_at: parse_date(ad)?,
-            committer_name: (*cn).to_owned(),
-            committer_email: (*ce).to_owned(),
-            committed_at: parse_date(cd)?,
-            trailers: parse_trailers(trailers),
-            message: body.trim_end_matches('\n').to_owned(),
-        });
-    }
-    Ok(commits)
+    output
+        .split('\x1e')
+        .filter(|record| !record.trim().is_empty())
+        .filter_map(|record| {
+            let fields: Vec<&str> = record.splitn(11, '\x1f').collect();
+            let [sha, tree, parents, an, ae, ad, cn, ce, cd, trailers, body] = fields.as_slice()
+            else {
+                return None;
+            };
+            Some(parse_date(ad).and_then(|authored_at| {
+                parse_date(cd).map(|committed_at| CommitMeta {
+                    sha: sha.trim().to_owned(),
+                    tree: tree.trim().to_owned(),
+                    parents: parents.split_whitespace().map(str::to_owned).collect(),
+                    author_name: (*an).to_owned(),
+                    author_email: (*ae).to_owned(),
+                    authored_at,
+                    committer_name: (*cn).to_owned(),
+                    committer_email: (*ce).to_owned(),
+                    committed_at,
+                    trailers: parse_trailers(trailers),
+                    message: body.trim_end_matches('\n').to_owned(),
+                })
+            }))
+        })
+        .collect()
 }
 
 fn parse_date(value: &str) -> Result<Option<Timestamp>, WgError> {

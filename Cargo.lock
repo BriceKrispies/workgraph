@@ -2366,6 +2366,7 @@ dependencies = [
  "wg-tasks-feature",
  "wg-telemetry",
  "wg-telemetry-feature",
+ "wg-trackers-feature",
  "wg-types",
  "wg-uispec",
 ]
@@ -3037,14 +3038,21 @@ dependencies = [
 name = "wg-trackers-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rpds",
  "serde_json",
+ "time",
+ "wg-clispec",
+ "wg-jobs",
+ "wg-json",
  "wg-model",
+ "wg-render",
  "wg-runtime",
  "wg-store",
  "wg-storecodec",
  "wg-trackers",
  "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

@@ -28,6 +28,7 @@ pub const FEATURES: &[&Feature] = &[
     &wg_automation_feature::FEATURE,
     &wg_git_feature::FEATURE,
     &wg_exec_feature::FEATURE,
+    &wg_trackers_feature::FEATURE,
 ];
 
 /// The implemented groups that predate the feature descriptor, in CLI help order.

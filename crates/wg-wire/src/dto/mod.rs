@@ -42,6 +42,9 @@ pub mod task_graph;
 pub mod task_link;
 pub mod task_rollup;
 pub mod worker;
+pub mod task_changes;
+pub mod task_diff;
+pub mod verification;
 pub mod workspace;
 pub mod workspace_summary;
 

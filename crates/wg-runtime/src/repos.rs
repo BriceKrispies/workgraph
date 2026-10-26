@@ -235,6 +235,19 @@ impl App {
         })
     }
 
+    /// `RepositoryOut` of a repository row as it was just written, so its `health_detail` keeps
+    /// the key order the decision built (the store reload would sort it).
+    fn repository_row_value(
+        &mut self,
+        workspace_id: Id,
+        repo: &Repository,
+    ) -> Result<Value, WgError> {
+        self.runtime.store.read(|session| {
+            let registry = session.registry_slice(workspace_id)?;
+            repository_out(session, &registry, repo)
+        })
+    }
+
     /// `RepositoryService.register`: registers the repository at a path, or adds the path as
     /// another checkout of a known one.
     pub fn repo_register(
@@ -372,7 +385,7 @@ impl App {
             allowed_roots,
             managed_roots,
         };
-        let id = self
+        let row = self
             .runtime
             .decide(
                 context,
@@ -384,7 +397,7 @@ impl App {
                 |loaded, stamp| refresh::refresh(&request, loaded, stamp),
             )?
             .reply;
-        self.repository_value(scope, id)
+        self.repository_row_value(scope, &row)
     }
 
     /// `RepositoryService.status`: the working tree of the primary checkout.

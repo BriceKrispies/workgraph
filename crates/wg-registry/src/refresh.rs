@@ -15,7 +15,7 @@ use wg_model::event::{
 use wg_model::{
     Decision, EventDraft, EventPayload, Repository, RepositoryCheckout, Row, Stamp, Write,
 };
-use wg_types::{Id, Permission, WgError};
+use wg_types::{Permission, WgError};
 
 use crate::checkout::{
     DiscoverySlots, WorktreeDetail, WorktreeRecord, discover_worktrees, discovered_rows,
@@ -111,7 +111,7 @@ pub fn refresh(
     request: &Request,
     matched: &Matched,
     stamp: &Stamp,
-) -> Result<Decision<Id>, WgError> {
+) -> Result<Decision<Repository>, WgError> {
     stamp.require(&[Permission::RepoRead])?;
     let at = stamp.at;
     let repo = &matched.repository;
@@ -236,6 +236,9 @@ pub fn refresh(
         updated_at: at,
         ..repo.clone()
     };
+    // The reply is the row as written, so `health_detail` keeps the key order it was built with;
+    // a reload from the store sorts JSON object keys.
+    let reply = row.clone();
     let health_event = (repo.health_status != status).then(|| {
         let payload = RepositoryHealthChanged {
             from: repo.health_status.clone(),
@@ -276,7 +279,7 @@ pub fn refresh(
         .collect();
     let decision = writes
         .into_iter()
-        .fold(Decision::new(repo.id), Decision::write);
+        .fold(Decision::new(reply), Decision::write);
     Ok(events.into_iter().fold(decision, Decision::event))
 }
 

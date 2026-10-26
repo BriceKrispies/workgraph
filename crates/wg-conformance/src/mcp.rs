@@ -43,6 +43,7 @@ pub struct Message {
 /// The arguments that start a stdio server after `prefix` (the implementation's own arguments):
 /// `mcp --agent-name conformance`, then one `--grant` per permission.
 pub fn mcp_args(prefix: &[String], grants: &[String]) -> Vec<String> {
+    // Grants are passed after the agent identity, one `--grant` each (see `mcp --help`).
     let mut args = prefix.to_vec();
     args.extend(["mcp", "--agent-name", "conformance"].map(str::to_owned));
     for g in grants {
@@ -218,6 +219,12 @@ impl StdioClient {
         )
     }
 
+    /// `resources/read` for one URI; the reply object is returned as the server sent it.
+    pub fn read_resource(&mut self, uri: &str) -> Result<Value, String> {
+        self.initialize()?;
+        self.request("resources/read", Some(json!({"uri": uri})))
+    }
+
     fn stderr_note(&self) -> String {
         let text = self
             .stderr
@@ -311,6 +318,50 @@ fn outcome_of(reply: &Value) -> Outcome {
             stderr: String::new(),
         }
     }
+}
+
+/// Run one `mcp_resource` scenario step: `resources/read` on the shared session. The first text
+/// content is the stdout; an error reply is exit `1` with the error as stderr.
+pub(crate) fn resource_step(
+    session: &mut Option<StdioClient>,
+    start: impl FnOnce() -> Result<StdioClient, String>,
+    mut rec: StepRecord,
+    uri: &str,
+) -> (StepRecord, Option<Outcome>) {
+    if session.is_none() {
+        match start() {
+            Ok(client) => *session = Some(client),
+            Err(e) => return (fail(rec, e), None),
+        }
+    }
+    let Some(client) = session.as_mut() else {
+        return (fail(rec, "no MCP session".to_owned()), None);
+    };
+    let reply = match client.read_resource(uri) {
+        Ok(reply) => reply,
+        Err(e) => return (fail(rec, e), None),
+    };
+    let outcome = match reply.get("error") {
+        Some(error) => Outcome {
+            exit: 1,
+            stdout: String::new(),
+            stderr: error.to_string(),
+        },
+        None => Outcome {
+            exit: 0,
+            stdout: reply
+                .pointer("/result/contents/0/text")
+                .and_then(Value::as_str)
+                .unwrap_or_default()
+                .to_owned(),
+            stderr: String::new(),
+        },
+    };
+    rec.exit = Some(outcome.exit);
+    rec.stdout.clone_from(&outcome.stdout);
+    rec.stderr.clone_from(&outcome.stderr);
+    rec.status = Status::Passed;
+    (rec, Some(outcome))
 }
 
 fn fail(rec: StepRecord, note: String) -> StepRecord {

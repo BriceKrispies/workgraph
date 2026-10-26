@@ -1,0 +1,41 @@
+{
+  "id": "mcp-repositories",
+  "covers": ["M05", "M06", "M07", "M08"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["project", "create", "core"], "json": true},
+    {"mcp": "repository_register", "args": {"path": "{repo:svc}"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "permission_denied"}},
+    {"mcp": "repository_register", "args": {"path": "{repo:svc}", "name": "svc-main"}, "grants": ["repo:register"], "save": {"repo_id": "/id"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/name", "equals": "svc-main"}}},
+    {"mcp": "repository_register", "args": {"path": "{repo:svc}", "name": "svc-again"}, "grants": ["repo:register"]},
+    {"assert": {"exit": 0}},
+    {"mcp": "repository_list", "args": {}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "svc-main"}},
+    {"mcp": "repository_list", "args": {"project": "core"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "repository_list", "args": {"project": "no-such-project"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "repository_get", "args": {"repository": "svc-main"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/id", "equals": "{var:repo_id}"}}},
+    {"mcp": "repository_get", "args": {"repository": "no-such-repo"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "repository_status", "args": {"repository": "svc-main"}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "branch"}},
+    {"mcp": "repository_status", "args": {"repository": "no-such-repo"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}}
+  ],
+  "not_observable": []
+}

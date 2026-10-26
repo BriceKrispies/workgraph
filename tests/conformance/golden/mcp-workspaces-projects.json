@@ -1,0 +1,138 @@
+{
+  "scenario": "mcp-workspaces-projects",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"core\",\n  \"name\": \"Core\",\n  \"description\": \"\",\n  \"status\": \"active\",\n  \"settings\": {},\n  \"repository_ids\": [],\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"workspaces\": [\n    {\n      \"id\": \"<id:2>\",\n      \"slug\": \"default\",\n      \"name\": \"Default\",\n      \"description\": \"\",\n      \"key_prefix\": \"WG\",\n      \"settings\": {},\n      \"created_at\": \"<ts:1|Z>\",\n      \"updated_at\": \"<ts:1|Z>\",\n      \"archived_at\": null\n    }\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"workspace\": {\n    \"id\": \"<id:2>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:1|Z>\",\n    \"archived_at\": null\n  },\n  \"projects\": 1,\n  \"repositories\": 0,\n  \"tasks_by_status\": {},\n  \"ready_tasks\": 0,\n  \"running_attempts\": 0,\n  \"queued_jobs\": 0,\n  \"dead_jobs\": 0\n}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool workspace_get: {\"error\": {\"code\": \"not_found\", \"message\": \"workspace 'no-such-workspace' not found\", \"details\": {\"ref\": \"no-such-workspace\"}}}"
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"projects\": [\n    {\n      \"id\": \"<id:1>\",\n      \"workspace_id\": \"<id:2>\",\n      \"slug\": \"core\",\n      \"name\": \"Core\",\n      \"description\": \"\",\n      \"status\": \"active\",\n      \"settings\": {},\n      \"repository_ids\": [],\n      \"created_at\": \"<ts:2|Z>\",\n      \"updated_at\": \"<ts:2|Z>\"\n    }\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"project\": {\n    \"id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"slug\": \"core\",\n    \"name\": \"Core\",\n    \"description\": \"\",\n    \"status\": \"active\",\n    \"settings\": {},\n    \"repository_ids\": [],\n    \"created_at\": \"<ts:2|Z>\",\n    \"updated_at\": \"<ts:2|Z>\"\n  },\n  \"repositories\": [],\n  \"tasks_by_status\": {},\n  \"open_tasks\": 0,\n  \"accepted_tasks\": 0,\n  \"recent_tasks\": []\n}",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool project_get: {\"error\": {\"code\": \"not_found\", \"message\": \"project 'no-such-project' not found in workspace\", \"details\": {\"ref\": \"no-such-project\"}}}"
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "scenario": "mcp-resources",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"core\",\n  \"name\": \"Core\",\n  \"description\": \"\",\n  \"status\": \"active\",\n  \"settings\": {},\n  \"repository_ids\": [],\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Read me\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [\n    \"<id:1>\"\n  ],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:5|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "mcp_resource",
+      "exit": 0,
+      "stdout": "[{\"id\": \"<id:2>\", \"slug\": \"default\", \"name\": \"Default\", \"description\": \"\", \"key_prefix\": \"WG\", \"settings\": {}, \"created_at\": \"<ts:1|Z>\", \"updated_at\": \"<ts:3|Z>\", \"archived_at\": null}]",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "mcp_resource",
+      "exit": 0,
+      "stdout": "[{\"id\": \"tasks_created\", \"family\": \"throughput\", \"title\": \"Tasks created\", \"definition\": \"Number of tasks created in the period.\", \"unit\": \"tasks\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"tasks_completed\", \"family\": \"throughput\", \"title\": \"Tasks completed\", \"definition\": \"Tasks whose completion was reported (entered awaiting verification/review), by completion time. Completion is a claim, not acceptance.\", \"unit\": \"tasks\", \"statistic\": \"count\", \"time_column\": \"completed_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"tasks_accepted\", \"family\": \"throughput\", \"title\": \"Tasks accepted\", \"definition\": \"Tasks accepted (verified or manually accepted), by acceptance time.\", \"unit\": \"tasks\", \"statistic\": \"count\", \"time_column\": \"accepted_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"open_backlog\", \"family\": \"throughput\", \"title\": \"Open tasks\", \"definition\": \"Tasks currently not accepted or cancelled, grouped by creation period.\", \"unit\": \"tasks\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"blocked_tasks\", \"family\": \"throughput\", \"title\": \"Blocked tasks\", \"definition\": \"Tasks currently in the blocked state.\", \"unit\": \"tasks\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"reopened_tasks\", \"family\": \"quality\", \"title\": \"Reopened tasks\", \"definition\": \"Tasks reopened at least once after acceptance or cancellation.\", \"unit\": \"tasks\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"queue_wait\", \"family\": \"execution\", \"title\": \"Queue waiting time\", \"definition\": \"Time between an attempt being queued and starting, per top-level attempt (measured by Workgraph).\", \"unit\": \"ms\", \"statistic\": \"distribution\", \"time_column\": \"started_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"execution_duration\", \"family\": \"execution\", \"title\": \"Active execution time\", \"definition\": \"Measured wall-clock duration of finished top-level attempts.\", \"unit\": \"ms\", \"statistic\": \"distribution\", \"time_column\": \"finished_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"task_elapsed\", \"family\": \"execution\", \"title\": \"Total task elapsed time\", \"definition\": \"Creation to acceptance, for accepted tasks.\", \"unit\": \"ms\", \"statistic\": \"distribution\", \"time_column\": \"accepted_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"cycle_time\", \"family\": \"execution\", \"title\": \"Cycle time\", \"definition\": \"First start (claim/run) to acceptance, for accepted tasks.\", \"unit\": \"ms\", \"statistic\": \"distribution\", \"time_column\": \"accepted_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"attempts_per_task\", \"family\": \"execution\", \"title\": \"Attempts per task\", \"definition\": \"Top-level attempts per accepted task that had attempts.\", \"unit\": \"attempts\", \"statistic\": \"distribution\", \"time_column\": \"accepted_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"retry_rate\", \"family\": \"execution\", \"title\": \"Retry frequency\", \"definition\": \"Share of top-level attempts that were explicit retries.\", \"unit\": \"ratio\", \"statistic\": \"ratio\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"first_pass_success\", \"family\": \"execution\", \"title\": \"First-pass success\", \"definition\": \"Accepted tasks (with attempts) whose first attempt succeeded and needed no further attempts.\", \"unit\": \"ratio\", \"statistic\": \"ratio\", \"time_column\": \"accepted_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"attempt_success_rate\", \"family\": \"execution\", \"title\": \"Attempt success rate\", \"definition\": \"Succeeded / finished top-level attempts.\", \"unit\": \"ratio\", \"statistic\": \"ratio\", \"time_column\": \"finished_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"attempt_outcomes\", \"family\": \"execution\", \"title\": \"Attempt outcomes\", \"definition\": \"Top-level attempts by status (group by status).\", \"unit\": \"attempts\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"cumulative_churn\", \"family\": \"code\", \"title\": \"Cumulative churn\", \"definition\": \"Lines added + removed across a task's distinct linked non-merge commits (confidence >= 0.5; cherry-picked or rewritten duplicates counted once).\", \"unit\": \"lines\", \"statistic\": \"distribution\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": [\"Lines changed do not measure difficulty or necessity.\"]}, {\"id\": \"final_change_size\", \"family\": \"code\", \"title\": \"Final change size\", \"definition\": \"Lines added + removed between the attempt baseline and the accepted revision (all repositories).\", \"unit\": \"lines\", \"statistic\": \"distribution\", \"time_column\": \"accepted_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"files_touched\", \"family\": \"code\", \"title\": \"Files affected\", \"definition\": \"Distinct file paths touched by a task's linked commits.\", \"unit\": \"files\", \"statistic\": \"distribution\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"functions_affected\", \"family\": \"code\", \"title\": \"Functions affected\", \"definition\": \"Functions/methods touched (Tree-sitter) summed over a task's analysed commits.\", \"unit\": \"functions\", \"statistic\": \"distribution\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"rework_ratio\", \"family\": \"code\", \"title\": \"Rework indicator\", \"definition\": \"Cumulative churn divided by final change size; values well above 1 mean code was rewritten during the task.\", \"unit\": \"ratio\", \"statistic\": \"distribution\", \"time_column\": \"accepted_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"repeated_file_edits\", \"family\": \"code\", \"title\": \"Repeated edits\", \"definition\": \"Files edited by more than one commit within the same task.\", \"unit\": \"files\", \"statistic\": \"distribution\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"repository_change_volume\", \"family\": \"code\", \"title\": \"Repository change volume\", \"definition\": \"Lines changed by distinct task-linked commits per repository (a commit shared by several tasks counts once).\", \"unit\": \"lines\", \"statistic\": \"sum\", \"time_column\": \"committed_at\", \"dimensions\": [\"period\", \"repository\"], \"caveats\": []}, {\"id\": \"module_hotspots\", \"family\": \"architecture\", \"title\": \"Module hotspots\", \"definition\": \"Lines changed per module across tasks (group by module).\", \"unit\": \"lines\", \"statistic\": \"sum\", \"time_column\": \"created_at\", \"dimensions\": [\"category\", \"file_class\", \"module\", \"period\", \"project\", \"repository\"], \"caveats\": []}, {\"id\": \"structural_distribution\", \"family\": \"architecture\", \"title\": \"Change by file class\", \"definition\": \"Lines changed by file class (production/test/config/docs).\", \"unit\": \"lines\", \"statistic\": \"sum\", \"time_column\": \"created_at\", \"dimensions\": [\"category\", \"file_class\", \"module\", \"period\", \"project\", \"repository\"], \"caveats\": []}, {\"id\": \"agent_completion_rate\", \"family\": \"agents\", \"title\": \"Agent completion rate\", \"definition\": \"Succeeded / finished top-level attempts, typically grouped by provider and model.\", \"unit\": \"ratio\", \"statistic\": \"ratio\", \"time_column\": \"finished_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": [\"Agents receive different tasks; differences are not caused by the agent alone (selection bias).\"]}, {\"id\": \"agent_duration\", \"family\": \"agents\", \"title\": \"Median agent execution duration\", \"definition\": \"Duration of succeeded top-level attempts.\", \"unit\": \"ms\", \"statistic\": \"distribution\", \"time_column\": \"finished_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"agent_verification_pass_rate\", \"family\": \"agents\", \"title\": \"Verification success\", \"definition\": \"Passed / executed verification runs attached to attempts.\", \"unit\": \"ratio\", \"statistic\": \"ratio\", \"time_column\": \"finished_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"input_tokens\", \"family\": \"agents\", \"title\": \"Input tokens (measured)\", \"definition\": \"Provider-reported input tokens; attempts without measured usage are excluded (see sample size).\", \"unit\": \"tokens\", \"statistic\": \"sum\", \"time_column\": \"finished_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"output_tokens\", \"family\": \"agents\", \"title\": \"Output tokens (measured)\", \"definition\": \"Provider-reported output tokens.\", \"unit\": \"tokens\", \"statistic\": \"sum\", \"time_column\": \"finished_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"cost\", \"family\": \"agents\", \"title\": \"Cost (measured)\", \"definition\": \"Provider-reported cost; never estimated by Workgraph.\", \"unit\": \"usd\", \"statistic\": \"sum\", \"time_column\": \"finished_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"priority\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"verification_pass_rate\", \"family\": \"quality\", \"title\": \"Verification pass rate\", \"definition\": \"Passed / completed verification runs.\", \"unit\": \"ratio\", \"statistic\": \"ratio\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"model\", \"period\", \"project\", \"provider\", \"status\"], \"caveats\": []}, {\"id\": \"check_failures\", \"family\": \"quality\", \"title\": \"Check failures\", \"definition\": \"Failed or errored verification checks (group by kind/check).\", \"unit\": \"checks\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"category\", \"check_name\", \"kind\", \"period\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"test_failures\", \"family\": \"quality\", \"title\": \"Test failures\", \"definition\": \"Failed test checks.\", \"unit\": \"checks\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"category\", \"check_name\", \"kind\", \"period\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"build_failures\", \"family\": \"quality\", \"title\": \"Build failures\", \"definition\": \"Failed build checks.\", \"unit\": \"checks\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"category\", \"check_name\", \"kind\", \"period\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"integration_failures\", \"family\": \"quality\", \"title\": \"Integration failures\", \"definition\": \"Failed cross-repository integration checks.\", \"unit\": \"checks\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"category\", \"check_name\", \"kind\", \"period\", \"project\", \"repository\", \"status\"], \"caveats\": []}, {\"id\": \"regressions\", \"family\": \"quality\", \"title\": \"Regressions linked to previous work\", \"definition\": \"Tasks related to earlier work as regression_of.\", \"unit\": \"relations\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"category\", \"period\", \"project\", \"relation_type\"], \"caveats\": []}, {\"id\": \"follow_up_fixes\", \"family\": \"quality\", \"title\": \"Follow-up fixes\", \"definition\": \"Tasks related to earlier work as follows_up.\", \"unit\": \"relations\", \"statistic\": \"count\", \"time_column\": \"created_at\", \"dimensions\": [\"category\", \"period\", \"project\", \"relation_type\"], \"caveats\": []}]",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "mcp_resource",
+      "exit": 0,
+      "stdout": "{\"workspace\": {\"id\": \"<id:2>\", \"slug\": \"default\", \"name\": \"Default\", \"description\": \"\", \"key_prefix\": \"WG\", \"settings\": {}, \"created_at\": \"<ts:1|Z>\", \"updated_at\": \"<ts:3|Z>\", \"archived_at\": null}, \"projects\": 1, \"repositories\": 0, \"tasks_by_status\": {\"ready\": 1}, \"ready_tasks\": 1, \"running_attempts\": 0, \"queued_jobs\": 2, \"dead_jobs\": 0}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "mcp_resource",
+      "exit": 0,
+      "stdout": "{\"project\": {\"id\": \"<id:1>\", \"workspace_id\": \"<id:2>\", \"slug\": \"core\", \"name\": \"Core\", \"description\": \"\", \"status\": \"active\", \"settings\": {}, \"repository_ids\": [], \"created_at\": \"<ts:2|Z>\", \"updated_at\": \"<ts:2|Z>\"}, \"repositories\": [], \"tasks_by_status\": {\"ready\": 1}, \"open_tasks\": 1, \"accepted_tasks\": 0, \"recent_tasks\": [{\"id\": \"<id:3>\", \"key\": \"WG-1\", \"title\": \"Read me\", \"status\": \"ready\", \"priority\": \"medium\", \"category\": null}]}",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "mcp_resource",
+      "exit": 0,
+      "stdout": "{\"id\": \"<id:3>\", \"workspace_id\": \"<id:2>\", \"key\": \"WG-1\", \"number\": 1, \"title\": \"Read me\", \"description\": \"\", \"acceptance_criteria\": [], \"status\": \"ready\", \"priority\": \"medium\", \"category\": null, \"tags\": [], \"files\": [], \"project_ids\": [\"<id:1>\"], \"repository_ids\": [], \"parent_id\": null, \"child_ids\": [], \"depends_on\": [], \"blocks\": [], \"assignee\": null, \"assigned_agent\": null, \"claimed_by\": null, \"claim_expires_at\": null, \"auto_execute\": false, \"estimated_effort\": null, \"links\": [], \"metadata\": {}, \"due_at\": null, \"scheduled_at\": null, \"created_by\": \"human:Brice\", \"version\": 2, \"created_at\": \"<ts:3|Z>\", \"updated_at\": \"<ts:5|Z>\", \"started_at\": null, \"completed_at\": null, \"accepted_at\": null, \"archived_at\": null, \"current_classification_id\": null, \"relations\": [], \"comments\": [], \"rollup\": null, \"dependency_state\": {\"satisfied\": true, \"unsatisfied\": []}}",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "mcp_resource",
+      "exit": 0,
+      "stdout": "{\"events\": [{\"seq\": 3, \"id\": \"<id:4>\", \"workspace_id\": \"<id:2>\", \"event_type\": \"task.created\", \"entity_type\": \"task\", \"entity_id\": \"<id:3>\", \"actor\": \"human:Brice\", \"actor_kind\": \"human\", \"occurred_at\": \"<ts:4|Z>\", \"correlation_id\": \"<id:5>\", \"causation_id\": null, \"attempt_id\": null, \"schema_version\": 2, \"data\": {\"acceptance_criteria\": [], \"assignee\": null, \"auto_execute\": false, \"depends_on\": [], \"description\": \"\", \"key\": \"WG-1\", \"parent_id\": null, \"priority\": \"medium\", \"project_ids\": [\"<id:1>\"], \"repository_ids\": [], \"status\": \"backlog\", \"tags\": [], \"title\": \"Read me\"}}, {\"seq\": 4, \"id\": \"<id:6>\", \"workspace_id\": \"<id:2>\", \"event_type\": \"task.status_changed\", \"entity_type\": \"task\", \"entity_id\": \"<id:3>\", \"actor\": \"human:Brice\", \"actor_kind\": \"human\", \"occurred_at\": \"<ts:5|Z>\", \"correlation_id\": \"<id:5>\", \"causation_id\": \"<id:4>\", \"attempt_id\": null, \"schema_version\": 1, \"data\": {\"from\": \"backlog\", \"reason\": \"created ready\", \"to\": \"ready\", \"version\": 2}}, {\"seq\": 5, \"id\": \"<id:7>\", \"workspace_id\": \"<id:2>\", \"event_type\": \"task.became_ready\", \"entity_type\": \"task\", \"entity_id\": \"<id:3>\", \"actor\": \"human:Brice\", \"actor_kind\": \"human\", \"occurred_at\": \"<ts:5|Z>\", \"correlation_id\": \"<id:5>\", \"causation_id\": \"<id:6>\", \"attempt_id\": null, \"schema_version\": 1, \"data\": {\"key\": \"WG-1\"}}], \"attempts\": {\"items\": [], \"total\": 0, \"limit\": 50, \"offset\": 0, \"next_offset\": null}}",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "mcp_resource",
+      "exit": 0,
+      "stdout": "{\"metric\": {\"id\": \"cumulative_churn\", \"family\": \"code\", \"title\": \"Cumulative churn\", \"definition\": \"Lines added + removed across a task's distinct linked non-merge commits (confidence >= 0.5; cherry-picked or rewritten duplicates counted once).\", \"unit\": \"lines\", \"statistic\": \"distribution\", \"time_column\": \"created_at\", \"dimensions\": [\"agent\", \"category\", \"period\", \"priority\", \"project\", \"repository\", \"status\"], \"caveats\": [\"Lines changed do not measure difficulty or necessity.\"]}, \"query\": {\"metric\": \"cumulative_churn\", \"group_by\": [\"period\"], \"period\": \"week\", \"filters\": {\"project\": null, \"repository\": null, \"category\": null, \"agent\": null, \"provider\": null, \"model\": null, \"priority\": null, \"status\": null, \"kind\": null, \"since\": null, \"until\": null}, \"limit\": 500}, \"rows\": [], \"sample_size\": 0, \"provenance\": {\"sql\": \"SELECT date_trunc('week', created_at) AS period, COUNT(churn_insertions + churn_deletions) AS n, AVG(churn_insertions + churn_deletions) AS mean, quantile_cont(churn_insertions + churn_deletions, 0.5) AS median, quantile_cont(churn_insertions + churn_deletions, 0.75) AS p75, quantile_cont(churn_insertions + churn_deletions, 0.9) AS p90, quantile_cont(churn_insertions + churn_deletions, 0.95) AS p95, MIN(churn_insertions + churn_deletions) AS min, MAX(churn_insertions + churn_deletions) AS max, SUM(churn_insertions + churn_deletions) AS sum FROM (\\n        SELECT tf.*, tf.workspace_id AS ws, tf.project_id AS project, tf.category AS category,\\n               tf.priority AS priority, tf.status AS status, tf.assigned_agent AS agent\\n        FROM task_facts tf WHERE tf.archived_at IS NULL\\n    ) WHERE ws = ? AND (commits > 0) GROUP BY period ORDER BY period LIMIT 500\", \"source\": \"DuckDB snapshot of the SQLite database\", \"generated_at\": \"<ts:6|db>\"}, \"notes\": [\"Lines changed do not measure difficulty or necessity.\", \"Metrics describe observed associations; differences between groups do not establish causation.\"]}",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "mcp_resource",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "{\"code\":-32602,\"message\":\"task 'WG-999' not found\",\"data\":{\"uri\":\"workgraph://workspaces/default/tasks/WG-999\"}}"
+    },
+    {
+      "index": 23,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "mcp_resource",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "{\"code\":-32602,\"message\":\"project 'no-such-project' not found in workspace\",\"data\":{\"uri\":\"workgraph://workspaces/default/projects/no-such-project\"}}"
+    },
+    {
+      "index": 25,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "mcp_resource",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "{\"code\":-32603,\"message\":\"Error creating resource from template workgraph://workspaces/default/analytics/no-such-metric\",\"data\":{\"uri\":\"workgraph://workspaces/default/analytics/no-such-metric\"}}"
+    },
+    {
+      "index": 27,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

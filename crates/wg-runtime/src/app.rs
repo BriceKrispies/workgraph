@@ -15,7 +15,7 @@ use wg_store::{Location, Session, Store};
 use wg_types::{ErrorCode, Id, WgError};
 
 use crate::cycle::Runtime;
-use crate::effects::{Interpreter, write_atomic};
+use crate::effects::{Interpreter, NetHttp, write_atomic};
 use crate::stamp::{SystemStamps, draw};
 
 /// The application context.
@@ -109,7 +109,10 @@ impl App {
             runtime: Runtime {
                 store,
                 stamps: Box::new(SystemStamps),
-                effects: Interpreter::default(),
+                effects: Interpreter {
+                    http: Some(Box::new(NetHttp::default())),
+                    ..Interpreter::default()
+                },
             },
         })
     }

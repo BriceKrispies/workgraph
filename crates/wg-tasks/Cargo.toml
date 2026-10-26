@@ -11,10 +11,10 @@ description = "task lifecycle, dependency graph, task writes, claims, comments"
 workspace = true
 
 [dependencies]
+rpds = { version = "1", features = ["serde"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-model = { path = "../wg-model" }
 wg-types = { path = "../wg-types" }
 
 [dev-dependencies]
-rpds = { version = "1", features = ["serde"] }
 uuid = { version = "1", default-features = false, features = ["std", "serde"] }

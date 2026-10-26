@@ -1,5 +1,5 @@
 //! Python's text and number conversions, reproduced where the configuration output depends on them:
-//! `repr()` of strings and floats, `int()` of a loose value, and the bound text of Pydantic messages.
+//! `repr()` of strings, floats and values, and the bound text of Pydantic messages.
 
 use serde_json::Value;
 
@@ -78,29 +78,38 @@ pub(crate) fn float_repr(value: f64) -> String {
     }
 }
 
+/// Python's `repr()` of a configuration value read from TOML: `None`, `True`/`False`, numbers,
+/// quoted strings, and lists and dicts of those.
+pub fn value_repr(value: &Value) -> String {
+    match value {
+        Value::Null => "None".to_string(),
+        Value::Bool(true) => "True".to_string(),
+        Value::Bool(false) => "False".to_string(),
+        Value::Number(number) => match number.as_i64() {
+            Some(int) => int.to_string(),
+            None => float_repr(number.as_f64().unwrap_or(f64::NAN)),
+        },
+        Value::String(text) => repr_str(text),
+        Value::Array(items) => {
+            let parts: Vec<String> = items.iter().map(value_repr).collect();
+            format!("[{}]", parts.join(", "))
+        }
+        Value::Object(map) => {
+            let parts: Vec<String> = map
+                .iter()
+                .map(|(key, value)| format!("{}: {}", repr_str(key), value_repr(value)))
+                .collect();
+            format!("{{{}}}", parts.join(", "))
+        }
+    }
+}
+
 /// A bound as Pydantic prints it in a message: an integer-valued float prints without a fraction.
 pub(crate) fn bound_text(bound: f64) -> String {
     if bound.fract() == 0.0 && bound.abs() < 9.0e15 {
         format!("{}", bound as i64)
     } else {
         float_repr(bound)
-    }
-}
-
-/// `int(value)` for a loose value. The error is the name of the Python exception it raises.
-pub(crate) fn int_of(value: &Value) -> Result<i64, &'static str> {
-    match value {
-        Value::Bool(flag) => Ok(i64::from(*flag)),
-        Value::Number(number) => match number.as_i64() {
-            Some(int) => Ok(int),
-            None => number
-                .as_f64()
-                .filter(|float| float.is_finite())
-                .map(|float| float.trunc() as i64)
-                .ok_or("ValueError"),
-        },
-        Value::String(text) => text.trim().parse::<i64>().map_err(|_| "ValueError"),
-        Value::Null | Value::Array(_) | Value::Object(_) => Err("TypeError"),
     }
 }
 

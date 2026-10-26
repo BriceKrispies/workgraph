@@ -28,6 +28,7 @@ mod writer;
 pub use error::ConfigError;
 pub use files::ConfigFiles;
 pub use model::{default_global, default_overrides, validate_global, validate_overrides};
+pub use pyfmt::value_repr;
 pub use set::{parse_value, set_path};
 pub use toml_doc::parse_document;
 pub use value::strip_none;

@@ -643,7 +643,7 @@ fn app_context_paths_token_config_and_workspaces() -> TestResult {
     assert!(broken.message.contains("is not valid TOML"));
     std::fs::remove_file(home.join("config").join("config.toml"))?;
 
-    create_schema(&mut app.runtime.store)?;
+    // `App::open` has migrated the fresh database to head, so the schema is already there.
     let none = app
         .default_workspace_id()
         .err()

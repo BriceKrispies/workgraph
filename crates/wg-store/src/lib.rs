@@ -18,6 +18,8 @@ mod git;
 mod migrate;
 mod repos;
 mod run;
+mod classify;
+mod search;
 mod session;
 mod stacks;
 mod tasks;

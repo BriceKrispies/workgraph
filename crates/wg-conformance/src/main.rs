@@ -13,6 +13,7 @@ use wg_conformance::runner::Implementation;
 
 const USAGE: &str = "usage: wg-conformance <validate|diff|record|check|coverage> [options]
        wg-conformance dbdump DATABASE [-o FILE]   canonical database dump (as dbdump.py dump)
+       wg-conformance mcp-replay --command COMMAND [--transcript FILE]   replay the CF-03 stdio transcript
        wg-conformance replay-http (--rust COMMAND | --python COMMAND) [--contracts DIR] [--file NAME]...
                             replay the CF-04 HTTP recordings (default contracts/http)
   --scenarios PATH     scenario directory or file (default tests/conformance/scenarios)
@@ -342,6 +343,9 @@ fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.first().map(String::as_str) == Some("dbdump") {
         return dbdump(&args[1..]);
+    }
+    if args.first().map(String::as_str) == Some("mcp-replay") {
+        return wg_conformance::mcp::replay_command(&args[1..]);
     }
     if args.first().map(String::as_str) == Some("replay-http") {
         return replay_http(&args[1..]);

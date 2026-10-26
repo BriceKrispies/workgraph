@@ -19,3 +19,10 @@ toml = { version = "0.9", default-features = false, features = ["parse", "serde"
 [[bin]]
 name = "wg-conformance"
 path = "src/main.rs"
+
+# CR-04 runs its own main: the test binary re-runs itself as a fake stdio MCP server, and the test
+# harness would write its own lines to the same stdout.
+[[test]]
+name = "cr04_mcp"
+path = "tests/cr04_mcp.rs"
+harness = false

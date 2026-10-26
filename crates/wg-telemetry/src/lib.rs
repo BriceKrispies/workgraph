@@ -11,12 +11,16 @@
 //! * [`binding`] is session correlation: which attempt, task or cwd binding a session belongs to.
 //! * [`transcript`] parses a subagent transcript and its tool calls.
 //! * [`timing`] classifies tool calls and measures where a run's wall time went.
+//! * [`ingest`] is the rows and events a hook ingestion writes, and the attempts it creates and finishes.
+//! * [`spool`] is the spooled record: its text, its file name and its replay bookkeeping.
 //! * [`json`] is the Python text of JSON values (`json.dumps(sort_keys=True)`, `str`, `repr`).
 
 pub mod binding;
 pub mod hook;
+pub mod ingest;
 pub mod json;
 pub mod redact;
+pub mod spool;
 pub mod timing;
 pub mod transcript;
 mod util;

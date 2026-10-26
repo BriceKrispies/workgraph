@@ -7,8 +7,10 @@ use wg_types::Id;
 /// `agent_session.bound`. Written against a task.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct AgentSessionBound {
-    pub cwd: String,
-    pub session_id: String,
+    /// The registered working-directory prefix; `None` when the binding names only a session.
+    pub cwd: Option<String>,
+    /// The external session id; `None` when the binding names only a working directory.
+    pub session_id: Option<String>,
 }
 
 /// `agent_session.started`.
@@ -17,7 +19,8 @@ pub struct AgentSessionStarted {
     pub binding: Value,
     pub external_session_id: String,
     pub provider: String,
-    pub source: String,
+    /// The hook's `source`; `None` when the payload carries none.
+    pub source: Option<String>,
     pub task_id: Option<Id>,
 }
 

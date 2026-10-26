@@ -1,0 +1,200 @@
+{
+  "id": "stack-child-without-fast-checks-ready",
+  "covers": [
+    "C099",
+    "C060",
+    "C001",
+    "C118",
+    "C172",
+    "C152",
+    "C136",
+    "C131",
+    "C127",
+    "C165",
+    "C143",
+    "C176",
+    "B04"
+  ],
+  "setup": [
+    {
+      "git": "init",
+      "repo": "svc"
+    },
+    {
+      "git": "commit",
+      "repo": "svc",
+      "files": {
+        "base.txt": "base\n"
+      },
+      "message": "initial"
+    }
+  ],
+  "steps": [
+    {
+      "cli": [
+        "init"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "execution.enabled",
+        "true"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "agent",
+        "add-command",
+        "fake-a",
+        "python",
+        "--arg=-c",
+        "--arg=import json,os,pathlib,subprocess,sys\nm=json.load(open(sys.argv[1]))\nk=json.loads(sys.stdin.read())['task']['key']\nf=sys.argv[2]\ne=dict(os.environ,GIT_AUTHOR_NAME='Workgraph Scripted Agent',GIT_AUTHOR_EMAIL='agent@workgraph.local',GIT_COMMITTER_NAME='Workgraph Scripted Agent',GIT_COMMITTER_EMAIL='agent@workgraph.local')\nch=[]\nfor r in m['repositories']:\n    if r['access']!='read_write': continue\n    p=pathlib.Path(r['checkout_path'])\n    plan=p/'workgraph-demo.json'\n    if plan.exists():\n        d=json.loads(plan.read_text()); t=p/d['file']; c=d['content'].replace(chr(123)+'task'+chr(125),k)\n    else:\n        t=p/f; prev=t.read_text() if t.exists() else ''; c=prev+'def change_%d():\\n    return %r\\n' % (len(prev.splitlines()),k)\n    t.parent.mkdir(parents=True,exist_ok=True); t.write_text(c,newline='\\n')\n    subprocess.run(['git','-C',str(p),'add','-A'],check=True,env=e,capture_output=True)\n    subprocess.run(['git','-C',str(p),'commit','-q','-m','Implement %s in %s\\n\\nTask-ID: %s' % (k,r['repository'],k)],check=True,env=e,capture_output=True)\n    ch.append(r['repository']+':'+str(t.relative_to(p)))\nprint(json.dumps(dict(type='usage',input_tokens=1200,output_tokens=340)))\nprint(json.dumps(dict(type='result',status='succeeded',summary='changed '+(', '.join(ch) or 'nothing'))))\n",
+        "--arg={manifest}",
+        "--arg=a.py",
+        "--timeout",
+        "120",
+        "--supports-usage"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "repo",
+        "register",
+        "{repo:svc}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "verify",
+        "config",
+        "gate",
+        "--scope-type",
+        "repository",
+        "--scope",
+        "svc",
+        "--check",
+        "{\"name\": \"full suite\", \"kind\": \"test\", \"command\": [\"python\", \"-c\", \"print('FAILED tests/test_api.py::test_login - AssertionError'); raise SystemExit(1)\"]}"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Parent work",
+        "--repo",
+        "svc"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "task",
+        "create",
+        "Full-only change",
+        "--parent",
+        "WG-1",
+        "--repo",
+        "svc",
+        "--ready"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "stack",
+        "create",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "run",
+        "start",
+        "WG-2",
+        "--agent",
+        "fake-a",
+        "--no-wait"
+      ],
+      "json": true,
+      "save": {
+        "attempt": "/id"
+      }
+    },
+    {
+      "drain": {
+        "max_jobs": 20
+      }
+    },
+    {
+      "cli": [
+        "run",
+        "get",
+        "{var:attempt}"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/attempt/status",
+          "equals": "succeeded"
+        }
+      }
+    },
+    {
+      "cli": [
+        "task",
+        "show",
+        "WG-2"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/status",
+          "equals": "awaiting_verification"
+        }
+      }
+    },
+    {
+      "cli": [
+        "stack",
+        "show",
+        "WG-1"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/items/0/state",
+          "equals": "merged"
+        }
+      }
+    },
+    {
+      "cli": [
+        "verify",
+        "runs",
+        "--task",
+        "WG-2"
+      ],
+      "json": true
+    },
+    {
+      "assert": {
+        "stdout_contains": "[]"
+      }
+    }
+  ],
+  "not_observable": []
+}

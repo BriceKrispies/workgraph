@@ -18,4 +18,5 @@ wg-json = { path = "../wg-json" }
 wg-model = { path = "../wg-model" }
 wg-render = { path = "../wg-render" }
 wg-types = { path = "../wg-types" }
+wg-validate = { path = "../wg-validate" }
 wg-wire = { path = "../wg-wire" }

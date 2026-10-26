@@ -3,13 +3,13 @@
 
 use std::collections::BTreeSet;
 
-use wg_json::Value;
+use wg_json::{LocalDateTime, Value};
 use wg_model::TaskSlice;
 use wg_model::entity::{Task, TaskComment, TaskFile, TaskLink, TaskRelation, TaskTag};
 use wg_model::slice::StackSlice;
 use wg_tasks::deps::unsatisfied_dependencies;
 use wg_tasks::hierarchy::rollup;
-use wg_types::Id;
+use wg_types::{Id, Timestamp};
 use wg_wire::dto::task::{self, TaskRelated};
 use wg_wire::dto::{dependency_state, task_brief, task_detail, task_rollup};
 
@@ -142,6 +142,42 @@ pub fn bulk_result_out(result: &wg_tasks::bulk::BulkResult) -> Value {
             ),
         ],
     )
+}
+
+/// A datetime field that the request gave without an offset. Python echoes the naive value it was
+/// given, where the stored instant is the same wall clock read as UTC, so the reply prints it
+/// without a zone. `value` is `Some` only for such a field; any other output is returned as is.
+#[must_use]
+pub fn echo_naive(out: Value, field: &str, value: Option<Timestamp>) -> Value {
+    match (out, value) {
+        (Value::Model { name, fields }, Some(ts)) => {
+            let at = ts.to_offset_datetime();
+            let naive = Value::LocalDateTime(LocalDateTime {
+                year: at.year(),
+                month: u8::from(at.month()),
+                day: at.day(),
+                hour: at.hour(),
+                minute: at.minute(),
+                second: at.second(),
+                microsecond: at.nanosecond() / 1_000,
+                offset_seconds: None,
+            });
+            Value::Model {
+                name,
+                fields: fields
+                    .into_iter()
+                    .map(|(key, current)| {
+                        if key == field {
+                            (key, naive.clone())
+                        } else {
+                            (key, current)
+                        }
+                    })
+                    .collect(),
+            }
+        }
+        (out, _) => out,
+    }
 }
 
 /// `TaskService._rollup`.

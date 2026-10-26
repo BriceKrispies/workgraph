@@ -116,6 +116,20 @@ impl Session<'_> {
         Ok(slice)
     }
 
+    /// The jobs that name `task_id`, of any status and kind: what an enrichment enqueue reads to
+    /// find a job already queued under the same idempotency key (`JobQueue.enqueue`).
+    pub fn task_jobs_slice(&mut self, task_id: Id) -> Result<QueueSlice, WgError> {
+        let mut slice = QueueSlice::default();
+        let filter = JobFilter {
+            task_id: Some(task_id),
+            ..JobFilter::default()
+        };
+        for job in self.list_jobs(&filter)?.0 {
+            slice.jobs = slice.jobs.insert(job.id, job);
+        }
+        Ok(slice)
+    }
+
     /// The queued and running jobs of `kind` as a slice (what a duplicate check reads).
     pub fn active_slice(&mut self, kind: &str) -> Result<QueueSlice, WgError> {
         let mut slice = QueueSlice::default();

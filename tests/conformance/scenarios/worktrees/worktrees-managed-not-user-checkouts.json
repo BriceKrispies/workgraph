@@ -1,0 +1,23 @@
+{
+  "id": "worktrees-managed-not-user-checkouts",
+  "covers": ["C117", "C118"],
+  "setup": [
+    {"git": "init", "repo": "managed"},
+    {"git": "commit", "repo": "managed", "files": {"README.md": "managed\n"}, "message": "initial"},
+    {"git": "branch", "repo": "managed", "args": ["managed-wt"]},
+    {"git": "worktree", "repo": "managed", "args": ["../../home/data/worktrees/managed-wt", "managed-wt"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:managed}"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/kind", "equals": "clone"}}},
+    {"assert": {"json": {"path": "/checkouts/0/is_primary", "equals": true}}},
+    {"assert": {"json": {"path": "/health_detail/skipped_worktrees", "equals": []}}},
+    {"assert": {"json": {"path": "/checkouts/1", "absent": true}}},
+    {"cli": ["repo", "refresh", "managed"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/kind", "equals": "clone"}}},
+    {"assert": {"json": {"path": "/health_status", "equals": "ok"}}},
+    {"assert": {"json": {"path": "/checkouts/1", "absent": true}}}
+  ],
+  "not_observable": []
+}

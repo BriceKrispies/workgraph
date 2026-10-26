@@ -1,0 +1,21 @@
+{
+  "id": "worktrees-attempt-submit-refuses-unmanaged",
+  "covers": ["C018", "C022", "C024", "C118", "C148", "C152"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["task", "create", "Recorded only", "--repo", "api", "--ready"], "json": true},
+    {"cli": ["task", "claim", "WG-1"], "json": true},
+    {"cli": ["attempt", "create", "WG-1", "--provider", "tester"], "json": true, "save": {"attempt": "/id"}},
+    {"cli": ["attempt", "submit", "{var:attempt}"], "json": true},
+    {"assert": {"exit": 2}},
+    {"assert": {"stdout_contains": "no managed worktree"}},
+    {"cli": ["attempt", "show", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "running"}}}
+  ],
+  "not_observable": []
+}

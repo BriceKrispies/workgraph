@@ -1,0 +1,26 @@
+{
+  "scenario": "security-cli-serve-binding",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "error: refusing to bind to non-loopback address 192.0.2.10; pass --allow-remote \nto opt in\n"
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

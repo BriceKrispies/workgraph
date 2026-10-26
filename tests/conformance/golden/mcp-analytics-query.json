@@ -1,0 +1,103 @@
+{
+  "scenario": "mcp-analytics-query",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Counted\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 2,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"metric\": {\n    \"id\": \"tasks_accepted\",\n    \"family\": \"throughput\",\n    \"title\": \"Tasks accepted\",\n    \"definition\": \"Tasks accepted (verified or manually accepted), by acceptance time.\",\n    \"unit\": \"tasks\",\n    \"statistic\": \"count\",\n    \"time_column\": \"accepted_at\",\n    \"dimensions\": [\n      \"agent\",\n      \"category\",\n      \"period\",\n      \"priority\",\n      \"project\",\n      \"repository\",\n      \"status\"\n    ],\n    \"caveats\": []\n  },\n  \"query\": {\n    \"metric\": \"tasks_accepted\",\n    \"group_by\": [\n      \"status\"\n    ],\n    \"period\": \"week\",\n    \"filters\": {\n      \"project\": null,\n      \"repository\": null,\n      \"category\": null,\n      \"agent\": null,\n      \"provider\": null,\n      \"model\": null,\n      \"priority\": null,\n      \"status\": null,\n      \"kind\": null,\n      \"since\": null,\n      \"until\": null\n    },\n    \"limit\": 500\n  },\n  \"rows\": [],\n  \"sample_size\": 0,\n  \"provenance\": {\n    \"sql\": \"SELECT status, COUNT(*) AS value, COUNT(*) AS n FROM (\\n        SELECT tf.*, tf.workspace_id AS ws, tf.project_id AS project, tf.category AS category,\\n               tf.priority AS priority, tf.status AS status, tf.assigned_agent AS agent\\n        FROM task_facts tf WHERE tf.archived_at IS NULL\\n    ) WHERE ws = ? AND (accepted_at IS NOT NULL) GROUP BY status ORDER BY status LIMIT 500\",\n    \"source\": \"DuckDB snapshot of the SQLite database\",\n    \"generated_at\": \"<ts:3|db>\"\n  },\n  \"notes\": [\n    \"Metrics describe observed associations; differences between groups do not establish causation.\"\n  ]\n}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_query: {\"error\": {\"code\": \"not_found\", \"message\": \"project 'no-such-project' not found in workspace\", \"details\": {\"ref\": \"no-such-project\"}}}"
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_query: {\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid analytics query: Value error, unknown metric 'no_such_metric'; known metrics: agent_completion_rate, agent_duration, agent_verification_pass_rate, attempt_outcomes, attempt_success_rate, attempts_per_task, blocked_tasks, build_failures, check_failures, cost, cumulative_churn, cycle_time, execution_duration, files_touched, final_change_size, first_pass_success, follow_up_fixes, functions_affected, input_tokens, integration_failures, module_hotspots, open_backlog, output_tokens, queue_wait, regressions, reopened_tasks, repeated_file_edits, repository_change_volume, retry_rate, rework_ratio, structural_distribution, task_elapsed, tasks_accepted, tasks_completed, tasks_created, test_failures, verification_pass_rate\", \"details\": {\"errors\": [{\"type\": \"value_error\", \"loc\": [\"metric\"], \"msg\": \"Value error, unknown metric 'no_such_metric'; known metrics: agent_completion_rate, agent_duration, agent_verification_pass_rate, attempt_outcomes, attempt_success_rate, attempts_per_task, blocked_tasks, build_failures, check_failures, cost, cumulative_churn, cycle_time, execution_duration, files_touched, final_change_size, first_pass_success, follow_up_fixes, functions_affected, input_tokens, integration_failures, module_hotspots, open_backlog, output_tokens, queue_wait, regressions, reopened_tasks, repeated_file_edits, repository_change_volume, retry_rate, rework_ratio, structural_distribution, task_elapsed, tasks_accepted, tasks_completed, tasks_created, test_failures, verification_pass_rate\", \"input\": \"no_such_metric\", \"ctx\": {\"error\": \"unknown metric 'no_such_metric'; known metrics: agent_completion_rate, agent_duration, agent_verification_pass_rate, attempt_outcomes, attempt_success_rate, attempts_per_task, blocked_tasks, build_failures, check_failures, cost, cumulative_churn, cycle_time, execution_duration, files_touched, final_change_size, first_pass_success, follow_up_fixes, functions_affected, input_tokens, integration_failures, module_hotspots, open_backlog, output_tokens, queue_wait, regressions, reopened_tasks, repeated_file_edits, repository_change_volume, retry_rate, rework_ratio, structural_distribution, task_elapsed, tasks_accepted, tasks_completed, tasks_created, test_failures, verification_pass_rate\"}}]}}}"
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_query: 1 validation error for analytics_queryArguments\ngroup_by.0\n  Input should be 'period', 'project', 'repository', 'category', 'priority', 'status', 'provider', 'model', 'agent', 'kind', 'check_name', 'module', 'file_class' or 'relation_type' [type=literal_error, input_value='nonsense', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool analytics_query: 1 validation error for analytics_queryArguments\nperiod\n  Input should be 'day', 'week', 'month', 'quarter' or 'year' [type=literal_error, input_value='fortnight', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

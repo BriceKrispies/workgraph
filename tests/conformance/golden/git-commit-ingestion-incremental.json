@@ -33,7 +33,7 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"ingest\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:3|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\ingest\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:3|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:3|Z>\"\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"ingest\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:4|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\ingest\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:4|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:4|Z>\",\n  \"updated_at\": \"<ts:4|Z>\"\n}\n",
       "stderr": ""
     },
     {
@@ -101,6 +101,97 @@
     },
     {
       "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "git",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "git",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"repository_id\": \"<id:1>\",\n    \"repository\": \"ingest\",\n    \"mode\": \"incremental\",\n    \"new_commits\": 1,\n    \"refs_changed\": 1,\n    \"marked_unreachable\": 0,\n    \"restored_reachable\": 0,\n    \"equivalences\": 0,\n    \"links_created\": 0,\n    \"shallow\": false,\n    \"head_refs\": 1\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"repository_id\": \"<id:1>\",\n  \"total\": 3,\n  \"items\": [\n    {\n      \"id\": \"<id:6>\",\n      \"sha\": \"<sha:4>\",\n      \"subject\": \"rename app\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:3|+00:00>\",\n      \"insertions\": 0,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [],\n      \"tasks\": []\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"sha\": \"<sha:2>\",\n      \"subject\": \"add module\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:2|+00:00>\",\n      \"insertions\": 2,\n      \"deletions\": 0,\n      \"files_changed\": 2,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [],\n      \"tasks\": []\n    },\n    {\n      \"id\": \"<id:5>\",\n      \"sha\": \"<sha:1>\",\n      \"subject\": \"initial\",\n      \"author\": \"Test Author\",\n      \"author_email\": \"author@example.com\",\n      \"committed_at\": \"<ts:1|+00:00>\",\n      \"insertions\": 1,\n      \"deletions\": 0,\n      \"files_changed\": 1,\n      \"is_merge\": false,\n      \"reachable\": true,\n      \"branches\": [\n        \"main\"\n      ],\n      \"trailers\": [],\n      \"tasks\": []\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"sha\": \"<sha:4>\",\n  \"repository_id\": \"<id:1>\",\n  \"parents\": [\n    \"<sha:2>\"\n  ],\n  \"subject\": \"rename app\",\n  \"message\": \"rename app\",\n  \"trailers\": [],\n  \"author\": {\n    \"name\": \"Test Author\",\n    \"email\": \"author@example.com\",\n    \"at\": \"<ts:3|+00:00>\"\n  },\n  \"committer\": {\n    \"name\": \"Test Committer\",\n    \"email\": \"committer@example.com\",\n    \"at\": \"<ts:3|+00:00>\"\n  },\n  \"is_merge\": false,\n  \"patch_id\": \"<sha:5>\",\n  \"reachable\": true,\n  \"object_available\": true,\n  \"branches\": [\n    \"main\"\n  ],\n  \"insertions\": 0,\n  \"deletions\": 0,\n  \"files\": [\n    {\n      \"path\": \"src/core.py\",\n      \"old_path\": \"src/app.py\",\n      \"change_type\": \"R\",\n      \"insertions\": 0,\n      \"deletions\": 0,\n      \"binary\": false,\n      \"language\": \"python\",\n      \"file_class\": \"production\",\n      \"module\": \"src\",\n      \"symbols\": []\n    }\n  ],\n  \"analysis\": null,\n  \"equivalences\": [],\n  \"tasks\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "git",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"repository_id\": \"<id:1>\",\n    \"repository\": \"ingest\",\n    \"mode\": \"incremental\",\n    \"new_commits\": 1,\n    \"refs_changed\": 1,\n    \"marked_unreachable\": 0,\n    \"restored_reachable\": 0,\n    \"equivalences\": 0,\n    \"links_created\": 0,\n    \"shallow\": false,\n    \"head_refs\": 1\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 24,
       "kind": "assert",
       "exit": null,
       "stdout": "",

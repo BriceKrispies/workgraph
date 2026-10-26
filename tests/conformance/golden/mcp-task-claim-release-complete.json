@@ -1,0 +1,145 @@
+{
+  "scenario": "mcp-task-claim-release-complete",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Claimable\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 2,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Not ready yet\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 1,\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:3|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Claimable\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:conformance\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:conformance\",\n  \"claim_expires_at\": \"<ts:8|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 3,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:4|Z>\",\n  \"started_at\": \"<ts:4|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool task_claim: {\"error\": {\"code\": \"invalid_transition\", \"message\": \"task WG-2 is backlog; only ready (or failed) tasks can be claimed\", \"details\": {\"status\": \"backlog\"}}}"
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool task_claim: 1 validation error for task_claimArguments\nlease_minutes\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than_equal"
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool task_release: {\"error\": {\"code\": \"invalid_transition\", \"message\": \"task WG-2 is backlog, not claimed\", \"details\": {}}}"
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Claimable\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:conformance\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 4,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:5|Z>\",\n  \"started_at\": \"<ts:4|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Claimable\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:conformance\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:conformance\",\n  \"claim_expires_at\": \"<ts:9|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 5,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:6|Z>\",\n  \"started_at\": \"<ts:4|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Claimable\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:conformance\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 6,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:7|Z>\",\n  \"started_at\": \"<ts:4|Z>\",\n  \"completed_at\": \"<ts:7|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool task_complete: {\"error\": {\"code\": \"not_found\", \"message\": \"task 'WG-404' not found\", \"details\": {\"ref\": \"WG-404\"}}}"
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "scenario": "mcp-task-update-fields",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Old title\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [\n    \"a\",\n    \"b\"\n  ],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"New title\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [\n    \"done\"\n  ],\n  \"status\": \"backlog\",\n  \"priority\": \"critical\",\n  \"category\": null,\n  \"tags\": [\n    \"b\",\n    \"c\"\n  ],\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"anchor\": null,\n      \"note\": \"\"\n    }\n  ],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 2,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"New title\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [\n    \"done\"\n  ],\n  \"status\": \"backlog\",\n  \"priority\": \"critical\",\n  \"category\": null,\n  \"tags\": [\n    \"b\",\n    \"c\"\n  ],\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"anchor\": null,\n      \"note\": \"\"\n    }\n  ],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 2,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"New title\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [\n    \"done\"\n  ],\n  \"status\": \"blocked\",\n  \"priority\": \"critical\",\n  \"category\": null,\n  \"tags\": [\n    \"b\",\n    \"c\"\n  ],\n  \"files\": [\n    {\n      \"path\": \"src/a.py\",\n      \"anchor\": null,\n      \"note\": \"\"\n    }\n  ],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 3,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:3|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool task_update: {\"error\": {\"code\": \"version_conflict\", \"message\": \"task WG-1 was modified concurrently (expected version 999, found 3); re-read and retry\", \"details\": {\"expected\": 999, \"actual\": 3}}}"
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool task_update: 1 validation error for task_updateArguments\nstatus\n  Input should be 'backlog', 'ready', 'blocked' or 'cancelled' [type=literal_error, input_value='accepted', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "mcp",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error executing tool task_update: {\"error\": {\"code\": \"not_found\", \"message\": \"task 'WG-404' not found\", \"details\": {\"ref\": \"WG-404\"}}}"
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"New title\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [\n    \"done\"\n  ],\n  \"status\": \"blocked\",\n  \"priority\": \"critical\",\n  \"category\": null,\n  \"tags\": [\n    \"b\",\n    \"c\"\n  ],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 4,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:4|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "mcp",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"New title\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [\n    \"done\"\n  ],\n  \"status\": \"blocked\",\n  \"priority\": \"critical\",\n  \"category\": null,\n  \"tags\": [\n    \"b\",\n    \"c\"\n  ],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"agent:conformance\",\n  \"version\": 4,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:4|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

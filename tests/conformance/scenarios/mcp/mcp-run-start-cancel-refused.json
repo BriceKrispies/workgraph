@@ -1,0 +1,28 @@
+{
+  "id": "mcp-run-start-cancel-refused",
+  "covers": ["M52", "M53", "M54", "M47"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Run me", "ready": true}},
+    {"mcp": "task_claim", "args": {"task": "WG-1"}},
+    {"mcp": "attempt_create", "args": {"task": "WG-1"}, "save": {"attempt": "/id"}},
+    {"mcp": "run_start", "args": {"task": "WG-1"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "run:start"}},
+    {"mcp": "run_get", "args": {"attempt_id": "{var:attempt}", "events": 10}},
+    {"assert": {"exit": 0}},
+    {"mcp": "run_get", "args": {"attempt_id": "00000000-0000-0000-0000-000000000000"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "run_cancel", "args": {"attempt_id": "{var:attempt}", "reason": "stop"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "run:cancel"}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_mcp.py::test_stdio_server_discovery_invocation_and_persistence: run_start succeeds only with the run:start grant and execution enabled, and run_cancel only with run:cancel on a queued or running run; the mcp step runs with the default agent grants and no execution, so only the refusals are reachable",
+      "covered_by": "CORE-12"
+    }
+  ]
+}

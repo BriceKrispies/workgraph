@@ -1,0 +1,28 @@
+{
+  "id": "mcp-task-history-attempts",
+  "covers": ["M41", "M42", "M47"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"mcp": "task_create", "args": {"title": "History", "ready": true}},
+    {"mcp": "task_claim", "args": {"task": "WG-1"}},
+    {"mcp": "attempt_create", "args": {"task": "WG-1", "model": "test-model"}},
+    {"assert": {"exit": 0}},
+    {"mcp": "task_get_history", "args": {"task": "WG-1", "limit": 50}},
+    {"assert": {"exit": 0}},
+    {"assert": {"stdout_contains": "task.created"}},
+    {"mcp": "task_get_history", "args": {"task": "WG-1", "limit": 0}},
+    {"assert": {"exit": 1}},
+    {"mcp": "task_get_history", "args": {"task": "WG-404"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}},
+    {"mcp": "task_get_attempts", "args": {"task": "WG-1", "limit": 10, "offset": 0}},
+    {"assert": {"json": {"path": "/total", "equals": 1}}},
+    {"mcp": "task_get_attempts", "args": {"task": "WG-1", "limit": 10, "offset": 1}},
+    {"assert": {"json": {"path": "/items", "equals": []}}},
+    {"mcp": "task_get_attempts", "args": {"task": "WG-404"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}}
+  ],
+  "not_observable": []
+}

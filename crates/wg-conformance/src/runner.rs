@@ -6,7 +6,7 @@
 
 use crate::gitfix;
 use crate::http;
-use crate::scenario::{Assertion, Scenario, Setup, Step};
+use crate::scenario::{Assertion, JsonExpect, Scenario, Setup, Step};
 use serde_json::{Map, Value, json};
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -287,6 +287,8 @@ impl Ctx<'_> {
                 .unwrap_or_else(|| "default".to_owned())),
             ("home", None) => Ok(display(&self.sb.home)),
             ("tmp", None) => Ok(display(&self.sb.tmp)),
+            // The platform path separator, so a scenario that asserts paths runs on every OS.
+            ("sep", None) => Ok(std::path::MAIN_SEPARATOR.to_string()),
             ("repo", Some(r)) => Ok(display(&self.sb.repos.join(r))),
             ("key", Some(a)) => n(a)
                 .and_then(|n| self.keys.get(n - 1).cloned())
@@ -403,6 +405,22 @@ pub(crate) fn run_cli(
     run_process(&mut cmd, stdin)
 }
 
+/// The JSON document a command printed. In `--json` mode Python first prints a banner line
+/// (`worker <id> started ...`), so when the whole output is not JSON the document starts at the
+/// first later line that begins with `{`. `Null` when there is none.
+fn json_document(stdout: &str) -> Value {
+    let mut start = 0;
+    loop {
+        if let Ok(doc) = serde_json::from_str::<Value>(&stdout[start..]) {
+            return doc;
+        }
+        match stdout[start..].find("\n{") {
+            Some(p) => start += p + 1,
+            None => return Value::Null,
+        }
+    }
+}
+
 fn pointer_text(stdout: &str, ptr: &str) -> Result<String, String> {
     let doc: Value =
         serde_json::from_str(stdout).map_err(|e| format!("last output is not JSON: {e}"))?;
@@ -434,16 +452,22 @@ fn fail(mut r: StepRecord, note: String) -> StepRecord {
     r
 }
 
-/// Run one typed git setup operation (CR-03) in the named repository.
-fn git_step(ctx: &mut Ctx<'_>, s: &Setup) -> Result<Outcome, String> {
-    let dir = ctx.sb.repos.join(&s.repo);
-    let tick = ctx.git_ticks.entry(s.repo.clone()).or_insert(0);
-    let mut repo = gitfix::Repo::new(dir, tick);
-    let message = s.message.as_deref().unwrap_or("commit");
-    match (s.git.as_str(), s.args.as_slice()) {
+/// Run one typed git operation (CR-03) in the repository at `dir`. `ticks` is the commit tick of
+/// that repository, so every operation on it continues one count of dates.
+fn git_op(
+    dir: PathBuf,
+    ticks: &mut u64,
+    op: &str,
+    args: &[String],
+    files: &[(String, String)],
+    message: Option<&str>,
+) -> Result<Outcome, String> {
+    let mut repo = gitfix::Repo::new(dir, ticks);
+    let message = message.unwrap_or("commit");
+    match (op, args) {
         ("init", []) => repo.init(),
-        ("commit", []) => repo.commit(message, &s.files, true),
-        ("write", []) => repo.write(&s.files),
+        ("commit", []) => repo.commit(message, files, true),
+        ("write", []) => repo.write(files),
         ("branch", [name]) => repo.branch(name),
         ("checkout", [name]) => repo.checkout(name, false),
         ("checkout", [flag, name]) if flag == "-b" => repo.checkout(name, true),
@@ -456,10 +480,33 @@ fn git_step(ctx: &mut Ctx<'_>, s: &Setup) -> Result<Outcome, String> {
         ("reset", [rev]) => repo.reset(None, rev),
         ("reset", [mode, rev]) => repo.reset(Some(mode), rev),
         (op, args) => Err(format!(
-            "setup `{op}` does not take {} argument(s)",
+            "git `{op}` does not take {} argument(s)",
             args.len()
         )),
     }
+}
+
+/// Run one setup operation in the named repository of the sandbox.
+fn setup_step(ctx: &mut Ctx<'_>, s: &Setup) -> Result<Outcome, String> {
+    let dir = ctx.sb.repos.join(&s.repo);
+    let ticks = ctx.git_ticks.entry(display(&dir)).or_insert(0);
+    git_op(dir, ticks, &s.git, &s.args, &s.files, s.message.as_deref())
+}
+
+/// A directory for a step's `cwd`: as given when absolute, else under the repositories directory.
+fn step_dir(sb: &Sandbox, cwd: &str) -> PathBuf {
+    let p = PathBuf::from(cwd);
+    if p.is_absolute() { p } else { sb.repos.join(p) }
+}
+
+/// Whether `path` is a directory strictly inside the sandbox home (no `..`, not the home itself).
+fn inside_home(sb: &Sandbox, path: &Path) -> bool {
+    path.is_absolute()
+        && path != sb.home
+        && path.starts_with(&sb.home)
+        && !path
+            .components()
+            .any(|c| matches!(c, std::path::Component::ParentDir))
 }
 
 fn run_assertion(ctx: &Ctx<'_>, a: &Assertion) -> Result<Result<(), String>, String> {
@@ -493,14 +540,38 @@ fn run_assertion(ctx: &Ctx<'_>, a: &Assertion) -> Result<Result<(), String>, Str
                 Err(format!("stderr does not contain {want:?}"))
             }
         }
-        Assertion::Json { path, equals } => {
-            let want = ctx.resolve_value(equals)?;
+        Assertion::Json { path, expect } => {
             let doc: Value = serde_json::from_str(&last()?.stdout)
                 .map_err(|e| format!("last output is not JSON: {e}"))?;
-            match doc.pointer(path) {
-                Some(got) if *got == want => Ok(()),
-                Some(got) => Err(format!("{path} is {got}, wanted {want}")),
-                None => Err(format!("no value at {path}")),
+            let got = doc.pointer(path);
+            match (expect, got) {
+                (JsonExpect::Equals(want), got) => {
+                    let want = ctx.resolve_value(want)?;
+                    match got {
+                        Some(got) if *got == want => Ok(()),
+                        Some(got) => Err(format!("{path} is {got}, wanted {want}")),
+                        None => Err(format!("no value at {path}")),
+                    }
+                }
+                (JsonExpect::NotEquals(want), got) => {
+                    let want = ctx.resolve_value(want)?;
+                    match got {
+                        Some(got) if *got != want => Ok(()),
+                        Some(_) => Err(format!("{path} is {want}, wanted anything else")),
+                        None => Err(format!("no value at {path}")),
+                    }
+                }
+                (JsonExpect::Absent, None) => Ok(()),
+                (JsonExpect::Absent, Some(got)) => Err(format!("{path} is present: {got}")),
+                (JsonExpect::Excludes(item), got) => {
+                    let item = ctx.resolve_value(item)?;
+                    match got {
+                        Some(Value::Array(items)) if !items.contains(&item) => Ok(()),
+                        Some(Value::Array(_)) => Err(format!("{path} contains {item}")),
+                        Some(_) => Err(format!("{path} is not an array")),
+                        None => Err(format!("no value at {path}")),
+                    }
+                }
             }
         }
         Assertion::File {
@@ -629,9 +700,23 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
             method,
             path,
             body,
+            headers,
             max_events,
+            expect_status,
             save,
-        } => http_step(ctx, index, method, path, body.as_ref(), *max_events, save),
+        } => http_step(
+            ctx,
+            index,
+            HttpCall {
+                method,
+                path,
+                body: body.as_ref(),
+                headers,
+                max_events: *max_events,
+                expect_status: *expect_status,
+                save,
+            },
+        ),
         Step::Drain { max_jobs } => {
             let mut rec = record(index, "drain", format!("max_jobs {max_jobs}"));
             let (mut done, mut failed) = (0u64, 0u64);
@@ -650,7 +735,7 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
                     rec.stderr = o.stderr;
                     return fail(rec, "worker run --once failed".to_owned());
                 }
-                let doc: Value = serde_json::from_str(&o.stdout).unwrap_or(Value::Null);
+                let doc = json_document(&o.stdout);
                 let n = |k: &str| doc.get(k).and_then(Value::as_u64).unwrap_or(0);
                 let (c, f) = (n("completed"), n("failed"));
                 if c + f == 0 {
@@ -662,6 +747,66 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
             rec.exit = Some(0);
             rec.stdout = format!("completed={done} failed={failed}\n");
             rec
+        }
+        Step::Git {
+            git,
+            cwd,
+            args,
+            files,
+            message,
+        } => {
+            let rec = record(index, "git", format!("{git} {cwd}"));
+            let dir = match ctx.resolve(cwd) {
+                Ok(c) => step_dir(ctx.sb, &c),
+                Err(e) => return fail(rec, e),
+            };
+            let args: Result<Vec<String>, String> = args.iter().map(|a| ctx.resolve(a)).collect();
+            let args = match args {
+                Ok(a) => a,
+                Err(e) => return fail(rec, e),
+            };
+            let message = match message.as_deref().map(|m| ctx.resolve(m)).transpose() {
+                Ok(m) => m,
+                Err(e) => return fail(rec, e),
+            };
+            let ticks = ctx.git_ticks.entry(display(&dir)).or_insert(0);
+            match git_op(dir, ticks, git, &args, files, message.as_deref()) {
+                Ok(o) => {
+                    let failed = o.exit != 0;
+                    let rec = StepRecord {
+                        exit: Some(o.exit),
+                        stdout: o.stdout,
+                        stderr: o.stderr,
+                        ..rec
+                    };
+                    if failed {
+                        fail(rec, format!("git {git} failed"))
+                    } else {
+                        rec
+                    }
+                }
+                Err(e) => fail(rec, e),
+            }
+        }
+        Step::Rmtree { path } => {
+            let rec = record(index, "rmtree", path.clone());
+            let path = match ctx.resolve(path) {
+                Ok(p) => PathBuf::from(p),
+                Err(e) => return fail(rec, e),
+            };
+            if !inside_home(ctx.sb, &path) {
+                return fail(
+                    rec,
+                    format!("{} is not inside the sandbox home", path.display()),
+                );
+            }
+            match std::fs::remove_dir_all(&path) {
+                Ok(()) => StepRecord {
+                    exit: Some(0),
+                    ..rec
+                },
+                Err(e) => fail(rec, format!("remove {}: {e}", path.display())),
+            }
         }
         Step::Assert(a) => {
             let rec = record(index, "assert", format!("{a:?}"));
@@ -681,19 +826,43 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
     }
 }
 
-/// Run one `http` step against the sandbox's `serve`, which starts on first use. The bearer
-/// token is sent on every step. The exit field holds the HTTP status; the output is the body,
-/// or with `max_events` the captured events, one JSON object per line.
-fn http_step(
-    ctx: &mut Ctx<'_>,
-    index: usize,
-    method: &str,
-    path: &str,
-    body: Option<&Value>,
+/// One `http` step as written in a scenario, borrowed from the step.
+struct HttpCall<'a> {
+    method: &'a str,
+    path: &'a str,
+    body: Option<&'a Value>,
+    headers: &'a [(String, String)],
     max_events: Option<usize>,
-    save: &[(String, String)],
-) -> StepRecord {
+    expect_status: Option<i64>,
+    save: &'a [(String, String)],
+}
+
+/// Run one `http` step against the sandbox's `serve`, which starts on first use. Unless the step
+/// names its own `authorization` header, the bearer token is sent. The exit field holds the HTTP
+/// status; the output is the body, or with `max_events` the captured events, one JSON object per
+/// line. The response becomes the last output, so `json` assertions and `{last:...}` read the body.
+/// Placeholders `{port}` and `{token}` resolve to the running server's port and API token.
+fn http_step(ctx: &mut Ctx<'_>, index: usize, call: HttpCall<'_>) -> StepRecord {
+    let HttpCall {
+        method,
+        path,
+        body,
+        headers,
+        max_events,
+        expect_status,
+        save,
+    } = call;
     let rec = record(index, "http", format!("{method} {path}"));
+    if ctx.server.is_none() {
+        match http::Server::start(ctx.imp, ctx.sb) {
+            Ok(s) => {
+                ctx.vars.insert("port".to_owned(), s.port.to_string());
+                ctx.vars.insert("token".to_owned(), s.token.clone());
+                ctx.server = Some(s);
+            }
+            Err(e) => return fail(rec, e),
+        }
+    }
     let path = match ctx.resolve(path) {
         Ok(p) => p,
         Err(e) => return fail(rec, e),
@@ -702,34 +871,39 @@ fn http_step(
         Ok(b) => b,
         Err(e) => return fail(rec, e),
     };
-    let (payload, mut headers): (Option<Vec<u8>>, Vec<(String, String)>) = match body {
-        None => (None, Vec::new()),
-        Some(Value::String(text)) => (Some(text.into_bytes()), Vec::new()),
-        Some(json) => (
-            Some(json.to_string().into_bytes()),
-            vec![("content-type".to_owned(), "application/json".to_owned())],
-        ),
-    };
-    if ctx.server.is_none() {
-        match http::Server::start(ctx.imp, ctx.sb) {
-            Ok(s) => ctx.server = Some(s),
+    let mut user_headers = Vec::with_capacity(headers.len());
+    for (name, value) in headers {
+        match ctx.resolve(value) {
+            Ok(v) => user_headers.push((name.clone(), v)),
             Err(e) => return fail(rec, e),
         }
     }
+    let has = |list: &[(String, String)], name: &str| {
+        list.iter().any(|(n, _)| n.eq_ignore_ascii_case(name))
+    };
+    let (payload, json_body): (Option<Vec<u8>>, bool) = match body {
+        None => (None, false),
+        Some(Value::String(text)) => (Some(text.into_bytes()), false),
+        Some(json) => (Some(json.to_string().into_bytes()), true),
+    };
+    let mut all: Vec<(String, String)> = Vec::new();
     let Some(server) = ctx.server.as_ref() else {
         return fail(rec, "serve did not start".to_owned());
     };
-    headers.insert(
-        0,
-        (
+    if !has(&user_headers, "authorization") {
+        all.push((
             "authorization".to_owned(),
             format!("Bearer {}", server.token),
-        ),
-    );
+        ));
+    }
+    all.extend(user_headers.iter().cloned());
+    if json_body && !has(&user_headers, "content-type") {
+        all.push(("content-type".to_owned(), "application/json".to_owned()));
+    }
     let req = http::Request {
         method,
         path: &path,
-        headers: &headers,
+        headers: &all,
         body: payload.as_deref(),
     };
     let exchange = match http::send(server.port, &req, max_events) {
@@ -746,28 +920,33 @@ fn http_step(
     } else {
         text.clone()
     };
+    let status = i64::from(exchange.status);
+    let rec = StepRecord {
+        exit: Some(status),
+        stdout: stdout.clone(),
+        ..rec
+    };
     scan_keys(&text, &mut ctx.keys);
     scan_ids(&text, &mut ctx.ids);
+    ctx.last = Some(Outcome {
+        exit: status,
+        stdout,
+        stderr: String::new(),
+    });
     for (name, ptr) in save {
         match pointer_text(&text, ptr) {
             Ok(v) => {
                 ctx.vars.insert(name.clone(), v);
             }
-            Err(e) => {
-                return fail(
-                    StepRecord {
-                        exit: Some(i64::from(exchange.status)),
-                        stdout,
-                        ..rec
-                    },
-                    format!("save {name}: {e}"),
-                );
-            }
+            Err(e) => return fail(rec, format!("save {name}: {e}")),
         }
     }
+    if let Some(want) = expect_status
+        && status != want
+    {
+        return fail(rec, format!("HTTP status {status}, wanted {want}"));
+    }
     StepRecord {
-        exit: Some(i64::from(exchange.status)),
-        stdout,
         status: Status::Passed,
         ..rec
     }
@@ -840,7 +1019,7 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
     let mut setup_ok = true;
     for (i, s) in scenario.setup.iter().enumerate() {
         let rec = record(i, "setup", format!("git {} {}", s.git, s.repo));
-        let rec = match git_step(&mut ctx, s) {
+        let rec = match setup_step(&mut ctx, s) {
             Ok(o) if o.exit == 0 => rec,
             Ok(o) => {
                 setup_ok = false;
@@ -921,6 +1100,10 @@ mod tests {
             r#"{"a": {x}} {unknown:1}"#
         );
         assert!(ctx.resolve("{key:3}").is_err());
+        assert_eq!(
+            ctx.resolve("{home}{sep}data").unwrap(),
+            format!("{}{}data", display(&sb.home), std::path::MAIN_SEPARATOR)
+        );
         let _ = std::fs::remove_dir_all(&sb.root);
     }
 
@@ -955,5 +1138,94 @@ mod tests {
             "{:?}",
             failures.iter().map(|s| &s.note).collect::<Vec<_>>()
         );
+    }
+
+    fn failures_of(text: &str) -> Vec<String> {
+        let scenario = crate::scenario::parse_scenario(text).unwrap();
+        let imp = Implementation::from_command("git", "git", Vec::new()).unwrap();
+        run_scenario(&scenario, &imp)
+            .unwrap()
+            .steps
+            .iter()
+            .filter(|s| s.status == Status::Failed)
+            .map(|s| format!("{}: {}", s.label, s.note))
+            .collect()
+    }
+
+    #[test]
+    fn git_steps_commit_in_a_named_directory_between_steps() {
+        let failed = failures_of(
+            r#"{"id":"git-step","covers":[],"setup":[
+              {"git":"init","repo":"r"},
+              {"git":"commit","repo":"r","files":{"a.txt":"a\n"},"message":"base"}
+            ],"steps":[
+              {"git":"commit","cwd":"{repo:r}","files":{"b.txt":"b\n"},"message":"second"},
+              {"git":"branch","cwd":"{repo:r}","args":["feat"]},
+              {"git":"checkout","cwd":"{repo:r}","args":["main"]},
+              {"git":"merge","cwd":"{repo:r}","args":["feat"]},
+              {"cli":["--version"]},
+              {"assert":{"exit":0}}
+            ]}"#,
+        );
+        assert!(failed.is_empty(), "{failed:?}");
+        // A git step in a directory that does not exist fails the step, not the run.
+        let failed = failures_of(
+            r#"{"id":"git-step-missing","covers":[],"steps":[
+              {"git":"commit","cwd":"{home}/no-such-dir","message":"x"}
+            ]}"#,
+        );
+        assert_eq!(failed.len(), 1, "{failed:?}");
+    }
+
+    #[test]
+    fn git_step_arguments_take_placeholders() {
+        // `{ws}` always resolves to `default`, so the branch created under a placeholder name
+        // can be checked out under its resolved name only if the arguments were resolved.
+        let failed = failures_of(
+            r#"{"id":"git-step-placeholders","covers":[],"setup":[
+              {"git":"init","repo":"r"},
+              {"git":"commit","repo":"r","files":{"a.txt":"a\n"},"message":"base"}
+            ],"steps":[
+              {"git":"branch","cwd":"{repo:r}","args":["{ws}-feat"]},
+              {"git":"checkout","cwd":"{repo:r}","args":["default-feat"]},
+              {"git":"commit","cwd":"{repo:r}","files":{"b.txt":"b\n"},"message":"on {ws}"}
+            ]}"#,
+        );
+        assert!(failed.is_empty(), "{failed:?}");
+    }
+
+    #[test]
+    fn rmtree_removes_a_tree_under_home_and_refuses_the_rest() {
+        let failed = failures_of(
+            r#"{"id":"rmtree-step","covers":[],"steps":[
+              {"git":"init","cwd":"{home}/gone"},
+              {"git":"write","cwd":"{home}/gone","files":{"x.txt":"x\n"}},
+              {"rmtree":"{home}/gone"},
+              {"assert":{"file":"{home}/gone/x.txt","exists":false}},
+              {"rmtree":"{home}/gone"}
+            ]}"#,
+        );
+        // Removing the tree twice is a failure of the second step, and the first one passed.
+        assert_eq!(failed.len(), 1, "{failed:?}");
+        assert!(failed[0].contains("remove"), "{failed:?}");
+        let sb = Sandbox::create().unwrap();
+        let outside = sb.root.join("elsewhere");
+        assert!(inside_home(&sb, &sb.home.join("data").join("worktrees")));
+        assert!(!inside_home(&sb, &sb.home));
+        assert!(!inside_home(&sb, &outside));
+        assert!(!inside_home(&sb, &sb.home.join("..").join("elsewhere")));
+        assert!(!inside_home(&sb, Path::new("relative/dir")));
+        let _ = std::fs::remove_dir_all(&sb.root);
+    }
+
+    #[test]
+    fn drain_reads_the_json_after_the_worker_banner() {
+        let plain = r#"{"completed": 1, "failed": 0}"#;
+        assert_eq!(json_document(plain)["completed"], 1);
+        let banner = "worker DESKTOP-1-2-abcdef started (concurrency 1)\n{\"completed\": 2, \"failed\": 1}\n";
+        let doc = json_document(banner);
+        assert_eq!(doc["completed"], 2);
+        assert_eq!(doc["failed"], 1);
+        assert_eq!(json_document("worker started\nno json here"), Value::Null);
     }
 }

@@ -1,0 +1,24 @@
+{
+  "id": "worktrees-attempt-submit-committed-work",
+  "covers": ["C022", "C023", "C097", "C118", "C152"],
+  "setup": [
+    {"git": "init", "repo": "api"},
+    {"git": "commit", "repo": "api", "files": {"README.md": "api\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:api}"], "json": true},
+    {"cli": ["task", "create", "External work", "--repo", "api", "--ready"], "json": true},
+    {"cli": ["attempt", "start", "WG-1", "--agent-name", "tester"], "json": true, "save": {"attempt": "/attempt_id"}},
+    {"cli": ["git", "worktrees"], "json": true},
+    {"assert": {"json": {"path": "/0/status", "equals": "active"}}},
+    {"cli": ["attempt", "show", "{var:attempt}"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "running"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktrees.py::test_attempt_submit_concludes_committed_work_for_review: the agent commit made inside the managed checkout after attempt start, and the submit that captures it (succeeded with no verification, task awaiting_review, change-set head_sha, task commits listing the commit, released but kept checkout) all need a commit inside a managed checkout between steps, and no step can create one.",
+      "covered_by": "CORE-11"
+    }
+  ]
+}

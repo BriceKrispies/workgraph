@@ -1,0 +1,36 @@
+{
+  "id": "worktrees-register-discovers-linked-checkouts",
+  "covers": ["C117", "C118"],
+  "setup": [
+    {"git": "init", "repo": "discover"},
+    {"git": "commit", "repo": "discover", "files": {"README.md": "discover\n"}, "message": "initial"},
+    {"git": "branch", "repo": "discover", "args": ["feature-a"]},
+    {"git": "worktree", "repo": "discover", "args": ["../wt/feature-a", "feature-a"]},
+    {"git": "branch", "repo": "discover", "args": ["detached-b"]},
+    {"git": "worktree", "repo": "discover", "args": ["../wt/detached-b", "detached-b"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:discover}"], "json": true},
+    {"assert": {"json": {"path": "/checkouts/0/kind", "equals": "clone"}}},
+    {"assert": {"json": {"path": "/checkouts/0/is_primary", "equals": true}}},
+    {"assert": {"json": {"path": "/checkouts/1/kind", "equals": "worktree"}}},
+    {"assert": {"json": {"path": "/checkouts/2/kind", "equals": "worktree"}}},
+    {"assert": {"stdout_contains": "feature-a"}},
+    {"assert": {"json": {"path": "/health_detail/skipped_worktrees", "equals": []}}},
+    {"cli": ["repo", "refresh", "discover"], "json": true},
+    {"assert": {"json": {"path": "/health_status", "equals": "ok"}}},
+    {"assert": {"json": {"path": "/checkouts/1/available", "equals": true}}},
+    {"assert": {"json": {"path": "/checkouts/2/available", "equals": true}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_worktree_discovery.py::test_register_and_refresh_discover_worktrees: the detached worktree is locked with git worktree lock, which no setup operation offers and which does not change the discovered kind, so the locked state is not reproduced.",
+      "covered_by": "CORE-08"
+    },
+    {
+      "case": "tests/integration/test_worktree_discovery.py::test_register_and_refresh_discover_worktrees: the second half adds feature-c and removes feature-a after the register, then expects four checkouts, checkout_lost, degraded health and the repository.checkout_discovered and checkout_lost event counts; setup runs before every step and has no worktree removal, so these changes cannot happen between steps, and the runner has no count assertion over event lists.",
+      "covered_by": "CORE-08"
+    }
+  ]
+}

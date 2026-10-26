@@ -1217,6 +1217,7 @@ dependencies = [
  "rpds",
  "rusqlite",
  "serde_json",
+ "wg-conformance",
  "wg-model",
  "wg-storecodec",
  "wg-types",

@@ -836,6 +836,25 @@ version = "0.1.0"
 [[package]]
 name = "wg-store"
 version = "0.1.0"
+dependencies = [
+ "rpds",
+ "rusqlite",
+ "serde_json",
+ "wg-model",
+ "wg-storecodec",
+ "wg-types",
+]
+
+[[package]]
+name = "wg-storecodec"
+version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "wg-json",
+ "wg-model",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-tasks"

@@ -38,6 +38,7 @@ wg-runtime Shell
 wg-server Shell
 wg-stacks Core
 wg-store Shell
+wg-storecodec Pure
 wg-tasks Core
 wg-telemetry Core
 wg-trackers Core

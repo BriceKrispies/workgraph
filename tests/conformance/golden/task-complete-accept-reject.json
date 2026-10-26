@@ -1,0 +1,327 @@
+{
+  "scenario": "task-complete-accept-reject",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"checked\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:1|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\checked\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:2|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:3|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"scope_type\": \"repository\",\n  \"scope_id\": \"<id:1>\",\n  \"name\": \"checked-tests\",\n  \"checks\": [\n    {\n      \"name\": \"unit\",\n      \"kind\": \"test\",\n      \"command\": [\n        \"python\",\n        \"-c\",\n        \"pass\"\n      ],\n      \"repository\": null,\n      \"timeout_seconds\": 900.0,\n      \"required\": true,\n      \"env\": {},\n      \"parser\": \"auto\",\n      \"baseline\": \"absolute\",\n      \"allow_shell\": false,\n      \"error_exit_codes\": [],\n      \"tier\": \"full\"\n    }\n  ],\n  \"enabled\": true,\n  \"approved_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:4|Z>\",\n  \"updated_at\": \"<ts:4|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Verified work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:6|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Manual work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:7|Z>\",\n  \"updated_at\": \"<ts:8|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Dependent work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [\n    \"<id:6>\"\n  ],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:9|Z>\",\n  \"updated_at\": \"<ts:9|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Rejected work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:10|Z>\",\n  \"updated_at\": \"<ts:11|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-5\",\n  \"number\": 5,\n  \"title\": \"Result work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:12|Z>\",\n  \"updated_at\": \"<ts:13|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-6\",\n  \"number\": 6,\n  \"title\": \"Never claimed\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:14|Z>\",\n  \"updated_at\": \"<ts:15|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Verified work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:alice\",\n  \"claim_expires_at\": \"<ts:35|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:17|Z>\",\n  \"started_at\": \"<ts:16|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Verified work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_verification\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:5|Z>\",\n  \"updated_at\": \"<ts:18|Z>\",\n  \"started_at\": \"<ts:16|Z>\",\n  \"completed_at\": \"<ts:18|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"conflict\", \"message\": \"WG-1 has no completed verification run\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Manual work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [\n    \"<id:7>\"\n  ],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:alice\",\n  \"claim_expires_at\": \"<ts:36|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:7|Z>\",\n  \"updated_at\": \"<ts:19|Z>\",\n  \"started_at\": \"<ts:19|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Manual work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [\n    \"<id:7>\"\n  ],\n  \"assignee\": \"agent:alice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:7|Z>\",\n  \"updated_at\": \"<ts:20|Z>\",\n  \"started_at\": \"<ts:19|Z>\",\n  \"completed_at\": \"<ts:20|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:11>\",\n  \"task_id\": \"<id:6>\",\n  \"attempt_id\": null,\n  \"verification_run_id\": null,\n  \"decision\": \"accepted\",\n  \"mode\": \"manual\",\n  \"reason\": \"reviewed by hand\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:21|Z>\",\n  \"promoted\": [\n    \"WG-3\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Dependent work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [\n    \"<id:6>\"\n  ],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:9|Z>\",\n  \"updated_at\": \"<ts:22|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"invalid_transition\", \"message\": \"WG-6 is ready; only completed work awaiting verification or review can be accepted\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Rejected work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:bob\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:bob\",\n  \"claim_expires_at\": \"<ts:37|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:10|Z>\",\n  \"updated_at\": \"<ts:23|Z>\",\n  \"started_at\": \"<ts:23|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Rejected work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:bob\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 4,\n  \"created_at\": \"<ts:10|Z>\",\n  \"updated_at\": \"<ts:24|Z>\",\n  \"started_at\": \"<ts:23|Z>\",\n  \"completed_at\": \"<ts:24|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:12>\",\n  \"task_id\": \"<id:8>\",\n  \"attempt_id\": null,\n  \"verification_run_id\": null,\n  \"decision\": \"rejected\",\n  \"mode\": \"manual\",\n  \"reason\": \"needs rework\",\n  \"actor\": \"human:Brice\",\n  \"manifest_id\": null,\n  \"created_at\": \"<ts:25|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Rejected work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:bob\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 5,\n  \"created_at\": \"<ts:10|Z>\",\n  \"updated_at\": \"<ts:26|Z>\",\n  \"started_at\": \"<ts:23|Z>\",\n  \"completed_at\": \"<ts:24|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [\n    {\n      \"id\": \"<id:13>\",\n      \"task_id\": \"<id:8>\",\n      \"attempt_id\": null,\n      \"author\": \"human:Brice\",\n      \"kind\": \"result\",\n      \"body\": \"first try\",\n      \"data\": {},\n      \"created_at\": \"<ts:24|Z>\"\n    }\n  ],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"invalid_transition\", \"message\": \"WG-6 is ready; nothing to reject\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Rejected work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:bob\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:bob\",\n  \"claim_expires_at\": \"<ts:38|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 6,\n  \"created_at\": \"<ts:10|Z>\",\n  \"updated_at\": \"<ts:27|Z>\",\n  \"started_at\": \"<ts:23|Z>\",\n  \"completed_at\": \"<ts:24|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:14>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:8>\",\n  \"number\": 1,\n  \"status\": \"running\",\n  \"provider\": \"external\",\n  \"adapter\": \"external\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": null,\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:29|Z>\",\n  \"queued_at\": \"<ts:28|Z>\",\n  \"started_at\": \"<ts:28|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 6,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Rejected work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:bob\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 8,\n  \"created_at\": \"<ts:10|Z>\",\n  \"updated_at\": \"<ts:30|Z>\",\n  \"started_at\": \"<ts:23|Z>\",\n  \"completed_at\": \"<ts:30|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 33,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 34,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-5\",\n  \"number\": 5,\n  \"title\": \"Result work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"claimed\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:bob\",\n  \"assigned_agent\": null,\n  \"claimed_by\": \"agent:bob\",\n  \"claim_expires_at\": \"<ts:39|Z>\",\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts:12|Z>\",\n  \"updated_at\": \"<ts:31|Z>\",\n  \"started_at\": \"<ts:31|Z>\",\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 35,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:15>\",\n  \"workspace_id\": \"<id:2>\",\n  \"task_id\": \"<id:9>\",\n  \"number\": 1,\n  \"status\": \"running\",\n  \"provider\": \"external\",\n  \"adapter\": \"external\",\n  \"agent_id\": \"human:Brice\",\n  \"model\": null,\n  \"session_id\": null,\n  \"parent_attempt_id\": null,\n  \"retry_of_attempt_id\": null,\n  \"rerun_of_attempt_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts:33|Z>\",\n  \"queued_at\": \"<ts:32|Z>\",\n  \"started_at\": \"<ts:32|Z>\",\n  \"finished_at\": null,\n  \"queue_wait_ms\": <dur>,\n  \"duration_ms\": null,\n  \"exit_reason\": null,\n  \"exit_code\": null,\n  \"error\": null,\n  \"summary\": null,\n  \"input_task_version\": 3,\n  \"baseline_manifest_id\": null,\n  \"outcome_manifest_id\": null,\n  \"usage\": {},\n  \"usage_source\": null,\n  \"cost_usd\": null,\n  \"cost_source\": null,\n  \"telemetry\": {},\n  \"modified_repository_ids\": [],\n  \"config_snapshot\": {},\n  \"environment\": {}\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 36,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-5\",\n  \"number\": 5,\n  \"title\": \"Result work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"awaiting_review\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"agent:bob\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 5,\n  \"created_at\": \"<ts:12|Z>\",\n  \"updated_at\": \"<ts:34|Z>\",\n  \"started_at\": \"<ts:31|Z>\",\n  \"completed_at\": \"<ts:34|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 37,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 38,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"cli_error\", \"message\": \"outcome must be succeeded or failed\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 39,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 40,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-6\",\n  \"number\": 6,\n  \"title\": \"Never claimed\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:14|Z>\",\n  \"updated_at\": \"<ts:15|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 41,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 42,
+      "kind": "cli",
+      "exit": 3,
+      "stdout": "{\"error\": {\"code\": \"invalid_transition\", \"message\": \"task WG-6 is ready; claim it before completing\", \"details\": {\"status\": \"ready\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 43,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

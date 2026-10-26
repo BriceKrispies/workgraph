@@ -2,6 +2,8 @@
 //! `repr()` of strings, floats and values, and the bound text of Pydantic messages.
 
 use serde_json::Value;
+use wg_validate::pydantic::error_url;
+use wg_validate::{Loc, ValidationError};
 
 /// `repr()` of a `str`: single quotes unless the text holds a single quote and no double quote.
 pub(crate) fn repr_str(text: &str) -> String {
@@ -120,5 +122,45 @@ pub(crate) fn one_of<'a>(values: impl Iterator<Item = &'a str>) -> String {
         None => String::new(),
         Some((last, [])) => last.clone(),
         Some((last, rest)) => format!("{} or {last}", rest.join(", ")),
+    }
+}
+
+/// `repr()` of Pydantic's `errors()` list, as a `ConfigError` problem line prints it: each error a
+/// dict of `type`, `loc` (a tuple), `msg`, `input`, `ctx` when Pydantic gives one, and `url`.
+pub(crate) fn errors_repr(errors: &[ValidationError]) -> String {
+    let parts: Vec<String> = errors.iter().map(error_repr).collect();
+    format!("[{}]", parts.join(", "))
+}
+
+fn error_repr(error: &ValidationError) -> String {
+    let mut parts = vec![
+        format!("'type': {}", repr_str(&error.kind)),
+        format!("'loc': {}", loc_repr(&error.loc)),
+        format!("'msg': {}", repr_str(&error.msg)),
+        format!("'input': {}", value_repr(&error.input)),
+    ];
+    if let Some(ctx) = &error.ctx {
+        parts.push(format!(
+            "'ctx': {}",
+            value_repr(&Value::Object(ctx.clone()))
+        ));
+    }
+    parts.push(format!("'url': {}", repr_str(&error_url(&error.kind))));
+    format!("{{{}}}", parts.join(", "))
+}
+
+/// `repr()` of an error location: a tuple, with a trailing comma when it holds one element.
+fn loc_repr(loc: &[Loc]) -> String {
+    let parts: Vec<String> = loc
+        .iter()
+        .map(|part| match part {
+            Loc::Key(key) => repr_str(key),
+            Loc::Index(index) => index.to_string(),
+        })
+        .collect();
+    match parts.as_slice() {
+        [] => "()".to_owned(),
+        [only] => format!("({only},)"),
+        _ => format!("({})", parts.join(", ")),
     }
 }

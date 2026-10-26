@@ -15,7 +15,9 @@ Each line is one exchange, sorted-key JSON::
 ``setup`` (a call that prepares state for later calls; it is recorded like any other).
 
 Every run uses fresh temporary Workgraph homes (one per transport) seeded with the demo data, an
-experiment, and a scratch Git repository. The live home is never touched. Ids and timestamps are
+experiment, and a scratch Git repository whose history yields validated replay tasks. Trials run in
+clones of that repository; a scripted solver writes the replayed source into some clones before grading,
+so the trial tools succeed with both outcomes. The live home is never touched. Ids and timestamps are
 recorded raw; normalisation is section 3.4 of ``docs/rust-rewrite.md`` and is applied at replay.
 
 Usage::
@@ -62,16 +64,16 @@ Save = dict[str, Callable[[dict[str, Any]], Any]]
 PROBLEMS: list[str] = []
 
 RULE_NAME = "recorded manual rule"
-
-# Labels whose success cannot be reached with the demo seed, and why. They are still recorded
-# (with the server's real error) and reported as known gaps instead of failing the run.
-KNOWN_GAPS: dict[str, str] = {
-    "trial_start:ok": "no replay tasks: `experiment replay scan` finds no candidate commits in the demo repositories",
-    "trial_grade:ok": "no started trial (see trial_start)",
-    "trial_classify:ok": "no failed trial (see trial_start)",
-    "experiment_fit:ok": "needs at least four graded trials with src_lines, src_files and packages",
-    "experiment_predict:ok": "needs task metadata contract.predicted, which only the experiment pipeline writes",
-}
+EXPERIMENT = "cli-exp"
+REPLAY_REPO = "mcp-replay"
+REPLAY_PACKAGE = "calc"
+# Lines in each replay commit's source file, one replay task per entry. The task's band is floor(log2(lines)),
+# so these cover every band of the protocol (1 to 5).
+FEATURE_LINES = (3, 5, 9, 12, 18, 24, 33, 40)
+# Trials run after the scenario's own (the first, which is left unsolved and fails). True: a scripted solver
+# writes the replayed source into the clone before grading, so the trial passes; False: the clone stays at the
+# base, so it fails. The fit needs both outcomes.
+SOLVED_TRIALS = (True, True, False, True)
 
 
 def _first(sc: dict[str, Any], *paths: tuple[str, ...]) -> Any:
@@ -293,8 +295,56 @@ def _git(path: Path, *args: str) -> str:
     return proc.stdout.strip()
 
 
-def seed(home: Path, scratch: Path) -> dict[str, str]:
-    """Populate ``home`` with demo data, an experiment and a scratch repository."""
+def _feature_source(lines: int) -> str:
+    """``run(x)`` adds 1 .. lines-3 to x, in ``lines`` lines in all."""
+    body = ["def run(x):", "    total = x", *[f"    total += {step}" for step in range(1, lines - 2)]]
+    return "\n".join([*body, "    return total"]) + "\n"
+
+
+def _test_source(number: int, lines: int) -> str:
+    """A red-then-green check: it imports the feature module, so it fails at the base."""
+    return (
+        f'"""Checks calc.feature_{number}: run(x) adds the steps of its body to x."""\n'
+        "\n"
+        "import sys\n"
+        "from pathlib import Path\n"
+        "\n"
+        "sys.path.insert(0, str(Path(__file__).resolve().parents[1]))\n"
+        "\n"
+        f"from calc.feature_{number} import run\n"
+        "\n"
+        f"assert run(5) == 5 + sum(range(1, {lines - 2})), run(5)\n"
+    )
+
+
+def _replay_repo(scratch: Path) -> tuple[Path, dict[int, str]]:
+    """A Python repository whose history is one commit per feature: its source and its test, together.
+
+    Returns the repository and each feature's commit, keyed by feature number.
+    """
+    repo = scratch / REPLAY_REPO
+    repo.mkdir(parents=True)
+    _git(repo, "init", "-q")
+    (repo / "pyproject.toml").write_text('[project]\nname = "calc"\nversion = "0"\n', encoding="utf-8")
+    (repo / REPLAY_PACKAGE).mkdir()
+    (repo / REPLAY_PACKAGE / "__init__.py").write_text("", encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "Initial commit")
+    solutions: dict[int, str] = {}
+    for number, lines in enumerate(FEATURE_LINES, start=1):
+        (repo / "tests").mkdir(exist_ok=True)
+        (repo / REPLAY_PACKAGE / f"feature_{number}.py").write_text(_feature_source(lines), encoding="utf-8")
+        (repo / "tests" / f"test_feature_{number}.py").write_text(
+            _test_source(number, lines), encoding="utf-8"
+        )
+        _git(repo, "add", "-A")
+        _git(repo, "commit", "-q", "-m", f"Add {REPLAY_PACKAGE}.feature_{number}")
+        solutions[number] = _git(repo, "rev-parse", "HEAD")
+    return repo, solutions
+
+
+def seed(home: Path, scratch: Path) -> dict[str, Any]:
+    """Populate ``home`` with demo data, an experiment, a replay pool and a scratch repository."""
     home.mkdir(parents=True, exist_ok=True)
     scratch.mkdir(parents=True, exist_ok=True)
     _workgraph(home, "demo", "seed", "--workspace", "demo")
@@ -304,7 +354,7 @@ def seed(home: Path, scratch: Path) -> dict[str, str]:
         home,
         "experiment",
         "create",
-        "cli-exp",
+        EXPERIMENT,
         "--title",
         "CLI experiment",
         "--question",
@@ -314,7 +364,32 @@ def seed(home: Path, scratch: Path) -> dict[str, str]:
         "--workspace",
         "demo",
     )
-    _workgraph(home, "experiment", "freeze", "cli-exp", "--workspace", "demo")
+    _workgraph(home, "experiment", "freeze", EXPERIMENT, "--workspace", "demo")
+
+    replay_path, solutions = _replay_repo(scratch)
+    _workgraph(home, "repo", "register", str(replay_path), "--name", REPLAY_REPO, "--workspace", "demo")
+    # The oracle runs each replay commit's test file as a script, with the interpreter that records the run.
+    template = json.dumps([sys.executable, "{test_files}"])
+    created = json.loads(
+        _workgraph(
+            home,
+            "experiment",
+            "replay",
+            "create",
+            *[solutions[number] for number in sorted(solutions)],
+            "--repo",
+            REPLAY_REPO,
+            "--validate",
+            "--oracle-template",
+            template,
+            "--workspace",
+            "demo",
+            "--json",
+        )
+    )
+    refused = [item for item in created if item["status"] != "created"]
+    if refused:
+        raise RuntimeError(f"the replay pool refused {refused}")
 
     rule = scratch / "rule.json"
     rule.write_text(
@@ -340,7 +415,14 @@ def seed(home: Path, scratch: Path) -> dict[str, str]:
 
     not_repo = scratch / "not-a-repo"
     not_repo.mkdir()
-    return {"extra_path": str(extra), "extra_head": head, "not_repo_path": str(not_repo), "rule": RULE_NAME}
+    return {
+        "extra_path": str(extra),
+        "extra_head": head,
+        "not_repo_path": str(not_repo),
+        "rule": RULE_NAME,
+        "replay_path": str(replay_path),
+        "replay_solutions": solutions,
+    }
 
 
 # -------------------------------------------------------------------- scenario
@@ -357,7 +439,9 @@ def _step(
     save: Save | None = None,
     method: str | None = None,
     params: dict[str, Any] | None = None,
+    prepare: Callable[[dict[str, Any]], None] | None = None,
 ) -> Step:
+    """One scenario step. ``prepare`` runs on the store before the call and is not an exchange itself."""
     return {
         "kind": kind,
         "label": label,
@@ -366,6 +450,7 @@ def _step(
         "save": save or {},
         "method": method,
         "params": params,
+        "prepare": prepare,
     }
 
 
@@ -379,6 +464,66 @@ def _pair(tool: str, ok: dict[str, Any], err: dict[str, Any], save: Save | None 
 def _setup_task(label: str, title: str, save_key: str, **extra: Any) -> Step:
     args = {"title": title, "ready": True, **extra}
     return _step("setup", label, "task_create", args, save={save_key: _key})
+
+
+def _planned_trial(sc: dict[str, Any]) -> str:
+    return sc["trial"]["id"]
+
+
+def _worktree_path(sc: dict[str, Any]) -> str:
+    return sc["worktree"]
+
+
+def _apply_solution(worktree: Path, repo: str, solutions: dict[int, str]) -> None:
+    """Scripted solver: write the replayed commit's source into the trial clone, where an agent's work would be.
+
+    The clone holds the base only, so the source comes from the repository's own history, by commit.
+    """
+    for test in sorted((worktree / "tests").glob("test_feature_*.py")):
+        number = int(test.stem.removeprefix("test_feature_"))
+        source = subprocess.run(
+            ["git", "-C", repo, "show", f"{solutions[number]}:{REPLAY_PACKAGE}/feature_{number}.py"],
+            capture_output=True,
+            check=True,
+        ).stdout
+        target = worktree / REPLAY_PACKAGE / f"feature_{number}.py"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(source)
+
+
+def _solve(worktree_key: str) -> Callable[[dict[str, Any]], None]:
+    def prepare(store: dict[str, Any]) -> None:
+        _apply_solution(Path(store[worktree_key]), store["replay_path"], store["replay_solutions"])
+
+    return prepare
+
+
+def _trial_steps(number: int, solved: bool) -> list[Step]:
+    """Plan the next trial, start it and grade it; a solved trial gets its solution before grading."""
+    trial, worktree = f"X{number}", f"WT{number}"
+    return [
+        _step(
+            "setup",
+            f"setup:trial-{number}-next",
+            "experiment_next",
+            {"experiment": EXPERIMENT},
+            save={trial: _planned_trial},
+        ),
+        _step(
+            "setup",
+            f"setup:trial-{number}-start",
+            "trial_start",
+            {"trial": f"${trial}"},
+            save={worktree: _worktree_path},
+        ),
+        _step(
+            "setup",
+            f"setup:trial-{number}-grade",
+            "trial_grade",
+            {"trial": f"${trial}", "timeout": 60},
+            prepare=_solve(worktree) if solved else None,
+        ),
+    ]
 
 
 def scenario() -> list[Step]:
@@ -466,11 +611,19 @@ def scenario() -> list[Step]:
         {"trial": "$trial", "cause": "other", "source": "mechanical", "notes": "recorded"},
         {"trial": "no-such-trial", "cause": "other", "source": "mechanical"},
     )
-    steps += _pair("experiment_report", {"experiment": "cli-exp"}, {"experiment": "no-such-experiment"})
+    for number, solved in enumerate(SOLVED_TRIALS, start=1):
+        steps += _trial_steps(number, solved)
+    steps += _pair("experiment_report", {"experiment": EXPERIMENT}, {"experiment": "no-such-experiment"})
     steps += _pair("experiment_fit", {"model": MODEL, "samples": 50, "seed": 1}, {"model": "no-such-model"})
     steps += _pair(
         "experiment_predict",
-        {"model": MODEL, "task": "DEMO-1", "src_lines": 40},
+        {
+            "model": MODEL,
+            "repository": REPLAY_REPO,
+            "src_lines": 40,
+            "src_files": 1,
+            "packages": [REPLAY_PACKAGE],
+        },
         {"model": MODEL, "task": "DEMO-999"},
     )
 
@@ -685,6 +838,8 @@ def run_transport(transport: str, scratch: Path, grants: list[str]) -> list[dict
     with Session(transport, home, grants, scratch) as session:
         for seq, step in enumerate(steps, start=1):
             kind = step["kind"]
+            if step["prepare"] is not None:
+                step["prepare"](store)
             if step["method"] is not None:
                 notify = step["method"].startswith("notifications/")
                 request, response = session.exchange(step["method"], step["params"], notify=notify)
@@ -710,11 +865,8 @@ def run_transport(transport: str, scratch: Path, grants: list[str]) -> list[dict
 
 
 def _problem(transport: str, label: str, detail: str) -> None:
-    """Record a step that missed its kind. Known gaps are not failures."""
-    if label in KNOWN_GAPS:
-        PROBLEMS.append(f"known gap {transport} {label}: {KNOWN_GAPS[label]}")
-    else:
-        PROBLEMS.append(f"{transport} {label}: {detail}")
+    """Record a step that missed its kind."""
+    PROBLEMS.append(f"{transport} {label}: {detail}")
 
 
 def _fill(value: Any, store: dict[str, Any]) -> Any:

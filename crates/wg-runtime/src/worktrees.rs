@@ -9,19 +9,32 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use wg_exec::manifest::{
+    AttemptRef, ExecutionManifest, ManifestEntry, PlanError, RepoFacts, RepoPlan,
+    RepoRequest as ExecRequest, effective_target, plan_repo, worktree_dir_name,
+};
 use wg_git::{Git, GitError, RunOptions, resolve};
 use wg_json::Value;
-use wg_model::entity::{ManagedWorktree, RepositoryCheckout, Task};
+use wg_model::entity::{
+    AgentAttempt, ManagedWorktree, Repository, RepositoryCheckout, ResourceLease, Task,
+    VerificationConfig,
+};
 use wg_model::write::RowKey;
 use wg_registry::boundary::is_within;
+use wg_registry::checkout::primary_checkout;
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::effects::GIT_TIMEOUT_MS;
 use wg_runtimespec::worktrees::{
-    Candidate, RecoveryInput, RecoveryReport, RecoveryRow, ReleaseTarget, Removal, path_key,
+    Candidate, PrepareFacts, PrepareRequest, RecoveryInput, RecoveryReport, RecoveryRow,
+    ReleaseTarget, Removal, WorktreeDraft, acquire_lease_decision, activated_decision,
+    configured_isolation, orphaned_decision, path_key, prepare_decision, preparing_decision,
     recovery_decision, release_decision, removed_decision, stack_of, worktree_list_out,
 };
-use wg_store::Session;
-use wg_types::{ErrorCode, Id, Permission, StackStatus, TaskStatus, WgError, WorktreeStatus};
+use wg_store::{Session, TaskWorld};
+use wg_types::{
+    AccessMode, ErrorCode, Id, Permission, StackStatus, TaskStatus, WgError, WorktreeStatus,
+};
+use wg_verify::TaskScope;
 
 use crate::app::App;
 
@@ -351,4 +364,400 @@ fn sorted_children(dir: &Path) -> Vec<PathBuf> {
 /// A stored path resolved on disk, as the text recovery compares.
 fn resolved_text(stored: &str) -> String {
     resolve(Path::new(stored)).display().to_string()
+}
+
+/// The attempt and task `prepare` starts from, and the repositories it sets up.
+struct PrepareStart {
+    task: Task,
+    /// The attempt's number under its task (`attempt.number`).
+    number: i64,
+    requests: Vec<PrepareRequest>,
+}
+
+/// What the final decision of `prepare` reads: the attempt, its task, the configurations that
+/// apply and the task's scope.
+struct PrepareWorld {
+    attempt: AgentAttempt,
+    task: Task,
+    configs: Vec<VerificationConfig>,
+    scope: TaskScope,
+}
+
+impl App {
+    /// `WorktreeManager.prepare`: sets up the workspace of one attempt. Each repository gets its
+    /// own worktree (or the checkout itself, under `in_place`, behind an exclusive lease), the
+    /// baseline manifest, the change set and the verification checks are recorded, and the
+    /// execution manifest is written to the workspace directory. `requests` defaults to the task's
+    /// repository links, `isolation` to the configured one. A failure after the first repository
+    /// was set up releases and removes what was made.
+    pub fn worktree_prepare(
+        &mut self,
+        context: &RequestContext,
+        attempt_id: Id,
+        requests: Option<Vec<PrepareRequest>>,
+        isolation: Option<&str>,
+        expected_changes: &[String],
+    ) -> Result<ExecutionManifest, WgError> {
+        let isolation = match isolation {
+            Some(text) => text.to_owned(),
+            None => configured_isolation(&self.config()?),
+        };
+        let start = self
+            .runtime
+            .store
+            .read(|session| prepare_start(session, attempt_id, requests, &isolation))?;
+        let workspace_dir =
+            PathBuf::from(self.paths.worktrees_dir().as_str()).join(attempt_id.to_string());
+        fs::create_dir_all(&workspace_dir).map_err(|err| io_failure(&workspace_dir, &err))?;
+        let mut entries = Vec::with_capacity(start.requests.len());
+        for request in &start.requests {
+            let planned = self.prepare_repo(
+                context,
+                &start,
+                attempt_id,
+                request,
+                &isolation,
+                &workspace_dir,
+            );
+            match planned {
+                Ok(entry) => entries.push(entry),
+                Err(err) => {
+                    // Python's `release(ctx, attempt_id, remove=True)` before re-raising. A failure
+                    // of the release itself does not replace the error that caused it.
+                    let _ = self.worktree_release(context, attempt_id, true, false);
+                    return Err(err);
+                }
+            }
+        }
+        let workspace_text = workspace_dir.display().to_string();
+        let manifest = self
+            .runtime
+            .decide(
+                context,
+                |session| prepare_world(session, attempt_id),
+                |world, stamp| {
+                    prepare_decision(
+                        &PrepareFacts {
+                            attempt: &world.attempt,
+                            task: &world.task,
+                            entries: &entries,
+                            explicit_expected: expected_changes,
+                            isolation: &isolation,
+                            workspace_dir: &workspace_text,
+                            configs: &world.configs,
+                            scope: &world.scope,
+                        },
+                        stamp,
+                    )
+                },
+            )?
+            .reply;
+        let file = workspace_dir.join(MANIFEST_FILE);
+        fs::write(&file, manifest.to_pretty_json()).map_err(|err| io_failure(&file, &err))?;
+        Ok(manifest)
+    }
+
+    /// `WorktreeManager._prepare_repo`: plans one repository, then creates its lease (in place) or
+    /// its managed worktree, recording each step as it happens.
+    fn prepare_repo(
+        &mut self,
+        context: &RequestContext,
+        start: &PrepareStart,
+        attempt_id: Id,
+        request: &PrepareRequest,
+        isolation: &str,
+        workspace_dir: &Path,
+    ) -> Result<ManifestEntry, WgError> {
+        let task = &start.task;
+        let workspace_id = task.workspace_id;
+        let (repo, checkout) = self.runtime.store.read(|session| {
+            let repo = session
+                .fetch::<Repository>(&RowKey::Repository(request.repository_id))?
+                .filter(|repo| repo.workspace_id == workspace_id)
+                .ok_or_else(|| {
+                    WgError::new(
+                        ErrorCode::NotFound,
+                        format!("repository {} not found", request.repository_id),
+                    )
+                })?;
+            if request.access == "read_write" && repo.access_mode == AccessMode::ReadOnly {
+                return Err(WgError::new(
+                    ErrorCode::ValidationFailed,
+                    format!("repository {} is read-only", repo.name),
+                ));
+            }
+            let checkouts = session.checkouts(repo.id)?;
+            let checkout = primary_checkout(&checkouts, true).cloned().ok_or_else(|| {
+                WgError::new(
+                    ErrorCode::GitError,
+                    format!("repository {} has no available checkout", repo.name),
+                )
+            })?;
+            Ok((repo, checkout))
+        })?;
+        let git = Git {
+            path: PathBuf::from(&checkout.path),
+            timeout_ms: GIT_TIMEOUT_MS,
+        };
+        let exec_request = ExecRequest {
+            target_ref: request.target_ref.clone(),
+            base: None,
+        };
+        let target = effective_target(&exec_request, repo.default_branch.as_deref());
+        let resolved = match target {
+            Some(name) => match git.resolve_commit(name) {
+                Ok(sha) => Some(sha),
+                Err(err @ GitError::InvalidRef(_)) => return Err(git_failure(err)),
+                // The target does not resolve: the attempt starts from the checkout's HEAD.
+                Err(_) => None,
+            },
+            None => None,
+        };
+        let head = git.head().map_err(git_failure)?;
+        let current = match (isolation == "in_place", request.access == "read_write") {
+            (true, true) => git.current_branch().map_err(git_failure)?,
+            _ => None,
+        };
+        let repo_id = repo.id.to_string();
+        let worktree_path = workspace_dir.join(worktree_dir_name(&repo.name));
+        let worktree_text = worktree_path.display().to_string();
+        let attempt_text = attempt_id.to_string();
+        let task_key = task.key.to_string();
+        let access_mode = repo.access_mode.as_str();
+        let facts = RepoFacts {
+            repository_id: &repo_id,
+            repository: &repo.name,
+            source_checkout_path: &checkout.path,
+            access: &request.access,
+            access_mode,
+            isolation,
+            request: exec_request.clone(),
+            target,
+            resolved_target: resolved.as_deref(),
+            head: head.as_deref(),
+            current_branch: current.as_deref(),
+            worktree_path: &worktree_text,
+            worktree_id: None,
+        };
+        let attempt_ref = AttemptRef {
+            task_key: &task_key,
+            attempt_number: start.number,
+            attempt_id: &attempt_text,
+        };
+        match plan_repo(&facts, attempt_ref).map_err(plan_failure)? {
+            RepoPlan::InPlace { entry } => {
+                let key = format!("checkout:{}", checkout.id);
+                let purpose = format!("in-place write {task_key}");
+                self.runtime.decide(
+                    context,
+                    |session| session.lease_by_resource(&key),
+                    |existing: &Option<ResourceLease>, stamp| {
+                        acquire_lease_decision(
+                            existing.as_ref(),
+                            &key,
+                            &attempt_text,
+                            &purpose,
+                            stamp,
+                        )
+                    },
+                )?;
+                Ok(entry)
+            }
+            RepoPlan::Worktree { mut entry } => {
+                let base = entry.sha.clone().unwrap_or_default();
+                let draft = WorktreeDraft {
+                    workspace_id,
+                    repository_id: repo.id,
+                    source_checkout_id: checkout.id,
+                    attempt_id,
+                    path: &entry.checkout_path,
+                    branch: entry.branch.as_deref(),
+                    base_sha: &base,
+                };
+                let worktree_id = self
+                    .runtime
+                    .decide(
+                        context,
+                        |_| Ok(()),
+                        |_, stamp| Ok(preparing_decision(&draft, stamp)),
+                    )?
+                    .reply;
+                let added = match entry.branch.as_deref() {
+                    Some(branch) => git.worktree_add_branch(branch, &entry.checkout_path, &base),
+                    None => git.worktree_add_detached(&entry.checkout_path, &base),
+                };
+                if let Err(err) = added {
+                    let message = err.to_string();
+                    self.runtime.decide(
+                        context,
+                        |session| worktree_row(session, worktree_id),
+                        |row, _| Ok(orphaned_decision(row, &message)),
+                    )?;
+                    return Err(git_failure(err));
+                }
+                let branch = entry.branch.clone();
+                let base_info = entry.base.clone();
+                self.runtime.decide(
+                    context,
+                    |session| worktree_row(session, worktree_id),
+                    |row, stamp| {
+                        Ok(activated_decision(
+                            row,
+                            &repo.name,
+                            branch.as_deref(),
+                            base_info.clone(),
+                            stamp,
+                        ))
+                    },
+                )?;
+                entry.worktree_id = Some(worktree_id.to_string());
+                Ok(entry)
+            }
+        }
+    }
+}
+
+/// The attempt's task and the requests `prepare` acts on. A stack child whose stack covers a
+/// repository needs the stack base, which is not ported yet, so it is refused.
+fn prepare_start(
+    session: &mut Session<'_>,
+    attempt_id: Id,
+    requests: Option<Vec<PrepareRequest>>,
+    isolation: &str,
+) -> Result<PrepareStart, WgError> {
+    let attempt = session
+        .attempt_by_id(attempt_id)?
+        .ok_or_else(|| not_found_attempt(attempt_id))?;
+    let task = session
+        .fetch::<Task>(&RowKey::Task(attempt.task_id))?
+        .ok_or_else(|| {
+            WgError::new(
+                ErrorCode::NotFound,
+                format!("task {} not found", attempt.task_id),
+            )
+        })?;
+    let requests = match requests {
+        Some(requests) => requests,
+        None => default_requests(session, &task)?,
+    };
+    if isolation != "in_place" {
+        for request in requests
+            .iter()
+            .filter(|request| request.target_ref.is_none())
+        {
+            if session
+                .active_repository_for_task(task.id, request.repository_id)?
+                .is_some()
+            {
+                return Err(WgError::new(
+                    ErrorCode::WorkgraphError,
+                    format!(
+                        "task {} is a stack child: choosing its stack base is not ported yet",
+                        task.key
+                    ),
+                ));
+            }
+        }
+    }
+    Ok(PrepareStart {
+        task,
+        number: attempt.number,
+        requests,
+    })
+}
+
+/// `WorktreeManager.default_requests`: one request per repository link of the task, skipping the
+/// archived or missing repositories; a read-only repository is requested read-only.
+fn default_requests(
+    session: &mut Session<'_>,
+    task: &Task,
+) -> Result<Vec<PrepareRequest>, WgError> {
+    let world = session.task_world(Some(task.workspace_id), &[])?;
+    let mut requests = Vec::new();
+    for link in world.tasks.repositories_of(task.id) {
+        let Some(repo) = session.fetch::<Repository>(&RowKey::Repository(link.repository_id))?
+        else {
+            continue;
+        };
+        if repo.archived_at.is_some() {
+            continue;
+        }
+        let access = if repo.access_mode == AccessMode::ReadOnly {
+            "read_only".to_owned()
+        } else {
+            link.access.clone()
+        };
+        requests.push(PrepareRequest {
+            repository_id: repo.id,
+            access,
+            target_ref: None,
+        });
+    }
+    Ok(requests)
+}
+
+/// What the final decision of `prepare` reads, in its transaction.
+fn prepare_world(session: &mut Session<'_>, attempt_id: Id) -> Result<PrepareWorld, WgError> {
+    let attempt = session
+        .attempt_by_id(attempt_id)?
+        .ok_or_else(|| not_found_attempt(attempt_id))?;
+    let task = session
+        .fetch::<Task>(&RowKey::Task(attempt.task_id))?
+        .ok_or_else(|| {
+            WgError::new(
+                ErrorCode::NotFound,
+                format!("task {} not found", attempt.task_id),
+            )
+        })?;
+    let world: TaskWorld = session.task_world(Some(task.workspace_id), &[])?;
+    let scope = TaskScope {
+        workspace_id: task.workspace_id,
+        task_id: task.id,
+        project_ids: world
+            .tasks
+            .projects_of(task.id)
+            .map(|link| link.project_id)
+            .collect(),
+        repository_ids: world
+            .tasks
+            .repositories_of(task.id)
+            .map(|link| link.repository_id)
+            .collect(),
+    };
+    let configs = session.verification_configs(task.workspace_id)?;
+    Ok(PrepareWorld {
+        attempt,
+        task,
+        configs,
+        scope,
+    })
+}
+
+/// The managed worktree row `id`, as stored.
+fn worktree_row(session: &mut Session<'_>, id: Id) -> Result<ManagedWorktree, WgError> {
+    session
+        .fetch::<ManagedWorktree>(&RowKey::ManagedWorktree(id))?
+        .ok_or_else(|| not_found(id))
+}
+
+/// `NotFoundError` for an attempt id.
+fn not_found_attempt(attempt_id: Id) -> WgError {
+    WgError::new(
+        ErrorCode::NotFound,
+        format!("attempt {attempt_id} not found"),
+    )
+}
+
+/// `workgraph.integrations.git.worktrees.plan_repo` failures as the API raises them.
+fn plan_failure(err: PlanError) -> WgError {
+    match err {
+        PlanError::ReadOnly { repository } => WgError::new(
+            ErrorCode::ValidationFailed,
+            format!("repository {repository} is read-only"),
+        ),
+        PlanError::NoCommits { repository } => WgError::new(
+            ErrorCode::GitError,
+            format!("repository {repository} has no commits to base an attempt on"),
+        ),
+    }
 }

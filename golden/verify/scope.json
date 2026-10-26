@@ -1,0 +1,591 @@
+{
+  "cases": [
+    {
+      "configs": [
+        {
+          "checks": [
+            {
+              "command": [
+                "pytest",
+                "-q"
+              ],
+              "name": "unit"
+            },
+            {
+              "command": [
+                "ruff",
+                "check"
+              ],
+              "name": "lint",
+              "tier": "fast"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d000",
+          "name": "ci",
+          "scope_id": "00000000-0000-4000-8000-000000000001",
+          "scope_type": "workspace",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "pytest"
+              ],
+              "name": "all",
+              "required": false,
+              "tier": "full"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d001",
+          "name": "extra",
+          "scope_id": "00000000-0000-4000-8000-0000000000a1",
+          "scope_type": "task",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "mypy",
+                "src"
+              ],
+              "name": "types",
+              "parser": "generic",
+              "tier": "fast"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d002",
+          "name": "lint",
+          "scope_id": "00000000-0000-4000-8000-0000000000b1",
+          "scope_type": "project",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "cargo",
+                "test"
+              ],
+              "name": "repo-check",
+              "tier": "fast"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d003",
+          "name": "types",
+          "scope_id": "00000000-0000-4000-8000-0000000000c1",
+          "scope_type": "repository",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "pytest",
+                "-q"
+              ],
+              "name": "unit"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d004",
+          "name": "other",
+          "scope_id": "00000000-0000-4000-8000-000000000002",
+          "scope_type": "workspace",
+          "workspace": "00000000-0000-4000-8000-000000000002"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "pytest",
+                "-q"
+              ],
+              "name": "unit"
+            }
+          ],
+          "enabled": false,
+          "id": "00000000-0000-4000-8000-00000000d005",
+          "name": "off",
+          "scope_id": "00000000-0000-4000-8000-000000000001",
+          "scope_type": "workspace",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "pytest",
+                "-q"
+              ],
+              "name": "unit"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d006",
+          "name": "elsewhere",
+          "scope_id": "00000000-0000-4000-8000-0000000000b2",
+          "scope_type": "project",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "pytest",
+                "-q"
+              ],
+              "name": "unit"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d007",
+          "name": "other-task",
+          "scope_id": "00000000-0000-4000-8000-0000000000a2",
+          "scope_type": "task",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "pytest",
+                "-q"
+              ],
+              "name": "unit"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d008",
+          "name": "other-repo",
+          "scope_id": "00000000-0000-4000-8000-0000000000c2",
+          "scope_type": "repository",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "expected": {
+        "all": [
+          {
+            "command": [
+              "mypy",
+              "src"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d002",
+            "config_name": "lint",
+            "name": "types",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-0000000000b1",
+            "scope_type": "project",
+            "tier": "fast"
+          },
+          {
+            "command": [
+              "cargo",
+              "test"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d003",
+            "config_name": "types",
+            "name": "repo-check",
+            "repository": "00000000-0000-4000-8000-0000000000c1",
+            "scope_id": "00000000-0000-4000-8000-0000000000c1",
+            "scope_type": "repository",
+            "tier": "fast"
+          },
+          {
+            "command": [
+              "pytest"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d001",
+            "config_name": "extra",
+            "name": "all",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-0000000000a1",
+            "scope_type": "task",
+            "tier": "full"
+          },
+          {
+            "command": [
+              "pytest",
+              "-q"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "ci",
+            "name": "unit",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-000000000001",
+            "scope_type": "workspace",
+            "tier": "full"
+          },
+          {
+            "command": [
+              "ruff",
+              "check"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "ci",
+            "name": "lint",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-000000000001",
+            "scope_type": "workspace",
+            "tier": "fast"
+          }
+        ],
+        "fast": [
+          {
+            "command": [
+              "mypy",
+              "src"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d002",
+            "config_name": "lint",
+            "name": "types",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-0000000000b1",
+            "scope_type": "project",
+            "tier": "fast"
+          },
+          {
+            "command": [
+              "cargo",
+              "test"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d003",
+            "config_name": "types",
+            "name": "repo-check",
+            "repository": "00000000-0000-4000-8000-0000000000c1",
+            "scope_id": "00000000-0000-4000-8000-0000000000c1",
+            "scope_type": "repository",
+            "tier": "fast"
+          },
+          {
+            "command": [
+              "ruff",
+              "check"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "ci",
+            "name": "lint",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-000000000001",
+            "scope_type": "workspace",
+            "tier": "fast"
+          }
+        ],
+        "full": [
+          {
+            "command": [
+              "pytest"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d001",
+            "config_name": "extra",
+            "name": "all",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-0000000000a1",
+            "scope_type": "task",
+            "tier": "full"
+          },
+          {
+            "command": [
+              "pytest",
+              "-q"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "ci",
+            "name": "unit",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-000000000001",
+            "scope_type": "workspace",
+            "tier": "full"
+          }
+        ]
+      },
+      "id": "scopes-and-order",
+      "task_projects": [
+        "00000000-0000-4000-8000-0000000000b1"
+      ],
+      "task_repositories": [
+        "00000000-0000-4000-8000-0000000000c1"
+      ]
+    },
+    {
+      "configs": [
+        {
+          "checks": [
+            {
+              "baseline": "regression",
+              "command": [
+                "make",
+                "test"
+              ],
+              "name": "base",
+              "repository": "other"
+            },
+            {
+              "command": [
+                "pytest"
+              ],
+              "name": "fallback"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d000",
+          "name": "base",
+          "scope_id": "00000000-0000-4000-8000-0000000000c1",
+          "scope_type": "repository",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "expected": {
+        "all": [
+          {
+            "command": [
+              "make",
+              "test"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "base",
+            "name": "base",
+            "repository": "other",
+            "scope_id": "00000000-0000-4000-8000-0000000000c1",
+            "scope_type": "repository",
+            "tier": "full"
+          },
+          {
+            "command": [
+              "pytest"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "base",
+            "name": "fallback",
+            "repository": "00000000-0000-4000-8000-0000000000c1",
+            "scope_id": "00000000-0000-4000-8000-0000000000c1",
+            "scope_type": "repository",
+            "tier": "full"
+          }
+        ],
+        "fast": [],
+        "full": [
+          {
+            "command": [
+              "make",
+              "test"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "base",
+            "name": "base",
+            "repository": "other",
+            "scope_id": "00000000-0000-4000-8000-0000000000c1",
+            "scope_type": "repository",
+            "tier": "full"
+          },
+          {
+            "command": [
+              "pytest"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "base",
+            "name": "fallback",
+            "repository": "00000000-0000-4000-8000-0000000000c1",
+            "scope_id": "00000000-0000-4000-8000-0000000000c1",
+            "scope_type": "repository",
+            "tier": "full"
+          }
+        ]
+      },
+      "id": "repository-scope-keeps-explicit-repository",
+      "task_projects": [],
+      "task_repositories": [
+        "00000000-0000-4000-8000-0000000000c1"
+      ]
+    },
+    {
+      "configs": [
+        {
+          "checks": [
+            {
+              "command": [
+                "mypy",
+                "src"
+              ],
+              "name": "types",
+              "parser": "generic",
+              "tier": "fast"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d000",
+          "name": "ws",
+          "scope_id": "00000000-0000-4000-8000-000000000001",
+          "scope_type": "workspace",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "ruff",
+                "check"
+              ],
+              "name": "lint",
+              "tier": "fast"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d001",
+          "name": "proj",
+          "scope_id": "00000000-0000-4000-8000-0000000000b1",
+          "scope_type": "project",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "expected": {
+        "all": [
+          {
+            "command": [
+              "mypy",
+              "src"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "ws",
+            "name": "types",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-000000000001",
+            "scope_type": "workspace",
+            "tier": "fast"
+          }
+        ],
+        "fast": [
+          {
+            "command": [
+              "mypy",
+              "src"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "ws",
+            "name": "types",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-000000000001",
+            "scope_type": "workspace",
+            "tier": "fast"
+          }
+        ],
+        "full": []
+      },
+      "id": "no-links-only-workspace-scope",
+      "task_projects": [],
+      "task_repositories": []
+    },
+    {
+      "configs": [
+        {
+          "checks": [
+            {
+              "command": [
+                "pytest",
+                "-q"
+              ],
+              "name": "unit"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d000",
+          "name": "zeta",
+          "scope_id": "00000000-0000-4000-8000-0000000000b1",
+          "scope_type": "project",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "checks": [
+            {
+              "command": [
+                "ruff",
+                "check"
+              ],
+              "name": "lint",
+              "tier": "fast"
+            }
+          ],
+          "enabled": true,
+          "id": "00000000-0000-4000-8000-00000000d001",
+          "name": "alpha",
+          "scope_id": "00000000-0000-4000-8000-0000000000b2",
+          "scope_type": "project",
+          "workspace": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "expected": {
+        "all": [
+          {
+            "command": [
+              "ruff",
+              "check"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d001",
+            "config_name": "alpha",
+            "name": "lint",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-0000000000b2",
+            "scope_type": "project",
+            "tier": "fast"
+          },
+          {
+            "command": [
+              "pytest",
+              "-q"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "zeta",
+            "name": "unit",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-0000000000b1",
+            "scope_type": "project",
+            "tier": "full"
+          }
+        ],
+        "fast": [
+          {
+            "command": [
+              "ruff",
+              "check"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d001",
+            "config_name": "alpha",
+            "name": "lint",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-0000000000b2",
+            "scope_type": "project",
+            "tier": "fast"
+          }
+        ],
+        "full": [
+          {
+            "command": [
+              "pytest",
+              "-q"
+            ],
+            "config_id": "00000000-0000-4000-8000-00000000d000",
+            "config_name": "zeta",
+            "name": "unit",
+            "repository": null,
+            "scope_id": "00000000-0000-4000-8000-0000000000b1",
+            "scope_type": "project",
+            "tier": "full"
+          }
+        ]
+      },
+      "id": "same-scope-type-orders-by-name",
+      "task_projects": [
+        "00000000-0000-4000-8000-0000000000b1",
+        "00000000-0000-4000-8000-0000000000b2"
+      ],
+      "task_repositories": []
+    }
+  ],
+  "task": "00000000-0000-4000-8000-0000000000a1",
+  "workspace": "00000000-0000-4000-8000-000000000001"
+}

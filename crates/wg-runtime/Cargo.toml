@@ -28,6 +28,7 @@ wg-config = { path = "../wg-config" }
 wg-mcpspec = { path = "../wg-mcpspec" }
 wg-render = { path = "../wg-render" }
 wg-serverspec = { path = "../wg-serverspec" }
+wg-exec = { path = "../wg-exec" }
 wg-git = { path = "../wg-git" }
 wg-gitcore = { path = "../wg-gitcore" }
 wg-jobs = { path = "../wg-jobs" }
@@ -42,5 +43,6 @@ wg-store = { path = "../wg-store" }
 wg-wire = { path = "../wg-wire" }
 wg-tasks = { path = "../wg-tasks" }
 wg-telemetry = { path = "../wg-telemetry" }
+wg-verify = { path = "../wg-verify" }
 wg-telemetryspec = { path = "../wg-telemetryspec" }
 wg-types = { path = "../wg-types" }

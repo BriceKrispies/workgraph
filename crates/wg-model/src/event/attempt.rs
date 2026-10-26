@@ -9,7 +9,7 @@ use serde::Serialize;
 use wg_types::{AttemptStatus, Id, TaskKey};
 
 use crate::entity::JsonObject;
-use crate::event::{StrMap, ser};
+use crate::event::ser;
 
 /// `attempt.created`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -60,8 +60,9 @@ pub struct AttemptFinished {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct AttemptWorkspacePrepared {
     pub repositories: VectorSync<String>,
-    /// Repository name to base revision.
-    pub bases: StrMap,
+    /// Repository name to the base the repository was prepared from (the stack base's dict, as
+    /// Python writes it), for the repositories that have one.
+    pub bases: JsonObject,
     pub isolation: String,
     pub baseline_manifest_id: Id,
     pub change_set_id: Option<Id>,

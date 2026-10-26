@@ -11,10 +11,12 @@
 //! * [`outcome`]: the `tools/call` result shapes and `tool_errors`' error mapping
 //!   (`src/workgraph/mcp/server.py`);
 //! * [`permissions`]: the agent's permission set from `--grant` flags, one function for both
-//!   transports (WG-3734).
+//!   transports (WG-3734);
+//! * [`jsonrpc`]: the `400` answer to a POST body that is not a JSON-RPC message (X6).
 
 pub mod arguments;
 pub mod catalog;
+pub mod jsonrpc;
 pub mod options;
 pub mod outcome;
 pub mod permissions;
@@ -22,6 +24,7 @@ pub mod wire;
 
 pub use arguments::{ArgumentsError, check_arguments};
 pub use catalog::{Catalog, ToolSpec};
+pub use jsonrpc::not_jsonrpc_reply;
 pub use outcome::{
     INVALID_PARAMS_MESSAGE, error_result, execution_error_text, has_params_to_parse, read_result,
     respond_to_call, structured_output, success_result, text_argument, tool_error_text,

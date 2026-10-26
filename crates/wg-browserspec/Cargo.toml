@@ -13,5 +13,6 @@ workspace = true
 [dependencies]
 wg-types = { path = "../wg-types" }
 wg-procspec = { path = "../wg-procspec" }
+wg-validate = { path = "../wg-validate" }
 serde_json = "1"
 base64 = "0.22"

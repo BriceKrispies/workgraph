@@ -10,7 +10,7 @@ use std::sync::{Arc, Mutex};
 
 use serde_json::{Value, json};
 use tokio_util::sync::CancellationToken;
-use wg_mcp::{Agent, ToolBackend, serve_http};
+use wg_mcp::{Agent, ToolBackend, http_router};
 use wg_mcpspec::options::ServeOptions;
 use wg_types::{Permission, WgError};
 
@@ -76,12 +76,18 @@ fn http_serves_and_applies_grants() {
     let port = listener.local_addr().expect("addr").port();
     let cancel = CancellationToken::new();
     let runtime = tokio::runtime::Runtime::new().expect("runtime");
-    let server = runtime.spawn(serve_http(
-        listener,
+    // The router alone: `wg-server` adds the token and Host/Origin checks in front of it.
+    let router = http_router(
         options.agent(),
         Box::new(Recorder(Arc::clone(&ran))),
         cancel.clone(),
-    ));
+    )
+    .expect("router");
+    listener.set_nonblocking(true).expect("nonblocking");
+    let server = runtime.spawn(async move {
+        let listener = tokio::net::TcpListener::from_std(listener).expect("listener");
+        axum::serve(listener, router).await
+    });
 
     let init = json!({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
         "protocolVersion": "2025-06-18", "capabilities": {},

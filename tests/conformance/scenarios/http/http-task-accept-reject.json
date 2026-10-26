@@ -1,0 +1,24 @@
+{
+  "id": "http-task-accept-reject",
+  "covers": ["H024", "H030", "H032", "H033", "H034", "H035"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks", "body": {"title": "API task", "status": "ready", "tags": ["api"]}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-1/claim", "body": {}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-1/complete", "body": {"summary": "done"}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-1/accept", "body": {}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-1/accept", "body": {"manual": true, "reason": "looks good"}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "accepted"}}},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-1/acceptances"},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks", "body": {"title": "Needs work", "status": "ready"}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-2/claim", "body": {}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-2/complete", "body": {"summary": "first try"}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-2/reject", "body": {"reason": ""}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-2/reject", "body": {"reason": "missing tests"}},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "ready"}}}
+  ],
+  "not_observable": []
+}

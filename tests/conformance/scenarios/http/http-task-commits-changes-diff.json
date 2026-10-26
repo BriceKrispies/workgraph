@@ -1,0 +1,29 @@
+{
+  "id": "http-task-commits-changes-diff",
+  "covers": ["H047", "H048", "H049", "H050", "H051"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"README.md": "svc\n"}, "message": "initial"},
+    {"git": "commit", "repo": "svc", "files": {"feature.txt": "feature\n"}, "message": "add feature\n\nTask-ID: WG-1"},
+    {"git": "commit", "repo": "svc", "files": {"fix.txt": "fix\n"}, "message": "unrelated fix"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Feature", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "Loose work", "--repo", "svc"], "json": true},
+    {"http": "POST", "path": "/api/v1/ws/default/repositories/svc/sync?mode=full"},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-1/commits?min_confidence=0.0"},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-1/changes?min_confidence=0.5"},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-1/diff?repository=svc&max_bytes=100000"},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-1/change-sets"},
+    {"http": "GET", "path": "/api/v1/ws/default/repositories/svc/commits?limit=10", "save": {"fix_sha": "/items/0/sha"}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-2/commits", "body": {"sha": "{var:fix_sha}", "repository": "svc", "note": "manual link"}},
+    {"http": "POST", "path": "/api/v1/ws/default/tasks/WG-2/commits", "body": {"sha": "abc"}},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-2/commits"},
+    {"http": "GET", "path": "/api/v1/ws/default/tasks/WG-999/commits"},
+    {"cli": ["task", "show", "WG-2"], "json": true},
+    {"assert": {"json": {"path": "/key", "equals": "WG-2"}}}
+  ],
+  "not_observable": []
+}

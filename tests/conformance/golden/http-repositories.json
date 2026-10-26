@@ -1,0 +1,131 @@
+{
+  "scenario": "http-repositories",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "http",
+      "exit": 201,
+      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"name\":\"svc\",\"description\":\"\",\"identity_fingerprint\":\"<sha:1>\",\"default_branch\":\"main\",\"tracked_branches\":[\"main\"],\"access_mode\":\"read_write\",\"health_status\":\"ok\",\"health_detail\":{\"skipped_worktrees\":[]},\"health_checked_at\":\"<ts:1|Z>\",\"is_shallow\":false,\"last_scanned_at\":null,\"archived_at\":null,\"remotes\":[],\"checkouts\":[{\"id\":\"<id:3>\",\"path\":\"<tmp>/repos\\\\svc\",\"kind\":\"clone\",\"is_primary\":true,\"available\":true,\"access_mode\":null,\"last_seen_at\":\"<ts:2|Z>\"}],\"project_ids\":[],\"depends_on\":[],\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:2|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "http",
+      "exit": 201,
+      "stdout": "{\"id\":\"<id:4>\",\"workspace_id\":\"<id:2>\",\"name\":\"spare-copy\",\"description\":\"\",\"identity_fingerprint\":\"<sha:2>\",\"default_branch\":\"main\",\"tracked_branches\":[\"main\"],\"access_mode\":\"read_write\",\"health_status\":\"ok\",\"health_detail\":{\"skipped_worktrees\":[]},\"health_checked_at\":\"<ts:3|Z>\",\"is_shallow\":false,\"last_scanned_at\":null,\"archived_at\":null,\"remotes\":[],\"checkouts\":[{\"id\":\"<id:5>\",\"path\":\"<tmp>/repos\\\\spare\",\"kind\":\"clone\",\"is_primary\":true,\"available\":true,\"access_mode\":null,\"last_seen_at\":\"<ts:3|Z>\"}],\"project_ids\":[],\"depends_on\":[],\"created_at\":\"<ts:3|Z>\",\"updated_at\":\"<ts:3|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 422,
+      "stdout": "{\"error\":{\"code\":\"validation_failed\",\"message\":\"invalid request\",\"details\":{\"errors\":[{\"type\":\"string_too_short\",\"loc\":[\"body\",\"path\"],\"msg\":\"String should have at least 1 character\",\"input\":\"\",\"ctx\":{\"min_length\":1}}]}}}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[{\"id\":\"<id:4>\",\"workspace_id\":\"<id:2>\",\"name\":\"spare-copy\",\"description\":\"\",\"identity_fingerprint\":\"<sha:2>\",\"default_branch\":\"main\",\"tracked_branches\":[\"main\"],\"access_mode\":\"read_write\",\"health_status\":\"ok\",\"health_detail\":{\"skipped_worktrees\":[]},\"health_checked_at\":\"<ts:3|Z>\",\"is_shallow\":false,\"last_scanned_at\":null,\"archived_at\":null,\"remotes\":[],\"checkouts\":[{\"id\":\"<id:5>\",\"path\":\"<tmp>/repos\\\\spare\",\"kind\":\"clone\",\"is_primary\":true,\"available\":true,\"access_mode\":null,\"last_seen_at\":\"<ts:3|Z>\"}],\"project_ids\":[],\"depends_on\":[],\"created_at\":\"<ts:3|Z>\",\"updated_at\":\"<ts:3|Z>\"},{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"name\":\"svc\",\"description\":\"\",\"identity_fingerprint\":\"<sha:1>\",\"default_branch\":\"main\",\"tracked_branches\":[\"main\"],\"access_mode\":\"read_write\",\"health_status\":\"ok\",\"health_detail\":{\"skipped_worktrees\":[]},\"health_checked_at\":\"<ts:1|Z>\",\"is_shallow\":false,\"last_scanned_at\":null,\"archived_at\":null,\"remotes\":[],\"checkouts\":[{\"id\":\"<id:3>\",\"path\":\"<tmp>/repos\\\\svc\",\"kind\":\"clone\",\"is_primary\":true,\"available\":true,\"access_mode\":null,\"last_seen_at\":\"<ts:2|Z>\"}],\"project_ids\":[],\"depends_on\":[],\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:2|Z>\"}]",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"project 'core' not found in workspace\",\"details\":{\"ref\":\"core\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"name\":\"svc\",\"description\":\"\",\"identity_fingerprint\":\"<sha:1>\",\"default_branch\":\"main\",\"tracked_branches\":[\"main\"],\"access_mode\":\"read_write\",\"health_status\":\"ok\",\"health_detail\":{\"skipped_worktrees\":[]},\"health_checked_at\":\"<ts:1|Z>\",\"is_shallow\":false,\"last_scanned_at\":null,\"archived_at\":null,\"remotes\":[],\"checkouts\":[{\"id\":\"<id:3>\",\"path\":\"<tmp>/repos\\\\svc\",\"kind\":\"clone\",\"is_primary\":true,\"available\":true,\"access_mode\":null,\"last_seen_at\":\"<ts:2|Z>\"}],\"project_ids\":[],\"depends_on\":[],\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:2|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"repository 'missing' not found in workspace\",\"details\":{\"ref\":\"missing\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"name\":\"svc\",\"description\":\"Service code\",\"identity_fingerprint\":\"<sha:1>\",\"default_branch\":\"main\",\"tracked_branches\":[\"main\"],\"access_mode\":\"read_write\",\"health_status\":\"ok\",\"health_detail\":{\"skipped_worktrees\":[]},\"health_checked_at\":\"<ts:1|Z>\",\"is_shallow\":false,\"last_scanned_at\":null,\"archived_at\":null,\"remotes\":[],\"checkouts\":[{\"id\":\"<id:3>\",\"path\":\"<tmp>/repos\\\\svc\",\"kind\":\"clone\",\"is_primary\":true,\"available\":true,\"access_mode\":null,\"last_seen_at\":\"<ts:2|Z>\"}],\"project_ids\":[],\"depends_on\":[],\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:4|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"name\":\"svc\",\"description\":\"Service code\",\"identity_fingerprint\":\"<sha:1>\",\"default_branch\":\"main\",\"tracked_branches\":[\"main\"],\"access_mode\":\"read_write\",\"health_status\":\"ok\",\"health_detail\":{\"checkouts\":[{\"path\":\"<tmp>/repos\\\\svc\",\"available\":true}],\"skipped_worktrees\":[]},\"health_checked_at\":\"<ts:5|Z>\",\"is_shallow\":false,\"last_scanned_at\":null,\"archived_at\":null,\"remotes\":[],\"checkouts\":[{\"id\":\"<id:3>\",\"path\":\"<tmp>/repos\\\\svc\",\"kind\":\"clone\",\"is_primary\":true,\"available\":true,\"access_mode\":null,\"last_seen_at\":\"<ts:5|Z>\"}],\"project_ids\":[],\"depends_on\":[],\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:5|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"repository_id\":\"<id:1>\",\"name\":\"svc\",\"checkout_path\":\"<tmp>/repos\\\\svc\",\"available\":true,\"branch\":\"main\",\"head\":\"<sha:1>\",\"detached\":false,\"staged\":[],\"unstaged\":[],\"untracked\":[],\"ahead\":null,\"behind\":null,\"is_shallow\":false,\"error\":null}",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:4>\",\"workspace_id\":\"<id:2>\",\"name\":\"spare-copy\",\"description\":\"\",\"identity_fingerprint\":\"<sha:2>\",\"default_branch\":\"main\",\"tracked_branches\":[\"main\"],\"access_mode\":\"read_write\",\"health_status\":\"ok\",\"health_detail\":{\"skipped_worktrees\":[]},\"health_checked_at\":\"<ts:3|Z>\",\"is_shallow\":false,\"last_scanned_at\":null,\"archived_at\":\"<ts:6|Z>\",\"remotes\":[],\"checkouts\":[{\"id\":\"<id:5>\",\"path\":\"<tmp>/repos\\\\spare\",\"kind\":\"clone\",\"is_primary\":true,\"available\":true,\"access_mode\":null,\"last_seen_at\":\"<ts:3|Z>\"}],\"project_ids\":[],\"depends_on\":[],\"created_at\":\"<ts:3|Z>\",\"updated_at\":\"<ts:6|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"name\": \"svc\",\n    \"description\": \"Service code\",\n    \"identity_fingerprint\": \"<sha:1>\",\n    \"default_branch\": \"main\",\n    \"tracked_branches\": [\n      \"main\"\n    ],\n    \"access_mode\": \"read_write\",\n    \"health_status\": \"ok\",\n    \"health_detail\": {\n      \"checkouts\": [\n        {\n          \"available\": true,\n          \"path\": \"<tmp>/repos\\\\svc\"\n        }\n      ],\n      \"skipped_worktrees\": []\n    },\n    \"health_checked_at\": \"<ts:5|Z>\",\n    \"is_shallow\": false,\n    \"last_scanned_at\": null,\n    \"archived_at\": null,\n    \"remotes\": [],\n    \"checkouts\": [\n      {\n        \"id\": \"<id:3>\",\n        \"path\": \"<tmp>/repos\\\\svc\",\n        \"kind\": \"clone\",\n        \"is_primary\": true,\n        \"available\": true,\n        \"access_mode\": null,\n        \"last_seen_at\": \"<ts:5|Z>\"\n      }\n    ],\n    \"project_ids\": [],\n    \"depends_on\": [],\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:5|Z>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -243,7 +243,7 @@ fn one_worker_leads_maintenance_and_queues_tracker_syncs_once() -> TestResult {
     let settings = WorkerSettings::from_config(&queue.app.config()?);
     assert_eq!(settings.trackers.len(), 1);
 
-    let first = queue.maintain("worker-a", &settings, 30)?;
+    let first = queue.maintain("worker-a", &settings, 30, &[])?;
     assert_eq!(first["leader"], json!(true));
     assert_eq!(
         first["tracker_syncs"],
@@ -252,10 +252,10 @@ fn one_worker_leads_maintenance_and_queues_tracker_syncs_once() -> TestResult {
     // The retention window opened for the first time; the services not ported are named.
     assert_eq!(first["automation"], json!("not ported"));
     // Another worker does not lead while the lease is held.
-    let second = queue.maintain("worker-b", &settings, 30)?;
+    let second = queue.maintain("worker-b", &settings, 30, &[])?;
     assert_eq!(second["leader"], json!(false));
     // The leader's next pass finds the cadences not yet elapsed: nothing more is queued.
-    let third = queue.maintain("worker-a", &settings, 30)?;
+    let third = queue.maintain("worker-a", &settings, 30, &[])?;
     assert_eq!(
         third["tracker_syncs"],
         json!({"incremental": 0, "full": 0, "failed": 0})

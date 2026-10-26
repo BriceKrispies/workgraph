@@ -22,6 +22,7 @@ wg-automation Core
 wg-automation-feature Shell
 wg-automation-feature::spec Pure
 wg-automation-feature::service Shell
+wg-automation-feature::jobs Shell
 wg-automation-feature::cli Shell
 wg-browser Shell
 wg-browserspec Pure

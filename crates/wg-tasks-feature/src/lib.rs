@@ -23,4 +23,5 @@ pub static FEATURE: Feature = Feature {
     tools: mcp::TOOLS,
     resources: &[],
     jobs: &[],
+    maintenance: &[],
 };

@@ -40,8 +40,8 @@ pub use cli_state::CliState;
 pub use cycle::{Flow, Outcome, Runtime, Step};
 pub use effects::{HttpClient, Interpreter, NetHttp, write_atomic};
 pub use feature::{
-    CliGroup, CliRun, Feature, JobKind, JobRun, ResourceRun, RouteGroup, RouteRequest, RouteRun,
-    ToolRun,
+    CliGroup, CliRun, Feature, JobKind, JobRun, MaintenanceRun, MaintenanceStep, ResourceRun,
+    RouteGroup, RouteRequest, RouteRun, ToolRun,
 };
 pub use handlers::{Handler, HandlerError, HandlerRegistry, HandlerResult, JobContext};
 pub use logging::{JsonLayer, LogSettings, RotatingFile, configure_logging, json_layer};

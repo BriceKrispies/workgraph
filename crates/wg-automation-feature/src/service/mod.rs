@@ -7,6 +7,7 @@
 //! first. These are free functions over `&mut App` (and `&mut Session` in [`reads`]): the feature's
 //! Shell, reached from the `cli`, `http` and `mcp` tables.
 
+pub mod execute;
 pub mod reads;
 
 use serde_json::{Map, Value as Json};
@@ -99,7 +100,7 @@ fn task_of_event(
 
 /// `_context`'s rows for one trigger: the event, its attempt, its task (or the task the input
 /// names), the task's tags and its classification.
-fn load_rows(
+pub(crate) fn load_rows(
     session: &mut Session<'_>,
     event: Option<EventRecord>,
     input: &Map<String, Json>,
@@ -436,7 +437,7 @@ pub fn process(app: &mut App, context: &RequestContext) -> Result<Value, WgError
 
 /// `AutomationService.process_events`: the events after the cursor, through the enabled event
 /// rules. Everything a pass reads is loaded here; the decision applies the writes.
-fn events_pass(app: &mut App, context: &RequestContext) -> Result<Value, WgError> {
+pub(crate) fn events_pass(app: &mut App, context: &RequestContext) -> Result<Value, WgError> {
     let at = app.runtime.stamps.stamp(context)?.at;
     let max_depth = core::max_depth_of_config(&app.config()?);
     let (cursor, counted, events) = app.runtime.store.read(|session| {
@@ -489,7 +490,7 @@ fn events_pass(app: &mut App, context: &RequestContext) -> Result<Value, WgError
 
 /// `AutomationService.run_scheduled`: the schedules that are due, recorded as runs. Returns how
 /// many runs were recorded.
-fn scheduled_pass(app: &mut App, context: &RequestContext) -> Result<i64, WgError> {
+pub(crate) fn scheduled_pass(app: &mut App, context: &RequestContext) -> Result<i64, WgError> {
     let at = app.runtime.stamps.stamp(context)?.at;
     let max_depth = core::max_depth_of_config(&app.config()?);
     let loaded = app.runtime.store.read(|session| {

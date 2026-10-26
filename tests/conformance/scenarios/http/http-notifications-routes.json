@@ -1,0 +1,16 @@
+{
+  "id": "http-notifications-routes",
+  "covers": ["H099", "H100"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Notified work"], "json": true},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/notifications"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/notifications?unread=true"},
+    {"http": "POST", "path": "/api/v1/notifications/00000000-0000-4000-8000-000000000000/read"},
+    {"http": "GET", "path": "/api/v1/ws/nope/notifications"},
+    {"cli": ["automation", "notifications"], "json": true},
+    {"assert": {"json": {"path": "", "equals": []}}}
+  ],
+  "not_observable": []
+}

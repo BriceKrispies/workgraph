@@ -1,0 +1,29 @@
+{
+  "id": "http-automation-routes",
+  "covers": ["H091", "H092", "H093", "H094", "H095", "H096", "H097", "H098"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "auto"], "json": true},
+    {"http": "GET", "path": "/api/v1/automation/catalog"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/automation/rules"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/automation/rules", "body": {"name": "tagger", "trigger": {"type": "manual"}, "actions": [{"type": "add_tags", "tags": ["x"]}]}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/automation/rules", "body": {"name": "tagger", "trigger": {"type": "manual"}, "actions": [{"type": "add_tags", "tags": ["x"]}]}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/automation/rules", "body": {"name": "broken", "trigger": {"type": "bogus"}, "actions": []}},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/automation/rules/tagger"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/automation/rules/nope"},
+    {"http": "PUT", "path": "/api/v1/ws/{ws}/automation/rules/tagger", "body": {"name": "tagger", "trigger": {"type": "manual"}, "actions": [{"type": "add_tags", "tags": ["y"]}]}},
+    {"http": "PUT", "path": "/api/v1/ws/{ws}/automation/rules/nope", "body": {"name": "nope", "trigger": {"type": "manual"}, "actions": [{"type": "add_tags", "tags": ["y"]}]}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/automation/rules/tagger/disable"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/automation/rules/tagger/enable"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/automation/rules/tagger/trigger", "body": {"inputs": {"task": "WG-1"}}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/automation/rules/tagger/explode"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/automation/preview", "body": {"rule": "tagger", "inputs": {"task": "WG-1"}}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/automation/preview", "body": {"rule": "tagger", "extra": 1}},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/automation/runs"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/automation/runs?rule=tagger&status=queued&limit=5"},
+    {"cli": ["automation", "runs"], "json": true},
+    {"assert": {"json": {"path": "/0/status", "equals": "previewed"}}}
+  ],
+  "not_observable": []
+}

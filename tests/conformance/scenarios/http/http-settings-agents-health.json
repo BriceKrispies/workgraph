@@ -1,0 +1,20 @@
+{
+  "id": "http-settings-agents-health",
+  "covers": ["H117", "H118", "H119", "H120", "H121"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"http": "GET", "path": "/api/v1/settings"},
+    {"http": "GET", "path": "/api/v1/settings?workspace=default"},
+    {"http": "GET", "path": "/api/v1/settings?workspace=nope"},
+    {"http": "PATCH", "path": "/api/v1/settings", "body": {"values": {"execution.max_concurrent_runs": 3}}},
+    {"http": "PATCH", "path": "/api/v1/settings", "body": {"values": {"agents.evil.executable": "rm"}}},
+    {"http": "PATCH", "path": "/api/v1/settings", "body": {"values": {"execution.max_concurrent_runs": "many"}}},
+    {"http": "GET", "path": "/api/v1/agents"},
+    {"http": "GET", "path": "/api/v1/llm/health"},
+    {"http": "GET", "path": "/api/v1/claude/status"},
+    {"cli": ["config", "show"], "json": true},
+    {"assert": {"json": {"path": "/config/execution/max_concurrent_runs", "equals": 3}}}
+  ],
+  "not_observable": []
+}

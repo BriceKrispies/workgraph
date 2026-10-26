@@ -1,0 +1,89 @@
+{
+  "scenario": "http-settings-agents-health",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"config\":{\"schema_version\":2,\"default_workspace\":\"default\",\"server\":{\"host\":\"127.0.0.1\",\"port\":<port>,\"allow_non_loopback\":false,\"lan\":true,\"lan_address\":null,\"lan_networks\":[]},\"llm\":{\"providers\":{\"ollama\":{\"type\":\"ollama\",\"base_url\":\"http://127.0.0.1:<port>\",\"timeout_seconds\":120.0,\"max_retries\":2,\"backoff_seconds\":1.0,\"api_key_env\":null},\"heuristic\":{\"type\":\"heuristic\"}},\"classification\":{\"provider\":\"ollama\",\"model\":\"qwen2.5:7b-instruct\"},\"embeddings\":{\"provider\":\"ollama\",\"model\":\"nomic-embed-text\"},\"summarization\":{\"provider\":\"ollama\",\"model\":\"qwen2.5:7b-instruct\"},\"auto_classify\":true,\"auto_embed\":true},\"agents\":{\"claude_code\":{\"type\":\"claude_code\",\"executable\":\"claude\",\"model\":null,\"permission_mode\":\"acceptEdits\",\"allowed_tools\":[],\"max_turns\":null,\"max_budget_usd\":null,\"timeout_seconds\":3600.0,\"extra_args\":[]}},\"execution\":{\"enabled\":false,\"default_agent\":\"claude_code\",\"max_concurrent_runs\":2,\"max_attempts_per_task\":3,\"auto_schedule\":false,\"isolation\":\"worktree\",\"allow_push\":false,\"allow_merge\":false},\"jobs\":{\"worker_concurrency\":4,\"gpu_concurrency\":1,\"per_agent_concurrency\":2,\"per_repository_concurrency\":1,\"verify_concurrency\":1,\"lease_seconds\":60,\"default_max_attempts\":5},\"stacks\":{\"auto_accept\":true},\"verification\":{\"auto_accept\":true},\"retention\":{\"telemetry_payload_days\":30,\"run_log_days\":90},\"claude\":{\"capture_tool_payloads\":false,\"max_payload_chars\":4000},\"automation\":{\"max_depth\":3},\"trackers\":{}},\"paths\":{\"config_file\":\"<home>\\\\config\\\\config.toml\",\"data_dir\":\"<home>\\\\data\"}}",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"config\":{\"schema_version\":2,\"default_workspace\":\"default\",\"server\":{\"host\":\"127.0.0.1\",\"port\":<port>,\"allow_non_loopback\":false,\"lan\":true,\"lan_address\":null,\"lan_networks\":[]},\"llm\":{\"providers\":{\"ollama\":{\"type\":\"ollama\",\"base_url\":\"http://127.0.0.1:<port>\",\"timeout_seconds\":120.0,\"max_retries\":2,\"backoff_seconds\":1.0,\"api_key_env\":null},\"heuristic\":{\"type\":\"heuristic\"}},\"classification\":{\"provider\":\"ollama\",\"model\":\"qwen2.5:7b-instruct\"},\"embeddings\":{\"provider\":\"ollama\",\"model\":\"nomic-embed-text\"},\"summarization\":{\"provider\":\"ollama\",\"model\":\"qwen2.5:7b-instruct\"},\"auto_classify\":true,\"auto_embed\":true},\"agents\":{\"claude_code\":{\"type\":\"claude_code\",\"executable\":\"claude\",\"model\":null,\"permission_mode\":\"acceptEdits\",\"allowed_tools\":[],\"max_turns\":null,\"max_budget_usd\":null,\"timeout_seconds\":3600.0,\"extra_args\":[]}},\"execution\":{\"enabled\":false,\"default_agent\":\"claude_code\",\"max_concurrent_runs\":2,\"max_attempts_per_task\":3,\"auto_schedule\":false,\"isolation\":\"worktree\",\"allow_push\":false,\"allow_merge\":false},\"jobs\":{\"worker_concurrency\":4,\"gpu_concurrency\":1,\"per_agent_concurrency\":2,\"per_repository_concurrency\":1,\"verify_concurrency\":1,\"lease_seconds\":60,\"default_max_attempts\":5},\"stacks\":{\"auto_accept\":true},\"verification\":{\"auto_accept\":true},\"retention\":{\"telemetry_payload_days\":30,\"run_log_days\":90},\"claude\":{\"capture_tool_payloads\":false,\"max_payload_chars\":4000},\"automation\":{\"max_depth\":3},\"trackers\":{}},\"paths\":{\"config_file\":\"<home>\\\\config\\\\config.toml\",\"data_dir\":\"<home>\\\\data\"}}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"config\":{\"schema_version\":2,\"default_workspace\":\"default\",\"server\":{\"host\":\"127.0.0.1\",\"port\":<port>,\"allow_non_loopback\":false,\"lan\":true,\"lan_address\":null,\"lan_networks\":[]},\"llm\":{\"providers\":{\"ollama\":{\"type\":\"ollama\",\"base_url\":\"http://127.0.0.1:<port>\",\"timeout_seconds\":120.0,\"max_retries\":2,\"backoff_seconds\":1.0,\"api_key_env\":null},\"heuristic\":{\"type\":\"heuristic\"}},\"classification\":{\"provider\":\"ollama\",\"model\":\"qwen2.5:7b-instruct\"},\"embeddings\":{\"provider\":\"ollama\",\"model\":\"nomic-embed-text\"},\"summarization\":{\"provider\":\"ollama\",\"model\":\"qwen2.5:7b-instruct\"},\"auto_classify\":true,\"auto_embed\":true},\"agents\":{\"claude_code\":{\"type\":\"claude_code\",\"executable\":\"claude\",\"model\":null,\"permission_mode\":\"acceptEdits\",\"allowed_tools\":[],\"max_turns\":null,\"max_budget_usd\":null,\"timeout_seconds\":3600.0,\"extra_args\":[]}},\"execution\":{\"enabled\":false,\"default_agent\":\"claude_code\",\"max_concurrent_runs\":2,\"max_attempts_per_task\":3,\"auto_schedule\":false,\"isolation\":\"worktree\",\"allow_push\":false,\"allow_merge\":false},\"jobs\":{\"worker_concurrency\":4,\"gpu_concurrency\":1,\"per_agent_concurrency\":2,\"per_repository_concurrency\":1,\"verify_concurrency\":1,\"lease_seconds\":60,\"default_max_attempts\":5},\"stacks\":{\"auto_accept\":true},\"verification\":{\"auto_accept\":true},\"retention\":{\"telemetry_payload_days\":30,\"run_log_days\":90},\"claude\":{\"capture_tool_payloads\":false,\"max_payload_chars\":4000},\"automation\":{\"max_depth\":3},\"trackers\":{}},\"paths\":{\"config_file\":\"<home>\\\\config\\\\config.toml\",\"data_dir\":\"<home>\\\\data\"}}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"config\":{\"schema_version\":2,\"default_workspace\":\"default\",\"server\":{\"host\":\"127.0.0.1\",\"port\":<port>,\"allow_non_loopback\":false,\"lan\":true,\"lan_address\":null,\"lan_networks\":[]},\"llm\":{\"providers\":{\"ollama\":{\"type\":\"ollama\",\"base_url\":\"http://127.0.0.1:<port>\",\"timeout_seconds\":120.0,\"max_retries\":2,\"backoff_seconds\":1.0,\"api_key_env\":null},\"heuristic\":{\"type\":\"heuristic\"}},\"classification\":{\"provider\":\"ollama\",\"model\":\"qwen2.5:7b-instruct\"},\"embeddings\":{\"provider\":\"ollama\",\"model\":\"nomic-embed-text\"},\"summarization\":{\"provider\":\"ollama\",\"model\":\"qwen2.5:7b-instruct\"},\"auto_classify\":true,\"auto_embed\":true},\"agents\":{\"claude_code\":{\"type\":\"claude_code\",\"executable\":\"claude\",\"model\":null,\"permission_mode\":\"acceptEdits\",\"allowed_tools\":[],\"max_turns\":null,\"max_budget_usd\":null,\"timeout_seconds\":3600.0,\"extra_args\":[]}},\"execution\":{\"enabled\":false,\"default_agent\":\"claude_code\",\"max_concurrent_runs\":3,\"max_attempts_per_task\":3,\"auto_schedule\":false,\"isolation\":\"worktree\",\"allow_push\":false,\"allow_merge\":false},\"jobs\":{\"worker_concurrency\":4,\"gpu_concurrency\":1,\"per_agent_concurrency\":2,\"per_repository_concurrency\":1,\"verify_concurrency\":1,\"lease_seconds\":60,\"default_max_attempts\":5},\"stacks\":{\"auto_accept\":true},\"verification\":{\"auto_accept\":true},\"retention\":{\"telemetry_payload_days\":30,\"run_log_days\":90},\"claude\":{\"capture_tool_payloads\":false,\"max_payload_chars\":4000},\"automation\":{\"max_depth\":3},\"trackers\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 422,
+      "stdout": "{\"error\":{\"code\":\"validation_failed\",\"message\":\"agents.evil.executable cannot be edited from the API; use the config file\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "http",
+      "exit": 422,
+      "stdout": "{\"error\":{\"code\":\"validation_failed\",\"message\":\"invalid settings: 1 validation error for GlobalConfig\\nexecution.max_concurrent_runs\\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='many', input_type=str]\\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[{\"name\":\"claude_code\",\"adapter\":\"claude_code\",\"available\":true,\"detail\":\"2.1.310 (Claude Code)\",\"capabilities\":{\"streaming_progress\":true,\"usage_reporting\":true,\"cost_reporting\":true,\"session_resume\":true,\"isolated_workspace\":true,\"cancellation\":true,\"subagents\":true,\"lifecycle_hooks\":true},\"config\":{\"adapter\":\"claude_code\",\"executable\":\"claude\",\"model\":null,\"permission_mode\":\"acceptEdits\",\"allowed_tools\":[],\"max_turns\":null,\"max_budget_usd\":null,\"extra_args\":[]}}]",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"ollama\":{\"available\":false,\"detail\":\"ollama at http://127.0.0.1:<port> is unreachable after 1 attempt(s): [WinError 10061] No connection could be made because the target machine actively refused it; ollama at http://127.0.0.1:<port> is unreachable after 1 attempt(s): [WinError 10061] No connection could be made because the target machine actively refused it\"},\"heuristic\":{\"available\":true,\"detail\":\"2 models\"}}",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"user\":{\"scope\":\"user\",\"settings\":\"C:\\\\Users\\\\Brice\\\\.claude\\\\settings.json\",\"exists\":true,\"error\":null,\"installed_events\":[\"PostToolUse\",\"PostToolUseFailure\",\"PreToolUse\",\"SessionEnd\",\"SessionStart\",\"Stop\",\"SubagentStart\",\"SubagentStop\",\"TaskCompleted\",\"TaskCreated\"],\"missing_events\":[],\"command_resolves\":true},\"hooks\":{\"hook_events\":0,\"last_received_at\":null,\"by_event\":{},\"spooled\":0,\"spool_failed\":0},\"sessions\":[]}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"workspace\": \"default\",\n  \"config\": {\n    \"schema_version\": 2,\n    \"default_workspace\": \"default\",\n    \"server\": {\n      \"host\": \"127.0.0.1\",\n      \"port\": <port>,\n      \"allow_non_loopback\": false,\n      \"lan\": true,\n      \"lan_address\": null,\n      \"lan_networks\": []\n    },\n    \"llm\": {\n      \"providers\": {\n        \"ollama\": {\n          \"type\": \"ollama\",\n          \"base_url\": \"http://127.0.0.1:<port>\",\n          \"timeout_seconds\": 120.0,\n          \"max_retries\": 2,\n          \"backoff_seconds\": 1.0,\n          \"api_key_env\": null\n        },\n        \"heuristic\": {\n          \"type\": \"heuristic\"\n        }\n      },\n      \"classification\": {\n        \"provider\": \"ollama\",\n        \"model\": \"qwen2.5:7b-instruct\"\n      },\n      \"embeddings\": {\n        \"provider\": \"ollama\",\n        \"model\": \"nomic-embed-text\"\n      },\n      \"summarization\": {\n        \"provider\": \"ollama\",\n        \"model\": \"qwen2.5:7b-instruct\"\n      },\n      \"auto_classify\": true,\n      \"auto_embed\": true\n    },\n    \"agents\": {\n      \"claude_code\": {\n        \"type\": \"claude_code\",\n        \"executable\": \"claude\",\n        \"model\": null,\n        \"permission_mode\": \"acceptEdits\",\n        \"allowed_tools\": [],\n        \"max_turns\": null,\n        \"max_budget_usd\": null,\n        \"timeout_seconds\": 3600.0,\n        \"extra_args\": []\n      }\n    },\n    \"execution\": {\n      \"enabled\": false,\n      \"default_agent\": \"claude_code\",\n      \"max_concurrent_runs\": 3,\n      \"max_attempts_per_task\": 3,\n      \"auto_schedule\": false,\n      \"isolation\": \"worktree\",\n      \"allow_push\": false,\n      \"allow_merge\": false\n    },\n    \"jobs\": {\n      \"worker_concurrency\": 4,\n      \"gpu_concurrency\": 1,\n      \"per_agent_concurrency\": 2,\n      \"per_repository_concurrency\": 1,\n      \"verify_concurrency\": 1,\n      \"lease_seconds\": 60,\n      \"default_max_attempts\": 5\n    },\n    \"stacks\": {\n      \"auto_accept\": true\n    },\n    \"verification\": {\n      \"auto_accept\": true\n    },\n    \"retention\": {\n      \"telemetry_payload_days\": 30,\n      \"run_log_days\": 90\n    },\n    \"claude\": {\n      \"capture_tool_payloads\": false,\n      \"max_payload_chars\": 4000\n    },\n    \"automation\": {\n      \"max_depth\": 3\n    },\n    \"trackers\": {}\n  },\n  \"files\": {\n    \"global\": \"<home>\\\\config\\\\config.toml\",\n    \"workspace\": \"<home>\\\\config\\\\workspaces\\\\default.toml\"\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

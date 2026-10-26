@@ -1,0 +1,22 @@
+{
+  "id": "http-runs-execution-opt-in",
+  "covers": ["H072", "H074", "H075", "H076", "H077", "H078", "H079", "H073"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Not yet runnable"], "json": true},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/runs", "body": {"task": "WG-1"}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/runs", "body": {"task": "WG-404"}},
+    {"http": "GET", "path": "/api/v1/attempts/00000000-0000-4000-8000-000000000000"},
+    {"http": "GET", "path": "/api/v1/attempts/00000000-0000-4000-8000-000000000000/manifests"},
+    {"http": "GET", "path": "/api/v1/attempts/00000000-0000-4000-8000-000000000000/log"},
+    {"http": "GET", "path": "/api/v1/attempts/compare?a=00000000-0000-4000-8000-000000000000&b=00000000-0000-4000-8000-000000000001"},
+    {"http": "POST", "path": "/api/v1/attempts/00000000-0000-4000-8000-000000000000/cancel"},
+    {"http": "POST", "path": "/api/v1/attempts/00000000-0000-4000-8000-000000000000/retry"},
+    {"http": "POST", "path": "/api/v1/attempts/00000000-0000-4000-8000-000000000000/rerun"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/attempts"},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"exit": 0}}
+  ],
+  "not_observable": []
+}

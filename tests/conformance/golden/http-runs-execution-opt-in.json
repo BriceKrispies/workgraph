@@ -1,0 +1,103 @@
+{
+  "scenario": "http-runs-execution-opt-in",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Not yet runnable\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "http",
+      "exit": 403,
+      "stdout": "{\"error\":{\"code\":\"permission_denied\",\"message\":\"agent code execution is disabled; opt in with `workgraph config set execution.enabled true`\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 403,
+      "stdout": "{\"error\":{\"code\":\"permission_denied\",\"message\":\"agent code execution is disabled; opt in with `workgraph config set execution.enabled true`\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"attempt '<id:3>' not found\",\"details\":{\"ref\":\"<id:3>\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[]",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"attempt '<id:3>' not found\",\"details\":{\"ref\":\"<id:3>\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"attempt '<id:3>' not found\",\"details\":{\"ref\":\"<id:3>\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"attempt '<id:3>' not found\",\"details\":{\"ref\":\"<id:3>\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"attempt '<id:3>' not found\",\"details\":{\"ref\":\"<id:3>\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"attempt '<id:3>' not found\",\"details\":{\"ref\":\"<id:3>\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"items\":[],\"total\":0,\"limit\":50,\"offset\":0,\"next_offset\":null}",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Not yet runnable\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "http-events-and-sse",
+  "covers": ["H123", "H124", "O08"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Event source"], "json": true},
+    {"cli": ["task", "create", "Second event"], "json": true},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/events?limit=2"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/events?limit=5&descending=true"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/events?after_seq=1&entity_type=task&prefix=task.&limit=10"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/events?entity_id=WG-1"},
+    {"http": "GET", "path": "/api/v1/ws/nope/events"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/events/stream?after_seq=0&max_events=1"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/events/stream?after_seq=99999&max_events=1"},
+    {"http": "GET", "path": "/api/v1/ws/nope/events/stream?max_events=1"},
+    {"cli": ["events", "list", "--limit", "1"], "json": true},
+    {"assert": {"json": {"path": "/0/seq", "equals": 3}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_api.py::test_sse_stream_requires_token_and_streams: the 401 for a stream request without a bearer token needs a request the runner cannot send, since every http step carries the token",
+      "covered_by": "SC-36"
+    }
+  ]
+}

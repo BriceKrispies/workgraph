@@ -109,11 +109,6 @@ pub fn model(name: &str, fields: Vec<(&'static str, Value)>) -> Value {
     }
 }
 
-/// An integer field.
-pub fn int(value: i64) -> Value {
-    Value::Int(i128::from(value))
-}
-
 /// An optional integer field: `null` when absent.
 pub fn optional_int(value: Option<i64>) -> Value {
     value.map_or(Value::Null, int)
@@ -122,16 +117,6 @@ pub fn optional_int(value: Option<i64>) -> Value {
 /// An optional float field: `null` when absent.
 pub fn optional_float(value: Option<f64>) -> Value {
     value.map_or(Value::Null, Value::Float)
-}
-
-/// An optional text field: `null` when absent.
-pub fn optional_text(value: Option<&str>) -> Value {
-    value.map_or(Value::Null, text)
-}
-
-/// An optional id field: `null` when absent.
-pub fn optional_id(value: Option<Id>) -> Value {
-    value.map_or(Value::Null, id)
 }
 
 /// A list-of-text field.

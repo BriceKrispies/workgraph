@@ -4,14 +4,7 @@
 //! documentation for the conventions. Later wire tasks add their modules here and their DTOs to
 //! [`implemented`].
 
-pub mod mcp_shapes;
-pub mod project;
-pub mod project_summary;
-pub mod repository;
-pub mod repository_brief;
-pub mod repository_checkout;
-pub mod repository_remote;
-pub mod repository_status;
+pub mod attempt;
 pub mod comment;
 pub mod decision;
 pub mod decision_choose;
@@ -24,9 +17,23 @@ pub mod decision_withdraw;
 pub mod dependency_state;
 pub mod graph_edge;
 pub mod graph_node;
+pub mod job;
+pub mod mcp_shapes;
 pub mod page;
 pub mod project;
+pub mod project_summary;
 pub mod relation;
+pub mod repository;
+pub mod repository_brief;
+pub mod repository_checkout;
+pub mod repository_remote;
+pub mod repository_status;
+pub mod scheduler;
+pub mod stack;
+pub mod stack_create;
+pub mod stack_item;
+pub mod stack_item_add;
+pub mod stack_repository;
 pub mod task;
 pub mod task_brief;
 pub mod task_detail;
@@ -34,15 +41,6 @@ pub mod task_file;
 pub mod task_graph;
 pub mod task_link;
 pub mod task_rollup;
-pub mod stack;
-pub mod stack_create;
-pub mod stack_item;
-pub mod stack_item_add;
-pub mod stack_repository;
-pub mod attempt;
-pub mod job;
-pub mod project;
-pub mod scheduler;
 pub mod worker;
 pub mod workspace;
 pub mod workspace_summary;
@@ -70,6 +68,7 @@ pub fn implemented() -> Vec<(&'static str, &'static [&'static str])> {
         (
             repository_status::NAME,
             repository_status::FIELDS.as_slice(),
+        ),
         (task::NAME, task::FIELDS.as_slice()),
         (task_detail::NAME, task_detail::FIELDS.as_slice()),
         (task_brief::NAME, task_brief::FIELDS.as_slice()),

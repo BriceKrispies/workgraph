@@ -1,0 +1,11 @@
+[package]
+name = "wg-hash"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "SHA-256 digests in-crate, for Core crates with no external dependencies"
+
+[lints]
+workspace = true

@@ -1199,6 +1199,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-hash"
+version = "0.1.0"
+
+[[package]]
 name = "wg-intel"
 version = "0.1.0"
 
@@ -1360,6 +1364,7 @@ dependencies = [
  "serde_json",
  "time",
  "uuid",
+ "wg-hash",
  "wg-model",
  "wg-types",
 ]
@@ -1371,6 +1376,12 @@ version = "0.1.0"
 [[package]]
 name = "wg-trackers"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-hash",
+ "wg-registry",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-types"

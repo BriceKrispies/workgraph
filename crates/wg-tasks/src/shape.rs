@@ -3,12 +3,12 @@
 
 use std::collections::BTreeSet;
 
+use crate::deps::unsatisfied_dependencies;
+use crate::hierarchy::rollup;
 use wg_json::{LocalDateTime, Value};
 use wg_model::TaskSlice;
 use wg_model::entity::{Task, TaskComment, TaskFile, TaskLink, TaskRelation, TaskTag};
 use wg_model::slice::StackSlice;
-use wg_tasks::deps::unsatisfied_dependencies;
-use wg_tasks::hierarchy::rollup;
 use wg_types::{Id, Timestamp};
 use wg_wire::dto::task::{self, TaskRelated};
 use wg_wire::dto::{dependency_state, task_brief, task_detail, task_rollup};
@@ -111,7 +111,7 @@ pub fn key_of(out: &Value) -> Option<String> {
 
 /// `BulkResult`: the keys updated and the message of each reference that failed.
 #[must_use]
-pub fn bulk_result_out(result: &wg_tasks::bulk::BulkResult) -> Value {
+pub fn bulk_result_out(result: &crate::bulk::BulkResult) -> Value {
     wg_wire::convention::model(
         "BulkResult",
         vec![

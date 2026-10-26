@@ -3,8 +3,9 @@
 //! sends a queue snapshot. The shell runs the queries; the parameters arrive validated.
 
 use serde_json::{Map, Value};
-use wg_storecodec::EventQuery;
+use wg_storecodec::{EventQuery, EventRecord};
 use wg_types::{Id, parse_id};
+use wg_wire::convention::{TimeFormat, id, json_object, model, optional_id, text, timestamp};
 
 /// The largest `limit` the history route reads (`limit=min(limit, 5000)`).
 pub const HISTORY_LIMIT_CAP: i64 = 5000;
@@ -76,6 +77,36 @@ pub fn stream_query(workspace_id: Id, cursor: i64) -> EventQuery {
         limit: STREAM_BATCH,
         ..EventQuery::default()
     }
+}
+
+/// `EventOut` for a stored event.
+#[must_use]
+pub fn event_out(event: &EventRecord) -> wg_json::Value {
+    model(
+        "EventOut",
+        vec![
+            ("seq", wg_json::Value::Int(i128::from(event.seq))),
+            ("id", id(event.id)),
+            ("workspace_id", optional_id(event.workspace_id)),
+            ("event_type", text(&event.event_type)),
+            ("entity_type", text(&event.entity_type)),
+            ("entity_id", id(event.entity_id)),
+            ("actor", text(&event.actor)),
+            ("actor_kind", text(&event.actor_kind)),
+            (
+                "occurred_at",
+                timestamp(event.occurred_at, TimeFormat::ModelZ),
+            ),
+            ("correlation_id", text(event.correlation_id.as_str())),
+            ("causation_id", optional_id(event.causation_id)),
+            ("attempt_id", optional_id(event.attempt_id)),
+            (
+                "schema_version",
+                wg_json::Value::Int(i128::from(event.schema_version)),
+            ),
+            ("data", json_object(&event.data)),
+        ],
+    )
 }
 
 #[cfg(test)]

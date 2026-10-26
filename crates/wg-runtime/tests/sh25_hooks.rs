@@ -79,8 +79,12 @@ impl Home {
 
     /// Creates a task and returns it.
     fn task(&mut self, title: &str) -> Result<Task, Box<dyn Error>> {
-        self.app
-            .task_create(&self.ctx, Some("main"), &json!({"title": title}))?;
+        wg_tasks_feature::service::task_create(
+            &mut self.app,
+            &self.ctx,
+            Some("main"),
+            &json!({"title": title}),
+        )?;
         let tasks = self.read(|session| {
             let ws = session.rows(&sql("SELECT id FROM workspaces"))?;
             let id = ids(&ws)?.remove(0);

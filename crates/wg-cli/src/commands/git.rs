@@ -5,8 +5,8 @@
 //! each handler reads the options, calls one `App` entry point and prints the result.
 
 use clap::ArgMatches;
+use wg_clispec::args::{option_flag, option_text};
 use wg_clispec::git as view;
-use wg_clispec::task::{option_flag, option_text};
 use wg_clispec::{CliFailure, not_implemented_message};
 use wg_runtime::human_context;
 

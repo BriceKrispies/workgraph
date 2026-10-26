@@ -5,7 +5,7 @@
 
 use clap::ArgMatches;
 use serde_json::{Value as Json, json};
-use wg_clispec::task::{many, number, one};
+use wg_clispec::args::{many, number, one};
 use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_clispec::{CliFailure, Snapshot, Usage};
 

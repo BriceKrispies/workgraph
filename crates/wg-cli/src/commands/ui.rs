@@ -11,7 +11,7 @@ use std::time::{Duration, Instant};
 
 use clap::ArgMatches;
 use wg_browser::{CaptureOptions, screenshot};
-use wg_clispec::task::{option_flag, option_text};
+use wg_clispec::args::{option_flag, option_text};
 use wg_clispec::ui::{
     SCREENSHOT, Shot, base_url, health_url, no_server_message, number, target_url, wait_selector,
 };

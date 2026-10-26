@@ -15,6 +15,14 @@ rpds = { version = "1", features = ["serde"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 time = { version = "0.3", default-features = false }
 wg-hash = { path = "../wg-hash" }
+wg-jobs = { path = "../wg-jobs" }
+wg-json = { path = "../wg-json" }
+wg-registry = { path = "../wg-registry" }
+wg-stacks = { path = "../wg-stacks" }
+wg-storecodec = { path = "../wg-storecodec" }
+wg-validate = { path = "../wg-validate" }
+wg-verify = { path = "../wg-verify" }
+wg-wire = { path = "../wg-wire" }
 wg-model = { path = "../wg-model" }
 wg-types = { path = "../wg-types" }
 

@@ -5,8 +5,8 @@
 //! entry point and prints the result.
 
 use clap::ArgMatches;
+use wg_clispec::args::{option_flag, option_list, option_text};
 use wg_clispec::registry as view;
-use wg_clispec::task::{option_flag, option_list, option_text};
 use wg_clispec::{CliFailure, not_implemented_message};
 use wg_runtime::{
     Term, human_context, project_create_body, project_option_body, workspace_create_body,

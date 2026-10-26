@@ -4,9 +4,9 @@
 #![allow(clippy::expect_used)]
 
 use wg_clispec::datetime::parse_click_datetime;
-use wg_clispec::task::create_body;
 use wg_clispec::{CliFailure, report};
 use wg_render::{Console, ConsoleEnv};
+use wg_tasks_feature::spec::args::create_body;
 
 fn due(value: &str) -> Option<String> {
     parse_click_datetime(value)
@@ -114,7 +114,7 @@ fn the_usage_error_is_text_with_the_panel_and_exit_2() {
 // covers: C152
 #[test]
 fn create_body_rejects_a_bad_due_before_reading_files() {
-    let command = wg_clispec::task::command();
+    let command = wg_tasks_feature::spec::args::command();
     let matches = command
         .try_get_matches_from([
             "task",

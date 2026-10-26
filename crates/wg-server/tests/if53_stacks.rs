@@ -20,7 +20,7 @@ use tower::ServiceExt;
 use wg_model::entity::{Repository, RepositoryCheckout, StackItem, Workspace};
 use wg_model::{Decision, Write};
 use wg_runtime::{App, human_context};
-use wg_runtimespec::tasks::reads::event_out;
+use wg_runtimespec::events::event_out;
 use wg_server::{Server, ServerOptions, Ui, groups, router};
 use wg_types::{AccessMode, StackItemState, Timestamp};
 
@@ -158,7 +158,7 @@ impl Harness {
                 lan: None,
                 ui: Ui::Dir(ui),
                 mcp: None,
-                routes: groups::routes_with(&[]),
+                routes: groups::routes_with(&[&wg_tasks_feature::FEATURE]),
             },
             app,
         )?;
@@ -175,7 +175,14 @@ impl Harness {
     /// Creates a task through the application, as the scenario's seeds do.
     async fn seed(&self, body: Value) -> TestResult {
         self.server
-            .blocking(move |app| app.task_create(&human_context(None)?, Some("main"), &body))
+            .blocking(move |app| {
+                wg_tasks_feature::service::task_create(
+                    app,
+                    &human_context(None)?,
+                    Some("main"),
+                    &body,
+                )
+            })
             .await?;
         Ok(())
     }

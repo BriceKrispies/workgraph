@@ -33,7 +33,7 @@ use wg_wire::convention::{dict, id as id_value, text};
 use super::out::{Tips, stack_out};
 use super::reads::{TipTarget, tip_directory};
 use super::{active_stack, item_of, task_in};
-use crate::tasks::writes::substamp;
+use wg_tasks::accept::substamp;
 
 // ---------------------------------------------------------------- create
 

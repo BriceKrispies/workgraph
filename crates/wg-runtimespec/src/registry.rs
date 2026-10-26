@@ -21,7 +21,7 @@ use wg_wire::dto::workspace_summary::Counts;
 use wg_wire::dto::{project, project_summary, task_brief, workspace, workspace_summary};
 
 use crate::setup::py_title;
-use crate::tasks::requests::{component, run};
+use wg_tasks::requests::{component, run};
 
 /// `WorkspaceCreate`, validated: the dump in declaration order.
 pub fn validate_workspace_create(body: &Json) -> Result<Map<String, Json>, WgError> {

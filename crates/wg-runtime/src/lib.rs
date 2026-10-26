@@ -13,6 +13,7 @@
 //! context's rules) is `wg-runtimespec`; this crate keeps the I/O.
 
 mod acceptance;
+pub use acceptance::{integration_busy, latest_succeeded};
 mod app;
 mod automation;
 mod bus;
@@ -28,12 +29,13 @@ mod jobs;
 mod logging;
 mod queue;
 mod registry;
+mod registry_tasks;
 mod repos;
+mod scope;
 mod setup;
 mod stacks;
 mod stamp;
-mod tasks;
-pub use tasks::index_written;
+pub use scope::index_written;
 mod worker;
 mod worktrees;
 
@@ -63,7 +65,7 @@ pub use wg_runtimespec::registry::{
 };
 pub use wg_runtimespec::repos::RegisterInput;
 pub use wg_runtimespec::setup::InitRequest;
-pub use wg_runtimespec::tasks::reads::{GraphRequest, Shown};
+
 pub use wg_runtimespec::{Level, RequestContext};
 pub use wg_tasks::rename::Term;
 pub use worker::{RunOptions, Summary, Worker, WorkerOptions};

@@ -47,3 +47,6 @@ wg-telemetry = { path = "../wg-telemetry" }
 wg-verify = { path = "../wg-verify" }
 wg-telemetryspec = { path = "../wg-telemetryspec" }
 wg-types = { path = "../wg-types" }
+
+[dev-dependencies]
+wg-tasks-feature = { path = "../wg-tasks-feature" }

@@ -4,8 +4,8 @@
 use clap::ArgMatches;
 use wg_json::{PyStr, Value, py_float_repr};
 
+use crate::args::option_text;
 use crate::failure::python_number_text;
-use crate::task::option_text;
 use crate::{CliFailure, Usage};
 
 /// The usage of `ui screenshot`, as Click prints it in a usage error.

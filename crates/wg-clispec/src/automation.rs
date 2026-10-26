@@ -11,7 +11,7 @@ use wg_json::Value;
 use wg_render::{Console, escape};
 
 use crate::CliFailure;
-use crate::task::{ReadFile, get, items, number, one, opt, python, s, truncate, when};
+use crate::args::{ReadFile, get, items, number, one, opt, python, s, truncate, when};
 use crate::tree::{SNAPSHOT_JSON, placeholder};
 use crate::{Snapshot, Usage};
 
@@ -101,7 +101,7 @@ pub fn runs_args(m: &ArgMatches) -> Result<(Option<String>, Option<String>, i64)
 /// The `--unread` of `notifications`.
 #[must_use]
 pub fn unread_only(m: &ArgMatches) -> bool {
-    crate::task::flag(m, "--unread")
+    crate::args::flag(m, "--unread")
 }
 
 /// The positional name argument (`name`) of the commands that take one.

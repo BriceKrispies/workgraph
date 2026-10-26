@@ -7,30 +7,30 @@
 //! the `TaskOut` the route prints. Completion and result reports also read the verification
 //! configurations (whether checks apply decides the next status) and the attempt a report names.
 
-use serde_json::{Map, Value as Json, json};
+use serde_json::{Map, json};
 use wg_exec::attempt::{FinishPlan, duration_ms, finish_plan, sanitize_usage};
 use wg_json::Value;
-use wg_model::entity::{AgentAttempt, Real, TaskComment, VerificationConfig};
+use wg_model::entity::{AgentAttempt, Real, VerificationConfig};
 use wg_model::event::{
-    AttemptFinished, EventDraft, EventPayload, TaskClaimed, TaskCommentRecorded, TaskCompleted,
-    TaskReleased,
+    AttemptFinished, EventDraft, EventPayload, TaskClaimed, TaskCompleted, TaskReleased,
 };
 use wg_model::stamp::{IdSeq, Stamp, py_repr_str};
 use wg_model::{Decision, TaskSlice, Write};
 use wg_registry::resolve;
 use wg_storecodec::task_world_sql::TaskWorld;
+use wg_tasks::accept::comment_step;
 use wg_tasks::claims::{
     Caller, ClaimPlan, REASON_ATTEMPT_FAILED, REASON_COMPLETION, REASON_EXPIRED_CLAIM_RELEASED,
     plan_claim, plan_complete, plan_release, plan_report_result,
 };
-use wg_tasks::comments::{check_attempt_owner, excerpt};
+use wg_tasks::comments::check_attempt_owner;
 use wg_tasks::deps::unsatisfied_dependencies;
 use wg_tasks::transition::{Applied, Change, transition};
 use wg_types::{AttemptStatus, CommentKind, ErrorCode, Id, Permission, TaskStatus, WgError};
 use wg_verify::{TaskScope, applicable_checks};
 
 use super::bodies::{ClaimRead, CompleteRead, ResultRead};
-use super::out::task_out;
+use wg_tasks::shape::task_out;
 
 /// The attempt id a report names, and the attempt row it found (`None` when there is no such
 /// attempt).
@@ -76,64 +76,6 @@ pub fn owned_attempt(
             Ok(attempt.id)
         })
         .transpose()
-}
-
-/// A comment row and the event that records it (`TaskService._comment`).
-pub struct CommentStep {
-    pub decision: Decision<()>,
-    pub ids: IdSeq,
-    pub row: TaskComment,
-}
-
-/// Records a comment of `kind` on `task`. `caused_by` is the event the comment follows.
-#[allow(clippy::too_many_arguments)]
-pub fn comment_step(
-    stamp: &Stamp,
-    ids: IdSeq,
-    task: Id,
-    workspace: Id,
-    kind: CommentKind,
-    body: &str,
-    data: &Map<String, Json>,
-    attempt: Option<Id>,
-    caused_by: Option<Id>,
-) -> CommentStep {
-    let (comment_id, ids) = ids.next();
-    let (event_id, ids) = ids.next();
-    let row = TaskComment {
-        id: comment_id,
-        task_id: task,
-        attempt_id: attempt,
-        author: stamp.actor.to_string(),
-        kind,
-        body: body.to_owned(),
-        data: data.clone(),
-        created_at: stamp.at,
-    };
-    let recorded = TaskCommentRecorded {
-        comment_id,
-        kind,
-        excerpt: excerpt(body),
-        extra: data.clone(),
-    };
-    let payload = match kind {
-        CommentKind::Comment => EventPayload::TaskCommentAdded(recorded),
-        CommentKind::Progress => EventPayload::TaskProgressReported(recorded),
-        CommentKind::Result => EventPayload::TaskResultReported(recorded),
-    };
-    let event =
-        EventDraft::new(stamp, event_id, Some(workspace), task, payload).with_attempt(attempt);
-    let event = match caused_by {
-        Some(cause) => event.caused_by(cause),
-        None => event,
-    };
-    CommentStep {
-        decision: Decision::new(())
-            .write(Write::insert(row.clone()))
-            .event(event),
-        ids,
-        row,
-    }
 }
 
 fn caller_of<'a>(stamp: &Stamp, actor: &'a str) -> Caller<'a> {

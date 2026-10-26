@@ -8,7 +8,7 @@ use wg_render::Console;
 use wg_runtimespec::repos::RegisterInput;
 use wg_types::AccessMode;
 
-use crate::task::{flag, get, items, many, one, opt, python, s, when};
+use crate::args::{flag, get, items, many, one, opt, python, s, when};
 use crate::tree::{SNAPSHOT_JSON, placeholder};
 use crate::{CliFailure, Snapshot};
 

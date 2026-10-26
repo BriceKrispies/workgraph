@@ -57,7 +57,8 @@ impl Harness {
                 created_at: at,
                 updated_at: at,
             })))?;
-        app.task_create(
+        wg_tasks_feature::service::task_create(
+            &mut app,
             &human_context(None)?,
             Some("acme"),
             &json!({"title": "Pick a database"}),

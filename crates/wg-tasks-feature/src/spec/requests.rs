@@ -7,122 +7,11 @@
 //! the validated value apart.
 
 use serde_json::{Map, Value, json};
+use wg_tasks::edit::*;
 use wg_tasks::files::FileInput;
-use wg_types::{ErrorCode, TaskPriority, TaskStatus, Timestamp, WgError};
-use wg_validate::{
-    Check, ChoiceKind, Extra, Field, IntRules, LoadOptions, Model, Schema, StrRules,
-    ValidationError, model_from_json_schema, validate,
-};
-
-/// `handle_errors` on a pydantic `ValidationError`: `validation_failed` with the error list.
-#[must_use]
-pub fn validation_failure(errors: &[ValidationError]) -> WgError {
-    let summary: Vec<String> = errors
-        .iter()
-        .map(|error| {
-            let loc: Vec<String> = error
-                .loc
-                .iter()
-                .map(|part| match part {
-                    wg_validate::Loc::Key(key) => key.clone(),
-                    wg_validate::Loc::Index(index) => index.to_string(),
-                })
-                .collect();
-            let place = if loc.is_empty() {
-                "input".to_owned()
-            } else {
-                loc.join(".")
-            };
-            format!("{place}: {}", error.msg)
-        })
-        .collect();
-    WgError::new(
-        ErrorCode::ValidationFailed,
-        format!("invalid input: {}", summary.join("; ")),
-    )
-    .with_detail(
-        "errors",
-        Value::Array(errors.iter().map(ValidationError::to_json).collect()),
-    )
-}
-
-fn check_for(model: &str, field: &str) -> Option<Check> {
-    match (model, field) {
-        ("TaskCreate", "tags") | ("TaskUpdate", "tags" | "add_tags" | "remove_tags") => {
-            Some(Check::Tags)
-        }
-        ("TaskCreate", "files") | ("TaskUpdate", "files" | "add_files") => Some(Check::Files),
-        ("TaskFileIn", "anchor") => Some(Check::EmptyToNone),
-        ("WorkspaceCreate" | "ProjectCreate" | "ProjectUpdate", "slug") => Some(Check::Slug),
-        ("WorkspaceCreate", "key_prefix") => Some(Check::KeyPrefix),
-        _ => None,
-    }
-}
-
-fn with_checks_schema(schema: Schema) -> Schema {
-    match schema {
-        Schema::Model(model) => Schema::Model(Box::new(with_checks(*model))),
-        Schema::Nullable(inner) => Schema::Nullable(Box::new(with_checks_schema(*inner))),
-        Schema::List {
-            item,
-            min_length,
-            max_length,
-        } => Schema::List {
-            item: Box::new(with_checks_schema(*item)),
-            min_length,
-            max_length,
-        },
-        other => other,
-    }
-}
-
-fn with_checks(model: Model) -> Model {
-    let name = model.name.clone();
-    Model {
-        fields: model
-            .fields
-            .into_iter()
-            .map(|field| Field {
-                check: check_for(&name, &field.name),
-                schema: with_checks_schema(field.schema),
-                ..field
-            })
-            .collect(),
-        ..model
-    }
-}
-
-/// A request model from the OpenAPI component schema `name`, fields in declaration order.
-pub fn component(name: &str, order: &[&str]) -> Result<Model, WgError> {
-    component_with(name, order, true)
-}
-
-/// [`component`], with `strip` saying whether the model strips whitespace (`InputSchema` does, a
-/// plain pydantic model does not).
-pub(crate) fn component_with(name: &str, order: &[&str], strip: bool) -> Result<Model, WgError> {
-    let openapi = wg_wire::contract::openapi()?;
-    let schema = &openapi["components"]["schemas"][name];
-    let model = model_from_json_schema(
-        &openapi,
-        schema,
-        LoadOptions {
-            strip_whitespace: strip,
-        },
-    )
-    .map_err(|err| WgError::new(ErrorCode::WorkgraphError, format!("{name}: {err}")))?;
-    Ok(with_checks(model.ordered(order)))
-}
-
-pub fn run(model: &Model, body: &Value) -> Result<Map<String, Value>, WgError> {
-    match validate(model, body) {
-        Ok(Value::Object(dump)) => Ok(dump),
-        Ok(_) => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            "a request model did not give an object",
-        )),
-        Err(errors) => Err(validation_failure(&errors)),
-    }
-}
+use wg_tasks::requests::{component, run};
+use wg_types::{TaskPriority, TaskStatus, Timestamp, WgError};
+use wg_validate::{ChoiceKind, Extra, Field, IntRules, Model, Schema, StrRules};
 
 const CREATE_ORDER: [&str; 19] = [
     "key",
@@ -146,39 +35,9 @@ const CREATE_ORDER: [&str; 19] = [
     "metadata",
 ];
 
-const UPDATE_ORDER: [&str; 22] = [
-    "expected_version",
-    "title",
-    "description",
-    "acceptance_criteria",
-    "status",
-    "priority",
-    "tags",
-    "add_tags",
-    "remove_tags",
-    "files",
-    "add_files",
-    "projects",
-    "parent",
-    "clear_parent",
-    "assignee",
-    "assigned_agent",
-    "auto_execute",
-    "due_at",
-    "scheduled_at",
-    "estimated_effort",
-    "metadata",
-    "reason",
-];
-
 /// Validates a `TaskCreate` body.
 pub fn validate_create(body: &Value) -> Result<Map<String, Value>, WgError> {
     run(&component("TaskCreate", &CREATE_ORDER)?, body)
-}
-
-/// Validates a `TaskUpdate` body.
-pub fn validate_update(body: &Value) -> Result<Map<String, Value>, WgError> {
-    run(&component("TaskUpdate", &UPDATE_ORDER)?, body)
 }
 
 /// Validates a `BulkUpdate` body (`tasks` and the `update` it applies).
@@ -307,53 +166,6 @@ pub fn validate_filter(body: &Value) -> Result<Map<String, Value>, WgError> {
     run(&filter_model()?, body)
 }
 
-pub(super) fn string_of(dump: &Map<String, Value>, key: &str) -> Option<String> {
-    dump.get(key).and_then(Value::as_str).map(str::to_owned)
-}
-
-fn strings_of(dump: &Map<String, Value>, key: &str) -> Option<Vec<String>> {
-    dump.get(key).and_then(Value::as_array).map(|items| {
-        items
-            .iter()
-            .filter_map(|item| item.as_str().map(str::to_owned))
-            .collect()
-    })
-}
-
-pub(super) fn object_of(dump: &Map<String, Value>, key: &str) -> Option<Map<String, Value>> {
-    dump.get(key).and_then(Value::as_object).cloned()
-}
-
-/// Whether a datetime field holds a naive value: text that only parses once `Z` is appended.
-fn is_naive(dump: &Map<String, Value>, key: &str) -> bool {
-    dump.get(key)
-        .and_then(Value::as_str)
-        .is_some_and(|text| Timestamp::parse_iso(text).is_err())
-}
-
-fn time_of(dump: &Map<String, Value>, key: &str) -> Result<Option<Timestamp>, WgError> {
-    match dump.get(key).and_then(Value::as_str) {
-        // A naive datetime counts as UTC (Python keeps it naive; the stored instant is the same).
-        Some(text) => Timestamp::parse_iso(text)
-            .or_else(|_| Timestamp::parse_iso(&format!("{text}Z")))
-            .map(Some),
-        None => Ok(None),
-    }
-}
-
-fn files_of(dump: &Map<String, Value>, key: &str) -> Option<Vec<FileInput>> {
-    dump.get(key).and_then(Value::as_array).map(|items| {
-        items
-            .iter()
-            .map(|item| FileInput {
-                path: item["path"].as_str().unwrap_or_default().to_owned(),
-                anchor: item["anchor"].as_str().map(str::to_owned),
-                note: item["note"].as_str().unwrap_or_default().to_owned(),
-            })
-            .collect()
-    })
-}
-
 /// A validated `TaskCreate`, with references still as typed.
 #[derive(Debug, Clone, PartialEq)]
 pub struct CreateRead {
@@ -415,79 +227,6 @@ pub fn read_create(dump: &Map<String, Value>) -> Result<CreateRead, WgError> {
         scheduled_naive: is_naive(dump, "scheduled_at"),
         estimated_effort: object_of(dump, "estimated_effort"),
         metadata: object_of(dump, "metadata").unwrap_or_default(),
-    })
-}
-
-/// A validated `TaskUpdate`, with references still as typed. A nullable field the request did
-/// not name is `None`; one it named is `Some`, with `Some(None)` clearing it.
-#[derive(Debug, Clone, Default, PartialEq)]
-pub struct UpdateRead {
-    pub expected_version: Option<i64>,
-    pub title: Option<String>,
-    pub description: Option<String>,
-    pub acceptance_criteria: Option<Vec<String>>,
-    pub status: Option<TaskStatus>,
-    pub priority: Option<TaskPriority>,
-    pub tags: Option<Vec<String>>,
-    pub add_tags: Vec<String>,
-    pub remove_tags: Vec<String>,
-    pub files: Option<Vec<FileInput>>,
-    pub add_files: Vec<FileInput>,
-    pub projects: Option<Vec<String>>,
-    pub parent: Option<String>,
-    pub clear_parent: bool,
-    pub assignee: Option<Option<String>>,
-    pub assigned_agent: Option<Option<String>>,
-    pub auto_execute: Option<bool>,
-    pub due_at: Option<Option<Timestamp>>,
-    pub scheduled_at: Option<Option<Timestamp>>,
-    pub estimated_effort: Option<Map<String, Value>>,
-    pub metadata: Option<Map<String, Value>>,
-    pub reason: Option<String>,
-}
-
-/// Reads a validated `TaskUpdate`; `given` is the request body, which tells a field that was
-/// left out from one that was set to null (`model_dump(exclude_unset=True)`).
-pub fn read_update(
-    dump: &Map<String, Value>,
-    given: &Map<String, Value>,
-) -> Result<UpdateRead, WgError> {
-    let named = |key: &str| given.contains_key(key);
-    let clearable =
-        |key: &str| -> Option<Option<String>> { named(key).then(|| string_of(dump, key)) };
-    let clearable_time = |key: &str| -> Result<Option<Option<Timestamp>>, WgError> {
-        if named(key) {
-            time_of(dump, key).map(Some)
-        } else {
-            Ok(None)
-        }
-    };
-    Ok(UpdateRead {
-        expected_version: dump.get("expected_version").and_then(Value::as_i64),
-        title: string_of(dump, "title"),
-        description: string_of(dump, "description"),
-        acceptance_criteria: strings_of(dump, "acceptance_criteria"),
-        status: string_of(dump, "status").and_then(|text| TaskStatus::parse(&text)),
-        priority: string_of(dump, "priority").and_then(|text| TaskPriority::parse(&text)),
-        tags: strings_of(dump, "tags"),
-        add_tags: strings_of(dump, "add_tags").unwrap_or_default(),
-        remove_tags: strings_of(dump, "remove_tags").unwrap_or_default(),
-        files: files_of(dump, "files"),
-        add_files: files_of(dump, "add_files").unwrap_or_default(),
-        projects: strings_of(dump, "projects"),
-        parent: string_of(dump, "parent"),
-        clear_parent: dump
-            .get("clear_parent")
-            .and_then(Value::as_bool)
-            .unwrap_or(false),
-        assignee: clearable("assignee"),
-        assigned_agent: clearable("assigned_agent"),
-        auto_execute: dump.get("auto_execute").and_then(Value::as_bool),
-        due_at: clearable_time("due_at")?,
-        scheduled_at: clearable_time("scheduled_at")?,
-        estimated_effort: object_of(dump, "estimated_effort"),
-        metadata: object_of(dump, "metadata"),
-        reason: string_of(dump, "reason"),
     })
 }
 

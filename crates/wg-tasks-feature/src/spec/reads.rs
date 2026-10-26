@@ -6,17 +6,15 @@ use std::collections::BTreeSet;
 use wg_json::Value;
 use wg_model::entity::{Task, TaskTag};
 use wg_registry::resolve;
-use wg_storecodec::EventRecord;
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::graph::{GraphEdgeKind, GraphQuery, task_graph};
 use wg_tasks::promote::{ReadyQuery, ready_tasks};
 use wg_types::{Id, TaskPriority, WgError};
-use wg_wire::convention::{TimeFormat, id, json_object, model, optional_id, text, timestamp};
 use wg_wire::dto::graph_edge::{self, EdgeKind};
 use wg_wire::dto::{graph_node, page, task_graph as task_graph_dto};
 
-use super::out::{task_detail_out, task_out};
 use super::requests::FilterRead;
+use wg_tasks::shape::{task_detail_out, task_out};
 
 /// `to_fts_query(text)` with its defaults: each token quoted, the last one a prefix, AND-ed.
 /// `None` when the text holds no word characters.
@@ -324,15 +322,6 @@ pub fn graph(
     Ok(task_graph_dto::from_model(nodes, edges))
 }
 
-/// `resolve.task`: the id of the task `reference` names.
-pub fn resolve_task_id(
-    world: &TaskWorld,
-    workspace: Option<Id>,
-    reference: &str,
-) -> Result<Id, WgError> {
-    resolve::task(&world.tasks, workspace, reference).map(|task| task.id)
-}
-
 /// The tasks `show` can resolve, so the shell can load their comments.
 #[must_use]
 pub fn shown_ids(world: &TaskWorld, workspace: Option<Id>, refs: &[String]) -> Vec<Id> {
@@ -365,36 +354,6 @@ pub fn show(world: &TaskWorld, workspace: Option<Id>, refs: &[String]) -> Shown 
         }
     }
     shown
-}
-
-/// `EventOut` for a stored event.
-#[must_use]
-pub fn event_out(event: &EventRecord) -> Value {
-    model(
-        "EventOut",
-        vec![
-            ("seq", Value::Int(i128::from(event.seq))),
-            ("id", id(event.id)),
-            ("workspace_id", optional_id(event.workspace_id)),
-            ("event_type", text(&event.event_type)),
-            ("entity_type", text(&event.entity_type)),
-            ("entity_id", id(event.entity_id)),
-            ("actor", text(&event.actor)),
-            ("actor_kind", text(&event.actor_kind)),
-            (
-                "occurred_at",
-                timestamp(event.occurred_at, TimeFormat::ModelZ),
-            ),
-            ("correlation_id", text(event.correlation_id.as_str())),
-            ("causation_id", optional_id(event.causation_id)),
-            ("attempt_id", optional_id(event.attempt_id)),
-            (
-                "schema_version",
-                Value::Int(i128::from(event.schema_version)),
-            ),
-            ("data", json_object(&event.data)),
-        ],
-    )
 }
 
 /// `Page[AttemptOut]`: one page of a task's attempts.

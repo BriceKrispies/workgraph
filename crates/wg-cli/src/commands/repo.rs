@@ -6,8 +6,8 @@
 //! entry point and prints the result.
 
 use clap::ArgMatches;
+use wg_clispec::args::option_text;
 use wg_clispec::repo as view;
-use wg_clispec::task::option_text;
 use wg_clispec::{CliFailure, not_implemented_message};
 use wg_json::Value;
 use wg_runtime::human_context;

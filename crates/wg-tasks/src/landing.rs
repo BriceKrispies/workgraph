@@ -8,6 +8,7 @@
 
 use std::collections::BTreeMap;
 
+use crate::transition::{Change, transition};
 use rpds::VectorSync;
 use wg_json::Value;
 use wg_model::entity::{
@@ -26,15 +27,14 @@ use wg_stacks::landing::{
     landed_reason, unverified_children,
 };
 use wg_storecodec::task_world_sql::TaskWorld;
-use wg_tasks::transition::{Change, transition};
 use wg_types::{
     CommentKind, ErrorCode, Id, StackItemState, StackStatus, TaskKey, TaskStatus, WgError,
     WorktreeStatus,
 };
 use wg_wire::dto::verification::acceptance_from_model;
 
-use super::acceptance::{AcceptFacts, Attempts, Run, accept_in, release_child};
-use super::claims::comment_step;
+use crate::accept::comment_step;
+use crate::accept::{AcceptFacts, Attempts, Run, accept_in, release_child};
 
 /// What the landing of one stack reads from the rows, per repository of the stack.
 #[derive(Debug, Clone)]
@@ -270,7 +270,7 @@ fn release_unverified(
                             ..Change::default()
                         },
                     )?;
-                    let applied = wg_tasks::transition::Applied {
+                    let applied = crate::transition::Applied {
                         decision: run.applied.decision.clone().then(next.decision),
                         ids: next.ids,
                         tasks: next.tasks,
@@ -301,7 +301,7 @@ fn release_unverified(
                 None,
             );
             let commented = Run {
-                applied: wg_tasks::transition::Applied {
+                applied: crate::transition::Applied {
                     decision: moved.applied.decision.clone().then(comment.decision),
                     ids: comment.ids,
                     tasks: moved.applied.tasks.apply(&Write::insert(comment.row)),

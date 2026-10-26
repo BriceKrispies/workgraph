@@ -6,6 +6,7 @@
 //! command snapshot (`contracts/cli.json`) and the comparison of a command tree against it, the
 //! clap tree built from it, the exit-code mapping and the text of error reports (contracts O02 and O05).
 
+pub mod args;
 pub mod argv;
 pub mod automation;
 pub mod datetime;
@@ -17,7 +18,6 @@ pub mod repo;
 pub mod servers;
 pub mod setup;
 pub mod snapshot;
-pub mod task;
 pub mod tree;
 pub mod ui;
 

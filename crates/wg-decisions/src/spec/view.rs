@@ -2,7 +2,7 @@
 //! functions of the values the services return, with no clap and no I/O.
 
 use wg_clispec::CliFailure;
-use wg_clispec::task::{get, items, opt, s, truncate, when};
+use wg_clispec::args::{get, items, opt, s, truncate, when};
 use wg_json::Value;
 use wg_model::py_repr_str;
 use wg_render::{Console, escape};

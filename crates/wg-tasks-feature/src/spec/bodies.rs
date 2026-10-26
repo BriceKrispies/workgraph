@@ -9,7 +9,8 @@
 use serde_json::{Map, Value};
 use wg_types::{CommentKind, ErrorCode, RelationType, WgError};
 
-use super::requests::{component_with, object_of, run, string_of};
+use wg_tasks::edit::{object_of, string_of};
+use wg_tasks::requests::{component_with, run};
 
 /// The model `name` validated against `body`; an absent (`null`) body is the empty object.
 fn validated(

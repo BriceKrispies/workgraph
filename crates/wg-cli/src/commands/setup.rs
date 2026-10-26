@@ -4,8 +4,8 @@
 //! `wg_clispec::setup`, calls one `App` entry point and prints the result.
 
 use clap::ArgMatches;
+use wg_clispec::args::option_text;
 use wg_clispec::setup as view;
-use wg_clispec::task::option_text;
 use wg_clispec::{CliFailure, not_implemented_message};
 use wg_runtime::{InitRequest, human_context};
 

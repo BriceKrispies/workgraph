@@ -22,9 +22,10 @@ use wg_types::{CommentKind, ErrorCode, Id, Permission, WgError};
 use wg_wire::dto::{comment, relation};
 
 use super::bodies::{CommentRead, ProgressRead, RelationRead, RepoRead};
-use super::claims::{comment_step, owned_attempt};
-use super::out::task_out;
+use super::claims::owned_attempt;
+use wg_tasks::accept::comment_step;
 use wg_tasks::comments::progress_data;
+use wg_tasks::shape::task_out;
 
 fn gone(task: Id) -> WgError {
     WgError::new(

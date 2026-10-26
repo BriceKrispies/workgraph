@@ -256,7 +256,7 @@ impl Harness {
                 lan: None,
                 ui: Ui::Dir(ui),
                 mcp: None,
-                routes: groups::routes_with(&[]),
+                routes: groups::routes_with(&[&wg_tasks_feature::FEATURE]),
             },
             app,
         )?;
@@ -632,7 +632,15 @@ async fn the_application_checks_permissions_and_claim_ownership() -> TestResult 
         .server
         .blocking({
             let bot = bot.clone();
-            move |app| app.task_release(&bot, Some("main"), "WG-1", &Value::Null)
+            move |app| {
+                wg_tasks_feature::service::task_release(
+                    app,
+                    &bot,
+                    Some("main"),
+                    "WG-1",
+                    &Value::Null,
+                )
+            }
         })
         .await;
     let denied = released.err().ok_or("the release was allowed")?;
@@ -640,7 +648,9 @@ async fn the_application_checks_permissions_and_claim_ownership() -> TestResult 
     assert_eq!(denied.message, "task WG-1 is claimed by human:tester");
     let completed = harness
         .server
-        .blocking(move |app| app.task_complete(&bot, Some("main"), "WG-1", &Value::Null))
+        .blocking(move |app| {
+            wg_tasks_feature::service::task_complete(app, &bot, Some("main"), "WG-1", &Value::Null)
+        })
         .await;
     let denied = completed.err().ok_or("the completion was allowed")?;
     assert_eq!(denied.code, wg_types::ErrorCode::PermissionDenied);
@@ -659,18 +669,36 @@ async fn the_application_checks_permissions_and_claim_ownership() -> TestResult 
         let outcome = harness
             .server
             .blocking(move |app| match what {
-                "claim" => app.task_claim(&reader, Some("main"), "WG-404", &Value::Null),
-                "comment" => {
-                    app.task_comment(&reader, Some("main"), "WG-404", &json!({"body": "x"}))
-                }
-                "complete" => app.task_complete(&reader, Some("main"), "WG-404", &Value::Null),
-                "dependency" => app.task_add_dependency(
+                "claim" => wg_tasks_feature::service::task_claim(
+                    app,
+                    &reader,
+                    Some("main"),
+                    "WG-404",
+                    &Value::Null,
+                ),
+                "comment" => wg_tasks_feature::service::task_comment(
+                    app,
+                    &reader,
+                    Some("main"),
+                    "WG-404",
+                    &json!({"body": "x"}),
+                ),
+                "complete" => wg_tasks_feature::service::task_complete(
+                    app,
+                    &reader,
+                    Some("main"),
+                    "WG-404",
+                    &Value::Null,
+                ),
+                "dependency" => wg_tasks_feature::service::task_add_dependency(
+                    app,
                     &reader,
                     Some("main"),
                     "WG-404",
                     &json!({"depends_on": "WG-9"}),
                 ),
-                _ => app.task_link_repository(
+                _ => wg_tasks_feature::service::task_link_repository(
+                    app,
                     &reader,
                     Some("main"),
                     "WG-404",
@@ -691,7 +719,15 @@ async fn the_application_checks_permissions_and_claim_ownership() -> TestResult 
     let sweeper = actor("system", None)?;
     let done = harness
         .server
-        .blocking(move |app| app.task_complete(&sweeper, Some("main"), "WG-1", &Value::Null))
+        .blocking(move |app| {
+            wg_tasks_feature::service::task_complete(
+                app,
+                &sweeper,
+                Some("main"),
+                "WG-1",
+                &Value::Null,
+            )
+        })
         .await?;
     let text = wg_json::http_json(&done).map_err(|e| format!("{e:?}"))?;
     let done: Value = serde_json::from_str(&text)?;

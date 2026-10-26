@@ -27,7 +27,6 @@ pub mod repos;
 pub mod settings;
 pub mod setup;
 pub mod stacks;
-pub mod tasks;
 pub mod worktrees;
 
 pub use context::{GETUSER_VARIABLES, RequestContext, getuser, timestamp_from_unix_nanos};

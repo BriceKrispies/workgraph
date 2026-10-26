@@ -12,8 +12,10 @@
 //!
 //! The migration runner is [`Store::upgrade`]; later tasks add the per-entity queries on top of this base.
 
+mod classify;
 mod migrate;
 mod repos;
+mod search;
 mod session;
 mod tasks;
 

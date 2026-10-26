@@ -17,6 +17,7 @@ pub mod run_sql;
 pub mod sql;
 pub mod stack_sql;
 pub mod task_sql;
+pub mod verification_sql;
 
 pub use codec::{Cols, DbFailure, Raw, db_error};
 pub use events::{EVENT_COLUMNS, EventQuery, EventRecord, append_statement, decode_event};

@@ -19,6 +19,7 @@ mod run;
 mod session;
 mod stacks;
 mod tasks;
+mod verify;
 
 use std::path::PathBuf;
 use std::time::Duration;
@@ -31,6 +32,7 @@ use session::db;
 
 pub use run::AttemptPage;
 pub use session::{Applied, Session};
+pub use verify::{FailureFilter, FailureRow, Page, RunFilter};
 pub use wg_storecodec::migrations::head_revision;
 pub use wg_storecodec::run_sql::{RecordedHead, WorktreeWithRepository};
 pub use wg_storecodec::{EventQuery, EventRecord, Raw, Statement, TableRow};

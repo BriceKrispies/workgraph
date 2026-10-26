@@ -4,6 +4,9 @@
 //! Explicit links, execution contexts and worktree reachability are decided by the callers that
 //! hold that state. Each candidate records its source, confidence and the evidence it rests on.
 
+use std::cmp::Reverse;
+use std::collections::BTreeSet;
+
 use regex::Regex;
 
 use crate::Trailer;
@@ -64,28 +67,24 @@ pub struct Candidate {
 /// Task references in trailers of a task-naming key. The value is split on commas and
 /// whitespace, so one trailer may name several tasks.
 pub fn trailer_candidates(trailers: &[Trailer]) -> Vec<Candidate> {
-    let mut found = Vec::new();
-    for trailer in trailers {
-        let key = trailer.key.to_lowercase();
-        if !TASK_TRAILER_KEYS.contains(&key.as_str()) {
-            continue;
-        }
-        let values = trailer
-            .value
-            .split(|c: char| c == ',' || is_py_space(c))
-            .filter(|value| !value.is_empty());
-        for value in values {
-            found.push(Candidate {
-                task_ref: value.to_owned(),
-                source: CandidateSource::Trailer,
-                confidence: TRAILER_CONFIDENCE,
-                evidence: Evidence::Trailer {
-                    trailer: format!("{}: {}", trailer.key, trailer.value),
-                },
-            });
-        }
-    }
-    found
+    trailers
+        .iter()
+        .filter(|trailer| TASK_TRAILER_KEYS.contains(&trailer.key.to_lowercase().as_str()))
+        .flat_map(|trailer| {
+            trailer
+                .value
+                .split(|c: char| c == ',' || is_py_space(c))
+                .filter(|value| !value.is_empty())
+                .map(move |value| Candidate {
+                    task_ref: value.to_owned(),
+                    source: CandidateSource::Trailer,
+                    confidence: TRAILER_CONFIDENCE,
+                    evidence: Evidence::Trailer {
+                        trailer: format!("{}: {}", trailer.key, trailer.value),
+                    },
+                })
+        })
+        .collect()
 }
 
 /// Task keys mentioned in the prose of a message, for any of the given prefixes.
@@ -97,15 +96,17 @@ pub fn message_candidates(
     key_prefixes: &[&str],
     trailers: &[Trailer],
 ) -> Vec<Candidate> {
-    let mut prefixes: Vec<&str> = key_prefixes
+    // Distinct, longest first, so a longer prefix is tried before a shorter one that it starts
+    // with; ties keep lexicographic order.
+    let prefixes: Vec<&str> = key_prefixes
         .iter()
         .copied()
         .filter(|prefix| !prefix.is_empty())
+        .map(|prefix| (Reverse(prefix.chars().count()), prefix))
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .map(|(_, prefix)| prefix)
         .collect();
-    prefixes.sort_unstable();
-    prefixes.dedup();
-    // Longest first, so a longer prefix is tried before a shorter one that it starts with.
-    prefixes.sort_by_key(|prefix| std::cmp::Reverse(prefix.chars().count()));
     if prefixes.is_empty() {
         return Vec::new();
     }
@@ -161,67 +162,91 @@ pub fn message_candidates(
 /// the original lookbehind expressed). The regex crate has no lookaround, so the check runs here
 /// and a rejected match resumes the search one character after its start.
 fn find_keys(pattern: &Regex, prose: &str) -> Vec<String> {
-    let mut keys: Vec<String> = Vec::new();
-    let mut pos = 0;
-    while let Some(caps) = pattern.captures_at(prose, pos) {
-        let Some(whole) = caps.get(0) else { break };
-        let (start, end) = (whole.start(), whole.end());
-        let preceded_by_alnum = prose[..start]
-            .chars()
-            .next_back()
-            .is_some_and(|c| c.is_ascii_alphanumeric());
-        let followed_by_digit = prose[end..].starts_with(|c: char| c.is_ascii_digit());
-        if preceded_by_alnum || followed_by_digit {
-            let step = prose[start..].chars().next().map_or(1, char::len_utf8);
-            pos = start + step;
-            continue;
-        }
-        if let (Some(prefix), Some(digits)) = (caps.get(1), caps.get(2)) {
-            let key = format!("{}-{}", prefix.as_str().to_uppercase(), digits.as_str());
-            if !keys.contains(&key) {
-                keys.push(key);
-            }
-        }
-        pos = end;
+    // Each step is one match attempt from `pos`: the key it accepted, if any, and where the next
+    // attempt starts. The first item is only the starting point and carries no key.
+    let steps = std::iter::successors(Some((0_usize, None::<String>)), |(pos, _)| {
+        scan_step(pattern, prose, *pos)
+    });
+    let keys: Vec<String> = steps.filter_map(|(_, key)| key).collect();
+    keys.iter()
+        .enumerate()
+        .filter(|(index, key)| !keys[..*index].contains(key))
+        .map(|(_, key)| key.clone())
+        .collect()
+}
+
+/// One match attempt of [`find_keys`] from `pos`. `None` when no further match exists.
+fn scan_step(pattern: &Regex, prose: &str, pos: usize) -> Option<(usize, Option<String>)> {
+    let caps = pattern.captures_at(prose, pos)?;
+    let whole = caps.get(0)?;
+    let (start, end) = (whole.start(), whole.end());
+    let preceded_by_alnum = prose[..start]
+        .chars()
+        .next_back()
+        .is_some_and(|c| c.is_ascii_alphanumeric());
+    let followed_by_digit = prose[end..].starts_with(|c: char| c.is_ascii_digit());
+    if preceded_by_alnum || followed_by_digit {
+        let step = prose[start..].chars().next().map_or(1, char::len_utf8);
+        return Some((start + step, None));
     }
-    keys
+    let key = match (caps.get(1), caps.get(2)) {
+        (Some(prefix), Some(digits)) => Some(format!(
+            "{}-{}",
+            prefix.as_str().to_uppercase(),
+            digits.as_str()
+        )),
+        _ => None,
+    };
+    Some((end, key))
 }
 
 /// The lines of `text` as Python's `str.splitlines` cuts them: `\r\n`, `\n`, `\r`, and the other
 /// line boundaries Python recognises. The terminators are dropped and a final empty line is not
 /// returned.
 fn split_lines(text: &str) -> Vec<&str> {
-    let mut lines = Vec::new();
-    let mut start = 0;
-    let mut chars = text.char_indices();
-    while let Some((index, c)) = chars.next() {
-        let boundary = matches!(
-            c,
-            '\n' | '\r'
-                | '\x0b'
-                | '\x0c'
-                | '\x1c'
-                | '\x1d'
-                | '\x1e'
-                | '\u{85}'
-                | '\u{2028}'
-                | '\u{2029}'
-        );
-        if !boundary {
-            continue;
-        }
-        lines.push(&text[start..index]);
-        let mut next = index + c.len_utf8();
-        if c == '\r' && text[next..].starts_with('\n') {
-            next += 1;
-            chars.next();
-        }
-        start = next;
-    }
-    if start < text.len() {
-        lines.push(&text[start..]);
-    }
-    lines
+    let bytes = text.as_bytes();
+    // Each cut is the index where a line ends and the index where the next line starts. A `\n`
+    // that follows a `\r` is part of that `\r\n` cut, so it does not cut again.
+    let cuts: Vec<(usize, usize)> = text
+        .char_indices()
+        .filter(|&(index, c)| {
+            let boundary = matches!(
+                c,
+                '\n' | '\r'
+                    | '\x0b'
+                    | '\x0c'
+                    | '\x1c'
+                    | '\x1d'
+                    | '\x1e'
+                    | '\u{85}'
+                    | '\u{2028}'
+                    | '\u{2029}'
+            );
+            boundary && !(c == '\n' && index > 0 && bytes[index - 1] == b'\r')
+        })
+        .map(|(index, c)| {
+            let next = if c == '\r' && bytes.get(index + 1) == Some(&b'\n') {
+                index + 2
+            } else {
+                index + c.len_utf8()
+            };
+            (index, next)
+        })
+        .collect();
+    let starts = std::iter::once(0).chain(cuts.iter().map(|&(_, next)| next));
+    let ends = cuts
+        .iter()
+        .map(|&(index, _)| index)
+        .chain(std::iter::once(text.len()));
+    let segment_count = cuts.len() + 1;
+    starts
+        .zip(ends)
+        .map(|(start, end)| &text[start..end])
+        .enumerate()
+        // The text after the last cut is a line only when it is not empty.
+        .filter(|(index, line)| index + 1 < segment_count || !line.is_empty())
+        .map(|(_, line)| line)
+        .collect()
 }
 
 /// Python's `str.isspace` for one character: Unicode white space plus the file, group, record

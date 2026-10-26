@@ -4,7 +4,9 @@
 //! Ported from `_cumulative_churn` in `integrations/git/service.py`. The shell loads the rows of
 //! the linked commits; this decides the totals.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+
+use rpds::{RedBlackTreeMap, RedBlackTreeSet, Vector};
 
 use crate::file_class;
 
@@ -82,60 +84,92 @@ pub fn cumulative_churn(commits: &[ChurnCommit]) -> Churn {
     }
 
     // Stable sort: ties keep the order the shell passed them in, and a commit without a date
-    // comes last, as the original's "now" stand-in did.
-    let mut ordered: Vec<&ChurnCommit> = commits.iter().collect();
-    ordered.sort_by(|a, b| match (a.committed_at, b.committed_at) {
-        (Some(x), Some(y)) => x.cmp(&y),
-        (Some(_), None) => std::cmp::Ordering::Less,
-        (None, Some(_)) => std::cmp::Ordering::Greater,
-        (None, None) => std::cmp::Ordering::Equal,
-    });
+    // comes last, as the original's "now" stand-in did. The index in the key keeps ties in order.
+    let ordered: Vec<&ChurnCommit> = commits
+        .iter()
+        .enumerate()
+        .map(|(index, commit)| {
+            let rank = (
+                commit.committed_at.is_none(),
+                commit.committed_at.unwrap_or(0),
+                index,
+            );
+            (rank, commit)
+        })
+        .collect::<BTreeMap<_, _>>()
+        .into_values()
+        .collect();
 
     // Keyed by (repository, patch id): identical patches in different repositories are distinct.
-    let mut seen: BTreeSet<(&str, &str)> = BTreeSet::new();
-    let mut counted: Vec<&ChurnCommit> = Vec::new();
-    let mut duplicates = 0;
-    let mut merges = 0;
-    for commit in ordered {
-        if commit.is_merge {
-            merges += 1;
-            continue;
-        }
-        if let Some(patch) = commit.patch_id.as_deref().filter(|p| !p.is_empty())
-            && !seen.insert((commit.repository_id.as_str(), patch))
-        {
-            duplicates += 1;
-            continue;
-        }
-        counted.push(commit);
-    }
+    let (counted, duplicates, merges, _) = ordered.iter().copied().fold(
+        (
+            Vector::<&ChurnCommit>::new(),
+            0_u64,
+            0_u64,
+            RedBlackTreeSet::<(&str, &str)>::new(),
+        ),
+        |(counted, duplicates, merges, seen), commit| {
+            let patch = commit.patch_id.as_deref().filter(|p| !p.is_empty());
+            match patch {
+                _ if commit.is_merge => (counted, duplicates, merges + 1, seen),
+                Some(patch) => {
+                    let key = (commit.repository_id.as_str(), patch);
+                    if seen.contains(&key) {
+                        (counted, duplicates + 1, merges, seen)
+                    } else {
+                        (
+                            counted.push_back(commit),
+                            duplicates,
+                            merges,
+                            seen.insert(key),
+                        )
+                    }
+                }
+                None => (counted.push_back(commit), duplicates, merges, seen),
+            }
+        },
+    );
+    let counted: Vec<&ChurnCommit> = counted.iter().copied().collect();
 
-    let mut path_rows: BTreeMap<&str, u64> = BTreeMap::new();
-    let mut by_class: BTreeMap<String, ClassTotals> = BTreeMap::new();
-    for commit in &counted {
-        for file in &commit.files {
-            *path_rows.entry(file.path.as_str()).or_insert(0) += 1;
-            let bucket = by_class
-                .entry(file_class(&file.path).to_owned())
-                .or_default();
-            bucket.insertions += file.insertions;
-            bucket.deletions += file.deletions;
-            bucket.files += 1;
-        }
-    }
+    let path_rows = counted.iter().flat_map(|commit| commit.files.iter()).fold(
+        RedBlackTreeMap::<&str, u64>::new(),
+        |rows, file| {
+            let seen = rows.get(&file.path.as_str()).copied().unwrap_or(0);
+            rows.insert(file.path.as_str(), seen + 1)
+        },
+    );
+    let by_class = counted.iter().flat_map(|commit| commit.files.iter()).fold(
+        RedBlackTreeMap::<&'static str, ClassTotals>::new(),
+        |classes, file| {
+            let class = file_class(&file.path);
+            let bucket = classes.get(&class).copied().unwrap_or_default();
+            classes.insert(
+                class,
+                ClassTotals {
+                    insertions: bucket.insertions + file.insertions,
+                    deletions: bucket.deletions + file.deletions,
+                    files: bucket.files + 1,
+                },
+            )
+        },
+    );
+    let by_file_class: BTreeMap<String, ClassTotals> = by_class
+        .iter()
+        .map(|(class, totals)| ((*class).to_owned(), *totals))
+        .collect();
 
     let analyzed: Vec<ChurnAnalysis> = counted.iter().filter_map(|c| c.analysis).collect();
     Churn {
         commits: counted.len() as u64,
         insertions: counted.iter().map(|c| c.insertions).sum(),
         deletions: counted.iter().map(|c| c.deletions).sum(),
-        files_touched: path_rows.len() as u64,
+        files_touched: path_rows.size() as u64,
         repeated_file_edits: path_rows.values().filter(|n| **n > 1).count() as u64,
         functions_affected: analyzed.iter().map(|a| a.functions_affected).sum(),
         types_affected: analyzed.iter().map(|a| a.types_affected).sum(),
         structurally_analyzed_commits: Some(analyzed.len() as u64),
         excluded_duplicates: duplicates,
         excluded_merges: merges,
-        by_file_class: Some(by_class),
+        by_file_class: Some(by_file_class),
     }
 }

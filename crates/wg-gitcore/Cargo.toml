@@ -12,6 +12,7 @@ workspace = true
 
 [dependencies]
 regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
+rpds = "1"
 wg-types = { path = "../wg-types" }
 
 [dev-dependencies]

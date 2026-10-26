@@ -38,40 +38,50 @@ pub fn non_empty_trimmed(output: &str) -> Option<String> {
 
 /// The stdin text for git commands that read one item per line: each line terminated by `\n`.
 pub fn stdin_lines(lines: &[String]) -> String {
-    let mut text = lines.join("\n");
-    text.push('\n');
-    text
+    format!("{}\n", lines.join("\n"))
 }
 
 /// `git remote -v` lines as `(name, url)` pairs, in order. Only fetch URLs count and the first
 /// URL of a name wins.
 pub fn parse_remotes(output: &str) -> Vec<(String, String)> {
-    let mut remotes: Vec<(String, String)> = Vec::new();
-    for line in output.lines() {
-        let parts: Vec<&str> = line.split_whitespace().collect();
-        let fetch = parts.len() < 3 || parts[2] == "(fetch)";
-        if parts.len() >= 2 && fetch && !remotes.iter().any(|(name, _)| name == parts[0]) {
-            remotes.push((parts[0].to_owned(), parts[1].to_owned()));
-        }
-    }
-    remotes
+    let fetch_lines: Vec<(String, String)> = output
+        .lines()
+        .filter_map(|line| {
+            let parts: Vec<&str> = line.split_whitespace().collect();
+            let fetch = parts.len() < 3 || parts[2] == "(fetch)";
+            (parts.len() >= 2 && fetch).then(|| (parts[0].to_owned(), parts[1].to_owned()))
+        })
+        .collect();
+    // A name's first fetch URL wins: a later line with a name already seen is dropped.
+    fetch_lines
+        .iter()
+        .enumerate()
+        .filter(|(index, (name, _))| {
+            !fetch_lines[..*index]
+                .iter()
+                .any(|(earlier, _)| earlier == name)
+        })
+        .map(|(_, pair)| pair.clone())
+        .collect()
 }
 
 /// `for-each-ref` output with the format `%(refname)%00%(objectname)%00%(*objectname)`: each
 /// ref to its commit id, with annotated tags peeled. `HEAD` entries are skipped.
 /// The pairs come back in git's output order, as the Python dict is built.
 pub fn parse_refs(output: &str) -> Vec<(String, String)> {
-    let mut refs = Vec::new();
-    for line in output.lines() {
-        let parts: Vec<&str> = line.split('\0').collect();
-        if let [name, object, peeled] = parts.as_slice()
-            && !name.ends_with("/HEAD")
-        {
-            let sha = if peeled.is_empty() { *object } else { *peeled };
-            refs.push(((*name).to_owned(), sha.to_owned()));
-        }
-    }
-    refs
+    output
+        .lines()
+        .filter_map(|line| {
+            let parts: Vec<&str> = line.split('\0').collect();
+            match parts.as_slice() {
+                [name, object, peeled] if !name.ends_with("/HEAD") => {
+                    let sha = if peeled.is_empty() { *object } else { *peeled };
+                    Some(((*name).to_owned(), sha.to_owned()))
+                }
+                _ => None,
+            }
+        })
+        .collect()
 }
 
 /// Output lines that are not empty, as written (no trimming): the paths `diff --name-only`

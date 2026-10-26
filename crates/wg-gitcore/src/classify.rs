@@ -129,15 +129,14 @@ pub fn module_for(path: &str, depth: usize) -> String {
 
 /// The parts of a POSIX path as `PurePosixPath(path).parts` gives them.
 fn posix_parts(path: &str) -> Vec<&str> {
-    let mut parts = Vec::new();
-    if path.starts_with('/') {
-        parts.push("/");
-    }
-    parts.extend(
-        path.split('/')
-            .filter(|part| !part.is_empty() && *part != "."),
-    );
-    parts
+    path.starts_with('/')
+        .then_some("/")
+        .into_iter()
+        .chain(
+            path.split('/')
+                .filter(|part| !part.is_empty() && *part != "."),
+        )
+        .collect()
 }
 
 /// `PurePath.suffix` of a file name: the text from its last dot, unless the dot is the first

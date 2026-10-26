@@ -57,47 +57,41 @@ pub fn plan_surface(
     is_ancestor: impl Fn(&str, &str) -> bool,
     parent_of: impl Fn(&str) -> Option<String>,
 ) -> SurfacePlan {
-    let mut base = non_empty(repo.manifest_base).map(str::to_owned);
-    let mut final_rev = non_empty(repo.manifest_final).map(str::to_owned);
-    let mut provenance = Provenance {
-        base: base.as_ref().map(|_| "attempt baseline manifest"),
-        final_rev: final_rev.as_ref().map(|_| "accepted revision manifest"),
-    };
-
-    if (base.is_none() || final_rev.is_none()) && !repo.linked_shas.is_empty() {
-        let shas: Vec<&str> = repo
-            .linked_shas
-            .iter()
-            .map(String::as_str)
-            .filter(|sha| exists(sha))
-            .collect();
-        let (Some(first), Some(last)) = (shas.first().copied(), shas.last().copied()) else {
-            return SurfacePlan::Skip;
+    let manifest_base = non_empty(repo.manifest_base).map(str::to_owned);
+    let manifest_final = non_empty(repo.manifest_final).map(str::to_owned);
+    let linked =
+        if (manifest_base.is_none() || manifest_final.is_none()) && !repo.linked_shas.is_empty() {
+            match linked_revisions(
+                repo.linked_shas,
+                manifest_base.is_none(),
+                manifest_final.is_none(),
+                &exists,
+                &is_ancestor,
+                &parent_of,
+            ) {
+                Some(linked) => linked,
+                None => return SurfacePlan::Skip,
+            }
+        } else {
+            Linked::default()
         };
-        if final_rev.is_none() {
-            let chosen = shas
-                .iter()
-                .copied()
-                .find(|s| shas.iter().all(|o| is_ancestor(o, s)))
-                .unwrap_or(last);
-            final_rev = Some(chosen.to_owned());
-            provenance.final_rev = Some("latest linked commit");
-        }
-        if base.is_none() {
-            let earliest = shas
-                .iter()
-                .copied()
-                .find(|s| shas.iter().all(|o| is_ancestor(s, o)))
-                .unwrap_or(first);
-            let parent = parent_of(earliest)
-                .filter(|p| !p.is_empty())
-                .unwrap_or_else(|| EMPTY_TREE.to_owned());
-            base = Some(parent);
-            provenance.base = Some("parent of earliest linked commit");
-        }
-    }
 
-    let (Some(base), Some(final_rev)) = (base, final_rev) else {
+    let provenance = Provenance {
+        base: match (&manifest_base, &linked.base) {
+            (Some(_), _) => Some("attempt baseline manifest"),
+            (None, Some(_)) => Some("parent of earliest linked commit"),
+            (None, None) => None,
+        },
+        final_rev: match (&manifest_final, &linked.final_rev) {
+            (Some(_), _) => Some("accepted revision manifest"),
+            (None, Some(_)) => Some("latest linked commit"),
+            (None, None) => None,
+        },
+    };
+    let (Some(base), Some(final_rev)) = (
+        manifest_base.or(linked.base),
+        manifest_final.or(linked.final_rev),
+    ) else {
         return SurfacePlan::Skip;
     };
     if base.is_empty() || final_rev.is_empty() || base == final_rev {
@@ -111,6 +105,49 @@ pub fn plan_surface(
         final_rev,
         provenance,
     }
+}
+
+/// The revisions the linked commits supply where the manifests do not.
+#[derive(Default)]
+struct Linked {
+    base: Option<String>,
+    final_rev: Option<String>,
+}
+
+/// Chooses the revisions the linked commits supply. `None` when no linked commit is present.
+fn linked_revisions(
+    linked_shas: &[String],
+    want_base: bool,
+    want_final: bool,
+    exists: &impl Fn(&str) -> bool,
+    is_ancestor: &impl Fn(&str, &str) -> bool,
+    parent_of: &impl Fn(&str) -> Option<String>,
+) -> Option<Linked> {
+    let shas: Vec<&str> = linked_shas
+        .iter()
+        .map(String::as_str)
+        .filter(|sha| exists(sha))
+        .collect();
+    let first = shas.first().copied()?;
+    let last = shas.last().copied()?;
+    let final_rev = want_final.then(|| {
+        shas.iter()
+            .copied()
+            .find(|s| shas.iter().all(|o| is_ancestor(o, s)))
+            .unwrap_or(last)
+            .to_owned()
+    });
+    let base = want_base.then(|| {
+        let earliest = shas
+            .iter()
+            .copied()
+            .find(|s| shas.iter().all(|o| is_ancestor(s, o)))
+            .unwrap_or(first);
+        parent_of(earliest)
+            .filter(|p| !p.is_empty())
+            .unwrap_or_else(|| EMPTY_TREE.to_owned())
+    });
+    Some(Linked { base, final_rev })
 }
 
 /// One file of the detail list.
@@ -152,21 +189,16 @@ pub fn surface_record(
     files: &[FileChange],
     structures: &[Option<(u64, u64)>],
 ) -> SurfaceRecord {
-    let mut functions = 0;
-    let mut types = 0;
-    let mut fallback = 0;
-    for (index, file) in files.iter().enumerate() {
-        if file.binary {
-            continue;
-        }
-        match structures.get(index).copied().flatten() {
-            Some((f, t)) => {
-                functions += f;
-                types += t;
-            }
-            None => fallback += 1,
-        }
-    }
+    // The structural entry of every text file, in file order. Binary files are not analysed.
+    let analysed: Vec<Option<(u64, u64)>> = files
+        .iter()
+        .enumerate()
+        .filter(|(_, file)| !file.binary)
+        .map(|(index, _)| structures.get(index).copied().flatten())
+        .collect();
+    let functions: u64 = analysed.iter().flatten().map(|(f, _)| f).sum();
+    let types: u64 = analysed.iter().flatten().map(|(_, t)| t).sum();
+    let fallback = analysed.iter().filter(|entry| entry.is_none()).count() as u64;
     SurfaceRecord {
         base_sha: base.to_owned(),
         final_sha: final_rev.to_owned(),

@@ -77,89 +77,106 @@ pub fn plan_equivalences(
     existing: &[(String, String)],
 ) -> Vec<Equivalence> {
     let new_set: BTreeSet<&str> = new_ids.iter().map(String::as_str).collect();
-    let mut out = Vec::new();
-    for new_id in new_ids {
-        let Some(commit) = commits.iter().find(|c| &c.id == new_id) else {
-            continue;
-        };
-        let mut matches: Vec<(&CommitFacts, EquivalenceKind, EquivalenceMethod)> = Vec::new();
+    new_ids
+        .iter()
+        .filter_map(|new_id| commits.iter().find(|c| &c.id == new_id))
+        .flat_map(|commit| {
+            equivalence_matches(commit, commits, &new_set)
+                .into_iter()
+                .filter(move |(other, _, _)| {
+                    !existing
+                        .iter()
+                        .any(|(orig, equiv)| orig == &other.id && equiv == &commit.id)
+                })
+                .map(move |(other, kind, method)| Equivalence {
+                    original_id: other.id.clone(),
+                    equivalent_id: commit.id.clone(),
+                    kind,
+                    method,
+                    original_sha: other.sha.clone(),
+                    new_sha: commit.sha.clone(),
+                })
+        })
+        .collect()
+}
 
-        if let Some(patch) = non_empty(&commit.patch_id) {
-            for other in commits.iter().filter(|o| {
+/// The older commits one new commit is equivalent to, with how each was found.
+fn equivalence_matches<'a>(
+    commit: &CommitFacts,
+    commits: &'a [CommitFacts],
+    new_set: &BTreeSet<&str>,
+) -> Vec<(&'a CommitFacts, EquivalenceKind, EquivalenceMethod)> {
+    let patch_matches: Vec<_> = match non_empty(&commit.patch_id) {
+        Some(patch) => commits
+            .iter()
+            .filter(|o| {
                 o.repository_id == commit.repository_id
                     && o.patch_id.as_deref() == Some(patch)
                     && o.id != commit.id
-            }) {
-                // A twin that is itself a new commit counts only once it has left every ref.
-                if new_set.contains(other.id.as_str()) && other.reachable != Some(false) {
-                    continue;
-                }
+            })
+            // A twin that is itself a new commit counts only once it has left every ref.
+            .filter(|o| !(new_set.contains(o.id.as_str()) && o.reachable != Some(false)))
+            .map(|other| {
                 let kind = if other.reachable == Some(true) {
                     EquivalenceKind::CherryPick
                 } else {
                     EquivalenceKind::Rewrite
                 };
-                matches.push((
+                (
                     other,
                     kind,
                     EquivalenceMethod::PatchId {
                         patch_id: patch.to_owned(),
                     },
-                ));
-            }
-        }
+                )
+            })
+            .collect(),
+        None => Vec::new(),
+    };
 
-        if let Some(authored) = commit.authored_at
-            && matches.is_empty()
-        {
-            for other in commits.iter().filter(|o| {
+    let author_matches: Vec<_> = match commit.authored_at {
+        Some(authored) if patch_matches.is_empty() => commits
+            .iter()
+            .filter(|o| {
                 o.repository_id == commit.repository_id
                     && o.id != commit.id
                     && o.reachable == Some(false)
                     && o.author_email == commit.author_email
                     && o.authored_at == Some(authored)
                     && o.subject == commit.subject
-            }) {
-                matches.push((
+            })
+            .map(|other| {
+                (
                     other,
                     EquivalenceKind::Rewrite,
                     EquivalenceMethod::AuthorDateSubject,
-                ));
-            }
-        }
+                )
+            })
+            .collect(),
+        _ => Vec::new(),
+    };
 
-        // A trailer naming a commit already matched by patch id adds nothing.
-        if let Some(prefix) = cherry_picked_from(&commit.message)
-            && let Some(picked) = commits.iter().find(|o| {
+    let matches: Vec<_> = patch_matches.into_iter().chain(author_matches).collect();
+
+    // A trailer naming a commit already matched by patch id adds nothing.
+    let trailer_match: Vec<_> = cherry_picked_from(&commit.message)
+        .and_then(|prefix| {
+            commits.iter().find(|o| {
                 o.repository_id == commit.repository_id && o.sha.starts_with(prefix.as_str())
             })
-            && !matches.iter().any(|(m, _, _)| m.id == picked.id)
-        {
-            matches.push((
+        })
+        .filter(|picked| !matches.iter().any(|(m, _, _)| m.id == picked.id))
+        .map(|picked| {
+            (
                 picked,
                 EquivalenceKind::CherryPick,
                 EquivalenceMethod::CherryPickTrailer,
-            ));
-        }
+            )
+        })
+        .into_iter()
+        .collect();
 
-        for (other, kind, method) in matches {
-            let known = existing
-                .iter()
-                .any(|(orig, equiv)| orig == &other.id && equiv == &commit.id);
-            if known {
-                continue;
-            }
-            out.push(Equivalence {
-                original_id: other.id.clone(),
-                equivalent_id: commit.id.clone(),
-                kind,
-                method,
-                original_sha: other.sha.clone(),
-                new_sha: commit.sha.clone(),
-            });
-        }
-    }
-    out
+    matches.into_iter().chain(trailer_match).collect()
 }
 
 /// A task link on the original commit of a rewrite.
@@ -189,21 +206,25 @@ pub fn carry_links(
     original_links: &[OriginalLink],
     rewritten_tasks: &[String],
 ) -> Vec<CarriedLink> {
-    let mut seen: BTreeSet<&str> = rewritten_tasks.iter().map(String::as_str).collect();
-    let mut out = Vec::new();
-    for link in original_links {
-        if !seen.insert(link.task_id.as_str()) {
-            continue;
-        }
-        out.push(CarriedLink {
+    // A link is carried when its task is not already linked to the rewritten commit and no
+    // earlier link of the original names the same task.
+    original_links
+        .iter()
+        .enumerate()
+        .filter(|(index, link)| {
+            !rewritten_tasks.contains(&link.task_id)
+                && !original_links[..*index]
+                    .iter()
+                    .any(|earlier| earlier.task_id == link.task_id)
+        })
+        .map(|(_, link)| CarriedLink {
             task_id: link.task_id.clone(),
             confidence: link.confidence.min(REWRITE_CONFIDENCE),
             from_commit: original_sha.to_owned(),
             original_source: link.source.clone(),
             attempt_id: link.attempt_id.clone(),
-        });
-    }
-    out
+        })
+        .collect()
 }
 
 fn non_empty(value: &Option<String>) -> Option<&str> {

@@ -8,7 +8,7 @@ use crate::codec::Raw;
 use crate::rows::{columns, key_values, primary_key, row_values};
 
 /// One statement: text with `?N` placeholders and the values to bind, in order.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Statement {
     pub sql: String,
     pub params: Vec<Raw>,

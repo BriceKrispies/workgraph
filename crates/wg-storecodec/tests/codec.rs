@@ -21,8 +21,11 @@ fn schema_columns(table: Table) -> Result<Vec<String>, Box<dyn Error>> {
     let start = format!("CREATE TABLE {} (", table.name());
     let body = text
         .split("\n\n")
-        .find(|block| block.starts_with(&start))
-        .ok_or("table not in schema")?;
+        .find(|block| {
+            block.starts_with(&start)
+                || block.starts_with(&format!("CREATE TABLE \"{}\" (", table.name()))
+        })
+        .ok_or_else(|| format!("table {} not in schema", table.name()))?;
     Ok(body
         .lines()
         .skip(1)
@@ -33,15 +36,47 @@ fn schema_columns(table: Table) -> Result<Vec<String>, Box<dyn Error>> {
         .collect())
 }
 
+/// The `PRIMARY KEY (...)` columns of `table` in the schema.
+fn schema_primary_key(table: Table) -> Result<Vec<String>, Box<dyn Error>> {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../contracts/schema-0011.sql");
+    let text = std::fs::read_to_string(path)?;
+    let start = format!("CREATE TABLE {} (", table.name());
+    let quoted = format!("CREATE TABLE \"{}\" (", table.name());
+    let body = text
+        .split(
+            "
+
+",
+        )
+        .find(|block| block.starts_with(&start) || block.starts_with(&quoted))
+        .ok_or_else(|| format!("table {} not in schema", table.name()))?;
+    let line = body
+        .lines()
+        .find(|line| line.contains("PRIMARY KEY ("))
+        .ok_or("no primary key")?;
+    let inner = line.split("PRIMARY KEY (").nth(1).ok_or("malformed")?;
+    Ok(inner
+        .trim_end_matches([')', ',', ' '])
+        .split(", ")
+        .map(str::to_owned)
+        .collect())
+}
+
 #[test]
 fn column_lists_follow_the_schema_contract() -> TestResult {
     for table in Table::ALL {
         let expected = schema_columns(*table)?;
         let actual: Vec<String> = columns(*table).iter().map(|c| (*c).to_owned()).collect();
         assert_eq!(actual, expected, "{}", table.name());
-        for column in primary_key(*table) {
-            assert!(expected.iter().any(|c| c == column), "{column}");
-        }
+        assert_eq!(
+            primary_key(*table)
+                .iter()
+                .map(|c| (*c).to_owned())
+                .collect::<Vec<_>>(),
+            schema_primary_key(*table)?,
+            "{}",
+            table.name()
+        );
     }
     Ok(())
 }

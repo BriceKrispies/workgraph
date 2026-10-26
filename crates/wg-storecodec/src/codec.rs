@@ -13,14 +13,17 @@ use rpds::VectorSync;
 use serde_json::Value;
 use wg_json::{DumpError, PyStr};
 use wg_model::JsonObject;
+use wg_model::entity::Real;
 use wg_types::{ErrorCode, Id, Timestamp, WgError, parse_id};
 
 /// One database value, as the three storage classes the schema uses.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Raw {
     Null,
     Int(i64),
+    Real(f64),
     Text(String),
+    Blob(Vec<u8>),
 }
 
 /// An id column.
@@ -117,6 +120,35 @@ pub fn strings_sql(items: &VectorSync<String>) -> Result<Raw, WgError> {
     Ok(text.map_or(Raw::Null, Raw::Text))
 }
 
+/// A nullable `FLOAT` column.
+pub fn opt_real_sql(value: Option<Real>) -> Raw {
+    value.map_or(Raw::Null, real_sql)
+}
+
+/// A `FLOAT` column.
+pub fn real_sql(value: Real) -> Raw {
+    Raw::Real(value.0)
+}
+
+/// A `BLOB` column.
+pub fn blob_sql(bytes: &VectorSync<u8>) -> Raw {
+    Raw::Blob(bytes.iter().copied().collect())
+}
+
+/// A NOT NULL JSON list of objects.
+pub fn objects_sql(items: &VectorSync<JsonObject>) -> Result<Raw, WgError> {
+    let list = Value::Array(items.iter().cloned().map(Value::Object).collect());
+    let text = json_text(&list)?;
+    Ok(text.map_or(Raw::Null, Raw::Text))
+}
+
+/// A NOT NULL JSON list of arbitrary values.
+pub fn values_sql(items: &VectorSync<Value>) -> Result<Raw, WgError> {
+    let list = Value::Array(items.iter().cloned().collect());
+    let text = json_text(&list)?;
+    Ok(text.map_or(Raw::Null, Raw::Text))
+}
+
 fn corrupt(column: &str, what: &str) -> WgError {
     WgError::new(
         ErrorCode::WorkgraphError,
@@ -148,7 +180,7 @@ impl<'a> Cols<'a> {
         match self.raw(name)? {
             Raw::Null => Ok(None),
             Raw::Text(text) => Ok(Some(text.clone())),
-            Raw::Int(_) => Err(corrupt(name, "expected text, found an integer")),
+            _ => Err(corrupt(name, "expected text")),
         }
     }
 
@@ -161,13 +193,34 @@ impl<'a> Cols<'a> {
         match self.raw(name)? {
             Raw::Null => Ok(None),
             Raw::Int(value) => Ok(Some(*value)),
-            Raw::Text(_) => Err(corrupt(name, "expected an integer, found text")),
+            _ => Err(corrupt(name, "expected an integer")),
         }
     }
 
     pub fn int(&self, name: &str) -> Result<i64, WgError> {
         self.opt_int(name)?
             .ok_or_else(|| corrupt(name, "unexpected NULL"))
+    }
+
+    pub fn opt_real(&self, name: &str) -> Result<Option<Real>, WgError> {
+        match self.raw(name)? {
+            Raw::Null => Ok(None),
+            Raw::Real(value) => Ok(Some(Real(*value))),
+            Raw::Int(value) => Ok(Some(Real(*value as f64))),
+            _ => Err(corrupt(name, "expected a float")),
+        }
+    }
+
+    pub fn real(&self, name: &str) -> Result<Real, WgError> {
+        self.opt_real(name)?
+            .ok_or_else(|| corrupt(name, "unexpected NULL"))
+    }
+
+    pub fn blob(&self, name: &str) -> Result<VectorSync<u8>, WgError> {
+        match self.raw(name)? {
+            Raw::Blob(bytes) => Ok(bytes.iter().copied().collect()),
+            _ => Err(corrupt(name, "expected a blob")),
+        }
     }
 
     pub fn flag(&self, name: &str) -> Result<bool, WgError> {
@@ -216,6 +269,24 @@ impl<'a> Cols<'a> {
         self.opt_text(name)?
             .map(|text| Self::object_from(self.json(&text, name)?, name))
             .transpose()
+    }
+
+    fn list(&self, name: &str) -> Result<Vec<Value>, WgError> {
+        match self.json(&self.text(name)?, name)? {
+            Value::Array(items) => Ok(items),
+            other => Err(corrupt(name, &format!("{other} is not a JSON list"))),
+        }
+    }
+
+    pub fn values(&self, name: &str) -> Result<VectorSync<Value>, WgError> {
+        Ok(self.list(name)?.into_iter().collect())
+    }
+
+    pub fn objects(&self, name: &str) -> Result<VectorSync<JsonObject>, WgError> {
+        self.list(name)?
+            .into_iter()
+            .map(|item| Self::object_from(item, name))
+            .collect()
     }
 
     pub fn strings(&self, name: &str) -> Result<VectorSync<String>, WgError> {

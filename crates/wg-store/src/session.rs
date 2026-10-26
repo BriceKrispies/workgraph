@@ -47,6 +47,32 @@ pub struct Applied {
     pub event_seqs: Vec<i64>,
 }
 
+/// A value to bind.
+macro_rules! to_sql {
+    ($param:expr) => {
+        match $param {
+            Raw::Null => Sql::Null,
+            Raw::Int(value) => Sql::Integer(*value),
+            Raw::Real(value) => Sql::Real(*value),
+            Raw::Text(text) => Sql::Text(text.clone()),
+            Raw::Blob(bytes) => Sql::Blob(bytes.clone()),
+        }
+    };
+}
+
+/// A value read.
+macro_rules! from_sql {
+    ($value:expr) => {
+        match $value {
+            Sql::Null => Raw::Null,
+            Sql::Integer(value) => Raw::Int(value),
+            Sql::Real(value) => Raw::Real(value),
+            Sql::Text(text) => Raw::Text(text),
+            Sql::Blob(bytes) => Raw::Blob(bytes),
+        }
+    };
+}
+
 /// An open transaction (see the module documentation).
 pub struct Session<'c> {
     pub(crate) conn: &'c Connection,
@@ -56,43 +82,22 @@ impl Session<'_> {
     /// Runs a statement and returns the number of rows it changed.
     pub fn run(&mut self, statement: &Statement) -> Result<usize, WgError> {
         let mut prepared = db!(self.conn.prepare_cached(&statement.sql))?;
-        db!(
-            prepared.execute(params_from_iter(statement.params.iter().map(
-                |param| match param {
-                    Raw::Null => Sql::Null,
-                    Raw::Int(value) => Sql::Integer(*value),
-                    Raw::Text(text) => Sql::Text(text.clone()),
-                }
-            )))
-        )
+        db!(prepared.execute(params_from_iter(
+            statement.params.iter().map(|param| to_sql!(param))
+        )))
     }
 
     /// Runs a query and returns every row as values, in column order.
     pub fn rows(&mut self, statement: &Statement) -> Result<Vec<Vec<Raw>>, WgError> {
         let mut prepared = db!(self.conn.prepare_cached(&statement.sql))?;
         let width = prepared.column_count();
-        let mut result = db!(prepared.query(params_from_iter(statement.params.iter().map(
-            |param| match param {
-                Raw::Null => Sql::Null,
-                Raw::Int(value) => Sql::Integer(*value),
-                Raw::Text(text) => Sql::Text(text.clone()),
-            }
-        ))))?;
+        let mut result = db!(prepared.query(params_from_iter(
+            statement.params.iter().map(|param| to_sql!(param))
+        )))?;
         let mut out = Vec::new();
         while let Some(row) = db!(result.next())? {
             let values = (0..width)
-                .map(|index| {
-                    row.get::<_, Sql>(index).and_then(|value| match value {
-                        Sql::Null => Ok(Raw::Null),
-                        Sql::Integer(value) => Ok(Raw::Int(value)),
-                        Sql::Text(text) => Ok(Raw::Text(text)),
-                        other => Err(rusqlite::Error::InvalidColumnType(
-                            index,
-                            "column".to_owned(),
-                            other.data_type(),
-                        )),
-                    })
-                })
+                .map(|index| row.get::<_, Sql>(index).map(|value| from_sql!(value)))
                 .collect::<Result<Vec<_>, _>>();
             out.push(db!(values)?);
         }
@@ -222,6 +227,52 @@ impl Session<'_> {
             TaskProject,
             TaskRepository,
             ExternalItem,
+            Commit,
+            CommitFileChange,
+            CommitSymbol,
+            CommitAnalysis,
+            CommitEquivalence,
+            CommitTaskLink,
+            GitObjectGap,
+            TaskChangeSurface,
+            VerificationConfig,
+            VerificationRun,
+            VerificationCheckResult,
+            TaskAcceptance,
+            Classification,
+            ClassificationGoldLabel,
+            ClassificationEvaluation,
+            TaskEmbedding,
+            AutomationRule,
+            AutomationRun,
+            Notification,
+            Report,
+            Finding,
+            AgentSession,
+            SessionBinding,
+            SubagentRun,
+            AgentInternalTask,
+            AgentProfile,
+            HookEvent,
+            ToolEvent,
+            Experiment,
+            ExperimentTrial,
+            PredictorFit,
+            AgentAttempt,
+            RevisionManifest,
+            ManagedWorktree,
+            ResourceLease,
+            ChangeSet,
+            ChangeSetItem,
+            Artifact,
+            Stack,
+            StackRepository,
+            StackItem,
+            Job,
+            JobRun,
+            JobResourceClaim,
+            Worker,
+            SystemCursor,
         ))
     }
 }

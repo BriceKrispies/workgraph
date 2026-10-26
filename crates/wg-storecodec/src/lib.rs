@@ -9,6 +9,7 @@ pub mod codec;
 pub mod events;
 pub mod query;
 pub mod rows;
+mod rows_more;
 pub mod sql;
 
 pub use codec::{Cols, DbFailure, Raw, db_error};

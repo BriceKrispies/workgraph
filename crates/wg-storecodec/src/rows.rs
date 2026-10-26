@@ -17,6 +17,7 @@ use crate::codec::{
     Cols, Raw, bool_sql, id_sql, object_sql, opt_id_sql, opt_int_sql, opt_object_sql, opt_text_sql,
     opt_ts_sql, strings_sql, text_sql, ts_sql,
 };
+use crate::rows_more::{columns_more, key_values_more, primary_key_more, row_values_more};
 
 /// A model value that is one row of one table.
 pub trait TableRow: Sized {
@@ -206,6 +207,7 @@ pub const fn columns(table: Table) -> &'static [&'static str] {
             "created_at",
             "updated_at",
         ],
+        _ => columns_more(table),
     }
 }
 
@@ -217,7 +219,7 @@ pub const fn primary_key(table: Table) -> &'static [&'static str] {
         Table::TaskTag => &["task_id", "tag"],
         Table::TaskProject => &["task_id", "project_id"],
         Table::TaskRepository => &["task_id", "repository_id"],
-        _ => &["id"],
+        _ => primary_key_more(table),
     }
 }
 
@@ -253,6 +255,7 @@ pub fn key_values(key: &RowKey) -> Vec<Raw> {
             task_id,
             repository_id,
         } => vec![id_sql(*task_id), id_sql(*repository_id)],
+        _ => key_values_more(key),
     }
 }
 
@@ -277,6 +280,7 @@ pub fn row_values(row: &Row) -> Result<Vec<Raw>, WgError> {
         Row::TaskProject(row) => row.values(),
         Row::TaskRepository(row) => row.values(),
         Row::ExternalItem(row) => row.values(),
+        _ => row_values_more(row),
     }
 }
 

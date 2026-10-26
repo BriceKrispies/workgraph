@@ -1,0 +1,25 @@
+{
+  "id": "http-verification-routes",
+  "covers": ["H085", "H086", "H087", "H088", "H089", "H090"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Checked work"], "json": true},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/verification/configs"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/verification/configs", "body": {"scope_type": "workspace", "name": "checks", "checks": [{"name": "unit", "kind": "test", "command": ["git", "--version"]}]}, "save": {"config": "/id"}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/verification/configs", "body": {"scope_type": "galaxy", "name": "bad", "checks": []}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/verification/configs", "body": {"scope_type": "task", "scope": "WG-1", "name": "task checks", "checks": [{"name": "unit", "kind": "test", "command": ["git", "--version"]}]}},
+    {"http": "POST", "path": "/api/v1/verification/configs/{var:config}/disable"},
+    {"http": "POST", "path": "/api/v1/verification/configs/{var:config}/enable"},
+    {"http": "POST", "path": "/api/v1/verification/configs/{var:config}/pause"},
+    {"http": "POST", "path": "/api/v1/verification/configs/00000000-0000-4000-8000-000000000000/disable"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/verification/configs"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/verification/runs?status=passed&limit=5"},
+    {"http": "GET", "path": "/api/v1/verification/runs/00000000-0000-4000-8000-000000000000"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/verification/failures?check=unit&since=2020-01-01T00:00:00"},
+    {"cli": ["verify", "configs"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "task checks"}}},
+    {"assert": {"json": {"path": "/1/name", "equals": "checks"}}}
+  ],
+  "not_observable": []
+}

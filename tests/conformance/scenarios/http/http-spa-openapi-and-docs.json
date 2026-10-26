@@ -1,0 +1,23 @@
+{
+  "id": "http-spa-openapi-and-docs",
+  "covers": ["X1", "X2", "X3", "X7"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"http": "GET", "path": "/api/openapi.json"},
+    {"http": "GET", "path": "/api/docs"},
+    {"http": "GET", "path": "/docs/oauth2-redirect"},
+    {"http": "GET", "path": "/"},
+    {"http": "GET", "path": "/tasks/WG-1"},
+    {"http": "GET", "path": "/api/v1/does-not-exist"},
+    {"http": "GET", "path": "/api/nothing-here"},
+    {"http": "GET", "path": "/mcp-notes"},
+    {"http": "GET", "path": "/favicon.ico"}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_api.py::test_lan_mode_requires_pairing_before_handing_out_the_token: the SPA answers 303 to /pair for an unpaired LAN browser; serve --local starts no LAN listener, so the runner cannot reach that branch",
+      "covered_by": "SC-36"
+    }
+  ]
+}

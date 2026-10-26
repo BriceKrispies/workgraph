@@ -1,0 +1,36 @@
+{
+  "id": "http-analytics-search-seeded",
+  "covers": ["H101", "H102", "H103", "H104", "H105", "H106", "H107", "H108", "H109", "H110", "H111", "H112", "H113", "H114", "H115", "H116"],
+  "setup": [],
+  "steps": [
+    {"cli": ["demo", "seed", "--workspace", "default"]},
+    {"http": "GET", "path": "/api/v1/analytics/metrics"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/analytics/query", "body": {"metric": "tasks_created", "group_by": ["status"]}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/analytics/query", "body": {"metric": "nope"}},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/analytics/overview?period=week"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/analytics/compare", "body": {"metric": "tasks_created", "a_since": "2020-01-01T00:00:00", "a_until": "2020-02-01T00:00:00", "b_since": "2020-02-01T00:00:00", "b_until": "2020-03-01T00:00:00", "group_by": []}},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/analytics/coupling?min_support=1"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/analytics/failures"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/analytics/agent-time?by=model"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/analytics/bottlenecks?top=5"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/analytics/history?limit=5"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/analytics/estimate", "body": {"title": "Estimate a login change", "description": "token refresh", "repositories": []}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/analytics/export", "body": {"format": "csv", "dataset": "task_facts"}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/analytics/export", "body": {"format": "json"}},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/reports"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/reports/retrospective", "body": {"period_days": 14, "use_model": false}},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/search?q=token&mode=lexical&limit=5"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/search?q=token&mode=hybrid&status=accepted&created_after=2020-01-01T00:00:00"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/search"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/classification/evaluations"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/classification/disagreements"},
+    {"cli": ["analytics", "overview"], "json": true},
+    {"assert": {"exit": 0}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_analytics.py::test_retrospective_with_model_narrative: the retrospective with a model narrative needs a configured language model; the corpus runs the fallback (use_model false) only",
+      "covered_by": "SC-15"
+    }
+  ]
+}

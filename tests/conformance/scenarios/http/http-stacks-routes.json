@@ -1,0 +1,41 @@
+{
+  "id": "http-stacks-routes",
+  "covers": ["H062", "H063", "H064", "H065", "H066", "H067", "H068"],
+  "setup": [
+    {"git": "init", "repo": "svc"},
+    {"git": "commit", "repo": "svc", "files": {"base.txt": "base\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc}"], "json": true},
+    {"cli": ["task", "create", "Parent work", "--repo", "svc"], "json": true},
+    {"cli": ["task", "create", "First change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/stacks"},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/stacks", "body": {"parent": "WG-1"}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/stacks", "body": {"parent": "WG-1"}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/stacks", "body": {"parent": "WG-1", "extra": 1}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/stacks", "body": {"parent": "WG-999"}},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/stacks/WG-1"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/stacks/WG-999"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/stacks?include_inactive=true"},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/parent_key", "equals": "WG-1"}}},
+    {"assert": {"json": {"path": "/items/0/task_key", "equals": "WG-2"}}},
+    {"assert": {"json": {"path": "/items/0/state", "equals": "pending"}}},
+    {"cli": ["task", "create", "Late change", "--parent", "WG-1", "--repo", "svc"], "json": true},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/stacks/WG-1/items", "body": {"task": "WG-3"}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/stacks/WG-1/items", "body": {"task": "WG-3", "extra": 1}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/stacks/WG-1/items", "body": {"task": "WG-2"}},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/stacks/WG-999/items", "body": {"task": "WG-3"}},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/tasks/WG-3/stacks"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/tasks/WG-1/stacks"},
+    {"http": "DELETE", "path": "/api/v1/ws/{ws}/stacks/WG-1/items/WG-3"},
+    {"http": "DELETE", "path": "/api/v1/ws/{ws}/stacks/WG-1/items/WG-999"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/stacks/WG-1/history"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/stacks/WG-999/history"},
+    {"cli": ["stack", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/items/0/task_key", "equals": "WG-2"}}},
+    {"assert": {"json": {"path": "/repositories/0/integration_tip", "equals": null}}}
+  ],
+  "not_observable": []
+}

@@ -1,0 +1,131 @@
+{
+  "scenario": "http-jobs-workers-scheduler",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Queued work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"job_id\": \"<id:3>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"items\":[{\"id\":\"<id:3>\",\"workspace_id\":null,\"kind\":\"noop\",\"status\":\"queued\",\"priority\":100,\"payload\":{},\"result\":null,\"run_at\":\"<ts:4|Z>\",\"attempts\":0,\"max_attempts\":5,\"lease_owner\":null,\"lease_expires_at\":null,\"heartbeat_at\":null,\"started_at\":null,\"finished_at\":null,\"cancel_requested\":false,\"resource_keys\":[],\"last_error\":null,\"error_kind\":null,\"task_id\":null,\"attempt_id\":null,\"created_by\":\"human:cli\",\"created_at\":\"<ts:5|Z>\"},{\"id\":\"<id:4>\",\"workspace_id\":\"<id:2>\",\"kind\":\"embed_task\",\"status\":\"queued\",\"priority\":100,\"payload\":{\"task_id\":\"<id:1>\"},\"result\":null,\"run_at\":\"<ts:2|Z>\",\"attempts\":0,\"max_attempts\":4,\"lease_owner\":null,\"lease_expires_at\":null,\"heartbeat_at\":null,\"started_at\":null,\"finished_at\":null,\"cancel_requested\":false,\"resource_keys\":[\"gpu\"],\"last_error\":null,\"error_kind\":null,\"task_id\":\"<id:1>\",\"attempt_id\":null,\"created_by\":\"human:Brice\",\"created_at\":\"<ts:3|Z>\"},{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"kind\":\"classify_task\",\"status\":\"queued\",\"priority\":100,\"payload\":{\"reason\":\"material_change\",\"task_id\":\"<id:1>\"},\"result\":null,\"run_at\":\"<ts:2|Z>\",\"attempts\":0,\"max_attempts\":4,\"lease_owner\":null,\"lease_expires_at\":null,\"heartbeat_at\":null,\"started_at\":null,\"finished_at\":null,\"cancel_requested\":false,\"resource_keys\":[\"gpu\"],\"last_error\":null,\"error_kind\":null,\"task_id\":\"<id:1>\",\"attempt_id\":null,\"created_by\":\"human:Brice\",\"created_at\":\"<ts:2|Z>\"}],\"total\":3,\"stats\":{\"queued\":3}}",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"items\":[{\"id\":\"<id:3>\",\"workspace_id\":null,\"kind\":\"noop\",\"status\":\"queued\",\"priority\":100,\"payload\":{},\"result\":null,\"run_at\":\"<ts:4|Z>\",\"attempts\":0,\"max_attempts\":5,\"lease_owner\":null,\"lease_expires_at\":null,\"heartbeat_at\":null,\"started_at\":null,\"finished_at\":null,\"cancel_requested\":false,\"resource_keys\":[],\"last_error\":null,\"error_kind\":null,\"task_id\":null,\"attempt_id\":null,\"created_by\":\"human:cli\",\"created_at\":\"<ts:5|Z>\"}],\"total\":1,\"stats\":{\"queued\":3}}",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"items\":[],\"total\":0,\"stats\":{\"queued\":3}}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"workspace 'nope' not found\",\"details\":{\"ref\":\"nope\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":null,\"kind\":\"noop\",\"status\":\"queued\",\"priority\":100,\"payload\":{},\"result\":null,\"run_at\":\"<ts:4|Z>\",\"attempts\":0,\"max_attempts\":5,\"lease_owner\":null,\"lease_expires_at\":null,\"heartbeat_at\":null,\"started_at\":null,\"finished_at\":null,\"cancel_requested\":false,\"resource_keys\":[],\"last_error\":null,\"error_kind\":null,\"task_id\":null,\"attempt_id\":null,\"created_by\":\"human:cli\",\"created_at\":\"<ts:5|Z>\",\"runs\":[]}",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"job <id:6> not found\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"status\":\"cancelled\"}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"status\":\"queued\"}",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"job <id:6> not found\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[]",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"enabled\":false,\"auto_schedule\":false,\"eligible\":[]}",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"workspace 'nope' not found\",\"details\":{\"ref\":\"nope\"}}}",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"kind\": \"noop\",\n  \"status\": \"queued\",\n  \"payload\": {},\n  \"result\": null,\n  \"attempts\": 0,\n  \"max_attempts\": 5,\n  \"run_at\": \"<ts:6|db>\",\n  \"lease_owner\": null,\n  \"lease_expires_at\": null,\n  \"last_error\": null,\n  \"error_kind\": null,\n  \"resource_keys\": [],\n  \"cancel_requested\": false,\n  \"created_at\": \"<ts:5|db>\",\n  \"finished_at\": null,\n  \"runs\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

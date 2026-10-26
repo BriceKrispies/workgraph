@@ -1,0 +1,26 @@
+{
+  "id": "http-pair-and-mcp-transport",
+  "covers": ["X4", "X5", "X6"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"http": "GET", "path": "/pair"},
+    {"http": "POST", "path": "/pair", "body": "code=WRONG-CODE"},
+    {"http": "POST", "path": "/mcp/", "body": {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "conformance", "version": "0"}}}},
+    {"http": "GET", "path": "/mcp/"}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_api.py::test_lan_mode_requires_pairing_before_handing_out_the_token: a wrong code answers 403 and the 10th wrong code 429 only on a LAN listener, which serve --local does not start",
+      "covered_by": "SC-36"
+    },
+    {
+      "case": "tests/integration/test_api.py::test_lan_mode_requires_pairing_before_handing_out_the_token: the MCP route answers 403 to a non-loopback client, which needs a LAN listener",
+      "covered_by": "SC-36"
+    },
+    {
+      "case": "tests/integration/test_api.py::test_dns_rebinding_and_origin_protection: a Host header that is not allowed answers 421, and a foreign Origin answers 403; the runner always sends Host 127.0.0.1 and no Origin, and step headers cannot be set",
+      "covered_by": "SC-36"
+    }
+  ]
+}

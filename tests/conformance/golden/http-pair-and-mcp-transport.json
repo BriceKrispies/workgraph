@@ -1,0 +1,40 @@
+{
+  "scenario": "http-pair-and-mcp-transport",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "http",
+      "exit": 303,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "http",
+      "exit": 303,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "event: message\ndata: {\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"capabilities\":{\"prompts\":{\"listChanged\":false},\"resources\":{\"listChanged\":false,\"subscribe\":false},\"tools\":{\"listChanged\":false}},\"instructions\":\"Workgraph tracks engineering work across repositories.\\nTypical agent loop: task_get_ready -> task_claim -> attempt_create -> (work, committing with a\\n`Task-ID: <KEY>` trailer) -> task_report_progress -> task_link_commit -> task_report_result.\\nReporting success moves a task to awaiting verification/review; only humans or configured\\nverification accept work. Task references accept a UUID or a key such as WG-12.\",\"protocolVersion\":\"2025-03-26\",\"serverInfo\":{\"name\":\"workgraph\",\"title\":\"Workgraph\",\"version\":\"0.1.0\"}}}\n\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 400,
+      "stdout": "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{\"code\":-32600,\"message\":\"Bad Request: Missing session ID\"}}",
+      "stderr": ""
+    }
+  ]
+}

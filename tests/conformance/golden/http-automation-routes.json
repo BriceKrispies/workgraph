@@ -1,0 +1,152 @@
+{
+  "scenario": "http-automation-routes",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"auto\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"triggers\":{\"task.created\":\"Task created\",\"task.updated\":\"Task updated\",\"task.became_ready\":\"Task becomes ready\",\"task.completed\":\"Task completed\",\"attempt.failed\":\"Attempt failed\",\"verification.completed\":\"Verification completed\",\"git.commit_ingested\":\"Git commit ingested\",\"classification.completed\":\"Classification completed\",\"repository.changes_detected\":\"Repository changes detected\",\"task.accepted\":\"Task accepted\",\"task.status_changed\":\"Task status changed\"},\"schedule\":[\"cron\",\"interval_seconds\"],\"manual\":true,\"actions\":[\"add_tags\",\"classify_task\",\"create_child_tasks\",\"create_dependency\",\"enqueue_agent_run\",\"generate_report\",\"notify\",\"run_verification\",\"update_task\"],\"operators\":[\"eq\",\"ne\",\"in\",\"not_in\",\"contains\",\"not_contains\",\"gt\",\"gte\",\"lt\",\"lte\",\"exists\",\"not_exists\",\"matches\",\"starts_with\"]}",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[]",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "http",
+      "exit": 201,
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"type\":\"manual\",\"event_types\":[]},\"conditions\":{},\"actions\":[{\"type\":\"add_tags\",\"tags\":[\"x\"]}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":1,\"created_at\":\"<ts:2|Z>\",\"updated_at\":\"<ts:2|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "http",
+      "exit": 409,
+      "stdout": "{\"error\":{\"code\":\"conflict\",\"message\":\"rule 'tagger' already exists\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "http",
+      "exit": 422,
+      "stdout": "{\"error\":{\"code\":\"validation_failed\",\"message\":\"invalid automation rule\",\"details\":{\"errors\":[{\"type\":\"literal_error\",\"loc\":[\"trigger\",\"type\"],\"msg\":\"Input should be 'event', 'schedule' or 'manual'\",\"input\":\"bogus\",\"ctx\":{\"expected\":\"'event', 'schedule' or 'manual'\"}},{\"type\":\"too_short\",\"loc\":[\"actions\"],\"msg\":\"List should have at least 1 item after validation, not 0\",\"input\":[],\"ctx\":{\"field_type\":\"List\",\"min_length\":1,\"actual_length\":0}}]}}}",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"event_types\":[],\"type\":\"manual\"},\"conditions\":{},\"actions\":[{\"tags\":[\"x\"],\"type\":\"add_tags\"}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":1,\"created_at\":\"<ts:2|Z>\",\"updated_at\":\"<ts:2|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"automation rule 'nope' not found\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"type\":\"manual\",\"event_types\":[]},\"conditions\":{},\"actions\":[{\"type\":\"add_tags\",\"tags\":[\"y\"]}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts:2|Z>\",\"updated_at\":\"<ts:3|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "http",
+      "exit": 404,
+      "stdout": "{\"error\":{\"code\":\"not_found\",\"message\":\"automation rule 'nope' not found\",\"details\":{}}}",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":false,\"trigger\":{\"event_types\":[],\"type\":\"manual\"},\"conditions\":{},\"actions\":[{\"tags\":[\"y\"],\"type\":\"add_tags\"}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts:2|Z>\",\"updated_at\":\"<ts:4|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"event_types\":[],\"type\":\"manual\"},\"conditions\":{},\"actions\":[{\"tags\":[\"y\"],\"type\":\"add_tags\"}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts:2|Z>\",\"updated_at\":\"<ts:5|Z>\"}",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:4>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"manual\",\"trigger_key\":\"manual:<id:5>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":false,\"status\":\"queued\",\"matched\":true,\"reason\":\"conditions matched\",\"condition_trace\":[],\"action_results\":[],\"error\":null,\"attempts\":0,\"created_at\":\"<ts:6|Z>\",\"finished_at\":null}",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "http",
+      "exit": 422,
+      "stdout": "{\"error\":{\"code\":\"validation_failed\",\"message\":\"invalid request\",\"details\":{\"errors\":[{\"type\":\"literal_error\",\"loc\":[\"path\",\"action\"],\"msg\":\"Input should be 'enable', 'disable' or 'trigger'\",\"input\":\"explode\",\"ctx\":{\"expected\":\"'enable', 'disable' or 'trigger'\"}}]}}}",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:6>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:7>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to WG-1\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts:7|Z>\",\"finished_at\":null}",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "{\"id\":\"<id:8>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:9>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to the triggering task\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts:8|Z>\",\"finished_at\":null}",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[{\"id\":\"<id:8>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:9>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to the triggering task\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts:8|Z>\",\"finished_at\":null},{\"id\":\"<id:6>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:7>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to WG-1\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts:7|Z>\",\"finished_at\":null},{\"id\":\"<id:4>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"manual\",\"trigger_key\":\"manual:<id:5>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":false,\"status\":\"queued\",\"matched\":true,\"reason\":\"conditions matched\",\"condition_trace\":[],\"action_results\":[],\"error\":null,\"attempts\":0,\"created_at\":\"<ts:6|Z>\",\"finished_at\":null}]",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "http",
+      "exit": 200,
+      "stdout": "[{\"id\":\"<id:4>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"manual\",\"trigger_key\":\"manual:<id:5>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":false,\"status\":\"queued\",\"matched\":true,\"reason\":\"conditions matched\",\"condition_trace\":[],\"action_results\":[],\"error\":null,\"attempts\":0,\"created_at\":\"<ts:6|Z>\",\"finished_at\":null}]",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:8>\",\n    \"rule_id\": \"<id:3>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"preview\",\n    \"trigger_key\": \"dry:<id:9>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": true,\n    \"status\": \"previewed\",\n    \"matched\": true,\n    \"reason\": \"dry run: actions not executed\",\n    \"condition_trace\": [],\n    \"action_results\": [\n      {\n        \"action\": {\n          \"tags\": [\n            \"y\"\n          ],\n          \"type\": \"add_tags\"\n        },\n        \"planned\": \"add tags ['y'] to the triggering task\"\n      }\n    ],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts:8|Z>\",\n    \"finished_at\": null\n  },\n  {\n    \"id\": \"<id:6>\",\n    \"rule_id\": \"<id:3>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"preview\",\n    \"trigger_key\": \"dry:<id:7>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": true,\n    \"status\": \"previewed\",\n    \"matched\": true,\n    \"reason\": \"dry run: actions not executed\",\n    \"condition_trace\": [],\n    \"action_results\": [\n      {\n        \"action\": {\n          \"tags\": [\n            \"y\"\n          ],\n          \"type\": \"add_tags\"\n        },\n        \"planned\": \"add tags ['y'] to WG-1\"\n      }\n    ],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts:7|Z>\",\n    \"finished_at\": null\n  },\n  {\n    \"id\": \"<id:4>\",\n    \"rule_id\": \"<id:3>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"manual\",\n    \"trigger_key\": \"manual:<id:5>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": false,\n    \"status\": \"queued\",\n    \"matched\": true,\n    \"reason\": \"conditions matched\",\n    \"condition_trace\": [],\n    \"action_results\": [],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts:6|Z>\",\n    \"finished_at\": null\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "http-jobs-workers-scheduler",
+  "covers": ["H080", "H081", "H082", "H083", "H084", "H122"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["task", "create", "Queued work"], "json": true},
+    {"cli": ["job", "enqueue", "noop", "--key", "http-job"], "json": true, "save": {"job": "/job_id"}},
+    {"http": "GET", "path": "/api/v1/jobs"},
+    {"http": "GET", "path": "/api/v1/jobs?status=queued&kind=noop&limit=5&offset=0"},
+    {"http": "GET", "path": "/api/v1/jobs?workspace=default&task=WG-1"},
+    {"http": "GET", "path": "/api/v1/jobs?workspace=nope"},
+    {"http": "GET", "path": "/api/v1/jobs/{var:job}"},
+    {"http": "GET", "path": "/api/v1/jobs/00000000-0000-4000-8000-000000000000"},
+    {"http": "POST", "path": "/api/v1/jobs/{var:job}/cancel"},
+    {"http": "POST", "path": "/api/v1/jobs/{var:job}/retry"},
+    {"http": "POST", "path": "/api/v1/jobs/00000000-0000-4000-8000-000000000000/retry"},
+    {"http": "GET", "path": "/api/v1/workers"},
+    {"http": "GET", "path": "/api/v1/ws/{ws}/scheduler"},
+    {"http": "GET", "path": "/api/v1/ws/nope/scheduler"},
+    {"cli": ["job", "show", "{var:job}"], "json": true},
+    {"assert": {"json": {"path": "/kind", "equals": "noop"}}},
+    {"assert": {"json": {"path": "/status", "equals": "queued"}}}
+  ],
+  "not_observable": []
+}

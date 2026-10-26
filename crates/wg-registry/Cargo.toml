@@ -9,3 +9,8 @@ description = "workspaces, projects, repositories and reference resolution"
 
 [lints]
 workspace = true
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-model = { path = "../wg-model" }
+wg-types = { path = "../wg-types" }

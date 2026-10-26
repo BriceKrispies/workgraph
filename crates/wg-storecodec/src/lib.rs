@@ -5,8 +5,11 @@
 //! row ([`sql`]), and the `events` log's rows, queries and upcasting ([`events`], [`query`]). The
 //! statements are values ([`sql::Statement`]); `wg-store` binds them to its driver and runs them.
 
+pub mod analytics_sql;
 pub mod codec;
 pub mod events;
+pub mod experiment_sql;
+pub mod external_sql;
 pub mod migrations;
 pub mod query;
 pub mod repo_sql;

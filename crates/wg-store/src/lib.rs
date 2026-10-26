@@ -12,6 +12,9 @@
 //!
 //! The migration runner is [`Store::upgrade`]; later tasks add the per-entity queries on top of this base.
 
+mod analytics;
+mod experiments;
+mod external;
 mod migrate;
 mod repos;
 mod run;
@@ -28,6 +31,7 @@ use wg_types::{ErrorCode, WgError};
 
 use session::db;
 
+pub use analytics::AnalyticsSource;
 pub use run::AttemptPage;
 pub use session::{Applied, Session};
 pub use wg_storecodec::migrations::head_revision;

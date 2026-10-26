@@ -318,7 +318,10 @@ fn object_of(dump: &Map<String, Value>, key: &str) -> Option<Map<String, Value>>
 
 fn time_of(dump: &Map<String, Value>, key: &str) -> Result<Option<Timestamp>, WgError> {
     match dump.get(key).and_then(Value::as_str) {
-        Some(text) => Timestamp::parse_iso(text).map(Some),
+        // A naive datetime counts as UTC (Python keeps it naive; the stored instant is the same).
+        Some(text) => Timestamp::parse_iso(text)
+            .or_else(|_| Timestamp::parse_iso(&format!("{text}Z")))
+            .map(Some),
         None => Ok(None),
     }
 }

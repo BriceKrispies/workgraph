@@ -28,4 +28,5 @@ pub use logging::{JsonLayer, LogSettings, RotatingFile, configure_logging, json_
 pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
+pub use wg_runtimespec::tasks::reads::{GraphRequest, Shown};
 pub use wg_runtimespec::{Level, RequestContext};

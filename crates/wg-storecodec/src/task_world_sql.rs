@@ -9,10 +9,15 @@
 //! [`statements`] lists one statement per table with the table it fills. `wg-store` runs them
 //! and decodes each row through that table's codec.
 
-use wg_model::Table;
-use wg_types::Id;
+use wg_model::entity::{
+    ExternalItem, Project, Repository, Stack, StackItem, Task, TaskComment, TaskDependency,
+    TaskFile, TaskLink, TaskProject, TaskRelation, TaskRepository, TaskTag, Workspace,
+};
+use wg_model::{Row, Table};
+use wg_types::{ErrorCode, Id, WgError};
 
 use crate::codec::{Raw, id_sql};
+use crate::rows::TableRow;
 use crate::rows::columns;
 use crate::sql::Statement;
 
@@ -192,4 +197,36 @@ impl TaskWorld {
             }
         })
     }
+}
+
+/// Decodes one result row of `table` into a [`Row`].
+pub fn decode_row(table: Table, values: &[Raw]) -> Result<Row, WgError> {
+    macro_rules! by_table {
+        ($($variant:ident),+ $(,)?) => {
+            match table {
+                $(Table::$variant => Ok(Row::from($variant::from_raw(values)?)),)+
+                other => Err(WgError::new(
+                    ErrorCode::WorkgraphError,
+                    format!("the task world does not load {}", other.name()),
+                )),
+            }
+        };
+    }
+    by_table!(
+        Workspace,
+        Project,
+        Repository,
+        Task,
+        TaskFile,
+        TaskTag,
+        TaskLink,
+        TaskComment,
+        TaskDependency,
+        TaskRelation,
+        TaskProject,
+        TaskRepository,
+        ExternalItem,
+        Stack,
+        StackItem,
+    )
 }

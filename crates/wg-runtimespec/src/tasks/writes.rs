@@ -34,6 +34,21 @@ pub struct Enrichment {
     pub embed: bool,
 }
 
+/// `config.llm.auto_classify` and `auto_embed` (both default on) from the configuration.
+#[must_use]
+pub fn enrichment_from(config: &serde_json::Map<String, Json>) -> Enrichment {
+    let llm = config.get("llm").and_then(Json::as_object);
+    let flag = |key: &str| {
+        llm.and_then(|section| section.get(key))
+            .and_then(Json::as_bool)
+            .unwrap_or(true)
+    };
+    Enrichment {
+        classify: flag("auto_classify"),
+        embed: flag("auto_embed"),
+    }
+}
+
 /// A stamp with its own ids, for a helper that always draws its first id from slot 0.
 fn substamp(stamp: &Stamp, salt: u32) -> Stamp {
     let a = derive_id(&stamp.entropy, 1_000_000 + salt);

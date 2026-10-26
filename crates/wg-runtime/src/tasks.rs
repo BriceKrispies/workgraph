@@ -17,7 +17,7 @@ use wg_runtimespec::tasks::requests::{
     read_create, read_filter, read_update, validate_bulk, validate_create, validate_filter,
     validate_update,
 };
-use wg_runtimespec::tasks::writes::{self, Enrichment};
+use wg_runtimespec::tasks::writes;
 use wg_store::{EventQuery, Session, TaskWorld};
 use wg_tasks::bulk::bulk_results;
 use wg_types::{ErrorCode, Id, Permission, WgError};
@@ -46,13 +46,6 @@ fn index_written<R>(
         .try_for_each(|task_id| session.index_task(task_id))
 }
 
-fn flag(section: Option<&Map<String, Json>>, key: &str) -> bool {
-    section
-        .and_then(|llm| llm.get(key))
-        .and_then(Json::as_bool)
-        .unwrap_or(true)
-}
-
 impl App {
     /// `TaskService._workspace_id`: the named workspace, else the default one.
     fn workspace_or_default(&mut self, workspace: Option<&str>) -> Result<Id, WgError> {
@@ -67,16 +60,6 @@ impl App {
         workspace
             .map(|reference| self.workspace_id(reference))
             .transpose()
-    }
-
-    /// `config.llm.auto_classify` and `auto_embed`.
-    fn enrichment(&self) -> Result<Enrichment, WgError> {
-        let config = self.config()?;
-        let llm = config.get("llm").and_then(Json::as_object);
-        Ok(Enrichment {
-            classify: flag(llm, "auto_classify"),
-            embed: flag(llm, "auto_embed"),
-        })
     }
 
     /// A read-permission check against a fresh stamp.
@@ -95,7 +78,7 @@ impl App {
         body: &Json,
     ) -> Result<Value, WgError> {
         let read = read_create(&validate_create(body)?)?;
-        let enrich = self.enrichment()?;
+        let enrich = writes::enrichment_from(&self.config()?);
         let scope = self.workspace_or_default(workspace)?;
         Ok(self
             .runtime
@@ -130,7 +113,7 @@ impl App {
         given: &Map<String, Json>,
     ) -> Result<Value, WgError> {
         let read = read_update(dump, given)?;
-        let enrich = self.enrichment()?;
+        let enrich = writes::enrichment_from(&self.config()?);
         let scope = self.workspace_or_all(workspace)?;
         Ok(self
             .runtime

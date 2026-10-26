@@ -9,6 +9,7 @@
 //! change onto it.
 
 use serde_json::{Map, Value};
+use wg_model::Task;
 use wg_model::event::{EventDraft, EventPayload, TaskKeyed, TaskReopened, TaskStatusChanged};
 use wg_model::slice::StackSlice;
 use wg_model::stamp::{IdSeq, Stamp};
@@ -55,6 +56,82 @@ fn missing(task_id: Id) -> WgError {
     WgError::new(ErrorCode::NotFound, format!("task {task_id} not found"))
 }
 
+/// The metadata with `key` set to `value`.
+fn with_entry(metadata: &Map<String, Value>, key: &str, value: Value) -> Map<String, Value> {
+    metadata
+        .iter()
+        .filter(|(name, _)| name.as_str() != key)
+        .map(|(name, member)| (name.clone(), member.clone()))
+        .chain(std::iter::once((key.to_owned(), value)))
+        .collect()
+}
+
+/// The metadata without `key`.
+fn without_entry(metadata: &Map<String, Value>, key: &str) -> Map<String, Value> {
+    metadata
+        .iter()
+        .filter(|(name, _)| name.as_str() != key)
+        .map(|(name, member)| (name.clone(), member.clone()))
+        .collect()
+}
+
+/// The task as the change leaves it, before its events.
+fn moved(
+    task: &Task,
+    metadata: Map<String, Value>,
+    current: TaskStatus,
+    target: TaskStatus,
+    at: wg_types::Timestamp,
+) -> Task {
+    let holds_claim = matches!(target, TaskStatus::Claimed | TaskStatus::Running);
+    let awaiting = matches!(
+        target,
+        TaskStatus::AwaitingVerification | TaskStatus::AwaitingReview
+    );
+    let accepted = target == TaskStatus::Accepted;
+    let reopened = matches!(current, TaskStatus::Accepted | TaskStatus::Cancelled);
+    Task {
+        status: target,
+        metadata: if target != TaskStatus::Blocked
+            && metadata.get("blocked_reason").is_some_and(truthy)
+        {
+            without_entry(&metadata, "blocked_reason")
+        } else {
+            metadata
+        },
+        started_at: if holds_claim && task.started_at.is_none() {
+            Some(at)
+        } else {
+            task.started_at
+        },
+        completed_at: if awaiting || (accepted && task.completed_at.is_none()) {
+            Some(at)
+        } else {
+            task.completed_at
+        },
+        accepted_at: if reopened {
+            None
+        } else if accepted {
+            Some(at)
+        } else {
+            task.accepted_at
+        },
+        claimed_by: if holds_claim {
+            task.claimed_by.clone()
+        } else {
+            None
+        },
+        claim_expires_at: if holds_claim {
+            task.claim_expires_at
+        } else {
+            None
+        },
+        version: task.version + 1,
+        updated_at: at,
+        ..task.clone()
+    }
+}
+
 /// Moves `task_id` to `target` (`TaskService._transition`), then refreshes its dependents when
 /// the change accepts or reopens it. A change to the status the task already has changes nothing
 /// except the `blocked_reason` the gate may set.
@@ -71,70 +148,47 @@ pub fn transition(
     let current = task.status;
     let gated = dependency_gate(tasks, stacks, task, target, change.reason)?;
     let target = gated.target;
-    let reason = gated.reason;
-
-    let mut next = task.clone();
-    if gated.blocked_by_dependencies {
-        next.metadata.insert(
-            "blocked_reason".to_owned(),
+    let metadata = if gated.blocked_by_dependencies {
+        with_entry(
+            &task.metadata,
+            "blocked_reason",
             Value::String(BLOCKED_BY_DEPENDENCIES.to_owned()),
-        );
-    }
+        )
+    } else {
+        task.metadata.clone()
+    };
     if current == target {
-        let unchanged = next.metadata == task.metadata;
-        let decision = if unchanged {
+        let decision = if metadata == task.metadata {
             Decision::new(())
         } else {
-            Decision::new(()).write(Write::update(next))
+            Decision::new(()).write(Write::update(Task {
+                metadata,
+                ..task.clone()
+            }))
         };
-        let tasks = tasks.apply_all(decision.writes.iter());
         return Ok(Applied {
+            tasks: tasks.apply_all(decision.writes.iter()),
             decision,
             ids,
-            tasks,
         });
     }
     check_task_transition(current, target, change.privileged, change.tracker)?;
 
-    let at = stamp.at;
-    next.status = target;
-    if target != TaskStatus::Blocked && next.metadata.get("blocked_reason").is_some_and(truthy) {
-        next.metadata = next
-            .metadata
-            .iter()
-            .filter(|(key, _)| key.as_str() != "blocked_reason")
-            .map(|(key, value)| (key.clone(), value.clone()))
-            .collect::<Map<String, Value>>();
-    }
-    if matches!(target, TaskStatus::Claimed | TaskStatus::Running) && next.started_at.is_none() {
-        next.started_at = Some(at);
-    }
-    if matches!(
-        target,
-        TaskStatus::AwaitingVerification | TaskStatus::AwaitingReview
-    ) {
-        next.completed_at = Some(at);
-    }
-    if target == TaskStatus::Accepted {
-        next.accepted_at = Some(at);
-        if next.completed_at.is_none() {
-            next.completed_at = Some(at);
-        }
-    }
-    if !matches!(target, TaskStatus::Claimed | TaskStatus::Running) {
-        next.claimed_by = None;
-        next.claim_expires_at = None;
-    }
+    let next = moved(task, metadata, current, target, stamp.at);
     let reopened = matches!(current, TaskStatus::Accepted | TaskStatus::Cancelled);
-    if reopened {
-        next.accepted_at = None;
-    }
-    next.version += 1;
-    next.updated_at = at;
-
     let workspace = Some(next.workspace_id);
     let (status_id, ids) = ids.next();
-    let mut status_event = EventDraft::new(
+    let (reopened_id, ids) = if reopened {
+        ids.next()
+    } else {
+        (status_id, ids)
+    };
+    let (ready_id, ids) = if target == TaskStatus::Ready {
+        ids.next()
+    } else {
+        (status_id, ids)
+    };
+    let status_event = EventDraft::new(
         stamp,
         status_id,
         workspace,
@@ -142,63 +196,60 @@ pub fn transition(
         EventPayload::TaskStatusChanged(TaskStatusChanged {
             from: current,
             to: target,
-            reason: reason.clone(),
+            reason: gated.reason.clone(),
             version: next.version,
             attempt_id: None,
             run_id: None,
             extra: Map::new(),
         }),
     );
-    if let Some(cause) = change.caused_by {
-        status_event = status_event.caused_by(cause);
-    }
-    let mut decision = Decision::new(())
-        .write(Write::update(next.clone()))
-        .event(status_event);
-    let mut ids = ids;
-    if reopened {
-        let (id, after) = ids.next();
-        ids = after;
-        decision = decision.event(
-            EventDraft::new(
-                stamp,
-                id,
-                workspace,
-                task_id,
-                EventPayload::TaskReopened(TaskReopened {
-                    from: current,
-                    to: target,
-                    reason: reason.clone(),
-                }),
-            )
-            .caused_by(status_id),
+    let status_event = match change.caused_by {
+        Some(cause) => status_event.caused_by(cause),
+        None => status_event,
+    };
+    let reopened_event = reopened.then(|| {
+        EventDraft::new(
+            stamp,
+            reopened_id,
+            workspace,
+            task_id,
+            EventPayload::TaskReopened(TaskReopened {
+                from: current,
+                to: target,
+                reason: gated.reason.clone(),
+            }),
+        )
+        .caused_by(status_id)
+    });
+    let ready_event = (target == TaskStatus::Ready).then(|| {
+        EventDraft::new(
+            stamp,
+            ready_id,
+            workspace,
+            task_id,
+            EventPayload::TaskBecameReady(TaskKeyed {
+                key: next.key.clone(),
+            }),
+        )
+        .caused_by(status_id)
+    });
+    let decision = std::iter::once(status_event)
+        .chain(reopened_event)
+        .chain(ready_event)
+        .fold(
+            Decision::new(()).write(Write::update(next)),
+            Decision::event,
         );
-    }
-    if target == TaskStatus::Ready {
-        let (id, after) = ids.next();
-        ids = after;
-        decision = decision.event(
-            EventDraft::new(
-                stamp,
-                id,
-                workspace,
-                task_id,
-                EventPayload::TaskBecameReady(TaskKeyed {
-                    key: next.key.clone(),
-                }),
-            )
-            .caused_by(status_id),
-        );
-    }
-    let mut applied = Applied {
+    let applied = Applied {
         tasks: tasks.apply_all(decision.writes.iter()),
         decision,
         ids,
     };
     if current == TaskStatus::Accepted || target == TaskStatus::Accepted {
-        applied = refresh_dependents(applied, stacks, stamp, task_id, status_id)?;
+        refresh_dependents(applied, stacks, stamp, task_id, status_id)
+    } else {
+        Ok(applied)
     }
-    Ok(applied)
 }
 
 /// Refreshes every task that depends on `task_id` (`_refresh_dependents`), one after the other,

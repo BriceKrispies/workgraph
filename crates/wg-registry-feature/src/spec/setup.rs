@@ -8,6 +8,7 @@ use serde_json::{Map, Value as Json, json};
 use wg_json::Value;
 use wg_model::entity::Workspace;
 use wg_model::{Decision, Stamp};
+use wg_registry::providers::ProviderHealth;
 use wg_types::{Permission, WgError};
 use wg_wire::convention::{dict, optional_text, text};
 
@@ -113,6 +114,10 @@ pub struct DoctorFacts {
     pub api_token_file: String,
     /// The tree-sitter grammars that load.
     pub languages: Vec<String>,
+    /// `LLMRegistry.health`: each configured LLM provider, in configuration order.
+    pub llm: Vec<(String, ProviderHealth)>,
+    /// `AgentRegistry.health`: each configured agent adapter, in configuration order.
+    pub agents: Vec<(String, ProviderHealth)>,
     pub execution_enabled: bool,
     pub live_workers: usize,
     pub dead_jobs: usize,
@@ -157,8 +162,10 @@ fn shown(revision: Option<&String>) -> String {
     revision.map_or_else(|| "None".to_owned(), Clone::clone)
 }
 
-/// The checks of `doctor`, in Python's order. The checks that need Python itself, the LLM
-/// providers, the agent adapters and the web build are not part of the list.
+/// The checks of `doctor`, in Python's order: the storage and configuration checks, the tree-sitter
+/// grammars, one row per LLM provider and per agent adapter, the agent execution switch, the
+/// worker and spool checks, then the event projections. The checks that need Python itself and
+/// the web build are not part of the list.
 #[must_use]
 pub fn doctor_checks(facts: &DoctorFacts) -> Vec<Check> {
     let schema = format!(
@@ -213,6 +220,8 @@ pub fn doctor_checks(facts: &DoctorFacts) -> Vec<Check> {
             facts.languages.join(", "),
             "warning",
         ),
+    ];
+    let tail = vec![
         check(
             "agent execution",
             true,
@@ -245,7 +254,26 @@ pub fn doctor_checks(facts: &DoctorFacts) -> Vec<Check> {
             "warning",
         ),
     ];
+    let llm = facts.llm.iter().map(|(name, health)| {
+        check(
+            &format!("llm provider {name}"),
+            health.available,
+            health.detail.clone(),
+            "warning",
+        )
+    });
+    let agents = facts.agents.iter().map(|(name, health)| {
+        check(
+            &format!("agent adapter {name}"),
+            health.available,
+            health.detail.clone(),
+            "warning",
+        )
+    });
     base.into_iter()
+        .chain(llm)
+        .chain(agents)
+        .chain(tail)
         .chain(
             facts
                 .event_projections

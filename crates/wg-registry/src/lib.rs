@@ -9,6 +9,7 @@ pub mod checkout;
 pub mod health;
 pub mod identity;
 pub mod projects;
+pub mod providers;
 pub mod refresh;
 pub mod register;
 pub mod remote;

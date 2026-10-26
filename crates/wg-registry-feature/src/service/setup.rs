@@ -12,10 +12,17 @@ use crate::spec::setup::{
     workspace_file,
 };
 use serde_json::{Map, Value as Json};
+use wg_agents::{
+    AgentRunner, ClaudeCodeProvider, ClaudeConfig, CommandAgentProvider, CommandConfig,
+};
 use wg_config::ConfigFiles;
 use wg_events::{task_states, verify_task_projection};
 use wg_json::Value;
 use wg_model::StoredEvent;
+use wg_net::{Endpoint, Net, Ollama, OpenAiCompatible};
+use wg_registry::providers::{
+    ProviderHealth, agent_adapters, entry_type, llm_health, llm_providers, wanted_models,
+};
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::app::{config_failure, io_error};
 use wg_store::head_revision;
@@ -259,14 +266,141 @@ pub(crate) fn save_default_workspace(app: &mut App, slug: &str) -> Result<(), Wg
     app.save_config(&config)
 }
 
-/// `doctor`: the checks the native build can run. `languages` are the tree-sitter grammars
-/// that load, which the caller asks of the code parser.
+/// The probes `doctor` makes of the LLM providers and the agent adapters. [`LiveProbe`] reaches
+/// the endpoints, the executables and the offline heuristic provider; tests answer from their own.
+pub trait HealthProbe {
+    /// `list_models()` of the provider that `entry` configures.
+    fn list_models(&mut self, name: &str, entry: &Map<String, Json>)
+    -> Result<Vec<String>, String>;
+    /// `check_model(model)` of the provider that `entry` configures: whether it serves the model,
+    /// and the sentence that says so.
+    fn check_model(&mut self, name: &str, entry: &Map<String, Json>, model: &str)
+    -> (bool, String);
+    /// `check_available()` of the agent adapter that `entry` configures.
+    fn agent(&mut self, name: &str, entry: &Map<String, Json>) -> (bool, String);
+}
+
+/// The probes against the real endpoints, executables and the heuristic provider.
+pub struct LiveProbe;
+
+/// The default base URL of an Ollama provider (`OllamaProviderConfig.base_url`).
+const OLLAMA_URL: &str = "http://127.0.0.1:11434";
+
+/// The credential an entry names in `api_key_env`, read from the environment (`secret_from_env`).
+fn api_key(entry: &Map<String, Json>) -> Option<String> {
+    entry
+        .get("api_key_env")
+        .and_then(Json::as_str)
+        .and_then(|name| std::env::var(name).ok())
+}
+
+fn ollama(entry: &Map<String, Json>) -> Ollama {
+    Ollama {
+        endpoint: Endpoint::from_config(entry, OLLAMA_URL, api_key(entry)),
+        net: Net::default(),
+    }
+}
+
+fn openai_compatible(name: &str, entry: &Map<String, Json>) -> OpenAiCompatible {
+    OpenAiCompatible {
+        name: name.to_owned(),
+        endpoint: Endpoint::from_config(entry, "", api_key(entry)),
+        net: Net::default(),
+    }
+}
+
+impl HealthProbe for LiveProbe {
+    fn list_models(
+        &mut self,
+        name: &str,
+        entry: &Map<String, Json>,
+    ) -> Result<Vec<String>, String> {
+        match entry_type(entry) {
+            "ollama" => ollama(entry)
+                .list_models()
+                .map_err(|error| error.message().to_owned()),
+            "openai_compatible" => openai_compatible(name, entry)
+                .list_models()
+                .map_err(|error| error.message().to_owned()),
+            _ => Ok(wg_intel::list_models()),
+        }
+    }
+
+    fn check_model(
+        &mut self,
+        name: &str,
+        entry: &Map<String, Json>,
+        model: &str,
+    ) -> (bool, String) {
+        match entry_type(entry) {
+            "ollama" => ollama(entry).check_model(model),
+            "openai_compatible" => openai_compatible(name, entry).check_model(model),
+            _ => wg_intel::check_model(model),
+        }
+    }
+
+    fn agent(&mut self, name: &str, entry: &Map<String, Json>) -> (bool, String) {
+        if entry_type(entry) == "claude_code" {
+            ClaudeCodeProvider::new(name, ClaudeConfig::from_config(entry)).check_available()
+        } else {
+            match CommandAgentProvider::new(name, CommandConfig::from_config(entry)) {
+                Ok(provider) => provider.check_available(),
+                Err(error) => (false, error.to_string()),
+            }
+        }
+    }
+}
+
+/// The health rows of `doctor`: a name with its health, for the LLM providers and for the agent
+/// adapters.
+pub type ProviderRows = (Vec<(String, ProviderHealth)>, Vec<(String, ProviderHealth)>);
+
+/// `LLMRegistry.health` and `AgentRegistry.health` over a dumped configuration: each LLM provider
+/// and each agent adapter with its health, both in configuration order. The probes are made here
+/// and the decisions over their answers are `wg-registry`'s.
+pub fn provider_health<P: HealthProbe>(config: &Map<String, Json>, probe: &mut P) -> ProviderRows {
+    let llm = llm_providers(config)
+        .into_iter()
+        .map(|(name, entry)| {
+            let wanted = wanted_models(config, name);
+            let listing = wanted.is_empty().then(|| probe.list_models(name, entry));
+            let checks: Vec<(bool, String)> = wanted
+                .iter()
+                .map(|model| probe.check_model(name, entry, model))
+                .collect();
+            (name.to_owned(), llm_health(listing, &checks))
+        })
+        .collect();
+    let agents = agent_adapters(config)
+        .into_iter()
+        .map(|(name, entry)| {
+            let (available, detail) = probe.agent(name, entry);
+            (name.to_owned(), ProviderHealth { available, detail })
+        })
+        .collect();
+    (llm, agents)
+}
+
+/// `doctor`: the checks the native build can run, with the live probes of the providers and
+/// adapters. `languages` are the tree-sitter grammars that load, which the caller asks of the
+/// code parser.
 pub fn doctor(
     app: &mut App,
     languages: Vec<String>,
     verify_events: bool,
 ) -> Result<Diagnosis, WgError> {
+    doctor_with(app, languages, verify_events, &mut LiveProbe)
+}
+
+/// [`doctor`] with the provider and adapter probes supplied by the caller.
+pub fn doctor_with<P: HealthProbe>(
+    app: &mut App,
+    languages: Vec<String>,
+    verify_events: bool,
+    probe: &mut P,
+) -> Result<Diagnosis, WgError> {
     let config = app.config()?;
+    let (llm, agents) = provider_health(&config, probe);
     let event_projections = if verify_events {
         Some(event_projections(app)?)
     } else {
@@ -283,6 +417,8 @@ pub fn doctor(
         api_token_exists: Path::new(app.paths.api_token_file().as_str()).exists(),
         api_token_file: app.paths.api_token_file().as_str().to_owned(),
         languages,
+        llm,
+        agents,
         execution_enabled: config
             .get("execution")
             .and_then(|execution| execution.get("enabled"))

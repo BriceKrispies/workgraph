@@ -7,5 +7,10 @@ license.workspace = true
 publish.workspace = true
 description = "fact tables, metric definitions, query engine, reports"
 
+[dependencies]
+rpds = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-types = { path = "../wg-types" }
+
 [lints]
 workspace = true

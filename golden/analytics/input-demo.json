@@ -1267,6 +1267,235 @@
     ]
    ]
   },
+  "events": {
+   "columns": [
+    "seq",
+    "workspace_id",
+    "event_type",
+    "entity_id",
+    "actor",
+    "occurred_at",
+    "data"
+   ],
+   "rows": [
+    [
+     14,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-1",
+     "human:demo",
+     "2026-01-23T03:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     17,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-2",
+     "human:demo",
+     "2026-01-26T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     20,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-3",
+     "human:demo",
+     "2026-01-30T03:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     23,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-4",
+     "human:demo",
+     "2026-02-02T21:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     26,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-5",
+     "human:demo",
+     "2026-02-06T09:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     29,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-6",
+     "human:demo",
+     "2026-02-09T21:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     32,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-7",
+     "human:demo",
+     "2026-02-13T15:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"ready\",\"version\":2}"
+    ],
+    [
+     40,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-9",
+     "human:demo",
+     "2026-02-23T21:00:00.000000+00:00",
+     "{\"from\":\"backlog\",\"reason\":\"created ready\",\"to\":\"blocked\",\"version\":2}"
+    ],
+    [
+     61,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-1",
+     "human:demo",
+     "2026-05-23T15:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by agent:scripted\",\"to\":\"claimed\",\"version\":5}"
+    ],
+    [
+     64,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-1",
+     "system:maintenance",
+     "2026-05-27T21:00:00.000000+00:00",
+     "{\"from\":\"claimed\",\"reason\":\"claim lease expired\",\"to\":\"ready\",\"version\":6}"
+    ],
+    [
+     77,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-2",
+     "human:demo",
+     "2026-06-04T21:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by agent:scripted\",\"to\":\"claimed\",\"version\":4}"
+    ],
+    [
+     80,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-2",
+     "system:maintenance",
+     "2026-06-09T03:00:00.000000+00:00",
+     "{\"from\":\"claimed\",\"reason\":\"claim lease expired\",\"to\":\"ready\",\"version\":5}"
+    ],
+    [
+     93,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-3",
+     "human:demo",
+     "2026-06-17T03:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by agent:scripted-buggy\",\"to\":\"claimed\",\"version\":4}"
+    ],
+    [
+     96,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-3",
+     "system:maintenance",
+     "2026-06-21T09:00:00.000000+00:00",
+     "{\"from\":\"claimed\",\"reason\":\"claim lease expired\",\"to\":\"ready\",\"version\":5}"
+    ],
+    [
+     109,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-3",
+     "human:demo",
+     "2026-06-29T09:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by agent:scripted\",\"to\":\"claimed\",\"version\":6}"
+    ],
+    [
+     112,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-3",
+     "system:maintenance",
+     "2026-07-03T15:00:00.000000+00:00",
+     "{\"from\":\"claimed\",\"reason\":\"claim lease expired\",\"to\":\"ready\",\"version\":7}"
+    ],
+    [
+     125,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-4",
+     "human:demo",
+     "2026-07-11T15:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by agent:scripted\",\"to\":\"claimed\",\"version\":4}"
+    ],
+    [
+     128,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-4",
+     "system:maintenance",
+     "2026-07-15T21:00:00.000000+00:00",
+     "{\"from\":\"claimed\",\"reason\":\"claim lease expired\",\"to\":\"ready\",\"version\":5}"
+    ],
+    [
+     144,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-5",
+     "human:demo",
+     "2026-07-23T21:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by agent:scripted\",\"to\":\"claimed\",\"version\":3}"
+    ],
+    [
+     147,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-5",
+     "system:maintenance",
+     "2026-07-28T03:00:00.000000+00:00",
+     "{\"from\":\"claimed\",\"reason\":\"claim lease expired\",\"to\":\"ready\",\"version\":4}"
+    ],
+    [
+     160,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-6",
+     "human:demo",
+     "2026-08-05T03:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by agent:scripted-fail\",\"to\":\"claimed\",\"version\":3}"
+    ],
+    [
+     163,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-6",
+     "system:maintenance",
+     "2026-08-09T09:00:00.000000+00:00",
+     "{\"from\":\"claimed\",\"reason\":\"claim lease expired\",\"to\":\"ready\",\"version\":4}"
+    ],
+    [
+     174,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-7",
+     "human:demo",
+     "2026-08-17T09:00:00.000000+00:00",
+     "{\"from\":\"ready\",\"reason\":\"claimed by agent:scripted\",\"to\":\"claimed\",\"version\":3}"
+    ],
+    [
+     177,
+     "workspaces:1",
+     "task.status_changed",
+     "task:DEMO-7",
+     "system:maintenance",
+     "2026-08-21T15:00:00.000000+00:00",
+     "{\"from\":\"claimed\",\"reason\":\"claim lease expired\",\"to\":\"ready\",\"version\":4}"
+    ]
+   ]
+  },
   "project_repositories": {
    "columns": [
     "project_id",

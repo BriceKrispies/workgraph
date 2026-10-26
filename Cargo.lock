@@ -2100,6 +2100,11 @@ version = "0.1.0"
 [[package]]
 name = "wg-analytics"
 version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "wg-types",
+]
 
 [[package]]
 name = "wg-archive"

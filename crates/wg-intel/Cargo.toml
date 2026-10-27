@@ -12,6 +12,8 @@ regex = { version = "1", default-features = false, features = ["std", "unicode-p
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
 wg-hash = { path = "../wg-hash" }
+wg-model = { path = "../wg-model" }
+wg-types = { path = "../wg-types" }
 
 [lints]
 workspace = true

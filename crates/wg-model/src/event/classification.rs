@@ -9,22 +9,23 @@ use crate::entity::Real;
 /// `classification.completed`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ClassificationCompleted {
-    pub category: Option<String>,
     pub classification_id: Id,
+    pub category: Option<String>,
     pub confidence: Option<Real>,
-    pub is_current: bool,
-    pub model: Option<String>,
-    pub prompt_version: Option<String>,
     pub provider: Option<String>,
+    pub model: Option<String>,
+    pub is_current: bool,
+    pub prompt_version: Option<String>,
     pub taxonomy_version: String,
 }
 
 /// `classification.confirmed`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ClassificationConfirmed {
-    pub category: Option<String>,
     pub classification_id: Id,
-    pub previous: Option<Id>,
+    pub category: Option<String>,
+    /// `{"category": ..., "model": ...}` of the former current classification, or null.
+    pub previous: Option<Value>,
 }
 
 /// `classification.disagreement`: the current and the new category, and whether the new one
@@ -39,10 +40,10 @@ pub struct ClassificationDisagreement {
 /// `classification.evaluated`. Written against the workspace.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ClassificationEvaluated {
-    pub accuracy: Option<Real>,
     pub evaluation_id: Id,
-    pub model: String,
     pub provider: String,
+    pub model: String,
+    pub accuracy: Option<Real>,
     pub sample_size: i64,
 }
 
@@ -50,10 +51,10 @@ pub struct ClassificationEvaluated {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ClassificationFailed {
     pub classification_id: Id,
-    pub error: Option<String>,
-    pub model: Option<String>,
-    pub provider: Option<String>,
     pub reason: String,
+    pub error: Option<String>,
+    pub provider: Option<String>,
+    pub model: Option<String>,
 }
 
 /// `classification.promoted`.
@@ -66,7 +67,7 @@ pub struct ClassificationPromoted {
 /// `classification.superseded`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ClassificationSuperseded {
-    pub new_id: Id,
     pub previous_id: Option<Id>,
+    pub new_id: Id,
     pub reason: String,
 }

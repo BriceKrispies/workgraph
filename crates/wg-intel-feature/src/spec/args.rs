@@ -2,6 +2,7 @@
 //! commands, which are the snapshot's own trees so usage, options and help match `contracts/cli.json`,
 //! and the readers of the matched options. Functions of the matches with no I/O.
 
+use crate::spec::requests::RunOptions;
 use clap::ArgMatches;
 use wg_clispec::args::{flag, many, number, one, option_text};
 use wg_clispec::tree::SNAPSHOT_JSON;
@@ -36,6 +37,29 @@ fn group_command(name: &str) -> clap::Command {
         Ok(snapshot) => wg_clispec::tree::placeholder(&snapshot, name),
         Err(_) => wg_clispec::tree::command(name),
     }
+}
+
+/// The options a classification run takes: `--provider`, `--model` and `--promote`.
+#[must_use]
+pub fn run_options(m: &ArgMatches) -> RunOptions {
+    RunOptions {
+        provider: option_text(m, "--provider"),
+        model: option_text(m, "--model"),
+        promote: flag(m, "--promote"),
+        batch_id: None,
+    }
+}
+
+/// The positional `category` of `classify confirm`.
+#[must_use]
+pub fn category_arg(m: &ArgMatches) -> String {
+    one(m, "category").unwrap_or_default()
+}
+
+/// The positional `classification_id` of `classify promote`.
+#[must_use]
+pub fn classification_arg(m: &ArgMatches) -> String {
+    one(m, "classification_id").unwrap_or_default()
 }
 
 /// The positional `task` of the `classify` commands that take one.

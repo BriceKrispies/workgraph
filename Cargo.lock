@@ -2654,6 +2654,8 @@ dependencies = [
  "rpds",
  "serde_json",
  "wg-hash",
+ "wg-model",
+ "wg-types",
 ]
 
 [[package]]
@@ -2665,8 +2667,11 @@ dependencies = [
  "serde_json",
  "wg-clispec",
  "wg-intel",
+ "wg-jobs",
  "wg-json",
  "wg-model",
+ "wg-net",
+ "wg-netspec",
  "wg-registry",
  "wg-render",
  "wg-runtime",

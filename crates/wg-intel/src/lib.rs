@@ -7,14 +7,27 @@
 //! function is a function of its arguments: model calls, the database and the clock stay in the
 //! shell crates. JSON values mirror the Python dictionaries they replace.
 
+mod classification;
+mod embedding;
 mod evaluation;
 mod fts;
 mod heuristic;
 mod order;
 mod pyrepr;
 mod search;
+mod similar;
 mod taxonomy;
 
+pub use similar::{Candidates, candidates, round4};
+
+pub use classification::{
+    ConfirmPlan, Confirmation, CurrentPlan, PromotePlan, RunRow, RunStatus, Superseded, TaskText,
+    apply_current, confirm, evaluation_result, evaluation_row, gold_label, model_row,
+    output_schema, promote, truncate, with_current,
+};
+pub use embedding::{
+    content_digest, embedding_text, pack, repository_overlap, same_category, similar_score, unpack,
+};
 pub use evaluation::compute_metrics;
 pub use fts::{FtsOptions, to_fts_query};
 pub use heuristic::{
@@ -23,6 +36,7 @@ pub use heuristic::{
 };
 pub use search::{FusedHit, RRF_K, cosine, fuse};
 pub use taxonomy::{
-    CATEGORIES, CATEGORY_DESCRIPTIONS, COMPLEXITY, PROMPT_VERSION, SYSTEM_PROMPT, TAXONOMY_VERSION,
-    build_prompt, input_hash, validate_classification,
+    CATEGORIES, CATEGORY_DESCRIPTIONS, COMPLEXITY, PROMPT_VERSION, SYSTEM_PROMPT, SchemaError,
+    TAXONOMY_VERSION, build_prompt, input_hash, schema_error_text, validate_classification,
+    validate_classification_errors, validation_error_text,
 };

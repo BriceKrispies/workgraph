@@ -4,6 +4,7 @@
 use serde_json::{Map, Value};
 
 use crate::order::unique;
+use crate::pyrepr::py_repr;
 
 pub const TAXONOMY_VERSION: &str = "2026.1";
 pub const PROMPT_VERSION: &str = "classify-v1";
@@ -137,14 +138,192 @@ pub fn input_hash(title: &str, description: &str, criteria: &[String]) -> String
     wg_hash::sha256_hex(material.as_bytes())
 }
 
+/// `pydantic`'s version in the error documentation links (`errors.pydantic.dev/<version>/v/...`),
+/// the minor version of the pinned pydantic.
+const PYDANTIC_DOCS_VERSION: &str = "2.14";
+
+/// How much of an input's `repr` a validation error shows.
+const INPUT_SHOWN_CHARS: usize = 50;
+
+const FIELD_REQUIRED: &str = "Field required";
+const EXTRA_FORBIDDEN: &str = "Extra inputs are not permitted";
+const MODEL_TYPE: &str = "Input should be a valid dictionary or object to extract fields from";
+const STRING_TYPE: &str = "Input should be a valid string";
+const LIST_TYPE: &str = "Input should be a valid list";
+const FLOAT_TYPE: &str = "Input should be a valid number";
+const FLOAT_PARSING: &str = "Input should be a valid number, unable to parse string as a number";
+
+/// One error of a `TaskClassification` validation: an entry of pydantic's `errors()`, with the
+/// error type, the location, the message, the input it failed on and the context it carries.
+#[derive(Debug, Clone, PartialEq)]
+pub struct SchemaError {
+    /// The pydantic error type, such as `literal_error` or `missing`.
+    pub kind: &'static str,
+    /// The location: field names and list indexes, as pydantic's `loc` tuple.
+    pub loc: Vec<Value>,
+    pub msg: String,
+    pub input: Value,
+    pub ctx: Vec<(&'static str, Value)>,
+}
+
+impl SchemaError {
+    fn new(
+        kind: &'static str,
+        loc: Vec<Value>,
+        msg: &str,
+        input: &Value,
+        ctx: Vec<(&'static str, Value)>,
+    ) -> Self {
+        Self {
+            kind,
+            loc,
+            msg: msg.to_owned(),
+            input: input.clone(),
+            ctx,
+        }
+    }
+
+    /// The location as pydantic prints it: the items joined by dots.
+    fn location(&self) -> String {
+        let items: Vec<String> = self
+            .loc
+            .iter()
+            .map(|item| match item {
+                Value::String(text) => text.clone(),
+                other => other.to_string(),
+            })
+            .collect();
+        items.join(".")
+    }
+
+    /// The `type:location` key of the error (the golden vectors record these).
+    fn key(&self) -> String {
+        format!("{}:{}", self.kind, self.location())
+    }
+
+    /// The documentation link pydantic attaches to the error type.
+    fn url(&self) -> String {
+        format!(
+            "https://errors.pydantic.dev/{PYDANTIC_DOCS_VERSION}/v/{}",
+            self.kind
+        )
+    }
+
+    /// The error as pydantic's `str(ValidationError)` lists it: the location, then the message
+    /// with its type and input, then the documentation link.
+    fn display(&self) -> String {
+        format!(
+            "{}\n  {} [type={}, input_value={}, input_type={}]\n    For further information visit {}",
+            self.location(),
+            self.msg,
+            self.kind,
+            shown_input(&self.input),
+            py_type_name(&self.input),
+            self.url(),
+        )
+    }
+
+    /// The error as Python's `repr` shows its dictionary in `ValidationError.errors()`.
+    fn repr(&self) -> String {
+        let location = match self.loc.as_slice() {
+            [only] => format!("({},)", py_repr(only)),
+            items => format!(
+                "({})",
+                items
+                    .iter()
+                    .map(py_repr)
+                    .collect::<Vec<String>>()
+                    .join(", ")
+            ),
+        };
+        let context = (!self.ctx.is_empty()).then(|| {
+            let pairs: Vec<String> = self
+                .ctx
+                .iter()
+                .map(|(name, value)| format!("'{name}': {}", py_repr(value)))
+                .collect();
+            format!("'ctx': {{{}}}", pairs.join(", "))
+        });
+        let url = self.url();
+        let entries: Vec<String> = [
+            Some(format!("'type': {}", py_repr(&Value::from(self.kind)))),
+            Some(format!("'loc': {location}")),
+            Some(format!(
+                "'msg': {}",
+                py_repr(&Value::from(self.msg.as_str()))
+            )),
+            Some(format!("'input': {}", py_repr(&self.input))),
+            context,
+            Some(format!("'url': {}", py_repr(&Value::from(url)))),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        format!("{{{}}}", entries.join(", "))
+    }
+}
+
+/// The text the classifier stores for a schema failure: `ValidationError.errors()[:3]` as Python
+/// prints the list of error dictionaries.
+#[must_use]
+pub fn schema_error_text(errors: &[SchemaError]) -> String {
+    let shown: Vec<String> = errors.iter().take(3).map(SchemaError::repr).collect();
+    format!("[{}]", shown.join(", "))
+}
+
+/// `str(ValidationError)` of the model `title` (pydantic 2.14 with pydantic-core 2.50): the error
+/// count and title, then each error as [`SchemaError::display`] lists it, one after another.
+#[must_use]
+pub fn validation_error_text(title: &str, errors: &[SchemaError]) -> String {
+    let plural = if errors.len() == 1 { "" } else { "s" };
+    std::iter::once(format!(
+        "{} validation error{plural} for {title}",
+        errors.len()
+    ))
+    .chain(errors.iter().map(SchemaError::display))
+    .collect::<Vec<String>>()
+    .join("\n")
+}
+
+/// The name of the Python type pydantic reports as `input_type` for a JSON value.
+fn py_type_name(value: &Value) -> &'static str {
+    match value {
+        Value::Null => "NoneType",
+        Value::Bool(_) => "bool",
+        Value::Number(number) if number.is_f64() => "float",
+        Value::Number(_) => "int",
+        Value::String(_) => "str",
+        Value::Array(_) => "list",
+        Value::Object(_) => "dict",
+    }
+}
+
+/// The input as pydantic shows it in `input_value`: its `repr`, cut to 50 characters with an
+/// ellipsis when it is longer.
+fn shown_input(value: &Value) -> String {
+    let text = py_repr(value);
+    if text.chars().count() > INPUT_SHOWN_CHARS {
+        let head: String = text.chars().take(INPUT_SHOWN_CHARS).collect();
+        format!("{head}...")
+    } else {
+        text
+    }
+}
+
 /// Validates a model's output against `TaskClassification` (pydantic semantics: lax float
 /// coercion, `extra = "forbid"`, field order in the error list). Returns the dumped model, with
-/// defaults filled in and the list fields cleaned, or the pydantic error keys `type:location`.
-pub fn validate_classification(payload: &Value) -> Result<Value, Vec<String>> {
+/// defaults filled in and the list fields cleaned, or the errors.
+pub fn validate_classification_errors(payload: &Value) -> Result<Value, Vec<SchemaError>> {
     let Some(object) = payload.as_object() else {
-        return Err(vec!["model_type:".to_string()]);
+        return Err(vec![SchemaError::new(
+            "model_type",
+            Vec::new(),
+            MODEL_TYPE,
+            payload,
+            Vec::new(),
+        )]);
     };
-    let fields: Vec<(&str, Result<Value, Vec<String>>)> = vec![
+    let fields: Vec<(&str, Result<Value, Vec<SchemaError>>)> = vec![
         ("category", literal(object, "category", &CATEGORIES)),
         ("subtype", text(object, "subtype", TEXT_MAX_CHARS, None)),
         ("domain", text(object, "domain", TEXT_MAX_CHARS, None)),
@@ -159,10 +338,18 @@ pub fn validate_classification(payload: &Value) -> Result<Value, Vec<String>> {
     ];
     let known: Vec<&str> = fields.iter().map(|(name, _)| *name).collect();
     let extra_errors = object
-        .keys()
-        .filter(|key| !known.contains(&key.as_str()))
-        .map(|key| format!("extra_forbidden:{key}"));
-    let errors: Vec<String> = fields
+        .iter()
+        .filter(|(key, _)| !known.contains(&key.as_str()))
+        .map(|(key, value)| {
+            SchemaError::new(
+                "extra_forbidden",
+                vec![Value::from(key.as_str())],
+                EXTRA_FORBIDDEN,
+                value,
+                Vec::new(),
+            )
+        });
+    let errors: Vec<SchemaError> = fields
         .iter()
         .filter_map(|(_, result)| result.as_ref().err())
         .flatten()
@@ -180,17 +367,61 @@ pub fn validate_classification(payload: &Value) -> Result<Value, Vec<String>> {
     ))
 }
 
+/// The `type:location` keys of [`validate_classification_errors`]'s errors.
+pub fn validate_classification(payload: &Value) -> Result<Value, Vec<String>> {
+    validate_classification_errors(payload)
+        .map_err(|errors| errors.iter().map(SchemaError::key).collect())
+}
+
+/// `missing`: the field is absent. Pydantic's input is the whole model input.
+fn missing(object: &Map<String, Value>, name: &str) -> SchemaError {
+    SchemaError::new(
+        "missing",
+        vec![Value::from(name)],
+        FIELD_REQUIRED,
+        &Value::Object(object.clone()),
+        Vec::new(),
+    )
+}
+
+fn plural(count: usize) -> &'static str {
+    if count == 1 { "" } else { "s" }
+}
+
+/// The `expected` of a literal error: the values as `repr`s, joined by `, ` with ` or ` before the
+/// last one.
+fn expected_literals(allowed: &[&str]) -> String {
+    let quoted: Vec<String> = allowed
+        .iter()
+        .map(|item| py_repr(&Value::from(*item)))
+        .collect();
+    match quoted.split_last() {
+        Some((last, [])) => last.clone(),
+        Some((last, rest)) => format!("{} or {last}", rest.join(", ")),
+        None => String::new(),
+    }
+}
+
 fn literal(
     object: &Map<String, Value>,
     name: &str,
     allowed: &[&str],
-) -> Result<Value, Vec<String>> {
+) -> Result<Value, Vec<SchemaError>> {
     match object.get(name) {
-        None => Err(vec![format!("missing:{name}")]),
+        None => Err(vec![missing(object, name)]),
         Some(Value::String(value)) if allowed.contains(&value.as_str()) => {
             Ok(Value::String(value.clone()))
         }
-        Some(_) => Err(vec![format!("literal_error:{name}")]),
+        Some(value) => {
+            let expected = expected_literals(allowed);
+            Err(vec![SchemaError::new(
+                "literal_error",
+                vec![Value::from(name)],
+                &format!("Input should be {expected}"),
+                value,
+                vec![("expected", Value::from(expected.as_str()))],
+            )])
+        }
     }
 }
 
@@ -199,47 +430,83 @@ fn text(
     name: &str,
     max_chars: usize,
     default: Option<&str>,
-) -> Result<Value, Vec<String>> {
+) -> Result<Value, Vec<SchemaError>> {
     match (object.get(name), default) {
         (None, Some(default)) => Ok(Value::String(default.to_string())),
-        (None, None) => Err(vec![format!("missing:{name}")]),
+        (None, None) => Err(vec![missing(object, name)]),
         (Some(Value::String(value)), _) if value.chars().count() > max_chars => {
-            Err(vec![format!("string_too_long:{name}")])
+            Err(vec![SchemaError::new(
+                "string_too_long",
+                vec![Value::from(name)],
+                &format!("String should have at most {max_chars} characters"),
+                &Value::String(value.clone()),
+                vec![("max_length", Value::from(max_chars))],
+            )])
         }
         (Some(Value::String(value)), _) => Ok(Value::String(value.clone())),
-        (Some(_), _) => Err(vec![format!("string_type:{name}")]),
+        (Some(other), _) => Err(vec![SchemaError::new(
+            "string_type",
+            vec![Value::from(name)],
+            STRING_TYPE,
+            other,
+            Vec::new(),
+        )]),
     }
 }
 
 /// `list[str]` with `max_length=10`, then the `_clean` field validator: each item is stripped,
 /// empty items are dropped, items are cut to 100 characters, and duplicates are removed.
-fn string_list(object: &Map<String, Value>, name: &str) -> Result<Value, Vec<String>> {
+fn string_list(object: &Map<String, Value>, name: &str) -> Result<Value, Vec<SchemaError>> {
     let items = match object.get(name) {
         None => return Ok(Value::Array(Vec::new())),
         Some(Value::Array(items)) => items,
-        Some(_) => return Err(vec![format!("list_type:{name}")]),
+        Some(other) => {
+            return Err(vec![SchemaError::new(
+                "list_type",
+                vec![Value::from(name)],
+                LIST_TYPE,
+                other,
+                Vec::new(),
+            )]);
+        }
     };
     if items.len() > LIST_MAX_ITEMS {
-        return Err(vec![format!("too_long:{name}")]);
+        return Err(vec![SchemaError::new(
+            "too_long",
+            vec![Value::from(name)],
+            &format!(
+                "List should have at most {LIST_MAX_ITEMS} item{} after validation, not {}",
+                plural(LIST_MAX_ITEMS),
+                items.len()
+            ),
+            &Value::Array(items.clone()),
+            vec![
+                ("field_type", Value::from("List")),
+                ("max_length", Value::from(LIST_MAX_ITEMS)),
+                ("actual_length", Value::from(items.len())),
+            ],
+        )]);
     }
-    let strings: Vec<Result<&str, String>> = items
+    let errors: Vec<SchemaError> = items
         .iter()
         .enumerate()
+        .filter(|(_, item)| !item.is_string())
         .map(|(index, item)| {
-            item.as_str()
-                .ok_or_else(|| format!("string_type:{name}.{index}"))
+            SchemaError::new(
+                "string_type",
+                vec![Value::from(name), Value::from(index)],
+                STRING_TYPE,
+                item,
+                Vec::new(),
+            )
         })
-        .collect();
-    let errors: Vec<String> = strings
-        .iter()
-        .filter_map(|item| item.as_ref().err().cloned())
         .collect();
     if !errors.is_empty() {
         return Err(errors);
     }
-    let cleaned = strings
-        .into_iter()
-        .filter_map(Result::ok)
+    let cleaned = items
+        .iter()
+        .filter_map(Value::as_str)
         .map(str::trim)
         .filter(|item| !item.is_empty())
         .map(|item| item.chars().take(TEXT_MAX_CHARS).collect::<String>());
@@ -250,21 +517,50 @@ fn string_list(object: &Map<String, Value>, name: &str) -> Result<Value, Vec<Str
 
 /// `float` with `ge=0`, `le=1` in lax mode: numbers, booleans and numeric strings are accepted.
 /// A NaN fails the upper bound first, as pydantic reports it.
-fn confidence(object: &Map<String, Value>) -> Result<Value, Vec<String>> {
-    let value = match object.get("confidence") {
-        None => return Err(vec!["missing:confidence".to_string()]),
-        Some(Value::Number(number)) => number.as_f64().unwrap_or(f64::NAN),
-        Some(Value::Bool(flag)) => f64::from(u8::from(*flag)),
-        Some(Value::String(text)) => text
-            .trim()
-            .parse::<f64>()
-            .map_err(|_| vec!["float_parsing:confidence".to_string()])?,
-        Some(_) => return Err(vec!["float_type:confidence".to_string()]),
+fn confidence(object: &Map<String, Value>) -> Result<Value, Vec<SchemaError>> {
+    let input = match object.get("confidence") {
+        None => return Err(vec![missing(object, "confidence")]),
+        Some(input) => input,
+    };
+    let location = || vec![Value::from("confidence")];
+    let value = match input {
+        Value::Number(number) => number.as_f64().unwrap_or(f64::NAN),
+        Value::Bool(flag) => f64::from(u8::from(*flag)),
+        Value::String(text) => text.trim().parse::<f64>().map_err(|_| {
+            vec![SchemaError::new(
+                "float_parsing",
+                location(),
+                FLOAT_PARSING,
+                input,
+                Vec::new(),
+            )]
+        })?,
+        _ => {
+            return Err(vec![SchemaError::new(
+                "float_type",
+                location(),
+                FLOAT_TYPE,
+                input,
+                Vec::new(),
+            )]);
+        }
     };
     if value.is_nan() || value > 1.0 {
-        Err(vec!["less_than_equal:confidence".to_string()])
+        Err(vec![SchemaError::new(
+            "less_than_equal",
+            location(),
+            "Input should be less than or equal to 1",
+            input,
+            vec![("le", Value::from(1.0))],
+        )])
     } else if value < 0.0 {
-        Err(vec!["greater_than_equal:confidence".to_string()])
+        Err(vec![SchemaError::new(
+            "greater_than_equal",
+            location(),
+            "Input should be greater than or equal to 0",
+            input,
+            vec![("ge", Value::from(0.0))],
+        )])
     } else {
         Ok(Value::from(value))
     }
@@ -283,6 +579,53 @@ mod tests {
         });
         let value = validate_classification(&payload).unwrap_or(Value::Null);
         assert_eq!(value["tags"], json!(["a", "b"]));
+    }
+
+    #[test]
+    fn schema_errors_print_as_pydantic_error_dicts() {
+        let payload = json!({"category": "nope", "complexity": "small", "confidence": 2,
+            "subtype": "x", "domain": "x"});
+        let errors = validate_classification_errors(&payload)
+            .err()
+            .unwrap_or_default();
+        let text = schema_error_text(&errors);
+        assert!(text.starts_with(
+            "[{'type': 'literal_error', 'loc': ('category',), 'msg': \"Input should be 'bug_fix', 'feature',"
+        ));
+        assert!(text.contains(", 'input': 'nope', 'ctx': {'expected': \"'bug_fix', "));
+        assert!(text.contains(
+            ", {'type': 'less_than_equal', 'loc': ('confidence',), 'msg': 'Input should be less than or equal to 1', 'input': 2, 'ctx': {'le': 1.0}, 'url': 'https://errors.pydantic.dev/2.14/v/less_than_equal'}]"
+        ));
+    }
+
+    #[test]
+    fn missing_fields_take_the_whole_input_and_lists_show_their_index() {
+        let payload = json!({"complexity": "small", "confidence": 0.3, "subtype": "x",
+            "domain": "x", "tags": ["ok", 7]});
+        let errors = validate_classification_errors(&payload)
+            .err()
+            .unwrap_or_default();
+        let text = schema_error_text(&errors);
+        assert!(text.starts_with(
+            "[{'type': 'missing', 'loc': ('category',), 'msg': 'Field required', 'input': {'complexity': 'small'"
+        ));
+        assert!(text.contains("{'type': 'string_type', 'loc': ('tags', 1), 'msg': 'Input should be a valid string', 'input': 7, 'url': 'https://errors.pydantic.dev/2.14/v/string_type'}"));
+    }
+
+    #[test]
+    fn validation_error_text_matches_pydantic_str() {
+        let payload = json!({"category": "nope", "complexity": "small", "confidence": 2,
+            "subtype": "x", "domain": "x"});
+        let errors = validate_classification_errors(&payload)
+            .err()
+            .unwrap_or_default();
+        let text = validation_error_text("TaskClassification", &errors);
+        assert!(text.starts_with(
+            "2 validation errors for TaskClassification\ncategory\n  Input should be 'bug_fix', 'feature', "
+        ));
+        assert!(text.contains(
+            " [type=literal_error, input_value='nope', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error\nconfidence\n  Input should be less than or equal to 1 [type=less_than_equal, input_value=2, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+        ));
     }
 
     #[test]

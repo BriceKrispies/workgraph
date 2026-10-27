@@ -32,5 +32,6 @@ rpds = "1"
 wg-decisions = { path = "../wg-decisions" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }
 wg-registry-feature = { path = "../wg-registry-feature" }
+wg-telemetry-feature = { path = "../wg-telemetry-feature" }
 wg-model = { path = "../wg-model" }
 wg-store = { path = "../wg-store" }

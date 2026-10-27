@@ -158,10 +158,10 @@ fn task_promote_ready_needs_one_scope() -> TestResult {
 }
 
 #[test]
-fn task_search_and_contract_check_are_not_answered_yet() -> TestResult {
+fn task_search_is_not_answered_yet() -> TestResult {
     let mut app = app("unanswered")?;
     let agent = agent()?;
-    for name in ["task_search", "task_contract_check", "attempt_get"] {
+    for name in ["task_search", "attempt_get"] {
         let out = wg_tasks_feature::mcp::call(&mut app, &agent, name, &json!({}));
         assert!(out.is_none(), "{name} must be left to the other features");
     }

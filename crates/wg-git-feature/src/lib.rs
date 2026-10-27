@@ -12,25 +12,27 @@
 //!
 //! * [`jobs`]: the `git_sync` job handler, which the worker runs as `GitService.sync` does.
 //! * [`http`] (Shell): the worktree listing route (H022), a table of operations into [`service`].
+//! * [`mcp`] (Shell): the git tools `git_get_changes` and `git_get_task_diff` (IF-33).
 //!
-//! The feature has no tools or resources yet, so its tables are empty; the feature exports
-//! [`FEATURE`] and the binary collects it into its ordered feature list.
+//! The feature has no resources yet; the feature exports [`FEATURE`] and the binary collects it
+//! into its ordered feature list.
 
 pub mod cli;
 pub mod http;
 pub mod jobs;
+pub mod mcp;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The git feature: its `git` command group, the worktree route and the `git_sync` job. It has no
-/// tools, resources or maintenance steps.
+/// The git feature: its `git` command group, the worktree route, the git tools and the `git_sync`
+/// job. It has no resources or maintenance steps.
 pub static FEATURE: Feature = Feature {
     name: "git",
     cli: &[cli::GROUP],
     routes: &[http::GROUP],
-    tools: &[],
+    tools: mcp::TOOLS,
     resources: &[],
     jobs: jobs::JOBS,
     maintenance: &[],

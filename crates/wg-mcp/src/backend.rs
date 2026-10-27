@@ -17,7 +17,7 @@ pub trait ToolBackend: Send + 'static {
 }
 
 /// The backend over `wg_runtime::App`. The tools and resources of `features` are asked in feature
-/// order, after the attempt and run tools; the rest are refused until their interface tasks land.
+/// order; a name no feature owns is refused until its interface task lands.
 /// A caller with no features passes `features: &[]`.
 pub struct AppBackend {
     pub app: App,
@@ -26,11 +26,7 @@ pub struct AppBackend {
 
 impl ToolBackend for AppBackend {
     fn call_tool(&mut self, agent: &Agent, name: &str, arguments: Value) -> Result<Value, WgError> {
-        // Dispatch: each tool group answers the names it owns. The IF-33 attempt, run and git
-        // tools come first (M47 to M56), then the features' tools.
-        if let Some(result) = crate::run_tools::call(&mut self.app, agent, name, &arguments) {
-            return result;
-        }
+        // Dispatch: each feature answers the tool names it owns, in feature order.
         let feature_tools = self
             .features
             .iter()

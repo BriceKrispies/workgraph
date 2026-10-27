@@ -20,10 +20,11 @@ use wg_types::{
 
 type TestResult = Result<(), Box<dyn Error>>;
 
-/// Unwraps a fixture value that is valid by construction.
-/// The exec feature, as the binary lists it: the attempt tools are answered by its table.
-static EXEC: &[&wg_runtime::Feature] = &[&wg_exec_feature::FEATURE];
+/// The exec and git features, as the binary lists them: the attempt tools are answered by the exec
+/// table, the git tools by the git table.
+static FEATURES: &[&wg_runtime::Feature] = &[&wg_exec_feature::FEATURE, &wg_git_feature::FEATURE];
 
+/// Unwraps a fixture value that is valid by construction.
 fn ok<T>(result: Result<T, WgError>) -> T {
     match result {
         Ok(value) => value,
@@ -175,7 +176,7 @@ fn attempt_get_returns_the_attempt() -> TestResult {
     let (app, home) = seeded_app("get")?;
     let mut backend = AppBackend {
         app,
-        features: EXEC,
+        features: FEATURES,
     };
     let out = backend.call_tool(
         &agent(granted()?),
@@ -197,7 +198,7 @@ fn attempt_get_names_an_unknown_attempt() -> TestResult {
     let (app, home) = seeded_app("get-missing")?;
     let mut backend = AppBackend {
         app,
-        features: EXEC,
+        features: FEATURES,
     };
     let (code, message) = error_of(backend.call_tool(
         &agent(granted()?),
@@ -216,7 +217,7 @@ fn attempt_list_pages_and_filters() -> TestResult {
     let (app, home) = seeded_app("list")?;
     let mut backend = AppBackend {
         app,
-        features: EXEC,
+        features: FEATURES,
     };
     let all = backend.call_tool(
         &agent(granted()?),
@@ -251,7 +252,7 @@ fn a_missing_permission_is_refused_before_the_read() -> TestResult {
     let (app, home) = seeded_app("permission")?;
     let mut backend = AppBackend {
         app,
-        features: EXEC,
+        features: FEATURES,
     };
     let (code, message) = error_of(backend.call_tool(
         &agent(BTreeSet::new()),
@@ -273,7 +274,7 @@ fn a_task_reference_that_names_nothing_is_not_found() -> TestResult {
     let (app, home) = seeded_app("task-missing")?;
     let mut backend = AppBackend {
         app,
-        features: EXEC,
+        features: FEATURES,
     };
     let mut arguments = Map::new();
     arguments.insert("task".into(), json!("DEMO-999"));
@@ -288,20 +289,152 @@ fn a_task_reference_that_names_nothing_is_not_found() -> TestResult {
     Ok(())
 }
 
+// covers: M55
 #[test]
-fn a_known_task_resolves_and_the_unwired_success_path_says_so() -> TestResult {
+fn git_get_changes_answers_a_known_task_with_no_links() -> TestResult {
     let (app, home) = seeded_app("task-known")?;
     let mut backend = AppBackend {
         app,
-        features: EXEC,
+        features: FEATURES,
     };
-    let (code, message) = error_of(backend.call_tool(
+    let out = backend.call_tool(
         &agent(granted()?),
         "git_get_changes",
         json!({"task": "WG-7"}),
+    )?;
+    assert_eq!(out["task_key"], json!("WG-7"));
+    assert_eq!(out["task_id"], json!(id(1).to_string()));
+    assert_eq!(out["commits"], json!([]));
+    let _ = std::fs::remove_dir_all(home);
+    Ok(())
+}
+
+// covers: M56
+#[test]
+fn git_get_task_diff_with_no_changes_is_empty_and_untruncated() -> TestResult {
+    let (app, home) = seeded_app("diff-empty")?;
+    let mut backend = AppBackend {
+        app,
+        features: FEATURES,
+    };
+    let out = backend.call_tool(
+        &agent(granted()?),
+        "git_get_task_diff",
+        json!({"task": "WG-7", "max_bytes": 1000}),
+    )?;
+    assert_eq!(out["task_key"], json!("WG-7"));
+    assert_eq!(out["parts"], json!([]));
+    assert_eq!(out["missing_objects"], json!([]));
+    assert_eq!(out["truncated"], json!(false));
+    let _ = std::fs::remove_dir_all(home);
+    Ok(())
+}
+
+// covers: M56
+#[test]
+fn git_get_task_diff_needs_git_read() -> TestResult {
+    let (app, home) = seeded_app("diff-permission")?;
+    let mut backend = AppBackend {
+        app,
+        features: FEATURES,
+    };
+    let (code, message) = error_of(backend.call_tool(
+        &agent(BTreeSet::new()),
+        "git_get_task_diff",
+        json!({"task": "WG-7"}),
     ));
-    assert_eq!(code, "workgraph_error");
-    assert_eq!(message, "tool git_get_changes is not wired yet");
+    assert_eq!(code, "permission_denied");
+    assert_eq!(
+        message,
+        "actor 'agent:recorder' lacks permission(s): git:read"
+    );
+    let _ = std::fs::remove_dir_all(home);
+    Ok(())
+}
+
+// covers: M47
+#[test]
+fn attempt_create_registers_an_attempt_for_this_agent() -> TestResult {
+    let (app, home) = seeded_app("create")?;
+    let mut backend = AppBackend {
+        app,
+        features: FEATURES,
+    };
+    let out = backend.call_tool(
+        &agent(granted()?),
+        "attempt_create",
+        json!({"task": "WG-7", "model": "m-1"}),
+    )?;
+    assert_eq!(out["task_id"], json!(id(1).to_string()));
+    assert_eq!(out["provider"], json!("recorder"));
+    assert_eq!(out["model"], json!("m-1"));
+    assert_eq!(out["status"], json!("running"));
+    let _ = std::fs::remove_dir_all(home);
+    Ok(())
+}
+
+// covers: M47
+#[test]
+fn attempt_create_needs_attempt_write() -> TestResult {
+    let (app, home) = seeded_app("create-permission")?;
+    let mut backend = AppBackend {
+        app,
+        features: FEATURES,
+    };
+    let (code, message) = error_of(backend.call_tool(
+        &agent(BTreeSet::new()),
+        "attempt_create",
+        json!({"task": "WG-7"}),
+    ));
+    assert_eq!(code, "permission_denied");
+    assert_eq!(
+        message,
+        "actor 'agent:recorder' lacks permission(s): attempt:write"
+    );
+    let _ = std::fs::remove_dir_all(home);
+    Ok(())
+}
+
+// covers: M48
+#[test]
+fn attempt_start_needs_task_claim_and_attempt_write() -> TestResult {
+    let (app, home) = seeded_app("start-permission")?;
+    let mut backend = AppBackend {
+        app,
+        features: FEATURES,
+    };
+    let (code, message) = error_of(backend.call_tool(
+        &agent(BTreeSet::new()),
+        "attempt_start",
+        json!({"task": "WG-7"}),
+    ));
+    assert_eq!(code, "permission_denied");
+    assert_eq!(
+        message,
+        "actor 'agent:recorder' lacks permission(s): attempt:write, task:claim"
+    );
+    let _ = std::fs::remove_dir_all(home);
+    Ok(())
+}
+
+// covers: M49
+#[test]
+fn attempt_submit_needs_verify_run() -> TestResult {
+    let (app, home) = seeded_app("submit-permission")?;
+    let mut backend = AppBackend {
+        app,
+        features: FEATURES,
+    };
+    let (code, message) = error_of(backend.call_tool(
+        &agent(granted()?),
+        "attempt_submit",
+        json!({"attempt": id(2).to_string(), "status": "failed"}),
+    ));
+    assert_eq!(code, "permission_denied");
+    assert_eq!(
+        message,
+        "actor 'agent:recorder' lacks permission(s): verify:run"
+    );
     let _ = std::fs::remove_dir_all(home);
     Ok(())
 }
@@ -323,7 +456,7 @@ fn an_ambiguous_task_key_is_refused_without_a_workspace() -> TestResult {
     })?;
     let mut backend = AppBackend {
         app,
-        features: EXEC,
+        features: FEATURES,
     };
 
     let (code, message) = error_of(backend.call_tool(
@@ -339,13 +472,17 @@ fn an_ambiguous_task_key_is_refused_without_a_workspace() -> TestResult {
 
     // Naming the workspace picks its task, and the reference then resolves.
     for workspace in ["default", "other"] {
-        let (code, message) = error_of(backend.call_tool(
+        let out = backend.call_tool(
             &agent(granted()?),
             "git_get_changes",
             json!({"task": "WG-7", "workspace": workspace}),
-        ));
-        assert_eq!(code, "workgraph_error", "workspace {workspace}");
-        assert_eq!(message, "tool git_get_changes is not wired yet");
+        )?;
+        assert_eq!(out["task_key"], json!("WG-7"), "workspace {workspace}");
+        assert_eq!(
+            out["task_id"],
+            json!(if workspace == "default" { id(1) } else { id(6) }.to_string()),
+            "workspace {workspace}"
+        );
     }
     let _ = std::fs::remove_dir_all(home);
     Ok(())

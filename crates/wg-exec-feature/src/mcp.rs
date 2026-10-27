@@ -6,14 +6,13 @@
 //! the call names or across all workspaces when it names none (an ambiguous key is refused), and
 //! an attempt by UUID. A reference that names nothing is the same `not_found` error Python gives.
 //!
-//! `attempt_get`, `attempt_list`, `run_get`, `run_start` and `run_cancel` are answered from the
-//! store and the run flow. The other tools stop after their references resolve: their success
-//! paths belong to the attempt group, which is not ported yet, so they answer with a
-//! `workgraph_error` that names the tool. The git tools of the same family are answered by
-//! `wg-mcp` until the git feature moves.
+//! Every tool here is answered by the same service the attempt and run commands use: the attempt
+//! writes ([`crate::service::attempt_runs`], [`crate::service::conclude`]) and the run flow
+//! ([`crate::service::run_flow`]). The git tools of IF-33 are in the git feature's `mcp`.
 
 use serde_json::Value;
 use wg_mcpspec::options::Agent;
+use wg_mcpspec::outcome::text_argument;
 use wg_mcpspec::{require, structured, tool_permissions};
 use wg_runtime::{App, ToolRun, agent_context};
 use wg_store::AttemptPage;
@@ -21,10 +20,12 @@ use wg_types::{AttemptStatus, Id, WgError};
 use wg_wire::dto::{attempt, page};
 
 use crate::service::agents::LiveAgents;
+use crate::service::attempt_runs::{self, CreateRequest, StartRequest as AttemptStartRequest};
+use crate::service::conclude::{self, Live};
 use crate::service::resolve::{find_attempt, find_task};
 use crate::service::run_flow;
 use crate::spec::runs::StartRequest;
-use wg_types::pyval::{int_or, text};
+use wg_types::pyval::{int_or, text, text_or};
 
 /// The feature's tool descriptor: one [`call`].
 pub const TOOLS: &[ToolRun] = &[call];
@@ -55,13 +56,65 @@ pub fn call(
         return Some(Err(err));
     }
     Some(match name {
+        "attempt_create" => attempt_create_tool(app, agent, arguments),
+        "attempt_start" => attempt_start_tool(app, agent, arguments),
+        "attempt_submit" => attempt_submit_tool(app, agent, arguments),
         "attempt_get" => attempt_get(app, arguments),
         "attempt_list" => attempt_list(app, arguments),
         "run_get" => run_get_tool(app, arguments),
         "run_start" => run_start_tool(app, agent, arguments),
-        "run_cancel" => run_cancel_tool(app, agent, arguments),
-        _ => unwired(app, name, arguments),
+        _ => run_cancel_tool(app, agent, arguments),
     })
+}
+
+/// `attempt_create`: registers an attempt for this agent's work on a claimed task
+/// (`AttemptService.create`, provider = the agent's name).
+fn attempt_create_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Value, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let request = CreateRequest {
+        workspace: text_argument(arguments, "workspace"),
+        task: text(arguments.get("task")),
+        provider: &agent.name,
+        adapter: None,
+        agent_id: None,
+        model: text_argument(arguments, "model"),
+        session_id: text_argument(arguments, "session_id"),
+        parent_attempt: text_argument(arguments, "parent_attempt"),
+        status: AttemptStatus::Running,
+    };
+    structured(&attempt_runs::attempt_create(app, &context, &request)?)
+}
+
+/// `attempt_start`: claims the task, records an attempt and prepares its worktrees
+/// (`RunService.start_external`). The reply names the checkouts to work in.
+fn attempt_start_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Value, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let request = AttemptStartRequest {
+        workspace: text_argument(arguments, "workspace"),
+        task: text(arguments.get("task")),
+        agent_name: Some(&agent.name),
+        adapter: text_or(arguments.get("adapter"), "claude_code_subagent"),
+        model: text_argument(arguments, "model"),
+        isolation: text_argument(arguments, "isolation"),
+    };
+    structured(&attempt_runs::attempt_start(app, &context, &request)?)
+}
+
+/// `attempt_submit`: concludes an external attempt from the commits the agent made in its
+/// checkouts (`RunService.submit_external`), with the live collaborators the CLI uses.
+fn attempt_submit_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Value, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let failed = text_or(arguments.get("status"), "succeeded") == "failed";
+    let out = conclude::attempt_submit(
+        app,
+        &context,
+        &mut Live,
+        text(arguments.get("attempt")),
+        failed,
+        text_argument(arguments, "summary"),
+        text_argument(arguments, "error"),
+    )?;
+    structured(&out)
 }
 
 /// `run_get`: the attempt, its job and its recent events (`RunService.get`).
@@ -168,40 +221,10 @@ fn attempt_list(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
     ))
 }
 
-/// The tools whose references resolve here and whose success path is not wired yet.
-fn unwired(app: &mut App, name: &str, arguments: &Value) -> Result<Value, WgError> {
-    if matches!(name, "attempt_submit") {
-        let reference = arguments
-            .get("attempt")
-            .or_else(|| arguments.get("attempt_id"))
-            .and_then(Value::as_str)
-            .unwrap_or_default();
-        app.runtime
-            .store
-            .read(|session| find_attempt(session, reference))?;
-    } else {
-        let workspace = workspace_arg(app, arguments)?;
-        let reference = text(arguments.get("task"));
-        app.runtime
-            .store
-            .read(|session| find_task(session, workspace, reference))?;
-    }
-    Err(WgError::workgraph(format!("tool {name} is not wired yet")))
-}
-
 /// The workspace the arguments name, else the default one (the tools that list a workspace).
 fn workspace_or_default(app: &mut App, arguments: &Value) -> Result<Id, WgError> {
     match arguments.get("workspace").and_then(Value::as_str) {
         Some(reference) => app.workspace_id(reference),
         None => app.default_workspace_id(),
-    }
-}
-
-/// The workspace the arguments name, if any. Without one a task reference is resolved across
-/// every workspace, as `resolve.task(session, None, ref)` does.
-fn workspace_arg(app: &mut App, arguments: &Value) -> Result<Option<Id>, WgError> {
-    match arguments.get("workspace").and_then(Value::as_str) {
-        Some(reference) => app.workspace_id(reference).map(Some),
-        None => Ok(None),
     }
 }

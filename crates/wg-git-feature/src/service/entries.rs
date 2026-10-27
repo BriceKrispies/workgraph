@@ -480,8 +480,8 @@ pub fn change_sets(
 }
 
 /// `GitService.task_diff` (`git diff`): the final diff of each change surface, or the diff of
-/// each linked commit when the task has no surface. Text is read live from git. The text of the
-/// reply is cut to `max_bytes` characters.
+/// each linked commit when the task has no surface. Text is read live from git and cut to
+/// `max_bytes` characters across the parts.
 pub fn git_diff(
     app: &mut App,
     context: &RequestContext,

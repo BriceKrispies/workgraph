@@ -19,6 +19,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "net", "io-std", "macros
 tokio-util = "0.7"
 wg-automation-feature = { path = "../wg-automation-feature" }
 wg-exec-feature = { path = "../wg-exec-feature" }
+wg-git-feature = { path = "../wg-git-feature" }
 wg-stacks-feature = { path = "../wg-stacks-feature" }
 wg-decisions = { path = "../wg-decisions" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }

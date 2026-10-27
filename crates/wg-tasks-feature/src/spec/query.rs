@@ -6,6 +6,7 @@ use serde_json::{Map, Value};
 use wg_types::WgError;
 
 use super::reads::{GraphRequest, Shown};
+use wg_types::pyval::int_or;
 
 /// A string parameter; `None` when unset.
 #[must_use]
@@ -31,7 +32,7 @@ pub fn flag(params: &Map<String, Value>, name: &str, default: bool) -> bool {
 /// An integer parameter, `default` when unset.
 #[must_use]
 pub fn number(params: &Map<String, Value>, name: &str, default: i64) -> i64 {
-    params.get(name).and_then(Value::as_i64).unwrap_or(default)
+    int_or(params.get(name), default)
 }
 
 /// The `TaskFilter` body that `GET /tasks` builds from its query (`list_tasks`): the query names

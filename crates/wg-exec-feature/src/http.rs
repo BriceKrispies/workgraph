@@ -16,6 +16,7 @@ use crate::service::attempt_reads;
 use crate::service::attempts::{self, ListQuery};
 use crate::service::{run_flow, runs, scheduler};
 use crate::spec::routes::{self, SPECS, strings};
+use wg_types::pyval::int_or;
 
 /// The routes of the attempt, run and scheduler operations, in registration order.
 pub const GROUP: RouteGroup = RouteGroup {
@@ -93,5 +94,5 @@ fn body_text<'a>(body: &'a Json, name: &str) -> Option<&'a str> {
 
 /// An integer parameter, `default` when unset.
 fn number(params: &Map<String, Json>, name: &str, default: i64) -> i64 {
-    params.get(name).and_then(Json::as_i64).unwrap_or(default)
+    int_or(params.get(name), default)
 }

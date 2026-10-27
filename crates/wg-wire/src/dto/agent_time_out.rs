@@ -3,10 +3,10 @@
 //!
 //! Every datetime prints as `isoformat()` of an aware UTC datetime (the window bounds).
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_types::Timestamp;
 
-use crate::convention::{TimeFormat, dict, optional_text, optional_timestamp, text, texts};
+use crate::convention::{TimeFormat, optional_text, optional_timestamp, text, texts};
 
 /// The name of the breakdown dict; it has no OpenAPI component schema.
 pub const BREAKDOWN_NAME: &str = "AgentTimeOut";
@@ -80,10 +80,10 @@ pub const CONCURRENCY_FIELDS: [&str; 3] =
 
 /// The `window` block: the optional bounds as `isoformat()` of aware UTC datetimes.
 pub fn window(since: Option<Timestamp>, until: Option<Timestamp>) -> Value {
-    dict(vec![
-        ("since", optional_timestamp(since, TimeFormat::Isoformat)),
-        ("until", optional_timestamp(until, TimeFormat::Isoformat)),
-    ])
+    dict!({
+        "since": optional_timestamp(since, TimeFormat::Isoformat),
+        "until": optional_timestamp(until, TimeFormat::Isoformat),
+    })
 }
 
 /// The `totals` block; the values are in [`TOTALS_FIELDS`] order.
@@ -120,14 +120,14 @@ pub fn breakdown(
     notes: &[&str],
     rows: Vec<Value>,
 ) -> Value {
-    dict(vec![
-        ("by", text(by)),
-        ("window", window),
-        ("model", optional_text(model)),
-        ("totals", totals),
-        ("notes", texts(notes.iter().copied())),
-        ("rows", Value::List(rows)),
-    ])
+    dict!({
+        "by": text(by),
+        "window": window,
+        "model": optional_text(model),
+        "totals": totals,
+        "notes": texts(notes.iter().copied()),
+        "rows": Value::List(rows),
+    })
 }
 
 /// The bottleneck report. `classes` are class rows, `by_task` group rows.
@@ -140,13 +140,13 @@ pub fn bottlenecks(
     by_task: Vec<Value>,
     notes: &[&str],
 ) -> Value {
-    dict(vec![
-        ("window", window),
-        ("totals", totals),
-        ("classes", Value::List(classes)),
-        ("slowest_calls", Value::List(slowest_calls)),
-        ("concurrency", concurrency),
-        ("by_task", Value::List(by_task)),
-        ("notes", texts(notes.iter().copied())),
-    ])
+    dict!({
+        "window": window,
+        "totals": totals,
+        "classes": Value::List(classes),
+        "slowest_calls": Value::List(slowest_calls),
+        "concurrency": concurrency,
+        "by_task": Value::List(by_task),
+        "notes": texts(notes.iter().copied()),
+    })
 }

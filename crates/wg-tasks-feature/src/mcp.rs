@@ -20,6 +20,7 @@ use wg_types::WgError;
 use crate::service;
 use crate::spec::query::first_shown;
 use crate::spec::tool_args as args;
+use wg_types::pyval::text;
 
 /// The feature's tool descriptor: one [`call`] that answers the task tool names.
 pub const TOOLS: &[ToolRun] = &[call];
@@ -297,8 +298,8 @@ fn report_result(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError
 /// `task_contract_check` (M28): the arguments arrive validated with the default target filled in.
 fn contract_check(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
     let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
-    let reference = a.get("task").and_then(Value::as_str).unwrap_or_default();
-    let model = a.get("model").and_then(Value::as_str).unwrap_or_default();
+    let reference = text(a.get("task"));
+    let model = text(a.get("model"));
     let target = a.get("target").and_then(Value::as_f64).unwrap_or(0.8);
     let workspace = a.get("workspace").and_then(Value::as_str);
     task_contract_check(app, &context, workspace, reference, model, target)

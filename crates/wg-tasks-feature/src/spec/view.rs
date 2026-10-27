@@ -2,11 +2,12 @@
 //! JSON values the service returns.
 
 use wg_clispec::args::count;
-use wg_clispec::args::{get, items, opt, python, s, truncate, when};
+use wg_clispec::args::{get, items, opt, python, s, when};
 use wg_json::Value;
 use wg_model::py_repr_str;
 use wg_render::{Console, escape};
 use wg_types::WgError;
+use wg_types::pyval::prefix;
 
 /// `emit(out, ...)` of `task create`.
 #[must_use]
@@ -401,7 +402,7 @@ pub fn graph_view(console: &Console, graph: &Value) -> String {
                 } else {
                     String::new()
                 },
-                truncate(&s(get(n, "title")), 60),
+                prefix(&s(get(n, "title")), 60),
             ]
         })
         .collect();
@@ -532,7 +533,7 @@ fn task_row(task: &Value) -> Vec<String> {
         s(get(task, "status")),
         s(get(task, "priority")),
         opt(get(task, "category")).unwrap_or_default(),
-        truncate(&s(get(task, "title")), 70),
+        prefix(&s(get(task, "title")), 70),
         tags.join(","),
         opt(get(task, "claimed_by")).unwrap_or_default(),
     ]
@@ -564,7 +565,7 @@ fn summary(data: Option<&Value>) -> String {
             .take(3)
             .map(|(k, v)| format!("{}={}", python(&Value::Str(k.clone())), python(v)))
             .collect();
-        return truncate(&joined.join(", "), 80);
+        return prefix(&joined.join(", "), 80);
     }
     String::new()
 }

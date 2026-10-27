@@ -26,6 +26,7 @@ use wg_types::{Id, WgError};
 use wg_wire::dto::task_brief;
 
 use wg_mcpspec::options::Agent;
+use wg_types::pyval::flag;
 
 /// Answers tool `name` when this module owns it; `None` leaves the call to the backend's fallback.
 pub fn call(
@@ -183,10 +184,7 @@ fn repository_register(app: &mut App, agent: &Agent, arguments: &Value) -> Resul
             .unwrap_or_default()
             .to_owned(),
         name: text_argument(arguments, "name").map(str::to_owned),
-        read_only: arguments
-            .get("read_only")
-            .and_then(Value::as_bool)
-            .unwrap_or(false),
+        read_only: flag(arguments.get("read_only")),
         ..RegisterInput::default()
     };
     let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;

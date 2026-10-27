@@ -19,7 +19,7 @@ pub use parquet_out::parquet_bytes;
 use std::path::Path;
 
 use serde_json::Value as JsonValue;
-use wg_json::{PyStr, Value, cli_json, db_json, log_json};
+use wg_json::{PyStr, Value, cli_json, db_json, dict, log_json};
 use wg_storecodec::{Raw, Statement};
 use wg_types::{Timestamp, WgError};
 
@@ -163,11 +163,11 @@ pub fn line_end(windows: bool) -> &'static str {
 
 /// The first line of a workspace export: `json.dumps({format, workspace_id, workgraph_version})`.
 pub fn export_header(workspace_id: &str, version: &str, windows: bool) -> Result<String, WgError> {
-    let value = Value::Dict(vec![
-        (key("format"), Value::Str(key(EXPORT_FORMAT))),
-        (key("workspace_id"), Value::Str(key(workspace_id))),
-        (key("workgraph_version"), Value::Str(key(version))),
-    ]);
+    let value = dict!({
+        "format": Value::Str(key(EXPORT_FORMAT)),
+        "workspace_id": Value::Str(key(workspace_id)),
+        "workgraph_version": Value::Str(key(version)),
+    });
     let line = log_json(&value).map_err(dump_failure)?;
     Ok(format!("{line}{}", line_end(windows)))
 }
@@ -187,10 +187,10 @@ pub fn export_line(table: &ExportTable, row: &[Raw]) -> Result<String, WgError> 
     for ((name, kind), raw) in table.columns.iter().zip(row) {
         fields.push((key(name), export_value(*kind, raw)?));
     }
-    let value = Value::Dict(vec![
-        (key("table"), Value::Str(key(table.name))),
-        (key("row"), Value::Dict(fields)),
-    ]);
+    let value = dict!({
+        "table": Value::Str(key(table.name)),
+        "row": Value::Dict(fields),
+    });
     log_json(&value).map_err(dump_failure)
 }
 
@@ -340,7 +340,7 @@ fn bytes_of(item: &JsonValue) -> Option<Vec<u8>> {
 
 fn bytes_value(bytes: &[u8]) -> Value {
     let hex: String = bytes.iter().map(|byte| format!("{byte:02x}")).collect();
-    Value::Dict(vec![(key("__bytes__"), Value::Str(key(&hex)))])
+    dict!({ "__bytes__": Value::Str(key(&hex)) })
 }
 
 fn decode_hex(text: &str) -> Option<Vec<u8>> {
@@ -360,16 +360,13 @@ pub fn manifest_text(
     schema_revision: Option<&str>,
     includes_artifacts: bool,
 ) -> Result<String, WgError> {
-    let value = Value::Dict(vec![
-        (key("format"), Value::Str(key(BACKUP_FORMAT))),
-        (key("created_at"), Value::Str(key(created_at))),
-        (key("workgraph_version"), Value::Str(key(version))),
-        (
-            key("schema_revision"),
-            schema_revision.map_or(Value::Null, |revision| Value::Str(key(revision))),
-        ),
-        (key("includes_artifacts"), Value::Bool(includes_artifacts)),
-    ]);
+    let value = dict!({
+        "format": Value::Str(key(BACKUP_FORMAT)),
+        "created_at": Value::Str(key(created_at)),
+        "workgraph_version": Value::Str(key(version)),
+        "schema_revision": schema_revision.map_or(Value::Null, |revision| Value::Str(key(revision))),
+        "includes_artifacts": Value::Bool(includes_artifacts),
+    });
     let mut text = cli_json(&value).map_err(dump_failure)?;
     text.pop();
     Ok(text)

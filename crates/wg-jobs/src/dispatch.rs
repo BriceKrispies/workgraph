@@ -105,18 +105,6 @@ pub fn timed_out(timeout_seconds: Option<f64>, elapsed_seconds: f64) -> bool {
     timeout_seconds.is_some_and(|limit| limit != 0.0 && elapsed_seconds > limit)
 }
 
-/// Python truthiness of a payload value (`bool(payload.get(...))`).
-pub fn is_truthy(value: &Value) -> bool {
-    match value {
-        Value::Null => false,
-        Value::Bool(flag) => *flag,
-        Value::Number(number) => number.as_f64().is_some_and(|n| n != 0.0),
-        Value::String(text) => !text.is_empty(),
-        Value::Array(items) => !items.is_empty(),
-        Value::Object(map) => !map.is_empty(),
-    }
-}
-
 /// `{host}-{pid}-{6 hex digits}` (the default worker id).
 pub fn default_worker_id(host: &str, pid: u32, entropy: &[u8]) -> String {
     let suffix: String = entropy

@@ -7,7 +7,8 @@ use wg_model::{HttpCall, HttpMethod};
 use crate::error::ProviderError;
 use crate::output::{Structured, floats, from_content};
 use crate::request::{bearer, call, json_content_type, url};
-use crate::text::{head, py_repr};
+use crate::text::py_repr;
+use wg_types::pyval::prefix;
 
 /// The provider label used in messages.
 pub fn label(base_url: &str) -> String {
@@ -137,8 +138,9 @@ pub fn status_error(model: &str, code: u16, body: &str) -> Option<ProviderError>
             py_repr(model)
         )));
     }
-    (code >= 400)
-        .then(|| ProviderError::InvalidOutput(format!("ollama error {code}: {}", head(body, 300))))
+    (code >= 400).then(|| {
+        ProviderError::InvalidOutput(format!("ollama error {code}: {}", prefix(body, 300)))
+    })
 }
 
 /// The `error` field of a JSON error body, or the empty string.

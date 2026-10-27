@@ -5,6 +5,7 @@
 use serde_json::{Map, Value};
 use wg_clispec::args::python;
 use wg_render::Console;
+use wg_types::pyval::prefix;
 use wg_wire::convention::json_value;
 
 /// `common.kv(d.items(), title)`: a value Python leaves out (`None`, an empty list, an empty dict)
@@ -139,11 +140,6 @@ fn field(object: &Value, key: &str) -> String {
         Some(Value::Bool(flag)) => python(&json_value(&Value::Bool(*flag))),
         Some(other) => other.to_string(),
     }
-}
-
-/// `text[:n]`, counted in characters.
-fn prefix(text: &str, n: usize) -> String {
-    text.chars().take(n).collect()
 }
 
 #[cfg(test)]

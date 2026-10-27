@@ -6,10 +6,11 @@
 //! this module orders and shapes them.
 
 use wg_intel::RRF_K;
-use wg_json::{PyStr, Value};
+use wg_json::Value;
 use wg_types::Id;
 
 use crate::spec::search_out::{Hit, TaskHead, round4};
+use wg_wire::convention::text;
 
 /// One semantic candidate: the task, its head and its cosine similarity to the query.
 #[derive(Debug, Clone, PartialEq)]
@@ -199,8 +200,4 @@ pub fn result_value(
             ("note".to_owned(), note.map_or(Value::Null, text)),
         ],
     }
-}
-
-fn text(value: &str) -> Value {
-    Value::Str(PyStr::from(value))
 }

@@ -4,7 +4,7 @@
 use clap::ArgMatches;
 use serde_json::{Map, Value as Json};
 use wg_config::{parse_value, set_path, validate_global, validate_overrides, value_repr};
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_render::Console;
 use wg_wire::convention::json_value;
 
@@ -119,11 +119,11 @@ pub fn config_set(
 /// The output of `config set`.
 #[must_use]
 pub fn config_set_value(key: &str, parsed: &Json, workspace: Option<&str>) -> Value {
-    wg_wire::convention::dict(vec![
-        ("key", wg_wire::convention::text(key)),
-        ("value", json_value(parsed)),
-        ("workspace", wg_wire::convention::optional_text(workspace)),
-    ])
+    dict!({
+        "key": wg_wire::convention::text(key),
+        "value": json_value(parsed),
+        "workspace": wg_wire::convention::optional_text(workspace),
+    })
 }
 
 /// The human line of `config set`.
@@ -137,18 +137,15 @@ pub fn config_set_line(console: &Console, key: &str, parsed: &Json) -> String {
 /// `{"valid": ..., "problems": [...]}` of `config validate`.
 #[must_use]
 pub fn validate_value(problems: &[String]) -> Value {
-    wg_wire::convention::dict(vec![
-        ("valid", Value::Bool(problems.is_empty())),
-        (
-            "problems",
-            Value::List(
-                problems
-                    .iter()
-                    .map(|p| wg_wire::convention::text(p))
-                    .collect(),
-            ),
+    dict!({
+        "valid": Value::Bool(problems.is_empty()),
+        "problems": Value::List(
+            problems
+                .iter()
+                .map(|p| wg_wire::convention::text(p))
+                .collect(),
         ),
-    ])
+    })
 }
 
 /// The result of `config show` as an output value.

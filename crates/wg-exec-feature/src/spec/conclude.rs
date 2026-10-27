@@ -7,7 +7,7 @@ use serde_json::{Map, Value, json};
 use wg_clispec::args::python;
 use wg_exec::attempt::{counts_as_failure, escalates, is_terminal, task_after_attempt_end};
 use wg_exec::run::{CaptureFacts, Conclusion, completes_task, conclude, kept_summary, task_reason};
-use wg_json::Value as Wire;
+use wg_json::{Value as Wire, dict};
 use wg_model::entity::{AgentAttempt, Artifact, Real, TaskTag};
 use wg_model::event::{EventDraft, EventPayload, TaskEscalated};
 use wg_model::stamp::{IdSeq, Stamp};
@@ -17,7 +17,7 @@ use wg_tasks::transition::{Change, transition};
 use wg_tasks_feature::spec::bodies::CompleteRead;
 use wg_tasks_feature::spec::claims::{Reported, complete_task};
 use wg_types::{AttemptStatus, Id, TaskStatus, WgError};
-use wg_wire::convention::{dict, int, text};
+use wg_wire::convention::{int, text};
 
 use crate::spec::attempts::{Finish, finish};
 
@@ -524,14 +524,11 @@ impl Captured {
                 .violations
                 .iter()
                 .map(|(repository, commits, files)| {
-                    dict(vec![
-                        ("repository", text(repository)),
-                        ("commits", int(i64::try_from(*commits).unwrap_or(i64::MAX))),
-                        (
-                            "uncommitted_files",
-                            int(i64::try_from(*files).unwrap_or(i64::MAX)),
-                        ),
-                    ])
+                    dict!({
+                        "repository": text(repository),
+                        "commits": int(i64::try_from(*commits).unwrap_or(i64::MAX)),
+                        "uncommitted_files": int(i64::try_from(*files).unwrap_or(i64::MAX)),
+                    })
                 })
                 .collect();
             python(&Wire::List(rows))

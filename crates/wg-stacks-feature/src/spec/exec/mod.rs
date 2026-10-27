@@ -119,9 +119,3 @@ pub fn str_list(items: &[String]) -> VectorSync<String> {
 pub fn job_result(value: &Value) -> Option<Map<String, Value>> {
     value.as_object().cloned()
 }
-
-/// The members of a JSON value that is an object (an empty object otherwise).
-#[must_use]
-pub fn object_of(value: &Value) -> Map<String, Value> {
-    value.as_object().cloned().unwrap_or_default()
-}

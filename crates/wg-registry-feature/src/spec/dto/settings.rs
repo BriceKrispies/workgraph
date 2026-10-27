@@ -1,7 +1,7 @@
 //! The settings documents of `GET /api/v1/settings` and `PATCH /api/v1/settings`. The config is
 //! the dumped effective configuration, passed in as a value.
 
-use wg_json::{PyStr, Value};
+use wg_json::{Value, dict};
 
 use wg_wire::convention::text;
 
@@ -16,29 +16,16 @@ pub const PATCH_FIELDS: [&str; 1] = ["config"];
 
 /// `GET /api/v1/settings`.
 pub fn settings(config: Value, config_file: &str, data_dir: &str) -> Value {
-    dict(vec![
-        ("config", config),
-        (
-            "paths",
-            dict(vec![
-                ("config_file", text(config_file)),
-                ("data_dir", text(data_dir)),
-            ]),
-        ),
-    ])
+    dict!({
+        "config": config,
+        "paths": dict!({
+            "config_file": text(config_file),
+            "data_dir": text(data_dir),
+        }),
+    })
 }
 
 /// `PATCH /api/v1/settings`: the configuration after the edit, and nothing else.
 pub fn patched(config: Value) -> Value {
-    dict(vec![("config", config)])
-}
-
-/// A dict value with its keys in the given order.
-fn dict(fields: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        fields
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
-            .collect(),
-    )
+    dict!({ "config": config })
 }

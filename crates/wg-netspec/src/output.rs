@@ -3,7 +3,8 @@
 use serde_json::{Map, Value};
 
 use crate::error::ProviderError;
-use crate::text::{head, py_repr};
+use crate::text::py_repr;
+use wg_types::pyval::prefix;
 
 /// A JSON object the model produced, with the raw text and the provider's metadata.
 #[derive(Debug, Clone, PartialEq)]
@@ -34,7 +35,7 @@ pub fn from_content(
         )),
         Err(_) => Err(ProviderError::InvalidOutput(format!(
             "model returned non-JSON output: {}",
-            py_repr(&head(content, 200))
+            py_repr(&prefix(content, 200))
         ))),
     }
 }

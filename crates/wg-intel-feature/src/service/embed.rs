@@ -24,6 +24,7 @@ use crate::spec::llm::{embedding_call_error, selection};
 use crate::spec::plan::{ids_of, json_text};
 use crate::spec::similar_sql;
 use crate::spec::write_out::SimilarEntry;
+use wg_types::pyval::prefix;
 
 /// The job kind of one embedding.
 pub const EMBED_JOB: &str = "embed_task";
@@ -173,7 +174,7 @@ pub fn rebuild_embeddings(
         |ids| Ok(ids.clone()),
     )?;
     let count = ids.len();
-    let ws_short: String = ws.to_string().chars().take(6).collect();
+    let ws_short: String = prefix(&ws.to_string(), 6);
     for task_id in &ids {
         let job = NewJob {
             payload: [
@@ -259,11 +260,7 @@ pub fn similar(
             let text = format!(
                 "{} {}",
                 target.title,
-                target
-                    .description
-                    .chars()
-                    .take(SIMILAR_DESCRIPTION_CHARS)
-                    .collect::<String>()
+                prefix(&target.description, SIMILAR_DESCRIPTION_CHARS)
             );
             let lexical =
                 search::lexical_ids(session, target.workspace_id, &text, SIMILAR_LEXICAL_LIMIT)?;

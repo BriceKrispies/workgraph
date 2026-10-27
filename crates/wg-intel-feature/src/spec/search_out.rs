@@ -4,12 +4,13 @@
 //! The candidates come from [`crate::spec::search_sql::lexical_candidates`] and the scope and task
 //! reads of [`crate::service`]; this module only decides and shapes.
 
-use wg_json::{PyStr, Value};
+use wg_json::Value;
 use wg_registry::resolve;
 use wg_store::TaskWorld;
 use wg_types::{Id, WgError};
 
 use crate::spec::search_sql::SearchScope;
+use wg_wire::convention::{optional_text, text};
 
 /// The candidate limit `search` passes to `lexical` (`limit * 2`).
 const LEXICAL_WIDEN: i64 = 2;
@@ -88,14 +89,6 @@ pub fn lexical_hits(candidates: &[Candidate], limit: i64) -> Vec<Hit> {
             snippet: candidate.snippet.clone(),
         })
         .collect()
-}
-
-fn text(value: &str) -> Value {
-    Value::Str(PyStr::from(value))
-}
-
-fn optional_text(value: Option<&str>) -> Value {
-    value.map_or(Value::Null, text)
 }
 
 /// A `SearchHit` as the service returns it (`model_dump`), with the semantic fields unset.

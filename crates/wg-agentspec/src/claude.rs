@@ -11,7 +11,8 @@ use wg_procspec::{ProcError, ProcessResult};
 use crate::types::{
     AgentCapabilities, AgentEvent, AgentRunRequest, AgentRunResult, EventKind, RunStatus,
 };
-use crate::util::{as_int, as_number, get, py_float, py_str, truncate_chars, truthy};
+use crate::util::{as_int, as_number, py_float, py_str};
+use wg_types::pyval::{get, prefix, truthy};
 
 const USAGE_FIELDS: [&str; 4] = [
     "input_tokens",
@@ -215,7 +216,7 @@ pub fn timeout_ms(request_seconds: f64, config_seconds: f64) -> u64 {
 /// first 200 characters of stdout, else of stderr.
 pub fn availability_detail(exit_code: Option<i32>, stdout: &str, stderr: &str) -> (bool, String) {
     let text = if stdout.is_empty() { stderr } else { stdout };
-    (exit_code == Some(0), truncate_chars(text.trim(), 200))
+    (exit_code == Some(0), prefix(text.trim(), 200))
 }
 
 /// The unavailability message for a resolve failure, as the Python `ProviderUnavailableError`.
@@ -297,10 +298,7 @@ impl StreamState {
         match serde_json::from_str::<Value>(text) {
             Err(_) => {
                 self.stray += 1;
-                vec![AgentEvent::plain(
-                    EventKind::Log,
-                    truncate_chars(text, 2000),
-                )]
+                vec![AgentEvent::plain(EventKind::Log, prefix(text, 2000))]
             }
             Ok(message @ Value::Object(_)) => self.apply(&message),
             Ok(_) => Vec::new(),
@@ -351,7 +349,7 @@ impl StreamState {
                 self.result = Some(message.clone());
                 vec![AgentEvent::with_data(
                     EventKind::Result,
-                    truncate_chars(&py_str(get(message, "result")), 2000),
+                    prefix(&py_str(get(message, "result")), 2000),
                     json!({
                         "subtype": get(message, "subtype"),
                         "is_error": get(message, "is_error"),
@@ -367,10 +365,7 @@ impl StreamState {
             Some("text") if truthy(get(block, "text")) => {
                 let text = py_str(get(block, "text"));
                 self.last_text.clone_from(&text);
-                Some(AgentEvent::plain(
-                    EventKind::Message,
-                    truncate_chars(&text, 2000),
-                ))
+                Some(AgentEvent::plain(EventKind::Message, prefix(&text, 2000)))
             }
             Some("tool_use") => {
                 self.tool_uses += 1;
@@ -469,11 +464,11 @@ pub fn finish_claude(state: &StreamState, process: &ProcessResult) -> AgentRunRe
     } else {
         state.last_text.clone()
     };
-    run.summary = truncate_chars(&summary, 50_000);
+    run.summary = prefix(&summary, 50_000);
     if success {
         run.status = RunStatus::Succeeded;
     } else if !error.is_empty() {
-        run.error = Some(truncate_chars(&error, 20_000));
+        run.error = Some(prefix(&error, 20_000));
     }
     run
 }

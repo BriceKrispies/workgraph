@@ -13,6 +13,7 @@ use wg_types::{Id, WgError};
 
 use super::{load_rows, reads};
 use crate::spec::execute::{self as exec, Claim, Loaded, Running};
+use wg_types::pyval::text;
 
 /// Runs the run `run_id`'s actions and records the outcome. The reply is
 /// `{"status": ..., "actions": n}`, or the run's status when it was already settled.
@@ -38,11 +39,7 @@ pub fn execute_run(app: &mut App, run_id: Id) -> Result<Json, WgError> {
         if running.done.contains(&index) {
             continue;
         }
-        let kind = action
-            .get("type")
-            .and_then(Json::as_str)
-            .unwrap_or_default()
-            .to_owned();
+        let kind = text(action.get("type")).to_owned();
         match run_action(app, &actions, &slug, &running, action) {
             Ok(output) => results.push(json!({
                 "index": index,
@@ -116,10 +113,7 @@ fn run_action(
     action: &serde_json::Map<String, Json>,
 ) -> Result<Json, WgError> {
     let render_context = &running.context;
-    let kind = action
-        .get("type")
-        .and_then(Json::as_str)
-        .unwrap_or_default();
+    let kind = text(action.get("type"));
     match kind {
         "add_tags" => {
             let task = exec::target_task(render_context)?;

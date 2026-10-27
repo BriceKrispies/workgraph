@@ -8,6 +8,7 @@ use crate::hook::INVALID_EVENT;
 use crate::ingest::HookEnv;
 use crate::json::{dumps_ordered, py_str};
 use crate::redact::redact;
+use wg_types::pyval::{int_or, prefix};
 
 /// The largest stdin `claude hook` ingests; a read takes one byte more to see that input is over it.
 pub const MAX_INPUT_BYTES: usize = 8 * 1024 * 1024;
@@ -66,10 +67,7 @@ pub fn payload_from_input(input: &[u8]) -> Value {
 
 /// `f"{type}: {message}"[:500]`: the failure text a spooled record keeps.
 pub fn failure_reason(type_name: &str, message: &str) -> String {
-    format!("{type_name}: {message}")
-        .chars()
-        .take(REASON_CHARS)
-        .collect()
+    prefix(&format!("{type_name}: {message}"), REASON_CHARS)
 }
 
 /// The record as it is spooled: its payload redacted and bounded, and the reason ingestion failed.
@@ -108,15 +106,11 @@ pub enum Replayed {
 /// The record after one more failed replay, with the count and the last error.
 pub fn after_failed_replay(record: &Value, reason: &str) -> Replayed {
     let entries = record.as_object().cloned().unwrap_or_default();
-    let attempts = entries
-        .get("replay_attempts")
-        .and_then(Value::as_i64)
-        .unwrap_or(0)
-        + 1;
+    let attempts = int_or(entries.get("replay_attempts"), 0) + 1;
     let updated = Value::Object(set(
         &set(&entries, "replay_attempts", json!(attempts)),
         "last_replay_error",
-        json!(reason.chars().take(REASON_CHARS).collect::<String>()),
+        json!(prefix(reason, REASON_CHARS)),
     ));
     if attempts >= MAX_REPLAYS {
         Replayed::SetAside(updated)

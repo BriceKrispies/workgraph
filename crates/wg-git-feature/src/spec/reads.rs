@@ -4,7 +4,7 @@
 
 use std::collections::BTreeSet;
 use wg_gitcore::{Churn as GitChurn, ChurnAnalysis, ChurnCommit, ChurnFile, ClassTotals};
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::git::{
     Commit, CommitAnalysis, CommitEquivalence, CommitFileChange, CommitSymbol, CommitTaskLink,
     TaskChangeSurface,
@@ -12,8 +12,9 @@ use wg_model::entity::git::{
 
 use crate::spec::sql::TaskCommitLink as TaskCommitLinkRow;
 use wg_types::Id;
+use wg_types::pyval::prefix;
 use wg_wire::convention::{
-    TimeFormat, dict, id, int, json_object, optional_text, optional_timestamp, text,
+    TimeFormat, id, int, json_object, optional_text, optional_timestamp, text,
 };
 use wg_wire::dto::task_changes::{self, Churn as WireChurn, ChurnTotals, CommitEntry, TaskChanges};
 use wg_wire::dto::task_diff::{self, DiffPart, Missing, TaskDiff};
@@ -36,40 +37,31 @@ pub struct LogItem<'a> {
 
 /// The `git log` page (`repository_commits`): `repository_id`, `total` and the items.
 pub fn repository_commits_value(repository_id: Id, total: i64, items: &[LogItem<'_>]) -> Value {
-    dict(vec![
-        ("repository_id", id(repository_id)),
-        ("total", int(total)),
-        ("items", Value::List(items.iter().map(log_item).collect())),
-    ])
+    dict!({
+        "repository_id": id(repository_id),
+        "total": int(total),
+        "items": Value::List(items.iter().map(log_item).collect()),
+    })
 }
 
 fn log_item(item: &LogItem<'_>) -> Value {
     let commit = item.commit;
-    dict(vec![
-        ("id", id(commit.id)),
-        ("sha", text(&commit.sha)),
-        ("subject", text(&commit.subject)),
-        ("author", text(&commit.author_name)),
-        ("author_email", text(&commit.author_email)),
-        (
-            "committed_at",
-            optional_timestamp(commit.committed_at, TimeFormat::Isoformat),
-        ),
-        ("insertions", int(commit.insertions)),
-        ("deletions", int(commit.deletions)),
-        ("files_changed", int(commit.files_changed)),
-        ("is_merge", Value::Bool(commit.is_merge)),
-        ("reachable", Value::Bool(commit.reachable)),
-        (
-            "branches",
-            Value::List(commit.branches.iter().map(|b| text(b)).collect()),
-        ),
-        ("trailers", trailers_value(commit)),
-        (
-            "tasks",
-            Value::List(item.tasks.iter().map(task_ref_value).collect()),
-        ),
-    ])
+    dict!({
+        "id": id(commit.id),
+        "sha": text(&commit.sha),
+        "subject": text(&commit.subject),
+        "author": text(&commit.author_name),
+        "author_email": text(&commit.author_email),
+        "committed_at": optional_timestamp(commit.committed_at, TimeFormat::Isoformat),
+        "insertions": int(commit.insertions),
+        "deletions": int(commit.deletions),
+        "files_changed": int(commit.files_changed),
+        "is_merge": Value::Bool(commit.is_merge),
+        "reachable": Value::Bool(commit.reachable),
+        "branches": Value::List(commit.branches.iter().map(|b| text(b)).collect()),
+        "trailers": trailers_value(commit),
+        "tasks": Value::List(item.tasks.iter().map(task_ref_value).collect()),
+    })
 }
 
 /// The stored trailers, each `{key, value}`, in message order.
@@ -79,12 +71,12 @@ fn trailers_value(commit: &Commit) -> Value {
 
 /// `{task_id, task_key, source, confidence}` of one link of a listing.
 fn task_ref_value(task: &TaskRef) -> Value {
-    dict(vec![
-        ("task_id", id(task.task_id)),
-        ("task_key", text(&task.task_key)),
-        ("source", text(&task.source)),
-        ("confidence", Value::Float(task.confidence)),
-    ])
+    dict!({
+        "task_id": id(task.task_id),
+        "task_key": text(&task.task_key),
+        "source": text(&task.source),
+        "confidence": Value::Float(task.confidence),
+    })
 }
 
 /// The inputs of `git show`: the commit, its file rows with their symbols, the analysis, the
@@ -102,80 +94,56 @@ pub struct DetailInput<'a> {
 /// The `git show` dict (`commit_detail`).
 pub fn commit_detail_value(input: &DetailInput<'_>) -> Value {
     let commit = input.commit;
-    dict(vec![
-        ("id", id(commit.id)),
-        ("sha", text(&commit.sha)),
-        ("repository_id", id(commit.repository_id)),
-        (
-            "parents",
-            Value::List(commit.parents.iter().map(|p| text(p)).collect()),
+    dict!({
+        "id": id(commit.id),
+        "sha": text(&commit.sha),
+        "repository_id": id(commit.repository_id),
+        "parents": Value::List(commit.parents.iter().map(|p| text(p)).collect()),
+        "subject": text(&commit.subject),
+        "message": text(&commit.message),
+        "trailers": trailers_value(commit),
+        "author": person(
+            &commit.author_name,
+            &commit.author_email,
+            commit.authored_at,
         ),
-        ("subject", text(&commit.subject)),
-        ("message", text(&commit.message)),
-        ("trailers", trailers_value(commit)),
-        (
-            "author",
-            person(
-                &commit.author_name,
-                &commit.author_email,
-                commit.authored_at,
-            ),
+        "committer": person(
+            &commit.committer_name,
+            &commit.committer_email,
+            commit.committed_at,
         ),
-        (
-            "committer",
-            person(
-                &commit.committer_name,
-                &commit.committer_email,
-                commit.committed_at,
-            ),
+        "is_merge": Value::Bool(commit.is_merge),
+        "patch_id": optional_text(commit.patch_id.as_deref()),
+        "reachable": Value::Bool(commit.reachable),
+        "object_available": Value::Bool(commit.object_available),
+        "branches": Value::List(commit.branches.iter().map(|b| text(b)).collect()),
+        "insertions": int(commit.insertions),
+        "deletions": int(commit.deletions),
+        "files": Value::List(
+            input
+                .files
+                .iter()
+                .map(|file| file_detail(file, input.symbols))
+                .collect(),
         ),
-        ("is_merge", Value::Bool(commit.is_merge)),
-        ("patch_id", optional_text(commit.patch_id.as_deref())),
-        ("reachable", Value::Bool(commit.reachable)),
-        ("object_available", Value::Bool(commit.object_available)),
-        (
-            "branches",
-            Value::List(commit.branches.iter().map(|b| text(b)).collect()),
+        "analysis": input.analysis.map_or(Value::Null, analysis_value),
+        "equivalences": Value::List(input.equivalences.iter().map(equivalence_value).collect()),
+        "tasks": Value::List(
+            input
+                .links
+                .iter()
+                .map(|(link, key)| link_value(link, key))
+                .collect(),
         ),
-        ("insertions", int(commit.insertions)),
-        ("deletions", int(commit.deletions)),
-        (
-            "files",
-            Value::List(
-                input
-                    .files
-                    .iter()
-                    .map(|file| file_detail(file, input.symbols))
-                    .collect(),
-            ),
-        ),
-        (
-            "analysis",
-            input.analysis.map_or(Value::Null, analysis_value),
-        ),
-        (
-            "equivalences",
-            Value::List(input.equivalences.iter().map(equivalence_value).collect()),
-        ),
-        (
-            "tasks",
-            Value::List(
-                input
-                    .links
-                    .iter()
-                    .map(|(link, key)| link_value(link, key))
-                    .collect(),
-            ),
-        ),
-    ])
+    })
 }
 
 fn person(name: &str, email: &str, at: Option<wg_types::Timestamp>) -> Value {
-    dict(vec![
-        ("name", text(name)),
-        ("email", text(email)),
-        ("at", optional_timestamp(at, TimeFormat::Isoformat)),
-    ])
+    dict!({
+        "name": text(name),
+        "email": text(email),
+        "at": optional_timestamp(at, TimeFormat::Isoformat),
+    })
 }
 
 fn file_detail(file: &CommitFileChange, symbols: &[CommitSymbol]) -> Value {
@@ -183,56 +151,56 @@ fn file_detail(file: &CommitFileChange, symbols: &[CommitSymbol]) -> Value {
         .iter()
         .filter(|symbol| symbol.file_change_id == file.id)
         .map(|symbol| {
-            dict(vec![
-                ("kind", text(&symbol.symbol_kind)),
-                ("name", text(&symbol.name)),
-                ("change", text(&symbol.change_kind)),
-                ("lines_changed", int(symbol.lines_changed)),
-            ])
+            dict!({
+                "kind": text(&symbol.symbol_kind),
+                "name": text(&symbol.name),
+                "change": text(&symbol.change_kind),
+                "lines_changed": int(symbol.lines_changed),
+            })
         })
         .collect();
-    dict(vec![
-        ("path", text(&file.path)),
-        ("old_path", optional_text(file.old_path.as_deref())),
-        ("change_type", text(&file.change_type)),
-        ("insertions", int(file.insertions)),
-        ("deletions", int(file.deletions)),
-        ("binary", Value::Bool(file.is_binary)),
-        ("language", optional_text(file.language.as_deref())),
-        ("file_class", text(&file.file_class)),
-        ("module", text(&file.module)),
-        ("symbols", Value::List(own)),
-    ])
+    dict!({
+        "path": text(&file.path),
+        "old_path": optional_text(file.old_path.as_deref()),
+        "change_type": text(&file.change_type),
+        "insertions": int(file.insertions),
+        "deletions": int(file.deletions),
+        "binary": Value::Bool(file.is_binary),
+        "language": optional_text(file.language.as_deref()),
+        "file_class": text(&file.file_class),
+        "module": text(&file.module),
+        "symbols": Value::List(own),
+    })
 }
 
 fn analysis_value(analysis: &CommitAnalysis) -> Value {
-    dict(vec![
-        ("analyzer_version", text(&analysis.analyzer_version)),
-        ("functions_affected", int(analysis.functions_affected)),
-        ("types_affected", int(analysis.types_affected)),
-        ("files_parsed", int(analysis.files_parsed)),
-        ("files_fallback", int(analysis.files_fallback)),
-        ("detail", json_object(&analysis.detail)),
-    ])
+    dict!({
+        "analyzer_version": text(&analysis.analyzer_version),
+        "functions_affected": int(analysis.functions_affected),
+        "types_affected": int(analysis.types_affected),
+        "files_parsed": int(analysis.files_parsed),
+        "files_fallback": int(analysis.files_fallback),
+        "detail": json_object(&analysis.detail),
+    })
 }
 
 fn equivalence_value(equivalence: &CommitEquivalence) -> Value {
-    dict(vec![
-        ("kind", text(&equivalence.kind)),
-        ("original_commit_id", id(equivalence.original_commit_id)),
-        ("equivalent_commit_id", id(equivalence.equivalent_commit_id)),
-        ("evidence", json_object(&equivalence.evidence)),
-    ])
+    dict!({
+        "kind": text(&equivalence.kind),
+        "original_commit_id": id(equivalence.original_commit_id),
+        "equivalent_commit_id": id(equivalence.equivalent_commit_id),
+        "evidence": json_object(&equivalence.evidence),
+    })
 }
 
 fn link_value(link: &CommitTaskLink, key: &str) -> Value {
-    dict(vec![
-        ("task_id", id(link.task_id)),
-        ("task_key", text(key)),
-        ("source", text(&link.source)),
-        ("confidence", Value::Float(link.confidence.0)),
-        ("evidence", json_object(&link.evidence)),
-    ])
+    dict!({
+        "task_id": id(link.task_id),
+        "task_key": text(key),
+        "source": text(&link.source),
+        "confidence": Value::Float(link.confidence.0),
+        "evidence": json_object(&link.evidence),
+    })
 }
 
 /// One linked commit of `git changes`, with the repository name and the links that attribute it.
@@ -395,7 +363,7 @@ pub fn unique_commit_ids(ids: impl Iterator<Item = Id>) -> Vec<Id> {
 
 /// The first twelve characters of a SHA, as the diff ranges print them.
 pub fn short_sha(sha: &str) -> String {
-    sha.chars().take(12).collect()
+    prefix(sha, 12)
 }
 
 /// A stored count as the `i64` the rows hold.

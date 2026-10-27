@@ -28,6 +28,7 @@ use wg_types::{AttemptStatus, Id, TaskStatus, WgError};
 use crate::spec::attempts;
 
 pub use crate::spec::attempts::Finish;
+use wg_types::pyval::prefix;
 
 /// The longest reason a task transition records (`reason[:200]`).
 pub const REASON_LIMIT: usize = 200;
@@ -310,5 +311,5 @@ pub fn start_out(attempt_id: Id, number: i64, task: &Task, manifest: &ExecutionM
 /// The text a task reason is cut to (`reason[:200]`).
 #[must_use]
 pub fn reason_text(text: &str) -> String {
-    text.chars().take(REASON_LIMIT).collect()
+    prefix(text, REASON_LIMIT)
 }

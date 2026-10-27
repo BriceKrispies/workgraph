@@ -29,7 +29,7 @@ use wg_git::{Git, RunOptions};
 use wg_gitcore::{
     EMPTY_TREE, FileChange, SurfacePlan, SurfaceRecord, SurfaceRepo, parse_numstat_z, plan_surface,
 };
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::git::{Commit, CommitTaskLink, GitObjectGap, TaskChangeSurface};
 use wg_model::entity::repository::Repository;
 use wg_model::entity::run::ManagedWorktree;
@@ -39,11 +39,12 @@ use wg_registry::resolve;
 use wg_runtimespec::RequestContext;
 use wg_store::Session;
 use wg_types::{Id, Permission, WgError, WorktreeStatus};
-use wg_wire::convention::{dict, int, text};
+use wg_wire::convention::{int, text};
 use wg_wire::dto::task_diff::{DiffPart, Missing};
 
 use crate::spec::git_error as git_err;
 use wg_runtime::App;
+use wg_types::pyval::prefix;
 
 /// The default `git diff` budget in characters (`max_bytes=400_000`).
 pub const DIFF_MAX_BYTES: usize = 400_000;
@@ -377,10 +378,9 @@ pub fn git_unlink(
             Ok(decision)
         },
     )?;
-    Ok(wg_wire::convention::dict(vec![(
-        "removed",
-        wg_wire::convention::int(i64::try_from(removed.reply).unwrap_or(i64::MAX)),
-    )]))
+    Ok(dict!({
+        "removed": wg_wire::convention::int(i64::try_from(removed.reply).unwrap_or(i64::MAX)),
+    }))
 }
 
 /// `GitService.task_changes` (`git changes`): the linked commits, the cumulative churn and the
@@ -827,7 +827,7 @@ pub fn git_analyze(
             analyzed += 1;
         }
     }
-    Ok(dict(vec![("analyzed", int(analyzed))]))
+    Ok(dict!({ "analyzed": int(analyzed) }))
 }
 
 /// `GitService.analyze_commit`: the structure analysis of one commit's files. Returns whether
@@ -1110,7 +1110,7 @@ fn remove_released_worktree(
                     .worktree_remove(&worktree.path, false, NO_CHECK_OPTIONS)
                     .map_err(git_err)?;
                 if output.returncode != 0 && path.exists() {
-                    let reason: String = output.stderr.trim().chars().take(300).collect();
+                    let reason: String = prefix(output.stderr.trim(), 300);
                     return Ok(removal_result(&id, false, Some(&reason)));
                 }
             }
@@ -1192,7 +1192,7 @@ pub fn git_install_hook(
     };
     match wg_git::install_post_commit_hook(&git, &repository_id.to_string()) {
         Ok(wg_git::HookOutcome::Installed(hook)) => {
-            Ok(dict(vec![("hook", text(&hook.display().to_string()))]))
+            Ok(dict!({ "hook": text(&hook.display().to_string()) }))
         }
         // Python: `fail(f"{hook} already exists ...", 3)`, a `cli_error` with no details.
         Ok(wg_git::HookOutcome::Refused(hook)) => Err(CliFailure::fail(

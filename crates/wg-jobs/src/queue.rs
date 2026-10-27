@@ -24,7 +24,8 @@ use wg_model::write::{RowKey, Write};
 use wg_types::{Correlation, Id, JobStatus, Timestamp, WgError};
 
 use crate::limits::LimitSettings;
-use crate::{shift, truncate_chars};
+use crate::shift;
+use wg_types::pyval::prefix;
 
 /// Statuses a job holds while it still counts as pending work (`ACTIVE_STATUSES`).
 pub const ACTIVE_STATUSES: [JobStatus; 2] = [JobStatus::Queued, JobStatus::Running];
@@ -603,7 +604,7 @@ fn record_failure(
         status,
         run_at,
         finished_at,
-        last_error: Some(truncate_chars(error, ERROR_TEXT_LIMIT)),
+        last_error: Some(prefix(error, ERROR_TEXT_LIMIT)),
         error_kind: error_kind.map(str::to_owned),
         lease_owner: None,
         lease_expires_at: None,
@@ -647,7 +648,7 @@ fn finish_run(
         .max_by_key(|run| run.started_at)?;
     let error = error
         .filter(|text| !text.is_empty())
-        .map(|text| truncate_chars(text, RUN_ERROR_LIMIT));
+        .map(|text| prefix(text, RUN_ERROR_LIMIT));
     Some(Write::update(JobRun {
         status: status.as_str().to_owned(),
         error,

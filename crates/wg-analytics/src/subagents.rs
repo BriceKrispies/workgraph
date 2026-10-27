@@ -14,9 +14,10 @@ use wg_types::Timestamp;
 use crate::agg::{Groups, aggregate, lookup};
 use crate::common::{
     Kind, Scope, Verdict, Window, iso_value, json_object, median_json, model_name, number, object,
-    task_index, truthy,
+    task_index,
 };
 use crate::source::{AnalyticsInput, CommitRow, SubagentRunRow, TaskRow};
+use wg_types::pyval::truthy_opt;
 
 /// The `period` argument: runs bucketed by ISO week or by calendar month.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -206,7 +207,7 @@ fn classify(
     }
     let telemetry = json_object(row.telemetry.as_deref());
     // Experiment trials have their own report and never reach acceptance, so they would read as pending.
-    if truthy(telemetry.get("trial_ids")) {
+    if truthy_opt(telemetry.get("trial_ids")) {
         return Some(Verdict {
             unlinked: false,
             kind: Kind::Trial,
@@ -417,16 +418,16 @@ fn by_size_rows(
                         .map(|lines| lines as f64),
                 )
             };
-            object(vec![
-                ("model", json!(model.name)),
-                ("band", if unknown { Value::Null } else { json!(band) }),
-                ("tasks", json!(tasks.len())),
-                ("accepted", json!(tally.accepted)),
-                ("decided", json!(tally.decided())),
-                ("acceptance_rate", acceptance_rate),
-                ("wilson", interval),
-                ("median_lines", median_lines),
-            ])
+            json!({
+                "model": json!(model.name),
+                "band": if unknown { Value::Null } else { json!(band) },
+                "tasks": json!(tasks.len()),
+                "accepted": json!(tally.accepted),
+                "decided": json!(tally.decided()),
+                "acceptance_rate": acceptance_rate,
+                "wilson": interval,
+                "median_lines": median_lines,
+            })
         })
         .collect()
 }
@@ -559,20 +560,17 @@ pub fn report(input: &AnalyticsInput, scope: &Scope, period: Period, window: &Wi
         })
         .collect();
 
-    object(vec![
-        ("period", json!(period.name())),
-        (
-            "window",
-            object(vec![
-                ("since", iso_value(window.since)),
-                ("until", iso_value(window.until)),
-            ]),
-        ),
-        ("model", json!(window.model)),
-        ("by_period", Value::Array(period_rows)),
-        ("by_size", Value::Array(size_rows)),
-        ("totals", Value::Array(totals)),
-        ("unlinked_runs", json!(unlinked)),
-        ("notes", json!(notes)),
-    ])
+    json!({
+        "period": json!(period.name()),
+        "window": json!({
+            "since": iso_value(window.since),
+            "until": iso_value(window.until),
+        }),
+        "model": json!(window.model),
+        "by_period": Value::Array(period_rows),
+        "by_size": Value::Array(size_rows),
+        "totals": Value::Array(totals),
+        "unlinked_runs": json!(unlinked),
+        "notes": json!(notes),
+    })
 }

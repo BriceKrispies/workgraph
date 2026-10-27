@@ -23,6 +23,7 @@ use wg_types::{FailureCause, FailureCauseSource, Id, TrialOutcome, TrialStatus, 
 use wg_wire::dto::trial::from_model;
 
 use crate::spec::trial::{choice, parse_status, require_running};
+use wg_types::pyval::{int_or, text};
 
 /// The prefix of a trial's branch (`BRANCH_PREFIX`).
 pub const BRANCH_PREFIX: &str = "wg/trial/";
@@ -263,7 +264,7 @@ pub fn command_record(argv: &[String], exit: i64, duration_ms: u128, output: &st
 /// The `exit` of a command record.
 #[must_use]
 pub fn record_exit(record: &Json) -> i64 {
-    record.get("exit").and_then(Json::as_i64).unwrap_or(-1)
+    int_or(record.get("exit"), -1)
 }
 
 /// The text a failed setup command reports: `setup command <argv> exited <code>: <tail>`.
@@ -276,10 +277,7 @@ pub fn setup_failure(argv: &[String], record: &Json) -> WgError {
         "setup command {} exited {}: {}",
         wg_experiments::briefs::shlex_join(argv),
         record_exit(record),
-        record
-            .get("output_tail")
-            .and_then(Json::as_str)
-            .unwrap_or_default()
+        text(record.get("output_tail"))
     ))
     .detail("command", argv)
     .detail("exit", record_exit(record))

@@ -81,18 +81,6 @@ pub fn py_repr(value: &Value) -> String {
     }
 }
 
-/// Python truthiness of an optional JSON value (`None`, `null`, `0`, `""`, `[]`, `{}` and `false` are falsy).
-pub fn truthy(value: Option<&Value>) -> bool {
-    match value {
-        None | Some(Value::Null) | Some(Value::Bool(false)) => false,
-        Some(Value::Bool(true)) => true,
-        Some(Value::Number(number)) => number.as_f64().is_some_and(|x| x != 0.0),
-        Some(Value::String(text)) => !text.is_empty(),
-        Some(Value::Array(items)) => !items.is_empty(),
-        Some(Value::Object(map)) => !map.is_empty(),
-    }
-}
-
 /// `float.__repr__`: the shortest digits that round-trip, fixed notation for exponents in `-4..16`.
 pub fn float_repr(value: f64) -> String {
     if value.is_nan() {

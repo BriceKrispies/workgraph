@@ -17,6 +17,7 @@ use wg_tasks::transition::{Change, transition};
 use wg_types::{AttemptStatus, Id, TaskStatus, WgError};
 
 use crate::spec::attempts::set_status;
+use wg_types::pyval::prefix;
 
 /// The key a database session is bound under when the agent reports a session.
 pub const BINDING_SOURCE: &str = "workgraph_launched";
@@ -165,7 +166,7 @@ pub fn event_payload(event: &AgentEvent) -> EventPayload {
     let message = match extra.remove("message") {
         Some(Value::String(text)) => text,
         Some(other) => other.to_string(),
-        None => event.message.chars().take(EVENT_MESSAGE_LIMIT).collect(),
+        None => prefix(&event.message, EVENT_MESSAGE_LIMIT),
     };
     match event.kind {
         EventKind::Progress => EventPayload::AttemptProgress(AttemptProgress {

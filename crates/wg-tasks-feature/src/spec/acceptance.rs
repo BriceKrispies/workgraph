@@ -15,6 +15,7 @@ use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::accept::*;
 use wg_tasks::promote::promote_dependents as promotable;
 use wg_tasks::transition::{Applied, Change, transition};
+use wg_types::pyval;
 use wg_types::{Id, Permission, TaskStatus, VerificationStatus, WgError};
 use wg_verify::{LatestRun, TaskScope, accept_refusal, applicable_checks, ran_fast_tier_only};
 use wg_wire::convention::text;
@@ -131,11 +132,8 @@ pub fn land_request_of(manual: bool, reason: &str) -> (&'static str, String) {
 /// The `manual` flag and the reason of a validated `AcceptBody` or `RejectBody`.
 pub fn body_parts(body: &Json) -> (bool, String) {
     (
-        body.get("manual").and_then(Json::as_bool).unwrap_or(false),
-        body.get("reason")
-            .and_then(Json::as_str)
-            .unwrap_or_default()
-            .to_owned(),
+        pyval::flag(body.get("manual")),
+        pyval::text(body.get("reason")).to_owned(),
     )
 }
 

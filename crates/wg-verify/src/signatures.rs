@@ -10,6 +10,7 @@
 
 use regex::Regex;
 use rpds::{RedBlackTreeSetSync, VectorSync};
+use wg_types::pyval::prefix;
 
 /// Which parser reads a check's log.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -277,7 +278,7 @@ fn generic_signatures<S: AsRef<str>>(lines: &[S], patterns: &Patterns) -> Vec<St
         .filter_map(|raw| {
             patterns.generic_error.captures(raw.as_ref()).map(|caps| {
                 let detail = caps.get(2).map_or("", |m| m.as_str());
-                let text: String = detail.trim().chars().take(GENERIC_DETAIL_CHARS).collect();
+                let text: String = prefix(detail.trim(), GENERIC_DETAIL_CHARS);
                 format!("error:{text}")
             })
         })

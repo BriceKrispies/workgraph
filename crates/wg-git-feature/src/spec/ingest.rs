@@ -17,6 +17,7 @@ use wg_model::entity::JsonObject;
 use wg_model::entity::git::{Commit, CommitFileChange};
 use wg_model::event::{GitCommitIngested, GitSyncCompleted};
 use wg_model::{IdSeq, Row};
+use wg_types::pyval::prefix;
 use wg_types::{Id, Timestamp};
 use wg_wire::convention::{int, model, text};
 
@@ -60,8 +61,8 @@ pub fn ingested_commit(
         committer_name: meta.committer_name.clone(),
         committer_email: meta.committer_email.clone(),
         committed_at: meta.committed_at,
-        subject: truncate_chars(meta.subject(), SUBJECT_LIMIT),
-        message: truncate_chars(&meta.message, MESSAGE_LIMIT),
+        subject: prefix(meta.subject(), SUBJECT_LIMIT),
+        message: prefix(&meta.message, MESSAGE_LIMIT),
         trailers: meta
             .trailers
             .iter()
@@ -126,11 +127,6 @@ fn trailer_object(trailer: &wg_gitcore::Trailer) -> JsonObject {
         serde_json::Value::String(trailer.value.clone()),
     );
     object
-}
-
-/// Keeps the first `limit` characters, as Python's `text[:limit]` does.
-fn truncate_chars(text: &str, limit: usize) -> String {
-    text.chars().take(limit).collect()
 }
 
 /// A count as the `i64` the columns hold; counts past `i64::MAX` cannot come from git.
@@ -230,7 +226,7 @@ pub fn commit_ingested_payload(
         insertions: commit.insertions,
         repository_id,
         sha: commit.sha.clone(),
-        subject: truncate_chars(&commit.subject, 200),
+        subject: prefix(&commit.subject, 200),
         task_ids: task_ids.iter().copied().collect(),
     }
 }

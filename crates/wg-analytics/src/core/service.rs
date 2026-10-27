@@ -6,7 +6,7 @@
 use std::cmp::Reverse;
 
 use rpds::RedBlackTreeMapSync;
-use serde_json::Value;
+use serde_json::{Value, json};
 use wg_types::Timestamp;
 
 use super::metrics::{Statistic, describe, find};
@@ -21,16 +21,6 @@ pub const CAUSATION_NOTE: &str = "Metrics describe observed associations; differ
 
 /// A `[since, until)` window of the compare analysis.
 pub type Window = (Timestamp, Timestamp);
-
-/// A JSON object from its entries, in the order given.
-pub(crate) fn object(entries: Vec<(&str, Value)>) -> Value {
-    Value::Object(
-        entries
-            .into_iter()
-            .map(|(key, value)| (key.to_string(), value))
-            .collect(),
-    )
-}
 
 /// The rows of a query with the given grouping and period, and no filters.
 fn grouped_rows(
@@ -74,41 +64,26 @@ pub fn overview(
     .into_iter()
     .take(15)
     .collect();
-    Ok(object(vec![
-        ("created_by_period", by("tasks_created", &["period"])?),
-        ("accepted_by_period", by("tasks_accepted", &["period"])?),
-        ("completed_by_period", by("tasks_completed", &["period"])?),
-        ("open_by_status", by("open_backlog", &["status"])?),
-        ("by_category", by("tasks_created", &["category"])?),
-        ("execution_duration", by("execution_duration", &[])?),
-        ("queue_wait", by("queue_wait", &[])?),
-        ("task_elapsed", by("task_elapsed", &[])?),
-        ("first_pass_success", by("first_pass_success", &[])?),
-        (
-            "agents",
-            by("agent_completion_rate", &["provider", "model"])?,
-        ),
-        (
-            "agent_duration",
-            by("agent_duration", &["provider", "model"])?,
-        ),
-        ("churn", by("cumulative_churn", &[])?),
-        ("final_change", by("final_change_size", &[])?),
-        ("rework", by("rework_ratio", &[])?),
-        (
-            "check_failures_by_period",
-            by("check_failures", &["period", "kind"])?,
-        ),
-        (
-            "verification_pass_rate",
-            by("verification_pass_rate", &["period"])?,
-        ),
-        (
-            "repository_volume",
-            by("repository_change_volume", &["repository"])?,
-        ),
-        ("module_hotspots", Value::Array(hotspots)),
-    ]))
+    Ok(json!({
+        "created_by_period": by("tasks_created", &["period"])?,
+        "accepted_by_period": by("tasks_accepted", &["period"])?,
+        "completed_by_period": by("tasks_completed", &["period"])?,
+        "open_by_status": by("open_backlog", &["status"])?,
+        "by_category": by("tasks_created", &["category"])?,
+        "execution_duration": by("execution_duration", &[])?,
+        "queue_wait": by("queue_wait", &[])?,
+        "task_elapsed": by("task_elapsed", &[])?,
+        "first_pass_success": by("first_pass_success", &[])?,
+        "agents": by("agent_completion_rate", &["provider", "model"])?,
+        "agent_duration": by("agent_duration", &["provider", "model"])?,
+        "churn": by("cumulative_churn", &[])?,
+        "final_change": by("final_change_size", &[])?,
+        "rework": by("rework_ratio", &[])?,
+        "check_failures_by_period": by("check_failures", &["period", "kind"])?,
+        "verification_pass_rate": by("verification_pass_rate", &["period"])?,
+        "repository_volume": by("repository_change_volume", &["repository"])?,
+        "module_hotspots": Value::Array(hotspots),
+    }))
 }
 
 /// `compare`: one metric over two windows, grouped by the dimensions of `group_by` (`period` is
@@ -157,14 +132,14 @@ pub fn compare(
         .values()
         .map(|key| comparison_row(key, &group, a_rows.get(key), b_rows.get(key), key_field))
         .collect();
-    Ok(object(vec![
-        ("metric", describe(&metric)),
-        ("statistic", Value::from(key_field)),
-        ("period_a", window_json(first)),
-        ("period_b", window_json(second)),
-        ("rows", Value::Array(rows)),
-        ("notes", Value::Array(vec![Value::from(CAUSATION_NOTE)])),
-    ]))
+    Ok(json!({
+        "metric": describe(&metric),
+        "statistic": Value::from(key_field),
+        "period_a": window_json(first),
+        "period_b": window_json(second),
+        "rows": Value::Array(rows),
+        "notes": Value::Array(vec![Value::from(CAUSATION_NOTE)]),
+    }))
 }
 
 /// The values of one group key: a NULL dimension is `None`.
@@ -351,24 +326,24 @@ fn history_row(fact: &TaskFact) -> Value {
     let accepted_at = task
         .accepted_at
         .map_or(Value::Null, |at| Value::from(naive_iso(at)));
-    object(vec![
-        ("key", text(&task.key)),
-        ("title", text(&task.title)),
-        ("category", text(&task.category)),
-        ("status", text(&task.status)),
-        ("attempts", number(fact.attempts)),
-        ("retries", number(fact.retries)),
-        ("execution_ms", optional(fact.execution_ms)),
-        ("queue_wait_ms", optional(fact.queue_wait_ms)),
-        ("elapsed_ms", optional(fact.elapsed_ms)),
-        ("commits", number(fact.commits)),
-        ("churn_insertions", number(fact.churn_insertions)),
-        ("churn_deletions", number(fact.churn_deletions)),
-        ("final_insertions", optional(fact.final_insertions)),
-        ("final_deletions", optional(fact.final_deletions)),
-        ("files_touched", number(fact.files_touched)),
-        ("repositories_touched", number(fact.repositories_touched)),
-        ("reopen_count", number(fact.reopen_count)),
-        ("accepted_at", accepted_at),
-    ])
+    json!({
+        "key": text(&task.key),
+        "title": text(&task.title),
+        "category": text(&task.category),
+        "status": text(&task.status),
+        "attempts": number(fact.attempts),
+        "retries": number(fact.retries),
+        "execution_ms": optional(fact.execution_ms),
+        "queue_wait_ms": optional(fact.queue_wait_ms),
+        "elapsed_ms": optional(fact.elapsed_ms),
+        "commits": number(fact.commits),
+        "churn_insertions": number(fact.churn_insertions),
+        "churn_deletions": number(fact.churn_deletions),
+        "final_insertions": optional(fact.final_insertions),
+        "final_deletions": optional(fact.final_deletions),
+        "files_touched": number(fact.files_touched),
+        "repositories_touched": number(fact.repositories_touched),
+        "reopen_count": number(fact.reopen_count),
+        "accepted_at": accepted_at,
+    })
 }

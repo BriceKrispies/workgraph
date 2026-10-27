@@ -130,16 +130,6 @@ pub fn texts<'a>(values: impl IntoIterator<Item = &'a str>) -> Value {
     Value::List(values.into_iter().map(text).collect())
 }
 
-/// A dict value, as a route handler returns a mapping: keys in the order given.
-pub fn dict(fields: Vec<(&'static str, Value)>) -> Value {
-    Value::Dict(
-        fields
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
-            .collect(),
-    )
-}
-
 /// A `Page[T]` envelope (`items`, `total`, `limit`, `offset`, `next_offset`).
 pub fn page(
     items: Vec<Value>,

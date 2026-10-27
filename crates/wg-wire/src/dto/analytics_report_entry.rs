@@ -1,9 +1,9 @@
 //! One stored report of `GET /reports` (`list_reports`).
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_types::Timestamp;
 
-use crate::convention::{TimeFormat, dict, text, timestamp};
+use crate::convention::{TimeFormat, text, timestamp};
 
 /// The name of the report dict; it has no OpenAPI component schema.
 pub const NAME: &str = "ReportOut";
@@ -27,12 +27,12 @@ pub fn from_parts(
     created_at: Timestamp,
     content: &str,
 ) -> Value {
-    dict(vec![
-        ("id", text(id)),
-        ("kind", text(kind)),
-        ("title", text(title)),
-        ("narrative_source", text(narrative_source)),
-        ("created_at", timestamp(created_at, TimeFormat::Isoformat)),
-        ("content", text(content)),
-    ])
+    dict!({
+        "id": text(id),
+        "kind": text(kind),
+        "title": text(title),
+        "narrative_source": text(narrative_source),
+        "created_at": timestamp(created_at, TimeFormat::Isoformat),
+        "content": text(content),
+    })
 }

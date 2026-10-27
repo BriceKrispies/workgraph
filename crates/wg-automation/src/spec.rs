@@ -14,6 +14,7 @@ use crate::condition::{self, Condition, ConditionError};
 use crate::cron::Cron;
 use crate::py;
 use crate::rules::{TRIGGER_EVENTS, TRIGGER_TYPES};
+use wg_types::pyval::{int_or, object, text, truthy};
 
 /// The task priorities a rule may set (`TaskPriority`).
 pub const PRIORITIES: [&str; 4] = ["critical", "high", "medium", "low"];
@@ -120,10 +121,7 @@ pub struct RuleSpec {
 impl RuleSpec {
     /// The trigger kind (`event`, `schedule` or `manual`).
     pub fn trigger_type(&self) -> &str {
-        self.trigger
-            .get("type")
-            .and_then(Value::as_str)
-            .unwrap_or_default()
+        text(self.trigger.get("type"))
     }
 }
 
@@ -738,7 +736,7 @@ fn action_rules(
     given: &Map<String, Value>,
     loc: &[Value],
 ) -> Result<(), Vec<Issue>> {
-    let set = |name: &str| dumped.get(name).is_some_and(py::truthy);
+    let set = |name: &str| dumped.get(name).is_some_and(truthy);
     if tag == "create_dependency" && set("depends_on") == set("blocks") {
         return Err(vec![value_error(
             loc,
@@ -754,17 +752,13 @@ fn action_rules(
 fn trigger_rules(trigger: &Map<String, Value>, loc: &[Value]) -> Result<(), Vec<Issue>> {
     let input = Value::Object(trigger.clone());
     let fail = |msg: String| Err(vec![value_error(loc, &msg, &input)]);
-    match trigger
-        .get("type")
-        .and_then(Value::as_str)
-        .unwrap_or_default()
-    {
+    match text(trigger.get("type")) {
         "event" => event_trigger_rules(trigger).or_else(fail),
         "schedule" => {
-            let cron = trigger.get("cron").filter(|value| py::truthy(value));
+            let cron = trigger.get("cron").filter(|value| truthy(value));
             let interval = trigger
                 .get("interval_seconds")
-                .filter(|value| py::truthy(value));
+                .filter(|value| truthy(value));
             if cron.is_some() == interval.is_some() {
                 return fail(
                     "schedule triggers need exactly one of cron or interval_seconds".to_owned(),
@@ -828,16 +822,16 @@ pub fn validate_rule(value: &Value) -> Result<RuleSpec, Failure> {
             None => Failure::Invalid(issues),
         }
     })?;
-    let trigger = object_of(&dumped, "trigger");
+    let trigger = object(dumped.get("trigger"));
     Ok(RuleSpec {
-        name: text_of(&dumped, "name"),
-        description: text_of(&dumped, "description"),
+        name: text(dumped.get("name")).to_owned(),
+        description: text(dumped.get("description")).to_owned(),
         enabled: dumped
             .get("enabled")
             .and_then(Value::as_bool)
             .unwrap_or(true),
         trigger,
-        conditions: object_of(&dumped, "conditions"),
+        conditions: object(dumped.get("conditions")),
         actions: dumped
             .get("actions")
             .and_then(Value::as_array)
@@ -848,25 +842,7 @@ pub fn validate_rule(value: &Value) -> Result<RuleSpec, Failure> {
                     .collect()
             })
             .unwrap_or_default(),
-        retry_max_attempts: int_of(&dumped, "retry_max_attempts", 3),
-        max_depth: int_of(&dumped, "max_depth", 3),
+        retry_max_attempts: int_or(dumped.get("retry_max_attempts"), 3),
+        max_depth: int_or(dumped.get("max_depth"), 3),
     })
-}
-
-fn object_of(map: &Map<String, Value>, key: &str) -> Map<String, Value> {
-    map.get(key)
-        .and_then(Value::as_object)
-        .cloned()
-        .unwrap_or_default()
-}
-
-fn text_of(map: &Map<String, Value>, key: &str) -> String {
-    map.get(key)
-        .and_then(Value::as_str)
-        .unwrap_or_default()
-        .to_owned()
-}
-
-fn int_of(map: &Map<String, Value>, key: &str, default: i64) -> i64 {
-    map.get(key).and_then(Value::as_i64).unwrap_or(default)
 }

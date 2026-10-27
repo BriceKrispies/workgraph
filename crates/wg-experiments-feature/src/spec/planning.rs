@@ -15,19 +15,20 @@ use wg_experiments::planner::{self, SizeFit, SizeFitOutcome, SizeTrial, Task, Tr
 use wg_experiments::pool::POOL_TAG;
 use wg_experiments::staircase::{Lookup, ProtocolFields, Raw, StaircaseConfig, Step, next_step};
 use wg_experiments::stats::ValueError;
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::{Experiment, ExperimentTrial, JsonObject, SubagentRun, Task as TaskRow};
 use wg_model::event::experiment::ExperimentTrialAdded;
 use wg_model::slice::TaskSlice;
 use wg_model::{Decision, EventDraft, EventPayload, Row, Stamp, Write, py_repr_str};
 use wg_types::{Id, WgError};
 use wg_validate::pydantic::py_repr;
-use wg_wire::convention::{dict, int, optional_float, text};
+use wg_wire::convention::{int, optional_float, text};
 use wg_wire::dto::{experiment_shapes, trial};
 
 use super::lifecycle::RUNNING;
 use super::protocol::arms;
 use super::sql::TrialWithTaskKey;
+use wg_types::pyval::truthy;
 
 /// A replay task the planner may draw from: its key, its band and the replay features it was
 /// validated with.
@@ -90,18 +91,6 @@ fn integer(value: Option<&Json>) -> Option<i64> {
     match value {
         Some(Json::Number(n)) => n.as_i64(),
         _ => None,
-    }
-}
-
-/// Python truthiness of a JSON value.
-fn truthy(value: &Json) -> bool {
-    match value {
-        Json::Null => false,
-        Json::Bool(flag) => *flag,
-        Json::Number(n) => n.as_f64().is_none_or(|x| x != 0.0),
-        Json::String(text) => !text.is_empty(),
-        Json::Array(items) => !items.is_empty(),
-        Json::Object(map) => !map.is_empty(),
     }
 }
 
@@ -632,10 +621,10 @@ impl RunUsage {
 /// `_summary`: the median and mean as a dict.
 fn summary_value(values: &[f64]) -> Value {
     let summary = planner::summary(values);
-    dict(vec![
-        ("median", optional_float(summary.median)),
-        ("mean", optional_float(summary.mean)),
-    ])
+    dict!({
+        "median": optional_float(summary.median),
+        "mean": optional_float(summary.mean),
+    })
 }
 
 /// The numbers of `key` across the runs' dicts.
@@ -658,35 +647,20 @@ fn usage_value(graded: &[&TrialWithTaskKey], runs: &BTreeMap<Id, RunUsage>) -> V
             .filter_map(|row| row.trial.subagent_run_id.and_then(|id| runs.get(&id)))
             .collect();
         let missing = wanted.len() - found.len();
-        dict(vec![
-            ("n", int(i64::try_from(found.len()).unwrap_or(i64::MAX))),
-            (
-                "missing_usage",
-                int(i64::try_from(missing).unwrap_or(i64::MAX)),
-            ),
-            (
-                "output_tokens",
-                summary_value(&numbers(&found, |run| &run.usage, "output_tokens")),
-            ),
-            (
+        dict!({
+            "n": int(i64::try_from(found.len()).unwrap_or(i64::MAX)),
+            "missing_usage": int(i64::try_from(missing).unwrap_or(i64::MAX)),
+            "output_tokens": summary_value(&numbers(&found, |run| &run.usage, "output_tokens")),
+            "cache_read_input_tokens": summary_value(&numbers(
+                &found,
+                |run| &run.usage,
                 "cache_read_input_tokens",
-                summary_value(&numbers(
-                    &found,
-                    |run| &run.usage,
-                    "cache_read_input_tokens",
-                )),
-            ),
-            (
-                "turns",
-                summary_value(&numbers(&found, |run| &run.telemetry, "turns")),
-            ),
-            (
-                "tool_errors",
-                summary_value(&numbers(&found, |run| &run.telemetry, "tool_errors")),
-            ),
-        ])
+            )),
+            "turns": summary_value(&numbers(&found, |run| &run.telemetry, "turns")),
+            "tool_errors": summary_value(&numbers(&found, |run| &run.telemetry, "tool_errors")),
+        })
     };
-    dict(vec![("pass", entry("pass")), ("fail", entry("fail"))])
+    dict!({ "pass": entry("pass"), "fail": entry("fail") })
 }
 
 fn pair(lines: Option<(f64, f64)>) -> Value {
@@ -696,18 +670,18 @@ fn pair(lines: Option<(f64, f64)>) -> Value {
 }
 
 fn fit_value(fit: &SizeFit) -> Value {
-    dict(vec![
-        ("intercept", Value::Float(fit.intercept)),
-        ("slope", Value::Float(fit.slope)),
-        ("converged", Value::Bool(fit.converged)),
-        ("n", int(i64::try_from(fit.n).unwrap_or(i64::MAX))),
-        ("x50", optional_float(fit.x50)),
-        ("x80", optional_float(fit.x80)),
-        ("lines50", optional_float(fit.lines50)),
-        ("lines80", optional_float(fit.lines80)),
-        ("ci50", pair(fit.ci50)),
-        ("ci80", pair(fit.ci80)),
-    ])
+    dict!({
+        "intercept": Value::Float(fit.intercept),
+        "slope": Value::Float(fit.slope),
+        "converged": Value::Bool(fit.converged),
+        "n": int(i64::try_from(fit.n).unwrap_or(i64::MAX)),
+        "x50": optional_float(fit.x50),
+        "x80": optional_float(fit.x80),
+        "lines50": optional_float(fit.lines50),
+        "lines80": optional_float(fit.lines80),
+        "ci50": pair(fit.ci50),
+        "ci80": pair(fit.ci80),
+    })
 }
 
 fn to_counts(pairs: Vec<(String, usize)>) -> Vec<(String, i64)> {
@@ -775,18 +749,12 @@ fn arm_value(
         .iter()
         .filter(|row| row.trial.status == "invalid")
         .map(|row| {
-            dict(vec![
-                ("seq", int(row.trial.seq)),
-                ("task_key", text(&row.task_key)),
-                (
-                    "failure_cause",
-                    row.trial.failure_cause.as_deref().map_or(Value::Null, text),
-                ),
-                (
-                    "notes",
-                    row.trial.notes.as_deref().map_or(Value::Null, text),
-                ),
-            ])
+            dict!({
+                "seq": int(row.trial.seq),
+                "task_key": text(&row.task_key),
+                "failure_cause": row.trial.failure_cause.as_deref().map_or(Value::Null, text),
+                "notes": row.trial.notes.as_deref().map_or(Value::Null, text),
+            })
         })
         .collect();
     Ok(experiment_shapes::arm(&experiment_shapes::ArmReport {

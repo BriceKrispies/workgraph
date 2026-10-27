@@ -3,11 +3,12 @@
 
 use clap::Command;
 use wg_agentspec::PLACEHOLDERS;
-use wg_clispec::args::{get, items, python, truncate};
+use wg_clispec::args::{get, items, python};
 use wg_clispec::tree::snapshot_command;
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::WgError;
+use wg_types::pyval::prefix;
 
 /// The clap command of the `agent` group: the snapshot's own tree.
 #[must_use]
@@ -35,7 +36,7 @@ pub fn list_view(console: &Console, rows: &Value) -> String {
                 text(get(row, "name")),
                 text(get(row, "adapter")),
                 if available { "yes" } else { "NO" }.to_owned(),
-                truncate(&text(get(row, "detail")), 60),
+                prefix(&text(get(row, "detail")), 60),
                 capabilities.join(","),
             ]
         })

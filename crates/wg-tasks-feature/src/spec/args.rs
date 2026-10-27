@@ -8,12 +8,12 @@ use wg_clispec::datetime;
 use wg_clispec::failure::python_number_text;
 use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_clispec::{CliFailure, Snapshot, Usage};
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::py_repr_str;
 use wg_types::WgError;
 use wg_validate::pydantic::error_text;
 use wg_validate::{Loc, ValidationError};
-use wg_wire::convention::{dict, text};
+use wg_wire::convention::text;
 use wg_wire::error::error_body;
 
 /// The usage of `task list`, `task ready`, `task update`, `task claim` and `task progress`, as
@@ -356,26 +356,20 @@ pub fn ready_limit(m: &ArgMatches) -> Result<i64, CliFailure> {
 /// The `{items, errors}` value of `task show` with several references.
 #[must_use]
 pub fn shown_value(found: Vec<Value>, errors: &[(String, WgError)]) -> Value {
-    dict(vec![
-        ("items", Value::List(found)),
-        (
-            "errors",
-            Value::List(
-                errors
-                    .iter()
-                    .map(|(reference, error)| {
-                        dict(vec![
-                            ("ref", text(reference)),
-                            (
-                                "error",
-                                error_body(error.code.as_str(), &error.message, &error.details),
-                            ),
-                        ])
+    dict!({
+        "items": Value::List(found),
+        "errors": Value::List(
+            errors
+                .iter()
+                .map(|(reference, error)| {
+                    dict!({
+                        "ref": text(reference),
+                        "error": error_body(error.code.as_str(), &error.message, &error.details),
                     })
-                    .collect(),
-            ),
+                })
+                .collect(),
         ),
-    ])
+    })
 }
 
 /// Whether a bulk result has failures, which make the command exit 3.

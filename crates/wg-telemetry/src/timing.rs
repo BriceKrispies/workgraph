@@ -16,6 +16,7 @@ use regex::Regex;
 use rpds::{RedBlackTreeMap, Vector};
 use serde_json::{Map, Value, json};
 use wg_types::Timestamp;
+use wg_types::pyval::{prefix, text};
 
 /// The version stamped on every breakdown.
 pub const TIMING_VERSION: u64 = 1;
@@ -144,10 +145,7 @@ fn compile_table() -> Vec<Compiled> {
 }
 
 fn command_text(tool_input: &Value) -> &str {
-    tool_input
-        .get("command")
-        .and_then(Value::as_str)
-        .unwrap_or("")
+    text(tool_input.get("command"))
 }
 
 fn classify_with(table: &[Compiled], name: &str, tool_input: &Value) -> String {
@@ -192,13 +190,10 @@ pub fn describe(name: &str, tool_input: &Value) -> String {
     .map_or_else(
         || name.to_owned(),
         |value| {
-            value
-                .split_whitespace()
-                .collect::<Vec<_>>()
-                .join(" ")
-                .chars()
-                .take(COMMAND_CHARS)
-                .collect()
+            prefix(
+                &value.split_whitespace().collect::<Vec<_>>().join(" "),
+                COMMAND_CHARS,
+            )
         },
     )
 }

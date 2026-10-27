@@ -1,6 +1,6 @@
 //! `GET /api/v1/llm/health`: a dict keyed by provider name, each value `{available, detail}`.
 
-use wg_json::{PyStr, Value};
+use wg_json::{PyStr, Value, dict};
 
 use crate::convention::text;
 
@@ -15,22 +15,12 @@ pub fn health<'a>(providers: impl IntoIterator<Item = (&'a str, bool, &'a str)>)
             .map(|(name, available, detail)| {
                 (
                     PyStr::from(name),
-                    dict(vec![
-                        ("available", Value::Bool(available)),
-                        ("detail", text(detail)),
-                    ]),
+                    dict!({
+                        "available": Value::Bool(available),
+                        "detail": text(detail),
+                    }),
                 )
             })
-            .collect(),
-    )
-}
-
-/// A dict value with its keys in the given order.
-fn dict(fields: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        fields
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
             .collect(),
     )
 }

@@ -1,7 +1,7 @@
 //! The automation outputs: `RuleOut` and `RunOut`, the catalog, and the `automation_list` MCP
 //! output (`{"rules", "recent_runs"}`).
 
-use wg_json::{PyStr, Value};
+use wg_json::{Value, dict};
 use wg_model::entity::automation::{AutomationRule, AutomationRun};
 use wg_types::Id;
 
@@ -142,44 +142,31 @@ pub fn catalog<'a>(
     actions: &[&str],
     operators: &[&str],
 ) -> Value {
-    dict(vec![
-        (
-            "triggers",
-            dict(
-                triggers
-                    .into_iter()
-                    .map(|(key, label)| (key, text(label)))
-                    .collect(),
-            ),
+    dict!({
+        "triggers": dict(
+            triggers
+                .into_iter()
+                .map(|(key, label)| (key, text(label)))
+                .collect(),
         ),
-        ("schedule", strings(&["cron", "interval_seconds"])),
-        ("manual", Value::Bool(true)),
-        ("actions", strings(actions)),
-        ("operators", strings(operators)),
-    ])
+        "schedule": strings(&["cron", "interval_seconds"]),
+        "manual": Value::Bool(true),
+        "actions": strings(actions),
+        "operators": strings(operators),
+    })
 }
 
 /// The `automation_list` MCP output: the rules and the recent runs, already converted.
 pub fn list(rules: Vec<Value>, recent_runs: Vec<Value>) -> Value {
-    dict(vec![
-        ("rules", Value::List(rules)),
-        ("recent_runs", Value::List(recent_runs)),
-    ])
+    dict!({
+        "rules": Value::List(rules),
+        "recent_runs": Value::List(recent_runs),
+    })
 }
 
 /// An optional id field: `null` when absent.
 fn optional_id(value: Option<Id>) -> Value {
     value.map_or(Value::Null, id)
-}
-
-/// A dict value with its keys in the given order.
-fn dict(fields: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        fields
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
-            .collect(),
-    )
 }
 
 fn strings(items: &[&str]) -> Value {

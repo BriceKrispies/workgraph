@@ -23,7 +23,7 @@ pub use similar::{Candidates, candidates, round4};
 pub use classification::{
     ConfirmPlan, Confirmation, CurrentPlan, PromotePlan, RunRow, RunStatus, Superseded, TaskText,
     apply_current, confirm, evaluation_result, evaluation_row, gold_label, model_row,
-    output_schema, promote, truncate, with_current,
+    output_schema, promote, with_current,
 };
 pub use embedding::{
     content_digest, embedding_text, pack, repository_overlap, same_category, similar_score, unpack,

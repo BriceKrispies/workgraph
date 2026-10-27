@@ -11,10 +11,11 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
 use serde_json::Value;
-use wg_jobs::dispatch::{WorkerSettings, is_truthy};
+use wg_jobs::dispatch::WorkerSettings;
 use wg_jobs::queue::ClaimedJob;
 use wg_model::entity::JsonObject;
 use wg_types::WgError;
+use wg_types::pyval::truthy;
 
 use crate::feature::{Feature, JobKind, MaintenanceStep};
 use crate::queue::Queue;
@@ -158,7 +159,7 @@ fn noop(_queue: &mut Queue, ctx: &mut JobContext) -> HandlerResult {
         ctx.check_cancelled()?;
         std::thread::sleep(Duration::from_secs_f64(seconds.min(0.1)));
     }
-    if let Some(message) = payload.get("fail").filter(|value| is_truthy(value)) {
+    if let Some(message) = payload.get("fail").filter(|value| truthy(value)) {
         let text = message
             .as_str()
             .map_or_else(|| message.to_string(), str::to_owned);
@@ -174,7 +175,7 @@ fn noop(_queue: &mut Queue, ctx: &mut JobContext) -> HandlerResult {
 fn compact_telemetry(queue: &mut Queue, ctx: &mut JobContext) -> HandlerResult {
     let config = queue.app.config().map_err(HandlerError::Failed)?;
     let settings = WorkerSettings::from_config(&config);
-    let dry_run = ctx.job.payload.get("dry_run").is_some_and(is_truthy);
+    let dry_run = ctx.job.payload.get("dry_run").is_some_and(truthy);
     queue
         .compact_telemetry(&settings, dry_run)
         .map(Some)

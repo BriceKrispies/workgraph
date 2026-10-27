@@ -5,7 +5,7 @@
 //! `wg-tasks` plans for the rows and events, applies the status changes that follow, and returns
 //! a [`Decision`] whose reply is the output value the command prints.
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::Workspace;
 use wg_model::event::{EventDraft, EventPayload, TaskKeyed};
 use wg_model::slice::QueueSlice;
@@ -19,7 +19,7 @@ use wg_tasks::edit::*;
 use wg_tasks::promote::{PromoteScope, promote_ready as promotable, promoted_by_project};
 use wg_tasks::transition::{Change, transition};
 use wg_types::{Id, Permission, TaskKey, TaskStatus, WgError};
-use wg_wire::convention::{dict, text};
+use wg_wire::convention::text;
 
 use super::requests::CreateRead;
 use wg_tasks::shape::{echo_naive, task_out};
@@ -281,10 +281,10 @@ pub fn promote_ready(
             )
         })
         .collect();
-    let out = dict(vec![
-        ("promoted", Value::List(keys)),
-        ("by_project", Value::Dict(counts)),
-        ("dry_run", Value::Bool(dry_run)),
-    ]);
+    let out = dict!({
+        "promoted": Value::List(keys),
+        "by_project": Value::Dict(counts),
+        "dry_run": Value::Bool(dry_run),
+    });
     Ok(decision.with_reply(out))
 }

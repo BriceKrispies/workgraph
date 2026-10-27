@@ -1,7 +1,7 @@
 //! The notification output of `GET /ws/{ws}/notifications`: a dict the handler builds, so its
 //! datetimes are `isoformat()` strings, not Pydantic's `Z` form.
 
-use wg_json::{PyStr, Value};
+use wg_json::{Value, dict};
 use wg_model::entity::automation::Notification;
 
 use wg_wire::convention::{TimeFormat, id, json_object, optional_timestamp, text, timestamp};
@@ -20,30 +20,14 @@ pub const FIELDS: [&str; 8] = [
 
 /// One notification as the list returns it.
 pub fn from_model(note: &Notification) -> Value {
-    dict(vec![
-        ("id", id(note.id)),
-        ("level", text(&note.level)),
-        ("title", text(&note.title)),
-        ("body", text(&note.body)),
-        ("source", text(&note.source)),
-        ("data", json_object(&note.data)),
-        (
-            "read_at",
-            optional_timestamp(note.read_at, TimeFormat::Isoformat),
-        ),
-        (
-            "created_at",
-            timestamp(note.created_at, TimeFormat::Isoformat),
-        ),
-    ])
-}
-
-/// A dict value with its keys in the given order.
-fn dict(fields: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        fields
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
-            .collect(),
-    )
+    dict!({
+        "id": id(note.id),
+        "level": text(&note.level),
+        "title": text(&note.title),
+        "body": text(&note.body),
+        "source": text(&note.source),
+        "data": json_object(&note.data),
+        "read_at": optional_timestamp(note.read_at, TimeFormat::Isoformat),
+        "created_at": timestamp(note.created_at, TimeFormat::Isoformat),
+    })
 }

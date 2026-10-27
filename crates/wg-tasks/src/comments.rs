@@ -6,6 +6,7 @@
 //! body for search. These functions build the payloads and run the checks.
 
 use serde_json::{Map, Value, json};
+use wg_types::pyval::prefix;
 use wg_types::{CommentKind, Id, WgError};
 
 /// Characters of the body kept in the event payload's `excerpt`.
@@ -22,7 +23,7 @@ pub const fn event_type(kind: CommentKind) -> &'static str {
 
 /// The first [`EXCERPT_CHARS`] characters of a body.
 pub fn excerpt(body: &str) -> String {
-    body.chars().take(EXCERPT_CHARS).collect()
+    prefix(body, EXCERPT_CHARS)
 }
 
 /// A comment given an attempt must name an attempt of the same task.

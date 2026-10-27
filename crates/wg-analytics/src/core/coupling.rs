@@ -11,9 +11,8 @@
 use std::cmp::Reverse;
 
 use rpds::{RedBlackTreeMapSync, RedBlackTreeSetSync, VectorSync};
-use serde_json::Value;
+use serde_json::{Value, json};
 
-use super::service::object;
 use super::stats::sorted;
 use crate::Facts;
 use crate::source::{AnalyticsInput, CheckResult};
@@ -149,45 +148,36 @@ pub fn coupling_report(
                 .iter()
                 .take(50)
                 .map(|task| {
-                    object(vec![
-                        ("task_id", Value::from(task.as_str())),
-                        (
-                            "task_key",
-                            text(fact_of.get(task).and_then(|fact| fact.task.key.clone())),
+                    json!({
+                        "task_id": Value::from(task.as_str()),
+                        "task_key": text(fact_of.get(task).and_then(|fact| fact.task.key.clone())),
+                        "commits": Value::Object(
+                            [a, b]
+                                .into_iter()
+                                .map(|repository| {
+                                    (name_of(repository), shas(&commits, task, repository))
+                                })
+                                .collect(),
                         ),
-                        (
-                            "commits",
-                            Value::Object(
-                                [a, b]
-                                    .into_iter()
-                                    .map(|repository| {
-                                        (name_of(repository), shas(&commits, task, repository))
-                                    })
-                                    .collect(),
-                            ),
-                        ),
-                    ])
+                    })
                 })
                 .collect();
             let is_declared = declared.contains(*pair);
-            object(vec![
-                ("source", Value::from(a.as_str())),
-                ("target", Value::from(b.as_str())),
-                ("source_name", Value::from(name_of(a))),
-                ("target_name", Value::from(name_of(b))),
-                ("co_changes", Value::from(co_changes)),
-                ("jaccard", jaccard.map_or(Value::Null, Value::from)),
-                ("declared", Value::Bool(is_declared)),
-                (
-                    "relationship",
-                    Value::from(if is_declared {
-                        "declared+observed"
-                    } else {
-                        "observed"
-                    }),
-                ),
-                ("evidence", Value::Array(evidence)),
-            ])
+            json!({
+                "source": Value::from(a.as_str()),
+                "target": Value::from(b.as_str()),
+                "source_name": Value::from(name_of(a)),
+                "target_name": Value::from(name_of(b)),
+                "co_changes": Value::from(co_changes),
+                "jaccard": jaccard.map_or(Value::Null, Value::from),
+                "declared": Value::Bool(is_declared),
+                "relationship": Value::from(if is_declared {
+                    "declared+observed"
+                } else {
+                    "observed"
+                }),
+                "evidence": Value::Array(evidence),
+            })
         })
         .collect();
     let observed = supported
@@ -200,11 +190,11 @@ pub fn coupling_report(
         .filter(|(a, b)| !observed.contains(&(a.clone(), b.clone())))
         .filter(|(a, b)| names.get(a).is_some() && names.get(b).is_some())
         .map(|(a, b)| {
-            object(vec![
-                ("source_name", Value::from(name_of(a))),
-                ("target_name", Value::from(name_of(b))),
-                ("relationship", Value::from("declared_only")),
-            ])
+            json!({
+                "source_name": Value::from(name_of(a)),
+                "target_name": Value::from(name_of(b)),
+                "relationship": Value::from("declared_only"),
+            })
         })
         .collect();
 
@@ -260,73 +250,52 @@ pub fn coupling_report(
 
     let matrix = matrix(&repos, &names, &pair_tasks, &touch_counts);
 
-    object(vec![
-        (
-            "repositories",
-            Value::Array(
-                repos
-                    .iter()
-                    .map(|(id, name)| {
-                        object(vec![
-                            ("id", Value::from(id.as_str())),
-                            ("name", Value::from(name.as_str())),
-                            ("tasks_touching", Value::from(touched_count(id.as_str()))),
-                        ])
+    json!({
+        "repositories": Value::Array(
+            repos
+                .iter()
+                .map(|(id, name)| {
+                    json!({
+                        "id": Value::from(id.as_str()),
+                        "name": Value::from(name.as_str()),
+                        "tasks_touching": Value::from(touched_count(id.as_str())),
                     })
-                    .collect(),
-            ),
+                })
+                .collect(),
         ),
-        ("edges", Value::Array(edges.clone())),
-        ("declared_only", Value::Array(declared_only)),
-        ("matrix", matrix),
-        (
-            "summary",
-            object(vec![
-                ("tasks_with_code", Value::from(task_repos.size() as i64)),
-                ("cross_repository_tasks", Value::from(cross.len() as i64)),
-                (
-                    "average_repositories_per_task",
-                    average_repositories.map_or(Value::Null, Value::from),
-                ),
-                ("median_elapsed_ms_cross_repo", elapsed(&cross)),
-                ("median_elapsed_ms_single_repo", elapsed(&single)),
-                ("integration_checks", Value::from(integration_checks as i64)),
-                (
-                    "integration_failure_rate",
-                    (integration_checks > 0)
-                        .then(|| round_to(integration_failed as f64 / integration_checks as f64, 4))
-                        .map_or(Value::Null, Value::from),
-                ),
-            ]),
-        ),
-        (
-            "commonly_changed_pairs",
-            Value::Array(
-                edges
-                    .iter()
-                    .take(10)
-                    .map(|edge| {
-                        object(vec![
-                            (
-                                "pair",
-                                Value::Array(vec![
-                                    edge["source_name"].clone(),
-                                    edge["target_name"].clone(),
-                                ]),
-                            ),
-                            ("co_changes", edge["co_changes"].clone()),
-                        ])
+        "edges": Value::Array(edges.clone()),
+        "declared_only": Value::Array(declared_only),
+        "matrix": matrix,
+        "summary": json!({
+            "tasks_with_code": Value::from(task_repos.size() as i64),
+            "cross_repository_tasks": Value::from(cross.len() as i64),
+            "average_repositories_per_task": average_repositories.map_or(Value::Null, Value::from),
+            "median_elapsed_ms_cross_repo": elapsed(&cross),
+            "median_elapsed_ms_single_repo": elapsed(&single),
+            "integration_checks": Value::from(integration_checks as i64),
+            "integration_failure_rate": (integration_checks > 0)
+                .then(|| round_to(integration_failed as f64 / integration_checks as f64, 4))
+                .map_or(Value::Null, Value::from),
+        }),
+        "commonly_changed_pairs": Value::Array(
+            edges
+                .iter()
+                .take(10)
+                .map(|edge| {
+                    json!({
+                        "pair": Value::Array(vec![
+                            edge["source_name"].clone(),
+                            edge["target_name"].clone(),
+                        ]),
+                        "co_changes": edge["co_changes"].clone(),
                     })
-                    .collect(),
-            ),
+                })
+                .collect(),
         ),
-        ("modules_with_cross_repo_impact", Value::Array(modules)),
-        ("coupling_candidates", Value::Array(candidates)),
-        (
-            "notes",
-            Value::Array(NOTES.iter().map(|note| Value::from(*note)).collect()),
-        ),
-    ])
+        "modules_with_cross_repo_impact": Value::Array(modules),
+        "coupling_candidates": Value::Array(candidates),
+        "notes": Value::Array(NOTES.iter().map(|note| Value::from(*note)).collect()),
+    })
 }
 
 /// The filter of `project`: the tasks linked to a project whose slug or id is `project`. Without
@@ -499,14 +468,11 @@ fn module_impact(
         .fold(
             RedBlackTreeMapSync::<(Reverse<i64>, String), Value>::new_sync(),
             |ranked, (key, (count, tasks))| {
-                let entry = object(vec![
-                    ("module", Value::from(key.as_str())),
-                    ("cross_repo_tasks", Value::from(*count)),
-                    (
-                        "tasks",
-                        Value::Array(tasks.iter().cloned().map(text).collect()),
-                    ),
-                ]);
+                let entry = json!({
+                    "module": Value::from(key.as_str()),
+                    "cross_repo_tasks": Value::from(*count),
+                    "tasks": Value::Array(tasks.iter().cloned().map(text).collect()),
+                });
                 ranked.insert((Reverse(*count), key.clone()), entry)
             },
         )

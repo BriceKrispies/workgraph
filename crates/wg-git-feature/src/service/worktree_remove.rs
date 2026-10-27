@@ -13,6 +13,7 @@ use wg_runtime::App;
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::effects::GIT_TIMEOUT_MS;
 use wg_store::Session;
+use wg_types::pyval::prefix;
 use wg_types::{Id, WgError, WorktreeStatus};
 
 /// The file an attempt directory keeps its manifest in.
@@ -71,7 +72,7 @@ pub fn worktree_remove(
                 .worktree_remove(&row.path, force, RunOptions::UNCHECKED)
                 .map_err(git_failure)?;
             if result.returncode != 0 && path.exists() {
-                let reason: String = result.stderr.trim().chars().take(REFUSAL_CHARS).collect();
+                let reason: String = prefix(result.stderr.trim(), REFUSAL_CHARS);
                 return Ok(Removal::refused(worktree_id, reason));
             }
         } else if force && path.exists() {

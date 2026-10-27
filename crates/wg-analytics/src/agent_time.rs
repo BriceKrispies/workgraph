@@ -13,10 +13,11 @@ use wg_pynum::{bisect_left, bisect_right, group_sorted, median, py_sum, stable_s
 use wg_telemetry::timing::{POLLING, class_names, round3};
 
 use crate::common::{
-    Kind, Scope, Verdict, Window, epoch_seconds, json_object, model_name, nonempty, number, object,
-    owner, parse_epoch, task_index, truthy, window_json,
+    Kind, Scope, Verdict, Window, epoch_seconds, json_object, model_name, number, object, owner,
+    parse_epoch, task_index, window_json,
 };
 use crate::source::{AnalyticsInput, SubagentRunRow, TaskRow};
+use wg_types::pyval::{nonempty, truthy_opt};
 
 /// The class of a run's model time, and of its time waiting on background work.
 pub const MODEL_CLASS: &str = "model";
@@ -99,7 +100,7 @@ fn classify(
     if !window.model_matches(name) {
         return None;
     }
-    if truthy(telemetry.get("trial_ids")) {
+    if truthy_opt(telemetry.get("trial_ids")) {
         return Some(Verdict {
             unlinked: false,
             kind: Kind::Trial,
@@ -250,18 +251,18 @@ impl Totals {
     fn json(&self) -> Value {
         let empty = self.runs == 0;
         let accounted = self.accounted();
-        object(vec![
-            ("runs", json!(self.runs)),
-            ("span_seconds", seconds(self.span, empty)),
-            ("accounted_seconds", seconds(accounted, empty)),
-            ("tool_seconds", seconds(self.tool, empty)),
-            ("model_seconds", seconds(self.model, empty)),
-            ("waiting_seconds", seconds(self.waiting, empty)),
-            ("polling_seconds", seconds(self.polling, empty)),
-            ("model_share", share(self.model, accounted)),
-            ("waiting_share", share(self.waiting, accounted)),
-            ("polling_share", share(self.polling, accounted)),
-        ])
+        json!({
+            "runs": json!(self.runs),
+            "span_seconds": seconds(self.span, empty),
+            "accounted_seconds": seconds(accounted, empty),
+            "tool_seconds": seconds(self.tool, empty),
+            "model_seconds": seconds(self.model, empty),
+            "waiting_seconds": seconds(self.waiting, empty),
+            "polling_seconds": seconds(self.polling, empty),
+            "model_share": share(self.model, accounted),
+            "waiting_share": share(self.waiting, accounted),
+            "polling_share": share(self.polling, accounted),
+        })
     }
 }
 
@@ -398,13 +399,13 @@ pub fn class_rows(runs: &[Timed]) -> Vec<Value> {
     sorted
         .into_iter()
         .map(|(class, seconds, calls)| {
-            object(vec![
-                ("class", json!(class)),
-                ("kind", json!(kind_of(&class))),
-                ("seconds", json!(round3(seconds))),
-                ("calls", json!(calls)),
-                ("share", share(seconds, accounted)),
-            ])
+            json!({
+                "class": json!(class),
+                "kind": json!(kind_of(&class)),
+                "seconds": json!(round3(seconds)),
+                "calls": json!(calls),
+                "share": share(seconds, accounted),
+            })
         })
         .collect()
 }
@@ -472,10 +473,10 @@ pub fn group_rows(runs: &[Timed], by: Group) -> Vec<Value> {
                 .iter()
                 .take(TOP_CLASSES)
                 .map(|(class, seconds)| {
-                    object(vec![
-                        ("class", json!(class)),
-                        ("seconds", json!(round3(*seconds))),
-                    ])
+                    json!({
+                        "class": json!(class),
+                        "seconds": json!(round3(*seconds)),
+                    })
                 })
                 .collect();
             let classes: Vec<(&str, Value)> = row
@@ -483,17 +484,17 @@ pub fn group_rows(runs: &[Timed], by: Group) -> Vec<Value> {
                 .iter()
                 .map(|(class, seconds)| (class.as_str(), json!(round3(*seconds))))
                 .collect();
-            object(vec![
-                ("key", json!(row.key)),
-                ("runs", json!(row.totals.runs)),
-                ("span_seconds", json!(round3(row.totals.span))),
-                ("accounted_seconds", json!(round3(accounted))),
-                ("model_seconds", json!(round3(row.totals.model))),
-                ("waiting_seconds", json!(round3(row.totals.waiting))),
-                ("polling_share", share(row.totals.polling, accounted)),
-                ("top_classes", Value::Array(top_classes)),
-                ("classes", object(classes)),
-            ])
+            json!({
+                "key": json!(row.key),
+                "runs": json!(row.totals.runs),
+                "span_seconds": json!(round3(row.totals.span)),
+                "accounted_seconds": json!(round3(accounted)),
+                "model_seconds": json!(round3(row.totals.model)),
+                "waiting_seconds": json!(round3(row.totals.waiting)),
+                "polling_share": share(row.totals.polling, accounted),
+                "top_classes": Value::Array(top_classes),
+                "classes": object(classes),
+            })
         })
         .collect()
 }
@@ -507,14 +508,14 @@ pub fn breakdown(input: &AnalyticsInput, scope: &Scope, window: &Window, by: Gro
         Group::Class => class_rows(&loaded.runs),
         other => group_rows(&loaded.runs, other),
     };
-    object(vec![
-        ("by", json!(by.name())),
-        ("window", window_json(window)),
-        ("model", json!(window.model)),
-        ("totals", totals(&refs).json()),
-        ("notes", json!(loaded.notes)),
-        ("rows", Value::Array(rows)),
-    ])
+    json!({
+        "by": json!(by.name()),
+        "window": window_json(window),
+        "model": json!(window.model),
+        "totals": totals(&refs).json(),
+        "notes": json!(loaded.notes),
+        "rows": Value::Array(rows),
+    })
 }
 
 /// A slowest call before its concurrency is read off the intervals.
@@ -615,20 +616,17 @@ pub fn bottlenecks(input: &AnalyticsInput, scope: &Scope, window: &Window, top: 
     let slowest_json: Vec<Value> = slowest
         .iter()
         .map(|call| {
-            object(vec![
-                ("class", json!(call.class)),
-                ("seconds", json!(call.seconds)),
-                ("tool", call.tool.clone()),
-                ("command", call.command.clone()),
-                ("at", call.at.clone()),
-                ("description", json!(call.description)),
-                ("model", json!(call.model)),
-                ("task", json!(call.task)),
-                (
-                    "concurrent_runs",
-                    call.at_epoch.map_or(Value::Null, |at| json!(active(at))),
-                ),
-            ])
+            json!({
+                "class": json!(call.class),
+                "seconds": json!(call.seconds),
+                "tool": call.tool.clone(),
+                "command": call.command.clone(),
+                "at": call.at.clone(),
+                "description": json!(call.description),
+                "model": json!(call.model),
+                "task": json!(call.task),
+                "concurrent_runs": call.at_epoch.map_or(Value::Null, |at| json!(active(at))),
+            })
         })
         .collect();
     let by_task: Vec<Value> = group_rows(&loaded.runs, Group::Task)
@@ -636,20 +634,17 @@ pub fn bottlenecks(input: &AnalyticsInput, scope: &Scope, window: &Window, top: 
         .take(top)
         .collect();
 
-    object(vec![
-        ("window", window_json(window)),
-        ("totals", totals(&refs).json()),
-        ("classes", Value::Array(class_rows(&loaded.runs))),
-        ("slowest_calls", Value::Array(slowest_json)),
-        (
-            "concurrency",
-            object(vec![
-                ("peak_during_window", json!(peak)),
-                ("median_at_slowest_calls", int_median(&concurrent)),
-                ("scope", json!(SCOPE)),
-            ]),
-        ),
-        ("by_task", Value::Array(by_task)),
-        ("notes", json!(loaded.notes)),
-    ])
+    json!({
+        "window": window_json(window),
+        "totals": totals(&refs).json(),
+        "classes": Value::Array(class_rows(&loaded.runs)),
+        "slowest_calls": Value::Array(slowest_json),
+        "concurrency": json!({
+            "peak_during_window": json!(peak),
+            "median_at_slowest_calls": int_median(&concurrent),
+            "scope": json!(SCOPE),
+        }),
+        "by_task": Value::Array(by_task),
+        "notes": json!(loaded.notes),
+    })
 }

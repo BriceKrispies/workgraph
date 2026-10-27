@@ -5,14 +5,15 @@
 //! what a fact means, and the text and order of the checks, is decided here.
 
 use serde_json::{Map, Value as Json, json};
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::Workspace;
 use wg_model::{Decision, Stamp};
 use wg_registry::providers::ProviderHealth;
 use wg_types::{Permission, WgError};
-use wg_wire::convention::{dict, optional_text, text};
+use wg_wire::convention::{optional_text, text};
 
 use crate::spec::registry::validate_workspace_create;
+use wg_types::pyval;
 
 /// What `workgraph init` was asked for.
 #[derive(Clone, Copy, Debug)]
@@ -63,11 +64,7 @@ pub fn init_workspace(
     dump: &Map<String, Json>,
 ) -> Result<Decision<Option<String>>, WgError> {
     stamp.require(&[Permission::WorkspaceAdmin])?;
-    let slug = dump
-        .get("slug")
-        .and_then(Json::as_str)
-        .unwrap_or_default()
-        .to_owned();
+    let slug = pyval::text(dump.get("slug")).to_owned();
     if existing.iter().any(|workspace| workspace.slug == slug) {
         return Ok(Decision::new(None));
     }
@@ -88,14 +85,14 @@ pub struct InitFacts<'a> {
 /// The result of `init`.
 #[must_use]
 pub fn init_result(facts: &InitFacts<'_>) -> Value {
-    dict(vec![
-        ("config_dir", text(facts.config_dir)),
-        ("data_dir", text(facts.data_dir)),
-        ("database", text(facts.database)),
-        ("schema_revision", optional_text(facts.schema_revision)),
-        ("workspace_created", optional_text(facts.workspace_created)),
-        ("default_workspace", optional_text(facts.default_workspace)),
-    ])
+    dict!({
+        "config_dir": text(facts.config_dir),
+        "data_dir": text(facts.data_dir),
+        "database": text(facts.database),
+        "schema_revision": optional_text(facts.schema_revision),
+        "workspace_created": optional_text(facts.workspace_created),
+        "default_workspace": optional_text(facts.default_workspace),
+    })
 }
 
 /// What `doctor` observed. The shell fills it; [`doctor_checks`] turns it into the checks.
@@ -317,34 +314,30 @@ pub fn healthy(checks: &[Check]) -> bool {
 /// The result of `doctor`: `{"healthy": ..., "checks": [...]}`.
 #[must_use]
 pub fn doctor_result(checks: &[Check]) -> Value {
-    dict(vec![
-        ("healthy", Value::Bool(healthy(checks))),
-        (
-            "checks",
-            Value::List(
-                checks
-                    .iter()
-                    .map(|c| {
-                        dict(vec![
-                            ("check", text(&c.name)),
-                            ("ok", Value::Bool(c.ok)),
-                            ("level", text(if c.ok { "ok" } else { c.level })),
-                            ("detail", text(&c.detail)),
-                        ])
+    dict!({
+        "healthy": Value::Bool(healthy(checks)),
+        "checks": Value::List(
+            checks
+                .iter()
+                .map(|c| {
+                    dict!({
+                        "check": text(&c.name),
+                        "ok": Value::Bool(c.ok),
+                        "level": text(if c.ok { "ok" } else { c.level }),
+                        "detail": text(&c.detail),
                     })
-                    .collect(),
-            ),
+                })
+                .collect(),
         ),
-    ])
+    })
 }
 
 /// `{"rewritten": [...]}` of `config migrate`.
 #[must_use]
 pub fn migrate_result(rewritten: &[String]) -> Value {
-    dict(vec![(
-        "rewritten",
-        Value::List(rewritten.iter().map(|p| text(p)).collect()),
-    )])
+    dict!({
+        "rewritten": Value::List(rewritten.iter().map(|p| text(p)).collect()),
+    })
 }
 
 /// `ConfigStore.workspace_file`: `<config>/workspaces/<slug>.toml`.

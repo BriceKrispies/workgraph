@@ -31,6 +31,7 @@ use crate::spec::runner::{
     spec_of, timeout_ms,
 };
 use crate::spec::runner_sql;
+use wg_types::pyval::prefix;
 
 /// What `start` reads before it clones: the trial, its experiment and task, and where the
 /// task's repository is checked out.
@@ -238,7 +239,7 @@ pub fn trial_start_run(
         |world| Ok(world.clone()),
     )?;
     let id = world.trial.id.to_string();
-    let short: String = id.chars().take(8).collect();
+    let short: String = prefix(&id, 8);
     let branch = format!("{BRANCH_PREFIX}{short}");
     let dest = PathBuf::from(app.paths.worktrees_dir().as_str())
         .join("trials")

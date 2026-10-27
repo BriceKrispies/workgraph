@@ -25,6 +25,7 @@ use wg_registry::resolve;
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::lifecycle::check_attempt_transition;
 use wg_tasks::transition::{Change, transition};
+use wg_types::pyval::prefix;
 use wg_types::{
     AttemptStatus, ChangeSetItemStatus, Id, TaskStatus, VerificationStatus, WgError, parse_id,
 };
@@ -490,7 +491,7 @@ fn finish_attempt(
         exit_code: None,
         error: error
             .as_ref()
-            .map(|text| text.chars().take(ATTEMPT_ERROR_CHARS).collect())
+            .map(|text| prefix(text, ATTEMPT_ERROR_CHARS))
             .or_else(|| attempt.error.clone()),
         duration_ms: duration.or(attempt.duration_ms),
         updated_at: stamp.at,
@@ -504,7 +505,7 @@ fn finish_attempt(
         exit_code: None,
         duration_ms: finished.duration_ms,
         error: error
-            .map(|text| text.chars().take(EVENT_ERROR_CHARS).collect::<String>())
+            .map(|text| prefix(&text, EVENT_ERROR_CHARS))
             .filter(|text| !text.is_empty()),
     };
     let payload = if passed {

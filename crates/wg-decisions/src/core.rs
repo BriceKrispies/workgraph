@@ -20,6 +20,7 @@ use wg_types::{CommentKind, Permission, WgError};
 use wg_tasks::comments;
 use wg_tasks::promote::PARKED_TAG;
 use wg_tasks::update::{TaskPatch, UpdatePlan, update_plan};
+use wg_types::pyval::prefix;
 
 /// Tag a task carries while a decision on it is open.
 pub const NEEDS_DECISION_TAG: &str = "needs-decision";
@@ -369,11 +370,7 @@ fn decision_event(
     task: &Task,
     decision: &TaskDecision,
 ) -> PlannedEvent {
-    let question: String = decision
-        .question
-        .chars()
-        .take(EVENT_QUESTION_CHARS)
-        .collect();
+    let question: String = prefix(&decision.question, EVENT_QUESTION_CHARS);
     PlannedEvent {
         payload: payload(TaskDecisionChanged {
             key: task.key.clone(),

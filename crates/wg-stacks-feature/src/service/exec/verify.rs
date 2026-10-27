@@ -31,12 +31,13 @@ use wg_types::{Id, VerificationStatus, WgError, parse_id};
 use wg_verify::{ApplicableCheck, CheckSpec};
 use wg_verify_feature::service::reads::{verification_check_results, verification_runs};
 use wg_verify_feature::spec::sql::{Page, RunFilter};
-use wg_wire::convention::{dict, text};
+use wg_wire::convention::text;
 
 use super::stack_world;
 
 use crate::service::load_world;
 use crate::spec::git_failure;
+use wg_json::dict;
 use wg_runtime::index_written;
 
 /// The checkouts of a stack's integration worktrees, with their targets, in repository order.
@@ -712,11 +713,11 @@ impl Exec<'_> {
             .reply;
         self.cancel_verify_jobs(context, stack_id)?;
         self.rebuild_without(context, stack_id)?;
-        Ok(dict(vec![
-            ("status", text("ejected")),
-            ("task", text(&task_key)),
-            ("stack_id", text(&stack_id.to_string())),
-        ]))
+        Ok(dict!({
+            "status": text("ejected"),
+            "task": text(&task_key),
+            "stack_id": text(&stack_id.to_string()),
+        }))
     }
 
     /// `_cancel_verify_jobs`: the stack's queued `stack_verify` jobs are cancelled and a running

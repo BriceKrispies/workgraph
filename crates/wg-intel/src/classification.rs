@@ -14,6 +14,7 @@ use wg_types::{Id, Timestamp};
 
 use crate::evaluation::compute_metrics;
 use crate::taxonomy::{CATEGORIES, COMPLEXITY, PROMPT_VERSION, TAXONOMY_VERSION, input_hash};
+use wg_types::pyval::{object, prefix};
 
 /// The longest stored error text of a failed classification (`error[:5000]`).
 const ERROR_MAX_CHARS: usize = 5000;
@@ -171,7 +172,7 @@ pub fn model_row(run: &RunRow, status: RunStatus<'_>) -> Classification {
             duration_ms,
         } => Classification {
             validation_status: validation.to_owned(),
-            error: Some(truncate(error, ERROR_MAX_CHARS)),
+            error: Some(prefix(error, ERROR_MAX_CHARS)),
             raw_output: raw.cloned(),
             duration_ms,
             ..base
@@ -197,12 +198,6 @@ fn list_field(value: &Value, key: &str) -> VectorSync<String> {
         .unwrap_or_default()
         .into_iter()
         .collect()
-}
-
-/// `text[:n]` in Python: the first `n` characters.
-#[must_use]
-pub fn truncate(text: &str, chars: usize) -> String {
-    text.chars().take(chars).collect()
 }
 
 /// The data of a `classification.superseded` event.
@@ -501,7 +496,7 @@ pub fn evaluation_result(
             "expected": expected,
             "predicted": null,
             "correct": false,
-            "error": truncate(error, RESULT_ERROR_MAX_CHARS),
+            "error": prefix(error, RESULT_ERROR_MAX_CHARS),
         }),
     };
     entry.as_object().cloned().unwrap_or_default()
@@ -545,8 +540,8 @@ pub fn evaluation_row(
         failures: i64::try_from(failures).unwrap_or(i64::MAX),
         accuracy: metric_real(&metrics, "accuracy"),
         macro_f1: metric_real(&metrics, "macro_f1"),
-        per_class: object_of(&metrics, "per_class"),
-        confusion: object_of(&metrics, "confusion"),
+        per_class: object(metrics.get("per_class")),
+        confusion: object(metrics.get("confusion")),
         results: results.iter().cloned().collect(),
         created_at,
     };
@@ -555,12 +550,4 @@ pub fn evaluation_row(
 
 fn metric_real(metrics: &Value, key: &str) -> Option<Real> {
     metrics.get(key).and_then(Value::as_f64).map(Real)
-}
-
-fn object_of(metrics: &Value, key: &str) -> JsonObject {
-    metrics
-        .get(key)
-        .and_then(Value::as_object)
-        .cloned()
-        .unwrap_or_default()
 }

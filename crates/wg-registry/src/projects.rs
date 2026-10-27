@@ -19,6 +19,7 @@ use wg_model::{
 use wg_types::{Id, Permission, WgError};
 
 use crate::resolve;
+use wg_types::pyval::text;
 
 /// A project with its repository ids, sorted: `ProjectOut`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -68,13 +69,6 @@ pub fn view(
     view_after(slice, found.id, &VectorSync::new_sync())
 }
 
-fn text(dump: &JsonObject, key: &str) -> String {
-    dump.get(key)
-        .and_then(Value::as_str)
-        .unwrap_or_default()
-        .to_owned()
-}
-
 fn event(
     stamp: &Stamp,
     id: Id,
@@ -97,7 +91,7 @@ pub fn create(
     let workspace = slice
         .workspace(workspace_id)
         .ok_or_else(|| WgError::not_found("workspace not found"))?;
-    let slug = text(dump, "slug");
+    let slug = text(dump.get("slug")).to_owned();
     let taken = slice
         .projects
         .values()
@@ -114,8 +108,8 @@ pub fn create(
         id: project_id,
         workspace_id,
         slug,
-        name: text(dump, "name"),
-        description: text(dump, "description"),
+        name: text(dump.get("name")).to_owned(),
+        description: text(dump.get("description")).to_owned(),
         status: "active".to_owned(),
         settings: dump
             .get("settings")

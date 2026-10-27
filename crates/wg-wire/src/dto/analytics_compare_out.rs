@@ -1,9 +1,9 @@
 //! The result of `POST /analytics/compare`: one metric over two periods, with the change per group.
 
-use wg_json::{PyStr, Value};
+use wg_json::{PyStr, Value, dict};
 use wg_types::Timestamp;
 
-use crate::convention::{TimeFormat, dict, text, texts, timestamp};
+use crate::convention::{TimeFormat, text, texts, timestamp};
 
 /// The name of the result dict; it has no OpenAPI component schema.
 pub const NAME: &str = "AnalyticsCompareOut";
@@ -51,12 +51,12 @@ pub fn from_parts(
             timestamp(until, TimeFormat::Isoformat),
         ])
     };
-    dict(vec![
-        ("metric", metric),
-        ("statistic", text(statistic)),
-        ("period_a", period(period_a)),
-        ("period_b", period(period_b)),
-        ("rows", Value::List(rows)),
-        ("notes", texts(notes.iter().copied())),
-    ])
+    dict!({
+        "metric": metric,
+        "statistic": text(statistic),
+        "period_a": period(period_a),
+        "period_b": period(period_b),
+        "rows": Value::List(rows),
+        "notes": texts(notes.iter().copied()),
+    })
 }

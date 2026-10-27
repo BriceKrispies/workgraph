@@ -16,6 +16,7 @@ use wg_store::Session;
 use wg_types::{Id, TaskKey, WgError, parse_id};
 
 use crate::backend::Agent;
+use wg_types::pyval::text;
 
 /// Runs tool `name` for `agent`, or returns `None` when the tool is not one of the git tools.
 pub fn call(
@@ -38,10 +39,7 @@ pub fn call(
 /// The git tools: their references resolve here and their success path is not wired yet.
 fn unwired(app: &mut App, name: &str, arguments: &Value) -> Result<Value, WgError> {
     let workspace = workspace_arg(app, arguments)?;
-    let reference = arguments
-        .get("task")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
+    let reference = text(arguments.get("task"));
     app.runtime
         .store
         .read(|session| find_task(session, workspace, reference))?;

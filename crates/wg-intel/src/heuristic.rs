@@ -14,6 +14,7 @@ use serde_json::{Value, json};
 
 use crate::order::{py_sum, round_to, sorted_by};
 use crate::pyrepr::py_str;
+use wg_types::pyval::{or_value, prefix, truthy};
 
 pub const MODEL: &str = "heuristic-v1";
 pub const EMBED_DIM: usize = 256;
@@ -479,7 +480,7 @@ pub fn decompose_text(text: &str) -> Value {
                 };
             json!({
                 "ref": format!("c{}", index + 1),
-                "title": item.chars().take(200).collect::<String>(),
+                "title": prefix(item, 200),
                 "description": format!("Derived from parent checklist item: {item}"),
                 "depends_on": depends_on,
                 "repositories": Vec::<String>::new(),
@@ -499,7 +500,7 @@ pub fn narrative_from_facts(facts_json: &str) -> Result<Value, HeuristicError> {
     let Some(object) = facts.as_object() else {
         return Err(HeuristicError::NotAnObject(python_type_name(&facts)));
     };
-    let summary = or_default(
+    let summary = or_value(
         object.get("summary"),
         Value::String("Engineering activity summary.".to_string()),
     );
@@ -512,33 +513,14 @@ pub fn narrative_from_facts(facts_json: &str) -> Result<Value, HeuristicError> {
     }))
 }
 
-/// `value or default`, in Python's truthiness.
-fn or_default(value: Option<&Value>, default: Value) -> Value {
-    match value {
-        Some(found) if is_truthy(found) => found.clone(),
-        _ => default,
-    }
-}
-
 /// `(value or [])[:limit]` as strings. A string slices by characters.
 fn leading_items(value: Option<&Value>, limit: usize) -> Result<Vec<String>, HeuristicError> {
     match value {
         None => Ok(Vec::new()),
-        Some(found) if !is_truthy(found) => Ok(Vec::new()),
+        Some(found) if !truthy(found) => Ok(Vec::new()),
         Some(Value::Array(items)) => Ok(items.iter().take(limit).map(py_str).collect()),
         Some(Value::String(text)) => Ok(text.chars().take(limit).map(String::from).collect()),
         Some(other) => Err(HeuristicError::NotSliceable(python_type_name(other))),
-    }
-}
-
-fn is_truthy(value: &Value) -> bool {
-    match value {
-        Value::Null => false,
-        Value::Bool(flag) => *flag,
-        Value::Number(number) => number.as_f64().is_some_and(|x| x != 0.0),
-        Value::String(text) => !text.is_empty(),
-        Value::Array(items) => !items.is_empty(),
-        Value::Object(entries) => !entries.is_empty(),
     }
 }
 

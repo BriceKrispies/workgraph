@@ -6,6 +6,7 @@ use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_clispec::{Snapshot, Usage};
 use wg_json::Value;
 use wg_render::Console;
+use wg_types::pyval::prefix;
 
 /// Click's usage line of `git log`, for its `--limit` usage error.
 pub const LOG: Usage = Usage {
@@ -34,20 +35,15 @@ pub fn command() -> clap::Command {
     }
 }
 
-/// `text[:n]`: the first `n` characters.
-fn cut(text: &str, n: usize) -> String {
-    text.chars().take(n).collect()
-}
-
 /// `value[:8]` of an optional id, as `short()` shows it.
 fn short8(value: Option<&Value>) -> String {
     let text = s(value);
-    cut(&text, 8)
+    prefix(&text, 8)
 }
 
 /// `value[:10]`, the SHA prefix the tables show.
 fn sha10(value: Option<&Value>) -> String {
-    cut(&s(value), 10)
+    prefix(&s(value), 10)
 }
 
 /// The text of a value that may be a string, or empty when absent.
@@ -123,7 +119,7 @@ pub fn log_view(console: &Console, page: &Value) -> String {
         .map(|commit| {
             vec![
                 sha10(get(commit, "sha")),
-                cut(&s(get(commit, "subject")), 60),
+                prefix(&s(get(commit, "subject")), 60),
                 s(get(commit, "author")),
                 lines_of(commit),
                 task_keys(get(commit, "tasks")),
@@ -178,7 +174,7 @@ pub fn show_view(console: &Console, detail: &Value) -> String {
                 s(get(file, "path")),
                 lines_of(file),
                 s(get(file, "file_class")),
-                cut(&symbols, 60),
+                prefix(&symbols, 60),
             ]
         })
         .collect();
@@ -233,7 +229,7 @@ pub fn changes_view(console: &Console, changes: &Value) -> String {
             vec![
                 s(get(commit, "repository")),
                 sha10(get(commit, "sha")),
-                cut(&s(get(commit, "subject")), 50),
+                prefix(&s(get(commit, "subject")), 50),
                 confidence,
                 sources.join(","),
             ]

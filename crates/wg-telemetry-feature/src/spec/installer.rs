@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 
 use serde_json::{Map, Value, json};
 use wg_types::WgError;
+use wg_types::pyval::{prefix, text};
 
 /// `DEFAULT_EVENTS`: the hook events Workgraph installs, in Python's order.
 pub const DEFAULT_EVENTS: [&str; 10] = [
@@ -106,7 +107,7 @@ pub fn is_workgraph_handler(handler: &Value) -> bool {
     if object.get("type").and_then(Value::as_str) != Some("command") {
         return false;
     }
-    let command = object.get("command").and_then(Value::as_str).unwrap_or("");
+    let command = text(object.get("command"));
     let forward = command.replace('\\', "/");
     let last = forward.rsplit('/').next().unwrap_or("");
     let stem = Path::new(last)
@@ -415,7 +416,7 @@ pub fn mcp_add_argv(claude: &str, scope: &str, command: &str) -> Vec<String> {
 #[must_use]
 pub fn mcp_output(stdout: &str, stderr: &str) -> String {
     let text = if stdout.is_empty() { stderr } else { stdout };
-    text.trim().chars().take(500).collect()
+    prefix(text.trim(), 500)
 }
 
 #[cfg(test)]

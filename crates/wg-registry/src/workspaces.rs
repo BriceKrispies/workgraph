@@ -13,13 +13,7 @@ use wg_model::{
 use wg_types::{Permission, WgError};
 
 use crate::{resolve, settings};
-
-fn field(dump: &JsonObject, key: &str) -> String {
-    dump.get(key)
-        .and_then(serde_json::Value::as_str)
-        .unwrap_or_default()
-        .to_owned()
-}
+use wg_types::pyval::text;
 
 /// The insert of a new workspace from a validated `WorkspaceCreate` dump, with its event, and
 /// none of the checks of [`create`]. `init` uses it after its own existence test.
@@ -27,10 +21,10 @@ pub fn insert(stamp: &Stamp, dump: &JsonObject) -> Decision<Workspace> {
     let ([workspace_id, event_id], _) = stamp.ids().take::<2>();
     let row = Workspace {
         id: workspace_id,
-        slug: field(dump, "slug"),
-        name: field(dump, "name"),
-        description: field(dump, "description"),
-        key_prefix: field(dump, "key_prefix"),
+        slug: text(dump.get("slug")).to_owned(),
+        name: text(dump.get("name")).to_owned(),
+        description: text(dump.get("description")).to_owned(),
+        key_prefix: text(dump.get("key_prefix")).to_owned(),
         next_task_number: 1,
         settings: JsonObject::new(),
         archived_at: None,
@@ -61,7 +55,7 @@ pub fn create(
     dump: &JsonObject,
 ) -> Result<Decision<Workspace>, WgError> {
     stamp.require(&[Permission::WorkspaceAdmin])?;
-    let slug = field(dump, "slug");
+    let slug = text(dump.get("slug")).to_owned();
     if slice.workspace_by_slug(&slug).is_some() {
         return Err(WgError::conflict(format!(
             "workspace {} already exists",

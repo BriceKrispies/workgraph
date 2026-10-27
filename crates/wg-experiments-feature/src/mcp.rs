@@ -16,6 +16,7 @@ use wg_wire::dto::experiment_shapes;
 
 use crate::service::{self, runner, trials};
 use crate::spec::predict::{FitSettings, PredictRequest};
+use wg_types::pyval::int_or;
 
 /// The feature's tool descriptor: one [`call`] that answers the experiment tool names.
 pub const TOOLS: &[ToolRun] = &[call];
@@ -146,10 +147,7 @@ fn fit(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Dto, WgError> 
             .get("feature_penalty")
             .and_then(Value::as_f64)
             .unwrap_or(0.01),
-        samples: arguments
-            .get("samples")
-            .and_then(Value::as_i64)
-            .unwrap_or(200),
+        samples: int_or(arguments.get("samples"), 200),
         seed: arguments
             .get("seed")
             .and_then(Value::as_i64)

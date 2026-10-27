@@ -3,18 +3,6 @@
 
 use serde_json::{Map, Value};
 
-/// Python's `bool(value)` for the values a TOML document can hold.
-pub(crate) fn truthy(value: &Value) -> bool {
-    match value {
-        Value::Null => false,
-        Value::Bool(flag) => *flag,
-        Value::Number(number) => number.as_f64().is_some_and(|n| n != 0.0),
-        Value::String(text) => !text.is_empty(),
-        Value::Array(items) => !items.is_empty(),
-        Value::Object(members) => !members.is_empty(),
-    }
-}
-
 /// The document without its `null` members, at every depth (`model_dump(exclude_none=True)`).
 #[must_use]
 pub fn strip_none(map: &Map<String, Value>) -> Map<String, Value> {

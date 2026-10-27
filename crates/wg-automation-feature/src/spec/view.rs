@@ -2,23 +2,16 @@
 //! tables a result prints, as functions of the result document and the console. The arguments are
 //! in [`super::args`].
 
-use wg_clispec::args::{get, items, opt, python, s, truncate, when};
+use wg_clispec::args::{cell, get, items, opt, python, s, when};
 use wg_json::Value;
 use wg_render::{Console, escape};
+use wg_types::pyval::prefix;
 
 /// Python's `str()` of a datetime value: `2026-10-26 10:07:27.331851+00:00`.
 fn datetime_text(value: &Value) -> Option<String> {
     match value {
         Value::DateTime(at) => Some(at.format_isoformat().replacen('T', " ", 1)),
         other => opt(Some(other)),
-    }
-}
-
-/// `table(rows, headers)` cell text: `None` is empty, anything else is `str()`.
-fn cell(value: Option<&Value>) -> String {
-    match value {
-        None | Some(Value::Null) => String::new(),
-        Some(other) => python(other),
     }
 }
 
@@ -135,12 +128,12 @@ pub fn runs_view(console: &Console, runs: &Value) -> String {
         .iter()
         .map(|run| {
             vec![
-                truncate(&s(get(run, "id")), 8),
-                truncate(&s(get(run, "rule_id")), 8),
+                prefix(&s(get(run, "id")), 8),
+                prefix(&s(get(run, "rule_id")), 8),
                 s(get(run, "trigger_type")),
                 s(get(run, "status")),
                 s(get(run, "depth")),
-                truncate(&s(get(run, "reason")), 50),
+                prefix(&s(get(run, "reason")), 50),
                 when(get(run, "created_at")),
             ]
         })
@@ -165,7 +158,7 @@ pub fn notifications_view(console: &Console, rows: &Value) -> String {
             vec![
                 s(get(note, "level")),
                 s(get(note, "title")),
-                truncate(&s(get(note, "created_at")), 16),
+                prefix(&s(get(note, "created_at")), 16),
             ]
         })
         .collect();
@@ -180,7 +173,7 @@ pub fn trigger_line(console: &Console, run: &Value) -> String {
     console
         .print(&format!(
             "run {}: {} ({})",
-            truncate(&s(get(run, "id")), 8),
+            prefix(&s(get(run, "id")), 8),
             s(get(run, "status")),
             escape(&s(get(run, "reason")))
         ))

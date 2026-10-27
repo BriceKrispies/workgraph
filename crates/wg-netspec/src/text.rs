@@ -1,11 +1,6 @@
 //! Text helpers: the Python-shaped snippets the messages quote, and percent-encoding for query
 //! strings.
 
-/// The first `count` characters of `text` (`text[:count]`).
-pub fn head(text: &str, count: usize) -> String {
-    text.chars().take(count).collect()
-}
-
 /// A single-quoted string as Python's `repr` shows plain text (`'name'`).
 pub fn py_repr(text: &str) -> String {
     format!("'{text}'")

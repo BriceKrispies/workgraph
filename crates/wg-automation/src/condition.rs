@@ -9,7 +9,8 @@
 use regex::Regex;
 use serde_json::{Map, Value, json};
 
-use crate::py::{compare, contains, eq, truthy};
+use crate::py::{compare, contains, eq};
+use wg_types::pyval::{prefix, truthy};
 
 /// Longest string value a predicate may compare with, in characters.
 pub const MAX_VALUE_CHARS: usize = 500;
@@ -327,7 +328,7 @@ fn compare_op(actual: &Value, op: Operator, expected: &Value) -> bool {
         },
         Operator::Matches => match actual {
             Value::String(text) => {
-                let prefix: String = text.chars().take(MATCH_PREFIX_CHARS).collect();
+                let prefix: String = prefix(text, MATCH_PREFIX_CHARS);
                 Regex::new(&crate::py::str_of(expected))
                     .map(|pattern| pattern.is_match(&prefix))
                     .unwrap_or(false)

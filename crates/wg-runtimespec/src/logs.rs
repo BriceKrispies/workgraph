@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 
 use wg_json::{DumpError, PyStr, Value, log_json};
 use wg_types::{Timestamp, WgError};
+use wg_wire::convention::text;
 
 /// The log file in `<logs>`.
 pub const LOG_FILE_NAME: &str = "workgraph.log";
@@ -157,10 +158,6 @@ pub fn format_record(record: &LogRecord) -> Result<String, DumpError> {
             .map(|(key, value)| (PyStr::from(key.as_str()), value))
             .collect(),
     ))
-}
-
-fn text(value: &str) -> Value {
-    Value::Str(PyStr::from(value))
 }
 
 /// `payload[key] = value`: a key already present keeps its place.

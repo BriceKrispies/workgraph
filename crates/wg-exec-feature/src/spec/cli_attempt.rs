@@ -4,10 +4,11 @@
 
 use clap::Command;
 use wg_clispec::Snapshot;
-use wg_clispec::args::{get, items, python, s, when};
+use wg_clispec::args::{cell, get, items, python, s, when};
 use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_json::Value;
 use wg_render::Console;
+use wg_types::pyval::prefix;
 
 /// The clap command of the `attempt` group: the snapshot's own tree.
 #[must_use]
@@ -15,15 +16,6 @@ pub fn command() -> Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "attempt"),
         Err(_) => wg_clispec::tree::command("attempt"),
-    }
-}
-
-/// A table cell: the value's `str()`, or nothing for a missing value (Python's table prints
-/// `None` as an empty cell).
-fn cell(value: Option<&Value>) -> String {
-    match value {
-        None | Some(Value::Null) => String::new(),
-        Some(other) => python(other),
     }
 }
 
@@ -39,7 +31,7 @@ fn fmt_ms(value: Option<&Value>) -> String {
 /// `short(id)`: the first eight characters of an id.
 fn short(value: Option<&Value>) -> String {
     let text = cell(value);
-    text.chars().take(8).collect()
+    prefix(&text, 8)
 }
 
 /// The human view of `attempt list`: the page's items as a table.
@@ -172,7 +164,7 @@ pub fn manifests_view(console: &Console, manifests: &Value) -> String {
 /// `e.get("sha", "")[:12] if e.get("sha") else ""`: a non-empty sha, cut to twelve characters.
 fn sha_cell(value: Option<&Value>) -> String {
     match value {
-        Some(Value::Str(_)) => cell(value).chars().take(12).collect(),
+        Some(Value::Str(_)) => prefix(&cell(value), 12),
         _ => String::new(),
     }
 }
@@ -256,7 +248,7 @@ pub fn start_view(console: &Console, out: &Value) -> String {
         .iter()
         .map(|repo| {
             let base = match get(repo, "base_sha") {
-                Some(Value::Str(_)) => cell(get(repo, "base_sha")).chars().take(12).collect(),
+                Some(Value::Str(_)) => prefix(&cell(get(repo, "base_sha")), 12),
                 _ => "?".to_owned(),
             };
             console
@@ -299,7 +291,7 @@ pub fn submit_view(console: &Console, reference: &str, out: &Value) -> String {
     let head = console
         .print(&format!(
             "attempt {} {}; task {}{}",
-            reference.chars().take(8).collect::<String>(),
+            prefix(reference, 8),
             cell(get(out, "attempt_status")),
             cell(get(out, "task_status")),
             suffix

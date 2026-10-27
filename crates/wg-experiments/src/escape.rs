@@ -8,6 +8,7 @@
 //! a quote, whitespace, or one of `;`, `&`, `|`.
 
 use serde_json::Value;
+use wg_types::pyval::prefix;
 
 /// Longest excerpt kept from the offending input string, in characters (`EXCERPT_CHARS`).
 pub const EXCERPT_CHARS: usize = 300;
@@ -155,7 +156,7 @@ pub fn find_escapes(calls: &[ToolCall], forbidden_roots: &[String]) -> Vec<Escap
                             tool: call.name.clone(),
                             tool_use_id: call.tool_use_id.clone(),
                             root: original.clone(),
-                            excerpt: raw.chars().take(EXCERPT_CHARS).collect(),
+                            excerpt: prefix(raw, EXCERPT_CHARS),
                         })
                 })
                 .collect::<Vec<Escape>>()

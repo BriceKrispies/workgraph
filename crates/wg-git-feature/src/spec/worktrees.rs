@@ -5,7 +5,7 @@
 use std::path::Path;
 
 use wg_git::GitError;
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::decision::Decision;
 use wg_model::entity::run::ManagedWorktree;
 use wg_model::event::{EventDraft, EventPayload, WorktreeRemoved};
@@ -13,7 +13,7 @@ use wg_model::stamp::Stamp;
 use wg_model::write::Write;
 use wg_types::{Id, WgError, WorktreeStatus};
 use wg_wire::convention::{
-    TimeFormat, dict, id, optional_id, optional_text, optional_timestamp, text, timestamp,
+    TimeFormat, id, optional_id, optional_text, optional_timestamp, text, timestamp,
 };
 
 /// One managed worktree with the name of its repository.
@@ -30,25 +30,19 @@ pub fn list_value(rows: &[WorktreeRow<'_>]) -> Value {
 
 fn list_item(row: &WorktreeRow<'_>) -> Value {
     let worktree = row.worktree;
-    dict(vec![
-        ("id", id(worktree.id)),
-        ("repository", text(row.repository)),
-        ("repository_id", id(worktree.repository_id)),
-        ("attempt_id", optional_id(worktree.attempt_id)),
-        ("path", text(&worktree.path)),
-        ("branch", text(&worktree.branch)),
-        ("base_sha", text(&worktree.base_sha)),
-        ("status", text(worktree.status.as_str())),
-        ("last_error", optional_text(worktree.last_error.as_deref())),
-        (
-            "created_at",
-            timestamp(worktree.created_at, TimeFormat::Isoformat),
-        ),
-        (
-            "removed_at",
-            optional_timestamp(worktree.removed_at, TimeFormat::Isoformat),
-        ),
-    ])
+    dict!({
+        "id": id(worktree.id),
+        "repository": text(row.repository),
+        "repository_id": id(worktree.repository_id),
+        "attempt_id": optional_id(worktree.attempt_id),
+        "path": text(&worktree.path),
+        "branch": text(&worktree.branch),
+        "base_sha": text(&worktree.base_sha),
+        "status": text(worktree.status.as_str()),
+        "last_error": optional_text(worktree.last_error.as_deref()),
+        "created_at": timestamp(worktree.created_at, TimeFormat::Isoformat),
+        "removed_at": optional_timestamp(worktree.removed_at, TimeFormat::Isoformat),
+    })
 }
 
 /// The dry-run result of `cleanup-worktrees`: every released worktree with the action a real run

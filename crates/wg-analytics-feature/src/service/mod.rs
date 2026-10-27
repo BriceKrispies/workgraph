@@ -22,6 +22,7 @@ use wg_wire::convention::json_value;
 
 use crate::spec::analyses::{self, Typed, compare_out};
 use crate::spec::query::{self, QueryRequest};
+use wg_types::pyval::text;
 
 /// `AnalyticsService.require(ANALYTICS_READ)`; the stamp's clock reading is the service's `utcnow()`.
 fn require(app: &mut App, context: &RequestContext) -> Result<Timestamp, WgError> {
@@ -205,10 +206,7 @@ fn persist_findings(app: &mut App, workspace: Option<&str>) -> Result<usize, WgE
             .iter()
             .enumerate()
             .try_for_each(|(index, finding)| {
-                let fingerprint = finding
-                    .get("fingerprint")
-                    .and_then(Json::as_str)
-                    .unwrap_or_default();
+                let fingerprint = text(finding.get("fingerprint"));
                 let stored = finding_by_fingerprint(session, ws, fingerprint)?;
                 let id = stamp.id(u32::try_from(index).unwrap_or(u32::MAX));
                 let write = match stored {

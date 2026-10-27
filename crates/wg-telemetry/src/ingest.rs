@@ -22,8 +22,8 @@ use crate::hook::{
     HookFields, Normalised, ToolEventRow, internal_task_description, internal_task_subject,
     last_message_excerpt, parse_utc, tool_counters,
 };
-use crate::json::truthy;
 use crate::transcript::TranscriptStats;
+use wg_types::pyval::{prefix, truthy};
 
 /// The provider every hook row records.
 pub const PROVIDER: &str = "claude_code";
@@ -50,7 +50,7 @@ pub struct HookEnv {
 
 /// The launch context of a record: its `env` object when it has one, with only text values kept.
 pub fn hook_env(record: &Value) -> HookEnv {
-    let env = record.get("env").filter(|env| truthy(Some(env)));
+    let env = record.get("env").filter(|env| truthy(env));
     let text = |key: &str| {
         env.and_then(|env| env.get(key))
             .and_then(Value::as_str)
@@ -132,11 +132,7 @@ pub fn hook_row(
         id,
         dedupe_key: normalised.dedupe_key.clone(),
         provider: PROVIDER.to_owned(),
-        hook_event_name: normalised
-            .event
-            .chars()
-            .take(crate::hook::EVENT_NAME_CHARS)
-            .collect(),
+        hook_event_name: prefix(&normalised.event, crate::hook::EVENT_NAME_CHARS),
         external_session_id: normalised.fields.session_id.clone(),
         session_id: session.map(|session| session.id),
         attempt_id: session.and_then(|session| session.attempt_id),
@@ -549,7 +545,7 @@ pub fn finish_attempt(
             .summary
             .clone()
             .filter(|text| !text.is_empty())
-            .map(|text| text.chars().take(50_000).collect())
+            .map(|text| prefix(&text, 50_000))
             .or_else(|| attempt.summary.clone()),
         usage: if clean.is_empty() {
             attempt.usage.clone()

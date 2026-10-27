@@ -6,8 +6,9 @@ use wg_types::WgError;
 
 use crate::condition::OPERATORS;
 use crate::cron::Cron;
-use crate::py::{str_of, truthy};
+use crate::py::str_of;
 use crate::template::render_default;
+use wg_types::pyval::{text, truthy};
 
 /// Event types that rules may subscribe to, with their labels, in catalog order.
 pub const TRIGGER_EVENTS: [(&str, &str); 11] = [
@@ -85,10 +86,7 @@ pub fn validate_trigger(trigger: &Map<String, Value>) -> Result<(), WgError> {
             }
         }
     }
-    let kind = trigger
-        .get("type")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
+    let kind = text(trigger.get("type"));
     if !TRIGGER_TYPES.contains(&kind) {
         return Err(WgError::validation(format!(
             "trigger type must be one of {TRIGGER_TYPES:?}"
@@ -155,10 +153,7 @@ fn task_text(context: &Value) -> String {
 /// One line describing what an action would do for the context (`AutomationService._describe`).
 pub fn describe_action(action: &Map<String, Value>, context: &Value) -> String {
     let task = task_text(context);
-    let kind = action
-        .get("type")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
+    let kind = text(action.get("type"));
     let field = |name: &str| action.get(name).cloned().unwrap_or(Value::Null);
     match kind {
         "classify_task" => format!("request classification of {task}"),

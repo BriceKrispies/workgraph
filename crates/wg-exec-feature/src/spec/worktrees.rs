@@ -17,7 +17,7 @@ use wg_exec::recovery::{RecoveryAction, WorktreeFacts, recovery_action};
 pub use wg_git_feature::spec::worktrees::{
     Removal, git_failure, io_failure, removal_out, removed_decision,
 };
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::decision::Decision;
 use wg_model::entity::{
     AgentAttempt, ChangeSet, ChangeSetItem, JsonObject, ManagedWorktree, ResourceLease,
@@ -35,7 +35,7 @@ use wg_types::{
 };
 use wg_verify::{ApplicableCheck, CheckTier, TaskScope, applicable_checks, checks_for_tier};
 use wg_wire::convention::{
-    TimeFormat, dict, id, optional_id, optional_text, optional_timestamp, text, texts, timestamp,
+    TimeFormat, id, optional_id, optional_text, optional_timestamp, text, texts, timestamp,
 };
 
 /// The `last_error` of a row whose checkout is missing (`recover`).
@@ -185,24 +185,12 @@ fn len(paths: &[String]) -> i64 {
 
 /// The report of `worker recover`'s `worktrees` entry: the four path lists, in Python's key order.
 pub fn recovery_report_out(report: &RecoveryReport) -> Value {
-    dict(vec![
-        (
-            "activated",
-            texts(report.activated.iter().map(String::as_str)),
-        ),
-        (
-            "released",
-            texts(report.released.iter().map(String::as_str)),
-        ),
-        (
-            "orphaned",
-            texts(report.orphaned.iter().map(String::as_str)),
-        ),
-        (
-            "unknown_dirs",
-            texts(report.unknown_dirs.iter().map(String::as_str)),
-        ),
-    ])
+    dict!({
+        "activated": texts(report.activated.iter().map(String::as_str)),
+        "released": texts(report.released.iter().map(String::as_str)),
+        "orphaned": texts(report.orphaned.iter().map(String::as_str)),
+        "unknown_dirs": texts(report.unknown_dirs.iter().map(String::as_str)),
+    })
 }
 
 /// `WorktreeManager.list`: one dict per managed worktree, in the order the rows came (newest
@@ -213,25 +201,19 @@ pub fn worktree_list_out(rows: &[WorktreeWithRepository]) -> Value {
 
 fn worktree_item(row: &WorktreeWithRepository) -> Value {
     let worktree = &row.worktree;
-    dict(vec![
-        ("id", id(worktree.id)),
-        ("repository", text(&row.repository_name)),
-        ("repository_id", id(worktree.repository_id)),
-        ("attempt_id", optional_id(worktree.attempt_id)),
-        ("path", text(&worktree.path)),
-        ("branch", text(&worktree.branch)),
-        ("base_sha", text(&worktree.base_sha)),
-        ("status", text(worktree.status.as_str())),
-        ("last_error", optional_text(worktree.last_error.as_deref())),
-        (
-            "created_at",
-            timestamp(worktree.created_at, TimeFormat::Isoformat),
-        ),
-        (
-            "removed_at",
-            optional_timestamp(worktree.removed_at, TimeFormat::Isoformat),
-        ),
-    ])
+    dict!({
+        "id": id(worktree.id),
+        "repository": text(&row.repository_name),
+        "repository_id": id(worktree.repository_id),
+        "attempt_id": optional_id(worktree.attempt_id),
+        "path": text(&worktree.path),
+        "branch": text(&worktree.branch),
+        "base_sha": text(&worktree.base_sha),
+        "status": text(worktree.status.as_str()),
+        "last_error": optional_text(worktree.last_error.as_deref()),
+        "created_at": timestamp(worktree.created_at, TimeFormat::Isoformat),
+        "removed_at": optional_timestamp(worktree.removed_at, TimeFormat::Isoformat),
+    })
 }
 
 /// A managed worktree `release` targets: its id, its path and the checkout it was made from.

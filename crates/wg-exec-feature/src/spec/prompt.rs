@@ -1,6 +1,7 @@
 //! The instruction an agent is given for one attempt (`orchestration/prompt.py`).
 
 use serde_json::{Map, Value};
+use wg_types::pyval::prefix;
 
 /// The version recorded with the prompt and in the attempt's config snapshot.
 pub const PROMPT_VERSION: &str = "run-prompt-v1";
@@ -70,13 +71,7 @@ pub fn build_prompt(
         } else {
             "READ-ONLY (do not modify)"
         };
-        let base: String = repo
-            .sha
-            .as_deref()
-            .unwrap_or("None")
-            .chars()
-            .take(12)
-            .collect();
+        let base: String = prefix(repo.sha.as_deref().unwrap_or("None"), 12);
         format!(
             "- `{}` at `{}` ({access}, base {base})",
             repo.repository, repo.checkout_path

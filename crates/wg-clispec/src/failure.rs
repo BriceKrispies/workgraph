@@ -2,7 +2,7 @@
 //! and O05; `fail` and `handle_errors` of `cli/common.py`).
 
 use serde_json::{Map, Value as Json};
-use wg_json::{PyStr, Value, log_json, py_float_repr};
+use wg_json::{Value, dict, log_json, py_float_repr};
 use wg_model::py_repr_str;
 use wg_render::{Console, cell_len, char_cells};
 use wg_types::WgError;
@@ -219,10 +219,9 @@ pub fn report(failure: &CliFailure, json: bool, console: &Console) -> Report {
         CliFailure::Fail {
             message, details, ..
         } if json => (
-            envelope_line(&Value::Dict(vec![(
-                PyStr::from("error"),
-                error_body(CLI_ERROR_CODE, message, details),
-            )])),
+            envelope_line(&dict!({
+                "error": error_body(CLI_ERROR_CODE, message, details),
+            })),
             String::new(),
         ),
         CliFailure::Domain(error) => {

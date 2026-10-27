@@ -2,6 +2,7 @@
 //! before it passes a name to git.
 
 use std::collections::BTreeSet;
+use wg_types::pyval::prefix;
 
 /// `re.fullmatch`-style check of a commit id: 7 to 64 lowercase hexadecimal digits.
 pub fn is_sha(value: &str) -> bool {
@@ -163,7 +164,7 @@ pub fn failed_message(args: &[String], returncode: i32, stderr: &str) -> String 
         .map(String::as_str)
         .collect::<Vec<_>>()
         .join(" ");
-    let detail: String = stderr.trim().chars().take(500).collect();
+    let detail: String = prefix(stderr.trim(), 500);
     format!("git {leading} failed ({returncode}): {detail}")
 }
 

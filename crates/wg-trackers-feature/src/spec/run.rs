@@ -2,7 +2,7 @@
 //! report (`tracker sync` in `cli/commands/tracker.py`, and the job result of `tracker_sync`).
 
 use serde_json::{Map, Value as Json};
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_netspec::TrackerError;
 use wg_trackers::SyncReport;
 use wg_types::WgError;
@@ -11,6 +11,7 @@ use wg_wire::convention as wire;
 use wg_clispec::args::python;
 
 use super::{iso_of_millis, unknown_connection};
+use wg_types::pyval::{int_or, text};
 
 /// A transport failure of a listing, as the sync raises it.
 #[must_use]
@@ -45,13 +46,7 @@ pub fn settings_of(config: &Map<String, Json>, name: &str) -> Result<TrackerSett
         .and_then(Json::as_object)
         .and_then(|trackers| trackers.get(name))
         .ok_or_else(|| unknown_connection(name))?;
-    let text = |key: &str| {
-        tracker
-            .get(key)
-            .and_then(Json::as_str)
-            .unwrap_or_default()
-            .to_owned()
-    };
+    let text = |key: &str| text(tracker.get(key)).to_owned();
     let texts = |key: &str| -> Vec<String> {
         tracker
             .get(key)
@@ -65,7 +60,7 @@ pub fn settings_of(config: &Map<String, Json>, name: &str) -> Result<TrackerSett
             })
             .unwrap_or_default()
     };
-    let int = |key: &str, default: i64| tracker.get(key).and_then(Json::as_i64).unwrap_or(default);
+    let int = |key: &str, default: i64| int_or(tracker.get(key), default);
     let flavour = match tracker.get("flavour").and_then(Json::as_str) {
         Some(flavour) => flavour.to_owned(),
         None => "cloud".to_owned(),
@@ -99,25 +94,19 @@ pub fn settings_of(config: &Map<String, Json>, name: &str) -> Result<TrackerSett
 /// The report as `tracker sync --json` prints it (`SyncReport.as_dict`), keys in Python's order.
 #[must_use]
 pub fn sync_out(report: &SyncReport) -> Value {
-    wire::dict(vec![
-        ("connection", wire::text(&report.connection)),
-        ("full", Value::Bool(report.full)),
-        ("fetched", wire::int(report.fetched)),
-        ("created", wire::int(report.created)),
-        ("updated", wire::int(report.updated)),
-        ("unchanged", wire::int(report.unchanged)),
-        ("missing", wire::int(report.missing)),
-        ("archived", wire::int(report.archived)),
-        (
-            "unresolved_pull_requests",
-            wire::texts(report.unresolved_pull_requests.iter().map(String::as_str)),
-        ),
-        (
-            "errors",
-            wire::texts(report.errors.iter().map(String::as_str)),
-        ),
-        ("cursor", cursor_value(report.cursor)),
-    ])
+    dict!({
+        "connection": wire::text(&report.connection),
+        "full": Value::Bool(report.full),
+        "fetched": wire::int(report.fetched),
+        "created": wire::int(report.created),
+        "updated": wire::int(report.updated),
+        "unchanged": wire::int(report.unchanged),
+        "missing": wire::int(report.missing),
+        "archived": wire::int(report.archived),
+        "unresolved_pull_requests": wire::texts(report.unresolved_pull_requests.iter().map(String::as_str)),
+        "errors": wire::texts(report.errors.iter().map(String::as_str)),
+        "cursor": cursor_value(report.cursor),
+    })
 }
 
 /// The report as the `tracker_sync` job stores it: the same keys, as a JSON object.

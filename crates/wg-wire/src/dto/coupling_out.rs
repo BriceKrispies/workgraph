@@ -1,8 +1,6 @@
 //! The result of `GET /analytics/coupling` (`coupling_report`): repositories changed together.
 
-use wg_json::Value;
-
-use crate::convention::dict;
+use wg_json::{Value, dict};
 
 /// The name of the report dict; it has no OpenAPI component schema.
 pub const NAME: &str = "CouplingOut";

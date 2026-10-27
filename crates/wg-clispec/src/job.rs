@@ -11,6 +11,7 @@ use wg_render::{Console, escape};
 use crate::args::{flag, float_value, get, items, many, number, one, python, s, when};
 use crate::tree::{SNAPSHOT_JSON, placeholder};
 use crate::{CliFailure, Snapshot, Usage};
+use wg_types::pyval::prefix;
 
 /// Click's usage line of `job list`.
 const JOB_LIST: Usage = Usage {
@@ -150,11 +151,6 @@ fn plain(value: Option<&Value>) -> String {
     }
 }
 
-/// The first `width` characters of `text`, as Python's `text[:width]`.
-fn head(text: &str, width: usize) -> String {
-    text.chars().take(width).collect()
-}
-
 /// `_job_row`: the list's columns for one job.
 fn job_row(job: &Value) -> Vec<String> {
     let attempts = format!(
@@ -163,12 +159,12 @@ fn job_row(job: &Value) -> Vec<String> {
         s(get(job, "max_attempts"))
     );
     vec![
-        head(&s(get(job, "id")), 8),
+        prefix(&s(get(job, "id")), 8),
         s(get(job, "kind")),
         s(get(job, "status")),
         attempts,
         when(get(job, "run_at")),
-        head(&plain(get(job, "last_error")), 60),
+        prefix(&plain(get(job, "last_error")), 60),
     ]
 }
 
@@ -205,7 +201,7 @@ pub fn job_show_view(console: &Console, job: &Value) -> String {
                 s(get(run, "attempt")),
                 s(get(run, "worker")),
                 s(get(run, "status")),
-                head(&plain(get(run, "error")), 80),
+                prefix(&plain(get(run, "error")), 80),
             ]
         })
         .collect();

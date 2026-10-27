@@ -8,6 +8,7 @@
 
 use serde_json::{Map, Value, json};
 use wg_types::WgError;
+use wg_types::pyval;
 
 /// The argument `key` when the call gave it (a `null` is absent).
 fn given(arguments: &Value, key: &str) -> Option<Value> {
@@ -16,24 +17,17 @@ fn given(arguments: &Value, key: &str) -> Option<Value> {
 
 /// The string argument `key`, or "" when absent.
 pub fn text(arguments: &Value, key: &str) -> String {
-    arguments
-        .get(key)
-        .and_then(Value::as_str)
-        .unwrap_or_default()
-        .to_owned()
+    pyval::text(arguments.get(key)).to_owned()
 }
 
 /// The boolean argument `key`, false when absent.
 fn flag(arguments: &Value, key: &str) -> bool {
-    arguments.get(key).and_then(Value::as_bool).unwrap_or(false)
+    pyval::flag(arguments.get(key))
 }
 
 /// The integer argument `key`, or `default` when absent.
 pub fn number(arguments: &Value, key: &str, default: i64) -> i64 {
-    arguments
-        .get(key)
-        .and_then(Value::as_i64)
-        .unwrap_or(default)
+    pyval::int_or(arguments.get(key), default)
 }
 
 /// The list argument `key` (`or []` in Python), or an empty list.

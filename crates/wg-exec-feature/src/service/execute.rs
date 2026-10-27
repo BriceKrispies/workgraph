@@ -35,6 +35,7 @@ use crate::spec::execute::{
 use crate::spec::prompt::{PROMPT_VERSION, PromptRepo, build_prompt};
 use crate::spec::sql::session_by_external;
 use crate::spec::worktrees::PrepareRequest;
+use wg_types::pyval::text;
 
 /// The name of the file the agent's output is logged to.
 const LOG_NAME: &str = "agent.log";
@@ -447,11 +448,7 @@ pub fn execute(
     )?;
 
     let manifest_path = workspace_dir.join("workgraph-manifest.json");
-    let task_key = snapshot
-        .get("key")
-        .and_then(Json::as_str)
-        .unwrap_or_default()
-        .to_owned();
+    let task_key = text(snapshot.get("key")).to_owned();
     let home = std::env::var("WORKGRAPH_HOME")
         .ok()
         .filter(|value| !value.is_empty())

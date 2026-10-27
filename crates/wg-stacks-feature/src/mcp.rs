@@ -17,6 +17,7 @@ use wg_runtime::{App, ToolRun, agent_context};
 use wg_types::WgError;
 
 use crate::service;
+use wg_types::pyval::{flag, text};
 
 /// The feature's tool descriptor: one [`call`] that answers the stack tool names.
 pub const TOOLS: &[ToolRun] = &[call];
@@ -42,11 +43,6 @@ pub fn call(
     Some(answer.and_then(|dto| structured_output(&dto)))
 }
 
-/// A required string argument; the catalog has already checked it is present.
-fn text<'a>(a: &'a Value, key: &str) -> &'a str {
-    a.get(key).and_then(Value::as_str).unwrap_or_default()
-}
-
 /// `StackService.get` for `stack_get` (M09): the parent's most recent stack.
 fn get(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
     let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
@@ -54,17 +50,14 @@ fn get(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
         app,
         &context,
         text_argument(a, "workspace"),
-        text(a, "parent"),
+        text(a.get("parent")),
     )
 }
 
 /// `StackService.list` for `stack_list` (M10), under `{"stacks": …}`.
 fn list(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
     let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
-    let include_inactive = a
-        .get("include_inactive")
-        .and_then(Value::as_bool)
-        .unwrap_or(false);
+    let include_inactive = flag(a.get("include_inactive"));
     let stacks = service::list(
         app,
         &context,
@@ -81,7 +74,7 @@ fn history(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
         app,
         &context,
         text_argument(a, "workspace"),
-        text(a, "parent"),
+        text(a.get("parent")),
     )?;
     Ok(Dto::Dict(vec![("events".into(), events)]))
 }
@@ -93,7 +86,7 @@ fn create(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
         app,
         &context,
         text_argument(a, "workspace"),
-        text(a, "parent"),
+        text(a.get("parent")),
     )
 }
 
@@ -104,8 +97,8 @@ fn add_item(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
         app,
         &context,
         text_argument(a, "workspace"),
-        text(a, "parent"),
-        text(a, "task"),
+        text(a.get("parent")),
+        text(a.get("task")),
     )
 }
 
@@ -116,8 +109,8 @@ fn remove_item(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> 
         app,
         &context,
         text_argument(a, "workspace"),
-        text(a, "parent"),
-        text(a, "task"),
+        text(a.get("parent")),
+        text(a.get("task")),
     )
 }
 
@@ -128,7 +121,7 @@ fn integrate(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
         app,
         &context,
         text_argument(a, "workspace"),
-        text(a, "parent"),
+        text(a.get("parent")),
     )
 }
 
@@ -139,6 +132,6 @@ fn verify(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
         app,
         &context,
         text_argument(a, "workspace"),
-        text(a, "parent"),
+        text(a.get("parent")),
     )
 }

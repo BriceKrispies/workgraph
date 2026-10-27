@@ -1,9 +1,9 @@
 //! The result of an analytics query (`POST /analytics/query`, MCP `analytics_query`).
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_types::Timestamp;
 
-use crate::convention::{TimeFormat, dict, int, text, texts, timestamp};
+use crate::convention::{TimeFormat, int, text, texts, timestamp};
 
 /// The name of the result dict; it has no OpenAPI component schema.
 pub const NAME: &str = "AnalyticsQueryOut";
@@ -23,14 +23,11 @@ pub const PROVENANCE_FIELDS: [&str; 3] = ["sql", "source", "generated_at"];
 
 /// The provenance block. `generated_at` is Python's `isoformat()` of an aware UTC datetime.
 pub fn provenance(sql: &str, source: &str, generated_at: Timestamp) -> Value {
-    dict(vec![
-        ("sql", text(sql)),
-        ("source", text(source)),
-        (
-            "generated_at",
-            timestamp(generated_at, TimeFormat::Isoformat),
-        ),
-    ])
+    dict!({
+        "sql": text(sql),
+        "source": text(source),
+        "generated_at": timestamp(generated_at, TimeFormat::Isoformat),
+    })
 }
 
 /// A query result. `rows` are the grouped rows the engine returned, each already in the
@@ -43,12 +40,12 @@ pub fn from_parts(
     provenance: Value,
     notes: &[&str],
 ) -> Value {
-    dict(vec![
-        ("metric", metric),
-        ("query", query),
-        ("rows", Value::List(rows)),
-        ("sample_size", int(sample_size)),
-        ("provenance", provenance),
-        ("notes", texts(notes.iter().copied())),
-    ])
+    dict!({
+        "metric": metric,
+        "query": query,
+        "rows": Value::List(rows),
+        "sample_size": int(sample_size),
+        "provenance": provenance,
+        "notes": texts(notes.iter().copied()),
+    })
 }

@@ -11,8 +11,9 @@ use crate::error::ConfigError;
 use crate::model::{validate_global, validate_overrides};
 use crate::pyfmt::{errors_repr, value_repr};
 use crate::toml_doc::parse_document;
-use crate::value::{deep_merge, truthy};
+use crate::value::deep_merge;
 use crate::{CONFIG_SCHEMA_VERSION, strip_none};
+use wg_types::pyval::truthy;
 
 /// The texts of `config.toml` and of each `workspaces/<slug>.toml`. A missing file is `None` or an
 /// absent key, and reads as an empty document.

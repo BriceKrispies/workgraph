@@ -4,6 +4,7 @@
 use rpds::VectorSync;
 use serde_json::{Value as Json, json};
 use wg_model::entity::JsonObject;
+use wg_types::pyval::prefix;
 use wg_types::{Id, parse_id};
 
 /// A repository an attempt changed: its id, the baseline and outcome shas and the checkout.
@@ -25,7 +26,7 @@ fn text(entry: &JsonObject, key: &str) -> Option<String> {
 
 /// The first twelve characters of a sha (`sha[:12]`).
 fn short(sha: &str) -> String {
-    sha.chars().take(12).collect()
+    prefix(sha, 12)
 }
 
 /// The repositories whose outcome sha differs from their baseline sha, in outcome order. A

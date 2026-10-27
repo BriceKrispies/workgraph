@@ -7,13 +7,14 @@ use serde_json::{Map, Value as Json};
 use std::collections::BTreeMap;
 use wg_codeanalysis::{ANALYZER_VERSION, FileStructure, Mode};
 use wg_gitcore::{Provenance, SurfaceRecord};
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::JsonObject;
 use wg_model::entity::git::{Commit, CommitAnalysis, CommitSymbol, TaskChangeSurface};
 use wg_model::entity::run::RevisionManifest;
 use wg_model::{IdSeq, Row, Write};
+use wg_types::pyval::prefix;
 use wg_types::{Id, Timestamp, parse_id};
-use wg_wire::convention::{dict, id, int, json_value, text};
+use wg_wire::convention::{id, int, json_value, text};
 
 /// Python's `name[:500]` cut of a symbol name.
 const SYMBOL_NAME_LIMIT: usize = 500;
@@ -55,7 +56,7 @@ pub fn analysis_writes(
                         id: symbol_id,
                         file_change_id: result.file_change_id,
                         symbol_kind: change.kind.as_str().to_owned(),
-                        name: change.name.chars().take(SYMBOL_NAME_LIMIT).collect(),
+                        name: prefix(&change.name, SYMBOL_NAME_LIMIT),
                         change_kind: change.change.as_str().to_owned(),
                         start_line: Some(to_i64(change.start_line)),
                         end_line: Some(to_i64(change.end_line)),
@@ -196,19 +197,19 @@ fn provenance_json(provenance: &Provenance) -> Json {
 
 /// One surface record as `git surface` prints it (`compute_change_surface`'s dict).
 pub fn surface_value(repository_id: Id, record: &SurfaceRecord) -> Value {
-    dict(vec![
-        ("repository_id", id(repository_id)),
-        ("base_sha", text(&record.base_sha)),
-        ("final_sha", text(&record.final_sha)),
-        ("files_changed", int(to_i64(record.files_changed))),
-        ("insertions", int(to_i64(record.insertions))),
-        ("deletions", int(to_i64(record.deletions))),
-        ("renames", int(to_i64(record.renames))),
-        ("binary_files", int(to_i64(record.binary_files))),
-        ("functions_affected", int(to_i64(record.functions_affected))),
-        ("types_affected", int(to_i64(record.types_affected))),
-        ("detail", json_value(&Json::Object(surface_detail(record)))),
-    ])
+    dict!({
+        "repository_id": id(repository_id),
+        "base_sha": text(&record.base_sha),
+        "final_sha": text(&record.final_sha),
+        "files_changed": int(to_i64(record.files_changed)),
+        "insertions": int(to_i64(record.insertions)),
+        "deletions": int(to_i64(record.deletions)),
+        "renames": int(to_i64(record.renames)),
+        "binary_files": int(to_i64(record.binary_files)),
+        "functions_affected": int(to_i64(record.functions_affected)),
+        "types_affected": int(to_i64(record.types_affected)),
+        "detail": json_value(&Json::Object(surface_detail(record))),
+    })
 }
 
 /// The `repository_id -> sha` map of a manifest's entries that carry a SHA.

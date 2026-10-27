@@ -11,7 +11,7 @@ use serde_json::{Map, Value as Json};
 use wg_clispec::failure::python_number_text;
 use wg_clispec::tree::{SNAPSHOT_JSON, command as bare_command, placeholder};
 use wg_clispec::{CliFailure, Snapshot, Usage};
-use wg_json::{PyStr, Value};
+use wg_json::{PyStr, Value, dict};
 
 /// The health endpoint of a Workgraph server, relative to its base URL.
 pub const HEALTH_PATH: &str = "api/v1/health";
@@ -283,10 +283,10 @@ pub fn timed_out_message(base: &str, timeout: f64, log: &str) -> String {
 /// The result: `{"url", "started"}`.
 #[must_use]
 pub fn opened_value(url: &str, started: bool) -> Value {
-    Value::Dict(vec![
-        (PyStr::from("url"), Value::Str(PyStr::from(url))),
-        (PyStr::from("started"), Value::Bool(started)),
-    ])
+    dict!({
+        "url": Value::Str(PyStr::from(url)),
+        "started": Value::Bool(started),
+    })
 }
 
 /// The human output: the URL alone with `--print`, else the start line (when started) and the

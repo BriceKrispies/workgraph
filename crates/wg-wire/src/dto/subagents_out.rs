@@ -1,10 +1,10 @@
 //! The subagent report of `GET /analytics/subagents` (MCP `analytics_subagents`): acceptance of
 //! subagent runs by period, by model and by task size.
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_types::Timestamp;
 
-use crate::convention::{TimeFormat, dict, optional_timestamp, text};
+use crate::convention::{TimeFormat, optional_timestamp, text};
 
 /// The name of the report dict; it has no OpenAPI component schema.
 pub const NAME: &str = "SubagentReportOut";
@@ -52,10 +52,10 @@ pub const BY_SIZE_FIELDS: [&str; 8] = [
 
 /// The `window` block; the bounds are `isoformat()` of aware UTC datetimes.
 pub fn window(since: Option<Timestamp>, until: Option<Timestamp>) -> Value {
-    dict(vec![
-        ("since", optional_timestamp(since, TimeFormat::Isoformat)),
-        ("until", optional_timestamp(until, TimeFormat::Isoformat)),
-    ])
+    dict!({
+        "since": optional_timestamp(since, TimeFormat::Isoformat),
+        "until": optional_timestamp(until, TimeFormat::Isoformat),
+    })
 }
 
 /// The summary pairs, `SUMMARY_FIELDS` order.

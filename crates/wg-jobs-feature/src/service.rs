@@ -3,12 +3,12 @@
 //! in one transaction. The shapes are the wire DTOs of `wg-wire` (`JobOut`, `WorkerOut`).
 
 use wg_jobs::queue::JobFilter;
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_runtime::App;
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::jobs as view;
 use wg_types::{Id, Permission, WgError, parse_id};
-use wg_wire::convention::{counts, dict, int, text};
+use wg_wire::convention::{counts, int, text};
 use wg_wire::dto::{job, worker};
 
 use crate::spec::page_window;
@@ -64,14 +64,11 @@ pub fn list(
         .into_iter()
         .map(|(status, count)| (status, i64::try_from(count).unwrap_or(i64::MAX)))
         .collect();
-    Ok(dict(vec![
-        (
-            "items",
-            Value::List(jobs.iter().map(job::from_model).collect()),
-        ),
-        ("total", int(i64::try_from(total).unwrap_or(i64::MAX))),
-        ("stats", counts(&pairs)),
-    ]))
+    Ok(dict!({
+        "items": Value::List(jobs.iter().map(job::from_model).collect()),
+        "total": int(i64::try_from(total).unwrap_or(i64::MAX)),
+        "stats": counts(&pairs),
+    }))
 }
 
 /// `JobQueue.get` with its runs: `GET /jobs/{job_id}`.
@@ -99,7 +96,7 @@ pub fn cancel(app: &mut App, context: &RequestContext, job_id: &str) -> Result<V
             |slice, stamp| wg_jobs::queue::cancel(slice, id, stamp),
         )?
         .reply;
-    Ok(dict(vec![("status", text(status.as_str()))]))
+    Ok(dict!({ "status": text(status.as_str()) }))
 }
 
 /// `JobQueue.retry_dead`: re-queues a dead-lettered, failed or cancelled job. The reply is
@@ -112,7 +109,7 @@ pub fn retry(app: &mut App, context: &RequestContext, job_id: &str) -> Result<Va
         |session| session.job_slice(id),
         |slice, stamp| wg_jobs::queue::retry_dead(slice, id, stamp),
     )?;
-    Ok(dict(vec![("status", text("queued"))]))
+    Ok(dict!({ "status": text("queued") }))
 }
 
 /// `JobQueue.workers` for `GET /workers`: the workers, newest first.

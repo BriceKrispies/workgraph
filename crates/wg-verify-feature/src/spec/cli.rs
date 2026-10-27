@@ -4,10 +4,11 @@
 
 use clap::{ArgMatches, Command};
 use wg_clispec::CliFailure;
-use wg_clispec::args::{ReadFile, get, items, many, option_text, python, when};
+use wg_clispec::args::{ReadFile, cell, get, items, many, option_text, python, when};
 use wg_clispec::tree::snapshot_command;
 use wg_json::Value;
 use wg_render::Console;
+use wg_types::pyval::prefix;
 
 /// The arguments of `verify config`.
 #[derive(Debug, Clone)]
@@ -79,7 +80,7 @@ pub fn run_view(console: &Console, run: &Value) -> String {
                 },
                 cell(get(check, "status")),
                 cell(get(check, "exit_code")),
-                signatures.join(", ").chars().take(60).collect(),
+                prefix(&signatures.join(", "), 60),
             ]
         })
         .collect();
@@ -104,18 +105,7 @@ pub fn command() -> Command {
 
 /// The first eight characters of an id (`short`), or nothing when the id is absent.
 fn short(value: Option<&Value>) -> String {
-    python(value.unwrap_or(&Value::Null))
-        .chars()
-        .take(8)
-        .collect()
-}
-
-/// A table cell: a value as text, `None` (and absence) as nothing.
-fn cell(value: Option<&Value>) -> String {
-    match value {
-        None | Some(Value::Null) => String::new(),
-        Some(value) => python(value),
-    }
+    prefix(&python(value.unwrap_or(&Value::Null)), 8)
 }
 
 /// `verify configs`: the configs as a table.
@@ -191,7 +181,7 @@ pub fn failures_view(console: &Console, failures: &Value) -> String {
                 cell(get(row, "check")),
                 cell(get(row, "status")),
                 cell(get(row, "exit_code")),
-                signatures.join(", ").chars().take(70).collect(),
+                prefix(&signatures.join(", "), 70),
             ]
         })
         .collect();

@@ -13,6 +13,7 @@
 
 use serde_json::{Map, Value, json};
 use wg_types::WgError;
+use wg_types::pyval;
 use wg_validate::{LoadOptions, Model, model_from_json_schema};
 
 /// The tool names in registration order.
@@ -82,7 +83,7 @@ fn ordered(list: &[Value], order: &[&str], what: &str) -> Result<Vec<Value>, WgE
             .ok_or_else(|| broken(format!("{what} `{name}` is not in the snapshot")))?;
         out.push(rest.remove(at).clone());
     }
-    rest.sort_by_key(|item| item.get("name").and_then(Value::as_str).unwrap_or(""));
+    rest.sort_by_key(|item| pyval::text(item.get("name")));
     out.extend(rest.into_iter().cloned());
     Ok(out)
 }

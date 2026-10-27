@@ -1,6 +1,7 @@
 //! Atlassian Document Format flattening: the plain text of a Jira rich-text field.
 
 use serde_json::Value;
+use wg_types::pyval::text;
 
 /// Block nodes: a node holding one of these as a child is flattened block by block.
 const BLOCK_TYPES: &[&str] = &[
@@ -97,7 +98,7 @@ fn attr_text(node: &Value, name: &str) -> String {
 fn inline(node: &Value) -> String {
     match kind(node) {
         Some("text") => {
-            let text = node.get("text").and_then(Value::as_str).unwrap_or_default();
+            let text = text(node.get("text"));
             if text.is_empty() {
                 link_href(node)
             } else {

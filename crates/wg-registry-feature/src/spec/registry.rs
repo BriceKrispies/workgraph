@@ -8,7 +8,7 @@
 use crate::spec::dto::workspace_summary::Counts;
 use crate::spec::dto::{project, project_summary, workspace, workspace_summary};
 use serde_json::{Map, Value as Json, json};
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::RegistrySlice;
 use wg_model::entity::{Task, VerificationConfig, Workspace};
 use wg_registry::projects::ProjectView;
@@ -18,7 +18,7 @@ use wg_tasks::rename::{
     TaskChange, TaskRecord, Term,
 };
 use wg_types::{Id, TaskStatus, WgError};
-use wg_wire::convention::{dict, int, text};
+use wg_wire::convention::{int, text};
 use wg_wire::dto::task_brief;
 
 use crate::spec::setup::py_title;
@@ -332,66 +332,60 @@ pub fn rename_report(
     errors: &[(String, String)],
 ) -> Value {
     let project = plan.project.as_ref().map_or(Value::Null, |change| {
-        dict(vec![
-            ("slug", text(&change.old_slug)),
-            ("new_slug", text(&change.new_slug)),
-            ("name", text(&change.old_name)),
-            ("new_name", text(&change.new_name)),
-        ])
+        dict!({
+            "slug": text(&change.old_slug),
+            "new_slug": text(&change.new_slug),
+            "name": text(&change.old_name),
+            "new_name": text(&change.new_name),
+        })
     });
     let repositories = plan.repositories.iter().map(|repo| {
-        dict(vec![
-            ("name", text(&repo.old_name)),
-            ("new_name", text(&repo.new_name)),
-            ("description_sites", int(count(repo.description_sites))),
-            ("checkouts_unchanged", Value::Bool(true)),
-        ])
+        dict!({
+            "name": text(&repo.old_name),
+            "new_name": text(&repo.new_name),
+            "description_sites": int(count(repo.description_sites)),
+            "checkouts_unchanged": Value::Bool(true),
+        })
     });
     let configs = plan
         .verification_configs
         .iter()
         .zip(missing)
         .map(|(config, paths)| {
-            dict(vec![
-                ("name", text(&config.name)),
-                ("sites", int(count(config.sites))),
-                (
-                    "missing_paths",
-                    Value::List(paths.iter().map(|path| text(path)).collect()),
-                ),
-            ])
+            dict!({
+                "name": text(&config.name),
+                "sites": int(count(config.sites)),
+                "missing_paths": Value::List(paths.iter().map(|path| text(path)).collect()),
+            })
         });
     let tasks = plan.tasks.iter().map(|task| {
-        dict(vec![
-            ("key", text(&task.key)),
-            ("status", text(status_text(task.status))),
-            ("closed", Value::Bool(task.closed)),
-            (
-                "fields",
-                dict(
-                    task.fields
-                        .iter()
-                        .map(|(name, sites)| (*name, int(count(*sites))))
-                        .collect(),
-                ),
+        dict!({
+            "key": text(&task.key),
+            "status": text(status_text(task.status)),
+            "closed": Value::Bool(task.closed),
+            "fields": dict(
+                task.fields
+                    .iter()
+                    .map(|(name, sites)| (*name, int(count(*sites))))
+                    .collect(),
             ),
-        ])
+        })
     });
     let failures = errors
         .iter()
-        .map(|(target, error)| dict(vec![("target", text(target)), ("error", text(error))]));
-    dict(vec![
-        ("from", text(term.old())),
-        ("to", text(term.new_word())),
-        ("dry_run", Value::Bool(dry_run)),
-        ("project", project),
-        ("repositories", Value::List(repositories.collect())),
-        ("verification_configs", Value::List(configs.collect())),
-        ("tasks", Value::List(tasks.collect())),
-        ("tags_renamed", int(count(plan.tags_renamed))),
-        ("closed_kept", int(count(plan.closed_kept))),
-        ("errors", Value::List(failures.collect())),
-    ])
+        .map(|(target, error)| dict!({ "target": text(target), "error": text(error) }));
+    dict!({
+        "from": text(term.old()),
+        "to": text(term.new_word()),
+        "dry_run": Value::Bool(dry_run),
+        "project": project,
+        "repositories": Value::List(repositories.collect()),
+        "verification_configs": Value::List(configs.collect()),
+        "tasks": Value::List(tasks.collect()),
+        "tags_renamed": int(count(plan.tags_renamed)),
+        "closed_kept": int(count(plan.closed_kept)),
+        "errors": Value::List(failures.collect()),
+    })
 }
 
 fn count(sites: usize) -> i64 {

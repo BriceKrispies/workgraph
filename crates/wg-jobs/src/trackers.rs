@@ -11,6 +11,7 @@ use wg_types::{Id, WgError};
 
 use crate::limits::tracker_key;
 use crate::queue::{ACTIVE_STATUSES, NewJob, enqueue};
+use wg_types::pyval::flag;
 
 /// The job kind of a tracker sync.
 pub const TRACKER_SYNC_KIND: &str = "tracker_sync";
@@ -68,8 +69,5 @@ pub fn enqueue_tracker_sync(
 
 /// `bool(payload.get("full"))` of the Python check.
 fn payload_is_full(payload: &JsonObject) -> bool {
-    payload
-        .get("full")
-        .and_then(Value::as_bool)
-        .unwrap_or(false)
+    flag(payload.get("full"))
 }

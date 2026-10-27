@@ -8,13 +8,11 @@
 //! * [`dict_from_stored`] is `Event.to_dict()`, which `run_get` puts in `recent_events`: a plain
 //!   dict whose `occurred_at` is `isoformat()` text (`+00:00`).
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::event::{EventDraft, StoredEvent};
 use wg_types::WgError;
 
-use crate::convention::{
-    TimeFormat, dict, id, int, json_object, model, optional_id, text, timestamp,
-};
+use crate::convention::{TimeFormat, id, int, json_object, model, optional_id, text, timestamp};
 
 /// The OpenAPI component schema this DTO mirrors.
 pub const NAME: &str = "EventOut";

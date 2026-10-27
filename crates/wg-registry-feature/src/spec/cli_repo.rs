@@ -11,6 +11,7 @@ use wg_types::AccessMode;
 use wg_clispec::args::{flag, get, items, many, one, opt, python, s, when};
 use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_clispec::{CliFailure, Snapshot};
+use wg_types::pyval::prefix;
 
 /// The clap command of the `repo` group: the snapshot's own tree.
 #[must_use]
@@ -117,9 +118,7 @@ pub fn depend_args(m: &ArgMatches) -> (String, String, bool) {
 
 /// The first `n` characters (`short()`), or nothing for a missing value.
 fn short(value: Option<String>, n: usize) -> String {
-    value
-        .map(|text| text.chars().take(n).collect())
-        .unwrap_or_default()
+    value.map(|text| prefix(&text, n)).unwrap_or_default()
 }
 
 fn yes(flag: Option<&Value>, on: &str, off: &str) -> String {

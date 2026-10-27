@@ -10,6 +10,7 @@ use serde_json::Value;
 
 use crate::condition::resolve;
 use crate::py::str_of;
+use wg_types::pyval::prefix;
 
 /// Longest substituted value kept, in characters, unless the caller gives another limit.
 pub const DEFAULT_LIMIT: usize = 500;
@@ -29,7 +30,7 @@ pub fn render(template: &str, context: &Value, limit: usize) -> String {
         .replace_all(template, |captures: &Captures<'_>| {
             match resolve(context, &captures[1]) {
                 None | Some(Value::Null) => String::new(),
-                Some(value) => str_of(value).chars().take(limit).collect(),
+                Some(value) => prefix(&str_of(value), limit),
             }
         })
         .into_owned()

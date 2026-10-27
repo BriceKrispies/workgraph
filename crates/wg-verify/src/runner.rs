@@ -10,6 +10,7 @@ use wg_types::{Id, VerificationStatus};
 
 use crate::config::CheckSpec;
 use crate::outcome::{ProcessOutcome, check_signatures, check_status};
+use wg_types::pyval::prefix;
 
 /// The most characters of a check's output kept in its result row.
 const STORED_EXCERPT_CHARS: usize = 8000;
@@ -155,13 +156,7 @@ impl ExecutedCheck {
             duration_ms: 0,
             timed_out: false,
             excerpt: last_chars(message, STORED_EXCERPT_CHARS),
-            signatures: vec![format!(
-                "error:{}",
-                message
-                    .chars()
-                    .take(START_SIGNATURE_CHARS)
-                    .collect::<String>()
-            )],
+            signatures: vec![format!("error:{}", prefix(message, START_SIGNATURE_CHARS))],
             logged: false,
             repository_id,
         }

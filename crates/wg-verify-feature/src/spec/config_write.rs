@@ -15,6 +15,7 @@ use wg_model::event::{
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, TaskSlice, Write, py_repr_str};
 use wg_registry::resolve;
+use wg_types::pyval::text;
 use wg_types::{Id, Permission, WgError};
 use wg_verify::CheckSpec;
 use wg_wire::dto::verification::config_from_model;
@@ -205,17 +206,9 @@ pub struct ConfigBody {
 #[must_use]
 pub fn config_body(body: &Json) -> ConfigBody {
     ConfigBody {
-        scope_type: body
-            .get("scope_type")
-            .and_then(Json::as_str)
-            .unwrap_or_default()
-            .to_owned(),
+        scope_type: text(body.get("scope_type")).to_owned(),
         scope: body.get("scope").and_then(Json::as_str).map(str::to_owned),
-        name: body
-            .get("name")
-            .and_then(Json::as_str)
-            .unwrap_or_default()
-            .to_owned(),
+        name: text(body.get("name")).to_owned(),
         checks: body
             .get("checks")
             .and_then(Json::as_array)

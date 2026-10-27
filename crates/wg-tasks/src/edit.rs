@@ -8,8 +8,7 @@ use crate::requests::{component, run};
 use crate::shape::task_out;
 use crate::transition::{Applied, Change, transition};
 use crate::update::{TaskPatch, update_plan};
-use serde_json::Value;
-use serde_json::{Map, Value as Json, json};
+use serde_json::{Map, Value, Value as Json, json};
 use wg_jobs::queue::{NewJob, enqueue};
 use wg_model::RowKey;
 use wg_model::entity::TaskProject;
@@ -21,6 +20,7 @@ use wg_model::{Decision, Write};
 use wg_registry::resolve;
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_types::Permission;
+use wg_types::pyval::flag;
 use wg_types::{Id, TaskPriority, TaskStatus};
 use wg_types::{Timestamp, WgError};
 
@@ -112,10 +112,7 @@ pub fn read_update(
         add_files: files_of(dump, "add_files").unwrap_or_default(),
         projects: strings_of(dump, "projects"),
         parent: string_of(dump, "parent"),
-        clear_parent: dump
-            .get("clear_parent")
-            .and_then(Value::as_bool)
-            .unwrap_or(false),
+        clear_parent: flag(dump.get("clear_parent")),
         assignee: clearable("assignee"),
         assigned_agent: clearable("assigned_agent"),
         auto_execute: dump.get("auto_execute").and_then(Value::as_bool),

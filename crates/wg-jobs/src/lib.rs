@@ -26,8 +26,3 @@ pub fn shift(at: Timestamp, seconds: f64) -> Timestamp {
         .and_then(|moved| Timestamp::from_offset_datetime(moved).ok())
         .unwrap_or(at)
 }
-
-/// The first `limit` characters of `text` (Python's `text[:limit]` counts code points).
-pub(crate) fn truncate_chars(text: &str, limit: usize) -> String {
-    text.chars().take(limit).collect()
-}

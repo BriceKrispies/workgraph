@@ -6,10 +6,10 @@
 //! `isoformat()` text (`+00:00`); nothing else here is a datetime.
 
 use serde_json::Value as Json;
-use wg_json::{PyStr, Value};
+use wg_json::{PyStr, Value, dict};
 use wg_model::entity::run::{AgentAttempt, RevisionManifest};
 
-use crate::convention::{TimeFormat, dict, id, int, json_object, json_value, text, timestamp};
+use crate::convention::{TimeFormat, id, int, json_object, json_value, text, timestamp};
 
 /// The name of the manifest dict; it has no OpenAPI component schema.
 pub const MANIFEST_NAME: &str = "ManifestOut";
@@ -48,18 +48,12 @@ pub const LOG_FIELDS: [&str; 3] = ["lines", "available", "total_lines"];
 
 /// One manifest of an attempt.
 pub fn manifest(row: &RevisionManifest) -> Value {
-    dict(vec![
-        ("id", id(row.id)),
-        ("kind", text(&row.kind)),
-        (
-            "entries",
-            Value::List(row.entries.iter().map(json_object).collect()),
-        ),
-        (
-            "created_at",
-            timestamp(row.created_at, TimeFormat::Isoformat),
-        ),
-    ])
+    dict!({
+        "id": id(row.id),
+        "kind": text(&row.kind),
+        "entries": Value::List(row.entries.iter().map(json_object).collect()),
+        "created_at": timestamp(row.created_at, TimeFormat::Isoformat),
+    })
 }
 
 /// The manifests of an attempt, in the order given (`created_at` ascending).
@@ -126,11 +120,11 @@ pub fn compare(
             let same = left == right;
             (
                 PyStr::from(*name),
-                dict(vec![
-                    ("a", json_value(&left)),
-                    ("b", json_value(&right)),
-                    ("same", Value::Bool(same)),
-                ]),
+                dict!({
+                    "a": json_value(&left),
+                    "b": json_value(&right),
+                    "same": Value::Bool(same),
+                }),
             )
         })
         .collect();
@@ -155,48 +149,39 @@ pub fn compare(
             };
             (
                 PyStr::from(key.as_str()),
-                dict(vec![("a", side(a)), ("b", side(b))]),
+                dict!({ "a": side(a), "b": side(b) }),
             )
         })
         .collect();
 
-    dict(vec![
-        ("a", id(a.id)),
-        ("b", id(b.id)),
-        ("same_task", Value::Bool(a.task_id == b.task_id)),
-        ("fields", Value::Dict(fields)),
-        ("config_differences", Value::Dict(config_differences)),
-        (
-            "input_snapshot_same",
-            Value::Bool(a.input_task_snapshot == b.input_task_snapshot),
-        ),
-        (
-            "manifests",
-            dict(vec![
-                ("a", by_kind(manifests_a)),
-                ("b", by_kind(manifests_b)),
-            ]),
-        ),
-    ])
+    dict!({
+        "a": id(a.id),
+        "b": id(b.id),
+        "same_task": Value::Bool(a.task_id == b.task_id),
+        "fields": Value::Dict(fields),
+        "config_differences": Value::Dict(config_differences),
+        "input_snapshot_same": Value::Bool(a.input_task_snapshot == b.input_task_snapshot),
+        "manifests": dict!({
+            "a": by_kind(manifests_a),
+            "b": by_kind(manifests_b),
+        }),
+    })
 }
 
 /// `GET /attempts/{id}/log`. `lines` is the tail already cut; `total_lines` is the line count of
 /// the whole log. A missing log answers `{"lines": [], "available": false}` (see [`log_missing`]).
 pub fn log(lines: &[&str], total_lines: i64) -> Value {
-    dict(vec![
-        (
-            "lines",
-            Value::List(lines.iter().map(|line| text(line)).collect()),
-        ),
-        ("available", Value::Bool(true)),
-        ("total_lines", int(total_lines)),
-    ])
+    dict!({
+        "lines": Value::List(lines.iter().map(|line| text(line)).collect()),
+        "available": Value::Bool(true),
+        "total_lines": int(total_lines),
+    })
 }
 
 /// `GET /attempts/{id}/log` when the log file does not exist.
 pub fn log_missing() -> Value {
-    dict(vec![
-        ("lines", Value::List(Vec::new())),
-        ("available", Value::Bool(false)),
-    ])
+    dict!({
+        "lines": Value::List(Vec::new()),
+        "available": Value::Bool(false),
+    })
 }

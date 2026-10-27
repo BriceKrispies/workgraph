@@ -9,6 +9,7 @@ use std::collections::BTreeMap;
 use std::fmt;
 
 use serde_json::Value as Json;
+use wg_types::pyval::flag;
 
 /// Whether a parameter is a positional argument or an option.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -139,7 +140,7 @@ fn param(value: &Json) -> Result<ParamSpec, SnapshotError> {
         Some("option") => Kind::Option,
         _ => return bad("a parameter has no kind"),
     };
-    let flag = |key: &str| map.get(key).and_then(Json::as_bool).unwrap_or(false);
+    let flag = |key: &str| flag(map.get(key));
     Ok(ParamSpec {
         kind,
         name: map.get("name").and_then(Json::as_str).map(str::to_owned),

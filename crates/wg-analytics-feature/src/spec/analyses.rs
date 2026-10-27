@@ -7,6 +7,7 @@ use serde_json::Value as Json;
 use wg_hash::sha256_hex;
 use wg_json::{LocalDateTime, Value};
 use wg_model::entity::{Finding, JsonObject, Real};
+use wg_types::pyval::{prefix, text};
 use wg_types::{Id, Timestamp, WgError};
 use wg_wire::convention::json_value;
 
@@ -52,15 +53,11 @@ pub fn compare_out(core: &Json, a: Typed, b: Typed) -> Value {
 /// `kind|title` text.
 #[must_use]
 pub fn fingerprint(text: &str) -> String {
-    sha256_hex(text.as_bytes()).chars().take(32).collect()
+    prefix(&sha256_hex(text.as_bytes()), 32)
 }
 
 fn text_of(finding: &Json, key: &str) -> String {
-    finding
-        .get(key)
-        .and_then(Json::as_str)
-        .unwrap_or_default()
-        .to_owned()
+    text(finding.get(key)).to_owned()
 }
 
 /// The finding row `persist_findings` writes for one entry of the report: a new row, or the

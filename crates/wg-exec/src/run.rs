@@ -9,6 +9,7 @@
 use std::path::{Path, PathBuf};
 
 use serde_json::{Map, Value, json};
+use wg_types::pyval::prefix;
 use wg_types::{AttemptStatus as A, TaskStatus as S, WgError};
 
 use crate::attempt::{
@@ -363,7 +364,7 @@ impl EarlyEnd {
 
     /// The reason text written on the task transition.
     pub fn reason(&self) -> String {
-        truncate_chars(&self.error, REASON_LIMIT)
+        prefix(&self.error, REASON_LIMIT)
     }
 }
 
@@ -569,7 +570,7 @@ pub fn task_reason(number: i64, attempt: A) -> String {
 /// The summary an attempt keeps: capped, and the old summary when the new one is empty.
 pub fn kept_summary(new: Option<&str>, old: Option<&str>) -> Option<String> {
     match new {
-        Some(s) if !s.is_empty() => Some(truncate_chars(s, SUMMARY_LIMIT)),
+        Some(s) if !s.is_empty() => Some(prefix(s, SUMMARY_LIMIT)),
         _ => old.map(str::to_owned),
     }
 }
@@ -675,11 +676,6 @@ pub fn session_provider_key<'a>(adapter: &str, provider: &'a str) -> &'a str {
 /// Whether the cancel checker consults the database now: at most every two seconds.
 pub fn cancel_poll_due(since_last_poll_seconds: f64) -> bool {
     since_last_poll_seconds > 2.0
-}
-
-/// Truncates to at most `limit` characters, as Python slicing does.
-pub fn truncate_chars(text: &str, limit: usize) -> String {
-    text.chars().take(limit).collect()
 }
 
 fn invalid(message: impl Into<String>) -> WgError {

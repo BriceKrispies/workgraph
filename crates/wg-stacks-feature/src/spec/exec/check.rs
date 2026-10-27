@@ -8,6 +8,7 @@ use wg_types::{Id, VerificationStatus};
 use wg_verify::{CheckSpec, ProcessOutcome, check_signatures, check_status};
 
 use super::run::{Executed, LogFile, Prepared};
+use wg_types::pyval::prefix;
 
 /// Where a check runs.
 #[derive(Debug, Clone, PartialEq)]
@@ -40,10 +41,7 @@ pub fn errored(spec: &CheckSpec, repository_id: Option<Id>, message: &str) -> Ex
         duration_ms: 0,
         timed_out: false,
         excerpt: message.to_owned(),
-        signatures: vec![format!(
-            "error:{}",
-            message.chars().take(120).collect::<String>()
-        )],
+        signatures: vec![format!("error:{}", prefix(message, 120))],
         log: None,
         repository_id,
     }

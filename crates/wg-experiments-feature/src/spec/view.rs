@@ -1,9 +1,10 @@
 //! The human views of the `experiment` commands (IF-19): the lines and tables the Python CLI
 //! prints, built from the JSON values the service returns.
 
-use wg_clispec::args::{get, items, opt, s, truncate, when};
+use wg_clispec::args::{get, items, opt, s, when};
 use wg_json::Value;
 use wg_render::Console;
+use wg_types::pyval::prefix;
 
 /// The columns of `experiment list`.
 const LIST_HEAD: [&str; 4] = ["slug", "status", "frozen", "title"];
@@ -79,6 +80,6 @@ fn trial_row(trial: &Value) -> Vec<String> {
         s(get(trial, "status")),
         opt(get(trial, "outcome")).unwrap_or_default(),
         opt(get(trial, "failure_cause")).unwrap_or_default(),
-        truncate(&model, 24),
+        prefix(&model, 24),
     ]
 }

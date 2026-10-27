@@ -15,6 +15,7 @@ use wg_tasks::edit::Enrichment;
 use wg_tasks::shape::key_of;
 use wg_tasks_feature::spec::requests::{read_create, validate_create};
 use wg_tasks_feature::spec::writes::create_task;
+use wg_types::pyval::prefix;
 use wg_types::{Id, TaskKey, WgError};
 use wg_validate::{Extra, Field, Model, Schema, StrRules, validate};
 
@@ -515,11 +516,7 @@ pub fn create_children(
             children,
             provider: parent.provider.to_owned(),
             model: parent.model.to_owned(),
-            rationale: proposal
-                .rationale
-                .chars()
-                .take(RATIONALE_EVENT_LIMIT)
-                .collect(),
+            rationale: prefix(&proposal.rationale, RATIONALE_EVENT_LIMIT),
         }),
     );
     Ok(done.decision.event(event).with_reply(done.keys))

@@ -19,7 +19,8 @@ use crate::error::AgentError;
 use crate::types::{
     AgentCapabilities, AgentEvent, AgentRunRequest, AgentRunResult, EventKind, RunStatus,
 };
-use crate::util::{as_int, as_number, get, py_str, truncate_chars, truthy};
+use crate::util::{as_int, as_number, py_str};
+use wg_types::pyval::{get, prefix, text, truthy};
 
 /// The protocol name in the request payload.
 pub const PROTOCOL: &str = "workgraph.agent.v1";
@@ -73,12 +74,7 @@ impl CommandConfig {
                 .unwrap_or(default)
         };
         let defaults = Self::new(String::new());
-        let mut config = Self::new(
-            entry
-                .get("executable")
-                .and_then(serde_json::Value::as_str)
-                .unwrap_or_default(),
-        );
+        let mut config = Self::new(text(entry.get("executable")));
         config.args = entry
             .get("args")
             .and_then(serde_json::Value::as_array)
@@ -288,10 +284,7 @@ pub struct CommandState {
 impl CommandState {
     fn log(&mut self, text: &str) -> Vec<AgentEvent> {
         self.logs += 1;
-        vec![AgentEvent::plain(
-            EventKind::Log,
-            truncate_chars(text, 2000),
-        )]
+        vec![AgentEvent::plain(EventKind::Log, prefix(text, 2000))]
     }
 
     /// Interpret one output line, returning the new state and the events.
@@ -314,7 +307,7 @@ impl CommandState {
                 self.progress += 1;
                 vec![AgentEvent::with_data(
                     EventKind::Progress,
-                    truncate_chars(&py_str(get(&message, "message")), 5000),
+                    prefix(&py_str(get(&message, "message")), 5000),
                     json!({"percent": get(&message, "percent")}),
                 )]
             }
@@ -348,7 +341,7 @@ impl CommandState {
                 )]
             }
             Some("result") => {
-                let summary = truncate_chars(&py_str(get(&message, "summary")), 5000);
+                let summary = prefix(&py_str(get(&message, "summary")), 5000);
                 self.result = Some(message.clone());
                 vec![AgentEvent::with_data(EventKind::Result, summary, message)]
             }
@@ -389,7 +382,7 @@ pub fn finish_command(
     let ok = process.exit_code == Some(0)
         && (declared.is_null() || declared.as_str() == Some("succeeded"));
     let summary = result.get("summary").map(py_str).unwrap_or_default();
-    run.summary = truncate_chars(&summary, 50_000);
+    run.summary = prefix(&summary, 50_000);
     run.cost_usd = as_number(get(result, "cost_usd")).filter(|_| config.supports_usage);
     run.artifacts.clone_from(&state.artifacts);
     if ok {
@@ -406,7 +399,7 @@ pub fn finish_command(
         } else {
             reported
         };
-        run.error = Some(truncate_chars(&error, 20_000));
+        run.error = Some(prefix(&error, 20_000));
     }
     run
 }

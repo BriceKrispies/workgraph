@@ -1,5 +1,7 @@
 //! Worktree branch naming (CORE-13), mirroring `_branch_name` in `integrations/git/worktrees.py`.
 
+use wg_types::pyval::prefix;
+
 /// The branch an attempt's managed worktree is created on: `wg/<slug>/attempt-<n>-<id prefix>`.
 ///
 /// The slug is the task key lower-cased with every character outside `a-z0-9-` replaced by `-`.
@@ -16,6 +18,6 @@ pub fn attempt_branch_name(task_key: &str, attempt_number: i64, attempt_id: &str
             }
         })
         .collect();
-    let prefix: String = attempt_id.chars().take(8).collect();
+    let prefix: String = prefix(attempt_id, 8);
     format!("wg/{slug}/attempt-{attempt_number}-{prefix}")
 }

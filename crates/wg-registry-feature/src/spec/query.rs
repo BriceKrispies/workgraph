@@ -5,23 +5,24 @@
 
 use serde_json::{Map, Value as Json};
 use wg_types::WgError;
+use wg_types::pyval;
 
 /// A boolean query parameter, `false` when unset.
 #[must_use]
 pub fn flag(params: &Map<String, Json>, name: &str) -> bool {
-    params.get(name).and_then(Json::as_bool).unwrap_or(false)
+    pyval::flag(params.get(name))
 }
 
 /// An integer query parameter, `default` when unset.
 #[must_use]
 pub fn number(params: &Map<String, Json>, name: &str, default: i64) -> i64 {
-    params.get(name).and_then(Json::as_i64).unwrap_or(default)
+    pyval::int_or(params.get(name), default)
 }
 
 /// A text field of the validated body, empty when absent.
 #[must_use]
 pub fn body_text<'a>(body: &'a Json, key: &str) -> &'a str {
-    body.get(key).and_then(Json::as_str).unwrap_or_default()
+    pyval::text(body.get(key))
 }
 
 /// The error of an operation id the route table does not name.

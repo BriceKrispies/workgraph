@@ -11,6 +11,7 @@ use wg_types::{CommentKind, RelationType, WgError};
 
 use wg_tasks::edit::{object_of, string_of};
 use wg_tasks::requests::{component_with, run};
+use wg_types::pyval::int_or;
 
 /// The model `name` validated against `body`; an absent (`null`) body is the empty object.
 fn validated(
@@ -49,10 +50,7 @@ pub fn read_claim(body: &Value) -> Result<ClaimRead, WgError> {
     )?;
     Ok(ClaimRead {
         agent: string_of(&dump, "agent"),
-        lease_minutes: dump
-            .get("lease_minutes")
-            .and_then(Value::as_i64)
-            .unwrap_or(120),
+        lease_minutes: int_or(dump.get("lease_minutes"), 120),
         expected_version: dump.get("expected_version").and_then(Value::as_i64),
     })
 }

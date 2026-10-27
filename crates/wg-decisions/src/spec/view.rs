@@ -2,10 +2,11 @@
 //! functions of the values the services return, with no clap and no I/O.
 
 use wg_clispec::CliFailure;
-use wg_clispec::args::{get, items, opt, s, truncate, when};
+use wg_clispec::args::{get, items, opt, s, when};
 use wg_json::Value;
 use wg_model::py_repr_str;
 use wg_render::{Console, escape};
+use wg_types::pyval::prefix;
 
 /// The 32 characters of a full decision id; shorter ids are prefixes.
 const FULL_ID: usize = 32;
@@ -60,14 +61,14 @@ pub fn list_view(console: &Console, decisions: &Value) -> String {
             .iter()
             .map(|d| {
                 vec![
-                    truncate(&s(get(d, "id")), 8),
+                    prefix(&s(get(d, "id")), 8),
                     s(get(d, "task_key")),
                     get(d, "task")
                         .map(|task| s(get(task, "priority")))
                         .unwrap_or_default(),
                     s(get(d, "status")),
-                    truncate(&s(get(d, "question")), 70),
-                    truncate(&answer(d), 30),
+                    prefix(&s(get(d, "question")), 70),
+                    prefix(&answer(d), 30),
                 ]
             })
             .collect(),
@@ -172,10 +173,11 @@ pub fn withdrawn_line(console: &Console, d: &Value) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use wg_wire::convention::{dict, text};
+    use wg_json::dict;
+    use wg_wire::convention::text;
 
     fn row(id: &str) -> Value {
-        dict(vec![("id", text(id))])
+        dict!({ "id": text(id) })
     }
 
     #[test]

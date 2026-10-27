@@ -1,9 +1,9 @@
 //! A metric definition: one entry of the metric catalog (`GET /analytics/metrics`, `catalog`
 //! reports and the metric block of every query result).
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 
-use crate::convention::{dict, text, texts};
+use crate::convention::{text, texts};
 
 /// The name of the definition dict; it has no OpenAPI component schema.
 pub const NAME: &str = "MetricDefinition";
@@ -37,15 +37,15 @@ pub struct MetricDefinition<'a> {
 
 /// One metric definition as the API prints it.
 pub fn from_parts(metric: &MetricDefinition<'_>) -> Value {
-    dict(vec![
-        ("id", text(metric.id)),
-        ("family", text(metric.family)),
-        ("title", text(metric.title)),
-        ("definition", text(metric.definition)),
-        ("unit", text(metric.unit)),
-        ("statistic", text(metric.statistic)),
-        ("time_column", text(metric.time_column)),
-        ("dimensions", texts(metric.dimensions.iter().copied())),
-        ("caveats", texts(metric.caveats.iter().copied())),
-    ])
+    dict!({
+        "id": text(metric.id),
+        "family": text(metric.family),
+        "title": text(metric.title),
+        "definition": text(metric.definition),
+        "unit": text(metric.unit),
+        "statistic": text(metric.statistic),
+        "time_column": text(metric.time_column),
+        "dimensions": texts(metric.dimensions.iter().copied()),
+        "caveats": texts(metric.caveats.iter().copied()),
+    })
 }

@@ -10,6 +10,7 @@ use crate::briefs::shlex_join;
 use crate::replay::{CLASSIFIER, Features};
 use rpds::RedBlackTreeMapSync;
 use serde_json::{Value, json};
+use wg_types::pyval::prefix;
 
 /// Tag on every replay task (`REPLAY_TAG`).
 pub const REPLAY_TAG: &str = "replay";
@@ -89,11 +90,8 @@ pub fn step(excluded: &[&str], sha: &str, index: &ExistingIndex) -> Step {
 /// `Replay <sha[:12]>: <subject>`, cut to [`TITLE_MAX`] characters.
 #[must_use]
 pub fn task_title(sha: &str, subject: &str) -> String {
-    let short: String = sha.chars().take(12).collect();
-    format!("Replay {short}: {subject}")
-        .chars()
-        .take(TITLE_MAX)
-        .collect()
+    let short: String = prefix(sha, 12);
+    prefix(&format!("Replay {short}: {subject}"), TITLE_MAX)
 }
 
 /// The task description: the commit, its message, the tests, the oracle and the base branch.

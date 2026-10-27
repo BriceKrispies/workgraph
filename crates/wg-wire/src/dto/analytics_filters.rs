@@ -1,10 +1,10 @@
 //! `AnalyticsFilters`: the filter block of an analytics query. Its echo in a query result prints
 //! the filters as `model_dump(mode="json")` does.
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_types::Timestamp;
 
-use crate::convention::{dict, optional_text, text};
+use crate::convention::{optional_text, text};
 
 /// The OpenAPI component schema this DTO mirrors.
 pub const NAME: &str = "AnalyticsFilters";
@@ -48,17 +48,17 @@ fn bound(at: Option<Timestamp>) -> Value {
 
 /// The echo of the filters inside a query result: the datetimes print in the model's `Z` form.
 pub fn echo(filters: &Filters<'_>) -> Value {
-    dict(vec![
-        ("project", optional_text(filters.project)),
-        ("repository", optional_text(filters.repository)),
-        ("category", optional_text(filters.category)),
-        ("agent", optional_text(filters.agent)),
-        ("provider", optional_text(filters.provider)),
-        ("model", optional_text(filters.model)),
-        ("priority", optional_text(filters.priority)),
-        ("status", optional_text(filters.status)),
-        ("kind", optional_text(filters.kind)),
-        ("since", bound(filters.since)),
-        ("until", bound(filters.until)),
-    ])
+    dict!({
+        "project": optional_text(filters.project),
+        "repository": optional_text(filters.repository),
+        "category": optional_text(filters.category),
+        "agent": optional_text(filters.agent),
+        "provider": optional_text(filters.provider),
+        "model": optional_text(filters.model),
+        "priority": optional_text(filters.priority),
+        "status": optional_text(filters.status),
+        "kind": optional_text(filters.kind),
+        "since": bound(filters.since),
+        "until": bound(filters.until),
+    })
 }

@@ -8,9 +8,9 @@ use clap::{ArgMatches, Command};
 use serde_json::Value as Json;
 use wg_clispec::args::{flag, one, python};
 use wg_clispec::tree::snapshot_command;
-use wg_json::{PyStr, Value};
+use wg_json::{PyStr, Value, dict};
 use wg_render::{Console, escape};
-use wg_wire::convention::{dict, text};
+use wg_wire::convention::text;
 
 /// The clap command of `backup`, from the snapshot so help and parameters match `contracts/cli.json`.
 #[must_use]
@@ -82,15 +82,15 @@ pub fn backup_document(
     schema_revision: Option<&str>,
     include_artifacts: bool,
 ) -> Value {
-    dict(vec![
-        ("path", text(path)),
-        ("bytes", Value::Int(i128::from(bytes))),
-        ("format", text(wg_archivespec::BACKUP_FORMAT)),
-        ("created_at", text(stamp)),
-        ("workgraph_version", text(version)),
-        ("schema_revision", opt_text(schema_revision)),
-        ("includes_artifacts", Value::Bool(include_artifacts)),
-    ])
+    dict!({
+        "path": text(path),
+        "bytes": Value::Int(i128::from(bytes)),
+        "format": text(wg_archivespec::BACKUP_FORMAT),
+        "created_at": text(stamp),
+        "workgraph_version": text(version),
+        "schema_revision": opt_text(schema_revision),
+        "includes_artifacts": Value::Bool(include_artifacts),
+    })
 }
 
 /// The `restore` result (`restore_backup`'s dict).
@@ -102,28 +102,28 @@ pub fn restore_document(
     schema_before: Option<&str>,
     schema_after: Option<&str>,
 ) -> Value {
-    dict(vec![
-        ("restored_from", text(restored_from)),
-        ("manifest", from_json(manifest)),
-        ("safety_copy", opt_text(safety_copy)),
-        ("schema_before", opt_text(schema_before)),
-        ("schema_after", opt_text(schema_after)),
-    ])
+    dict!({
+        "restored_from": text(restored_from),
+        "manifest": from_json(manifest),
+        "safety_copy": opt_text(safety_copy),
+        "schema_before": opt_text(schema_before),
+        "schema_after": opt_text(schema_after),
+    })
 }
 
 /// The `export workspace` result: the file and the rows per table, in the order they were written.
 #[must_use]
 pub fn export_document(path: &str, tables: &[(String, usize)]) -> Value {
-    dict(vec![("path", text(path)), ("tables", counts(tables))])
+    dict!({ "path": text(path), "tables": counts(tables) })
 }
 
 /// The `import` result: the workspace id and the rows per table, in the order they were read.
 #[must_use]
 pub fn import_document(workspace_id: &str, tables: &[(String, usize)]) -> Value {
-    dict(vec![
-        ("workspace_id", text(workspace_id)),
-        ("tables", counts(tables)),
-    ])
+    dict!({
+        "workspace_id": text(workspace_id),
+        "tables": counts(tables),
+    })
 }
 
 /// The human line of `backup`: `backup written to ... (N bytes, schema R)`.

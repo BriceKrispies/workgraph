@@ -1,9 +1,9 @@
 //! The result of `GET /analytics/failures` (`detect_failures`) and its findings.
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_types::Timestamp;
 
-use crate::convention::{TimeFormat, dict, int, optional_float, text, timestamp};
+use crate::convention::{TimeFormat, int, optional_float, text, timestamp};
 
 /// The name of the report dict; it has no OpenAPI component schema.
 pub const NAME: &str = "FailuresOut";
@@ -32,25 +32,22 @@ pub fn finding(
     evidence: Value,
     fingerprint: &str,
 ) -> Value {
-    dict(vec![
-        ("kind", text(kind)),
-        ("title", text(title)),
-        ("severity", text(severity)),
-        ("metric_value", optional_float(metric_value)),
-        ("sample_size", int(sample_size)),
-        ("evidence", evidence),
-        ("fingerprint", text(fingerprint)),
-    ])
+    dict!({
+        "kind": text(kind),
+        "title": text(title),
+        "severity": text(severity),
+        "metric_value": optional_float(metric_value),
+        "sample_size": int(sample_size),
+        "evidence": evidence,
+        "fingerprint": text(fingerprint),
+    })
 }
 
 /// The report. `generated_at` is `isoformat()` of an aware UTC datetime.
 pub fn from_parts(generated_at: Timestamp, findings: Vec<Value>, note: &str) -> Value {
-    dict(vec![
-        (
-            "generated_at",
-            timestamp(generated_at, TimeFormat::Isoformat),
-        ),
-        ("findings", Value::List(findings)),
-        ("note", text(note)),
-    ])
+    dict!({
+        "generated_at": timestamp(generated_at, TimeFormat::Isoformat),
+        "findings": Value::List(findings),
+        "note": text(note),
+    })
 }

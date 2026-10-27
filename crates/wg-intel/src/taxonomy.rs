@@ -5,6 +5,7 @@ use serde_json::{Map, Value};
 
 use crate::order::unique;
 use crate::pyrepr::py_repr;
+use wg_types::pyval::prefix;
 
 pub const TAXONOMY_VERSION: &str = "2026.1";
 pub const PROMPT_VERSION: &str = "classify-v1";
@@ -84,7 +85,7 @@ pub fn build_prompt(
     } else {
         vec![
             "Description:".to_string(),
-            description.chars().take(DESCRIPTION_PROMPT_CHARS).collect(),
+            prefix(description, DESCRIPTION_PROMPT_CHARS),
         ]
     };
     let criteria_lines: Vec<String> = if criteria.is_empty() {
@@ -303,7 +304,7 @@ fn py_type_name(value: &Value) -> &'static str {
 fn shown_input(value: &Value) -> String {
     let text = py_repr(value);
     if text.chars().count() > INPUT_SHOWN_CHARS {
-        let head: String = text.chars().take(INPUT_SHOWN_CHARS).collect();
+        let head: String = prefix(&text, INPUT_SHOWN_CHARS);
         format!("{head}...")
     } else {
         text
@@ -509,7 +510,7 @@ fn string_list(object: &Map<String, Value>, name: &str) -> Result<Value, Vec<Sch
         .filter_map(Value::as_str)
         .map(str::trim)
         .filter(|item| !item.is_empty())
-        .map(|item| item.chars().take(TEXT_MAX_CHARS).collect::<String>());
+        .map(|item| prefix(item, TEXT_MAX_CHARS));
     Ok(Value::Array(
         unique(cleaned).into_iter().map(Value::String).collect(),
     ))

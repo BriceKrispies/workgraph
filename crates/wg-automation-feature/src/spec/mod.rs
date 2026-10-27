@@ -26,7 +26,7 @@ use wg_automation::rules::{ACTION_TYPES, TRIGGER_EVENTS};
 use wg_automation::spec::{Failure, Issue, RuleSpec, validate_rule};
 use wg_jobs::queue::{NewJob, enqueue_as};
 use wg_jobs::scheduler::next_time;
-use wg_json::Value as WireValue;
+use wg_json::{Value as WireValue, dict};
 use wg_model::entity::{
     AgentAttempt, AutomationRule, AutomationRun, Classification, Notification, SystemCursor, Task,
 };
@@ -35,6 +35,7 @@ use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, EventDraft, EventPayload, Write};
 use wg_storecodec::EventRecord;
+use wg_types::pyval::prefix;
 use wg_types::{Id, Timestamp, WgError};
 use wg_wire::convention as wire_convention;
 
@@ -84,10 +85,10 @@ pub fn runs_out(runs: &[AutomationRun]) -> WireValue {
 
 /// The result of `process`: the event pass's counts and the number of scheduled runs.
 pub fn process_out(events: WireValue, scheduled: i64) -> WireValue {
-    wire_convention::dict(vec![
-        ("events", events),
-        ("scheduled", wire_convention::int(scheduled)),
-    ])
+    dict!({
+        "events": events,
+        "scheduled": wire_convention::int(scheduled),
+    })
 }
 
 /// The notification list of a listing.
@@ -303,7 +304,7 @@ pub fn clean_inputs(inputs: &Map<String, Value>) -> Map<String, Value> {
         })
         .map(|(key, value)| {
             let cleaned = match value {
-                Value::String(text) => Value::String(text.chars().take(1000).collect()),
+                Value::String(text) => Value::String(prefix(text, 1000)),
                 other => other.clone(),
             };
             (key.clone(), cleaned)
@@ -380,7 +381,7 @@ fn task_value(task: &Task, tags: &[String]) -> Value {
         "assignee": task.assignee,
         "auto_execute": task.auto_execute,
         "parent_id": task.parent_id.map(|id| id.to_string()),
-        "description": task.description.chars().take(2000).collect::<String>(),
+        "description": prefix(&task.description, 2000),
     })
 }
 
@@ -584,12 +585,12 @@ pub struct PassStats {
 impl PassStats {
     /// The result dict of `process_events`.
     pub fn to_value(self) -> WireValue {
-        wire_convention::dict(vec![
-            ("events", wire_convention::int(self.events)),
-            ("runs", wire_convention::int(self.runs)),
-            ("matched", wire_convention::int(self.matched)),
-            ("skipped", wire_convention::int(self.skipped)),
-        ])
+        dict!({
+            "events": wire_convention::int(self.events),
+            "runs": wire_convention::int(self.runs),
+            "matched": wire_convention::int(self.matched),
+            "skipped": wire_convention::int(self.skipped),
+        })
     }
 }
 

@@ -31,6 +31,7 @@ use wg_verify::{TaskScope, applicable_checks};
 
 use super::bodies::{ClaimRead, CompleteRead, ResultRead};
 use wg_tasks::shape::task_out;
+use wg_types::pyval::prefix;
 
 /// The attempt id a report names, and the attempt row it found (`None` when there is no such
 /// attempt).
@@ -318,7 +319,7 @@ pub fn complete_in(
         Some(task.workspace_id),
         task.id,
         EventPayload::TaskCompleted(TaskCompleted {
-            summary: summary.chars().take(5000).collect(),
+            summary: prefix(summary, 5000),
             next_status: plan.target,
             verification_configured: plan.verification_configured,
         }),
@@ -421,7 +422,7 @@ fn finish_attempt(
         summary: if read.summary.is_empty() {
             attempt.summary.clone()
         } else {
-            Some(read.summary.chars().take(50_000).collect())
+            Some(prefix(&read.summary, 50_000))
         },
         usage: usage.clone().unwrap_or_else(|| attempt.usage.clone()),
         usage_source: if usage.is_some() {

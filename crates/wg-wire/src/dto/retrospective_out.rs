@@ -1,8 +1,8 @@
 //! The result of `POST /reports/retrospective` (`generate_retrospective`).
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 
-use crate::convention::{dict, text};
+use crate::convention::text;
 
 /// The name of the result dict; it has no OpenAPI component schema.
 pub const NAME: &str = "RetrospectiveOut";
@@ -19,11 +19,11 @@ pub fn from_parts(
     content: &str,
     facts: Value,
 ) -> Value {
-    dict(vec![
-        ("id", text(id)),
-        ("title", text(title)),
-        ("narrative_source", text(narrative_source)),
-        ("content", text(content)),
-        ("facts", facts),
-    ])
+    dict!({
+        "id": text(id),
+        "title": text(title),
+        "narrative_source": text(narrative_source),
+        "content": text(content),
+        "facts": facts,
+    })
 }

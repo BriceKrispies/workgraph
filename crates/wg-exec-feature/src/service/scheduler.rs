@@ -4,7 +4,7 @@
 
 use std::collections::BTreeMap;
 
-use serde_json::{Map, Value as Json};
+use serde_json::{Map, Value as Json, json};
 use wg_json::Value as WgJson;
 use wg_model::entity::{AgentAttempt, RepositoryCheckout};
 use wg_net::{Endpoint, Net, Ollama, OpenAiCompatible};
@@ -310,20 +310,14 @@ pub fn decompose(
     let order = validate_decomposition(&proposal, &repositories)?;
     let key = task.key.to_string();
     let report = |created: Vec<String>| {
-        Json::Object(Map::from_iter([
-            ("task".to_owned(), Json::String(key.clone())),
-            ("proposal".to_owned(), proposal.dump.clone()),
-            (
-                "order".to_owned(),
-                Json::Array(order.iter().cloned().map(Json::String).collect()),
-            ),
-            ("provider".to_owned(), Json::String(provider_name.clone())),
-            ("model".to_owned(), Json::String(answered.clone())),
-            (
-                "created".to_owned(),
-                Json::Array(created.into_iter().map(Json::String).collect()),
-            ),
-        ]))
+        json!({
+            "task": Json::String(key.clone()),
+            "proposal": proposal.dump.clone(),
+            "order": Json::Array(order.iter().cloned().map(Json::String).collect()),
+            "provider": Json::String(provider_name.clone()),
+            "model": Json::String(answered.clone()),
+            "created": Json::Array(created.into_iter().map(Json::String).collect()),
+        })
     };
     if !create {
         return Ok(report(Vec::new()));

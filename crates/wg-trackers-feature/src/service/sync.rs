@@ -14,7 +14,6 @@
 use std::collections::HashSet;
 
 use serde_json::Value as Json;
-use wg_jobs::dispatch::is_truthy;
 use wg_model::slice::QueueSlice;
 use wg_net::{Flavour, JiraClient, Net};
 use wg_netspec::TrackerError;
@@ -31,6 +30,7 @@ use wg_trackers::{
     fetch_candidates, listed_ids, map_issue, newest_update, referenced_keys, since_seconds,
     timestamp_ms,
 };
+use wg_types::pyval::{text, truthy};
 use wg_types::{Correlation, Id, TaskKey, WgError};
 
 use crate::spec;
@@ -132,12 +132,8 @@ pub fn run_now(
 /// the report as a JSON object.
 pub fn tracker_sync_job(queue: &mut Queue, ctx: &mut JobContext) -> HandlerResult {
     let payload = ctx.job.payload.clone();
-    let connection = payload
-        .get("connection")
-        .and_then(Json::as_str)
-        .unwrap_or_default()
-        .to_owned();
-    let full = payload.get("full").is_some_and(is_truthy);
+    let connection = text(payload.get("connection")).to_owned();
+    let full = payload.get("full").is_some_and(truthy);
     let config = queue.app.config().map_err(HandlerError::Failed)?;
     let settings = settings_of(&config, &connection).map_err(HandlerError::Failed)?;
     let enrich = enrichment_from(&config);
@@ -264,7 +260,7 @@ fn map_one<S: IssueSource>(
     issue: &Json,
 ) -> Result<TrackerSnapshot, WgError> {
     let pull_requests = if settings.dev_panel {
-        let external_id = issue.get("id").and_then(Json::as_str).unwrap_or_default();
+        let external_id = text(issue.get("id"));
         source.dev_pull_requests(external_id)
     } else {
         Vec::new()

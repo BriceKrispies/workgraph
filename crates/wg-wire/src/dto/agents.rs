@@ -1,7 +1,7 @@
 //! `GET /api/v1/agents`: one entry per configured agent adapter. `capabilities` and `config` are the
 //! provider's own dumps and are passed through as values.
 
-use wg_json::{PyStr, Value};
+use wg_json::{Value, dict};
 
 use crate::convention::text;
 
@@ -24,27 +24,17 @@ pub fn agent(
     capabilities: Value,
     config: Value,
 ) -> Value {
-    dict(vec![
-        ("name", text(name)),
-        ("adapter", text(adapter)),
-        ("available", Value::Bool(available)),
-        ("detail", text(detail)),
-        ("capabilities", capabilities),
-        ("config", config),
-    ])
+    dict!({
+        "name": text(name),
+        "adapter": text(adapter),
+        "available": Value::Bool(available),
+        "detail": text(detail),
+        "capabilities": capabilities,
+        "config": config,
+    })
 }
 
 /// The endpoint's body: the list of entries.
 pub fn agents(entries: Vec<Value>) -> Value {
     Value::List(entries)
-}
-
-/// A dict value with its keys in the given order.
-fn dict(fields: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        fields
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
-            .collect(),
-    )
 }

@@ -151,6 +151,12 @@ pub fn opt(value: Option<&Value>) -> Option<String> {
     }
 }
 
+/// A table cell, `"" if v is None else str(v)`: the value's `str()`, or nothing for a missing or
+/// null value.
+pub fn cell(value: Option<&Value>) -> String {
+    opt(value).unwrap_or_default()
+}
+
 /// `when()`: `YYYY-MM-DD HH:MM`, or nothing.
 pub fn when(value: Option<&Value>) -> String {
     match value {
@@ -162,8 +168,4 @@ pub fn when(value: Option<&Value>) -> String {
 pub fn count(value: Option<&Value>) -> Option<String> {
     let length = items(value).len();
     (length > 0).then(|| length.to_string())
-}
-
-pub fn truncate(text: &str, width: usize) -> String {
-    text.chars().take(width).collect()
 }

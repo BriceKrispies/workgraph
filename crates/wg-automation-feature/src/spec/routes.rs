@@ -7,6 +7,7 @@ use wg_model::entity::Notification;
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, Write};
 use wg_types::WgError;
+use wg_types::pyval::{flag, int_or};
 
 /// The `limit` of `GET /ws/{ws}/automation/runs` when the client sends none.
 pub const RUNS_LIMIT: i64 = 100;
@@ -55,20 +56,14 @@ pub fn run_args(params: &Map<String, Json>) -> (Option<&str>, Option<&str>, i64)
     (
         params.get("rule").and_then(Json::as_str),
         params.get("status").and_then(Json::as_str),
-        params
-            .get("limit")
-            .and_then(Json::as_i64)
-            .unwrap_or(RUNS_LIMIT),
+        int_or(params.get("limit"), RUNS_LIMIT),
     )
 }
 
 /// The `unread` flag of `GET /ws/{ws}/notifications`: only unread notifications when set.
 #[must_use]
 pub fn unread_only(params: &Map<String, Json>) -> bool {
-    params
-        .get("unread")
-        .and_then(Json::as_bool)
-        .unwrap_or(false)
+    flag(params.get("unread"))
 }
 
 /// `NotificationService.mark_read`: the notification with `read_at` set to the call's time. An

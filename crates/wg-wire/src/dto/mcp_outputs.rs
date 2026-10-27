@@ -15,7 +15,7 @@
 //! the area modules own the rest (`experiment_shapes`, `analytics_mcp_shapes`, `mcp_shapes`).
 
 use serde_json::Value as Json;
-use wg_json::{PyStr, Value};
+use wg_json::{PyStr, Value, dict};
 
 use super::{
     agent_time_out, analytics_overview, analytics_query, analytics_query_out, attempt,
@@ -25,7 +25,7 @@ use super::{
     stack_repository, subagents_out, task, task_changes, task_detail, task_diff, task_file,
     task_history_row, task_rollup, trial,
 };
-use crate::convention::{counts, dict, int, optional_text, text, texts};
+use crate::convention::{counts, int, optional_text, text, texts};
 
 /// What a tool puts on the wire.
 #[derive(Debug, Clone, Copy)]
@@ -529,57 +529,54 @@ pub fn tools_with_shape() -> impl Iterator<Item = &'static str> {
 
 /// `{"events": [...]}`: `stack_history` and `task_get_history`.
 pub fn events(items: Vec<Value>) -> Value {
-    dict(vec![("events", Value::List(items))])
+    dict!({ "events": Value::List(items) })
 }
 
 /// `{"stacks": [...]}`: `stack_list`.
 pub fn stacks(items: Vec<Value>) -> Value {
-    dict(vec![("stacks", Value::List(items))])
+    dict!({ "stacks": Value::List(items) })
 }
 
 /// `{"tasks": [...]}`: `task_get_ready`.
 pub fn tasks(items: Vec<Value>) -> Value {
-    dict(vec![("tasks", Value::List(items))])
+    dict!({ "tasks": Value::List(items) })
 }
 
 /// `{"links": [...]}`: `task_link_commit`.
 pub fn links(items: Vec<Value>) -> Value {
-    dict(vec![("links", Value::List(items))])
+    dict!({ "links": Value::List(items) })
 }
 
 /// `stack_integrate`: `{"stack": parent key, "jobs": [{"repository", "job_id"}, ...]}`.
 pub fn stack_integrate(stack_key: &str, jobs: &[(&str, &str)]) -> Value {
-    dict(vec![
-        ("stack", text(stack_key)),
-        (
-            "jobs",
-            Value::List(
-                jobs.iter()
-                    .map(|(repository, job_id)| {
-                        dict(vec![
-                            ("repository", text(repository)),
-                            ("job_id", text(job_id)),
-                        ])
+    dict!({
+        "stack": text(stack_key),
+        "jobs": Value::List(
+            jobs.iter()
+                .map(|(repository, job_id)| {
+                    dict!({
+                        "repository": text(repository),
+                        "job_id": text(job_id),
                     })
-                    .collect(),
-            ),
+                })
+                .collect(),
         ),
-    ])
+    })
 }
 
 /// `stack_verify`: `{"stack": parent key, "job_id"}`.
 pub fn stack_verify(stack_key: &str, job_id: &str) -> Value {
-    dict(vec![("stack", text(stack_key)), ("job_id", text(job_id))])
+    dict!({ "stack": text(stack_key), "job_id": text(job_id) })
 }
 
 /// `task_promote_ready`: the promoted keys, the count per project slug (`"(none)"` for a task in
 /// no project) and whether it was a dry run.
 pub fn promote_ready(promoted: &[&str], by_project: &[(String, i64)], dry_run: bool) -> Value {
-    dict(vec![
-        ("promoted", texts(promoted.iter().copied())),
-        ("by_project", counts(by_project)),
-        ("dry_run", Value::Bool(dry_run)),
-    ])
+    dict!({
+        "promoted": texts(promoted.iter().copied()),
+        "by_project": counts(by_project),
+        "dry_run": Value::Bool(dry_run),
+    })
 }
 
 /// One checkout of an `attempt_start` answer (`StartedRepository`).
@@ -590,13 +587,13 @@ pub fn started_repository(
     base_sha: Option<&str>,
     base: Value,
 ) -> Value {
-    dict(vec![
-        ("repository", text(repository)),
-        ("checkout_path", text(checkout_path)),
-        ("branch", optional_text(branch)),
-        ("base_sha", optional_text(base_sha)),
-        ("base", base),
-    ])
+    dict!({
+        "repository": text(repository),
+        "checkout_path": text(checkout_path),
+        "branch": optional_text(branch),
+        "base_sha": optional_text(base_sha),
+        "base": base,
+    })
 }
 
 /// `attempt_start` (`AttemptStartOut`).
@@ -607,13 +604,13 @@ pub fn attempt_start(
     repositories: Vec<Value>,
     agent_checks: Vec<Value>,
 ) -> Value {
-    dict(vec![
-        ("attempt_id", text(attempt_id)),
-        ("attempt_number", int(attempt_number)),
-        ("task_key", text(task_key)),
-        ("repositories", Value::List(repositories)),
-        ("agent_checks", Value::List(agent_checks)),
-    ])
+    dict!({
+        "attempt_id": text(attempt_id),
+        "attempt_number": int(attempt_number),
+        "task_key": text(task_key),
+        "repositories": Value::List(repositories),
+        "agent_checks": Value::List(agent_checks),
+    })
 }
 
 /// `attempt_submit` for an attempt that did not succeed: the conclusion's `status` and `error`,
@@ -624,12 +621,12 @@ pub fn submit_failed(
     task_status: &str,
     attempt_status: &str,
 ) -> Value {
-    dict(vec![
-        ("status", text(status)),
-        ("error", optional_text(error)),
-        ("task_status", text(task_status)),
-        ("attempt_status", text(attempt_status)),
-    ])
+    dict!({
+        "status": text(status),
+        "error": optional_text(error),
+        "task_status": text(task_status),
+        "attempt_status": text(attempt_status),
+    })
 }
 
 /// `attempt_submit` for a succeeded attempt: `verification` is `null`, `{"gate"}`, `{"run_id",
@@ -640,13 +637,13 @@ pub fn submit_succeeded(
     task_status: &str,
     attempt_status: &str,
 ) -> Value {
-    dict(vec![
-        ("status", text("succeeded")),
-        ("verification", verification),
-        ("outcome", outcome),
-        ("task_status", text(task_status)),
-        ("attempt_status", text(attempt_status)),
-    ])
+    dict!({
+        "status": text("succeeded"),
+        "verification": verification,
+        "outcome": outcome,
+        "task_status": text(task_status),
+        "attempt_status": text(attempt_status),
+    })
 }
 
 /// `run_get` (`RunOut`): the attempt, its `agent_run` job, and the recent events as
@@ -657,12 +654,12 @@ pub fn run_get(
     job_status: Option<&str>,
     recent_events: Vec<Value>,
 ) -> Value {
-    dict(vec![
-        ("attempt", attempt),
-        ("job_id", optional_text(job_id)),
-        ("job_status", optional_text(job_status)),
-        ("recent_events", Value::List(recent_events)),
-    ])
+    dict!({
+        "attempt": attempt,
+        "job_id": optional_text(job_id),
+        "job_status": optional_text(job_status),
+        "recent_events": Value::List(recent_events),
+    })
 }
 
 /// One planned task of a `task_import_breakdown` answer.
@@ -675,24 +672,24 @@ pub fn breakdown_row(
     depends_on: &[&str],
     tags: &[&str],
 ) -> Value {
-    dict(vec![
-        ("id", text(id)),
-        ("key", optional_text(key)),
-        ("title", text(title)),
-        ("action", text(action)),
-        ("status", text(status)),
-        ("depends_on", texts(depends_on.iter().copied())),
-        ("tags", texts(tags.iter().copied())),
-    ])
+    dict!({
+        "id": text(id),
+        "key": optional_text(key),
+        "title": text(title),
+        "action": text(action),
+        "status": text(status),
+        "depends_on": texts(depends_on.iter().copied()),
+        "tags": texts(tags.iter().copied()),
+    })
 }
 
 /// An unresolved dependency of a `task_import_breakdown` answer.
 pub fn breakdown_unresolved(id: &str, dependency: &str, reason: &str) -> Value {
-    dict(vec![
-        ("id", text(id)),
-        ("dependency", text(dependency)),
-        ("reason", text(reason)),
-    ])
+    dict!({
+        "id": text(id),
+        "dependency": text(dependency),
+        "reason": text(reason),
+    })
 }
 
 /// `task_import_breakdown`: the plan. `map` is the section id to task key mapping in section
@@ -710,28 +707,22 @@ pub fn import_breakdown(
     ready: i64,
     backlog: i64,
 ) -> Value {
-    dict(vec![
-        ("source", text(source)),
-        ("dry_run", Value::Bool(dry_run)),
-        ("tasks", Value::List(rows)),
-        (
-            "map",
-            Value::Dict(
-                map.iter()
-                    .map(|(id, key)| (PyStr::from(*id), optional_text(*key)))
-                    .collect(),
-            ),
+    dict!({
+        "source": text(source),
+        "dry_run": Value::Bool(dry_run),
+        "tasks": Value::List(rows),
+        "map": Value::Dict(
+            map.iter()
+                .map(|(id, key)| (PyStr::from(*id), optional_text(*key)))
+                .collect(),
         ),
-        ("unresolved", Value::List(unresolved)),
-        (
-            "counts",
-            dict(vec![
-                ("created", int(created)),
-                ("updated", int(updated)),
-                ("unchanged", int(unchanged)),
-                ("ready", int(ready)),
-                ("backlog", int(backlog)),
-            ]),
-        ),
-    ])
+        "unresolved": Value::List(unresolved),
+        "counts": dict!({
+            "created": int(created),
+            "updated": int(updated),
+            "unchanged": int(unchanged),
+            "ready": int(ready),
+            "backlog": int(backlog),
+        }),
+    })
 }

@@ -15,11 +15,11 @@ use wg_analytics::core::period::Period;
 use wg_analytics::core::query::{Answer, Filters, Query, QueryError, run};
 use wg_analytics::core::service::CAUSATION_NOTE;
 use wg_analytics::source::AnalyticsInput;
-use wg_json::{LocalDateTime, PyStr, Value};
+use wg_json::{LocalDateTime, Value, dict};
 use wg_tasks::requests::validation_failure;
 use wg_types::{Timestamp, WgError};
 use wg_validate::{Loc, ValidationError};
-use wg_wire::convention::json_value;
+use wg_wire::convention::{json_value, optional_text, text};
 
 /// The `source` of the provenance block (`AnalyticsService.query`).
 pub const SOURCE: &str = "DuckDB snapshot of the SQLite database";
@@ -47,24 +47,6 @@ pub struct QueryRequest {
     pub model: Option<String>,
     pub since: Option<LocalDateTime>,
     pub until: Option<LocalDateTime>,
-}
-
-/// A JSON object from its entries, in the order given.
-fn dict(entries: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        entries
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
-            .collect(),
-    )
-}
-
-fn text(value: &str) -> Value {
-    Value::Str(PyStr::from(value))
-}
-
-fn optional_text(value: Option<&str>) -> Value {
-    value.map_or(Value::Null, text)
 }
 
 /// The metric registry as `metric_definition` dicts, in registry order (`AnalyticsService
@@ -219,31 +201,25 @@ pub fn run_query(
 /// The `query` echo: `AnalyticsQuery.model_dump(mode="json")`, with the dates as they were typed.
 fn echo(request: &QueryRequest) -> Value {
     let date = |at: Option<LocalDateTime>| at.map_or(Value::Null, Value::LocalDateTime);
-    dict(vec![
-        ("metric", text(&request.metric)),
-        (
-            "group_by",
-            Value::List(request.group_by.iter().map(|dim| text(dim)).collect()),
-        ),
-        ("period", text(&request.period)),
-        (
-            "filters",
-            dict(vec![
-                ("project", optional_text(request.project.as_deref())),
-                ("repository", optional_text(request.repository.as_deref())),
-                ("category", optional_text(request.category.as_deref())),
-                ("agent", Value::Null),
-                ("provider", optional_text(request.provider.as_deref())),
-                ("model", optional_text(request.model.as_deref())),
-                ("priority", Value::Null),
-                ("status", Value::Null),
-                ("kind", Value::Null),
-                ("since", date(request.since)),
-                ("until", date(request.until)),
-            ]),
-        ),
-        ("limit", Value::Int(LIMIT as i128)),
-    ])
+    dict!({
+        "metric": text(&request.metric),
+        "group_by": Value::List(request.group_by.iter().map(|dim| text(dim)).collect()),
+        "period": text(&request.period),
+        "filters": dict!({
+            "project": optional_text(request.project.as_deref()),
+            "repository": optional_text(request.repository.as_deref()),
+            "category": optional_text(request.category.as_deref()),
+            "agent": Value::Null,
+            "provider": optional_text(request.provider.as_deref()),
+            "model": optional_text(request.model.as_deref()),
+            "priority": Value::Null,
+            "status": Value::Null,
+            "kind": Value::Null,
+            "since": date(request.since),
+            "until": date(request.until),
+        }),
+        "limit": Value::Int(LIMIT as i128),
+    })
 }
 
 /// The `query` result document (`AnalyticsQueryOut`), in the Python field order.
@@ -262,19 +238,16 @@ pub fn query_out(
         .chain(std::iter::once(CAUSATION_NOTE))
         .map(text)
         .collect();
-    dict(vec![
-        ("metric", json_value(&describe(metric))),
-        ("query", echo(request)),
-        ("rows", Value::List(rows)),
-        ("sample_size", Value::Int(i128::from(answer.sample_size))),
-        (
-            "provenance",
-            dict(vec![
-                ("sql", text(SQL_DESCRIPTION)),
-                ("source", text(SOURCE)),
-                ("generated_at", text(&generated_at.format_isoformat())),
-            ]),
-        ),
-        ("notes", Value::List(notes)),
-    ])
+    dict!({
+        "metric": json_value(&describe(metric)),
+        "query": echo(request),
+        "rows": Value::List(rows),
+        "sample_size": Value::Int(i128::from(answer.sample_size)),
+        "provenance": dict!({
+            "sql": text(SQL_DESCRIPTION),
+            "source": text(SOURCE),
+            "generated_at": text(&generated_at.format_isoformat()),
+        }),
+        "notes": Value::List(notes),
+    })
 }

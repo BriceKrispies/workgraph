@@ -1,17 +1,10 @@
 //! Pure: the human views of `analytics metrics` and `analytics query` (`cli/commands/analytics.py`):
 //! the Rich tables and lines a result prints, as functions of the result document and the console.
 
-use wg_clispec::args::{get, items, python, s};
+use wg_clispec::args::{cell, get, items, python, s};
 use wg_json::Value;
 use wg_render::Console;
-
-/// `table(rows, headers)` cell text: `None` is empty, anything else is `str()`.
-fn cell(value: Option<&Value>) -> String {
-    match value {
-        None | Some(Value::Null) => String::new(),
-        Some(other) => python(other),
-    }
-}
+use wg_types::pyval::prefix;
 
 /// The Python `table(...)` of a list of rows, followed by its text. Rich prints a table with
 /// nothing in it as `nothing to show`, which the renderer does itself.
@@ -33,7 +26,7 @@ pub fn metrics_view(console: &Console, definitions: &Value) -> String {
     let rows = items(Some(definitions))
         .iter()
         .map(|d| {
-            let definition: String = s(get(d, "definition")).chars().take(80).collect();
+            let definition: String = prefix(&s(get(d, "definition")), 80);
             vec![
                 cell(get(d, "id")),
                 cell(get(d, "family")),
@@ -251,7 +244,7 @@ pub fn history_view(console: &Console, rows: &Value) -> String {
                     cell(get(row, "commits")),
                     total(row, "churn_insertions", "churn_deletions"),
                     total(row, "final_insertions", "final_deletions"),
-                    s(get(row, "title")).chars().take(50).collect(),
+                    prefix(&s(get(row, "title")), 50),
                 ]
             })
             .collect(),

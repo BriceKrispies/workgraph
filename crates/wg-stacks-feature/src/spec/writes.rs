@@ -10,7 +10,7 @@
 use serde_json::json;
 use wg_jobs::limits::stack_key;
 use wg_jobs::queue::{NewJob, enqueue};
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::{Repository, RepositoryCheckout, Stack, StackItem, StackRepository, Task};
 use wg_model::event::{
     EventDraft, EventPayload, StackCreated, StackItemAdded, StackItemRemoved,
@@ -28,7 +28,7 @@ use wg_stacks::verify::{verify_job_key, verify_resource_keys};
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Applied, Change, refresh_dependents, transition};
 use wg_types::{Id, Permission, StackItemState, StackStatus, TaskStatus, WgError};
-use wg_wire::convention::{dict, id as id_value, text};
+use wg_wire::convention::{id as id_value, text};
 
 use super::out::{Tips, stack_out};
 use super::reads::{TipTarget, tip_directory};
@@ -736,20 +736,20 @@ pub fn integrate(
                 .find(|(id, _, _)| id == repository)
                 .map(|(_, name, _)| name.as_str())
                 .unwrap_or_default();
-            dict(vec![
-                ("repository", text(name)),
-                ("job_id", id_value(job.reply)),
-            ])
+            dict!({
+                "repository": text(name),
+                "job_id": id_value(job.reply),
+            })
         })
         .collect();
     let decision = jobs
         .iter()
         .flat_map(|(_, job)| job.writes.iter().cloned().collect::<Vec<_>>())
         .fold(Decision::new(()), Decision::write);
-    Ok(decision.with_reply(dict(vec![
-        ("stack", text(&queued.parent_key)),
-        ("jobs", Value::List(listed)),
-    ])))
+    Ok(decision.with_reply(dict!({
+        "stack": text(&queued.parent_key),
+        "jobs": Value::List(listed),
+    })))
 }
 
 /// The integration worktrees whose tips a verification request keys its job by.
@@ -824,10 +824,10 @@ pub fn request_verification(
     job.causation_id = Some(version);
     job.created_by = stamp.actor.to_string();
     let queued_job = enqueue(queue, &job, &substamp(stamp, 200));
-    let reply = dict(vec![
-        ("stack", text(&queued.parent_key)),
-        ("job_id", id_value(queued_job.reply)),
-    ]);
+    let reply = dict!({
+        "stack": text(&queued.parent_key),
+        "job_id": id_value(queued_job.reply),
+    });
     Ok(queued_job.with_reply(reply))
 }
 

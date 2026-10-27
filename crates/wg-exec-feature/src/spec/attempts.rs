@@ -15,6 +15,7 @@ use wg_model::event::{
     AttemptCreated, AttemptFinished, AttemptStatusChanged, EventDraft, EventPayload,
 };
 use wg_model::stamp::{IdSeq, Stamp};
+use wg_types::pyval::prefix;
 use wg_types::{AttemptStatus, Id, WgError};
 
 /// The longest error an attempt keeps (`error[:20_000]`).
@@ -242,13 +243,13 @@ pub fn finish(
         exit_reason: finish.exit_reason.clone(),
         exit_code: finish.exit_code,
         error: error_text
-            .map(|text| text.chars().take(ERROR_LIMIT).collect())
+            .map(|text| prefix(text, ERROR_LIMIT))
             .or_else(|| attempt.error.clone()),
         summary: finish
             .summary
             .as_deref()
             .filter(|text| !text.is_empty())
-            .map(|text| text.chars().take(wg_exec::run::SUMMARY_LIMIT).collect())
+            .map(|text| prefix(text, wg_exec::run::SUMMARY_LIMIT))
             .or_else(|| attempt.summary.clone()),
         usage: if clean.is_empty() {
             attempt.usage.clone()
@@ -301,7 +302,7 @@ pub fn finish(
         error: finish
             .error
             .as_deref()
-            .map(|text| text.chars().take(EVENT_ERROR_LIMIT).collect::<String>())
+            .map(|text| prefix(text, EVENT_ERROR_LIMIT))
             .filter(|text| !text.is_empty()),
     };
     let payload = match event {

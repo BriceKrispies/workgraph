@@ -9,8 +9,8 @@ use serde_json::Value as Json;
 use wg_intel::{
     CATEGORIES, PROMPT_VERSION, RunStatus, SYSTEM_PROMPT, TaskText, apply_current,
     confirm as confirm_plan, evaluation_result, evaluation_row, gold_label, model_row,
-    output_schema, promote as promote_plan, schema_error_text, truncate,
-    validate_classification_errors, validation_error_text,
+    output_schema, promote as promote_plan, schema_error_text, validate_classification_errors,
+    validation_error_text,
 };
 use wg_jobs::queue::NewJob;
 use wg_model::entity::{
@@ -27,6 +27,7 @@ use wg_registry::resolve;
 use wg_runtime::App;
 use wg_runtimespec::RequestContext;
 use wg_store::Session;
+use wg_types::pyval::{prefix, text};
 use wg_types::{Id, Permission, WgError};
 
 use crate::service::classify as classify_reads;
@@ -271,7 +272,7 @@ fn record_failure(
             );
             let payload = ClassificationFailed {
                 classification_id: row.id,
-                error: Some(truncate(error, 500)),
+                error: Some(prefix(error, 500)),
                 model: Some(run.model.clone()),
                 provider: Some(run.provider.clone()),
                 reason: validation.to_owned(),
@@ -693,10 +694,7 @@ pub fn evaluate(
             Ok(Generation { data, .. }) => {
                 match validate_classification_errors(&Json::Object(data)) {
                     Ok(parsed) => {
-                        let predicted = parsed
-                            .get("category")
-                            .and_then(Json::as_str)
-                            .unwrap_or_default();
+                        let predicted = text(parsed.get("category"));
                         evaluation_result(*label_id, title, expected, Ok(predicted))
                     }
                     Err(errors) => {
@@ -705,7 +703,7 @@ pub fn evaluate(
                             *label_id,
                             title,
                             expected,
-                            Err(&truncate(&text, EVALUATION_ERROR_CHARS)),
+                            Err(&prefix(&text, EVALUATION_ERROR_CHARS)),
                         )
                     }
                 }
@@ -717,13 +715,13 @@ pub fn evaluate(
                 *label_id,
                 title,
                 expected,
-                Err(&truncate(error.message(), EVALUATION_ERROR_CHARS)),
+                Err(&prefix(error.message(), EVALUATION_ERROR_CHARS)),
             ),
             Err(CallError::Unsupported(message)) => evaluation_result(
                 *label_id,
                 title,
                 expected,
-                Err(&truncate(&message, EVALUATION_ERROR_CHARS)),
+                Err(&prefix(&message, EVALUATION_ERROR_CHARS)),
             ),
             Err(CallError::Raised(error)) => return Err(error),
         };

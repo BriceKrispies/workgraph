@@ -7,14 +7,16 @@
 //! Pydantic datetimes print in the `Z` form (`TimeFormat::ModelZ`); the failure row calls
 //! `isoformat()` itself and so uses `TimeFormat::Isoformat`.
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::JsonObject;
 use wg_model::entity::verification::{
     TaskAcceptance, VerificationCheckResult, VerificationConfig, VerificationRun,
 };
 use wg_types::Id;
 
-use crate::convention::{TimeFormat, id, json_object, model, optional_timestamp, text, timestamp};
+use crate::convention::{
+    TimeFormat, id, int, json_object, model, optional_timestamp, text, timestamp,
+};
 
 /// The Python class of the config DTO.
 pub const CONFIG_NAME: &str = "VerificationConfigOut";
@@ -239,28 +241,22 @@ pub fn failure_row(
     attempt_id: Option<Id>,
     task_key: &str,
 ) -> Value {
-    dict(vec![
-        ("check_result_id", id(check.id)),
-        ("run_id", id(run_id)),
-        ("task_id", id(task_id)),
-        ("task_key", text(task_key)),
-        ("attempt_id", optional_id(attempt_id)),
-        ("check", text(&check.name)),
-        ("kind", text(&check.kind)),
-        ("required", Value::Bool(check.required)),
-        ("status", text(&check.status)),
-        ("exit_code", optional_int(check.exit_code)),
-        ("timed_out", Value::Bool(check.timed_out)),
-        (
-            "failure_signatures",
-            Value::List(check.failure_signatures.iter().map(|s| text(s)).collect()),
-        ),
-        ("repository_id", optional_id(check.repository_id)),
-        (
-            "created_at",
-            timestamp(check.created_at, TimeFormat::Isoformat),
-        ),
-    ])
+    dict!({
+        "check_result_id": id(check.id),
+        "run_id": id(run_id),
+        "task_id": id(task_id),
+        "task_key": text(task_key),
+        "attempt_id": optional_id(attempt_id),
+        "check": text(&check.name),
+        "kind": text(&check.kind),
+        "required": Value::Bool(check.required),
+        "status": text(&check.status),
+        "exit_code": optional_int(check.exit_code),
+        "timed_out": Value::Bool(check.timed_out),
+        "failure_signatures": Value::List(check.failure_signatures.iter().map(|s| text(s)).collect()),
+        "repository_id": optional_id(check.repository_id),
+        "created_at": timestamp(check.created_at, TimeFormat::Isoformat),
+    })
 }
 
 fn checks_list<'a>(checks: impl IntoIterator<Item = &'a JsonObject>) -> Value {
@@ -273,17 +269,4 @@ fn optional_id(value: Option<Id>) -> Value {
 
 fn optional_int(value: Option<i64>) -> Value {
     value.map_or(Value::Null, int)
-}
-
-fn int(value: i64) -> Value {
-    Value::Int(i128::from(value))
-}
-
-fn dict(fields: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        fields
-            .into_iter()
-            .map(|(key, value)| (wg_json::PyStr::from(key), value))
-            .collect(),
-    )
 }

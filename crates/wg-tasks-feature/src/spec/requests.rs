@@ -10,6 +10,7 @@ use serde_json::{Map, Value, json};
 use wg_tasks::edit::*;
 use wg_tasks::files::FileInput;
 use wg_tasks::requests::{component, run};
+use wg_types::pyval::{self, int_or};
 use wg_types::{TaskPriority, TaskStatus, Timestamp, WgError};
 use wg_validate::{ChoiceKind, Extra, Field, IntRules, Model, Schema, StrRules};
 
@@ -217,10 +218,7 @@ pub fn read_create(dump: &Map<String, Value>) -> Result<CreateRead, WgError> {
         depends_on: strings_of(dump, "depends_on").unwrap_or_default(),
         assignee: string_of(dump, "assignee"),
         assigned_agent: string_of(dump, "assigned_agent"),
-        auto_execute: dump
-            .get("auto_execute")
-            .and_then(Value::as_bool)
-            .unwrap_or(false),
+        auto_execute: pyval::flag(dump.get("auto_execute")),
         due_at: time_of(dump, "due_at")?,
         scheduled_at: time_of(dump, "scheduled_at")?,
         due_naive: is_naive(dump, "due_at"),
@@ -258,7 +256,7 @@ pub struct FilterRead {
 /// Python.
 pub fn read_filter(dump: &Map<String, Value>) -> Result<FilterRead, WgError> {
     let non_empty = |key: &str| string_of(dump, key).filter(|text| !text.is_empty());
-    let flag = |key: &str| dump.get(key).and_then(Value::as_bool).unwrap_or(false);
+    let flag = |key: &str| pyval::flag(dump.get(key));
     Ok(FilterRead {
         statuses: strings_of(dump, "statuses")
             .unwrap_or_default()
@@ -288,7 +286,7 @@ pub fn read_filter(dump: &Map<String, Value>) -> Result<FilterRead, WgError> {
             .get("descending")
             .and_then(Value::as_bool)
             .unwrap_or(true),
-        limit: dump.get("limit").and_then(Value::as_i64).unwrap_or(50),
-        offset: dump.get("offset").and_then(Value::as_i64).unwrap_or(0),
+        limit: int_or(dump.get("limit"), 50),
+        offset: int_or(dump.get("offset"), 0),
     })
 }

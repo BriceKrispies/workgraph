@@ -17,6 +17,7 @@ use wg_types::{Id, Timestamp, parse_id};
 use wg_wire::dto::commit_link;
 
 use super::ingest::offset_time;
+use wg_types::pyval::text;
 
 /// The source name of an explicit link (`AttributionSource.EXPLICIT`).
 pub const EXPLICIT: &str = "explicit";
@@ -42,11 +43,7 @@ pub fn trailers_of(commit: &Commit) -> Vec<Trailer> {
 }
 
 fn string_field(object: &JsonObject, key: &str) -> String {
-    object
-        .get(key)
-        .and_then(Json::as_str)
-        .unwrap_or_default()
-        .to_owned()
+    text(object.get(key)).to_owned()
 }
 
 /// The task references a stored commit names: its task-naming trailers, then the keys its prose

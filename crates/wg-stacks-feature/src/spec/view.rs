@@ -3,18 +3,14 @@
 //! the text Python's `console` would write, line by line.
 
 use serde_json::Value as Json;
-use wg_clispec::args::{get, items, opt, python, s, truncate, when};
+use wg_clispec::args::{cell, get, items, opt, python, s, when};
 use wg_json::Value;
 use wg_render::Console;
-
-/// `"" if v is None else str(v)`: a table cell or a text that may be absent.
-fn cell(value: Option<&Value>) -> String {
-    opt(value).unwrap_or_default()
-}
+use wg_types::pyval::prefix;
 
 /// `short(value, n)`: the first `n` characters, or nothing when there is no value.
 fn short(value: Option<&Value>, n: usize) -> String {
-    truncate(&cell(value), n)
+    prefix(&cell(value), n)
 }
 
 /// A JSON scalar as Python's `str()` shows it (`None` for null, `True`/`False` for booleans).

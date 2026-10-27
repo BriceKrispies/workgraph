@@ -29,6 +29,7 @@ use wg_model::entity::{Stack, StackItem, Task};
 use wg_registry::resolve;
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::deps::INACTIVE_STACK_STATUSES;
+use wg_types::pyval::text;
 use wg_types::{Id, WgError};
 
 /// The `stack` group's clap command, built from the snapshot (`contracts/cli.json`), so its
@@ -45,9 +46,7 @@ pub fn command() -> clap::Command {
 /// when there is none.
 #[must_use]
 pub fn body_text<'a>(body: &'a serde_json::Value, name: &str) -> &'a str {
-    body.get(name)
-        .and_then(serde_json::Value::as_str)
-        .unwrap_or_default()
+    text(body.get(name))
 }
 
 /// `StackService._active_or_raise`: the parent's stack that has not landed or been abandoned.

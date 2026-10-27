@@ -6,10 +6,11 @@
 //! the `max_bytes` truncation the service applies. The service measures the limit in characters
 //! (Python `len` of a `str`), and so does this module.
 
-use wg_json::{PyStr, Value};
+use wg_json::{Value, dict};
 use wg_types::Id;
 
 use crate::convention::{id, text};
+use wg_types::pyval::prefix;
 
 /// The keys of the top-level dict, in the order the service builds them.
 pub const FIELDS: [&str; 5] = [
@@ -66,10 +67,7 @@ pub fn from_parts(diff: &TaskDiff<'_>) -> Value {
         let remaining = diff.max_bytes.saturating_sub(total);
         let text_len = part_text(part).chars().count();
         let (body, cut) = if text_len > remaining {
-            (
-                part_text(part).chars().take(remaining).collect::<String>(),
-                true,
-            )
+            (prefix(part_text(part), remaining), true)
         } else {
             (part_text(part).to_string(), false)
         };
@@ -77,16 +75,13 @@ pub fn from_parts(diff: &TaskDiff<'_>) -> Value {
         truncated |= cut;
         parts.push(part_value(part, &body, cut));
     }
-    dict(vec![
-        ("task_id", id(diff.task_id)),
-        ("task_key", text(diff.task_key)),
-        ("parts", Value::List(parts)),
-        (
-            "missing_objects",
-            Value::List(diff.missing.iter().map(missing_value).collect()),
-        ),
-        ("truncated", Value::Bool(truncated)),
-    ])
+    dict!({
+        "task_id": id(diff.task_id),
+        "task_key": text(diff.task_key),
+        "parts": Value::List(parts),
+        "missing_objects": Value::List(diff.missing.iter().map(missing_value).collect()),
+        "truncated": Value::Bool(truncated),
+    })
 }
 
 fn part_text(part: &DiffPart) -> &str {
@@ -121,28 +116,20 @@ fn part_value(part: &DiffPart, body: &str, cut: bool) -> Value {
 
 fn missing_value(missing: &Missing) -> Value {
     match missing {
-        Missing::Range { repository, range } => dict(vec![
-            ("repository", text(repository)),
-            ("range", text(range)),
-        ]),
+        Missing::Range { repository, range } => dict!({
+            "repository": text(repository),
+            "range": text(range),
+        }),
         Missing::Commit { repository, sha } => {
-            dict(vec![("repository", text(repository)), ("sha", text(sha))])
+            dict!({ "repository": text(repository), "sha": text(sha) })
         }
     }
-}
-
-fn dict(fields: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        fields
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
-            .collect(),
-    )
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use wg_json::PyStr;
 
     #[test]
     fn cuts_by_characters_and_flags_the_cut_part() {

@@ -18,6 +18,7 @@ use wg_runtimespec::RequestContext;
 use wg_types::{Correlation, Id, Permission, WgError};
 
 use super::{TriggerRows, condition_context, objects};
+use wg_types::pyval::{self, flag};
 
 /// `AUTOMATION_PERMISSIONS`: what an automation run's actions may do. A rule a human authored also
 /// gets `run:start` (`created_by` starts with `human:`).
@@ -183,10 +184,7 @@ pub fn inherits_repositories(action: &Map<String, Json>) -> bool {
 
 /// Whether a `create_child_tasks` action chains its children (default `false`).
 pub fn is_sequential(action: &Map<String, Json>) -> bool {
-    action
-        .get("sequential")
-        .and_then(Json::as_bool)
-        .unwrap_or(false)
+    flag(action.get("sequential"))
 }
 
 /// The `TaskCreate` body of one child: its rendered title and description, its priority
@@ -231,7 +229,7 @@ pub fn dependency_request(
     match action.get("depends_on").and_then(Json::as_str) {
         Some(depends_on) => (task.to_owned(), render(depends_on, context, 100)),
         None => {
-            let blocks = action.get("blocks").and_then(Json::as_str).unwrap_or("");
+            let blocks = pyval::text(action.get("blocks"));
             (render(blocks, context, 100), task.to_owned())
         }
     }
@@ -346,7 +344,7 @@ fn py_text(text: &PyStr) -> String {
 
 /// A string member of an action, or the empty text when it is absent.
 fn text<'a>(object: &'a Map<String, Json>, key: &str) -> &'a str {
-    object.get(key).and_then(Json::as_str).unwrap_or("")
+    pyval::text(object.get(key))
 }
 
 /// The string items of a list member of an action.

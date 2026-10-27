@@ -2227,6 +2227,7 @@ dependencies = [
  "serde_json",
  "wg-json",
  "wg-procspec",
+ "wg-types",
 ]
 
 [[package]]
@@ -2450,6 +2451,7 @@ version = "0.1.0"
 dependencies = [
  "serde_json",
  "toml",
+ "wg-types",
  "wg-validate",
 ]
 
@@ -2821,6 +2823,7 @@ dependencies = [
  "rpds",
  "serde_json",
  "wg-model",
+ "wg-types",
 ]
 
 [[package]]

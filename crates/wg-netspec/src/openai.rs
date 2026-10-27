@@ -8,7 +8,8 @@ use wg_model::{HttpCall, HttpMethod};
 use crate::error::ProviderError;
 use crate::output::{Structured, floats, from_content};
 use crate::request::{bearer, call, json_content_type, url};
-use crate::text::{head, py_repr};
+use crate::text::py_repr;
+use wg_types::pyval::prefix;
 
 /// The provider label used in retry messages: the configured name, then the base URL.
 pub fn label(name: &str, base_url: &str) -> String {
@@ -128,11 +129,12 @@ pub fn status_error(name: &str, code: u16, body: &str) -> Option<ProviderError> 
     if code == 404 {
         return Some(ProviderError::ModelUnavailable(format!(
             "{name}: {}",
-            head(body, 200)
+            prefix(body, 200)
         )));
     }
-    (code >= 400)
-        .then(|| ProviderError::InvalidOutput(format!("{name} error {code}: {}", head(body, 300))))
+    (code >= 400).then(|| {
+        ProviderError::InvalidOutput(format!("{name} error {code}: {}", prefix(body, 300)))
+    })
 }
 
 /// The structured output of a `/v1/chat/completions` body: `choices[0].message.content` must be
@@ -141,7 +143,7 @@ pub fn parse_chat(body: &Value, request_model: &str) -> Result<Structured, Provi
     let unexpected = || {
         ProviderError::InvalidOutput(format!(
             "unexpected completion payload: {}",
-            head(&body.to_string(), 200)
+            prefix(&body.to_string(), 200)
         ))
     };
     let content = body

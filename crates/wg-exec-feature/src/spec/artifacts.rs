@@ -5,6 +5,7 @@
 use serde_json::{Map, Value};
 use wg_hash::sha256_hex;
 use wg_model::entity::Artifact;
+use wg_types::pyval::prefix;
 use wg_types::{Id, Timestamp};
 
 /// The longest file name an artifact keeps.
@@ -31,7 +32,7 @@ pub fn safe_name(name: &str) -> String {
     } else {
         trimmed
     };
-    named.chars().take(NAME_LIMIT).collect()
+    prefix(named, NAME_LIMIT)
 }
 
 /// The path of a stored artifact below the artifacts directory: `<workspace>/<artifact>/<name>`.

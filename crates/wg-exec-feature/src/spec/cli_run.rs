@@ -2,14 +2,15 @@
 //! `watch` commands (`RunOut` of `orchestration/runs.py`).
 
 use clap::Command;
-use wg_clispec::args::{get, items, python, truncate};
+use wg_clispec::args::{cell, get, items, python};
 use wg_clispec::tree::snapshot_command;
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::{AgentAttempt, Job};
 use wg_render::Console;
 use wg_storecodec::EventRecord;
 use wg_types::AttemptStatus;
-use wg_wire::convention::{dict, id, text};
+use wg_types::pyval::prefix;
+use wg_wire::convention::{id, text};
 use wg_wire::dto::{attempt, event};
 
 /// The `run` command, built from the snapshot so its help and parameters match.
@@ -26,31 +27,17 @@ pub fn run_document(attempt: &AgentAttempt, job: Option<&Job>, events: &[EventRe
         .rev()
         .map(|record| event::dict_from_stored(&record.clone().into()))
         .collect();
-    dict(vec![
-        ("attempt", attempt::from_model(attempt)),
-        ("job_id", job.map_or(Value::Null, |found| id(found.id))),
-        (
-            "job_status",
-            job.map_or(Value::Null, |found| text(found.status.as_str())),
-        ),
-        ("recent_events", Value::List(recent)),
-    ])
+    dict!({
+        "attempt": attempt::from_model(attempt),
+        "job_id": job.map_or(Value::Null, |found| id(found.id)),
+        "job_status": job.map_or(Value::Null, |found| text(found.status.as_str())),
+        "recent_events": Value::List(recent),
+    })
 }
 
 /// The first eight characters of an id (`short`).
 fn short(value: Option<&Value>) -> String {
-    python(value.unwrap_or(&Value::Null))
-        .chars()
-        .take(8)
-        .collect()
-}
-
-/// A table cell: a value as text, `None` (and absence) as nothing.
-fn cell(value: Option<&Value>) -> String {
-    match value {
-        None | Some(Value::Null) => String::new(),
-        Some(value) => python(value),
-    }
+    prefix(&python(value.unwrap_or(&Value::Null)), 8)
 }
 
 /// The optional text of a `kv` pair: `None` for an absent or null value (`kv` leaves it out).
@@ -90,7 +77,7 @@ pub fn get_view(console: &Console, run: &Value) -> String {
             vec![
                 cell(get(event, "seq")),
                 cell(get(event, "event_type")),
-                truncate(&message, 80),
+                prefix(&message, 80),
             ]
         })
         .collect();

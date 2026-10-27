@@ -24,6 +24,7 @@ use crate::service::agents::LiveAgents;
 use crate::service::resolve::{find_attempt, find_task};
 use crate::service::run_flow;
 use crate::spec::runs::StartRequest;
+use wg_types::pyval::{int_or, text};
 
 /// The feature's tool descriptor: one [`call`].
 pub const TOOLS: &[ToolRun] = &[call];
@@ -65,14 +66,8 @@ pub fn call(
 
 /// `run_get`: the attempt, its job and its recent events (`RunService.get`).
 fn run_get_tool(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
-    let reference = arguments
-        .get("attempt_id")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
-    let events = arguments
-        .get("events")
-        .and_then(Value::as_i64)
-        .unwrap_or(50);
+    let reference = text(arguments.get("attempt_id"));
+    let events = int_or(arguments.get("events"), 50);
     structured(&crate::service::runs::get(app, reference, events)?)
 }
 
@@ -104,10 +99,7 @@ fn run_start_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Val
 /// `run_cancel`: asks a queued or running attempt to stop (`RunService.cancel`).
 fn run_cancel_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Value, WgError> {
     let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
-    let reference = arguments
-        .get("attempt_id")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
+    let reference = text(arguments.get("attempt_id"));
     let reason = arguments
         .get("reason")
         .and_then(Value::as_str)
@@ -118,10 +110,7 @@ fn run_cancel_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Va
 
 /// `attempt_get`: the attempt as `AttemptOut`.
 fn attempt_get(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
-    let reference = arguments
-        .get("attempt_id")
-        .and_then(Value::as_str)
-        .unwrap_or_default();
+    let reference = text(arguments.get("attempt_id"));
     let found = app
         .runtime
         .store
@@ -132,8 +121,8 @@ fn attempt_get(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
 /// `attempt_list`: one page of attempts in the workspace, newest first.
 fn attempt_list(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
     let workspace = workspace_or_default(app, arguments)?;
-    let limit = arguments.get("limit").and_then(Value::as_i64).unwrap_or(50);
-    let offset = arguments.get("offset").and_then(Value::as_i64).unwrap_or(0);
+    let limit = int_or(arguments.get("limit"), 50);
+    let offset = int_or(arguments.get("offset"), 0);
     let provider = arguments.get("provider").and_then(Value::as_str);
     // An unknown status never matches a row, so a filter of only unknown names matches nothing,
     // while an empty filter does not narrow at all.
@@ -192,10 +181,7 @@ fn unwired(app: &mut App, name: &str, arguments: &Value) -> Result<Value, WgErro
             .read(|session| find_attempt(session, reference))?;
     } else {
         let workspace = workspace_arg(app, arguments)?;
-        let reference = arguments
-            .get("task")
-            .and_then(Value::as_str)
-            .unwrap_or_default();
+        let reference = text(arguments.get("task"));
         app.runtime
             .store
             .read(|session| find_task(session, workspace, reference))?;

@@ -2,23 +2,6 @@
 
 use serde_json::Value;
 
-/// The value under `key`, or `Null` (Python `dict.get`). A non-object gives `Null`.
-pub fn get<'a>(value: &'a Value, key: &str) -> &'a Value {
-    value.get(key).unwrap_or(&Value::Null)
-}
-
-/// Python truthiness: `None`, `False`, `0`, `""`, `[]` and `{}` are falsy.
-pub fn truthy(value: &Value) -> bool {
-    match value {
-        Value::Null => false,
-        Value::Bool(b) => *b,
-        Value::Number(n) => n.as_f64().is_some_and(|f| f != 0.0),
-        Value::String(s) => !s.is_empty(),
-        Value::Array(a) => !a.is_empty(),
-        Value::Object(o) => !o.is_empty(),
-    }
-}
-
 /// Python `str(value)` for a decoded JSON value. Lists and dicts use their JSON form, which
 /// differs from Python's `repr` only in quoting; the adapters only ever see strings there.
 pub fn py_str(value: &Value) -> String {
@@ -29,11 +12,6 @@ pub fn py_str(value: &Value) -> String {
         Value::String(s) => s.clone(),
         other => py_dumps(other, None),
     }
-}
-
-/// The first `n` characters (Python `s[:n]`).
-pub fn truncate_chars(text: &str, n: usize) -> String {
-    text.chars().take(n).collect()
 }
 
 /// A JSON integer (not a float): Python `isinstance(x, int)`.
@@ -148,9 +126,7 @@ mod tests {
     #[test]
     fn python_scalars() {
         assert_eq!(py_str(&Value::Null), "None");
-        assert!(!truthy(&json!(0)) && truthy(&json!("x")) && !truthy(&json!([])));
         assert_eq!(as_int(&json!(1.5)), None);
         assert_eq!(as_int(&json!(3)), Some(3));
-        assert_eq!(truncate_chars("héllo", 2), "hé");
     }
 }

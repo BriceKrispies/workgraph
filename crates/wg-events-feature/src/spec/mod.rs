@@ -4,12 +4,13 @@
 
 use clap::{ArgMatches, Command};
 use serde_json::Value as Json;
-use wg_clispec::args::{get, items, one, python, when};
+use wg_clispec::args::{cell, get, items, one, when};
 use wg_clispec::tree::snapshot_command;
 use wg_clispec::{CliFailure, Usage};
 use wg_json::Value;
 use wg_render::Console;
 use wg_storecodec::EventQuery;
+use wg_types::pyval::prefix;
 use wg_types::{Id, parse_id};
 
 /// The most events one history read returns (`min(limit, 5000)`).
@@ -105,7 +106,7 @@ pub fn list_view(console: &Console, events: &Value) -> String {
                 when(get(event, "occurred_at")),
                 cell(get(event, "event_type")),
                 cell(get(event, "actor")),
-                cell(get(event, "entity_id")).chars().take(8).collect(),
+                prefix(&cell(get(event, "entity_id")), 8),
             ]
         })
         .collect();
@@ -133,14 +134,6 @@ pub fn verify_view(console: &Console, report: &Value) -> String {
             tail
         ))
         .text
-}
-
-/// `str()` of an output value, with `None` for nothing.
-fn cell(value: Option<&Value>) -> String {
-    match value {
-        None | Some(Value::Null) => String::new(),
-        Some(other) => python(other),
-    }
 }
 
 /// A JSON document, as the output value of the same Python object: object keys in file order,

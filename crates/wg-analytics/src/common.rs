@@ -3,8 +3,9 @@
 //! `analytics/agent_time.py` select runs the same way), and the JSON readers that follow Python's
 //! `_dict` and `_number` helpers.
 
-use serde_json::{Map, Value};
+use serde_json::{Map, Value, json};
 use wg_types::Timestamp;
+use wg_types::pyval::nonempty;
 
 use crate::agg::{Groups, aggregate, lookup};
 use crate::source::{AnalyticsInput, TaskRow};
@@ -107,26 +108,6 @@ pub fn number(value: Option<&Value>) -> Option<f64> {
     }
 }
 
-/// Python truthiness of a JSON value: `None`, `false`, zero, and empty strings, arrays and
-/// objects are false.
-#[must_use]
-pub fn truthy(value: Option<&Value>) -> bool {
-    match value {
-        None | Some(Value::Null) => false,
-        Some(Value::Bool(flag)) => *flag,
-        Some(Value::Number(number)) => number.as_f64().is_some_and(|n| n != 0.0),
-        Some(Value::String(text)) => !text.is_empty(),
-        Some(Value::Array(items)) => !items.is_empty(),
-        Some(Value::Object(object)) => !object.is_empty(),
-    }
-}
-
-/// `text or None`: an empty string is treated as absent, as Python's `or` does.
-#[must_use]
-pub fn nonempty(text: Option<&str>) -> Option<&str> {
-    text.filter(|text| !text.is_empty())
-}
-
 /// `row.model or row.requested_model or UNKNOWN`.
 #[must_use]
 pub fn model_name<'a>(model: &'a Option<String>, requested: &'a Option<String>) -> &'a str {
@@ -174,10 +155,10 @@ pub fn median_json(values: impl IntoIterator<Item = f64>) -> Value {
 /// The `window` object every report echoes.
 #[must_use]
 pub fn window_json(window: &Window) -> Value {
-    object(vec![
-        ("since", iso_value(window.since)),
-        ("until", iso_value(window.until)),
-    ])
+    json!({
+        "since": iso_value(window.since),
+        "until": iso_value(window.until),
+    })
 }
 
 /// The task of a run's `task_id`, if the task exists.

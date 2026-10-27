@@ -7,6 +7,7 @@
 use std::collections::BTreeSet;
 
 use wg_types::Id;
+use wg_types::pyval::prefix;
 
 /// The longest text sent to the embedding provider (`[:8000]`, in characters).
 const EMBEDDING_TEXT_CHARS: usize = 8000;
@@ -28,17 +29,17 @@ pub fn embedding_text<'a>(
     tags: impl IntoIterator<Item = &'a str>,
 ) -> String {
     let tag_part = tags.into_iter().collect::<Vec<&str>>().join(" ");
-    [title, description]
-        .into_iter()
-        .map(str::to_owned)
-        .chain(criteria.into_iter().map(str::to_owned))
-        .chain(std::iter::once(tag_part))
-        .filter(|part| !part.is_empty())
-        .collect::<Vec<String>>()
-        .join("\n")
-        .chars()
-        .take(EMBEDDING_TEXT_CHARS)
-        .collect()
+    prefix(
+        &[title, description]
+            .into_iter()
+            .map(str::to_owned)
+            .chain(criteria.into_iter().map(str::to_owned))
+            .chain(std::iter::once(tag_part))
+            .filter(|part| !part.is_empty())
+            .collect::<Vec<String>>()
+            .join("\n"),
+        EMBEDDING_TEXT_CHARS,
+    )
 }
 
 /// The `input_hash` of an embedded text: its SHA-256 in hex.

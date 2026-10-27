@@ -10,8 +10,9 @@ use serde_json::{Map, Value, json};
 use wg_hash::sha256_hex;
 use wg_types::Timestamp;
 
-use crate::json::{dumps_sorted, py_str, truthy};
+use crate::json::{dumps_sorted, py_str};
 use crate::redact::{redact, redact_object, redact_text, summarize};
+use wg_types::pyval::{prefix, truthy};
 
 /// The event name of a payload that is not a hook object.
 pub const INVALID_EVENT: &str = "Invalid";
@@ -188,7 +189,7 @@ pub fn payload_object(record: &Value) -> Map<String, Value> {
     hook_object(
         record
             .get("payload")
-            .filter(|value| truthy(Some(value)))
+            .filter(|value| truthy(value))
             .cloned()
             .unwrap_or_else(|| json!({})),
     )
@@ -309,22 +310,17 @@ pub fn tool_summary(fields: &HookFields) -> Map<String, Value> {
     let name = fields.tool_name.as_deref();
     let file = match (name, input.and_then(|map| map.get("file_path"))) {
         (Some("Edit" | "Write" | "MultiEdit" | "NotebookEdit" | "Read"), Some(path))
-            if truthy(Some(path)) =>
+            if truthy(path) =>
         {
             Some((
                 "file_path".to_owned(),
-                json!(
-                    py_str(path)
-                        .chars()
-                        .take(FILE_PATH_CHARS)
-                        .collect::<String>()
-                ),
+                json!(prefix(&py_str(path), FILE_PATH_CHARS)),
             ))
         }
         _ => None,
     };
     let bash = match (name, input.and_then(|map| map.get("command"))) {
-        (Some("Bash"), Some(command)) if truthy(Some(command)) => {
+        (Some("Bash"), Some(command)) if truthy(command) => {
             let text = redact_text(&py_str(command), Some(COMMAND_CHARS));
             let head = text.split_whitespace().next().unwrap_or("").to_owned();
             Some(("command_head".to_owned(), json!(head)))
@@ -372,7 +368,7 @@ pub fn tool_event(fields: &HookFields, summary: &Map<String, Value>) -> Option<T
         .filter(|name| !name.is_empty())?;
     Some(ToolEventRow {
         phase,
-        tool_name: name.chars().take(TOOL_NAME_CHARS).collect(),
+        tool_name: prefix(name, TOOL_NAME_CHARS),
         tool_use_id: fields.tool_use_id.clone(),
         duration_ms: fields.duration_ms,
         error_excerpt: fields
@@ -411,7 +407,7 @@ pub fn last_message_excerpt(last_message: Option<&str>) -> Option<String> {
 
 /// The stored subject of an internal task: its first 500 code points.
 pub fn internal_task_subject(subject: Option<&str>) -> String {
-    subject.unwrap_or("").chars().take(SUBJECT_CHARS).collect()
+    prefix(subject.unwrap_or(""), SUBJECT_CHARS)
 }
 
 /// The stored description of an internal task: redacted and bounded, or `None` when empty.

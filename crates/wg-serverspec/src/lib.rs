@@ -26,6 +26,7 @@ pub mod net;
 pub mod operations;
 pub mod pages;
 pub mod pairing;
+use wg_types::pyval::prefix;
 pub use wg_validate::pyjson;
 pub mod reply;
 pub mod request;
@@ -102,7 +103,7 @@ pub fn header_text(bytes: &[u8]) -> String {
 pub fn actor_name(header: Option<&[u8]>) -> Option<String> {
     header
         .filter(|name| !name.is_empty())
-        .map(|name| header_text(name).chars().take(100).collect())
+        .map(|name| prefix(&header_text(name), 100))
 }
 
 /// `X-Correlation-Id`: the text kept when it is at most 64 characters (Python's `len` of the

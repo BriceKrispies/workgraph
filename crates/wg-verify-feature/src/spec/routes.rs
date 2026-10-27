@@ -4,6 +4,7 @@
 
 use serde_json::{Map, Value as Json};
 use time::{Date, Duration, Month, PrimitiveDateTime, Time};
+use wg_types::pyval::{int_or, prefix};
 use wg_types::{Timestamp, WgError};
 
 /// The `limit` of `GET /ws/{ws}/verification/runs` when the client sends none.
@@ -43,10 +44,7 @@ pub fn run_args(params: &Map<String, Json>) -> (Option<&str>, i64) {
         .get("status")
         .and_then(Json::as_str)
         .filter(|text| !text.is_empty());
-    let limit = params
-        .get("limit")
-        .and_then(Json::as_i64)
-        .unwrap_or(RUNS_LIMIT);
+    let limit = int_or(params.get("limit"), RUNS_LIMIT);
     (status, limit)
 }
 
@@ -153,7 +151,7 @@ fn clock_of(text: &str) -> Option<(u8, u8, u8, u32)> {
     }
     let micro = match fraction {
         Some(fraction) => {
-            let kept: String = fraction.chars().take(6).collect();
+            let kept: String = prefix(fraction, 6);
             digits(fraction)?;
             digits(&format!("{kept:0<6}"))?
         }

@@ -18,7 +18,7 @@ pub mod sql;
 pub mod view;
 
 use serde_json::{Map, Value as Json};
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::{Task, TaskComment, TaskDecision};
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, EventDraft, EventPayload, Write};
@@ -28,7 +28,6 @@ use wg_tasks::edit::tag_writes;
 use wg_tasks::requests::{component, run};
 use wg_types::{Id, Permission, WgError, parse_id};
 use wg_validate::Model;
-use wg_wire::convention::dict;
 
 use self::dto::{decision, decision_task, decision_with_task};
 pub use self::sql::DecisionFilter;
@@ -37,6 +36,7 @@ use crate::core::{
     Answer, DecisionPlan, OptionInput, check_answer, check_request, plan_choose, plan_request,
     plan_withdraw,
 };
+use wg_types::pyval::{flag, int_or, text};
 
 /// What a decision on one existing decision reads: the task world of its workspace, the stored
 /// decision row and every decision on its task.
@@ -108,20 +108,9 @@ pub fn read_options(options: &[Json]) -> Vec<OptionInput> {
         .iter()
         .map(|option| OptionInput {
             id: option.get("id").and_then(Json::as_str).map(str::to_owned),
-            label: option
-                .get("label")
-                .and_then(Json::as_str)
-                .unwrap_or_default()
-                .to_owned(),
-            detail: option
-                .get("detail")
-                .and_then(Json::as_str)
-                .unwrap_or_default()
-                .to_owned(),
-            recommended: option
-                .get("recommended")
-                .and_then(Json::as_bool)
-                .unwrap_or(false),
+            label: text(option.get("label")).to_owned(),
+            detail: text(option.get("detail")).to_owned(),
+            recommended: flag(option.get("recommended")),
         })
         .collect()
 }
@@ -131,10 +120,7 @@ pub fn read_options(options: &[Json]) -> Vec<OptionInput> {
 #[must_use]
 pub fn request_parts(body: &Json) -> (String, Vec<Json>) {
     (
-        body.get("question")
-            .and_then(Json::as_str)
-            .unwrap_or_default()
-            .to_owned(),
+        text(body.get("question")).to_owned(),
         body.get("options")
             .and_then(Json::as_array)
             .cloned()
@@ -164,7 +150,7 @@ pub fn list_args(params: &Map<String, Json>) -> (DecisionFilter, i64) {
             .and_then(Json::as_str)
             .and_then(filter_of)
             .unwrap_or(DecisionFilter::Open),
-        params.get("limit").and_then(Json::as_i64).unwrap_or(200),
+        int_or(params.get("limit"), 200),
     )
 }
 
@@ -206,13 +192,13 @@ pub fn for_task_out(task_key: &str, rows: &[TaskDecision]) -> Value {
 /// `{"items": [...]}`, the body of the list routes.
 #[must_use]
 pub fn items(list: Value) -> Value {
-    dict(vec![("items", list)])
+    dict!({ "items": list })
 }
 
 /// `{"decisions": [...]}`, the result of the list tools.
 #[must_use]
 pub fn decisions(list: Value) -> Value {
-    dict(vec![("decisions", list)])
+    dict!({ "decisions": list })
 }
 
 // ---------------------------------------------------------------- writes

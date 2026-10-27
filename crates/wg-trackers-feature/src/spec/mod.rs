@@ -10,8 +10,9 @@ pub mod view;
 
 use serde_json::{Map, Value as Json};
 use time::OffsetDateTime;
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::py_repr_str;
+use wg_types::pyval::text;
 use wg_types::{Timestamp, WgError};
 use wg_wire::convention as wire;
 
@@ -80,11 +81,7 @@ pub fn connections(config: &Map<String, Json>) -> Vec<Connection> {
 
 /// A text field of a configuration table, empty when it is missing.
 fn text_field(tracker: &Json, key: &str) -> String {
-    tracker
-        .get(key)
-        .and_then(Json::as_str)
-        .unwrap_or_default()
-        .to_owned()
+    text(tracker.get(key)).to_owned()
 }
 
 /// The configured connection `name`, or the `not_found` the Python service raises
@@ -128,16 +125,13 @@ pub fn list_out(rows: &[Connection]) -> Value {
     Value::List(
         rows.iter()
             .map(|row| {
-                wire::dict(vec![
-                    ("name", wire::text(&row.name)),
-                    ("flavour", wire::text(&row.flavour)),
-                    ("base_url", wire::text(&row.base_url)),
-                    ("workspace", wire::text(&row.workspace)),
-                    (
-                        "projects",
-                        wire::texts(row.projects.iter().map(String::as_str)),
-                    ),
-                ])
+                dict!({
+                    "name": wire::text(&row.name),
+                    "flavour": wire::text(&row.flavour),
+                    "base_url": wire::text(&row.base_url),
+                    "workspace": wire::text(&row.workspace),
+                    "projects": wire::texts(row.projects.iter().map(String::as_str)),
+                })
             })
             .collect(),
     )
@@ -146,28 +140,22 @@ pub fn list_out(rows: &[Connection]) -> Value {
 /// One status as its document, in the Python dict's key order.
 #[must_use]
 pub fn status_out(status: &Status) -> Value {
-    wire::dict(vec![
-        ("connection", wire::text(&status.connection)),
-        ("workspace", wire::text(&status.workspace)),
-        (
-            "projects",
-            wire::texts(status.projects.iter().map(String::as_str)),
+    dict!({
+        "connection": wire::text(&status.connection),
+        "workspace": wire::text(&status.workspace),
+        "projects": wire::texts(status.projects.iter().map(String::as_str)),
+        "cursor": optional_iso(status.cursor),
+        "last_sync": optional_iso(status.last_sync),
+        "last_full_sync": optional_iso(status.last_full_sync),
+        "tracked_tasks": wire::int(status.tracked_tasks),
+        "missing": wire::int(status.missing),
+        "unresolved_pull_request_repos": wire::texts(
+            status
+                .unresolved_pull_request_repos
+                .iter()
+                .map(String::as_str),
         ),
-        ("cursor", optional_iso(status.cursor)),
-        ("last_sync", optional_iso(status.last_sync)),
-        ("last_full_sync", optional_iso(status.last_full_sync)),
-        ("tracked_tasks", wire::int(status.tracked_tasks)),
-        ("missing", wire::int(status.missing)),
-        (
-            "unresolved_pull_request_repos",
-            wire::texts(
-                status
-                    .unresolved_pull_request_repos
-                    .iter()
-                    .map(String::as_str),
-            ),
-        ),
-    ])
+    })
 }
 
 /// The `status` document: one dict when a connection was named, else the list of every
@@ -183,9 +171,9 @@ pub fn status_document(statuses: &[Status], single: bool) -> Value {
 /// `tracker sync --queue --json`: the job, the connection and the mode.
 #[must_use]
 pub fn enqueued_out(job_id: &str, connection: &str, full: bool) -> Value {
-    wire::dict(vec![
-        ("job_id", wire::text(job_id)),
-        ("connection", wire::text(connection)),
-        ("full", Value::Bool(full)),
-    ])
+    dict!({
+        "job_id": wire::text(job_id),
+        "connection": wire::text(connection),
+        "full": Value::Bool(full),
+    })
 }

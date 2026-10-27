@@ -5,33 +5,16 @@
 
 use std::collections::BTreeSet;
 
-use wg_json::{PyStr, Value};
+use wg_json::{Value, dict};
 use wg_model::entity::{Classification, ClassificationEvaluation, ClassificationGoldLabel};
 use wg_types::Id;
-use wg_wire::convention::json_value;
+use wg_wire::convention::{json_value, optional_text, text};
 
 /// The note `TaskClassifications` carries.
 pub const NOTE: &str = "Model classifications are inferences, not objective facts.";
 
-fn text(value: &str) -> Value {
-    Value::Str(PyStr::from(value))
-}
-
-fn optional_text(value: Option<&str>) -> Value {
-    value.map_or(Value::Null, text)
-}
-
 fn texts(values: impl Iterator<Item = impl AsRef<str>>) -> Value {
     Value::List(values.map(|v| text(v.as_ref())).collect())
-}
-
-fn dict(entries: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        entries
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
-            .collect(),
-    )
 }
 
 fn optional_float(value: Option<f64>) -> Value {
@@ -144,16 +127,13 @@ pub fn gold_out(rows: &[ClassificationGoldLabel]) -> Value {
     Value::List(
         rows.iter()
             .map(|row| {
-                dict(vec![
-                    ("id", text(&row.id.to_string())),
-                    (
-                        "task_id",
-                        row.task_id.map_or(Value::Null, |id| text(&id.to_string())),
-                    ),
-                    ("title", text(&row.title)),
-                    ("category", text(&row.category)),
-                    ("labeled_by", text(&row.labeled_by)),
-                ])
+                dict!({
+                    "id": text(&row.id.to_string()),
+                    "task_id": row.task_id.map_or(Value::Null, |id| text(&id.to_string())),
+                    "title": text(&row.title),
+                    "category": text(&row.category),
+                    "labeled_by": text(&row.labeled_by),
+                })
             })
             .collect(),
     )
@@ -165,26 +145,20 @@ pub fn evaluations_out(rows: &[ClassificationEvaluation]) -> Value {
     Value::List(
         rows.iter()
             .map(|row| {
-                dict(vec![
-                    ("id", text(&row.id.to_string())),
-                    ("provider", text(&row.provider)),
-                    ("model", text(&row.model)),
-                    ("prompt_version", text(&row.prompt_version)),
-                    ("taxonomy_version", text(&row.taxonomy_version)),
-                    ("sample_size", Value::Int(i128::from(row.sample_size))),
-                    ("failures", Value::Int(i128::from(row.failures))),
-                    ("accuracy", optional_float(row.accuracy.map(|real| real.0))),
-                    ("macro_f1", optional_float(row.macro_f1.map(|real| real.0))),
-                    (
-                        "per_class",
-                        json_value(&serde_json::Value::Object(row.per_class.clone())),
-                    ),
-                    (
-                        "confusion",
-                        json_value(&serde_json::Value::Object(row.confusion.clone())),
-                    ),
-                    ("created_at", text(&row.created_at.format_isoformat())),
-                ])
+                dict!({
+                    "id": text(&row.id.to_string()),
+                    "provider": text(&row.provider),
+                    "model": text(&row.model),
+                    "prompt_version": text(&row.prompt_version),
+                    "taxonomy_version": text(&row.taxonomy_version),
+                    "sample_size": Value::Int(i128::from(row.sample_size)),
+                    "failures": Value::Int(i128::from(row.failures)),
+                    "accuracy": optional_float(row.accuracy.map(|real| real.0)),
+                    "macro_f1": optional_float(row.macro_f1.map(|real| real.0)),
+                    "per_class": json_value(&serde_json::Value::Object(row.per_class.clone())),
+                    "confusion": json_value(&serde_json::Value::Object(row.confusion.clone())),
+                    "created_at": text(&row.created_at.format_isoformat()),
+                })
             })
             .collect(),
     )
@@ -193,18 +167,15 @@ pub fn evaluations_out(rows: &[ClassificationEvaluation]) -> Value {
 /// The succeeded classification of a task in `disagreements`, as the command shows it.
 #[must_use]
 fn disagreement_item(row: &Classification) -> Value {
-    dict(vec![
-        ("id", text(&row.id.to_string())),
-        ("category", optional_text(row.category.as_deref())),
-        ("source", text(&row.source)),
-        ("provider", optional_text(row.provider.as_deref())),
-        ("model", optional_text(row.model.as_deref())),
-        ("is_current", Value::Bool(row.is_current)),
-        (
-            "confidence",
-            optional_float(row.confidence.map(|real| real.0)),
-        ),
-    ])
+    dict!({
+        "id": text(&row.id.to_string()),
+        "category": optional_text(row.category.as_deref()),
+        "source": text(&row.source),
+        "provider": optional_text(row.provider.as_deref()),
+        "model": optional_text(row.model.as_deref()),
+        "is_current": Value::Bool(row.is_current),
+        "confidence": optional_float(row.confidence.map(|real| real.0)),
+    })
 }
 
 /// The tasks whose succeeded classifications name more than one category, in first-appearance
@@ -230,19 +201,16 @@ pub fn disagreements_out(rows: &[(Classification, String)]) -> Value {
                     .map(|(row, _)| row.category.as_deref())
                     .collect();
                 (categories.len() > 1).then(|| {
-                    dict(vec![
-                        ("task_id", text(&task_id.to_string())),
-                        ("task_key", text(&items[0].1)),
-                        (
-                            "classifications",
-                            Value::List(
-                                items
-                                    .iter()
-                                    .map(|(row, _)| disagreement_item(row))
-                                    .collect(),
-                            ),
+                    dict!({
+                        "task_id": text(&task_id.to_string()),
+                        "task_key": text(&items[0].1),
+                        "classifications": Value::List(
+                            items
+                                .iter()
+                                .map(|(row, _)| disagreement_item(row))
+                                .collect(),
                         ),
-                    ])
+                    })
                 })
             })
             .collect(),

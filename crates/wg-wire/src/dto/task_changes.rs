@@ -7,11 +7,11 @@
 //! `isoformat()` output, so timestamps use `TimeFormat::Isoformat` (the MCP recording shows
 //! `+00:00`).
 
-use wg_json::{PyStr, Value};
+use wg_json::{Value, dict};
 use wg_model::entity::git::{Commit, CommitTaskLink, TaskChangeSurface};
 use wg_types::Id;
 
-use crate::convention::{TimeFormat, id, json_object, optional_timestamp, text};
+use crate::convention::{TimeFormat, id, int, json_object, optional_timestamp, text};
 
 /// The keys of the top-level dict, in the order the service builds them.
 pub const FIELDS: [&str; 7] = [
@@ -118,27 +118,18 @@ pub struct TaskChanges<'a> {
 
 /// The task-changes dict.
 pub fn from_parts(changes: &TaskChanges<'_>) -> Value {
-    dict(vec![
-        ("task_id", id(changes.task_id)),
-        ("task_key", text(changes.task_key)),
-        ("min_confidence", Value::Float(changes.min_confidence)),
-        (
-            "commits",
-            Value::List(changes.commits.iter().map(commit_entry).collect()),
-        ),
-        ("cumulative_churn", churn(changes.churn)),
-        (
-            "final_change_surface",
-            Value::List(changes.surfaces.iter().copied().map(surface).collect()),
-        ),
-        (
-            "definitions",
-            dict(vec![
-                ("cumulative_churn", text(CUMULATIVE_CHURN_DEFINITION)),
-                ("final_change_surface", text(FINAL_SURFACE_DEFINITION)),
-            ]),
-        ),
-    ])
+    dict!({
+        "task_id": id(changes.task_id),
+        "task_key": text(changes.task_key),
+        "min_confidence": Value::Float(changes.min_confidence),
+        "commits": Value::List(changes.commits.iter().map(commit_entry).collect()),
+        "cumulative_churn": churn(changes.churn),
+        "final_change_surface": Value::List(changes.surfaces.iter().copied().map(surface).collect()),
+        "definitions": dict!({
+            "cumulative_churn": text(CUMULATIVE_CHURN_DEFINITION),
+            "final_change_surface": text(FINAL_SURFACE_DEFINITION),
+        }),
+    })
 }
 
 /// One entry of `commits`. `confidence` is the highest link confidence, starting from `0.0`.
@@ -148,119 +139,94 @@ pub fn commit_entry(entry: &CommitEntry<'_>) -> Value {
         .links
         .iter()
         .fold(0.0_f64, |best, link| best.max(link.confidence.0));
-    dict(vec![
-        ("commit_id", id(commit.id)),
-        ("sha", text(&commit.sha)),
-        ("repository_id", id(commit.repository_id)),
-        ("repository", text(entry.repository_name)),
-        ("subject", text(&commit.subject)),
-        ("author", text(&commit.author_name)),
-        (
-            "committed_at",
-            optional_timestamp(commit.committed_at, TimeFormat::Isoformat),
-        ),
-        ("insertions", int(commit.insertions)),
-        ("deletions", int(commit.deletions)),
-        ("files_changed", int(commit.files_changed)),
-        ("is_merge", Value::Bool(commit.is_merge)),
-        ("reachable", Value::Bool(commit.reachable)),
-        ("object_available", Value::Bool(commit.object_available)),
-        (
-            "links",
-            Value::List(entry.links.iter().map(|link| link_entry(link)).collect()),
-        ),
-        ("confidence", Value::Float(confidence)),
-    ])
+    dict!({
+        "commit_id": id(commit.id),
+        "sha": text(&commit.sha),
+        "repository_id": id(commit.repository_id),
+        "repository": text(entry.repository_name),
+        "subject": text(&commit.subject),
+        "author": text(&commit.author_name),
+        "committed_at": optional_timestamp(commit.committed_at, TimeFormat::Isoformat),
+        "insertions": int(commit.insertions),
+        "deletions": int(commit.deletions),
+        "files_changed": int(commit.files_changed),
+        "is_merge": Value::Bool(commit.is_merge),
+        "reachable": Value::Bool(commit.reachable),
+        "object_available": Value::Bool(commit.object_available),
+        "links": Value::List(entry.links.iter().map(|link| link_entry(link)).collect()),
+        "confidence": Value::Float(confidence),
+    })
 }
 
 fn link_entry(link: &CommitTaskLink) -> Value {
-    dict(vec![
-        ("source", text(&link.source)),
-        ("confidence", Value::Float(link.confidence.0)),
-        ("evidence", json_object(&link.evidence)),
-        ("attempt_id", link.attempt_id.map_or(Value::Null, id)),
-    ])
+    dict!({
+        "source": text(&link.source),
+        "confidence": Value::Float(link.confidence.0),
+        "evidence": json_object(&link.evidence),
+        "attempt_id": link.attempt_id.map_or(Value::Null, id),
+    })
 }
 
 /// The `cumulative_churn` dict: nine keys when no commit is linked, eleven otherwise.
 pub fn churn(churn: &Churn) -> Value {
     match churn {
-        Churn::NoCommits => dict(vec![
-            ("commits", int(0)),
-            ("insertions", int(0)),
-            ("deletions", int(0)),
-            ("files_touched", int(0)),
-            ("repeated_file_edits", int(0)),
-            ("functions_affected", int(0)),
-            ("types_affected", int(0)),
-            ("excluded_duplicates", int(0)),
-            ("excluded_merges", int(0)),
-        ]),
-        Churn::Counted(totals) => dict(vec![
-            ("commits", int(totals.commits)),
-            ("insertions", int(totals.insertions)),
-            ("deletions", int(totals.deletions)),
-            ("files_touched", int(totals.files_touched)),
-            ("repeated_file_edits", int(totals.repeated_file_edits)),
-            ("functions_affected", int(totals.functions_affected)),
-            ("types_affected", int(totals.types_affected)),
-            (
-                "structurally_analyzed_commits",
-                int(totals.structurally_analyzed_commits),
+        Churn::NoCommits => dict!({
+            "commits": int(0),
+            "insertions": int(0),
+            "deletions": int(0),
+            "files_touched": int(0),
+            "repeated_file_edits": int(0),
+            "functions_affected": int(0),
+            "types_affected": int(0),
+            "excluded_duplicates": int(0),
+            "excluded_merges": int(0),
+        }),
+        Churn::Counted(totals) => dict!({
+            "commits": int(totals.commits),
+            "insertions": int(totals.insertions),
+            "deletions": int(totals.deletions),
+            "files_touched": int(totals.files_touched),
+            "repeated_file_edits": int(totals.repeated_file_edits),
+            "functions_affected": int(totals.functions_affected),
+            "types_affected": int(totals.types_affected),
+            "structurally_analyzed_commits": int(totals.structurally_analyzed_commits),
+            "excluded_duplicates": int(totals.excluded_duplicates),
+            "excluded_merges": int(totals.excluded_merges),
+            "by_file_class": dict(
+                totals
+                    .by_file_class
+                    .iter()
+                    .map(|(class, t)| {
+                        (
+                            class.as_str(),
+                            dict!({
+                                "insertions": int(t.insertions),
+                                "deletions": int(t.deletions),
+                                "files": int(t.files),
+                            }),
+                        )
+                    })
+                    .collect(),
             ),
-            ("excluded_duplicates", int(totals.excluded_duplicates)),
-            ("excluded_merges", int(totals.excluded_merges)),
-            (
-                "by_file_class",
-                dict(
-                    totals
-                        .by_file_class
-                        .iter()
-                        .map(|(class, t)| {
-                            (
-                                class.as_str(),
-                                dict(vec![
-                                    ("insertions", int(t.insertions)),
-                                    ("deletions", int(t.deletions)),
-                                    ("files", int(t.files)),
-                                ]),
-                            )
-                        })
-                        .collect(),
-                ),
-            ),
-        ]),
+        }),
     }
 }
 
 /// One entry of `final_change_surface`.
 pub fn surface(surface: &TaskChangeSurface) -> Value {
-    dict(vec![
-        ("repository_id", id(surface.repository_id)),
-        ("base_sha", text(&surface.base_sha)),
-        ("final_sha", text(&surface.final_sha)),
-        ("files_changed", int(surface.files_changed)),
-        ("insertions", int(surface.insertions)),
-        ("deletions", int(surface.deletions)),
-        ("renames", int(surface.renames)),
-        ("binary_files", int(surface.binary_files)),
-        ("functions_affected", int(surface.functions_affected)),
-        ("types_affected", int(surface.types_affected)),
-        ("detail", json_object(&surface.detail)),
-    ])
-}
-
-fn int(value: i64) -> Value {
-    Value::Int(i128::from(value))
-}
-
-fn dict(fields: Vec<(&str, Value)>) -> Value {
-    Value::Dict(
-        fields
-            .into_iter()
-            .map(|(key, value)| (PyStr::from(key), value))
-            .collect(),
-    )
+    dict!({
+        "repository_id": id(surface.repository_id),
+        "base_sha": text(&surface.base_sha),
+        "final_sha": text(&surface.final_sha),
+        "files_changed": int(surface.files_changed),
+        "insertions": int(surface.insertions),
+        "deletions": int(surface.deletions),
+        "renames": int(surface.renames),
+        "binary_files": int(surface.binary_files),
+        "functions_affected": int(surface.functions_affected),
+        "types_affected": int(surface.types_affected),
+        "detail": json_object(&surface.detail),
+    })
 }
 
 #[cfg(test)]

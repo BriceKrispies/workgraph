@@ -3,9 +3,9 @@
 //! The warehouse holds naive UTC wall-clock datetimes, so `accepted_at` prints as Python's
 //! `isoformat()` of a naive datetime: no offset.
 
-use wg_json::{LocalDateTime, Value};
+use wg_json::{LocalDateTime, Value, dict};
 
-use crate::convention::{dict, optional_int, optional_text, text};
+use crate::convention::{optional_int, optional_text, text};
 
 /// The name of the row dict; it has no OpenAPI component schema.
 pub const NAME: &str = "TaskHistoryRow";
@@ -58,27 +58,24 @@ pub struct TaskHistoryRow<'a> {
 
 /// One history row, fields in [`FIELDS`] order.
 pub fn from_parts(row: &TaskHistoryRow<'_>) -> Value {
-    dict(vec![
-        ("key", text(row.key)),
-        ("title", text(row.title)),
-        ("category", optional_text(row.category)),
-        ("status", text(row.status)),
-        ("attempts", optional_int(row.attempts)),
-        ("retries", optional_int(row.retries)),
-        ("execution_ms", optional_int(row.execution_ms)),
-        ("queue_wait_ms", optional_int(row.queue_wait_ms)),
-        ("elapsed_ms", optional_int(row.elapsed_ms)),
-        ("commits", optional_int(row.commits)),
-        ("churn_insertions", optional_int(row.churn_insertions)),
-        ("churn_deletions", optional_int(row.churn_deletions)),
-        ("final_insertions", optional_int(row.final_insertions)),
-        ("final_deletions", optional_int(row.final_deletions)),
-        ("files_touched", optional_int(row.files_touched)),
-        (
-            "repositories_touched",
-            optional_int(row.repositories_touched),
-        ),
-        ("reopen_count", optional_int(row.reopen_count)),
-        ("accepted_at", Value::LocalDateTime(row.accepted_at)),
-    ])
+    dict!({
+        "key": text(row.key),
+        "title": text(row.title),
+        "category": optional_text(row.category),
+        "status": text(row.status),
+        "attempts": optional_int(row.attempts),
+        "retries": optional_int(row.retries),
+        "execution_ms": optional_int(row.execution_ms),
+        "queue_wait_ms": optional_int(row.queue_wait_ms),
+        "elapsed_ms": optional_int(row.elapsed_ms),
+        "commits": optional_int(row.commits),
+        "churn_insertions": optional_int(row.churn_insertions),
+        "churn_deletions": optional_int(row.churn_deletions),
+        "final_insertions": optional_int(row.final_insertions),
+        "final_deletions": optional_int(row.final_deletions),
+        "files_touched": optional_int(row.files_touched),
+        "repositories_touched": optional_int(row.repositories_touched),
+        "reopen_count": optional_int(row.reopen_count),
+        "accepted_at": Value::LocalDateTime(row.accepted_at),
+    })
 }

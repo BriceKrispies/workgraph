@@ -9,7 +9,8 @@ use wg_model::{HttpCall, HttpMethod};
 
 use crate::error::TrackerError;
 use crate::request::{Header, Query, call, url};
-use crate::text::{head, percent_encode, py_repr};
+use crate::text::{percent_encode, py_repr};
+use wg_types::pyval::{flag, prefix};
 
 /// Issues per search page.
 pub const PAGE_SIZE: u64 = 100;
@@ -123,7 +124,7 @@ impl Flavour {
                     .get("nextPageToken")
                     .and_then(Value::as_str)
                     .filter(|token| !token.is_empty());
-                let last = page.get("isLast").and_then(Value::as_bool).unwrap_or(false);
+                let last = flag(page.get("isLast"));
                 match token {
                     Some(token) if !last => Some(Cursor::Token(Some(token.to_owned()))),
                     _ => None,
@@ -240,7 +241,7 @@ pub fn read_response(path: &str, status: u16, body: &str) -> Result<Value, Track
 /// A request that never got a response. `detail` is the transport's account of it.
 pub fn transport_error(path: &str, detail: &str) -> TrackerError {
     TrackerError {
-        message: format!("Jira GET {path} failed: {}", head(detail, 200)),
+        message: format!("Jira GET {path} failed: {}", prefix(detail, 200)),
         status: None,
     }
 }

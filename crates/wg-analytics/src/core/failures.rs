@@ -7,11 +7,11 @@
 use std::cmp::Reverse;
 
 use rpds::{RedBlackTreeMapSync, RedBlackTreeSetSync, VectorSync};
-use serde_json::Value;
+use serde_json::{Value, json};
 
-use super::service::object;
 use crate::Facts;
 use crate::source::AnalyticsInput;
+use wg_types::pyval::prefix;
 
 /// A failed (or errored) check of the workspace, with the task and the attempt of its run.
 #[derive(Debug, Clone)]
@@ -44,16 +44,13 @@ pub fn failures(
         regression_follow_ups(input, facts, workspace, fingerprint),
     ]
     .concat();
-    object(vec![
-        ("generated_at", Value::from(generated_at)),
-        ("findings", Value::Array(findings)),
-        (
-            "note",
-            Value::from(
-                "Findings are computed deterministically from recorded tasks, attempts, checks and commits.",
-            ),
+    json!({
+        "generated_at": Value::from(generated_at),
+        "findings": Value::Array(findings),
+        "note": Value::from(
+            "Findings are computed deterministically from recorded tasks, attempts, checks and commits.",
         ),
-    ])
+    })
 }
 
 /// One finding: its kind, title, severity, metric value, sample size, evidence and fingerprint.
@@ -66,19 +63,16 @@ fn finding(
     evidence: Value,
     fingerprint: &impl Fn(&str) -> String,
 ) -> Value {
-    let digest: String = fingerprint(&format!("{kind}|{title}"))
-        .chars()
-        .take(32)
-        .collect();
-    object(vec![
-        ("kind", Value::from(kind)),
-        ("title", Value::from(title)),
-        ("severity", Value::from(severity)),
-        ("metric_value", value),
-        ("sample_size", Value::from(sample_size as i64)),
-        ("evidence", evidence),
-        ("fingerprint", Value::from(digest)),
-    ])
+    let digest: String = prefix(&fingerprint(&format!("{kind}|{title}")), 32);
+    json!({
+        "kind": Value::from(kind),
+        "title": Value::from(title),
+        "severity": Value::from(severity),
+        "metric_value": value,
+        "sample_size": Value::from(sample_size as i64),
+        "evidence": evidence,
+        "fingerprint": Value::from(digest),
+    })
 }
 
 /// A nullable text as Python prints it in an f-string: the text, or `None`.
@@ -226,26 +220,20 @@ fn frequent_tests(checks: &[FailedCheck], fingerprint: &impl Fn(&str) -> String)
                 if count < 5 { "warning" } else { "error" },
                 Value::from(count as i64),
                 count,
-                object(vec![
-                    (
-                        "tasks",
-                        Value::Array(
-                            sorted_unique(items.iter().filter_map(|item| item.task_key.clone()))
-                                .into_iter()
-                                .map(Value::from)
-                                .collect(),
-                        ),
+                json!({
+                    "tasks": Value::Array(
+                        sorted_unique(items.iter().filter_map(|item| item.task_key.clone()))
+                            .into_iter()
+                            .map(Value::from)
+                            .collect(),
                     ),
-                    (
-                        "attempts",
-                        Value::Array(
-                            sorted_unique(items.iter().filter_map(|item| item.attempt_id.clone()))
-                                .into_iter()
-                                .map(Value::from)
-                                .collect(),
-                        ),
+                    "attempts": Value::Array(
+                        sorted_unique(items.iter().filter_map(|item| item.attempt_id.clone()))
+                            .into_iter()
+                            .map(Value::from)
+                            .collect(),
                     ),
-                ]),
+                }),
                 fingerprint,
             )
         })
@@ -282,22 +270,16 @@ fn failure_categories(
                 "info",
                 Value::from(count as i64),
                 count,
-                object(vec![
-                    (
-                        "tasks",
-                        Value::Array(
-                            sorted_unique(items.iter().filter_map(|(task, _)| task.clone()))
-                                .into_iter()
-                                .take(50)
-                                .map(Value::from)
-                                .collect(),
-                        ),
+                json!({
+                    "tasks": Value::Array(
+                        sorted_unique(items.iter().filter_map(|(task, _)| task.clone()))
+                            .into_iter()
+                            .take(50)
+                            .map(Value::from)
+                            .collect(),
                     ),
-                    (
-                        "attempts",
-                        Value::Array(items.iter().take(50).map(|(_, id)| text(id)).collect()),
-                    ),
-                ]),
+                    "attempts": Value::Array(items.iter().take(50).map(|(_, id)| text(id)).collect()),
+                }),
                 fingerprint,
             )
         })
@@ -321,16 +303,15 @@ fn failing_checks(checks: &[FailedCheck], fingerprint: &impl Fn(&str) -> String)
             "warning",
             Value::from(count as i64),
             count,
-            object(vec![(
-                "tasks",
-                Value::Array(
+            json!({
+                "tasks": Value::Array(
                     sorted_unique(items.iter().filter_map(|task| task.clone()))
                         .into_iter()
                         .take(50)
                         .map(Value::from)
                         .collect(),
                 ),
-            )]),
+            }),
             fingerprint,
         )
     })
@@ -373,10 +354,10 @@ fn retry_loops(
                 "warning",
                 Value::from(fact.attempts),
                 fact.attempts as usize,
-                object(vec![
-                    ("tasks", Value::Array(vec![text(&fact.task.key)])),
-                    ("attempts", Value::Array(attempt_ids)),
-                ]),
+                json!({
+                    "tasks": Value::Array(vec![text(&fact.task.key)]),
+                    "attempts": Value::Array(attempt_ids),
+                }),
                 fingerprint,
             )
         })
@@ -444,10 +425,9 @@ fn high_rework(
                 "info",
                 Value::from(total),
                 tasks,
-                object(vec![(
-                    "tasks",
-                    Value::Array(keys.into_iter().take(50).map(Value::from).collect()),
-                )]),
+                json!({
+                    "tasks": Value::Array(keys.into_iter().take(50).map(Value::from).collect()),
+                }),
                 fingerprint,
             )
         })
@@ -524,16 +504,15 @@ fn integration_failures(
                     "warning",
                     Value::from(rate),
                     checks,
-                    object(vec![(
-                        "tasks",
-                        Value::Array(
+                    json!({
+                        "tasks": Value::Array(
                             in_order(items.iter().filter_map(|(key, _)| key.clone()), order)
                                 .into_iter()
                                 .take(50)
                                 .map(Value::from)
                                 .collect(),
                         ),
-                    )]),
+                    }),
                     fingerprint,
                 )
             })
@@ -589,13 +568,10 @@ fn dependency_bottlenecks(
             "info",
             Value::from(count as i64),
             count,
-            object(vec![
-                ("blocker", text(&blocker)),
-                (
-                    "tasks",
-                    Value::Array(items.iter().take(50).map(text).collect()),
-                ),
-            ]),
+            json!({
+                "blocker": text(&blocker),
+                "tasks": Value::Array(items.iter().take(50).map(text).collect()),
+            }),
             fingerprint,
         )
     })
@@ -661,11 +637,11 @@ fn regression_follow_ups(
                 if count > 1 { "warning" } else { "info" },
                 Value::from(count as i64),
                 count,
-                object(vec![
-                    ("original", text(&original)),
-                    ("fixes", Value::Array(items.iter().map(text).collect())),
-                    ("commits", Value::Array(commits)),
-                ]),
+                json!({
+                    "original": text(&original),
+                    "fixes": Value::Array(items.iter().map(text).collect()),
+                    "commits": Value::Array(commits),
+                }),
                 fingerprint,
             )
         })

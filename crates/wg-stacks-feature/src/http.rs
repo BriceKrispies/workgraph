@@ -7,7 +7,6 @@
 //! [`SPECS`] is the table of operations; the server binds each one to [`run`], which reads the
 //! validated request and calls the feature's [`crate::service`] entry point.
 
-use serde_json::Value as Json;
 use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
@@ -16,6 +15,7 @@ use wg_types::WgError;
 
 use crate::service;
 use crate::spec::body_text;
+use wg_types::pyval::flag;
 
 /// The operations of the group, in registration order.
 pub const SPECS: [RouteSpec; 9] = [
@@ -112,10 +112,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
     let reference = text_param(params, "ref");
     match id {
         "H062" => {
-            let all = params
-                .get("include_inactive")
-                .and_then(Json::as_bool)
-                .unwrap_or(false);
+            let all = flag(params.get("include_inactive"));
             service::list(app, context, ws, all)
         }
         "H063" => service::create(app, context, ws, body_text(&request.body, "parent")),

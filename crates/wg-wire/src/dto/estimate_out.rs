@@ -1,9 +1,9 @@
 //! The result of `POST /analytics/estimate` (`estimate`): distributions of comparable accepted
 //! tasks, or a refusal when too few are comparable.
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 
-use crate::convention::{dict, int, optional_float, text, texts};
+use crate::convention::{int, optional_float, text, texts};
 
 /// The name of the estimate dict; it has no OpenAPI component schema.
 pub const NAME: &str = "EstimateOut";
@@ -46,12 +46,12 @@ pub const VERIFICATION_FIELDS: [&str; 3] = ["runs", "passed", "pass_rate"];
 
 /// The refusal: fewer comparable tasks than the minimum sample.
 pub fn insufficient(message: &str, comparable_tasks: Vec<Value>, min_sample: i64) -> Value {
-    dict(vec![
-        ("status", text("insufficient_data")),
-        ("message", text(message)),
-        ("comparable_tasks", Value::List(comparable_tasks)),
-        ("min_sample", int(min_sample)),
-    ])
+    dict!({
+        "status": text("insufficient_data"),
+        "message": text(message),
+        "comparable_tasks": Value::List(comparable_tasks),
+        "min_sample": int(min_sample),
+    })
 }
 
 /// The ok estimate. `status` is always `ok`; `values` holds the other eight fields in
@@ -80,20 +80,20 @@ pub fn distributions(values: [Value; 7]) -> Value {
 
 /// One comparable-task entry of `basis`.
 pub fn basis_row(task_id: &str, key: &str, title: &str, score: f64, reasons: &[&str]) -> Value {
-    dict(vec![
-        ("task_id", text(task_id)),
-        ("key", text(key)),
-        ("title", text(title)),
-        ("score", Value::Float(score)),
-        ("reasons", texts(reasons.iter().copied())),
-    ])
+    dict!({
+        "task_id": text(task_id),
+        "key": text(key),
+        "title": text(title),
+        "score": Value::Float(score),
+        "reasons": texts(reasons.iter().copied()),
+    })
 }
 
 /// The `verification` block: the number of runs, how many passed and the rate, if any run.
 pub fn verification(runs: i64, passed: i64, pass_rate: Option<f64>) -> Value {
-    dict(vec![
-        ("runs", int(runs)),
-        ("passed", int(passed)),
-        ("pass_rate", optional_float(pass_rate)),
-    ])
+    dict!({
+        "runs": int(runs),
+        "passed": int(passed),
+        "pass_rate": optional_float(pass_rate),
+    })
 }

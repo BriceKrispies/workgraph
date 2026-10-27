@@ -23,11 +23,12 @@ use wg_tasks::transition::{Change, transition};
 use wg_tasks_feature::spec::bodies::ClaimRead;
 use wg_tasks_feature::spec::claims::claim_task;
 use wg_types::{AttemptStatus, Id, JobStatus, Permission, WgError};
-use wg_wire::convention::{dict, text};
+use wg_wire::convention::text;
 use wg_wire::dto::attempt;
 
 use crate::spec::attempts::{Finish, NewAttempt, finish, new_attempt};
 use crate::spec::prompt::PROMPT_VERSION;
+use wg_json::dict;
 
 /// The job kind a managed run is queued as.
 pub const RUN_JOB: &str = "agent_run";
@@ -172,21 +173,18 @@ pub fn rerun_document(started: wg_json::Value, plan: &RerunPlan) -> wg_json::Val
         .missing
         .iter()
         .map(|found| {
-            dict(vec![
-                ("repository", text(&found.repository)),
-                ("sha", text(&found.sha)),
-            ])
+            dict!({
+                "repository": text(&found.repository),
+                "sha": text(&found.sha),
+            })
         })
         .collect();
-    dict(vec![
-        ("attempt", started),
-        (
-            "reproduced_baseline",
-            wg_json::Value::Bool(plan.reproduced_baseline()),
-        ),
-        ("missing_revisions", wg_json::Value::List(missing)),
-        ("note", text(RERUN_NOTE)),
-    ])
+    dict!({
+        "attempt": started,
+        "reproduced_baseline": wg_json::Value::Bool(plan.reproduced_baseline()),
+        "missing_revisions": wg_json::Value::List(missing),
+        "note": text(RERUN_NOTE),
+    })
 }
 
 fn gone(what: &str, id: Id) -> WgError {

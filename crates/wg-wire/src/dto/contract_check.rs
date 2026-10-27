@@ -5,10 +5,10 @@
 //! [`super::implemented`]. The nested prediction is the dump of a `PredictionOut`, whose
 //! timestamps print in the `Z` form.
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 
 use super::predictor::{self, Prediction};
-use crate::convention::{dict, text, texts};
+use crate::convention::{text, texts};
 
 /// A contract verdict, as the contract checker decides it.
 #[derive(Debug, Clone, PartialEq)]
@@ -24,18 +24,15 @@ pub struct ContractVerdict {
 
 /// The verdict as its dict, keys in Python's order.
 pub fn verdict(check: &ContractVerdict) -> Value {
-    dict(vec![
-        ("verdict", text(&check.verdict)),
-        ("reasons", texts(check.reasons.iter().map(String::as_str))),
-        ("missing", texts(check.missing.iter().map(String::as_str))),
-        (
-            "prediction",
-            check
-                .prediction
-                .as_ref()
-                .map_or(Value::Null, predictor::prediction),
-        ),
-        ("target", Value::Float(check.target)),
-        ("model", text(&check.model)),
-    ])
+    dict!({
+        "verdict": text(&check.verdict),
+        "reasons": texts(check.reasons.iter().map(String::as_str)),
+        "missing": texts(check.missing.iter().map(String::as_str)),
+        "prediction": check
+            .prediction
+            .as_ref()
+            .map_or(Value::Null, predictor::prediction),
+        "target": Value::Float(check.target),
+        "model": text(&check.model),
+    })
 }

@@ -4,6 +4,7 @@
 
 use serde_json::{Map, Value};
 use wg_storecodec::{EventQuery, EventRecord};
+use wg_types::pyval::{flag, int_or};
 use wg_types::{Id, parse_id};
 use wg_wire::convention::{TimeFormat, id, json_object, model, optional_id, text, timestamp};
 
@@ -56,15 +57,8 @@ pub fn history_query(params: &Map<String, Value>, workspace_id: Id) -> Option<Ev
         entity_ids,
         event_type_prefix: text_param(params, "prefix").map(str::to_owned),
         after_seq: after_seq(params),
-        limit: params
-            .get("limit")
-            .and_then(Value::as_i64)
-            .unwrap_or(STREAM_BATCH)
-            .min(HISTORY_LIMIT_CAP),
-        descending: params
-            .get("descending")
-            .and_then(Value::as_bool)
-            .unwrap_or(false),
+        limit: int_or(params.get("limit"), STREAM_BATCH).min(HISTORY_LIMIT_CAP),
+        descending: flag(params.get("descending")),
         ..EventQuery::default()
     })
 }

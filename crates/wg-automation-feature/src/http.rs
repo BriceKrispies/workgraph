@@ -5,12 +5,11 @@
 //! [`SPECS`] is the table of operations; the server binds each one to [`run`], which reads the
 //! validated request and calls the feature's [`crate::service`] entry points.
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::{BodyRef, OPEN_OBJECT, RouteSpec};
 use wg_types::WgError;
-use wg_wire::convention::dict;
 
 use crate::service;
 use crate::spec::catalog;
@@ -158,7 +157,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
         "H099" => service::notifications(app, context, ws, unread_only(params)),
         "H100" => {
             service::mark_read(app, context, text_param(params, "notification_id"))?;
-            Ok(dict(vec![("ok", Value::Bool(true))]))
+            Ok(dict!({ "ok": Value::Bool(true) }))
         }
         other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }

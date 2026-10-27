@@ -1,21 +1,14 @@
 //! The human views of the `classify` reads and of `search` (`cli/commands/intelligence.py`): the
 //! lines and tables the commands print, built from the values the service returns.
 
-use wg_clispec::args::{get, items, opt, python, s, truncate};
+use wg_clispec::args::{cell, get, items, opt, python, s};
 use wg_json::Value;
 use wg_render::Console;
+use wg_types::pyval::prefix;
 
 /// `short(value)`: the first eight characters of an id.
 fn short(value: Option<&Value>) -> String {
-    truncate(&s(value), 8)
-}
-
-/// A cell of a table: `""` for a missing value, `str()` of the rest.
-fn cell(value: Option<&Value>) -> String {
-    match value {
-        None | Some(Value::Null) => String::new(),
-        Some(other) => python(other),
-    }
+    prefix(&s(value), 8)
 }
 
 /// An f-string of a value, where a missing value prints as `None`.
@@ -120,7 +113,7 @@ pub fn gold_view(console: &Console, rows: &Value) -> String {
             vec![
                 short(get(g, "id")),
                 cell(get(g, "category")),
-                truncate(&s(get(g, "title")), 70),
+                prefix(&s(get(g, "title")), 70),
             ]
         })
         .collect();
@@ -142,7 +135,7 @@ pub fn evaluations_view(console: &Console, rows: &Value) -> String {
                 cell(get(r, "sample_size")),
                 cell(get(r, "accuracy")),
                 cell(get(r, "macro_f1")),
-                truncate(&s(get(r, "created_at")), 16),
+                prefix(&s(get(r, "created_at")), 16),
             ]
         })
         .collect();
@@ -256,7 +249,7 @@ pub fn similar_view(console: &Console, result: &Value) -> String {
                 score,
                 cell(get(entry, "status")),
                 cell(get(entry, "category")),
-                truncate(&s(get(entry, "title")), 60),
+                prefix(&s(get(entry, "title")), 60),
                 items(get(entry, "implementation")).len().to_string(),
             ]
         })
@@ -285,8 +278,8 @@ pub fn search_view(console: &Console, result: &Value) -> String {
                 s(get(h, "key")),
                 score,
                 s(get(h, "status")),
-                truncate(&s(get(h, "title")), 60),
-                truncate(&s(get(h, "snippet")), 60),
+                prefix(&s(get(h, "title")), 60),
+                prefix(&s(get(h, "snippet")), 60),
             ]
         })
         .collect();

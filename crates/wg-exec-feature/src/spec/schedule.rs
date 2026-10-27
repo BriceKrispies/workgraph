@@ -3,7 +3,7 @@
 
 use std::collections::{BTreeMap, VecDeque};
 
-use serde_json::{Map, Value as Json};
+use serde_json::{Value as Json, json};
 use wg_exec::attempt::{ACTIVE_STATUSES, counts_as_failure};
 use wg_model::TaskSlice;
 use wg_model::entity::{AgentAttempt, RepositoryCheckout, Task};
@@ -32,27 +32,15 @@ pub struct Eligible {
 impl Eligible {
     /// The item as the scheduler's reports print it.
     pub fn to_json(&self) -> Json {
-        Json::Object(Map::from_iter([
-            ("task_id".to_owned(), Json::String(self.task_id.to_string())),
-            ("key".to_owned(), Json::String(self.key.clone())),
-            (
-                "priority".to_owned(),
-                Json::String(self.priority.as_str().to_owned()),
-            ),
-            (
-                "project_id".to_owned(),
-                self.project_id
-                    .map_or(Json::Null, |id| Json::String(id.to_string())),
-            ),
-            (
-                "agent".to_owned(),
-                self.agent.clone().map_or(Json::Null, Json::String),
-            ),
-            (
-                "workspace_id".to_owned(),
-                Json::String(self.workspace_id.to_string()),
-            ),
-        ]))
+        json!({
+            "task_id": Json::String(self.task_id.to_string()),
+            "key": Json::String(self.key.clone()),
+            "priority": Json::String(self.priority.as_str().to_owned()),
+            "project_id": self.project_id
+                .map_or(Json::Null, |id| Json::String(id.to_string())),
+            "agent": self.agent.clone().map_or(Json::Null, Json::String),
+            "workspace_id": Json::String(self.workspace_id.to_string()),
+        })
     }
 }
 
@@ -205,14 +193,11 @@ pub fn explain(world: &World<'_>, task: &Task, execution_enabled: bool, max_atte
         .chain((!task.auto_execute).then(|| "auto_execute is off".to_owned()))
         .chain(found)
         .collect();
-    Json::Object(Map::from_iter([
-        ("task".to_owned(), Json::String(task.key.to_string())),
-        ("eligible".to_owned(), Json::Bool(reasons.is_empty())),
-        (
-            "reasons".to_owned(),
-            Json::Array(reasons.into_iter().map(Json::String).collect()),
-        ),
-    ]))
+    json!({
+        "task": Json::String(task.key.to_string()),
+        "eligible": Json::Bool(reasons.is_empty()),
+        "reasons": Json::Array(reasons.into_iter().map(Json::String).collect()),
+    })
 }
 
 /// How many more runs a pass may start: the configured limit less the root attempts in flight.
@@ -238,37 +223,31 @@ pub const COUNTED_STATUSES: [AttemptStatus; 6] = [
 
 /// The report of a pass that started nothing.
 pub fn idle_report(reason: &str) -> Json {
-    Json::Object(Map::from_iter([
-        ("started".to_owned(), Json::Array(Vec::new())),
-        ("reason".to_owned(), Json::String(reason.to_owned())),
-    ]))
+    json!({
+        "started": Json::Array(Vec::new()),
+        "reason": Json::String(reason.to_owned()),
+    })
 }
 
 /// The report of a pass: the runs it started and the errors of those it could not.
 pub fn tick_report(started: Vec<(String, Id)>, errors: Vec<(String, String)>) -> Json {
-    Json::Object(Map::from_iter([
-        (
-            "started".to_owned(),
-            Json::Array(
-                started
-                    .into_iter()
-                    .map(|(task, attempt)| {
-                        Json::Object(Map::from_iter([
-                            ("task".to_owned(), Json::String(task)),
-                            ("attempt_id".to_owned(), Json::String(attempt.to_string())),
-                        ]))
+    json!({
+        "started": Json::Array(
+            started
+                .into_iter()
+                .map(|(task, attempt)| {
+                    json!({
+                        "task": Json::String(task),
+                        "attempt_id": Json::String(attempt.to_string()),
                     })
-                    .collect(),
-            ),
+                })
+                .collect(),
         ),
-        (
-            "errors".to_owned(),
-            Json::Object(
-                errors
-                    .into_iter()
-                    .map(|(k, v)| (k, Json::String(v)))
-                    .collect(),
-            ),
+        "errors": Json::Object(
+            errors
+                .into_iter()
+                .map(|(k, v)| (k, Json::String(v)))
+                .collect(),
         ),
-    ]))
+    })
 }

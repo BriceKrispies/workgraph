@@ -156,18 +156,6 @@ pub fn compare(left: &Value, right: &Value) -> Option<Ordering> {
     }
 }
 
-/// Python truthiness (`bool(value)`).
-pub fn truthy(value: &Value) -> bool {
-    match value {
-        Value::Null => false,
-        Value::Bool(flag) => *flag,
-        Value::Number(number) => number.as_f64().is_some_and(|n| n != 0.0),
-        Value::String(text) => !text.is_empty(),
-        Value::Array(items) => !items.is_empty(),
-        Value::Object(map) => !map.is_empty(),
-    }
-}
-
 /// Python `item in container`. `None` means the container is not iterable or the item is not
 /// hashable for it (`TypeError`).
 pub fn contains(container: &Value, item: &Value) -> Option<bool> {

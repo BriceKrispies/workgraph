@@ -4,12 +4,12 @@
 //! models, but FastAPI encodes their datetimes like a model field, so they print in the `Z` form
 //! (checked against a live Python response: `"run_at":"2026-10-26T04:55:43.038933Z"`).
 
-use wg_json::Value;
+use wg_json::{Value, dict};
 use wg_model::entity::queue::{Job, JobRun};
 
 use crate::convention::{
-    TimeFormat, dict, id, int, json_object, optional_id, optional_text, optional_timestamp, text,
-    texts, timestamp,
+    TimeFormat, id, int, json_object, optional_id, optional_text, optional_timestamp, text, texts,
+    timestamp,
 };
 
 /// The name of the job dict; it has no OpenAPI component schema.
@@ -97,17 +97,14 @@ pub fn detail_from_model(job: &Job, runs: &[JobRun]) -> Value {
 
 /// One run of a job, as the detail route lists it.
 pub fn run_from_model(run: &JobRun) -> Value {
-    dict(vec![
-        ("attempt", int(run.attempt_number)),
-        ("worker", text(&run.worker_id)),
-        ("status", text(&run.status)),
-        ("error", optional_text(run.error.as_deref())),
-        ("started_at", timestamp(run.started_at, TimeFormat::Z)),
-        (
-            "finished_at",
-            optional_timestamp(run.finished_at, TimeFormat::Z),
-        ),
-    ])
+    dict!({
+        "attempt": int(run.attempt_number),
+        "worker": text(&run.worker_id),
+        "status": text(&run.status),
+        "error": optional_text(run.error.as_deref()),
+        "started_at": timestamp(run.started_at, TimeFormat::Z),
+        "finished_at": optional_timestamp(run.finished_at, TimeFormat::Z),
+    })
 }
 
 fn job_fields(job: &Job) -> Vec<(&'static str, Value)> {

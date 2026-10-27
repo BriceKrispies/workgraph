@@ -5,7 +5,7 @@
 use wg_model::{EffectError, EffectErrorKind, HttpResponse};
 
 use crate::error::ProviderError;
-use crate::text::head;
+use wg_types::pyval::prefix;
 
 /// Statuses the providers retry (`RETRYABLE_STATUS`).
 pub const PROVIDER_RETRYABLE: [u16; 7] = [408, 425, 429, 500, 502, 503, 504];
@@ -52,7 +52,7 @@ impl Attempt {
     /// The attempt as an error message gives it: `HTTP <code>: <body>` or the transport message.
     pub fn describe(&self) -> String {
         match self {
-            Self::Status { code, body, .. } => format!("HTTP {code}: {}", head(body, 200)),
+            Self::Status { code, body, .. } => format!("HTTP {code}: {}", prefix(body, 200)),
             Self::Transport(message) | Self::Failed(message) => message.clone(),
         }
     }

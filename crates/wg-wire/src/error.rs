@@ -6,7 +6,7 @@
 //! result.
 
 use serde_json::{Map, Value as Json};
-use wg_json::{PyStr, Value};
+use wg_json::{Value, dict};
 use wg_types::{ErrorCode, WgError};
 
 use crate::convention::{json_object, json_value, text};
@@ -20,21 +20,17 @@ pub const INVALID_REQUEST_MESSAGE: &str = "invalid request";
 /// The HTTP status of a request validation failure.
 pub const VALIDATION_STATUS: u16 = 422;
 
-fn key(name: &str) -> PyStr {
-    PyStr::from(name)
-}
-
 /// The inner object `{"code", "message", "details"}` (Python `WorkgraphError.to_dict()`).
 pub fn error_body(code: &str, message: &str, details: &Map<String, Json>) -> Value {
-    Value::Dict(vec![
-        (key("code"), text(code)),
-        (key("message"), text(message)),
-        (key("details"), json_object(details)),
-    ])
+    dict!({
+        "code": text(code),
+        "message": text(message),
+        "details": json_object(details),
+    })
 }
 
 fn envelope(body: Value) -> Value {
-    Value::Dict(vec![(key("error"), body)])
+    dict!({ "error": body })
 }
 
 /// The envelope for a domain error.
@@ -54,13 +50,12 @@ pub fn cli_error_envelope(message: &str) -> Value {
 /// The 422 envelope for a request whose body, query or arguments failed validation. `errors` are
 /// the Pydantic error items (`wg_validate::ValidationError::to_json`).
 pub fn validation_envelope(errors: &[Json]) -> Value {
-    let details = Value::Dict(vec![(
-        key("errors"),
-        Value::List(errors.iter().map(json_value).collect()),
-    )]);
-    envelope(Value::Dict(vec![
-        (key("code"), text(ErrorCode::ValidationFailed.as_str())),
-        (key("message"), text(INVALID_REQUEST_MESSAGE)),
-        (key("details"), details),
-    ]))
+    let details = dict!({
+        "errors": Value::List(errors.iter().map(json_value).collect()),
+    });
+    envelope(dict!({
+        "code": text(ErrorCode::ValidationFailed.as_str()),
+        "message": text(INVALID_REQUEST_MESSAGE),
+        "details": details,
+    }))
 }

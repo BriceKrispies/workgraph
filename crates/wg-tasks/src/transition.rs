@@ -19,6 +19,7 @@ use wg_types::{Id, TaskStatus, WgError};
 use crate::deps::BLOCKED_BY_DEPENDENCIES;
 use crate::lifecycle::check_task_transition;
 use crate::promote::{dependency_gate, dependents, refresh_blocked_state};
+use wg_types::pyval::truthy;
 
 /// How a status change is requested.
 #[derive(Debug, Clone, Copy, Default)]
@@ -45,18 +46,6 @@ pub struct Applied {
     pub decision: Decision<()>,
     pub ids: IdSeq,
     pub tasks: TaskSlice,
-}
-
-/// Python truthiness of a JSON value.
-fn truthy(value: &Value) -> bool {
-    match value {
-        Value::Null => false,
-        Value::Bool(flag) => *flag,
-        Value::String(text) => !text.is_empty(),
-        Value::Array(items) => !items.is_empty(),
-        Value::Object(fields) => !fields.is_empty(),
-        Value::Number(number) => number.as_f64().is_none_or(|n| n != 0.0),
-    }
 }
 
 fn missing(task_id: Id) -> WgError {

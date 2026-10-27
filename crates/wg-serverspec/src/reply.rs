@@ -3,7 +3,7 @@
 //! errors), with the security headers of O07.
 
 use serde_json::Value as Json;
-use wg_json::{PyStr, Value, http_json};
+use wg_json::{Value, dict, http_json};
 use wg_types::WgError;
 use wg_wire::convention::text;
 use wg_wire::error::{error_envelope, validation_envelope};
@@ -90,20 +90,15 @@ impl Reply {
     }
 }
 
-fn key(name: &str) -> PyStr {
-    PyStr::from(name)
-}
-
 /// `{"error": {"code": code, "message": message}}`: the envelope the security middleware and the
 /// SPA's 404 build by hand, without `details`.
 pub fn bare_error(status: u16, code: &str, message: &str) -> Reply {
-    let body = Value::Dict(vec![(
-        key("error"),
-        Value::Dict(vec![
-            (key("code"), text(code)),
-            (key("message"), text(message)),
-        ]),
-    )]);
+    let body = dict!({
+        "error": dict!({
+            "code": text(code),
+            "message": text(message),
+        }),
+    });
     Reply::json(status, &body)
 }
 
@@ -119,7 +114,7 @@ pub fn validation_reply(errors: &[Json]) -> Reply {
 
 /// FastAPI's `HTTPException` body: `{"detail": text}`.
 pub fn detail(status: u16, message: &str) -> Reply {
-    Reply::json(status, &Value::Dict(vec![(key("detail"), text(message))]))
+    Reply::json(status, &dict!({ "detail": text(message) }))
 }
 
 /// Starlette's 405 for a path that matched with another method: `Allow` lists the methods of the

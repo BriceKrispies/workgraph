@@ -11,7 +11,7 @@ use std::sync::OnceLock;
 
 use regex::Regex;
 use serde_json::{Value as Json, json};
-use wg_clispec::args::{get, items, opt, s, truncate};
+use wg_clispec::args::{get, items, opt, s};
 use wg_experiments::pool::{self, Entry};
 use wg_experiments::replay::{
     self, Change, CommitFacts, Features, NameStatus, ReplayConfig, Split,
@@ -19,6 +19,7 @@ use wg_experiments::replay::{
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::WgError;
+use wg_types::pyval::prefix;
 
 /// The message of a replay base commit. It must not name the solution commit: a trial agent reads
 /// the base's log, and with the SHA it could look the solution up.
@@ -271,7 +272,7 @@ pub fn base_sync_paths(entries: &[NameStatus], config: &ReplayConfig) -> Vec<Str
 /// The branch of a replay base: `wg/replay/<sha[:12]>`.
 #[must_use]
 pub fn base_branch(sha: &str) -> String {
-    format!("wg/replay/{}", sha.chars().take(12).collect::<String>())
+    format!("wg/replay/{}", prefix(sha, 12))
 }
 
 /// The exit codes of the oracle at the solution and at the base, and the verdict.
@@ -482,14 +483,14 @@ fn scan_row(candidate: &Value) -> Vec<String> {
     let joined =
         |value: Option<&Value>| items(value).iter().map(s_one).collect::<Vec<_>>().join(",");
     vec![
-        truncate(&s(get(candidate, "sha")), 12),
+        prefix(&s(get(candidate, "sha")), 12),
         opt(feature("band")).unwrap_or_default(),
         s(feature("src_lines")),
         s(feature("test_lines")),
         s(feature("src_files")),
         joined(feature("packages")),
         joined(get(candidate, "excluded")),
-        truncate(&s(get(candidate, "subject")), 60),
+        prefix(&s(get(candidate, "subject")), 60),
     ]
 }
 
@@ -505,7 +506,7 @@ pub fn create_view(console: &Console, results: &Value) -> String {
             .iter()
             .map(|result| {
                 vec![
-                    truncate(&s(get(result, "sha")), 12),
+                    prefix(&s(get(result, "sha")), 12),
                     s(get(result, "status")),
                     opt(get(result, "task_key")).unwrap_or_default(),
                     opt(get(result, "reason")).unwrap_or_default(),
@@ -566,7 +567,7 @@ pub fn git_failure(error: &wg_gitcore::GitError) -> WgError {
         } => failure
             .detail("args", args)
             .detail("returncode", returncode)
-            .detail("stderr", stderr.chars().take(2000).collect::<String>()),
+            .detail("stderr", prefix(stderr, 2000)),
         _ => failure,
     }
 }

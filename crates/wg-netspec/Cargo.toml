@@ -15,3 +15,4 @@ base64 = "0.22"
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-model = { path = "../wg-model" }
+wg-types = { path = "../wg-types" }

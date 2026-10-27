@@ -9,6 +9,7 @@ use wg_types::WgError;
 
 use crate::service::{self, JobQuery};
 use crate::spec::{SPECS, strings};
+use wg_types::pyval::int_or;
 
 /// The routes of the jobs feature, in registration order.
 pub const GROUP: RouteGroup = RouteGroup {
@@ -53,7 +54,7 @@ fn text<'a>(params: &'a Map<String, Json>, name: &str) -> Option<&'a str> {
 
 /// An integer parameter, `default` when unset.
 fn number(params: &Map<String, Json>, name: &str, default: i64) -> i64 {
-    params.get(name).and_then(Json::as_i64).unwrap_or(default)
+    int_or(params.get(name), default)
 }
 
 #[cfg(test)]

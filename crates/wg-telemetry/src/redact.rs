@@ -5,6 +5,7 @@
 
 use regex::Regex;
 use serde_json::{Map, Value, json};
+use wg_types::pyval::prefix;
 
 /// The text that replaces a secret.
 pub const REDACTED: &str = "[REDACTED]";
@@ -73,7 +74,7 @@ fn redact_with(patterns: &Patterns, value: &str, max_chars: Option<usize>) -> St
     match max_chars {
         Some(limit) if scrubbed.chars().count() > limit => {
             let total = scrubbed.chars().count();
-            let head: String = scrubbed.chars().take(limit).collect();
+            let head: String = prefix(&scrubbed, limit);
             format!("{head}... [truncated {} chars]", total - limit)
         }
         _ => scrubbed,

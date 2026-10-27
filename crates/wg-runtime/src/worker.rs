@@ -32,6 +32,7 @@ use wg_types::{ErrorCode, Id, WgError};
 use crate::handlers::{HandlerError, HandlerRegistry, JobContext};
 use crate::queue::Queue;
 use crate::stamp::draw;
+use wg_types::pyval::prefix;
 
 /// How a worker is set up (`workgraph worker run`'s options).
 #[derive(Debug, Clone, Default)]
@@ -264,10 +265,7 @@ impl Worker {
             failed: Arc::clone(&self.failed),
         };
         match std::thread::Builder::new()
-            .name(format!(
-                "wg-job-{}",
-                job_id.to_string().chars().take(8).collect::<String>()
-            ))
+            .name(format!("wg-job-{}", prefix(&job_id.to_string(), 8)))
             .spawn(move || runner.run())
         {
             Ok(handle) => self.running.push(Running { job_id, handle }),

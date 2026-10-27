@@ -7,6 +7,7 @@ use wg_types::{StackStatus, TaskStatus};
 
 use crate::ejection::returns_to_ready;
 use crate::queue::ItemDetail;
+use wg_types::pyval::prefix;
 
 /// Integration merges are commits made by Workgraph itself: (variable, value) pairs for git's
 /// author and committer environment.
@@ -114,7 +115,7 @@ impl MergeOutcome {
                     .map(str::to_string)
                     .collect(),
             ),
-            git_error: stderr.trim().chars().take(500).collect(),
+            git_error: prefix(stderr.trim(), 500),
             already_integrated: false,
         }
     }

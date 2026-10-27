@@ -1,8 +1,6 @@
 //! The dashboard bundle of `GET /analytics/overview` (MCP `analytics_report` `overview`).
 
-use wg_json::Value;
-
-use crate::convention::dict;
+use wg_json::{Value, dict};
 
 /// The name of the bundle dict; it has no OpenAPI component schema.
 pub const NAME: &str = "AnalyticsOverviewOut";

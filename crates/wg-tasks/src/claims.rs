@@ -13,6 +13,7 @@ use wg_model::{Task, TaskSlice};
 use wg_types::{TaskStatus, Timestamp, WgError};
 
 use crate::lifecycle::check_task_transition;
+use wg_types::pyval::prefix;
 
 /// Actors with this prefix are system processes and may complete any claim.
 pub const SYSTEM_ACTOR_PREFIX: &str = "system:";
@@ -254,7 +255,7 @@ pub fn plan_complete(
 /// The payload of the `task.completed` event (`summary` is cut to 5000 characters).
 pub fn complete_event_data(plan: &CompletePlan, summary: &str) -> Value {
     json!({
-        "summary": summary.chars().take(5000).collect::<String>(),
+        "summary": prefix(summary, 5000),
         "next_status": plan.target.as_str(),
         "verification_configured": plan.verification_configured,
     })

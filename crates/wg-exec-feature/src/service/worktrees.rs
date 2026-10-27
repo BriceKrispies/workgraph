@@ -75,11 +75,12 @@ pub fn worktree_list(
         .stamps
         .stamp(context)?
         .require(&[Permission::RepoRead])?;
-    let workspace_id = match workspace {
+    // Python tests `if workspace:` and `if status:`, so an empty reference filters nothing.
+    let workspace_id = match workspace.filter(|reference| !reference.is_empty()) {
         Some(reference) => Some(app.workspace_id(reference)?),
         None => None,
     };
-    let status = match status {
+    let status = match status.filter(|text| !text.is_empty()) {
         Some(text) => match WorktreeStatus::parse(text) {
             Some(status) => Some(status),
             None => return Ok(worktree_list_out(&[])),
@@ -279,9 +280,9 @@ pub fn worktree_prepare(
         match planned {
             Ok(entry) => entries.push(entry),
             Err(err) => {
-                // Python's `release(ctx, attempt_id, remove=True)` before re-raising. A failure
-                // of the release itself does not replace the error that caused it.
-                let _ = worktree_release(app, context, attempt_id, true, false);
+                // Python's `release(ctx, attempt_id, remove=True)` runs inside the `except`, so a
+                // failure of the release itself propagates in place of the error that caused it.
+                worktree_release(app, context, attempt_id, true, false)?;
                 return Err(err);
             }
         }

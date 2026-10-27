@@ -476,7 +476,7 @@ impl JobRunner {
                     target: "workgraph.worker",
                     job = %job,
                     kind = %self.ctx.job.kind,
-                    error = %text,
+                    exc = %text,
                     "job failed"
                 );
                 queue

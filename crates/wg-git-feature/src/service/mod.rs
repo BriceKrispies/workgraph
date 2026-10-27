@@ -11,3 +11,4 @@ mod sync;
 
 pub use entries::*;
 pub use sync::git_sync;
+pub(crate) use sync::sync_repository;

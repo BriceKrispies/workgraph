@@ -130,3 +130,136 @@ pub fn finished(run: &Value) -> bool {
             AttemptStatus::parse(&python(status)).is_some_and(wg_exec::attempt::is_terminal)
         })
 }
+
+/// `run start`: `attempt <id> #<number> <status>`.
+#[must_use]
+pub fn start_line(console: &Console, attempt: &Value) -> String {
+    console
+        .print(&format!(
+            "attempt {} #{} {}",
+            cell(get(attempt, "id")),
+            cell(get(attempt, "number")),
+            cell(get(attempt, "status"))
+        ))
+        .text
+}
+
+/// `run cancel`: `<short id>: <status>`.
+#[must_use]
+pub fn cancel_line(console: &Console, attempt: &Value) -> String {
+    console
+        .print(&format!(
+            "{}: {}",
+            short(get(attempt, "id")),
+            cell(get(attempt, "status"))
+        ))
+        .text
+}
+
+/// `run retry`: `retry queued as attempt <id> #<number>`.
+#[must_use]
+pub fn retry_line(console: &Console, attempt: &Value) -> String {
+    console
+        .print(&format!(
+            "retry queued as attempt {} #{}",
+            cell(get(attempt, "id")),
+            cell(get(attempt, "number"))
+        ))
+        .text
+}
+
+/// `run rerun`: where the rerun was queued, whether the baseline was reproduced and what was missing.
+#[must_use]
+pub fn rerun_line(console: &Console, result: &Value) -> String {
+    let missing = get(result, "missing_revisions");
+    let tail = if items(missing).is_empty() {
+        String::new()
+    } else {
+        format!("; missing revisions: {}", cell(missing))
+    };
+    console
+        .print(&format!(
+            "rerun queued as {}; baseline reproduced: {}{tail}",
+            cell(get(result, "attempt").and_then(|found| get(found, "id"))),
+            cell(get(result, "reproduced_baseline"))
+        ))
+        .text
+}
+
+/// `run schedule --explain`: the task, whether it is eligible and the reasons it is not.
+#[must_use]
+pub fn explain_view(console: &Console, report: &Value) -> String {
+    let task = optional(get(report, "task"));
+    let eligible = optional(get(report, "eligible"));
+    let reasons = optional(get(report, "reasons"));
+    console
+        .kv(
+            &[
+                ("task", task.as_deref()),
+                ("eligible", eligible.as_deref()),
+                ("reasons", reasons.as_deref()),
+            ],
+            None,
+        )
+        .text
+}
+
+/// `run schedule --dry-run`: the eligible tasks.
+#[must_use]
+pub fn eligible_view(console: &Console, rows: &Value) -> String {
+    let table: Vec<Vec<String>> = items(Some(rows))
+        .iter()
+        .map(|row| {
+            vec![
+                cell(get(row, "key")),
+                cell(get(row, "priority")),
+                cell(get(row, "agent")),
+            ]
+        })
+        .collect();
+    console
+        .table(&table, &["task", "priority", "agent"], None)
+        .text
+}
+
+/// `run schedule`: how many runs the pass started, then the whole report.
+#[must_use]
+pub fn tick_line(console: &Console, report: &Value) -> String {
+    console
+        .print(&format!(
+            "started {}: {}",
+            items(get(report, "started")).len(),
+            python(report)
+        ))
+        .text
+}
+
+/// `run decompose`: the proposed children, then the keys created (or a dry run note).
+#[must_use]
+pub fn decompose_view(console: &Console, result: &Value) -> String {
+    let children = get(result, "proposal").and_then(|found| get(found, "children"));
+    let rows: Vec<Vec<String>> = items(children)
+        .iter()
+        .map(|child| {
+            let depends: Vec<String> = items(get(child, "depends_on")).iter().map(python).collect();
+            vec![
+                cell(get(child, "ref")),
+                cell(get(child, "title")),
+                depends.join(","),
+            ]
+        })
+        .collect();
+    let created = get(result, "created");
+    let note = if items(created).is_empty() {
+        "dry run (use --create)".to_owned()
+    } else {
+        format!("created: {}", cell(created))
+    };
+    format!(
+        "{}{}",
+        console
+            .table(&rows, &["ref", "title", "depends on"], None)
+            .text,
+        console.print(&note).text
+    )
+}

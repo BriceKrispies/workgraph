@@ -17,10 +17,14 @@ use wg_mcpspec::options::Agent;
 use wg_mcpspec::{require, structured, tool_permissions};
 use wg_model::entity::AgentAttempt;
 use wg_model::{RowKey, Task, py_repr_str};
-use wg_runtime::{App, ToolRun};
+use wg_runtime::{App, ToolRun, agent_context};
 use wg_store::{AttemptPage, Session};
 use wg_types::{AttemptStatus, ErrorCode, Id, TaskKey, WgError, parse_id};
 use wg_wire::dto::{attempt, page};
+
+use crate::service::agents::LiveAgents;
+use crate::service::run_flow;
+use crate::spec::runs::StartRequest;
 
 /// The feature's tool descriptor: one [`call`].
 pub const TOOLS: &[ToolRun] = &[call];
@@ -53,8 +57,64 @@ pub fn call(
     Some(match name {
         "attempt_get" => attempt_get(app, arguments),
         "attempt_list" => attempt_list(app, arguments),
+        "run_get" => run_get_tool(app, arguments),
+        "run_start" => run_start_tool(app, agent, arguments),
+        "run_cancel" => run_cancel_tool(app, agent, arguments),
         _ => unwired(app, name, arguments),
     })
+}
+
+/// `run_get`: the attempt, its job and its recent events (`RunService.get`).
+fn run_get_tool(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
+    let reference = arguments
+        .get("attempt_id")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
+    let events = arguments
+        .get("events")
+        .and_then(Value::as_i64)
+        .unwrap_or(50);
+    structured(&crate::service::runs::get(app, reference, events)?)
+}
+
+/// `run_start`: queues a managed run of a task (`RunService.start`).
+fn run_start_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Value, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let text = |key: &str| {
+        arguments
+            .get(key)
+            .and_then(Value::as_str)
+            .map(str::to_owned)
+    };
+    let request = StartRequest {
+        agent: text("agent"),
+        model: text("model"),
+        ..StartRequest::default()
+    };
+    let started = run_flow::run_start(
+        app,
+        &context,
+        &mut LiveAgents,
+        text("workspace").as_deref(),
+        &text("task").unwrap_or_default(),
+        &request,
+    )?;
+    structured(&started)
+}
+
+/// `run_cancel`: asks a queued or running attempt to stop (`RunService.cancel`).
+fn run_cancel_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Value, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let reference = arguments
+        .get("attempt_id")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
+    let reason = arguments
+        .get("reason")
+        .and_then(Value::as_str)
+        .unwrap_or("cancelled via MCP");
+    let cancelled = run_flow::run_cancel(app, &context, reference, reason)?;
+    structured(&cancelled)
 }
 
 /// `attempt_get`: the attempt as `AttemptOut`.

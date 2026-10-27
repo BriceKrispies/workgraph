@@ -31,6 +31,12 @@ const COUPLING: Usage = Usage {
     command: "workgraph analytics coupling",
 };
 
+/// Click's usage line of `analytics retrospective`.
+const RETROSPECTIVE: Usage = Usage {
+    usage: "workgraph analytics retrospective [OPTIONS]",
+    command: "workgraph analytics retrospective",
+};
+
 /// Click's usage line of `analytics history`.
 const HISTORY: Usage = Usage {
     usage: "workgraph analytics history [OPTIONS]",
@@ -42,6 +48,41 @@ pub type CompareArguments = (String, Typed, Typed, Vec<String>);
 
 /// The `history` options: the category, the repository and the limit.
 pub type HistoryOptions = (Option<String>, Option<String>, i64);
+
+/// The `retrospective` options: the period in days, the project, the repository, whether the model
+/// narrates (`--no-model` turns it off) and the `--output` file.
+pub type RetrospectiveOptions = (
+    i64,
+    Option<String>,
+    Option<String>,
+    bool,
+    Option<std::path::PathBuf>,
+);
+
+/// The `retrospective` options as the command reads them (`--days` defaults to 14).
+pub fn retrospective_options(m: &ArgMatches) -> Result<RetrospectiveOptions, CliFailure> {
+    Ok((
+        number(m, "--days", 14, RETROSPECTIVE)?,
+        option_text(m, "--project"),
+        option_text(m, "--repo"),
+        !flag(m, "--no-model"),
+        option_text(m, "--output").map(std::path::PathBuf::from),
+    ))
+}
+
+/// The `estimate` options: the task, the title, the category and the `--repo` repositories.
+pub type EstimateOptions = (Option<String>, Option<String>, Option<String>, Vec<String>);
+
+/// The `estimate` arguments and options, as the command reads them.
+#[must_use]
+pub fn estimate_options(m: &ArgMatches) -> EstimateOptions {
+    (
+        one(m, "task"),
+        option_text(m, "--title"),
+        option_text(m, "--category"),
+        option_list(m, "--repo"),
+    )
+}
 
 /// The clap command of the `analytics` group: the snapshot's own tree.
 #[must_use]

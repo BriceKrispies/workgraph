@@ -82,6 +82,26 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             )?;
             state.emit(&out, Some(&|c| view::history_view(c, &out)))
         }
+        Some("estimate") => {
+            let context = human_context(None)?;
+            let (task, title, category, repositories) = args::estimate_options(m);
+            let out = service::estimate::estimate(
+                state.app()?,
+                &context,
+                ws,
+                task.as_deref(),
+                title.as_deref(),
+                category.as_deref(),
+                &repositories,
+            )?;
+            state.emit(&out, Some(&|c| view::estimate_view(c, &out)))
+        }
+        Some("retrospective") => {
+            let context = human_context(None)?;
+            let options = args::retrospective_options(m)?;
+            let out = service::retrospective::retrospective(state.app()?, &context, ws, &options)?;
+            state.emit(&out, Some(&|c| view::retrospective_view(c, &out)))
+        }
         _ => Err(CliFailure::fail(
             wg_clispec::not_implemented_message(path),
             1,

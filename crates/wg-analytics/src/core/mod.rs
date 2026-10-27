@@ -4,9 +4,11 @@
 
 pub mod bases;
 pub mod coupling;
+pub mod estimate;
 pub mod failures;
 pub mod metrics;
 pub mod period;
 pub mod query;
+pub mod retrospective;
 pub mod service;
 pub mod stats;

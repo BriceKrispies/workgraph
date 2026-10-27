@@ -6,7 +6,9 @@
 //! engine of `wg-analytics`. These are free functions over `&mut App`; the `cli` table reaches
 //! them. The generation instants are the service clock's: the stamp of the permission check.
 
+pub mod estimate;
 pub mod reads;
+pub mod retrospective;
 
 use serde_json::Value as Json;
 use wg_analytics::core::{coupling, failures, period::Period, service};

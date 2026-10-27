@@ -5,6 +5,7 @@ pub mod analyses;
 pub mod args;
 pub mod dto;
 pub mod load;
+pub mod narrative;
 pub mod query;
 pub mod sql;
 pub mod view;

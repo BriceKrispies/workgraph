@@ -258,3 +258,87 @@ pub fn history_view(console: &Console, rows: &Value) -> String {
         ],
     )
 }
+
+/// `estimate`: the sample and its method, the distributions, the comparable tasks and the agents on
+/// similar tasks; `insufficient_data` prints its message alone.
+#[must_use]
+pub fn estimate_view(console: &Console, result: &Value) -> String {
+    if s(get(result, "status")) != "ok" {
+        return console
+            .print(&format!("[yellow]{}[/yellow]", s(get(result, "message"))))
+            .text;
+    }
+    let mut out = console
+        .print(&format!(
+            "based on {} comparable tasks ({} similarity)",
+            s(get(result, "sample_size")),
+            s(get(result, "method"))
+        ))
+        .text;
+    let distributions = get(result, "distributions").map(|value| match value {
+        // Each measure of the distributions document, with its count and percentiles.
+        Value::Dict(entries) => entries
+            .iter()
+            .map(|(name, d)| {
+                vec![
+                    key_text(name),
+                    cell(get(d, "n")),
+                    cell(get(d, "p25")),
+                    cell(get(d, "median")),
+                    cell(get(d, "p75")),
+                    cell(get(d, "p90")),
+                ]
+            })
+            .collect(),
+        _ => Vec::new(),
+    });
+    out.push_str(&table(
+        console,
+        distributions.unwrap_or_default(),
+        &["measure", "n", "p25", "median", "p75", "p90"],
+    ));
+    let basis = items(get(result, "basis"))
+        .iter()
+        .map(|task| {
+            let why: Vec<String> = items(get(task, "reasons"))
+                .iter()
+                .map(|reason| s(Some(reason)))
+                .collect();
+            vec![
+                cell(get(task, "key")),
+                cell(get(task, "score")),
+                why.join("; "),
+            ]
+        })
+        .collect();
+    out.push_str(&table(console, basis, &["task", "score", "why"]));
+    let agents: Vec<Vec<String>> = items(get(result, "agent_recommendations"))
+        .iter()
+        .map(|agent| {
+            vec![
+                cell(get(agent, "provider")),
+                cell(get(agent, "model")),
+                cell(get(agent, "attempts")),
+                cell(get(agent, "success_rate")),
+            ]
+        })
+        .collect();
+    out.push_str(
+        &console
+            .table(
+                &agents,
+                &["provider", "model", "attempts", "success"],
+                Some("agents on similar tasks (selection bias applies)"),
+            )
+            .text,
+    );
+    out
+}
+
+/// `retrospective`: the report text, printed as it is (Python `console.print(content, markup=False)`).
+#[must_use]
+pub fn retrospective_view(console: &Console, result: &Value) -> String {
+    console
+        .print(&wg_render::escape(&s(get(result, "content"))))
+        .text
+}

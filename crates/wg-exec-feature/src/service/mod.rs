@@ -11,6 +11,7 @@
 
 pub mod agent_cmds;
 pub mod agents;
+pub mod attempt_reads;
 pub mod attempt_runs;
 pub mod attempts;
 pub mod conclude;

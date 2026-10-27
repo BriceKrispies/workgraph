@@ -17,5 +17,5 @@ mod text;
 mod value;
 
 pub use json::{cli_json, db_json, http_json, log_json};
-pub use text::{isoformat, py_float_repr, when};
+pub use text::{isoformat, py_float_repr, py_splitlines, when};
 pub use value::{Date, DumpError, LocalDateTime, PyStr, Value};

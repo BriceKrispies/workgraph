@@ -30,6 +30,7 @@ pub const FEATURES: &[&Feature] = &[
     &wg_analytics_feature::FEATURE,
     &wg_git_feature::FEATURE,
     &wg_exec_feature::FEATURE,
+    &wg_jobs_feature::FEATURE,
     &wg_trackers_feature::FEATURE,
     &wg_intel_feature::FEATURE,
     &wg_archive_feature::FEATURE,

@@ -17,6 +17,7 @@ pub struct ListQuery<'a> {
     pub statuses: &'a [String],
     pub provider: Option<&'a str>,
     pub limit: i64,
+    pub offset: i64,
 }
 
 /// `AttemptService.list`: one page of the workspace's attempts, newest first. A status that is
@@ -50,12 +51,19 @@ pub fn attempt_list(
             items: Vec::new(),
             total: 0,
             limit: query.limit,
-            offset: 0,
+            offset: query.offset,
             next_offset: None,
         }
     } else {
         app.runtime.store.read(|session| {
-            session.attempts_page(workspace, task_id, &statuses, provider, query.limit, 0)
+            session.attempts_page(
+                workspace,
+                task_id,
+                &statuses,
+                provider,
+                query.limit,
+                query.offset,
+            )
         })?
     };
     let items: Vec<_> = page.items.iter().map(attempt::from_model).collect();

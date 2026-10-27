@@ -2386,6 +2386,7 @@ dependencies = [
  "wg-experiments-feature",
  "wg-git-feature",
  "wg-intel-feature",
+ "wg-jobs-feature",
  "wg-json",
  "wg-mcp",
  "wg-mcpspec",
@@ -2570,6 +2571,7 @@ dependencies = [
  "wg-render",
  "wg-runtime",
  "wg-runtimespec",
+ "wg-serverspec",
  "wg-store",
  "wg-storecodec",
  "wg-tasks",
@@ -2723,6 +2725,20 @@ dependencies = [
  "wg-automation",
  "wg-model",
  "wg-types",
+]
+
+[[package]]
+name = "wg-jobs-feature"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "wg-jobs",
+ "wg-json",
+ "wg-runtime",
+ "wg-runtimespec",
+ "wg-serverspec",
+ "wg-types",
+ "wg-wire",
 ]
 
 [[package]]
@@ -2963,7 +2979,9 @@ dependencies = [
  "tower",
  "wg-automation-feature",
  "wg-decisions",
+ "wg-exec-feature",
  "wg-git-feature",
+ "wg-jobs-feature",
  "wg-json",
  "wg-model",
  "wg-registry-feature",

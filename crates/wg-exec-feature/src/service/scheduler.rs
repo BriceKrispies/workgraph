@@ -5,6 +5,7 @@
 use std::collections::BTreeMap;
 
 use serde_json::{Map, Value as Json};
+use wg_json::Value as WgJson;
 use wg_model::entity::{AgentAttempt, RepositoryCheckout};
 use wg_net::{Endpoint, Net, Ollama, OpenAiCompatible};
 use wg_registry::resolve;
@@ -14,10 +15,13 @@ use wg_store::Session;
 use wg_storecodec::TableRow;
 use wg_tasks::edit::enrichment_from;
 use wg_types::{ErrorCode, Id, WgError};
+use wg_wire::dto::scheduler;
 
 use crate::service::agents::AgentHost;
 use crate::service::run_flow::run_start;
-use crate::spec::config::{config_at, execution_enabled, execution_number, provider_failure};
+use crate::spec::config::{
+    config_at, execution_enabled, execution_flag, execution_number, provider_failure,
+};
 use crate::spec::decompose::{
     DECOMPOSE_SYSTEM, Parent, create_children, json_schema, prompt, read_proposal,
     validate_decomposition,
@@ -107,6 +111,32 @@ pub fn explain(app: &mut App, workspace: Option<&str>, task_ref: &str) -> Result
         task,
         execution_enabled(&config),
         execution_number(&config, "max_attempts_per_task", 3),
+    ))
+}
+
+/// `GET /ws/{ws}/scheduler` (`api/routes/ops.py`): the execution flags and the first 50 eligible
+/// tasks of the workspace, as `SchedulerOut`. The caller has checked `task:read`.
+pub fn overview(app: &mut App, workspace: Option<Id>) -> Result<WgJson, WgError> {
+    let config = app.config()?;
+    let eligible = eligible_tasks(app, workspace, 50)?;
+    let entries: Vec<WgJson> = eligible
+        .iter()
+        .map(|item| {
+            let project = item.project_id.map(|id| id.to_string());
+            scheduler::eligible_entry(
+                &item.task_id.to_string(),
+                &item.key,
+                item.priority.as_str(),
+                project.as_deref(),
+                item.agent.as_deref(),
+                &item.workspace_id.to_string(),
+            )
+        })
+        .collect();
+    Ok(scheduler::from_parts(
+        execution_enabled(&config),
+        execution_flag(&config, "auto_schedule"),
+        entries,
     ))
 }
 

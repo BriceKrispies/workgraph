@@ -14,13 +14,15 @@
 //!
 //! The git-facing worktree commands (`git worktrees`, `git cleanup-worktrees`) still belong to the
 //! git group and are answered by `wg-runtime`'s git service until the git feature moves (FC-06).
-//! The feature has no routes yet. Concluding a run reaches the
+//! The routes cover the attempt reads, the run routes and the scheduler overview ([`http`]).
+//! Concluding a run reaches the
 //! features that do not serve it yet (commit attribution, stack readiness, verification runs)
 //! through `service::conclude::Collaborators`.
 //!
 //! The feature exports [`FEATURE`]; the binary collects it into its ordered feature list.
 
 pub mod cli;
+pub mod http;
 pub mod jobs;
 pub mod mcp;
 pub mod service;
@@ -31,12 +33,12 @@ use wg_runtime::{CliGroup, Feature};
 /// The exec feature's command groups: `attempt`, `agent` and `run`.
 pub const CLI: &[CliGroup] = &[cli::attempt::GROUP, cli::agent::GROUP, cli::run::GROUP];
 
-/// The exec feature: its command groups, its tools, its job handlers and its maintenance step. It
-/// has no routes or resources yet.
+/// The exec feature: its command groups, its attempt, run and scheduler routes, its tools, its
+/// job handlers and its maintenance step. It has no resources yet.
 pub static FEATURE: Feature = Feature {
     name: "exec",
     cli: CLI,
-    routes: &[],
+    routes: &[http::GROUP],
     tools: mcp::TOOLS,
     resources: &[],
     jobs: jobs::JOBS,

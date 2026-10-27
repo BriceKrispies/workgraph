@@ -299,3 +299,61 @@ pub(crate) fn model_str(fields: &[(String, Value)]) -> String {
         .collect();
     parts.join(" ")
 }
+
+/// `str.splitlines()`: the lines of `text`, cut at every boundary Python recognises (`\n`, `\r`,
+/// `\r\n`, `\v`, `\f`, `\x1c`, `\x1d`, `\x1e`, U+0085, U+2028 and U+2029). Terminators are dropped,
+/// and a final piece after the last boundary is a line only when it is not empty.
+pub fn py_splitlines(text: &str) -> Vec<&str> {
+    let mut lines = Vec::new();
+    let mut start = 0;
+    let mut chars = text.char_indices();
+    while let Some((index, c)) = chars.next() {
+        if !matches!(
+            c,
+            '\n' | '\r'
+                | '\x0b'
+                | '\x0c'
+                | '\x1c'
+                | '\x1d'
+                | '\x1e'
+                | '\u{85}'
+                | '\u{2028}'
+                | '\u{2029}'
+        ) {
+            continue;
+        }
+        lines.push(&text[start..index]);
+        let mut end = index + c.len_utf8();
+        if c == '\r' && text[end..].starts_with('\n') {
+            chars.next();
+            end += 1;
+        }
+        start = end;
+    }
+    if start < text.len() {
+        lines.push(&text[start..]);
+    }
+    lines
+}
+
+#[cfg(test)]
+mod splitlines_tests {
+    use super::py_splitlines;
+
+    #[test]
+    fn cuts_at_every_python_boundary_and_drops_terminators() {
+        assert_eq!(py_splitlines("a\rb\r\nc\nd"), ["a", "b", "c", "d"]);
+        assert_eq!(py_splitlines("x\u{2028}y\u{2029}z"), ["x", "y", "z"]);
+        assert_eq!(
+            py_splitlines("p\x0bq\x0cr\x1cs\x1dt\x1eu\u{85}v"),
+            ["p", "q", "r", "s", "t", "u", "v"]
+        );
+    }
+
+    #[test]
+    fn a_trailing_terminator_adds_no_empty_line() {
+        assert_eq!(py_splitlines("a\n"), ["a"]);
+        assert_eq!(py_splitlines("a\n\nb"), ["a", "", "b"]);
+        assert_eq!(py_splitlines(""), Vec::<&str>::new());
+    }
+}

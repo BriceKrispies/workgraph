@@ -43,6 +43,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 statuses: &statuses,
                 provider: provider.as_deref(),
                 limit,
+                offset: 0,
             };
             let out = attempts::attempt_list(state.app()?, &context, &query)?;
             state.emit(&out, Some(&|c| view::list_view(c, &out)))

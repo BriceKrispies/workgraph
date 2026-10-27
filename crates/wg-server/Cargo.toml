@@ -36,6 +36,8 @@ wg-stacks-feature = { path = "../wg-stacks-feature" }
 wg-registry-feature = { path = "../wg-registry-feature" }
 wg-automation-feature = { path = "../wg-automation-feature" }
 wg-verify-feature = { path = "../wg-verify-feature" }
+wg-exec-feature = { path = "../wg-exec-feature" }
+wg-jobs-feature = { path = "../wg-jobs-feature" }
 wg-telemetry-feature = { path = "../wg-telemetry-feature" }
 wg-model = { path = "../wg-model" }
 wg-store = { path = "../wg-store" }

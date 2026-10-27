@@ -9,8 +9,8 @@ use wg_json::{PyStr, Value};
 use wg_model::entity::{Classification, ClassificationEvaluation};
 use wg_types::Id;
 
-use crate::spec::classify_out::json_value;
 use crate::spec::similar_sql::ImplementationCommit;
+use wg_wire::convention::json_value;
 
 fn text(value: &str) -> Value {
     Value::Str(PyStr::from(value))

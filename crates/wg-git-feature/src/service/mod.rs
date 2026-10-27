@@ -13,3 +13,4 @@ mod sync;
 pub use attempt_links::link_attempt_commits;
 pub use entries::*;
 pub use sync::git_sync;
+pub(crate) use sync::sync_repository;

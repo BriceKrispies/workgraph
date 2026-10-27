@@ -5,6 +5,7 @@
 //!
 //! * [`ingest`]: commit rows from parsed `git log`/`diff-tree` output, branch membership,
 //!   reachability updates, and the `SyncResult`.
+//! * [`jobs`]: the `git_sync` job's payload, mode and result decisions.
 //! * [`links`]: attribution candidates, explicit links and unlinks.
 //! * [`reads`]: the JSON of the log, the commit detail, the changes and the diff.
 //! * [`analysis`]: the analysis rows of a commit and the change-surface records.
@@ -17,6 +18,7 @@ pub mod analysis;
 pub mod attempt_links;
 pub mod cli;
 pub mod ingest;
+pub mod jobs;
 pub mod links;
 pub mod reads;
 pub mod sql;

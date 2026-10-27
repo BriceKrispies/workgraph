@@ -10,22 +10,26 @@
 //!   glue;
 //! * [`cli`] (Shell): the clap group, a table of `fn` pointers into [`service`].
 //!
-//! The feature has no routes, tools, resources or job handlers yet, so its tables are empty; the
-//! feature exports [`FEATURE`] and the binary collects it into its ordered feature list.
+//! * [`jobs`]: the `git_sync` job handler, which the worker runs as `GitService.sync` does.
+//!
+//! The feature has no routes, tools or resources yet, so its tables are empty; the feature exports
+//! [`FEATURE`] and the binary collects it into its ordered feature list.
 
 pub mod cli;
+pub mod jobs;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The git feature: its `git` command group. It has no routes, tools, resources or jobs.
+/// The git feature: its `git` command group and its `git_sync` job. It has no routes, tools,
+/// resources or maintenance steps.
 pub static FEATURE: Feature = Feature {
     name: "git",
     cli: &[cli::GROUP],
     routes: &[],
     tools: &[],
     resources: &[],
-    jobs: &[],
+    jobs: jobs::JOBS,
     maintenance: &[],
 };

@@ -338,6 +338,29 @@ fn resource_limits() {
 }
 
 #[test]
+fn git_sync_jobs_for_one_repository_are_serialised() {
+    // The registration's git_sync and a later one carry the repository's key (repository.py).
+    let mut db = Db::new();
+    let repo = vec!["repo:018f0000-0000-7000-8000-0000000000aa".to_owned()];
+    let other = vec!["repo:018f0000-0000-7000-8000-0000000000bb".to_owned()];
+    let first = db.enqueue(0.0, &keyed("git_sync", &repo));
+    let second = db.enqueue(1.0, &keyed("git_sync", &repo));
+    let elsewhere = db.enqueue(2.0, &keyed("git_sync", &other));
+    assert_eq!(db.claim_any("w1", 3.0).map(|found| found.id), Some(first));
+    assert_eq!(
+        db.claim_any("w2", 3.0).map(|found| found.id),
+        Some(elsewhere),
+        "another repository is not held back"
+    );
+    assert!(
+        db.claim_any("w3", 3.0).is_none(),
+        "the second sync waits while the first holds the repository's key"
+    );
+    ok(db.complete(3.0, first, "w1"));
+    assert_eq!(db.claim_any("w3", 4.0).map(|found| found.id), Some(second));
+}
+
+#[test]
 fn verify_keys_are_bounded_by_verify_concurrency() {
     let mut db = Db::new();
     let verify = vec![verify_key("abc")];

@@ -5,6 +5,7 @@
 #![allow(clippy::expect_used)]
 
 use std::process::{Command, Output};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use wg_clispec::{Snapshot, diff_commands};
 
@@ -29,9 +30,18 @@ fn snapshot() -> Snapshot {
     Snapshot::parse(wg_clispec::tree::SNAPSHOT_JSON).expect("the snapshot parses")
 }
 
+/// Runs the binary against a fresh home of its own, so a command that writes never touches the
+/// real data directory.
 fn workgraph(args: &[&str]) -> Output {
+    static NEXT: AtomicUsize = AtomicUsize::new(0);
+    let home = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join(format!(
+        "if01-{}-{}",
+        std::process::id(),
+        NEXT.fetch_add(1, Ordering::Relaxed)
+    ));
     Command::new(env!("CARGO_BIN_EXE_workgraph"))
         .args(args)
+        .env("WORKGRAPH_HOME", &home)
         .env("COLUMNS", "120")
         .output()
         .expect("the binary runs")
@@ -173,7 +183,10 @@ fn options_with_negated_spellings_parse() {
         "--arg",
         "x",
     ]);
-    // It parses, then reports as unimplemented.
-    assert_eq!(out.status.code(), Some(1));
-    assert!(text(&out.stderr).contains("not implemented"));
+    assert_eq!(out.status.code(), Some(0), "{}", text(&out.stderr));
+    assert_eq!(
+        text(&out.stdout),
+        "agent n configured
+"
+    );
 }

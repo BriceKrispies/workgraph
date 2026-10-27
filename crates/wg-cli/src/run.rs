@@ -62,7 +62,13 @@ pub fn run_with(args: Vec<String>, stdout: Box<dyn Write>, stderr: Box<dyn Write
             .find(|group| group.name == name)
             .map(|group| (group.command)())
     };
-    let tree = root(&snapshot, &implemented);
+    let mut tree = root(&snapshot, &implemented);
+    // Click's `no_args_is_help` looks at the raw arguments; clap counts `--home` filled from
+    // `WORKGRAPH_HOME` as given, so an empty command line is answered here.
+    if argv.args.is_empty() {
+        state.print(&tree.render_help().to_string());
+        return EXIT_USAGE;
+    }
     let matches =
         match tree.try_get_matches_from(std::iter::once("workgraph".to_owned()).chain(argv.args)) {
             Ok(matches) => matches,

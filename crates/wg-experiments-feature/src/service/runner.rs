@@ -22,7 +22,7 @@ use wg_types::{ErrorCode, Id, Permission, WgError};
 use wg_wire::dto::experiment_shapes::trial_start;
 
 use crate::service::exec::{
-    Calls, current_branch, default_branch as git_default_branch, environment, out, run_command,
+    current_branch, default_branch as git_default_branch, environment, out, run_command,
 };
 use crate::service::replay::{template_inputs, worktree_changes};
 use crate::service::trials::{experiment_of, load_trial, trial_classify, trial_show};
@@ -121,32 +121,27 @@ fn load_start(
 }
 
 /// `_commit_message`: the subject and body of a commit.
-fn commit_message(
-    calls: &mut Calls,
-    checkout: &Path,
-    sha: &str,
-) -> Result<(String, String), WgError> {
-    let subject = out(calls, checkout, &["log", "-1", "--format=%s", sha])?
+fn commit_message(checkout: &Path, sha: &str) -> Result<(String, String), WgError> {
+    let subject = out(checkout, &["log", "-1", "--format=%s", sha])?
         .trim()
         .to_owned();
-    let body = out(calls, checkout, &["log", "-1", "--format=%b", sha])?
+    let body = out(checkout, &["log", "-1", "--format=%b", sha])?
         .trim_end_matches('\n')
         .to_owned();
     Ok((subject, body))
 }
 
 /// `_default_branch`: the default branch, or the checked-out one when no default can be read.
-fn default_branch(calls: &mut Calls, checkout: &Path) -> Result<String, WgError> {
-    let branch = match git_default_branch(calls, checkout)? {
+fn default_branch(checkout: &Path) -> Result<String, WgError> {
+    let branch = match git_default_branch(checkout)? {
         Some(branch) => Some(branch),
-        None => current_branch(calls, checkout)?,
+        None => current_branch(checkout)?,
     };
     branch.ok_or_else(|| runner::no_default_branch(&checkout.display().to_string()))
 }
 
 /// The oracle and gates of a trial, with the template inputs read at `base_sha` in `clone`.
 fn commands_at(
-    calls: &mut Calls,
     protocol: &Map<String, Json>,
     spec: &Spec,
     clone: &Path,
@@ -154,7 +149,7 @@ fn commands_at(
     test_paths: &[String],
 ) -> Result<(Commands, Commands), WgError> {
     let inputs = runner::oracle_template(protocol, spec)
-        .map(|_| template_inputs(calls, clone, base_sha, test_paths))
+        .map(|_| template_inputs(clone, base_sha, test_paths))
         .transpose()?;
     runner::commands(protocol, spec, inputs.as_ref())
 }
@@ -167,7 +162,6 @@ struct Prepared {
 
 /// Clones the replay base into `dest`, runs the setup and renders the brief.
 fn prepare(
-    calls: &mut Calls,
     world: &StartWorld,
     protocol: &Map<String, Json>,
     dest: &Path,
@@ -176,11 +170,11 @@ fn prepare(
     let spec = &world.spec;
     let (subject, body) = match &spec.commit {
         None => (world.task.title.clone(), world.task.description.clone()),
-        Some(commit) => commit_message(calls, &world.checkout, commit)?,
+        Some(commit) => commit_message(&world.checkout, commit)?,
     };
     let base_ref = match &spec.base_ref {
         Some(base) => base.clone(),
-        None => default_branch(calls, &world.checkout)?,
+        None => default_branch(&world.checkout)?,
     };
     let env = environment(&runner::protocol_env(protocol));
     let shown = dest.display().to_string();
@@ -189,7 +183,6 @@ fn prepare(
     // clone. "isolated" (the default) copies only the base branch's objects; "shared" keeps
     // alternates to the source object store, so solution objects stay readable by SHA.
     out(
-        calls,
         &world.checkout,
         &[
             "clone",
@@ -202,8 +195,8 @@ fn prepare(
             &shown,
         ],
     )?;
-    out(calls, dest, &["checkout", "-b", branch])?;
-    out(calls, dest, &["remote", "remove", "origin"])?;
+    out(dest, &["checkout", "-b", branch])?;
+    out(dest, &["remote", "remove", "origin"])?;
     for command in runner::setup_commands(protocol) {
         let argv = runner::setup_argv(&command, &shown);
         let record = run_command(&argv, dest, None, &env);
@@ -211,13 +204,13 @@ fn prepare(
             return Err(runner::setup_failure(&argv, &record));
         }
     }
-    let base_sha = out(calls, dest, &["rev-parse", "HEAD"])?.trim().to_owned();
+    let base_sha = out(dest, &["rev-parse", "HEAD"])?.trim().to_owned();
     let test_paths = if spec.commit.is_none() {
         runner::declared_test_paths(&spec.files, &crate::service::exec::config_for(dest))
     } else {
         spec.test_paths.clone()
     };
-    let (oracle, gates) = commands_at(calls, protocol, spec, dest, &base_sha, &test_paths)?;
+    let (oracle, gates) = commands_at(protocol, spec, dest, &base_sha, &test_paths)?;
     let brief = runner::render_brief(
         protocol,
         &BriefInput {
@@ -299,9 +292,7 @@ fn start_in(
     dest: &Path,
     branch: &str,
 ) -> Result<(Value, Prepared), WgError> {
-    let mut calls = Calls::default();
-    let prepared = prepare(&mut calls, world, &world.experiment.protocol, dest, branch)?;
-    calls.log("trial start");
+    let prepared = prepare(world, &world.experiment.protocol, dest, branch)?;
     let shown = dest.display().to_string();
     let trial_ref = world.trial.id.to_string();
     let reply = app
@@ -484,17 +475,9 @@ pub fn trial_grade_run(
         .with_detail("path", json!(worktree.display().to_string())));
     }
     let base_sha = world.trial.base_ref.clone().unwrap_or_default();
-    let calls = &mut Calls::default();
     let protocol = &world.experiment.protocol;
     let spec = spec_of(&world.task, &world.tags)?;
-    let (oracle, gates) = commands_at(
-        calls,
-        protocol,
-        &spec,
-        &worktree,
-        &base_sha,
-        &spec.test_paths,
-    )?;
+    let (oracle, gates) = commands_at(protocol, &spec, &worktree, &base_sha, &spec.test_paths)?;
 
     if let (None, Some(run)) = (world.trial.subagent_run_id, world.run.as_ref()) {
         let link = RunLink {
@@ -513,7 +496,7 @@ pub fn trial_grade_run(
     }
     let trial = current_trial(app, scope, &trial_id)?;
 
-    let changes = worktree_changes(calls, &worktree, &base_sha)?;
+    let changes = worktree_changes(&worktree, &base_sha)?;
     let (escape_check, found) = escapes(world.run.as_ref(), &world.checkouts, &worktree);
     let flags = runner::grade_flags(&FlagInput {
         tests_modified: &changes.tests_modified,
@@ -534,9 +517,7 @@ pub fn trial_grade_run(
         .iter()
         .map(|argv| run_command(argv, &worktree, limit, &env))
         .collect();
-    let head_sha = out(calls, &worktree, &["rev-parse", "HEAD"])?
-        .trim()
-        .to_owned();
+    let head_sha = out(&worktree, &["rev-parse", "HEAD"])?.trim().to_owned();
     let passed = oracle_records
         .iter()
         .chain(&gate_records)
@@ -590,6 +571,5 @@ pub fn trial_grade_run(
             Some(&runner::flag_summary(&flags)),
         )?;
     }
-    calls.log("trial grade");
     trial_show(app, context, workspace, &trial_id)
 }

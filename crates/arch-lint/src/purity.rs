@@ -29,6 +29,7 @@ use syn::spanned::Spanned;
 use syn::visit::{self, Visit};
 
 use crate::core_tier::{self, CoreRules};
+use crate::shell_io::{ShellNames, defined_types, does_shell_io};
 use crate::{code_lines, is_test_gated, rel, rust_files, workspace_root};
 
 /// Purity tier of a crate. Ordered from least to most strict, so `tier >=
@@ -694,6 +695,11 @@ pub(crate) struct FnFacts {
     pure_ok: bool,
     strict_ok: bool,
     callees: BTreeSet<String>,
+    /// The function does I/O through a shell type (see `shell_io`).
+    io: bool,
+    /// The subset of `callees` called as `f(..)`, not as `.m(..)`; shell I/O spreads to a
+    /// caller through these, followed transitively.
+    path_callees: BTreeSet<String>,
 }
 
 /// Candidate flags `(pure, strict)` for each function, in input order. A
@@ -705,9 +711,31 @@ pub(crate) fn candidate_flags(facts: &[FnFacts]) -> Vec<(bool, bool)> {
     for fact in facts {
         defs.entry(fact.name.as_str()).or_default().push(fact);
     }
+    // Names that do shell I/O, directly or through a chain of `f(..)` calls: a thin wrapper
+    // over an I/O helper is I/O glue, however clean its own body looks.
+    let mut io_names: BTreeSet<&str> = facts
+        .iter()
+        .filter(|f| f.io)
+        .map(|f| f.name.as_str())
+        .collect();
+    loop {
+        let before = io_names.len();
+        let spread: Vec<&str> = facts
+            .iter()
+            .filter(|f| f.path_callees.iter().any(|c| io_names.contains(c.as_str())))
+            .map(|f| f.name.as_str())
+            .collect();
+        io_names.extend(spread);
+        if io_names.len() == before {
+            break;
+        }
+    }
     facts
         .iter()
         .map(|fact| {
+            if io_names.contains(fact.name.as_str()) {
+                return (false, false);
+            }
             let callees_pass = |ok: fn(&FnFacts) -> bool| {
                 fact.callees
                     .iter()
@@ -749,6 +777,7 @@ fn crate_candidates(
     krate: &str,
     mut_traits: &BTreeSet<String>,
     tier_file: &TierFile,
+    shell_names: &ShellNames,
 ) -> Vec<Candidate> {
     let src_dir = root.join("crates").join(krate).join("src");
     let mut sites: Vec<(String, bool, FnSite)> = Vec::new();
@@ -757,7 +786,7 @@ fn crate_candidates(
         let shell =
             file_mark(tier_file, krate, module_of(&src_dir, &file).as_deref()) == Some(Mark::Shell);
         sites.extend(
-            fn_sites(&file, mut_traits)
+            fn_sites(&file, mut_traits, shell_names)
                 .into_iter()
                 .map(|site| (path.clone(), shell, site)),
         );
@@ -789,17 +818,22 @@ fn crate_candidates(
     found
 }
 
-fn fn_sites(file: &Path, mut_traits: &BTreeSet<String>) -> Vec<FnSite> {
+fn fn_sites(file: &Path, mut_traits: &BTreeSet<String>, shell: &ShellNames) -> Vec<FnSite> {
     let Some(ast) = parse(file) else {
         return Vec::new();
     };
     let code: Vec<usize> = code_lines(file).into_iter().map(|(line, _)| line).collect();
-    sites_from_ast(&ast, &code, mut_traits)
+    sites_from_ast(&ast, &code, mut_traits, shell)
 }
 
 /// Collects the functions of one parsed file. `code` lists the code line
 /// numbers, so a function's LOC is the code lines inside its span.
-fn sites_from_ast(ast: &syn::File, code: &[usize], mut_traits: &BTreeSet<String>) -> Vec<FnSite> {
+fn sites_from_ast(
+    ast: &syn::File,
+    code: &[usize],
+    mut_traits: &BTreeSet<String>,
+    shell: &ShellNames,
+) -> Vec<FnSite> {
     if is_test_gated(&ast.attrs) {
         return Vec::new();
     }
@@ -808,6 +842,7 @@ fn sites_from_ast(ast: &syn::File, code: &[usize], mut_traits: &BTreeSet<String>
         mut_traits,
         code,
         uses: &uses,
+        shell,
         sites: Vec::new(),
     };
     collector.visit_file(ast);
@@ -818,6 +853,7 @@ struct FnCollector<'a> {
     mut_traits: &'a BTreeSet<String>,
     code: &'a [usize],
     uses: &'a UseMap,
+    shell: &'a ShellNames,
     sites: Vec<FnSite>,
 }
 
@@ -835,15 +871,23 @@ impl FnCollector<'_> {
         }
         scan.visit_signature(sig);
         scan.visit_block(block);
-        let mut calls = CallCollector(BTreeSet::new());
+        let mut calls = CallCollector {
+            uses: self.uses,
+            names: BTreeSet::new(),
+            paths: BTreeSet::new(),
+        };
         calls.visit_block(block);
         let found = scan.found;
+        // I/O through a method of a shell type is I/O, whatever the signature says.
+        let io = does_shell_io(sig, block, self.shell, self.uses);
         self.sites.push(FnSite {
             facts: FnFacts {
                 name: sig.ident.to_string(),
-                pure_ok: found.iter().all(|v| v.strict),
-                strict_ok: found.is_empty(),
-                callees: calls.0,
+                pure_ok: !io && found.iter().all(|v| v.strict),
+                strict_ok: !io && found.is_empty(),
+                callees: calls.names,
+                io,
+                path_callees: calls.paths,
             },
             line: span.0,
             loc: self
@@ -880,21 +924,38 @@ impl<'ast> Visit<'ast> for FnCollector<'_> {
 }
 
 /// Names of the functions a body calls: `f(..)` by its last path segment and
-/// `.m(..)` by its method name.
-struct CallCollector(BTreeSet<String>);
+/// `.m(..)` by its method name. An imported name is also recorded under what it imports
+/// (`use exec::default_branch as git_default_branch` records both).
+struct CallCollector<'a> {
+    uses: &'a UseMap,
+    names: BTreeSet<String>,
+    /// The names called as `f(..)`.
+    paths: BTreeSet<String>,
+}
 
-impl<'ast> Visit<'ast> for CallCollector {
+impl<'ast> Visit<'ast> for CallCollector<'_> {
     fn visit_expr_call(&mut self, node: &'ast syn::ExprCall) {
         if let syn::Expr::Path(path) = &*node.func
             && let Some(segment) = path.path.segments.last()
         {
-            self.0.insert(segment.ident.to_string());
+            self.paths.insert(segment.ident.to_string());
+            self.names.insert(segment.ident.to_string());
+            let segs: Vec<String> = path
+                .path
+                .segments
+                .iter()
+                .map(|s| s.ident.to_string())
+                .collect();
+            for full in self.uses.resolve(&segs) {
+                self.paths.extend(full.last().cloned());
+                self.names.extend(full.last().cloned());
+            }
         }
         visit::visit_expr_call(self, node);
     }
 
     fn visit_expr_method_call(&mut self, node: &'ast syn::ExprMethodCall) {
-        self.0.insert(node.method.to_string());
+        self.names.insert(node.method.to_string());
         visit::visit_expr_method_call(self, node);
     }
 }
@@ -905,6 +966,7 @@ fn candidates_report(only: Option<&str>) -> Result<(), String> {
     let root = workspace_root();
     let tier_file = load_tier_file(&root)?;
     let mut_traits = mut_trait_names(&root);
+    let shell_names = shell_names(&root, &tier_file);
     let crates: Vec<String> = match only {
         Some(krate) => {
             require_crate(&root, krate)?;
@@ -927,10 +989,11 @@ fn candidates_report(only: Option<&str>) -> Result<(), String> {
     for krate in &crates {
         let tier = tier_label(&tier_file, krate);
         // With no crate named, only the `Shell` sources (the ceiling's scope) are listed.
-        let candidates: Vec<Candidate> = crate_candidates(&root, krate, &mut_traits, &tier_file)
-            .into_iter()
-            .filter(|c| only.is_some() || c.shell)
-            .collect();
+        let candidates: Vec<Candidate> =
+            crate_candidates(&root, krate, &mut_traits, &tier_file, &shell_names)
+                .into_iter()
+                .filter(|c| only.is_some() || c.shell)
+                .collect();
         let pure_loc: usize = candidates.iter().map(|c| c.loc).sum();
         let strict: Vec<&Candidate> = candidates.iter().filter(|c| c.strict).collect();
         let strict_loc: usize = strict.iter().map(|c| c.loc).sum();
@@ -962,12 +1025,13 @@ fn candidates_report(only: Option<&str>) -> Result<(), String> {
 /// sources (`Shell` crates and `Shell` modules), as `purity-report --candidates`
 /// lists them.
 fn shell_candidate_loc(root: &Path, file: &TierFile, mut_traits: &BTreeSet<String>) -> Ceilings {
+    let shell_names = shell_names(root, file);
     let mut total = Ceilings::default();
     for name in crate_names(root)
         .into_iter()
         .filter(|name| has_shell_source(file, name))
     {
-        for c in crate_candidates(root, &name, mut_traits, file)
+        for c in crate_candidates(root, &name, mut_traits, file, &shell_names)
             .into_iter()
             .filter(|c| c.shell)
         {
@@ -1002,6 +1066,43 @@ fn read_baseline(root: &Path) -> Result<Ceilings, String> {
 }
 
 /// Crate directory names under `crates/`, sorted.
+/// The shell-tier names of the workspace: the types defined in `Shell` sources (minus any
+/// name that a non-shell source also defines), and the `Shell` crates and modules.
+fn shell_names(root: &Path, file: &TierFile) -> ShellNames {
+    let ident = |krate: &str| krate.replace('-', "_");
+    let mut shell_types = BTreeSet::new();
+    let mut other_types = BTreeSet::new();
+    let mut names = ShellNames::default();
+    for krate in crate_names(root) {
+        let src_dir = root.join("crates").join(&krate).join("src");
+        if crate_mark(file, &krate) == Some(Mark::Shell) {
+            names.crates.insert(ident(&krate));
+        }
+        for (module, mark) in file.modules.get(&krate).into_iter().flatten() {
+            let set = if *mark == Mark::Shell {
+                &mut names.shell_modules
+            } else {
+                &mut names.other_modules
+            };
+            set.entry(ident(&krate)).or_default().insert(module.clone());
+        }
+        for source in rust_files(&src_dir) {
+            let Some(ast) = parse(&source) else {
+                continue;
+            };
+            let mark = file_mark(file, &krate, module_of(&src_dir, &source).as_deref());
+            let target = if mark == Some(Mark::Shell) {
+                &mut shell_types
+            } else {
+                &mut other_types
+            };
+            target.extend(defined_types(&ast));
+        }
+    }
+    names.types = shell_types.difference(&other_types).cloned().collect();
+    names
+}
+
 fn crate_names(root: &Path) -> Vec<String> {
     let mut names: Vec<String> = fs::read_dir(root.join("crates"))
         .into_iter()
@@ -1759,6 +1860,8 @@ mod tests {
             pure_ok,
             strict_ok,
             callees: callees.iter().map(|c| (*c).to_string()).collect(),
+            io: false,
+            path_callees: BTreeSet::new(),
         }
     }
 
@@ -1767,7 +1870,7 @@ mod tests {
     fn sites_of(src: &str) -> Vec<FnSite> {
         let ast = syn::parse_file(src).unwrap();
         let code: Vec<usize> = (1..=src.lines().count()).collect();
-        sites_from_ast(&ast, &code, &BTreeSet::new())
+        sites_from_ast(&ast, &code, &BTreeSet::new(), &ShellNames::default())
     }
 
     fn names_and_flags(sites: &[FnSite]) -> Vec<(&str, bool, bool)> {
@@ -1775,6 +1878,38 @@ mod tests {
             .iter()
             .map(|s| (s.facts.name.as_str(), s.facts.pure_ok, s.facts.strict_ok))
             .collect()
+    }
+
+    #[test]
+    fn a_fn_calling_git_methods_on_a_shell_param_is_not_a_candidate() {
+        let names = ShellNames {
+            types: BTreeSet::from(["Git".to_string()]),
+            ..ShellNames::default()
+        };
+        let src =
+            "fn head(git: &Git) -> String { git.head() }\nfn add(a: u32, b: u32) -> u32 { a + b }";
+        let ast = syn::parse_file(src).unwrap();
+        let code: Vec<usize> = (1..=src.lines().count()).collect();
+        let sites = sites_from_ast(&ast, &code, &BTreeSet::new(), &names);
+        assert_eq!(
+            names_and_flags(&sites),
+            vec![("head", false, false), ("add", true, true)]
+        );
+        // Without the shell type known, the same function looks pure.
+        let blind = sites_from_ast(&ast, &code, &BTreeSet::new(), &ShellNames::default());
+        assert_eq!(names_and_flags(&blind)[0], ("head", true, true));
+    }
+
+    #[test]
+    fn shell_io_spreads_to_callers_through_path_calls() {
+        let mut io = fact("run", true, true, &[]);
+        io.io = true;
+        let mut wrapper = fact("out", true, true, &["run"]);
+        wrapper.path_callees = BTreeSet::from(["run".to_string()]);
+        let mut outer = fact("changes", true, true, &["out"]);
+        outer.path_callees = BTreeSet::from(["out".to_string()]);
+        let flags = candidate_flags(&[io, wrapper, outer]);
+        assert_eq!(flags, [(false, false); 3]);
     }
 
     #[test]

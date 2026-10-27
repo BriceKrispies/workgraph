@@ -22,6 +22,7 @@ use std::path::{Path, PathBuf};
 
 mod core_tier;
 mod purity;
+mod shell_io;
 
 pub use purity::{gate as purity_gate, report as purity_report, report_with as purity_report_with};
 

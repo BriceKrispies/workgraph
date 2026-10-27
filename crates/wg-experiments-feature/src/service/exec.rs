@@ -1,8 +1,5 @@
 //! Shell: the process and git helpers of the trial runner and the replay glue. Commands run as
 //! argument vectors with the inherited environment plus the protocol's (`{**os.environ, **env}`).
-//!
-//! Every git call takes the command's [`Calls`] tally by `&mut`, so a command can log how many git
-//! calls it made and how long they took.
 
 use std::collections::BTreeMap;
 use std::ffi::OsString;
@@ -22,38 +19,11 @@ use wg_types::{ErrorCode, WgError};
 use crate::spec::replay::git_failure;
 use crate::spec::runner::{command_record, python_exit, record_exit};
 
-/// The git calls one command made: how many, and how long they took in all. Every call takes the
-/// tally by `&mut`, and the command logs it when it is done.
-#[derive(Debug, Default)]
-pub struct Calls {
-    count: u64,
-    elapsed_ms: u128,
-}
-
-impl Calls {
-    /// Logs the tally at debug level on the `workgraph.git` target.
-    pub fn log(&mut self, command: &str) {
-        let done = std::mem::take(self);
-        tracing::debug!(
-            target: "workgraph.git",
-            calls = done.count,
-            elapsed_ms = u64::try_from(done.elapsed_ms).unwrap_or(u64::MAX),
-            "{command}"
-        );
-    }
-
-    /// Runs `call` with the runner for the repository or working tree at `path` (`Git(path)`) and
-    /// adds it to the tally.
-    fn timed<T>(&mut self, path: &Path, call: impl FnOnce(&Git) -> T) -> T {
-        let runner = Git {
-            path: path.to_path_buf(),
-            timeout_ms: GIT_TIMEOUT_MS,
-        };
-        let started = Instant::now();
-        let result = call(&runner);
-        self.count += 1;
-        self.elapsed_ms += started.elapsed().as_millis();
-        result
+/// The runner for the repository or working tree at `path` (`Git(path)`).
+fn git_at(path: &Path) -> Git {
+    Git {
+        path: path.to_path_buf(),
+        timeout_ms: GIT_TIMEOUT_MS,
     }
 }
 
@@ -62,14 +32,9 @@ impl Calls {
 /// # Errors
 ///
 /// Returns the `GitError` of a call that cannot run, or exits non-zero in a checked call.
-pub fn run(
-    calls: &mut Calls,
-    path: &Path,
-    args: &[&str],
-    options: RunOptions<'_>,
-) -> Result<GitOutput, WgError> {
-    calls
-        .timed(path, |runner| runner.run_with(args, options))
+pub fn run(path: &Path, args: &[&str], options: RunOptions<'_>) -> Result<GitOutput, WgError> {
+    git_at(path)
+        .run_with(args, options)
         .map_err(|error| git_failure(&error))
 }
 
@@ -78,8 +43,8 @@ pub fn run(
 /// # Errors
 ///
 /// Returns the `GitError` of a call that cannot run or exits non-zero.
-pub fn out(calls: &mut Calls, path: &Path, args: &[&str]) -> Result<String, WgError> {
-    run(calls, path, args, RunOptions::CHECKED).map(|output| output.stdout)
+pub fn out(path: &Path, args: &[&str]) -> Result<String, WgError> {
+    run(path, args, RunOptions::CHECKED).map(|output| output.stdout)
 }
 
 /// `Git(path).out(*args, check=False)`: the standard output of an unchecked call.
@@ -87,8 +52,8 @@ pub fn out(calls: &mut Calls, path: &Path, args: &[&str]) -> Result<String, WgEr
 /// # Errors
 ///
 /// Returns the `GitError` of a call that cannot run.
-pub fn out_unchecked(calls: &mut Calls, path: &Path, args: &[&str]) -> Result<String, WgError> {
-    run(calls, path, args, RunOptions::UNCHECKED).map(|output| output.stdout)
+pub fn out_unchecked(path: &Path, args: &[&str]) -> Result<String, WgError> {
+    run(path, args, RunOptions::UNCHECKED).map(|output| output.stdout)
 }
 
 /// `Git(path).resolve_commit(reference)`.
@@ -96,16 +61,16 @@ pub fn out_unchecked(calls: &mut Calls, path: &Path, args: &[&str]) -> Result<St
 /// # Errors
 ///
 /// Returns the `GitError` of an invalid ref or a ref that does not resolve.
-pub fn resolve_commit(calls: &mut Calls, path: &Path, reference: &str) -> Result<String, WgError> {
-    calls
-        .timed(path, |runner| runner.resolve_commit(reference))
+pub fn resolve_commit(path: &Path, reference: &str) -> Result<String, WgError> {
+    git_at(path)
+        .resolve_commit(reference)
         .map_err(|error| git_failure(&error))
 }
 
 /// `Git(path).show_file(sha, file)`: the content of a file at a commit, `None` when it is absent.
 #[must_use]
-pub fn show_file(calls: &mut Calls, path: &Path, sha: &str, file: &str) -> Option<Vec<u8>> {
-    calls.timed(path, |runner| runner.show_file(sha, file))
+pub fn show_file(path: &Path, sha: &str, file: &str) -> Option<Vec<u8>> {
+    git_at(path).show_file(sha, file)
 }
 
 /// `Git(path).default_branch()`.
@@ -113,9 +78,9 @@ pub fn show_file(calls: &mut Calls, path: &Path, sha: &str, file: &str) -> Optio
 /// # Errors
 ///
 /// Returns the `GitError` of a call that cannot run.
-pub fn default_branch(calls: &mut Calls, path: &Path) -> Result<Option<String>, WgError> {
-    calls
-        .timed(path, Git::default_branch)
+pub fn default_branch(path: &Path) -> Result<Option<String>, WgError> {
+    git_at(path)
+        .default_branch()
         .map_err(|error| git_failure(&error))
 }
 
@@ -124,9 +89,9 @@ pub fn default_branch(calls: &mut Calls, path: &Path) -> Result<Option<String>, 
 /// # Errors
 ///
 /// Returns the `GitError` of a call that cannot run.
-pub fn current_branch(calls: &mut Calls, path: &Path) -> Result<Option<String>, WgError> {
-    calls
-        .timed(path, Git::current_branch)
+pub fn current_branch(path: &Path) -> Result<Option<String>, WgError> {
+    git_at(path)
+        .current_branch()
         .map_err(|error| git_failure(&error))
 }
 

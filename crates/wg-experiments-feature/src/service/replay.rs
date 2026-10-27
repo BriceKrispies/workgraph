@@ -19,8 +19,8 @@ use wg_types::{ErrorCode, Id, Permission, WgError};
 use wg_wire::convention::json_value;
 
 use crate::service::exec::{
-    Calls, config_for, environment, exit_code, out, out_unchecked, resolve_commit, run,
-    scratch_dir, show_file,
+    config_for, environment, exit_code, out, out_unchecked, resolve_commit, run, scratch_dir,
+    show_file,
 };
 use crate::spec::replay as shape;
 use crate::spec::replay::{Candidate, Extras, Validation, WorktreeChanges, validate_ref};
@@ -29,7 +29,6 @@ use crate::spec::runner::{timeout_ms, tree_files};
 /// `_changes`: the diff of `sha` against its first parent; a root commit is shown against the
 /// empty tree.
 fn changes(
-    calls: &mut Calls,
     repo: &Path,
     sha: &str,
     parent: Option<&str>,
@@ -47,7 +46,7 @@ fn changes(
             .chain([parent, sha])
             .collect(),
     };
-    out(calls, repo, &args)
+    out(repo, &args)
 }
 
 /// `_tree_files`: every path of the tree of `commit`.
@@ -55,13 +54,8 @@ fn changes(
 /// # Errors
 ///
 /// Returns the `GitError` of a failed `ls-tree`.
-pub fn tree_files_at(
-    calls: &mut Calls,
-    repo: &Path,
-    commit: &str,
-) -> Result<BTreeSet<String>, WgError> {
+pub fn tree_files_at(repo: &Path, commit: &str) -> Result<BTreeSet<String>, WgError> {
     Ok(tree_files(&out(
-        calls,
         repo,
         &["ls-tree", "-r", "-z", "--name-only", commit],
     )?))
@@ -74,14 +68,13 @@ pub fn tree_files_at(
 ///
 /// Returns the `GitError` of a failed git call.
 pub fn template_inputs(
-    calls: &mut Calls,
     repo: &Path,
     sha: &str,
     test_paths: &[String],
 ) -> Result<(Vec<String>, Vec<String>), WgError> {
-    let commit = resolve_commit(calls, repo, sha)?;
+    let commit = resolve_commit(repo, sha)?;
     Ok(replay::template_inputs(
-        &tree_files_at(calls, repo, &commit)?,
+        &tree_files_at(repo, &commit)?,
         test_paths,
     ))
 }
@@ -91,44 +84,30 @@ pub fn template_inputs(
 /// # Errors
 ///
 /// Returns the `GitError` of a failed git call.
-pub fn analyze_commit(
-    calls: &mut Calls,
-    repo: &Path,
-    sha: &str,
-    config: &ReplayConfig,
-) -> Result<Candidate, WgError> {
-    let commit = resolve_commit(calls, repo, sha)?;
+pub fn analyze_commit(repo: &Path, sha: &str, config: &ReplayConfig) -> Result<Candidate, WgError> {
+    let commit = resolve_commit(repo, sha)?;
     let header = shape::parse_header(&out(
-        calls,
         repo,
         &["show", "-s", "--format=%P%x00%s%x00%b", &commit],
     )?)?;
     let parent = header.parent();
-    let files = tree_files_at(calls, repo, &commit)?;
+    let files = tree_files_at(repo, &commit)?;
     let measured = shape::measure(
-        &changes(calls, repo, &commit, parent, &["--numstat", "-z", "-M"])?,
+        &changes(repo, &commit, parent, &["--numstat", "-z", "-M"])?,
         &files,
         config,
     );
     let patch = shape::needs_patch(&measured)
-        .then(|| changes(calls, repo, &commit, parent, &["-M", "-U0"]))
+        .then(|| changes(repo, &commit, parent, &["-M", "-U0"]))
         .transpose()?;
     let blind = shape::needs_whitespace_blind(&header, &measured)
-        .then(|| {
-            changes(
-                calls,
-                repo,
-                &commit,
-                parent,
-                &["--numstat", "-z", "-M", "-w"],
-            )
-        })
+        .then(|| changes(repo, &commit, parent, &["--numstat", "-z", "-M", "-w"]))
         .transpose()?;
     let tests = shape::test_paths(&measured);
     let names: BTreeMap<String, Option<String>> = shape::package_dirs(&tests, &files)
         .into_iter()
         .map(|dir| {
-            let name = show_file(calls, repo, &commit, &shape::manifest_path(&dir))
+            let name = show_file(repo, &commit, &shape::manifest_path(&dir))
                 .and_then(|data| shape::package_name(&data));
             (dir, name)
         })
@@ -164,13 +143,12 @@ pub struct ScanOptions<'a> {
 ///
 /// Returns the `GitError` of an invalid ref or a failed git call.
 pub fn scan(
-    calls: &mut Calls,
     repo: &Path,
     options: &ScanOptions<'_>,
     config: &ReplayConfig,
 ) -> Result<Vec<Candidate>, WgError> {
     validate_ref(options.rev)?;
-    let listing = out(calls, repo, &["rev-list", "--no-merges", options.rev])?;
+    let listing = out(repo, &["rev-list", "--no-merges", options.rev])?;
     let limit = options
         .limit
         .map(|limit| usize::try_from(limit).unwrap_or(0));
@@ -179,7 +157,7 @@ pub fn scan(
         if limit.is_some_and(|limit| candidates.len() >= limit) {
             break;
         }
-        let candidate = analyze_commit(calls, repo, sha, config)?;
+        let candidate = analyze_commit(repo, sha, config)?;
         let wanted = replay::in_size_range(
             candidate.features.src_lines,
             options.min_lines,
@@ -194,28 +172,16 @@ pub fn scan(
 
 /// `_sync_path`: makes the index entry for `path` equal to its content at `sha`, or absent if it
 /// has none.
-fn sync_path(
-    calls: &mut Calls,
-    repo: &Path,
-    index: &str,
-    sha: &str,
-    path: &str,
-) -> Result<(), WgError> {
+fn sync_path(repo: &Path, index: &str, sha: &str, path: &str) -> Result<(), WgError> {
     let env = [("GIT_INDEX_FILE", index)];
     let options = RunOptions {
         env: &env,
         ..RunOptions::CHECKED
     };
-    let entry = out(calls, repo, &["ls-tree", "-z", sha, "--", path])?;
+    let entry = out(repo, &["ls-tree", "-z", sha, "--", path])?;
     match shape::tree_entry(&entry) {
-        None => run(
-            calls,
-            repo,
-            &["update-index", "--force-remove", path],
-            options,
-        ),
+        None => run(repo, &["update-index", "--force-remove", path], options),
         Some((mode, blob)) => run(
-            calls,
             repo,
             &["update-index", "--add", "--cacheinfo", &mode, &blob, path],
             options,
@@ -232,11 +198,7 @@ fn sync_path(
 ///
 /// Returns the `GitError` of a failed git call, and an error for a root commit or a branch that
 /// exists with a different tree.
-pub fn create_base(
-    calls: &mut Calls,
-    repo: &Path,
-    candidate: &Candidate,
-) -> Result<String, WgError> {
+pub fn create_base(repo: &Path, candidate: &Candidate) -> Result<String, WgError> {
     let parent = candidate.parent.as_deref().ok_or_else(|| {
         WgError::new(
             ErrorCode::WorkgraphError,
@@ -247,11 +209,11 @@ pub fn create_base(
     let branch = shape::base_branch(&candidate.sha);
     let reference = format!("refs/heads/{branch}");
     let scratch = scratch_dir("wg-replay-index-")?;
-    let built = build_tree(calls, repo, &scratch, parent, &candidate.sha, &config);
+    let built = build_tree(repo, &scratch, parent, &candidate.sha, &config);
     let _ = std::fs::remove_dir_all(&scratch);
     let tree = built?;
     let probe = format!("{reference}^{{tree}}");
-    let existing = out_unchecked(calls, repo, &["rev-parse", "--verify", "--quiet", &probe])?;
+    let existing = out_unchecked(repo, &["rev-parse", "--verify", "--quiet", &probe])?;
     let existing = existing.trim();
     if !existing.is_empty() {
         return if existing == tree {
@@ -264,7 +226,6 @@ pub fn create_base(
         };
     }
     let commit = out(
-        calls,
         repo,
         &[
             "commit-tree",
@@ -275,13 +236,12 @@ pub fn create_base(
             shape::BASE_MESSAGE,
         ],
     )?;
-    out(calls, repo, &["update-ref", &reference, commit.trim()])?;
+    out(repo, &["update-ref", &reference, commit.trim()])?;
     Ok(branch)
 }
 
 /// The tree of the parent with the commit's test changes, written through a temporary index.
 fn build_tree(
-    calls: &mut Calls,
     repo: &Path,
     scratch: &Path,
     parent: &str,
@@ -294,22 +254,17 @@ fn build_tree(
         env: &env,
         ..RunOptions::CHECKED
     };
-    run(calls, repo, &["read-tree", parent], with_index)?;
-    let listing = out(
-        calls,
-        repo,
-        &["diff", "--name-status", "-z", "-M", parent, sha],
-    )?;
+    run(repo, &["read-tree", parent], with_index)?;
+    let listing = out(repo, &["diff", "--name-status", "-z", "-M", parent, sha])?;
     for path in shape::base_sync_paths(&replay::parse_name_status(&listing), config) {
-        sync_path(calls, repo, &index, sha, &path)?;
+        sync_path(repo, &index, sha, &path)?;
     }
-    let tree = run(calls, repo, &["write-tree"], with_index)?;
+    let tree = run(repo, &["write-tree"], with_index)?;
     Ok(tree.stdout.trim().to_owned())
 }
 
 /// `_run_oracle`: the exit code of each command in a detached worktree of `reference`.
 fn run_oracle(
-    calls: &mut Calls,
     repo: &Path,
     reference: &str,
     path: &Path,
@@ -318,17 +273,12 @@ fn run_oracle(
     env: &BTreeMap<OsString, OsString>,
 ) -> Result<Vec<i64>, WgError> {
     let shown = path.display().to_string();
-    out(
-        calls,
-        repo,
-        &["worktree", "add", "--detach", &shown, reference],
-    )?;
+    out(repo, &["worktree", "add", "--detach", &shown, reference])?;
     let codes: Vec<i64> = oracle
         .iter()
         .map(|command| exit_code(command, path, timeout, env))
         .collect();
     let _ = run(
-        calls,
         repo,
         &["worktree", "remove", "--force", &shown],
         RunOptions::UNCHECKED,
@@ -344,7 +294,6 @@ fn run_oracle(
 ///
 /// Returns the `GitError` of an invalid ref or a failed worktree.
 pub fn validate(
-    calls: &mut Calls,
     repo: &Path,
     candidate: &Candidate,
     base_ref: &str,
@@ -361,7 +310,6 @@ pub fn validate(
     // The solution runs first: commits that were red when made are the commonest rejection, and
     // checking them first skips the base run (a full build in a compiled language).
     let verdict = run_oracle(
-        calls,
         repo,
         &candidate.sha,
         &root.join("solution"),
@@ -372,7 +320,6 @@ pub fn validate(
     .and_then(|solution| match shape::solution_verdict(&solution) {
         Some(rejected) => Ok(rejected),
         None => run_oracle(
-            calls,
             repo,
             base_ref,
             &root.join("base"),
@@ -392,21 +339,16 @@ pub fn validate(
 /// # Errors
 ///
 /// Returns the `GitError` of a failed git call.
-pub fn worktree_changes(
-    calls: &mut Calls,
-    worktree: &Path,
-    base_sha: &str,
-) -> Result<WorktreeChanges, WgError> {
+pub fn worktree_changes(worktree: &Path, base_sha: &str) -> Result<WorktreeChanges, WgError> {
     let config = config_for(worktree);
-    let base = resolve_commit(calls, worktree, base_sha)?;
+    let base = resolve_commit(worktree, base_sha)?;
     let scratch = scratch_dir("wg-worktree-index-")?;
-    let measured = measure_index(calls, worktree, &scratch, &base, &config);
+    let measured = measure_index(worktree, &scratch, &base, &config);
     let _ = std::fs::remove_dir_all(&scratch);
     measured
 }
 
 fn measure_index(
-    calls: &mut Calls,
     worktree: &Path,
     scratch: &Path,
     base: &str,
@@ -418,8 +360,7 @@ fn measure_index(
         env: &env,
         ..RunOptions::CHECKED
     };
-    let mut staged =
-        |args: &[&str]| run(calls, worktree, args, options).map(|output| output.stdout);
+    let staged = |args: &[&str]| run(worktree, args, options).map(|output| output.stdout);
     staged(&["read-tree", base])?;
     staged(&["add", "-A"])?;
     let files = tree_files(&staged(&["ls-files", "-z"])?);
@@ -475,9 +416,7 @@ pub fn replay_scan(
     app.require_read(context)?;
     let scope = app.workspace_or_default(workspace)?;
     let path = checkout_of(app, scope, repository)?;
-    let mut calls = Calls::default();
-    let candidates = scan(&mut calls, &path, options, &config_for(&path))?;
-    calls.log("replay scan");
+    let candidates = scan(&path, options, &config_for(&path))?;
     Ok(Value::List(
         candidates
             .iter()
@@ -544,7 +483,6 @@ pub fn replay_create(
     app.require_permission(context, Permission::ExperimentWrite)?;
     let scope = app.workspace_or_default(workspace)?;
     let path = checkout_of(app, scope, repository)?;
-    let calls = &mut Calls::default();
     let config = ReplayConfig {
         oracle_template: options.oracle_template.clone(),
         ..config_for(&path)
@@ -552,7 +490,7 @@ pub fn replay_create(
     let mut index = existing_replays(app, context, workspace)?;
     let mut results: Vec<Json> = Vec::new();
     for sha in shas {
-        let candidate = analyze_commit(calls, &path, sha, &config)?;
+        let candidate = analyze_commit(&path, sha, &config)?;
         let excluded: Vec<&str> = candidate.excluded.iter().map(String::as_str).collect();
         match pool::step(&excluded, &candidate.sha, &index) {
             Step::Skipped { reason } => {
@@ -572,10 +510,9 @@ pub fn replay_create(
                 ));
             }
             Step::Create => {
-                let base_ref = create_base(calls, &path, &candidate)?;
+                let base_ref = create_base(&path, &candidate)?;
                 let validation = if options.validate {
                     Some(validate(
-                        calls,
                         &path,
                         &candidate,
                         &base_ref,
@@ -616,6 +553,5 @@ pub fn replay_create(
             }
         }
     }
-    calls.log("replay create");
     Ok(Value::List(results.iter().map(json_value).collect()))
 }

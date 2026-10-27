@@ -9,8 +9,8 @@ use serde_json::Value as Json;
 use wg_intel::{
     CATEGORIES, PROMPT_VERSION, RunStatus, SYSTEM_PROMPT, TaskText, apply_current,
     confirm as confirm_plan, evaluation_result, evaluation_row, gold_label, model_row,
-    output_schema, promote as promote_plan, schema_error_text, truncate, validate_classification,
-    validate_classification_errors,
+    output_schema, promote as promote_plan, schema_error_text, truncate,
+    validate_classification_errors, validation_error_text,
 };
 use wg_jobs::queue::NewJob;
 use wg_model::entity::{
@@ -63,6 +63,9 @@ pub struct Evaluated {
 
 /// A task as the classification writes read it: the row and its tags.
 type Loaded = (Task, Vec<String>);
+
+/// How much of a failed evaluation sample's error is stored (`str(exc)[:300]` in Python).
+const EVALUATION_ERROR_CHARS: usize = 300;
 
 /// The task with `id` and its tags (`session.get(Task, ...)` plus the tag rows).
 pub fn load_task(session: &mut Session<'_>, id: Id) -> Result<Loaded, WgError> {
@@ -692,33 +695,41 @@ pub fn evaluate(
         let prompt = prompt_of(title, description, &[], &[]);
         let outcome = llm.generate_json(&model_name, SYSTEM_PROMPT, &prompt, &output_schema());
         let entry = match outcome {
-            Ok(Generation { data, .. }) => match validate_classification(&Json::Object(data)) {
-                Ok(parsed) => {
-                    let predicted = parsed
-                        .get("category")
-                        .and_then(Json::as_str)
-                        .unwrap_or_default();
-                    evaluation_result(*label_id, title, expected, Ok(predicted))
+            Ok(Generation { data, .. }) => {
+                match validate_classification_errors(&Json::Object(data)) {
+                    Ok(parsed) => {
+                        let predicted = parsed
+                            .get("category")
+                            .and_then(Json::as_str)
+                            .unwrap_or_default();
+                        evaluation_result(*label_id, title, expected, Ok(predicted))
+                    }
+                    Err(errors) => {
+                        let text = validation_error_text("TaskClassification", &errors);
+                        evaluation_result(
+                            *label_id,
+                            title,
+                            expected,
+                            Err(&truncate(&text, EVALUATION_ERROR_CHARS)),
+                        )
+                    }
                 }
-                Err(keys) => evaluation_result(
-                    *label_id,
-                    title,
-                    expected,
-                    Err(&format!(
-                        "output failed schema validation: {}",
-                        keys.join(", ")
-                    )),
-                ),
-            },
+            }
             Err(CallError::Provider(error)) if is_unavailable(&error) => {
                 return Err(unavailable_error(&error));
             }
-            Err(CallError::Provider(error)) => {
-                evaluation_result(*label_id, title, expected, Err(error.message()))
-            }
-            Err(CallError::Unsupported(message)) => {
-                evaluation_result(*label_id, title, expected, Err(&message))
-            }
+            Err(CallError::Provider(error)) => evaluation_result(
+                *label_id,
+                title,
+                expected,
+                Err(&truncate(error.message(), EVALUATION_ERROR_CHARS)),
+            ),
+            Err(CallError::Unsupported(message)) => evaluation_result(
+                *label_id,
+                title,
+                expected,
+                Err(&truncate(&message, EVALUATION_ERROR_CHARS)),
+            ),
             Err(CallError::Raised(error)) => return Err(error),
         };
         results.push(entry);

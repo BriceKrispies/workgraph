@@ -38,5 +38,5 @@ pub use search::{FusedHit, RRF_K, cosine, fuse};
 pub use taxonomy::{
     CATEGORIES, CATEGORY_DESCRIPTIONS, COMPLEXITY, PROMPT_VERSION, SYSTEM_PROMPT, SchemaError,
     TAXONOMY_VERSION, build_prompt, input_hash, schema_error_text, validate_classification,
-    validate_classification_errors,
+    validate_classification_errors, validation_error_text,
 };

@@ -142,6 +142,9 @@ pub fn input_hash(title: &str, description: &str, criteria: &[String]) -> String
 /// the minor version of the pinned pydantic.
 const PYDANTIC_DOCS_VERSION: &str = "2.14";
 
+/// How much of an input's `repr` a validation error shows.
+const INPUT_SHOWN_CHARS: usize = 50;
+
 const FIELD_REQUIRED: &str = "Field required";
 const EXTRA_FORBIDDEN: &str = "Extra inputs are not permitted";
 const MODEL_TYPE: &str = "Input should be a valid dictionary or object to extract fields from";
@@ -180,9 +183,9 @@ impl SchemaError {
         }
     }
 
-    /// The `type:location` key of the error (the golden vectors record these).
-    fn key(&self) -> String {
-        let location: Vec<String> = self
+    /// The location as pydantic prints it: the items joined by dots.
+    fn location(&self) -> String {
+        let items: Vec<String> = self
             .loc
             .iter()
             .map(|item| match item {
@@ -190,7 +193,34 @@ impl SchemaError {
                 other => other.to_string(),
             })
             .collect();
-        format!("{}:{}", self.kind, location.join("."))
+        items.join(".")
+    }
+
+    /// The `type:location` key of the error (the golden vectors record these).
+    fn key(&self) -> String {
+        format!("{}:{}", self.kind, self.location())
+    }
+
+    /// The documentation link pydantic attaches to the error type.
+    fn url(&self) -> String {
+        format!(
+            "https://errors.pydantic.dev/{PYDANTIC_DOCS_VERSION}/v/{}",
+            self.kind
+        )
+    }
+
+    /// The error as pydantic's `str(ValidationError)` lists it: the location, then the message
+    /// with its type and input, then the documentation link.
+    fn display(&self) -> String {
+        format!(
+            "{}\n  {} [type={}, input_value={}, input_type={}]\n    For further information visit {}",
+            self.location(),
+            self.msg,
+            self.kind,
+            shown_input(&self.input),
+            py_type_name(&self.input),
+            self.url(),
+        )
     }
 
     /// The error as Python's `repr` shows its dictionary in `ValidationError.errors()`.
@@ -214,10 +244,7 @@ impl SchemaError {
                 .collect();
             format!("'ctx': {{{}}}", pairs.join(", "))
         });
-        let url = format!(
-            "https://errors.pydantic.dev/{PYDANTIC_DOCS_VERSION}/v/{}",
-            self.kind
-        );
+        let url = self.url();
         let entries: Vec<String> = [
             Some(format!("'type': {}", py_repr(&Value::from(self.kind)))),
             Some(format!("'loc': {location}")),
@@ -242,6 +269,45 @@ impl SchemaError {
 pub fn schema_error_text(errors: &[SchemaError]) -> String {
     let shown: Vec<String> = errors.iter().take(3).map(SchemaError::repr).collect();
     format!("[{}]", shown.join(", "))
+}
+
+/// `str(ValidationError)` of the model `title` (pydantic 2.14 with pydantic-core 2.50): the error
+/// count and title, then each error as [`SchemaError::display`] lists it, one after another.
+#[must_use]
+pub fn validation_error_text(title: &str, errors: &[SchemaError]) -> String {
+    let plural = if errors.len() == 1 { "" } else { "s" };
+    std::iter::once(format!(
+        "{} validation error{plural} for {title}",
+        errors.len()
+    ))
+    .chain(errors.iter().map(SchemaError::display))
+    .collect::<Vec<String>>()
+    .join("\n")
+}
+
+/// The name of the Python type pydantic reports as `input_type` for a JSON value.
+fn py_type_name(value: &Value) -> &'static str {
+    match value {
+        Value::Null => "NoneType",
+        Value::Bool(_) => "bool",
+        Value::Number(number) if number.is_f64() => "float",
+        Value::Number(_) => "int",
+        Value::String(_) => "str",
+        Value::Array(_) => "list",
+        Value::Object(_) => "dict",
+    }
+}
+
+/// The input as pydantic shows it in `input_value`: its `repr`, cut to 50 characters with an
+/// ellipsis when it is longer.
+fn shown_input(value: &Value) -> String {
+    let text = py_repr(value);
+    if text.chars().count() > INPUT_SHOWN_CHARS {
+        let head: String = text.chars().take(INPUT_SHOWN_CHARS).collect();
+        format!("{head}...")
+    } else {
+        text
+    }
 }
 
 /// Validates a model's output against `TaskClassification` (pydantic semantics: lax float
@@ -544,6 +610,22 @@ mod tests {
             "[{'type': 'missing', 'loc': ('category',), 'msg': 'Field required', 'input': {'complexity': 'small'"
         ));
         assert!(text.contains("{'type': 'string_type', 'loc': ('tags', 1), 'msg': 'Input should be a valid string', 'input': 7, 'url': 'https://errors.pydantic.dev/2.14/v/string_type'}"));
+    }
+
+    #[test]
+    fn validation_error_text_matches_pydantic_str() {
+        let payload = json!({"category": "nope", "complexity": "small", "confidence": 2,
+            "subtype": "x", "domain": "x"});
+        let errors = validate_classification_errors(&payload)
+            .err()
+            .unwrap_or_default();
+        let text = validation_error_text("TaskClassification", &errors);
+        assert!(text.starts_with(
+            "2 validation errors for TaskClassification\ncategory\n  Input should be 'bug_fix', 'feature', "
+        ));
+        assert!(text.contains(
+            " [type=literal_error, input_value='nope', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error\nconfidence\n  Input should be less than or equal to 1 [type=less_than_equal, input_value=2, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.14/v/less_than_equal"
+        ));
     }
 
     #[test]

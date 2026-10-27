@@ -157,7 +157,7 @@ fn find_experiment(
 
 /// `_trial`: the trial named by `reference` whose experiment is in the workspace, with the key of
 /// its task.
-fn load_trial(
+pub(crate) fn load_trial(
     session: &mut Session<'_>,
     workspace_id: Id,
     reference: &str,
@@ -181,7 +181,7 @@ fn load_trial(
 }
 
 /// The experiment a trial belongs to.
-fn experiment_of(
+pub(crate) fn experiment_of(
     session: &mut Session<'_>,
     trial: &ExperimentTrial,
 ) -> Result<Experiment, WgError> {

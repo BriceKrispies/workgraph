@@ -5,6 +5,7 @@
 //! The clap command is the snapshot's own tree, so help and parameters match `contracts/cli.json`;
 //! each handler calls one service entry point and prints the result.
 
+pub mod replay;
 pub mod trial;
 
 use crate::service;
@@ -27,6 +28,8 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
     let ws = workspace.as_deref();
     let context = human_context(None)?;
     match path.get(1).map(String::as_str) {
+        Some("trial") => trial::run(state, path, m),
+        Some("replay") => replay::run(state, path, m),
         Some("list") => {
             let status = option_text(m, "--status");
             let out = service::experiment_list(state.app()?, &context, ws, status.as_deref())?;

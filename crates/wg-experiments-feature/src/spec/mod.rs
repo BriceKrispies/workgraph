@@ -8,6 +8,9 @@ use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_model::py_repr_str;
 use wg_types::{ErrorCode, WgError};
 
+pub mod replay;
+pub mod runner;
+pub mod runner_sql;
 pub mod sql;
 pub mod trial;
 pub mod view;

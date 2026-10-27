@@ -209,7 +209,7 @@ pub fn classify(
 }
 
 /// `_require_running`: trials change only while their experiment runs.
-fn require_running(experiment: &Experiment) -> Result<(), WgError> {
+pub(crate) fn require_running(experiment: &Experiment) -> Result<(), WgError> {
     if experiment.status == ExperimentStatus::Running.as_str() {
         return Ok(());
     }
@@ -260,7 +260,7 @@ fn check_band(experiment: &Experiment, band: Option<i64>) -> Result<(), WgError>
 }
 
 /// A stored trial status; an unknown string is a corrupt row.
-fn parse_status(text: &str) -> Result<TrialStatus, WgError> {
+pub(crate) fn parse_status(text: &str) -> Result<TrialStatus, WgError> {
     TrialStatus::parse(text).ok_or_else(|| {
         WgError::new(
             ErrorCode::WorkgraphError,

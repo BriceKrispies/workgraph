@@ -6,6 +6,7 @@
 //! worker knows nothing of this crate.
 
 use serde_json::{Value as Json, json};
+use wg_exec_feature::service::agents::LiveAgents;
 use wg_jobs::maintenance::Step;
 use wg_runtime::{
     App, HandlerError, HandlerResult, JobContext, JobKind, MaintenanceStep, Queue, RequestContext,
@@ -44,8 +45,8 @@ fn automation_action(queue: &mut Queue, ctx: &mut JobContext) -> HandlerResult {
         .and_then(Json::as_str)
         .ok_or_else(|| HandlerError::Exception("KeyError: 'run_id'".to_owned()))?;
     let id = parse_id(run_id).map_err(HandlerError::Failed)?;
-    let outcome =
-        service::execute::execute_run(&mut queue.app, id).map_err(HandlerError::Failed)?;
+    let outcome = service::execute::execute_run(&mut queue.app, &mut LiveAgents, id)
+        .map_err(HandlerError::Failed)?;
     Ok(outcome.as_object().cloned())
 }
 

@@ -17,13 +17,14 @@
 
 pub mod cli;
 pub mod http;
+pub mod jobs;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The telemetry feature: the `claude` CLI group and the H121 route. It has no tools, resources
-/// or jobs yet.
+/// The telemetry feature: the `claude` CLI group, the H121 route and the hook spool replay step. It
+/// has no tools, resources or job kinds.
 pub static FEATURE: Feature = Feature {
     name: "telemetry",
     cli: &[cli::GROUP],
@@ -31,5 +32,5 @@ pub static FEATURE: Feature = Feature {
     tools: &[],
     resources: &[],
     jobs: &[],
-    maintenance: &[],
+    maintenance: jobs::MAINTENANCE,
 };

@@ -310,11 +310,11 @@ impl Queue {
                     Value::Null
                 },
             ),
-            Step::ReleaseExpiredClaims => ("released_claims", json!("not ported")),
+            Step::ReleaseExpiredClaims => ("released_claims", self.feature_step(steps, step)?),
             Step::ProcessAutomationEvents => ("automation", self.feature_step(steps, step)?),
             Step::RunScheduledRules => ("scheduled_rules", self.feature_step(steps, step)?),
             Step::ScheduledRuns => ("scheduled_runs", self.feature_step(steps, step)?),
-            Step::ReplayHooks => ("replayed_hooks", json!("not ported")),
+            Step::ReplayHooks => ("replayed_hooks", self.feature_step(steps, step)?),
         })
     }
 

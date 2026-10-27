@@ -3,7 +3,12 @@
 //! and the outcome is recorded in a second transaction. A failed action stops the run; the error
 //! is raised so the queue retries the job, and a retry runs only the actions not yet finished.
 
-use serde_json::{Value as Json, json};
+use serde_json::{Map, Value as Json, json};
+use wg_exec_feature::service::agents::AgentHost;
+use wg_exec_feature::service::run_flow;
+use wg_exec_feature::spec::runs::StartRequest;
+use wg_jobs::limits::task_verify_keys;
+use wg_jobs::queue::NewJob;
 use wg_model::RowKey;
 use wg_model::entity::{AutomationRule, AutomationRun};
 use wg_runtime::{App, RequestContext, system_context};
@@ -15,9 +20,15 @@ use super::{load_rows, reads};
 use crate::spec::execute::{self as exec, Claim, Loaded, Running};
 use wg_types::pyval::text;
 
+/// The job kind of a verification the `run_verification` action queues (`verify`).
+const VERIFY_JOB: &str = "verify";
+/// The job kind of the report the `generate_report` action queues.
+const REPORT_JOB: &str = "generate_report";
+
 /// Runs the run `run_id`'s actions and records the outcome. The reply is
-/// `{"status": ..., "actions": n}`, or the run's status when it was already settled.
-pub fn execute_run(app: &mut App, run_id: Id) -> Result<Json, WgError> {
+/// `{"status": ..., "actions": n}`, or the run's status when it was already settled. `host` is the
+/// agent host an `enqueue_agent_run` action probes its adapter through (the live one in the worker).
+pub fn execute_run(app: &mut App, host: &mut dyn AgentHost, run_id: Id) -> Result<Json, WgError> {
     let system = system_context("automation")?;
     let claimed = app
         .runtime
@@ -40,7 +51,7 @@ pub fn execute_run(app: &mut App, run_id: Id) -> Result<Json, WgError> {
             continue;
         }
         let kind = text(action.get("type")).to_owned();
-        match run_action(app, &actions, &slug, &running, action) {
+        match run_action(app, host, &actions, &slug, &running, action) {
             Ok(output) => results.push(json!({
                 "index": index,
                 "type": kind,
@@ -107,6 +118,7 @@ fn load_run(session: &mut Session<'_>, run_id: Id) -> Result<AutomationRun, WgEr
 /// Runs one action (`_execute_action`) and returns its output.
 fn run_action(
     app: &mut App,
+    host: &mut dyn AgentHost,
     context: &RequestContext,
     slug: &str,
     running: &Running,
@@ -196,10 +208,60 @@ fn run_action(
                 .reply;
             Ok(json!({"notification_id": note.to_string()}))
         }
+        "enqueue_agent_run" => {
+            let task = exec::target_task(render_context)?;
+            let request = StartRequest {
+                agent: action_text(action, "agent"),
+                model: action_text(action, "model"),
+                ..StartRequest::default()
+            };
+            let attempt = run_flow::run_start(app, context, host, Some(slug), &task, &request)?;
+            let out = exec::to_json(&attempt);
+            Ok(json!({"attempt_id": out["id"]}))
+        }
+        "run_verification" => {
+            // `task_verify_keys(session, task)`: one verify key per repository the task is linked to.
+            let task = exec::target_task(render_context)?;
+            let repositories = repositories_of(app, &task)?;
+            let job = NewJob {
+                payload: Map::from_iter([("task_id".to_owned(), json!(task))]),
+                workspace_id: Some(running.workspace_id),
+                task_id: Some(wg_types::parse_id(&task)?),
+                max_attempts: 1,
+                resource_keys: task_verify_keys(repositories.iter().map(String::as_str)),
+                created_by: context.actor.to_string(),
+                ..NewJob::new(VERIFY_JOB)
+            };
+            let job_id = app.enqueue_as(context, &job)?;
+            Ok(json!({"job_id": job_id.to_string()}))
+        }
+        "generate_report" => {
+            let period_days = action
+                .get("period_days")
+                .and_then(Json::as_i64)
+                .unwrap_or(7);
+            let job = NewJob {
+                payload: Map::from_iter([
+                    ("workspace".to_owned(), json!(slug)),
+                    ("scope".to_owned(), json!({"period_days": period_days})),
+                ]),
+                workspace_id: Some(running.workspace_id),
+                max_attempts: 2,
+                created_by: context.actor.to_string(),
+                ..NewJob::new(REPORT_JOB)
+            };
+            let job_id = app.enqueue_as(context, &job)?;
+            Ok(json!({"job_id": job_id.to_string()}))
+        }
         other => Err(WgError::workgraph(format!(
             "automation action {other} is not ported to Rust yet"
         ))),
     }
+}
+
+/// The text of an optional action field: `None` when absent or not a string.
+fn action_text(action: &Map<String, Json>, name: &str) -> Option<String> {
+    action.get(name).and_then(Json::as_str).map(str::to_owned)
 }
 
 /// The repositories a task is linked to, as ids (`TaskRepository.repository_id`).

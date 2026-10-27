@@ -21,6 +21,7 @@ wg-proc = { path = "../wg-proc" }
 wg-procspec = { path = "../wg-procspec" }
 wg-registry = { path = "../wg-registry" }
 wg-render = { path = "../wg-render" }
+wg-jobs = { path = "../wg-jobs" }
 wg-runtime = { path = "../wg-runtime" }
 wg-runtimespec = { path = "../wg-runtimespec" }
 wg-serverspec = { path = "../wg-serverspec" }

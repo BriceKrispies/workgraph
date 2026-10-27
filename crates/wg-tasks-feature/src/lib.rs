@@ -9,13 +9,15 @@
 
 pub mod cli;
 pub mod http;
+pub mod jobs;
 pub mod mcp;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The tasks feature: its CLI group, its routes and its tools. It has no resources or jobs.
+/// The tasks feature: its CLI group, its routes, its tools and its expired-claim maintenance step.
+/// It has no resources or job kinds.
 pub static FEATURE: Feature = Feature {
     name: "tasks",
     cli: &[cli::GROUP],
@@ -23,5 +25,5 @@ pub static FEATURE: Feature = Feature {
     tools: mcp::TOOLS,
     resources: &[],
     jobs: &[],
-    maintenance: &[],
+    maintenance: jobs::MAINTENANCE,
 };

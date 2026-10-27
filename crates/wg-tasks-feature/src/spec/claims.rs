@@ -21,7 +21,8 @@ use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::accept::comment_step;
 use wg_tasks::claims::{
     Caller, ClaimPlan, REASON_ATTEMPT_FAILED, REASON_COMPLETION, REASON_EXPIRED_CLAIM_RELEASED,
-    plan_claim, plan_complete, plan_release, plan_report_result,
+    REASON_LEASE_EXPIRED, expired_claims, plan_claim, plan_complete, plan_release,
+    plan_report_result,
 };
 use wg_tasks::comments::check_attempt_owner;
 use wg_tasks::deps::unsatisfied_dependencies;
@@ -216,6 +217,32 @@ fn step(
         ids: next.ids,
         tasks: next.tasks,
     })
+}
+
+/// `TaskService.release_expired_claims`: every claimed task whose lease ended before the stamp goes
+/// back to ready with [`REASON_LEASE_EXPIRED`], in task-number order. The reply is the keys released.
+pub fn release_expired(world: &TaskWorld, stamp: &Stamp) -> Result<Decision<Vec<String>>, WgError> {
+    let expired = expired_claims(&world.tasks, stamp.at);
+    let keys: Vec<String> = expired.iter().map(|task| task.key.to_string()).collect();
+    let start = Applied {
+        decision: Decision::new(()),
+        ids: stamp.ids(),
+        tasks: world.tasks.clone(),
+    };
+    let moved = expired.iter().try_fold(start, |acc, task| {
+        step(
+            acc,
+            world,
+            stamp,
+            task.id,
+            TaskStatus::Ready,
+            Change {
+                reason: Some(REASON_LEASE_EXPIRED),
+                ..Change::default()
+            },
+        )
+    })?;
+    Ok(moved.decision.with_reply(keys))
 }
 
 /// `TaskService.release`.

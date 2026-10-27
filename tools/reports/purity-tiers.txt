@@ -147,12 +147,14 @@ wg-tasks-feature::service Shell
 wg-tasks-feature::cli Shell
 wg-tasks-feature::http Shell
 wg-tasks-feature::mcp Shell
+wg-tasks-feature::jobs Shell
 wg-telemetry Core
 wg-telemetry-feature Shell
 wg-telemetry-feature::spec Pure
 wg-telemetry-feature::service Shell
 wg-telemetry-feature::cli Shell
 wg-telemetry-feature::http Shell
+wg-telemetry-feature::jobs Shell
 wg-telemetryspec Pure
 wg-trackers Core
 wg-trackers-feature Shell

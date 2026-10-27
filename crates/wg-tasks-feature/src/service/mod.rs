@@ -374,6 +374,22 @@ pub fn task_claim(
         .reply)
 }
 
+/// `TaskService.release_expired_claims` (the maintenance step): the keys of the tasks it released.
+pub fn release_expired_claims(
+    app: &mut App,
+    context: &RequestContext,
+) -> Result<Vec<String>, WgError> {
+    Ok(app
+        .runtime
+        .decide_then(
+            context,
+            |session| session.task_world(None, &[]),
+            |world: &TaskWorld, stamp| claims::release_expired(world, stamp),
+            index_written,
+        )?
+        .reply)
+}
+
 /// `TaskService.release`; `body` is the optional `ReasonBody`.
 pub fn task_release(
     app: &mut App,

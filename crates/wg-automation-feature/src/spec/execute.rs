@@ -313,8 +313,8 @@ pub fn finish(
     Decision::new(()).write(Write::update(row)).event(event)
 }
 
-/// The Python value of a wire value, as the JSON the actions read it as (dates and models, which
-/// no action reads back, become `null`).
+/// The Python value of a wire value, as the JSON the actions read it as (dates, which no action
+/// reads back, become `null`; a model reads as its fields).
 pub fn to_json(value: &Wire) -> Json {
     match value {
         Wire::Null => Json::Null,
@@ -324,11 +324,20 @@ pub fn to_json(value: &Wire) -> Json {
             serde_json::Number::from_f64(*number).map_or(Json::Null, Json::Number)
         }
         Wire::Str(text) => Json::String(py_text(text)),
+        // A UUID is held as its text: the string an action output records (`attempt.id`).
+        Wire::Uuid(id) => Json::String(id.clone()),
         Wire::List(items) => Json::Array(items.iter().map(to_json).collect()),
         Wire::Dict(items) => Json::Object(
             items
                 .iter()
                 .map(|(key, value)| (py_text(key), to_json(value)))
+                .collect(),
+        ),
+        // A pydantic model reads as its fields (`AttemptOut` and the other replies).
+        Wire::Model { fields, .. } => Json::Object(
+            fields
+                .iter()
+                .map(|(key, value)| (key.clone(), to_json(value)))
                 .collect(),
         ),
         _ => Json::Null,

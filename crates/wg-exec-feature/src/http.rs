@@ -78,6 +78,11 @@ fn run_exec(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgE
             let workspace = app.workspace_id(ws)?;
             scheduler::overview(app, Some(workspace))
         }
+        "H061" => {
+            let task = text(&params, "ref").unwrap_or_default();
+            let found = scheduler::explain(app, Some(ws), task)?;
+            Ok(wg_json::to_value(&found))
+        }
         other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }

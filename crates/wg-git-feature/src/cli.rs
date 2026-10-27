@@ -85,7 +85,14 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         Some("diff") => {
             let task = option_text(m, "task").unwrap_or_default();
             let repository = option_text(m, "--repository");
-            let out = service::git_diff(state.app()?, &context, ws, &task, repository.as_deref())?;
+            let out = service::git_diff(
+                state.app()?,
+                &context,
+                ws,
+                &task,
+                repository.as_deref(),
+                service::DIFF_MAX_BYTES,
+            )?;
             state.emit(&out, Some(&|c| view::diff_view(c, &out)))
         }
         Some("surface") => {

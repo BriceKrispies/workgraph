@@ -1,6 +1,7 @@
 //! The verification group (`api/routes/ops.py`, verification): the check configs (H085, H086),
 //! their enable and disable (H087), the check runs (H088, H089) and the failure history (H090),
-//! under `/api/v1`.
+//! under `/api/v1`, and the task's verification runs and applicable checks (H057, H058, from
+//! `api/routes/tasks.py`).
 //!
 //! [`SPECS`] is the table of operations; the server binds each one to [`run`], which reads the
 //! validated request and calls the feature's [`crate::service::api`] entry points.
@@ -16,7 +17,7 @@ use crate::spec::config_write::config_body;
 use crate::spec::routes::{enabled_of, failure_args, run_args};
 
 /// The operations of the group, in registration order.
-pub const SPECS: [RouteSpec; 6] = [
+pub const SPECS: [RouteSpec; 8] = [
     RouteSpec {
         id: "H085",
         method: "GET",
@@ -69,6 +70,22 @@ pub const SPECS: [RouteSpec; 6] = [
         query: &["check", "repository", "since"],
         body: None,
     },
+    RouteSpec {
+        id: "H057",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/tasks/{ref}/verification",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
+        id: "H058",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/tasks/{ref}/checks",
+        status: 200,
+        query: &[],
+        body: None,
+    },
 ];
 
 /// The group as the feature descriptor takes it.
@@ -95,6 +112,8 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             let (check, repository, since) = failure_args(params);
             api::failures(app, context, ws, check, repository, since)
         }
+        "H057" => api::task_runs(app, context, ws, text_param(params, "ref")),
+        "H058" => api::checks_for_task(app, context, ws, text_param(params, "ref")),
         other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
@@ -103,12 +122,23 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
 mod tests {
     use super::*;
 
+    // covers: H057 H058
     #[test]
     fn the_verification_table_has_the_operations_of_its_group() {
         let ids: Vec<&str> = SPECS.iter().map(|spec| spec.id).collect();
-        assert_eq!(ids, ["H085", "H086", "H087", "H088", "H089", "H090"]);
+        assert_eq!(
+            ids,
+            [
+                "H085", "H086", "H087", "H088", "H089", "H090", "H057", "H058"
+            ]
+        );
         for spec in &SPECS {
-            assert_eq!(wg_serverspec::operations::group_of(spec.id), "IF-47");
+            let group = if matches!(spec.id, "H057" | "H058") {
+                "IF-45"
+            } else {
+                "IF-47"
+            };
+            assert_eq!(wg_serverspec::operations::group_of(spec.id), group);
         }
     }
 

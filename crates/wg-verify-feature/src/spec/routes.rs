@@ -4,11 +4,27 @@
 
 use serde_json::{Map, Value as Json};
 use time::{Date, Duration, Month, PrimitiveDateTime, Time};
+use wg_json::Value;
 use wg_types::pyval::{int_or, prefix};
 use wg_types::{Timestamp, WgError};
+use wg_verify::ApplicableCheck;
 
 /// The `limit` of `GET /ws/{ws}/verification/runs` when the client sends none.
 pub const RUNS_LIMIT: i64 = 50;
+
+/// One entry of `checks_for_task` (`GET /ws/{ws}/tasks/{ref}/checks`): the configuration's name and
+/// scope type, then the check's own fields as `model_dump(mode="json")` gives them.
+#[must_use]
+pub fn check_document(check: &ApplicableCheck) -> Value {
+    let mut document = Map::new();
+    document.insert("config".to_owned(), Json::String(check.config_name.clone()));
+    document.insert(
+        "scope_type".to_owned(),
+        Json::String(check.scope_type.clone()),
+    );
+    document.extend(check.spec.to_json());
+    wg_json::to_dict(&document)
+}
 
 /// The `action` of `POST /verification/configs/{config_id}/{action}`: `true` to enable, `false` to
 /// disable. The snapshot's enum rejects any other word first; this is the same answer for a

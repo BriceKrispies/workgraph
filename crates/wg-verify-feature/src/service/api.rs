@@ -11,11 +11,15 @@ use wg_runtime::{App, RequestContext};
 use wg_types::{Permission, VerificationStatus, WgError, parse_id};
 use wg_wire::dto::verification::{config_from_model, failure_row};
 
+use wg_verify::applicable_checks;
+
 use crate::service::config;
+use crate::service::listing;
 use crate::service::listing::run_document;
 use crate::service::reads;
 use crate::spec::config_write::{self, ConfigBody, ConfigRequest};
-use crate::spec::routes::parse_since;
+use crate::spec::routes::{check_document, parse_since};
+use crate::spec::run::task_scope;
 use crate::spec::sql::{FailureFilter, Page, RunFilter};
 
 /// The most failures `GET /ws/{ws}/verification/failures` returns (`failures`' default limit).
@@ -113,6 +117,38 @@ pub fn runs(
             .collect::<Result<Vec<_>, _>>()?;
         Ok(Value::List(documents))
     })
+}
+
+/// `VerificationService.list_runs(task=ref)`: the newest runs of one task (`GET /tasks/{ref}/verification`).
+pub fn task_runs(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: &str,
+    task_reference: &str,
+) -> Result<Value, WgError> {
+    require(app, context, Permission::TaskRead)?;
+    listing::runs(app, Some(workspace), Some(task_reference))
+}
+
+/// `VerificationService.checks_for_task`: the checks that apply to one task now, as the
+/// configurations' scopes select them (`GET /tasks/{ref}/checks`).
+pub fn checks_for_task(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: &str,
+    task_reference: &str,
+) -> Result<Value, WgError> {
+    require(app, context, Permission::TaskRead)?;
+    let ws = app.workspace_or_default(Some(workspace))?;
+    let reference = task_reference.to_owned();
+    let checks = app.runtime.store.read(|session| {
+        let world = session.task_world(Some(ws), &[])?;
+        let task = resolve::task(&world.tasks, Some(ws), &reference)?;
+        let scope = task_scope(&world.tasks, task);
+        let configs = session.verification_configs(ws)?;
+        applicable_checks(&configs, &scope)
+    })?;
+    Ok(Value::List(checks.iter().map(check_document).collect()))
 }
 
 /// `VerificationService.get_run`: one run with its manifest entries and check results.

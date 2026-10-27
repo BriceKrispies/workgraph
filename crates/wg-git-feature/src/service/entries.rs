@@ -432,14 +432,63 @@ pub fn git_changes(
     }))
 }
 
+/// `GitService.task_commits` (`GET /tasks/{ref}/commits`): the task's linked commits at or above
+/// `min_confidence`, each with the links that attribute it, in commit-date order.
+pub fn task_commits(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    task_reference: &str,
+    min_confidence: f64,
+) -> Result<Value, WgError> {
+    git_require(app, context, Permission::GitRead)?;
+    let scope = app.workspace_or_all(workspace)?;
+    let reference = task_reference.to_owned();
+    let grouped = app.runtime.store.read(|session| {
+        let world = session.task_world(scope, &[])?;
+        let task = resolve::task(&world.tasks, scope, &reference)?.clone();
+        let links = store::task_commit_links(session, task.id, min_confidence)?;
+        Ok(group_by_commit(&links))
+    })?;
+    Ok(reads::task_commits_value(&grouped))
+}
+
+/// `GitService.change_sets` (`GET /tasks/{ref}/change-sets`): the task's change sets, oldest
+/// first, each with its repository items.
+pub fn change_sets(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    task_reference: &str,
+) -> Result<Value, WgError> {
+    git_require(app, context, Permission::GitRead)?;
+    let scope = app.workspace_or_all(workspace)?;
+    let reference = task_reference.to_owned();
+    let sets = app.runtime.store.read(|session| {
+        let world = session.task_world(scope, &[])?;
+        let task = resolve::task(&world.tasks, scope, &reference)?.clone();
+        session
+            .change_sets_of_task(task.id)?
+            .into_iter()
+            .map(|set| {
+                let items = session.change_set_items(set.id)?;
+                Ok((set, items))
+            })
+            .collect::<Result<Vec<_>, WgError>>()
+    })?;
+    Ok(reads::change_sets_value(&sets))
+}
+
 /// `GitService.task_diff` (`git diff`): the final diff of each change surface, or the diff of
-/// each linked commit when the task has no surface. Text is read live from git.
+/// each linked commit when the task has no surface. Text is read live from git. The text of the
+/// reply is cut to `max_bytes` characters.
 pub fn git_diff(
     app: &mut App,
     context: &RequestContext,
     workspace: Option<&str>,
     task_reference: &str,
     repository: Option<&str>,
+    max_bytes: usize,
 ) -> Result<Value, WgError> {
     git_require(app, context, Permission::GitRead)?;
     let scope = app.workspace_or_all(workspace)?;
@@ -570,11 +619,7 @@ pub fn git_diff(
         record_gaps(app, context, &gaps, &gap_context)?;
     }
     Ok(reads::task_diff_value(
-        task.id,
-        &task_key,
-        &parts,
-        &missing,
-        DIFF_MAX_BYTES,
+        task.id, &task_key, &parts, &missing, max_bytes,
     ))
 }
 

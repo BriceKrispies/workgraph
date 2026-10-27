@@ -126,11 +126,10 @@ fn checkout_entries(world: &PrepareWorld, task_id: Id) -> Vec<JsonObject> {
         .collect()
 }
 
-/// `_prepare`, the part that reads: the checks of the tier and the revision entries.
-pub fn plan_run(world: &PrepareWorld, request: &RunRequest<'_>) -> Result<Plan, WgError> {
-    let tasks = &world.world.tasks;
-    let task = task_of(&world.world, request.scope, request.task)?;
-    let scope = TaskScope {
+/// The facts about `task` that decide which check scopes apply to it: its workspace, the task, its
+/// projects and its repositories (the `TaskScope` the shell reads from the slice).
+pub fn task_scope(tasks: &wg_model::TaskSlice, task: &wg_model::Task) -> TaskScope {
+    TaskScope {
         workspace_id: task.workspace_id,
         task_id: task.id,
         project_ids: tasks
@@ -141,7 +140,13 @@ pub fn plan_run(world: &PrepareWorld, request: &RunRequest<'_>) -> Result<Plan, 
             .repositories_of(task.id)
             .map(|row| row.repository_id)
             .collect(),
-    };
+    }
+}
+
+/// `_prepare`, the part that reads: the checks of the tier and the revision entries.
+pub fn plan_run(world: &PrepareWorld, request: &RunRequest<'_>) -> Result<Plan, WgError> {
+    let task = task_of(&world.world, request.scope, request.task)?;
+    let scope = task_scope(&world.world.tasks, task);
     let all = applicable_checks(&world.configs, &scope)?;
     let checks: Vec<ApplicableCheck> = checks_for_tier(&all, request.tier)
         .into_iter()

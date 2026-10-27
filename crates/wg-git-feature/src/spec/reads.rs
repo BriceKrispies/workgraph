@@ -9,12 +9,14 @@ use wg_model::entity::git::{
     Commit, CommitAnalysis, CommitEquivalence, CommitFileChange, CommitSymbol, CommitTaskLink,
     TaskChangeSurface,
 };
+use wg_model::entity::{ChangeSet, ChangeSetItem};
 
 use crate::spec::sql::TaskCommitLink as TaskCommitLinkRow;
 use wg_types::Id;
 use wg_types::pyval::prefix;
 use wg_wire::convention::{
-    TimeFormat, id, int, json_object, optional_text, optional_timestamp, text,
+    TimeFormat, id, int, json_object, optional_id, optional_text, optional_timestamp, text,
+    timestamp,
 };
 use wg_wire::dto::task_changes::{self, Churn as WireChurn, ChurnTotals, CommitEntry, TaskChanges};
 use wg_wire::dto::task_diff::{self, DiffPart, Missing, TaskDiff};
@@ -242,6 +244,68 @@ pub fn task_changes_value(input: &ChangesInput<'_>) -> Value {
         commits: &entries,
         churn: &churn,
         surfaces: input.surfaces,
+    })
+}
+
+/// The `task_commits` list (`GET /tasks/{ref}/commits`): one `CommitOut` per linked commit, in the
+/// order the groups are given.
+pub fn task_commits_value(commits: &[CommitGroup]) -> Value {
+    Value::List(
+        commits
+            .iter()
+            .map(|group| {
+                let links: Vec<&CommitTaskLink> = group.links.iter().collect();
+                task_changes::commit_entry(&CommitEntry {
+                    commit: &group.commit,
+                    repository_name: &group.repository_name,
+                    links: &links,
+                })
+            })
+            .collect(),
+    )
+}
+
+/// A float query parameter, `default` when it is unset or not a number.
+pub fn float_param(
+    params: &serde_json::Map<String, serde_json::Value>,
+    name: &str,
+    default: f64,
+) -> f64 {
+    params
+        .get(name)
+        .and_then(serde_json::Value::as_f64)
+        .unwrap_or(default)
+}
+
+/// The `change_sets` list (`GET /tasks/{ref}/change-sets`): each change set with its items.
+pub fn change_sets_value(sets: &[(ChangeSet, Vec<ChangeSetItem>)]) -> Value {
+    Value::List(
+        sets.iter()
+            .map(|(set, items)| change_set_value(set, items))
+            .collect(),
+    )
+}
+
+fn change_set_value(set: &ChangeSet, items: &[ChangeSetItem]) -> Value {
+    dict!({
+        "id": id(set.id),
+        "attempt_id": optional_id(set.attempt_id),
+        "title": text(&set.title),
+        "status": text(set.status.as_str()),
+        "created_at": timestamp(set.created_at, TimeFormat::Isoformat),
+        "items": Value::List(items.iter().map(change_set_item_value).collect()),
+    })
+}
+
+fn change_set_item_value(item: &ChangeSetItem) -> Value {
+    dict!({
+        "repository_id": id(item.repository_id),
+        "base_sha": optional_text(item.base_sha.as_deref()),
+        "head_sha": optional_text(item.head_sha.as_deref()),
+        "branch": optional_text(item.branch.as_deref()),
+        "commits": Value::List(item.commit_shas.iter().map(|sha| text(sha)).collect()),
+        "status": text(item.status.as_str()),
+        "detail": optional_text(item.detail.as_deref()),
     })
 }
 

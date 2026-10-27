@@ -1,23 +1,21 @@
 //! IF-09: the pure helpers of the attempt writes and the agent group.
 
 use serde_json::json;
-use wg_exec::manifest::Violation;
-use wg_exec_feature::spec::attempt_capture::violations_text;
 use wg_exec_feature::spec::attempt_writes::{attempt_limit, validation};
 use wg_exec_feature::spec::cli_agent::unknown_placeholder;
+use wg_exec_feature::spec::conclude::Captured;
 use wg_types::ErrorCode;
 
 // covers: C022
 #[test]
 fn violations_print_as_python_prints_a_list_of_dicts() {
-    assert_eq!(violations_text(&[]), None);
-    let one = Violation {
-        repository: "api".to_owned(),
-        commits: 1,
-        uncommitted_files: 0,
+    assert_eq!(Captured::default().violations_text(), None);
+    let one = Captured {
+        violations: vec![("api".to_owned(), 1, 0)],
+        ..Captured::default()
     };
     assert_eq!(
-        violations_text(&[one]).as_deref(),
+        one.violations_text().as_deref(),
         Some("[{'repository': 'api', 'commits': 1, 'uncommitted_files': 0}]")
     );
 }

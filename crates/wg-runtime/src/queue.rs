@@ -313,7 +313,7 @@ impl Queue {
             Step::ReleaseExpiredClaims => ("released_claims", json!("not ported")),
             Step::ProcessAutomationEvents => ("automation", self.feature_step(steps, step)?),
             Step::RunScheduledRules => ("scheduled_rules", self.feature_step(steps, step)?),
-            Step::ScheduledRuns => ("scheduled_runs", json!("not ported")),
+            Step::ScheduledRuns => ("scheduled_runs", self.feature_step(steps, step)?),
             Step::ReplayHooks => ("replayed_hooks", json!("not ported")),
         })
     }

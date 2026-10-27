@@ -5,7 +5,7 @@ use wg_clispec::args::{option_flag, option_list, option_text};
 use wg_clispec::{CliFailure, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
-use crate::service::agents::{self, CommandAgent};
+use crate::service::agent_cmds::{self as agents, CommandAgent};
 use crate::spec::cli_agent::{command, list_view};
 
 /// The `agent` group.

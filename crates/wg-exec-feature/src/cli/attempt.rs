@@ -113,6 +113,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             let out = conclude::attempt_submit(
                 state.app()?,
                 &context,
+                &mut conclude::Live,
                 &reference,
                 option_flag(m, "--failed"),
                 summary.as_deref(),

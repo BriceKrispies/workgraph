@@ -6,21 +6,24 @@
 //! the call names or across all workspaces when it names none (an ambiguous key is refused), and
 //! an attempt by UUID. A reference that names nothing is the same `not_found` error Python gives.
 //!
-//! `attempt_get` and `attempt_list` are answered from the store and the `wg-wire` DTOs. The other
-//! tools stop after their references resolve: their success paths need the run flow (queued jobs,
-//! adapters, worktree preparation) and the git runner, and those are not wired yet, so they answer
-//! with a `workgraph_error` that names the tool. The git tools of the same family are answered by
+//! `attempt_get`, `attempt_list`, `run_get`, `run_start` and `run_cancel` are answered from the
+//! store and the run flow. The other tools stop after their references resolve: their success
+//! paths belong to the attempt group, which is not ported yet, so they answer with a
+//! `workgraph_error` that names the tool. The git tools of the same family are answered by
 //! `wg-mcp` until the git feature moves.
 
 use serde_json::Value;
 use wg_mcpspec::options::Agent;
 use wg_mcpspec::{require, structured, tool_permissions};
-use wg_runtime::{App, ToolRun};
+use wg_runtime::{App, ToolRun, agent_context};
 use wg_store::AttemptPage;
 use wg_types::{AttemptStatus, ErrorCode, Id, WgError};
 use wg_wire::dto::{attempt, page};
 
+use crate::service::agents::LiveAgents;
 use crate::service::resolve::{find_attempt, find_task};
+use crate::service::run_flow;
+use crate::spec::runs::StartRequest;
 
 /// The feature's tool descriptor: one [`call`].
 pub const TOOLS: &[ToolRun] = &[call];
@@ -53,8 +56,64 @@ pub fn call(
     Some(match name {
         "attempt_get" => attempt_get(app, arguments),
         "attempt_list" => attempt_list(app, arguments),
+        "run_get" => run_get_tool(app, arguments),
+        "run_start" => run_start_tool(app, agent, arguments),
+        "run_cancel" => run_cancel_tool(app, agent, arguments),
         _ => unwired(app, name, arguments),
     })
+}
+
+/// `run_get`: the attempt, its job and its recent events (`RunService.get`).
+fn run_get_tool(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
+    let reference = arguments
+        .get("attempt_id")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
+    let events = arguments
+        .get("events")
+        .and_then(Value::as_i64)
+        .unwrap_or(50);
+    structured(&crate::service::runs::get(app, reference, events)?)
+}
+
+/// `run_start`: queues a managed run of a task (`RunService.start`).
+fn run_start_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Value, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let text = |key: &str| {
+        arguments
+            .get(key)
+            .and_then(Value::as_str)
+            .map(str::to_owned)
+    };
+    let request = StartRequest {
+        agent: text("agent"),
+        model: text("model"),
+        ..StartRequest::default()
+    };
+    let started = run_flow::run_start(
+        app,
+        &context,
+        &mut LiveAgents,
+        text("workspace").as_deref(),
+        &text("task").unwrap_or_default(),
+        &request,
+    )?;
+    structured(&started)
+}
+
+/// `run_cancel`: asks a queued or running attempt to stop (`RunService.cancel`).
+fn run_cancel_tool(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Value, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let reference = arguments
+        .get("attempt_id")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
+    let reason = arguments
+        .get("reason")
+        .and_then(Value::as_str)
+        .unwrap_or("cancelled via MCP");
+    let cancelled = run_flow::run_cancel(app, &context, reference, reason)?;
+    structured(&cancelled)
 }
 
 /// `attempt_get`: the attempt as `AttemptOut`.
@@ -122,7 +181,7 @@ fn attempt_list(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
 
 /// The tools whose references resolve here and whose success path is not wired yet.
 fn unwired(app: &mut App, name: &str, arguments: &Value) -> Result<Value, WgError> {
-    if matches!(name, "attempt_submit" | "run_get" | "run_cancel") {
+    if matches!(name, "attempt_submit") {
         let reference = arguments
             .get("attempt")
             .or_else(|| arguments.get("attempt_id"))

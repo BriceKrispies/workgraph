@@ -54,6 +54,7 @@ wg-exec Core
 wg-exec-feature Shell
 wg-exec-feature::spec Pure
 wg-exec-feature::service Shell
+wg-exec-feature::jobs Shell
 wg-exec-feature::mcp Shell
 wg-exec-feature::cli Shell
 wg-experiments Core
@@ -147,4 +148,5 @@ wg-verify Core
 wg-verify-feature Shell
 wg-verify-feature::spec Pure
 wg-verify-feature::service Shell
+wg-verify-feature::cli Shell
 wg-wire Pure

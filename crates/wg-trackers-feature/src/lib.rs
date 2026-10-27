@@ -9,22 +9,27 @@
 //!   served and the entry points of the commands;
 //! * [`cli`] (Shell): the clap group, a table of `fn` pointers into [`service`].
 //!
-//! The feature exports [`FEATURE`]. Its routes and tools are not served yet, and `tracker sync`
-//! without `--queue` (the run-now sync) is not ported, so the CLI reports it as not implemented.
+//! The feature exports [`FEATURE`]: the `tracker` CLI group and the `tracker_sync` job. Its routes
+//! and tools are not served yet.
 
 pub mod cli;
 pub mod service;
 pub mod spec;
 
-use wg_runtime::Feature;
+use wg_jobs::trackers::TRACKER_SYNC_KIND;
+use wg_runtime::{Feature, JobKind};
 
-/// The trackers feature: its `tracker` CLI group. It has no routes, tools, resources or jobs yet.
+/// The trackers feature: its `tracker` CLI group and the `tracker_sync` job. It has no routes,
+/// tools or resources yet.
 pub static FEATURE: Feature = Feature {
     name: "trackers",
     cli: &[cli::GROUP],
     routes: &[],
     tools: &[],
     resources: &[],
-    jobs: &[],
+    jobs: &[JobKind {
+        kind: TRACKER_SYNC_KIND,
+        handler: service::sync::tracker_sync_job,
+    }],
     maintenance: &[],
 };

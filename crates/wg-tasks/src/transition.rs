@@ -35,6 +35,8 @@ pub struct Change<'a> {
     pub attempt_id: Option<Option<Id>>,
     /// The `run_id` key of the status event (`extra={"run_id": ...}`), the same way.
     pub run_id: Option<Option<Id>>,
+    /// Further keys of the status event (`extra=` in Python), merged after the standard keys.
+    pub extra: Option<&'a wg_model::entity::JsonObject>,
 }
 
 /// What a status change produced: the changes, the ids still free and the slice afterwards.
@@ -205,7 +207,7 @@ pub fn transition(
             version: next.version,
             attempt_id: change.attempt_id,
             run_id: change.run_id,
-            extra: Map::new(),
+            extra: change.extra.cloned().unwrap_or_default(),
         }),
     );
     let status_event = match change.caused_by {

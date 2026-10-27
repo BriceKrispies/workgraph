@@ -3,6 +3,7 @@
 //! are in [`crate::spec`] and the sync decisions in the `wg-trackers` core crate.
 
 pub mod reads;
+pub mod sync;
 
 use wg_jobs::trackers::{TRACKER_SYNC_KIND, enqueue_tracker_sync};
 use wg_runtime::{App, RequestContext};

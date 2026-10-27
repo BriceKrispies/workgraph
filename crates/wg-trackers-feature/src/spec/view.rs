@@ -3,6 +3,7 @@
 
 use wg_clispec::args::python;
 use wg_render::Console;
+use wg_trackers::SyncReport;
 use wg_wire::convention as wire;
 
 use super::{Connection, Status, iso_of_millis};
@@ -75,4 +76,15 @@ pub fn status_view(console: &Console, statuses: &[Status]) -> String {
 #[must_use]
 pub fn enqueued_line(console: &Console, job_id: &str) -> String {
     console.print(&format!("enqueued {job_id}")).text
+}
+
+/// The human view of `tracker sync` (`kv` under the title `tracker sync`).
+#[must_use]
+pub fn sync_view(console: &Console, report: &SyncReport) -> String {
+    let rows = crate::spec::run::sync_rows(report);
+    let pairs: Vec<(&str, Option<&str>)> = rows
+        .iter()
+        .map(|(name, value)| (*name, value.as_deref()))
+        .collect();
+    console.kv(&pairs, Some("tracker sync")).text
 }

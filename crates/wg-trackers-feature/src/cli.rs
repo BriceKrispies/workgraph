@@ -43,13 +43,11 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 let out = crate::spec::enqueued_out(&job, &connection, full);
                 state.emit(&out, Some(&|c| view::enqueued_line(c, &job)))
             } else {
-                // The run-now sync (fetch, map and apply the issues) is not ported yet. An
-                // unknown connection still fails as Python does before it fetches anything.
-                service::check_connection(state.app()?, &connection)?;
-                Err(CliFailure::fail(
-                    wg_clispec::not_implemented_message(path),
-                    1,
-                ))
+                let full = args::full(m);
+                let context = human_context(None)?;
+                let report = service::sync::run_now(state.app()?, &context, &connection, full)?;
+                let out = crate::spec::run::sync_out(&report);
+                state.emit(&out, Some(&|c| view::sync_view(c, &report)))
             }
         }
         _ => Err(CliFailure::fail(

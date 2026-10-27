@@ -1,6 +1,6 @@
 //! The capture options, their validation, and the browser's launch arguments.
 
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// What a screenshot captures and how long it waits. The defaults are the Python ones.
 #[derive(Clone, Debug, PartialEq)]
@@ -46,16 +46,12 @@ impl CaptureOptions {
     /// 0.25 to 4, or a theme other than `light` or `dark`.
     pub fn validate(&self) -> Result<(), WgError> {
         if self.width < 200 || self.height < 200 || !(0.25..=4.0).contains(&self.scale) {
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
+            return Err(WgError::validation(
                 "width and height must be at least 200 and scale between 0.25 and 4",
             ));
         }
         if !matches!(self.theme.as_deref(), None | Some("light" | "dark")) {
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                "theme must be light or dark",
-            ));
+            return Err(WgError::validation("theme must be light or dark"));
         }
         Ok(())
     }
@@ -81,6 +77,7 @@ pub fn launch_args(profile: &str, width: u32, height: u32) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use wg_types::ErrorCode;
 
     #[test]
     fn defaults_are_valid() {

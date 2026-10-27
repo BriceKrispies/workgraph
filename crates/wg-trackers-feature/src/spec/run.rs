@@ -5,7 +5,7 @@ use serde_json::{Map, Value as Json};
 use wg_json::Value;
 use wg_netspec::TrackerError;
 use wg_trackers::SyncReport;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_wire::convention as wire;
 
 use wg_clispec::args::python;
@@ -15,7 +15,7 @@ use super::{iso_of_millis, unknown_connection};
 /// A transport failure of a listing, as the sync raises it.
 #[must_use]
 pub fn tracker_failure(err: TrackerError) -> WgError {
-    WgError::new(ErrorCode::WorkgraphError, err.message)
+    WgError::workgraph(err.message)
 }
 
 /// One `[trackers.<name>]` connection, as `TrackerSyncService` reads it.

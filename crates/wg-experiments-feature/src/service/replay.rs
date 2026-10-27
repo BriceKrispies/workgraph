@@ -15,7 +15,7 @@ use wg_model::py_repr_str;
 use wg_registry::checkout::primary_checkout;
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext, draw};
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 use wg_wire::convention::json_value;
 
 use crate::service::exec::{
@@ -200,10 +200,10 @@ fn sync_path(repo: &Path, index: &str, sha: &str, path: &str) -> Result<(), WgEr
 /// exists with a different tree.
 pub fn create_base(repo: &Path, candidate: &Candidate) -> Result<String, WgError> {
     let parent = candidate.parent.as_deref().ok_or_else(|| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("{} has no parent, so it has no replay base", candidate.sha),
-        )
+        WgError::workgraph(format!(
+            "{} has no parent, so it has no replay base",
+            candidate.sha
+        ))
     })?;
     let config = config_for(repo);
     let branch = shape::base_branch(&candidate.sha);
@@ -219,10 +219,9 @@ pub fn create_base(repo: &Path, candidate: &Candidate) -> Result<String, WgError
         return if existing == tree {
             Ok(branch)
         } else {
-            Err(WgError::new(
-                ErrorCode::WorkgraphError,
-                format!("branch {branch} already exists with a different tree"),
-            ))
+            Err(WgError::workgraph(format!(
+                "branch {branch} already exists with a different tree"
+            )))
         };
     }
     let commit = out(
@@ -389,13 +388,10 @@ fn checkout_of(app: &mut App, scope: Id, repository: &str) -> Result<PathBuf, Wg
             primary_checkout(checkouts, true)
                 .map(|checkout| PathBuf::from(&checkout.path))
                 .ok_or_else(|| {
-                    WgError::new(
-                        ErrorCode::ValidationFailed,
-                        format!(
-                            "repository {} has no available checkout",
-                            py_repr_str(&found.name)
-                        ),
-                    )
+                    WgError::validation(format!(
+                        "repository {} has no available checkout",
+                        py_repr_str(&found.name)
+                    ))
                 })
         },
     )

@@ -8,7 +8,7 @@
 
 use std::collections::BTreeMap;
 
-use serde_json::{Value as Json, json};
+use serde_json::Value as Json;
 use wg_clispec::args::{get, opt, s};
 use wg_experiments::trials as lifecycle;
 use wg_json::Value;
@@ -17,8 +17,8 @@ use wg_model::event::{EventPayload, ExperimentTrialAdded, ExperimentTrialClassif
 use wg_model::{Decision, EventDraft, Row, Stamp, Write, py_repr_str};
 use wg_render::Console;
 use wg_types::{
-    ErrorCode, ExperimentStatus, FailureCause, FailureCauseSource, TrialOutcome, TrialPhase,
-    TrialStatus, WgError,
+    ExperimentStatus, FailureCause, FailureCauseSource, TrialOutcome, TrialPhase, TrialStatus,
+    WgError,
 };
 use wg_wire::dto::trial::from_model;
 
@@ -36,15 +36,12 @@ pub fn choice<E: Copy>(
         Some(member) => Ok(member),
         None => {
             let allowed: Vec<&str> = all.iter().map(|member| text(*member)).collect();
-            Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                format!(
-                    "{what} {} is not one of: {}",
-                    py_repr_str(value),
-                    allowed.join(", ")
-                ),
-            )
-            .with_detail("allowed", json!(allowed)))
+            Err(WgError::validation(format!(
+                "{what} {} is not one of: {}",
+                py_repr_str(value),
+                allowed.join(", ")
+            ))
+            .detail("allowed", allowed))
         }
     }
 }
@@ -77,15 +74,12 @@ pub fn add(
         Some(model) => model.clone(),
         None => {
             let names: Vec<&str> = arms.keys().map(String::as_str).collect();
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                format!(
-                    "arm {} is not in the protocol of {}",
-                    py_repr_str(input.arm),
-                    experiment.slug
-                ),
-            )
-            .with_detail("arms", json!(names)));
+            return Err(WgError::validation(format!(
+                "arm {} is not in the protocol of {}",
+                py_repr_str(input.arm),
+                experiment.slug
+            ))
+            .detail("arms", names));
         }
     };
     let phase = choice(input.phase, "phase", TrialPhase::ALL, TrialPhase::as_str)?;
@@ -177,13 +171,10 @@ pub fn classify(
     let status = parse_status(&trial.status)?;
     let outcome = trial.outcome.as_deref().and_then(TrialOutcome::parse);
     lifecycle::classify(status, outcome).map_err(|rejected| {
-        WgError::new(
-            ErrorCode::Conflict,
-            format!("trial {} {}", trial.id, rejected.message()),
-        )
-        .with_detail("trial", json!(trial.id.to_string()))
-        .with_detail("status", json!(trial.status))
-        .with_detail("outcome", json!(trial.outcome))
+        WgError::conflict(format!("trial {} {}", trial.id, rejected.message()))
+            .detail("trial", trial.id.to_string())
+            .detail("status", &trial.status)
+            .detail("outcome", &trial.outcome)
     })?;
     let next = ExperimentTrial {
         failure_cause: Some(failure.as_str().to_owned()),
@@ -213,15 +204,12 @@ pub(crate) fn require_running(experiment: &Experiment) -> Result<(), WgError> {
     if experiment.status == ExperimentStatus::Running.as_str() {
         return Ok(());
     }
-    Err(WgError::new(
-        ErrorCode::Conflict,
-        format!(
-            "experiment {} is {}; trials change only while it is running",
-            experiment.slug, experiment.status
-        ),
-    )
-    .with_detail("experiment", json!(experiment.slug))
-    .with_detail("status", json!(experiment.status)))
+    Err(WgError::conflict(format!(
+        "experiment {} is {}; trials change only while it is running",
+        experiment.slug, experiment.status
+    ))
+    .detail("experiment", &experiment.slug)
+    .detail("status", &experiment.status))
 }
 
 /// `_arms`: the arm names of the protocol with their requested models, sorted by name.
@@ -247,13 +235,12 @@ fn check_band(experiment: &Experiment, band: Option<i64>) -> Result<(), WgError>
     let high = bands.and_then(|b| b.get("max")).and_then(Json::as_i64);
     match (band, low, high) {
         (Some(value), Some(min), Some(max)) if !(min <= value && value <= max) => {
-            Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("band {value} is outside the protocol range {min}..{max}"),
-            )
-            .with_detail("band", json!(value))
-            .with_detail("min", json!(min))
-            .with_detail("max", json!(max)))
+            Err(WgError::validation(format!(
+                "band {value} is outside the protocol range {min}..{max}"
+            ))
+            .detail("band", value)
+            .detail("min", min)
+            .detail("max", max))
         }
         _ => Ok(()),
     }
@@ -261,18 +248,8 @@ fn check_band(experiment: &Experiment, band: Option<i64>) -> Result<(), WgError>
 
 /// A stored trial status; an unknown string is a corrupt row.
 pub(crate) fn parse_status(text: &str) -> Result<TrialStatus, WgError> {
-    TrialStatus::parse(text).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("unknown trial status {}", py_repr_str(text)),
-        )
-    })
-}
-
-/// A `NotFound` carrying the reference the Python error details name.
-#[must_use]
-pub fn not_found(message: &str, reference: &str) -> WgError {
-    WgError::new(ErrorCode::NotFound, message.to_owned()).with_detail("ref", json!(reference))
+    TrialStatus::parse(text)
+        .ok_or_else(|| WgError::workgraph(format!("unknown trial status {}", py_repr_str(text))))
 }
 
 /// `--band`: an integer, or none. Click types the option as `int`, so a non-integer is a usage
@@ -284,12 +261,11 @@ pub fn not_found(message: &str, reference: &str) -> WgError {
 pub fn band_text(text: Option<&str>) -> Result<Option<i64>, WgError> {
     match text {
         None => Ok(None),
-        Some(text) => text.trim().parse::<i64>().map(Some).map_err(|_| {
-            WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("invalid band {text:?}"),
-            )
-        }),
+        Some(text) => text
+            .trim()
+            .parse::<i64>()
+            .map(Some)
+            .map_err(|_| WgError::validation(format!("invalid band {text:?}"))),
     }
 }
 

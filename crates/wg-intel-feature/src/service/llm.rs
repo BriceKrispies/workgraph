@@ -10,7 +10,7 @@ use wg_intel::{EMBED_DIM, HeuristicError};
 use wg_net::{Net, Ollama, OpenAiCompatible};
 use wg_netspec::client::Endpoint;
 use wg_registry::providers::{entry_type, llm_provider};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::spec::llm::{CallError, Generation, generation_of};
 
@@ -54,10 +54,7 @@ impl Providers for Live {
         config: &Map<String, Json>,
     ) -> Result<Box<dyn Provider>, WgError> {
         let entry = llm_provider(config, name).ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("inference provider '{name}' is not configured"),
-            )
+            WgError::not_found(format!("inference provider '{name}' is not configured"))
         })?;
         let key = entry
             .get("api_key_env")
@@ -137,17 +134,13 @@ impl Provider for Heuristic {
                 data,
                 duration_ms: 0,
             }),
-            Ok(_) => Err(CallError::Raised(WgError::new(
-                ErrorCode::ValidationFailed,
+            Ok(_) => Err(CallError::Raised(WgError::validation(
                 "heuristic provider produced a non-object output",
             ))),
             Err(HeuristicError::Unsupported(title)) => Err(CallError::Unsupported(format!(
                 "heuristic provider cannot produce '{title}' outputs"
             ))),
-            Err(other) => Err(CallError::Raised(WgError::new(
-                ErrorCode::ValidationFailed,
-                other.to_string(),
-            ))),
+            Err(other) => Err(CallError::Raised(WgError::validation(other.to_string()))),
         }
     }
 

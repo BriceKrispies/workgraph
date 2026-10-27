@@ -9,7 +9,7 @@ use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::{BodyRef, RouteSpec};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::service::api;
 use crate::spec::config_write::config_body;
@@ -95,10 +95,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             let (check, repository, since) = failure_args(params);
             api::failures(app, context, ws, check, repository, since)
         }
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 

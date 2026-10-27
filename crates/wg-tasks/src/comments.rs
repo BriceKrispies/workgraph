@@ -6,7 +6,7 @@
 //! body for search. These functions build the payloads and run the checks.
 
 use serde_json::{Map, Value, json};
-use wg_types::{CommentKind, ErrorCode, Id, WgError};
+use wg_types::{CommentKind, Id, WgError};
 
 /// Characters of the body kept in the event payload's `excerpt`.
 pub const EXCERPT_CHARS: usize = 500;
@@ -30,10 +30,7 @@ pub fn check_attempt_owner(task_id: Id, attempt_task_id: Id) -> Result<(), WgErr
     if attempt_task_id == task_id {
         Ok(())
     } else {
-        Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "attempt does not belong to this task",
-        ))
+        Err(WgError::validation("attempt does not belong to this task"))
     }
 }
 

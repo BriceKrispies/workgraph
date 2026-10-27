@@ -3,7 +3,7 @@
 use std::path::{Path, PathBuf};
 
 use wg_procspec::executable_suffixes;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// The environment variable that names the browser executable.
 pub const BROWSER_ENV: &str = "WORKGRAPH_BROWSER";
@@ -176,21 +176,15 @@ pub fn locate_browser(
 /// The error for a browser named explicitly that does not exist.
 #[must_use]
 pub fn browser_not_found(chosen: &str) -> WgError {
-    WgError::new(
-        ErrorCode::ProviderUnavailable,
-        format!("browser not found: {chosen}"),
-    )
+    WgError::provider_unavailable(format!("browser not found: {chosen}"))
 }
 
 /// The error when no browser is named and none is installed where it is looked for.
 #[must_use]
 pub fn no_browser_installed() -> WgError {
-    WgError::new(
-        ErrorCode::ProviderUnavailable,
-        format!(
-            "no Chrome, Edge or Chromium found; install one or set {BROWSER_ENV} to its executable"
-        ),
-    )
+    WgError::provider_unavailable(format!(
+        "no Chrome, Edge or Chromium found; install one or set {BROWSER_ENV} to its executable"
+    ))
 }
 
 #[cfg(test)]

@@ -7,7 +7,7 @@
 //! list allowed targets sorted by wire string, as Python's `sorted(...)` does.
 
 use serde_json::{Value, json};
-use wg_types::{ErrorCode, StackItemState, WgError};
+use wg_types::{StackItemState, WgError};
 
 use StackItemState as S;
 
@@ -57,13 +57,12 @@ pub fn check_item_transition(current: S, target: S) -> Result<(), WgError> {
         .filter(|state| targets.contains(*state))
         .map(|state| json!(state.as_str()))
         .collect();
-    Err(WgError::new(
-        ErrorCode::InvalidTransition,
-        format!("cannot move stack item from {current} to {target}"),
+    Err(
+        WgError::invalid_transition(format!("cannot move stack item from {current} to {target}"))
+            .detail("from", current.as_str())
+            .detail("to", target.as_str())
+            .detail("allowed", Value::Array(allowed)),
     )
-    .with_detail("from", json!(current.as_str()))
-    .with_detail("to", json!(target.as_str()))
-    .with_detail("allowed", Value::Array(allowed)))
 }
 
 /// Whether an item in `state` may leave its stack.

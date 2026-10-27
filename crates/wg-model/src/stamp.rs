@@ -7,7 +7,7 @@
 
 use rpds::RedBlackTreeSetSync;
 use uuid::Builder;
-use wg_types::{Actor, Correlation, ErrorCode, Id, Permission, Timestamp, WgError};
+use wg_types::{Actor, Correlation, Id, Permission, Timestamp, WgError};
 
 /// Written by the shell for every decision; the only source of time, ids and the actor.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -62,16 +62,13 @@ impl Stamp {
         }
         let names: Vec<&str> = missing.iter().copied().collect();
         let actor = self.actor.to_string();
-        Err(WgError::new(
-            ErrorCode::PermissionDenied,
-            format!(
-                "actor {} lacks permission(s): {}",
-                py_repr_str(&actor),
-                names.join(", ")
-            ),
-        )
-        .with_detail("actor", serde_json::Value::String(actor))
-        .with_detail(
+        Err(WgError::permission_denied(format!(
+            "actor {} lacks permission(s): {}",
+            py_repr_str(&actor),
+            names.join(", ")
+        ))
+        .detail("actor", serde_json::Value::String(actor))
+        .detail(
             "missing",
             serde_json::Value::Array(
                 names

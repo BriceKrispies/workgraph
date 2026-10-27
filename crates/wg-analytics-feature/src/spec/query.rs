@@ -17,7 +17,7 @@ use wg_analytics::core::service::CAUSATION_NOTE;
 use wg_analytics::source::AnalyticsInput;
 use wg_json::{LocalDateTime, PyStr, Value};
 use wg_tasks::requests::validation_failure;
-use wg_types::{ErrorCode, Timestamp, WgError};
+use wg_types::{Timestamp, WgError};
 use wg_validate::{Loc, ValidationError};
 use wg_wire::convention::json_value;
 
@@ -159,10 +159,10 @@ pub fn engine_query(
     repository_id: Option<String>,
 ) -> Result<Query, WgError> {
     let period = Period::parse(&request.period).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("unknown period {}", wg_types::py_repr_str(&request.period)),
-        )
+        WgError::validation(format!(
+            "unknown period {}",
+            wg_types::py_repr_str(&request.period)
+        ))
     })?;
     Ok(Query {
         metric: request.metric.clone(),
@@ -189,7 +189,7 @@ pub fn engine_query(
 /// ones it can (`details.allowed`, sorted, with `period`).
 #[must_use]
 pub fn refusal(err: &QueryError) -> WgError {
-    let refused = WgError::new(ErrorCode::ValidationFailed, err.to_string());
+    let refused = WgError::validation(err.to_string());
     match err {
         QueryError::Dimension { metric, .. } => find(metric).map_or(refused.clone(), |known| {
             let allowed: BTreeSet<&str> = dimensions(known.base)
@@ -197,7 +197,7 @@ pub fn refusal(err: &QueryError) -> WgError {
                 .copied()
                 .chain(std::iter::once("period"))
                 .collect();
-            refused.with_detail(
+            refused.detail(
                 "allowed",
                 Json::Array(allowed.into_iter().map(Json::from).collect()),
             )

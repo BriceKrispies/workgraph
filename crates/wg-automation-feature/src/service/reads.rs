@@ -7,7 +7,7 @@
 
 use wg_model::entity::{AutomationRule, AutomationRun, Finding, Notification, Report};
 use wg_store::{EventQuery, EventRecord, Raw, Session, many, one};
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Id, Timestamp, WgError};
 
 use crate::spec::sql::{self, Page, RuleRun};
 
@@ -113,8 +113,7 @@ pub fn live_run_count(
         .and_then(|row| row.first())
     {
         Some(Raw::Int(count)) => Ok(*count),
-        _ => Err(WgError::new(
-            ErrorCode::WorkgraphError,
+        _ => Err(WgError::workgraph(
             "COUNT(*) over automation_runs returned no integer",
         )),
     }

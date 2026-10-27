@@ -13,10 +13,9 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use serde_json::json;
 use wg_model::slice::StackSlice;
 use wg_model::{Task, TaskSlice};
-use wg_types::{ErrorCode, Id, StackItemState, StackStatus, TaskStatus, WgError};
+use wg_types::{Id, StackItemState, StackStatus, TaskStatus, WgError};
 
 /// Metadata value of `blocked_reason` for a task parked by unsatisfied dependencies.
 pub const BLOCKED_BY_DEPENDENCIES: &str = "dependencies";
@@ -176,7 +175,7 @@ fn path_to(parents: &BTreeMap<Id, Option<Id>>, node: Id) -> Vec<Id> {
 }
 
 fn missing_task(id: Id) -> WgError {
-    WgError::new(ErrorCode::NotFound, format!("task {id} not found"))
+    WgError::not_found(format!("task {id} not found"))
 }
 
 /// The cycle check of `add_dependency`: `task_id` will depend on `depends_on_id`.
@@ -190,10 +189,7 @@ pub fn check_add_dependency(
         .task(depends_on_id)
         .ok_or_else(|| missing_task(depends_on_id))?;
     if dep.id == task.id {
-        return Err(WgError::new(
-            ErrorCode::DependencyCycle,
-            "a task cannot depend on itself",
-        ));
+        return Err(WgError::dependency_cycle("a task cannot depend on itself"));
     }
     if tasks
         .dependencies_of(task.id)
@@ -211,16 +207,13 @@ pub fn check_add_dependency(
                         .map_or_else(|| id.to_string(), |t| t.key.to_string())
                 }))
                 .collect();
-            Err(WgError::new(
-                ErrorCode::DependencyCycle,
-                format!(
-                    "adding {} -> {} would create a cycle: {}",
-                    task.key,
-                    dep.key,
-                    keys.join(" -> ")
-                ),
-            )
-            .with_detail("cycle", json!(keys)))
+            Err(WgError::dependency_cycle(format!(
+                "adding {} -> {} would create a cycle: {}",
+                task.key,
+                dep.key,
+                keys.join(" -> ")
+            ))
+            .detail("cycle", keys))
         }
     }
 }

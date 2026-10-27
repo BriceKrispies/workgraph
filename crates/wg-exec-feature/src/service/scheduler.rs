@@ -14,7 +14,7 @@ use wg_runtimespec::RequestContext;
 use wg_store::Session;
 use wg_storecodec::TableRow;
 use wg_tasks::edit::enrichment_from;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 use wg_wire::dto::scheduler;
 
 use crate::service::agents::AgentHost;
@@ -217,14 +217,11 @@ fn generate(
     let Some(entry) = providers.get(name).and_then(Json::as_object) else {
         let mut configured: Vec<&String> = providers.keys().collect();
         configured.sort();
-        return Err(WgError::new(
-            ErrorCode::NotFound,
-            format!(
-                "inference provider {} is not configured",
-                wg_model::py_repr_str(name)
-            ),
-        )
-        .with_detail(
+        return Err(WgError::not_found(format!(
+            "inference provider {} is not configured",
+            wg_model::py_repr_str(name)
+        ))
+        .detail(
             "configured",
             Json::Array(
                 configured
@@ -259,7 +256,7 @@ fn generate(
         }
         _ => {
             let data = wg_intel::generate_json(Some("TaskDecomposition"), text)
-                .map_err(|error| WgError::new(ErrorCode::WorkgraphError, error.to_string()))?;
+                .map_err(|error| WgError::workgraph(error.to_string()))?;
             Ok((
                 data.as_object().cloned().unwrap_or_default(),
                 wg_intel::MODEL.to_owned(),
@@ -281,9 +278,7 @@ pub fn decompose(
     let (task, world) = app.runtime.store.read(|session| {
         let task = session
             .fetch::<wg_model::Task>(&wg_model::RowKey::Task(task_id))?
-            .ok_or_else(|| {
-                WgError::new(ErrorCode::NotFound, format!("task {task_id} not found"))
-            })?;
+            .ok_or_else(|| WgError::not_found(format!("task {task_id} not found")))?;
         let world = session.task_world(Some(task.workspace_id), &[])?;
         Ok((task, world))
     })?;

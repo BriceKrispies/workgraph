@@ -14,7 +14,7 @@ use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, Write};
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Change, transition};
-use wg_types::{AttemptStatus, ErrorCode, Id, TaskStatus, WgError};
+use wg_types::{AttemptStatus, Id, TaskStatus, WgError};
 
 use crate::spec::attempts::set_status;
 
@@ -23,10 +23,7 @@ pub const BINDING_SOURCE: &str = "workgraph_launched";
 
 /// The error for a job payload that lacks a member.
 pub fn missing_payload(what: &str) -> WgError {
-    WgError::new(
-        ErrorCode::ValidationFailed,
-        format!("job payload has no {what}"),
-    )
+    WgError::validation(format!("job payload has no {what}"))
 }
 
 /// The result recorded for a run that never produced one: failed, with the reason in its
@@ -79,12 +76,10 @@ pub fn preparing_decision(
         Some((row, event)) => Decision::new(()).write(Write::update(row)).event(event),
         None => Decision::new(()),
     };
-    let task = world.tasks.task(attempt.task_id).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("task {} not found", attempt.task_id),
-        )
-    })?;
+    let task = world
+        .tasks
+        .task(attempt.task_id)
+        .ok_or_else(|| WgError::not_found(format!("task {} not found", attempt.task_id)))?;
     if task.status != TaskStatus::Claimed {
         return Ok(base);
     }

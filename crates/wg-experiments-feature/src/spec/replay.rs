@@ -18,7 +18,7 @@ use wg_experiments::replay::{
 };
 use wg_json::Value;
 use wg_render::Console;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// The message of a replay base commit. It must not name the solution commit: a trial agent reads
 /// the base's log, and with the SHA it could look the solution up.
@@ -54,10 +54,7 @@ pub fn parse_header(output: &str) -> Result<Header, WgError> {
             subject: subject.to_owned(),
             body: body.trim_end_matches('\n').to_owned(),
         }),
-        _ => Err(WgError::new(
-            ErrorCode::GitError,
-            "unexpected commit header from git",
-        )),
+        _ => Err(WgError::git("unexpected commit header from git")),
     }
 }
 
@@ -532,10 +529,10 @@ pub fn env_pairs(values: &[String]) -> Result<Vec<(String, String)>, WgError> {
         .iter()
         .map(|item| match item.split_once('=') {
             Some((key, value)) if !key.is_empty() => Ok((key.to_owned(), value.to_owned())),
-            _ => Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("--env expects K=V, got {}", wg_model::py_repr_str(item)),
-            )),
+            _ => Err(WgError::validation(format!(
+                "--env expects K=V, got {}",
+                wg_model::py_repr_str(item)
+            ))),
         })
         .collect()
 }
@@ -551,8 +548,7 @@ pub fn oracle_template_arg(parsed: &Json) -> Result<Vec<String>, WgError> {
             .iter()
             .filter_map(|item| item.as_str().map(str::to_owned))
             .collect()),
-        _ => Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        _ => Err(WgError::validation(
             "--oracle-template must be a JSON list of strings",
         )),
     }
@@ -561,19 +557,16 @@ pub fn oracle_template_arg(parsed: &Json) -> Result<Vec<String>, WgError> {
 /// A git failure as the `GitError` the Python services raise, with its details.
 #[must_use]
 pub fn git_failure(error: &wg_gitcore::GitError) -> WgError {
-    let failure = WgError::new(ErrorCode::GitError, error.to_string());
+    let failure = WgError::git(error.to_string());
     match error {
         wg_gitcore::GitError::Failed {
             args,
             returncode,
             stderr,
         } => failure
-            .with_detail("args", json!(args))
-            .with_detail("returncode", json!(returncode))
-            .with_detail(
-                "stderr",
-                json!(stderr.chars().take(2000).collect::<String>()),
-            ),
+            .detail("args", args)
+            .detail("returncode", returncode)
+            .detail("stderr", stderr.chars().take(2000).collect::<String>()),
         _ => failure,
     }
 }
@@ -587,10 +580,10 @@ pub fn validate_ref(reference: &str) -> Result<(), WgError> {
     if wg_gitcore::is_valid_ref(reference) {
         Ok(())
     } else {
-        Err(WgError::new(
-            ErrorCode::GitError,
-            format!("invalid git ref {}", wg_model::py_repr_str(reference)),
-        ))
+        Err(WgError::git(format!(
+            "invalid git ref {}",
+            wg_model::py_repr_str(reference)
+        )))
     }
 }
 

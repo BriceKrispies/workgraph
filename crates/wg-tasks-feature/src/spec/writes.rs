@@ -18,7 +18,7 @@ use wg_tasks::create::{Allocation, NewTask, RepositoryLink, create_plan};
 use wg_tasks::edit::*;
 use wg_tasks::promote::{PromoteScope, promote_ready as promotable, promoted_by_project};
 use wg_tasks::transition::{Change, transition};
-use wg_types::{ErrorCode, Id, Permission, TaskKey, TaskStatus, WgError};
+use wg_types::{Id, Permission, TaskKey, TaskStatus, WgError};
 use wg_wire::convention::{dict, text};
 
 use super::requests::CreateRead;
@@ -34,12 +34,10 @@ pub fn create_task(
 ) -> Result<Decision<Value>, WgError> {
     stamp.require(&[Permission::TaskWrite])?;
     let tasks = &world.tasks;
-    let space = tasks.registry.workspace(workspace).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("workspace {workspace} not found"),
-        )
-    })?;
+    let space = tasks
+        .registry
+        .workspace(workspace)
+        .ok_or_else(|| WgError::not_found(format!("workspace {workspace} not found")))?;
     let key_taken = read
         .key
         .as_deref()
@@ -161,7 +159,7 @@ pub fn create_task(
     }
     let created = state
         .task(task_id)
-        .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, "the created task vanished"))?;
+        .ok_or_else(|| WgError::workgraph("the created task vanished"))?;
     // The task id was drawn just now, so no job can carry its idempotency keys yet.
     decision = absorb(
         decision,

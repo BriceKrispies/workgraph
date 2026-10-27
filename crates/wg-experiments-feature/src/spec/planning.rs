@@ -20,7 +20,7 @@ use wg_model::entity::{Experiment, ExperimentTrial, JsonObject, SubagentRun, Tas
 use wg_model::event::experiment::ExperimentTrialAdded;
 use wg_model::slice::TaskSlice;
 use wg_model::{Decision, EventDraft, EventPayload, Row, Stamp, Write, py_repr_str};
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 use wg_validate::pydantic::py_repr;
 use wg_wire::convention::{dict, int, optional_float, text};
 use wg_wire::dto::{experiment_shapes, trial};
@@ -70,7 +70,7 @@ pub struct NextPlan {
 
 /// A statistics `ValueError` as the generic domain error.
 fn value_error(error: ValueError) -> WgError {
-    WgError::new(ErrorCode::WorkgraphError, error.message())
+    WgError::workgraph(error.message())
 }
 
 fn object(value: Option<&Json>) -> Option<&JsonObject> {
@@ -440,10 +440,7 @@ pub fn pool_tasks(
 }
 
 fn bad_pool(name: &str) -> WgError {
-    WgError::new(
-        ErrorCode::ValidationFailed,
-        format!("the pool {name} of the protocol must be text"),
-    )
+    WgError::validation(format!("the pool {name} of the protocol must be text"))
 }
 
 /// A task as a pool candidate: its `metadata.replay` must be non-empty (and validated, when
@@ -477,44 +474,35 @@ pub fn planned_trial(
     max_seq: Option<i64>,
 ) -> Result<Decision<TrialWithTaskKey>, WgError> {
     if experiment.status != RUNNING {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!(
-                "experiment {} is {}; trials change only while it is running",
-                experiment.slug, experiment.status
-            ),
-        )
-        .with_detail("experiment", json!(experiment.slug))
-        .with_detail("status", json!(experiment.status)));
+        return Err(WgError::conflict(format!(
+            "experiment {} is {}; trials change only while it is running",
+            experiment.slug, experiment.status
+        ))
+        .detail("experiment", &experiment.slug)
+        .detail("status", &experiment.status));
     }
     let models = arms(&experiment.protocol);
     let Some((_, model)) = models.iter().find(|(name, _)| *name == added.arm) else {
         let mut names: Vec<&str> = models.iter().map(|(name, _)| name.as_str()).collect();
         names.sort_unstable();
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "arm {} is not in the protocol of {}",
-                py_repr_str(&added.arm),
-                experiment.slug
-            ),
-        )
-        .with_detail("arms", json!(names)));
+        return Err(WgError::validation(format!(
+            "arm {} is not in the protocol of {}",
+            py_repr_str(&added.arm),
+            experiment.slug
+        ))
+        .detail("arms", names));
     };
     let bands = object(experiment.protocol.get("bands"));
     let low = integer(bands.and_then(|map| map.get("min"))).unwrap_or(0);
     let high = integer(bands.and_then(|map| map.get("max"))).unwrap_or(0);
     if !(low..=high).contains(&added.band) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "band {} is outside the protocol range {low}..{high}",
-                added.band
-            ),
-        )
-        .with_detail("band", json!(added.band))
-        .with_detail("min", json!(low))
-        .with_detail("max", json!(high)));
+        return Err(WgError::validation(format!(
+            "band {} is outside the protocol range {low}..{high}",
+            added.band
+        ))
+        .detail("band", added.band)
+        .detail("min", low)
+        .detail("max", high));
     }
     let seq = max_seq.unwrap_or(0) + 1;
     let ([trial_id, event_id], _) = stamp.ids().take::<2>();

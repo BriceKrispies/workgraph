@@ -6,10 +6,10 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use serde_json::{Value, json};
+use serde_json::Value;
 use wg_model::slice::StackSlice;
 use wg_model::{Task, TaskSlice};
-use wg_types::{ErrorCode, Id, TaskPriority, TaskStatus, WgError};
+use wg_types::{Id, TaskPriority, TaskStatus, WgError};
 
 use crate::deps::{BLOCKED_BY_DEPENDENCIES, satisfied_dependencies, unsatisfied_dependencies};
 use crate::lifecycle::requires_dependencies;
@@ -62,11 +62,11 @@ pub fn dependency_gate(
     }
     let keys: Vec<String> = blockers.iter().map(|b| b.key.to_string()).collect();
     if target != TaskStatus::Ready {
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!("task {} has unsatisfied dependencies", task.key),
-        )
-        .with_detail("blocked_by", json!(keys)));
+        return Err(WgError::invalid_transition(format!(
+            "task {} has unsatisfied dependencies",
+            task.key
+        ))
+        .detail("blocked_by", keys));
     }
     Ok(Gated {
         target: TaskStatus::Blocked,

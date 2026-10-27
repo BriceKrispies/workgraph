@@ -5,7 +5,7 @@ use serde_json::{Map, Value as Json, json};
 use wg_agentspec::validate_template;
 use wg_json::Value;
 use wg_runtime::App;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_wire::convention::json_value;
 
 use crate::spec::cli_agent::unknown_placeholder;
@@ -30,8 +30,7 @@ pub struct CommandAgent<'a> {
 pub fn agent_add_command(app: &mut App, agent: &CommandAgent<'_>) -> Result<Value, WgError> {
     validate_template(agent.args).map_err(|err| unknown_placeholder(&err.name))?;
     if agent.timeout_seconds.is_nan() || agent.timeout_seconds <= 0.0 {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "timeout_seconds must be greater than 0",
         ));
     }

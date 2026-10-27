@@ -21,7 +21,7 @@ use wg_stacks::landing::{
 };
 use wg_stacks::verify::StackRepoBase;
 use wg_store::EventQuery;
-use wg_types::{AttemptStatus, ErrorCode, Id, WgError, WorktreeStatus};
+use wg_types::{AttemptStatus, Id, WgError, WorktreeStatus};
 
 use super::stack_world;
 
@@ -46,11 +46,8 @@ impl Exec<'_> {
         let mut targets = Vec::new();
         for repository_id in repositories {
             let target = self.stack_target(stack_id, repository_id)?.ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::Conflict,
-                    format!("stack {stack_id} is no longer active"),
-                )
-                .with_detail("stack_id", stack_id.to_string().into())
+                WgError::conflict(format!("stack {stack_id} is no longer active"))
+                    .detail("stack_id", stack_id.to_string())
             })?;
             targets.push(target);
         }
@@ -439,10 +436,7 @@ impl Exec<'_> {
                 .get(&step.repository)
                 .map(|path| git_at!(path))
                 .ok_or_else(|| {
-                    WgError::new(
-                        ErrorCode::WorkgraphError,
-                        format!("no source checkout for {}", step.repository),
-                    )
+                    WgError::workgraph(format!("no source checkout for {}", step.repository))
                 }),
         }
     }

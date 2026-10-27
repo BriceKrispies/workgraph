@@ -2,13 +2,12 @@
 //! human view of `agent list` and the refusal of an unknown argument placeholder.
 
 use clap::Command;
-use serde_json::json;
 use wg_agentspec::PLACEHOLDERS;
 use wg_clispec::args::{get, items, python, truncate};
 use wg_clispec::tree::snapshot_command;
 use wg_json::Value;
 use wg_render::Console;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// The clap command of the `agent` group: the snapshot's own tree.
 #[must_use]
@@ -58,9 +57,8 @@ fn text(value: Option<&Value>) -> String {
 #[must_use]
 pub fn unknown_placeholder(name: &str) -> WgError {
     let sorted: std::collections::BTreeSet<&str> = PLACEHOLDERS.iter().copied().collect();
-    WgError::new(
-        ErrorCode::ConfigError,
-        format!("unknown placeholder {{{name}}} in agent argument template"),
-    )
-    .with_detail("allowed", json!(sorted))
+    WgError::config(format!(
+        "unknown placeholder {{{name}}} in agent argument template"
+    ))
+    .detail("allowed", sorted)
 }

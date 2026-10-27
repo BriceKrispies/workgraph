@@ -9,7 +9,7 @@ use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::{BodyRef, OPEN_OBJECT, RouteSpec};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_wire::convention::dict;
 
 use crate::service;
@@ -160,10 +160,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             service::mark_read(app, context, text_param(params, "notification_id"))?;
             Ok(dict(vec![("ok", Value::Bool(true))]))
         }
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 
@@ -181,10 +178,7 @@ fn rule_action(
         "enable" => service::set_enabled(app, context, ws, reference, true),
         "disable" => service::set_enabled(app, context, ws, reference, false),
         "trigger" => service::trigger(app, context, ws, reference, &action_inputs(body)),
-        other => Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("unknown rule action {other}"),
-        )),
+        other => Err(WgError::validation(format!("unknown rule action {other}"))),
     }
 }
 

@@ -12,7 +12,7 @@ use wg_model::event::{EventDraft, EventPayload, GitCommitsAttributed};
 use wg_model::{Decision, Row, Write};
 use wg_runtime::App;
 use wg_runtimespec::RequestContext;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use super::entries::analyze_commit;
 use super::store;
@@ -38,12 +38,9 @@ pub fn link_attempt_commits(
     attempt_id: Id,
 ) -> Result<i64, WgError> {
     let loaded = app.runtime.store.read(|session| {
-        let attempt = session.attempt_by_id(attempt_id)?.ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("attempt '{attempt_id}' not found"),
-            )
-        })?;
+        let attempt = session
+            .attempt_by_id(attempt_id)?
+            .ok_or_else(|| WgError::not_found(format!("attempt '{attempt_id}' not found")))?;
         let manifests = session.manifests_of_attempt(attempt_id)?;
         let pick = |id: Option<Id>| {
             id.and_then(|wanted| manifests.iter().find(|row| row.id == wanted).cloned())

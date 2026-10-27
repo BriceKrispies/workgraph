@@ -12,7 +12,7 @@ use serde_json::{Map, Value as Json};
 use time::OffsetDateTime;
 use wg_json::Value;
 use wg_model::py_repr_str;
-use wg_types::{ErrorCode, Timestamp, WgError};
+use wg_types::{Timestamp, WgError};
 use wg_wire::convention as wire;
 
 /// One configured tracker connection (Python `JiraTrackerConfig`), as `tracker list` shows it.
@@ -100,11 +100,11 @@ pub fn connection_of(connections: &[Connection], name: &str) -> Result<Connectio
 /// `TrackerSyncService.connection`'s refusal: the connection is not configured (`not_found`).
 #[must_use]
 pub fn unknown_connection(name: &str) -> WgError {
-    WgError::new(
-        ErrorCode::NotFound,
-        format!("tracker connection {} is not configured", py_repr_str(name)),
-    )
-    .with_detail("connection", Json::String(name.to_owned()))
+    WgError::not_found(format!(
+        "tracker connection {} is not configured",
+        py_repr_str(name)
+    ))
+    .detail("connection", Json::String(name.to_owned()))
 }
 
 /// `datetime.fromtimestamp(ms / 1000, tz=UTC).isoformat()`: the instant of a cursor in ISO 8601,

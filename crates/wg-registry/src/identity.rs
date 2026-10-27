@@ -7,7 +7,7 @@
 use std::collections::BTreeSet;
 
 use wg_model::py_repr_str;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 /// How a registration was matched to an existing repository (the `matched_by` of the event).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -77,24 +77,18 @@ pub fn new_repository_name(
         return Ok(name.to_owned());
     }
     if requested.is_some() {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!(
-                "repository name {} is already registered",
-                py_repr_str(name)
-            ),
-        ));
+        return Err(WgError::conflict(format!(
+            "repository name {} is already registered",
+            py_repr_str(name)
+        )));
     }
     (2_u32..)
         .map(|suffix| format!("{name}-{suffix}"))
         .find(|candidate| !taken.contains(&candidate.as_str()))
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::Conflict,
-                format!(
-                    "repository name {} is already registered",
-                    py_repr_str(name)
-                ),
-            )
+            WgError::conflict(format!(
+                "repository name {} is already registered",
+                py_repr_str(name)
+            ))
         })
 }

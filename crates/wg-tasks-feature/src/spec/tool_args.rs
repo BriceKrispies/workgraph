@@ -7,7 +7,7 @@
 //! read it.
 
 use serde_json::{Map, Value, json};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// The argument `key` when the call gave it (a `null` is absent).
 fn given(arguments: &Value, key: &str) -> Option<Value> {
@@ -211,14 +211,12 @@ pub fn promote_scope(arguments: &Value) -> Result<PromoteScope, WgError> {
     let all = flag(arguments, "all");
     let scoped = project.is_some() || !tags.is_empty();
     if all && scoped {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "all=true cannot be combined with tags or project",
         ));
     }
     if !(all || scoped) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "give tags, project, or all=true to choose the tasks to promote",
         ));
     }

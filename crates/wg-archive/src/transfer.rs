@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 use wg_archivespec as spec;
 use wg_store::{Session, Store};
-use wg_types::{ErrorCode, WgError, parse_id};
+use wg_types::{WgError, parse_id};
 
 /// The rows per table, in the order the tables were written or first read.
 pub type TableCounts = Vec<(String, usize)>;
@@ -80,12 +80,9 @@ pub fn import_workspace(store: &mut Store, source: &Path) -> Result<ImportReport
     let text =
         std::fs::read_to_string(source).map_err(|err| spec::io_failure("read", source, &err))?;
     let mut lines = text.lines();
-    let header = lines.next().ok_or_else(|| {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            "not a Workgraph workspace export",
-        )
-    })?;
+    let header = lines
+        .next()
+        .ok_or_else(|| WgError::validation("not a Workgraph workspace export"))?;
     let workspace_id = spec::parse_header(header)?;
     store.write(move |session| {
         session.execute_batch("PRAGMA defer_foreign_keys = ON")?;
@@ -93,7 +90,7 @@ pub fn import_workspace(store: &mut Store, source: &Path) -> Result<ImportReport
             .rows(&spec::workspace_exists(&workspace_id))?
             .is_empty()
         {
-            return Err(spec::conflict(
+            return Err(WgError::conflict(
                 "this workspace already exists in the target database; nothing was imported",
             ));
         }

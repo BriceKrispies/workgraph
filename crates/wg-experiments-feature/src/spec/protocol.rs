@@ -5,9 +5,9 @@
 //! (by full id), the brief, the size metric, the band range, the staircase and the budget. Bare
 //! model aliases are rejected because the same alias has resolved to different models over time.
 
-use serde_json::{Map, Value as Json, json};
+use serde_json::{Map, Value as Json};
 use wg_model::py_repr_str;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// Aliases resolve to whatever model is current (`MODEL_ALIASES`).
 const MODEL_ALIASES: [&str; 5] = ["haiku", "sonnet", "opus", "fable", "inherit"];
@@ -331,11 +331,11 @@ pub fn validate_protocol(protocol: &Json) -> Result<Map<String, Json>, WgError> 
     let problems = protocol_problems(protocol);
     match (problems.is_empty(), protocol) {
         (true, Json::Object(map)) => Ok(map.clone()),
-        _ => Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("invalid experiment protocol: {}", problems.join("; ")),
-        )
-        .with_detail("problems", json!(problems))),
+        _ => Err(WgError::validation(format!(
+            "invalid experiment protocol: {}",
+            problems.join("; ")
+        ))
+        .detail("problems", problems)),
     }
 }
 

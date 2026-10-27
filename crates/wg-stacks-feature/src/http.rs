@@ -12,7 +12,7 @@ use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::{BodyRef, RouteSpec};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::service;
 use crate::spec::body_text;
@@ -132,10 +132,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
         "H068" => service::containing(app, context, ws, reference),
         "H069" => service::integrate(app, context, ws, reference),
         "H070" => service::verify(app, context, ws, reference),
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 

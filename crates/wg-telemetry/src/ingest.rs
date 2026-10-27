@@ -15,7 +15,7 @@ use wg_model::event::{
     AgentSubagentChanged, AttemptCreated, AttemptFinished, AttemptSubagentBound,
 };
 use wg_model::{EventDraft, EventPayload, Stamp};
-use wg_types::{AttemptStatus, ErrorCode, Id, Timestamp, WgError, parse_id};
+use wg_types::{AttemptStatus, Id, Timestamp, WgError, parse_id};
 
 use crate::binding::Resolved;
 use crate::hook::{
@@ -603,13 +603,10 @@ pub fn finish_attempt(
 /// names it.
 fn already_finished(attempt: &AgentAttempt, status: AttemptStatus, error: WgError) -> WgError {
     if is_terminal(attempt.status) && attempt.status != status {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "attempt {} already finished as {}",
-                attempt.id, attempt.status
-            ),
-        )
+        WgError::validation(format!(
+            "attempt {} already finished as {}",
+            attempt.id, attempt.status
+        ))
     } else {
         error
     }

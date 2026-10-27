@@ -36,7 +36,7 @@ pub mod spa;
 pub mod sse;
 pub mod text;
 
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::routes::Entry;
 
@@ -89,7 +89,7 @@ pub fn openapi_body() -> Result<Vec<u8>, WgError> {
     let document = wg_wire::contract::openapi()?;
     wg_json::http_json(&wg_wire::convention::json_value(&document))
         .map(String::into_bytes)
-        .map_err(|err| WgError::new(ErrorCode::WorkgraphError, format!("openapi: {err:?}")))
+        .map_err(|err| WgError::workgraph(format!("openapi: {err:?}")))
 }
 
 /// A header's value as Starlette reads it: each byte is one character (Latin-1), so the text of

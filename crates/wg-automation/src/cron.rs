@@ -8,7 +8,7 @@
 use std::collections::BTreeSet;
 
 use time::{Duration, OffsetDateTime};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::py::str_repr;
 
@@ -29,10 +29,6 @@ pub struct Cron {
     weekdays: BTreeSet<u64>,
     dom_any: bool,
     dow_any: bool,
-}
-
-fn invalid(message: String) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
 }
 
 /// Python `str.isdigit()` for the ASCII inputs that cron fields hold.
@@ -58,7 +54,7 @@ fn parse_item(item: &str, low: u64, high: u64) -> Result<BTreeSet<u64>, WgError>
     let (part, step) = match item.split_once('/') {
         Some((head, step_text)) => {
             if !is_digits(step_text) || number(step_text) == 0 {
-                return Err(invalid(format!(
+                return Err(WgError::validation(format!(
                     "invalid cron step {}",
                     str_repr(step_text)
                 )));
@@ -71,16 +67,22 @@ fn parse_item(item: &str, low: u64, high: u64) -> Result<BTreeSet<u64>, WgError>
         (low, high)
     } else if let Some((first, last)) = part.split_once('-') {
         if !(is_digits(first) && is_digits(last)) {
-            return Err(invalid(format!("invalid cron range {}", str_repr(part))));
+            return Err(WgError::validation(format!(
+                "invalid cron range {}",
+                str_repr(part)
+            )));
         }
         (number(first), number(last))
     } else if is_digits(part) {
         (number(part), number(part))
     } else {
-        return Err(invalid(format!("invalid cron field {}", str_repr(part))));
+        return Err(WgError::validation(format!(
+            "invalid cron field {}",
+            str_repr(part)
+        )));
     };
     if start < low || end > high || start > end {
-        return Err(invalid(format!(
+        return Err(WgError::validation(format!(
             "cron value {} outside {low}-{high}",
             str_repr(part)
         )));
@@ -97,7 +99,7 @@ impl Cron {
     pub fn parse(expression: &str) -> Result<Self, WgError> {
         let fields: Vec<&str> = expression.split_whitespace().collect();
         let [minute, hour, day, month, weekday] = fields.as_slice() else {
-            return Err(invalid(
+            return Err(WgError::validation(
                 "cron expressions need 5 fields: minute hour day month weekday".to_owned(),
             ));
         };
@@ -140,7 +142,7 @@ impl Cron {
         .take(usize::try_from(SEARCH_LIMIT_MINUTES).unwrap_or(usize::MAX))
         .find(|current| self.matches(*current))
         .ok_or_else(|| {
-            invalid(format!(
+            WgError::validation(format!(
                 "cron expression {} never fires",
                 str_repr(&self.expression)
             ))

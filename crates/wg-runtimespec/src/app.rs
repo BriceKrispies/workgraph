@@ -6,7 +6,7 @@ use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use serde_json::Value;
 use wg_config::ConfigError;
 use wg_storecodec::{Raw, Statement};
-use wg_types::{ErrorCode, Id, WgError, parse_id};
+use wg_types::{Id, WgError, parse_id};
 use wg_validate::ValidationError;
 use wg_validate::pydantic::error_url;
 
@@ -17,43 +17,33 @@ pub fn token_urlsafe(bytes: &[u8]) -> String {
 
 /// A file the application context could not read, write or create.
 pub fn io_error(what: &str, path: &std::path::Path, err: &std::io::Error) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("cannot {what} {}: {err}", path.display()),
-    )
+    WgError::workgraph(format!("cannot {what} {}: {err}", path.display()))
 }
 
 /// `ConfigStore` failing on the file at `path`: `config_error`, worded as Python words it.
 pub fn config_failure(path: &str, err: ConfigError) -> WgError {
     match err {
-        ConfigError::InvalidToml(detail) => WgError::new(
-            ErrorCode::ConfigError,
-            format!("{path} is not valid TOML: {detail}"),
-        ),
-        ConfigError::InvalidSchemaVersion(value) => WgError::new(
-            ErrorCode::ConfigError,
-            format!(
-                "{path} has an invalid schema_version: expected an integer, got {}",
-                wg_config::value_repr(&value)
-            ),
-        )
-        .with_detail("schema_version", value),
-        ConfigError::Validation(errors) => {
-            WgError::new(ErrorCode::ConfigError, format!("{path} failed validation"))
-                .with_detail("errors", validation_details(&errors))
+        ConfigError::InvalidToml(detail) => {
+            WgError::config(format!("{path} is not valid TOML: {detail}"))
         }
-        ConfigError::Exception(name) => WgError::new(ErrorCode::WorkgraphError, name),
+        ConfigError::InvalidSchemaVersion(value) => WgError::config(format!(
+            "{path} has an invalid schema_version: expected an integer, got {}",
+            wg_config::value_repr(&value)
+        ))
+        .detail("schema_version", value),
+        ConfigError::Validation(errors) => WgError::config(format!("{path} failed validation"))
+            .detail("errors", validation_details(&errors)),
+        ConfigError::Exception(name) => WgError::workgraph(name),
     }
 }
 
 /// `ConfigStore.effective` failing after the merge.
 pub fn merged_config_failure(slug: &str, err: ConfigError) -> WgError {
     match err {
-        ConfigError::Validation(errors) => WgError::new(
-            ErrorCode::ConfigError,
-            format!("workspace overrides for {slug} produce an invalid configuration"),
-        )
-        .with_detail("errors", validation_details(&errors)),
+        ConfigError::Validation(errors) => WgError::config(format!(
+            "workspace overrides for {slug} produce an invalid configuration"
+        ))
+        .detail("errors", validation_details(&errors)),
         other => config_failure(slug, other),
     }
 }
@@ -109,37 +99,30 @@ pub fn workspace_rows(rows: &[Vec<Raw>]) -> Result<Vec<(Id, String)>, WgError> {
     rows.iter()
         .map(|row| match row.as_slice() {
             [Raw::Text(id), Raw::Text(slug)] => Ok((parse_id(id)?, slug.clone())),
-            _ => Err(WgError::new(
-                ErrorCode::WorkgraphError,
-                "unexpected workspace row shape",
-            )),
+            _ => Err(WgError::workgraph("unexpected workspace row shape")),
         })
         .collect()
 }
 
 /// `resolve.workspace` finding nothing.
 pub fn workspace_not_found(reference: &str) -> WgError {
-    WgError::new(
-        ErrorCode::NotFound,
-        format!("workspace {} not found", wg_model::py_repr_str(reference)),
-    )
-    .with_detail("ref", Value::String(reference.to_owned()))
+    WgError::not_found(format!(
+        "workspace {} not found",
+        wg_model::py_repr_str(reference)
+    ))
+    .detail("ref", Value::String(reference.to_owned()))
 }
 
 /// `Workgraph.workspace_slug` finding nothing.
 pub fn workspace_id_not_found(workspace_id: &str) -> WgError {
-    WgError::new(
-        ErrorCode::NotFound,
-        format!("workspace {workspace_id} not found"),
-    )
+    WgError::not_found(format!("workspace {workspace_id} not found"))
 }
 
 /// `Workgraph.default_workspace_id` without a configured slug: the only unarchived workspace.
 pub fn only_workspace(unarchived: &[(Id, String)]) -> Result<Id, WgError> {
     match unarchived {
         [(id, _)] => Ok(*id),
-        _ => Err(WgError::new(
-            ErrorCode::NotFound,
+        _ => Err(WgError::not_found(
             "no default workspace configured; pass --workspace or run `workgraph workspace use <slug>`",
         )),
     }
@@ -157,6 +140,7 @@ pub fn configured_default_workspace(config: &serde_json::Map<String, Value>) -> 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use wg_types::ErrorCode;
 
     #[test]
     fn token_has_python_length_and_alphabet() {

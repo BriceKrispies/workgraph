@@ -11,10 +11,10 @@ use wg_registry::resolve;
 use wg_runtime::{App, RequestContext};
 use wg_runtimespec::app::is_uuid;
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, Permission, WgError, parse_id};
+use wg_types::{Id, Permission, WgError, parse_id};
 
 use crate::service::reads;
-use crate::spec::trial::{self, AddInput, not_found};
+use crate::spec::trial::{self, AddInput};
 
 /// `ExperimentService.add_trial`: plans one trial of `task` in the running experiment `experiment`.
 ///
@@ -148,10 +148,10 @@ fn find_experiment(
     };
     match found {
         Some(experiment) if experiment.workspace_id == workspace_id => Ok(experiment),
-        _ => Err(not_found(
-            &format!("experiment {} not found", py_repr_str(reference)),
-            reference,
-        )),
+        _ => Err(
+            WgError::not_found(format!("experiment {} not found", py_repr_str(reference)))
+                .detail("ref", reference),
+        ),
     }
 }
 
@@ -163,10 +163,8 @@ pub(crate) fn load_trial(
     reference: &str,
 ) -> Result<(ExperimentTrial, String), WgError> {
     let missing = || {
-        not_found(
-            &format!("trial {} not found", py_repr_str(reference)),
-            reference,
-        )
+        WgError::not_found(format!("trial {} not found", py_repr_str(reference)))
+            .detail("ref", reference)
     };
     if !is_uuid(reference) {
         return Err(missing());
@@ -185,17 +183,13 @@ pub(crate) fn experiment_of(
     session: &mut Session<'_>,
     trial: &ExperimentTrial,
 ) -> Result<Experiment, WgError> {
-    reads::experiment_by_id(session, trial.experiment_id)?.ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("experiment {} not found", trial.experiment_id),
-        )
-    })
+    reads::experiment_by_id(session, trial.experiment_id)?
+        .ok_or_else(|| WgError::not_found(format!("experiment {} not found", trial.experiment_id)))
 }
 
 /// The key of the task `task_id`, which the trial output shows.
 fn task_key(session: &mut Session<'_>, task_id: Id) -> Result<String, WgError> {
     let task: Option<Task> = session.fetch(&RowKey::Task(task_id))?;
     task.map(|task| task.key.to_string())
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("task {task_id} not found")))
+        .ok_or_else(|| WgError::not_found(format!("task {task_id} not found")))
 }

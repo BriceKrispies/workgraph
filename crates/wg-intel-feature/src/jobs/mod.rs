@@ -13,7 +13,7 @@ use wg_runtime::{
     Handler, HandlerError, HandlerResult, JobContext, JobKind, Queue, system_context,
 };
 use wg_runtimespec::RequestContext;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::service::embed;
 use crate::service::llm::{Live, Providers};
@@ -154,12 +154,8 @@ pub fn evaluate_classifier_over(
     .map_err(HandlerError::Failed)?
     .caused_by(job.job.causation_id);
     let payload: Map<String, Json> = job.job.payload.clone();
-    let workspace = text(&payload, "workspace").ok_or_else(|| {
-        HandlerError::Failed(WgError::new(
-            ErrorCode::ValidationFailed,
-            "job payload has no workspace",
-        ))
-    })?;
+    let workspace = text(&payload, "workspace")
+        .ok_or_else(|| HandlerError::Failed(WgError::validation("job payload has no workspace")))?;
     let evaluated = ops::evaluate(
         &mut queue.app,
         &context,

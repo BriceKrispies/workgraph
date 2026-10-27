@@ -9,7 +9,7 @@ use wg_json::Value;
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext};
 use wg_tasks::triage::{PlannedVerdict, Step, TriagePlan, plan_triage, verdict_list};
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 use wg_wire::convention::json_value;
 
 use super::{task_add_relation, task_comment, task_create, task_update};
@@ -71,12 +71,8 @@ pub fn task_triage_apply(
 /// Reads the triage file. A file that cannot be read or parsed is a validation failure, as the
 /// Python loader raises it.
 fn load_entries(path: &str) -> Result<Json, WgError> {
-    let unreadable = |err: String| {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("cannot read triage file {path}: {err}"),
-        )
-    };
+    let unreadable =
+        |err: String| WgError::validation(format!("cannot read triage file {path}: {err}"));
     let text = std::fs::read_to_string(path).map_err(|err| unreadable(err.to_string()))?;
     // `json.loads(text)`: the message is `str(JSONDecodeError)`, as CPython words it.
     wg_validate::pyjson::parse_message(&text).map_err(unreadable)

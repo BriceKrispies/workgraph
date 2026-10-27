@@ -6,7 +6,7 @@ use serde_json::json;
 use wg_clispec::Snapshot;
 use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_model::py_repr_str;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 pub mod lifecycle;
 pub mod ops_args;
@@ -40,14 +40,11 @@ pub fn status_choice(value: &str) -> Result<String, WgError> {
         Ok(value.to_owned())
     } else {
         let allowed: Vec<serde_json::Value> = STATUSES.iter().map(|s| json!(s)).collect();
-        Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "status {} is not one of: {}",
-                py_repr_str(value),
-                STATUSES.join(", ")
-            ),
-        )
-        .with_detail("allowed", serde_json::Value::Array(allowed)))
+        Err(WgError::validation(format!(
+            "status {} is not one of: {}",
+            py_repr_str(value),
+            STATUSES.join(", ")
+        ))
+        .detail("allowed", serde_json::Value::Array(allowed)))
     }
 }

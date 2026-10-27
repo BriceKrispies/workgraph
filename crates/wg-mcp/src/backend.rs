@@ -3,7 +3,7 @@
 use serde_json::Value;
 pub use wg_mcpspec::options::Agent;
 use wg_runtime::{App, Feature};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// The application behind the server. The server holds it behind one lock, so a call has the
 /// application to itself (`App` is `&mut`: one SQLite connection, one decision at a time). Calls
@@ -40,10 +40,7 @@ impl ToolBackend for AppBackend {
                 return answer;
             }
         }
-        Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("tool {name} is not wired yet"),
-        ))
+        Err(WgError::workgraph(format!("tool {name} is not wired yet")))
     }
 
     fn read_resource(&mut self, agent: &Agent, uri: &str) -> Result<String, WgError> {
@@ -56,9 +53,8 @@ impl ToolBackend for AppBackend {
                 return text;
             }
         }
-        Err(WgError::new(
-            ErrorCode::NotFound,
-            format!("resource {uri} is not wired yet"),
-        ))
+        Err(WgError::not_found(format!(
+            "resource {uri} is not wired yet"
+        )))
     }
 }

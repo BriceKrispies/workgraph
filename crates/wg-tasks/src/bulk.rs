@@ -77,7 +77,7 @@ mod tests {
             ("WG-1".to_owned(), Ok("WG-1".to_owned())),
             (
                 "WG-404".to_owned(),
-                Err(WgError::new(ErrorCode::NotFound, "task WG-404 not found")),
+                Err(WgError::not_found("task WG-404 not found")),
             ),
             ("WG-2".to_owned(), Ok("WG-2".to_owned())),
         ];
@@ -88,10 +88,7 @@ mod tests {
             vec![("WG-404".to_owned(), "task WG-404 not found".to_owned())]
         );
 
-        let fatal = vec![(
-            "X".to_owned(),
-            Err(WgError::new(ErrorCode::GitError, "boom")),
-        )];
+        let fatal = vec![("X".to_owned(), Err(WgError::git("boom")))];
         assert_eq!(
             bulk_results(fatal).err().map(|e| e.code),
             Some(ErrorCode::GitError)

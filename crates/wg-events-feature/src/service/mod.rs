@@ -10,7 +10,7 @@ use wg_json::Value;
 use wg_model::StoredEvent;
 use wg_runtime::{App, RequestContext};
 use wg_storecodec::EventQuery;
-use wg_types::{ErrorCode, Permission, WgError};
+use wg_types::{Permission, WgError};
 use wg_wire::dto::event::from_stored;
 
 use crate::spec::{self, ListArgs};
@@ -76,5 +76,5 @@ pub fn verify(
         events.into_iter().map(StoredEvent::from).collect(),
         &task_states(&tasks),
     )
-    .map_err(|error| WgError::new(ErrorCode::WorkgraphError, error.to_string()))
+    .map_err(|error| WgError::workgraph(error.to_string()))
 }

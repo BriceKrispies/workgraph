@@ -7,7 +7,7 @@
 //! the acceptance row is the shell's job.
 
 use wg_model::entity::VerificationRun;
-use wg_types::{ErrorCode, Id, VerificationStatus, WgError};
+use wg_types::{Id, VerificationStatus, WgError};
 
 /// Facts for the automatic acceptance that follows a finished run.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -98,30 +98,18 @@ impl AcceptRefusal {
     /// The domain error for this refusal, with the Python message text.
     pub fn to_error(self, task_key: &str) -> WgError {
         match self {
-            Self::NoVerificationConfigured => WgError::new(
-                ErrorCode::ValidationFailed,
-                format!(
+            Self::NoVerificationConfigured => WgError::validation(format!(
                     "{task_key} has no verification configured; use manual acceptance with a recorded reason"
-                ),
-            ),
-            Self::NoCompletedRun => WgError::new(
-                ErrorCode::Conflict,
-                format!("{task_key} has no completed verification run"),
-            ),
-            Self::LatestRunFailed { run_id } => WgError::new(
-                ErrorCode::Conflict,
-                format!(
+                )),
+            Self::NoCompletedRun => WgError::conflict(format!("{task_key} has no completed verification run")),
+            Self::LatestRunFailed { run_id } => WgError::conflict(format!(
                     "latest verification run for {task_key} failed required checks; it cannot be accepted"
-                ),
-            )
-            .with_detail("run_id", run_id.to_string().into()),
-            Self::LatestRunFastOnly { run_id } => WgError::new(
-                ErrorCode::Conflict,
-                format!(
+                ))
+            .detail("run_id", run_id.to_string()),
+            Self::LatestRunFastOnly { run_id } => WgError::conflict(format!(
                     "latest verification run for {task_key} ran only fast checks; run full verification first"
-                ),
-            )
-            .with_detail("run_id", run_id.to_string().into()),
+                ))
+            .detail("run_id", run_id.to_string()),
         }
     }
 }

@@ -44,10 +44,10 @@ macro_rules! string_enum {
 
             fn from_str(text: &str) -> Result<Self, Self::Err> {
                 Self::parse(text).ok_or_else(|| {
-                    $crate::WgError::new(
-                        $crate::ErrorCode::ValidationFailed,
-                        format!("unknown {} {text:?}", stringify!($name)),
-                    )
+                    $crate::WgError::validation(format!(
+                        "unknown {} {text:?}",
+                        stringify!($name)
+                    ))
                 })
             }
         }

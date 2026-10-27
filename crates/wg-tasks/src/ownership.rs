@@ -5,11 +5,10 @@
 
 use std::collections::BTreeSet;
 
-use serde_json::json;
 use wg_model::TaskSlice;
 use wg_model::entity::{ExternalItem, Task};
 use wg_model::stamp::py_repr_str;
-use wg_types::{Actor, ErrorCode, Id, WgError};
+use wg_types::{Actor, Id, WgError};
 
 /// The actor string of the tracker sync (`SYNC_ACTOR`).
 pub const SYNC_ACTOR: &str = "system:tracker-sync";
@@ -63,19 +62,16 @@ pub fn guard_tracker_owned(
     if owned.is_empty() {
         return Ok(());
     }
-    Err(WgError::new(
-        ErrorCode::PermissionDenied,
-        format!(
-            "{} mirrors {} in {}; the tracker owns {} for it, so change them there",
-            task.key,
-            item.external_key,
-            item.connection,
-            owned.join(", ")
-        ),
-    )
-    .with_detail("fields", json!(owned))
-    .with_detail("connection", json!(item.connection))
-    .with_detail("external_key", json!(item.external_key)))
+    Err(WgError::permission_denied(format!(
+        "{} mirrors {} in {}; the tracker owns {} for it, so change them there",
+        task.key,
+        item.external_key,
+        item.connection,
+        owned.join(", ")
+    ))
+    .detail("fields", owned)
+    .detail("connection", &item.connection)
+    .detail("external_key", &item.external_key))
 }
 
 /// Whether `key` looks like a tracker issue key: an uppercase letter, up to nine more uppercase
@@ -103,29 +99,26 @@ pub fn check_tracker_key(
     key_taken: bool,
 ) -> Result<(), WgError> {
     if !is_sync_actor(actor) {
-        return Err(WgError::new(
-            ErrorCode::PermissionDenied,
-            format!("only {SYNC_ACTOR} may set a task key"),
-        ));
+        return Err(WgError::permission_denied(format!(
+            "only {SYNC_ACTOR} may set a task key"
+        )));
     }
     if !is_tracker_key(key) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("tracker key {} must look like ABC-123", py_repr_str(key)),
-        ));
+        return Err(WgError::validation(format!(
+            "tracker key {} must look like ABC-123",
+            py_repr_str(key)
+        )));
     }
     let prefix = key.split_once('-').map_or(key, |(prefix, _)| prefix);
     if prefix == workspace_prefix {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("tracker key prefix {prefix} is the workspace's own prefix"),
-        ));
+        return Err(WgError::validation(format!(
+            "tracker key prefix {prefix} is the workspace's own prefix"
+        )));
     }
     if key_taken {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!("task {key} already exists in this workspace"),
-        ));
+        return Err(WgError::conflict(format!(
+            "task {key} already exists in this workspace"
+        )));
     }
     Ok(())
 }

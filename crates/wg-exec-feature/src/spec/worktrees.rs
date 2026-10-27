@@ -15,7 +15,7 @@ use wg_exec::manifest::{
 };
 use wg_exec::recovery::{RecoveryAction, WorktreeFacts, recovery_action};
 pub use wg_git_feature::spec::worktrees::{
-    Removal, git_failure, io_failure, not_found, removal_out, removed_decision,
+    Removal, git_failure, io_failure, removal_out, removed_decision,
 };
 use wg_json::Value;
 use wg_model::decision::Decision;
@@ -31,8 +31,7 @@ use wg_model::write::{RowKey, Write};
 use wg_registry::boundary::is_within;
 use wg_storecodec::run_sql::WorktreeWithRepository;
 use wg_types::{
-    AttemptStatus, ChangeSetItemStatus, ChangeSetStatus, ErrorCode, Id, Timestamp, WgError,
-    WorktreeStatus,
+    AttemptStatus, ChangeSetItemStatus, ChangeSetStatus, Id, Timestamp, WgError, WorktreeStatus,
 };
 use wg_verify::{ApplicableCheck, CheckTier, TaskScope, applicable_checks, checks_for_tier};
 use wg_wire::convention::{
@@ -326,13 +325,13 @@ pub fn acquire_lease_decision(
             })))
         }
         Some(current) if current.expires_at.is_none_or(|expiry| expiry > stamp.at) => {
-            Err(WgError::new(
-                ErrorCode::ResourceBusy,
-                format!("resource {resource_key} is leased by {}", current.holder),
-            )
-            .with_detail("resource", serde_json::json!(resource_key))
-            .with_detail("holder", serde_json::json!(current.holder))
-            .with_detail("purpose", serde_json::json!(current.purpose)))
+            Err(WgError::resource_busy(format!(
+                "resource {resource_key} is leased by {}",
+                current.holder
+            ))
+            .detail("resource", resource_key)
+            .detail("holder", &current.holder)
+            .detail("purpose", &current.purpose))
         }
         Some(_) => Ok(Decision::new(()).write(Write::update(fresh))),
     }
@@ -532,10 +531,10 @@ pub fn prepare_decision(
                             })
                         })
                         .map_err(|_| {
-                            WgError::new(
-                                ErrorCode::WorkgraphError,
-                                format!("invalid repository id {}", item.repository_id),
-                            )
+                            WgError::workgraph(format!(
+                                "invalid repository id {}",
+                                item.repository_id
+                            ))
                         })
                 })
                 .collect::<Result<Vec<_>, _>>()?;
@@ -611,24 +610,14 @@ fn entry_object(entry: &ManifestEntry) -> JsonObject {
     }
 }
 
-/// `NotFoundError` for an attempt id.
-pub fn not_found_attempt(attempt_id: Id) -> WgError {
-    WgError::new(
-        ErrorCode::NotFound,
-        format!("attempt {attempt_id} not found"),
-    )
-}
-
 /// `workgraph.integrations.git.worktrees.plan_repo` failures as the API raises them.
 pub fn plan_failure(err: PlanError) -> WgError {
     match err {
-        PlanError::ReadOnly { repository } => WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("repository {repository} is read-only"),
-        ),
-        PlanError::NoCommits { repository } => WgError::new(
-            ErrorCode::GitError,
-            format!("repository {repository} has no commits to base an attempt on"),
-        ),
+        PlanError::ReadOnly { repository } => {
+            WgError::validation(format!("repository {repository} is read-only"))
+        }
+        PlanError::NoCommits { repository } => WgError::git(format!(
+            "repository {repository} has no commits to base an attempt on"
+        )),
     }
 }

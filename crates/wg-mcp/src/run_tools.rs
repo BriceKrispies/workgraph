@@ -13,7 +13,7 @@ use wg_model::entity::Task;
 use wg_model::{RowKey, py_repr_str};
 use wg_runtime::App;
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, TaskKey, WgError, parse_id};
+use wg_types::{Id, TaskKey, WgError, parse_id};
 
 use crate::backend::Agent;
 
@@ -45,10 +45,7 @@ fn unwired(app: &mut App, name: &str, arguments: &Value) -> Result<Value, WgErro
     app.runtime
         .store
         .read(|session| find_task(session, workspace, reference))?;
-    Err(WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("tool {name} is not wired yet"),
-    ))
+    Err(WgError::workgraph(format!("tool {name} is not wired yet")))
 }
 
 /// The workspace the arguments name, if any. Without one a task reference is resolved across
@@ -69,10 +66,7 @@ fn find_task(
     reference: &str,
 ) -> Result<Task, WgError> {
     if reference.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "task reference must not be empty",
-        ));
+        return Err(WgError::validation("task reference must not be empty"));
     }
     let by_id = match parse_id(reference) {
         Ok(id) => session.fetch::<Task>(&RowKey::Task(id))?,
@@ -87,13 +81,10 @@ fn find_task(
                     // At most one match is needed to tell "one" from "ambiguous".
                     let mut matches = session.tasks_by_key(&key)?;
                     if matches.len() > 1 {
-                        return Err(WgError::new(
-                            ErrorCode::ValidationFailed,
-                            format!(
-                                "task key {} is ambiguous across workspaces; pass a workspace",
-                                py_repr_str(reference)
-                            ),
-                        ));
+                        return Err(WgError::validation(format!(
+                            "task key {} is ambiguous across workspaces; pass a workspace",
+                            py_repr_str(reference)
+                        )));
                     }
                     matches.pop()
                 }
@@ -104,10 +95,7 @@ fn find_task(
     found
         .filter(|task| workspace.is_none_or(|ws| task.workspace_id == ws))
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("task {} not found", py_repr_str(reference)),
-            )
-            .with_detail("ref", Value::String(reference.to_owned()))
+            WgError::not_found(format!("task {} not found", py_repr_str(reference)))
+                .detail("ref", Value::String(reference.to_owned()))
         })
 }

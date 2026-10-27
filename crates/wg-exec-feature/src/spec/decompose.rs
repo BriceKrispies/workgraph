@@ -15,7 +15,7 @@ use wg_tasks::edit::Enrichment;
 use wg_tasks::shape::key_of;
 use wg_tasks_feature::spec::requests::{read_create, validate_create};
 use wg_tasks_feature::spec::writes::create_task;
-use wg_types::{ErrorCode, Id, TaskKey, WgError};
+use wg_types::{Id, TaskKey, WgError};
 use wg_validate::{Extra, Field, Model, Schema, StrRules, validate};
 
 /// The system prompt of the decomposition request.
@@ -167,11 +167,7 @@ fn text(value: Option<&Json>) -> String {
 /// `TaskDecomposition.model_validate(data)`, or the `validation_failed` error the service raises.
 pub fn read_proposal(data: &Map<String, Json>) -> Result<Proposal, WgError> {
     let dump = validate(&model(), &Json::Object(data.clone())).map_err(|errors| {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            "model proposed an invalid decomposition",
-        )
-        .with_detail(
+        WgError::validation("model proposed an invalid decomposition").detail(
             "errors",
             Json::Array(
                 errors
@@ -211,12 +207,8 @@ fn list_repr(items: &[String]) -> String {
     format!("[{}]", shown.join(", "))
 }
 
-fn invalid(message: String) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
-}
-
 fn cycle(message: String) -> WgError {
-    WgError::new(ErrorCode::DependencyCycle, message)
+    WgError::dependency_cycle(message)
 }
 
 /// `validate_decomposition`: checks the references and returns the refs in dependency order, as
@@ -232,7 +224,7 @@ pub fn validate_decomposition(
         .collect();
     let distinct: std::collections::BTreeSet<&str> = refs.iter().copied().collect();
     if distinct.len() != refs.len() {
-        return Err(invalid(
+        return Err(WgError::validation(
             "decomposition contains duplicate child refs".to_owned(),
         ));
     }
@@ -244,7 +236,7 @@ pub fn validate_decomposition(
             .cloned()
             .collect();
         if !unknown.is_empty() {
-            return Err(invalid(format!(
+            return Err(WgError::validation(format!(
                 "child {} depends on unknown refs {}",
                 child.reference,
                 list_repr(&unknown)
@@ -263,7 +255,7 @@ pub fn validate_decomposition(
             .cloned()
             .collect();
         if !outside.is_empty() {
-            return Err(invalid(format!(
+            return Err(WgError::validation(format!(
                 "child {} references repositories outside the parent task: {}",
                 child.reference,
                 list_repr(&outside)
@@ -473,9 +465,9 @@ pub fn create_children(
         .iter()
         .enumerate()
         .try_fold(start, |built, (index, reference)| {
-            let child = by_ref
-                .get(reference.as_str())
-                .ok_or_else(|| invalid(format!("decomposition has no child {reference}")))?;
+            let child = by_ref.get(reference.as_str()).ok_or_else(|| {
+                WgError::validation(format!("decomposition has no child {reference}"))
+            })?;
             let body = child_body(
                 child,
                 &parent.task.to_string(),

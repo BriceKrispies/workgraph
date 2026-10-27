@@ -9,7 +9,7 @@
 
 use time::{Date, Month, OffsetDateTime, PrimitiveDateTime, Time, UtcOffset};
 
-use crate::{ErrorCode, WgError};
+use crate::WgError;
 
 /// A UTC instant truncated to microseconds. Naive values and other offsets are converted to UTC
 /// on construction, so every formatter prints the UTC wall clock.
@@ -17,7 +17,7 @@ use crate::{ErrorCode, WgError};
 pub struct Timestamp(OffsetDateTime);
 
 fn invalid(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
+    WgError::validation(message)
 }
 
 fn component<E: core::fmt::Display, T>(result: Result<T, E>) -> Result<T, WgError> {

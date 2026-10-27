@@ -20,7 +20,7 @@ use wg_model::{RowKey, Write};
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext};
 use wg_store::{EventRecord, Session};
-use wg_types::{ActorKind, ErrorCode, Id, Permission, Timestamp, WgError, parse_id};
+use wg_types::{ActorKind, Id, Permission, Timestamp, WgError, parse_id};
 
 use crate::spec::sql::Page;
 use crate::spec::{self as core, Counted, EventRow, PassStats, RunRequest, ScheduleRow};
@@ -65,13 +65,10 @@ fn rule_or_not_found(
     reference: &str,
 ) -> Result<AutomationRule, WgError> {
     find_rule(session, workspace, reference)?.ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!(
-                "automation rule {} not found",
-                wg_model::py_repr_str(reference)
-            ),
-        )
+        WgError::not_found(format!(
+            "automation rule {} not found",
+            wg_model::py_repr_str(reference)
+        ))
     })
 }
 
@@ -152,7 +149,7 @@ fn reread_run(app: &mut App, key: &str) -> Result<AutomationRun, WgError> {
     app.runtime
         .store
         .read(|session| reads::run_by_trigger_key(session, key))?
-        .ok_or_else(|| WgError::new(ErrorCode::Conflict, format!("run {key} was not recorded")))
+        .ok_or_else(|| WgError::conflict(format!("run {key} was not recorded")))
 }
 
 /// `AutomationService.list_rules`.
@@ -318,8 +315,7 @@ pub fn preview(
         (Some(_), _) => None,
         (None, Some(document)) => Some(core::parse_rule(document)?),
         (None, None) => {
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
+            return Err(WgError::validation(
                 "pass a rule name/id or a rule spec to preview",
             ));
         }
@@ -363,8 +359,7 @@ pub fn preview(
                 }
                 (None, Some(stored)) => (stored.clone(), None),
                 (None, None) => {
-                    return Err(WgError::new(
-                        ErrorCode::ValidationFailed,
+                    return Err(WgError::validation(
                         "pass a rule name/id or a rule spec to preview",
                     ));
                 }

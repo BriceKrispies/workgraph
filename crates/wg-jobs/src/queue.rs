@@ -21,7 +21,7 @@ use wg_model::entity::{Job, JobResourceClaim, JobRun, JsonObject, Real};
 use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
 use wg_model::write::{RowKey, Write};
-use wg_types::{Correlation, ErrorCode, Id, JobStatus, Timestamp, WgError};
+use wg_types::{Correlation, Id, JobStatus, Timestamp, WgError};
 
 use crate::limits::LimitSettings;
 use crate::{shift, truncate_chars};
@@ -274,10 +274,7 @@ pub fn heartbeat(
         .job(job_id)
         .filter(|job| is_leased_to(job, worker))
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::Conflict,
-                format!("job {job_id} is no longer leased by {worker}"),
-            )
+            WgError::conflict(format!("job {job_id} is no longer leased by {worker}"))
         })?;
     let now = stamp.at;
     let row = Job {
@@ -403,7 +400,9 @@ pub fn cancel(
     job_id: Id,
     stamp: &Stamp,
 ) -> Result<Decision<JobStatus>, WgError> {
-    let job = slice.job(job_id).ok_or_else(|| not_found(job_id))?;
+    let job = slice
+        .job(job_id)
+        .ok_or_else(|| WgError::not_found(format!("job {job_id} not found")))?;
     let now = stamp.at;
     match job.status {
         JobStatus::Queued => {
@@ -431,18 +430,17 @@ pub fn cancel(
 /// Gives a dead, failed or cancelled job a fresh retry budget and makes it runnable now
 /// (`JobQueue.retry_dead`).
 pub fn retry_dead(slice: &QueueSlice, job_id: Id, stamp: &Stamp) -> Result<Decision<()>, WgError> {
-    let job = slice.job(job_id).ok_or_else(|| not_found(job_id))?;
+    let job = slice
+        .job(job_id)
+        .ok_or_else(|| WgError::not_found(format!("job {job_id} not found")))?;
     if !matches!(
         job.status,
         JobStatus::Dead | JobStatus::Cancelled | JobStatus::Failed
     ) {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!(
-                "job {job_id} is {}; only dead/cancelled jobs can be retried",
-                job.status
-            ),
-        ));
+        return Err(WgError::conflict(format!(
+            "job {job_id} is {}; only dead/cancelled jobs can be retried",
+            job.status
+        )));
     }
     let now = stamp.at;
     let row = Job {
@@ -459,7 +457,9 @@ pub fn retry_dead(slice: &QueueSlice, job_id: Id, stamp: &Stamp) -> Result<Decis
 
 /// The job with `job_id`.
 pub fn get(slice: &QueueSlice, job_id: Id) -> Result<&Job, WgError> {
-    slice.job(job_id).ok_or_else(|| not_found(job_id))
+    slice
+        .job(job_id)
+        .ok_or_else(|| WgError::not_found(format!("job {job_id} not found")))
 }
 
 /// The jobs matching `filter`, newest first, with the number of matches before paging
@@ -560,17 +560,16 @@ fn is_leased_to(job: &Job, worker: &str) -> bool {
 
 /// The job, when it is running and leased to `worker` (`_owned`).
 fn owned<'a>(slice: &'a QueueSlice, job_id: Id, worker: &str) -> Result<&'a Job, WgError> {
-    let job = slice.job(job_id).ok_or_else(|| not_found(job_id))?;
+    let job = slice
+        .job(job_id)
+        .ok_or_else(|| WgError::not_found(format!("job {job_id} not found")))?;
     if is_leased_to(job, worker) {
         Ok(job)
     } else {
-        Err(WgError::new(
-            ErrorCode::Conflict,
-            format!(
-                "job {job_id} is not leased by {worker} (status={})",
-                job.status
-            ),
-        ))
+        Err(WgError::conflict(format!(
+            "job {job_id} is not leased by {worker} (status={})",
+            job.status
+        )))
     }
 }
 
@@ -678,8 +677,4 @@ fn sorted_unique(keys: &[String]) -> VectorSync<String> {
         .collect::<BTreeSet<String>>()
         .into_iter()
         .collect()
-}
-
-fn not_found(job_id: Id) -> WgError {
-    WgError::new(ErrorCode::NotFound, format!("job {job_id} not found"))
 }

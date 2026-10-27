@@ -7,7 +7,7 @@
 //! `TableRow` codecs as a fetch by key. Lists have a fixed `ORDER BY` so results are deterministic.
 
 use wg_model::Table;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::codec::{Raw, id_sql, text_sql};
 use crate::sql::{Statement, select_list};
@@ -107,10 +107,7 @@ pub fn pairs_from_rows(rows: &[Vec<Raw>]) -> Result<Vec<(String, i64)>, WgError>
     rows.iter()
         .map(|row| match row.as_slice() {
             [Raw::Text(key), Raw::Int(count)] => Ok((key.clone(), *count)),
-            _ => Err(WgError::new(
-                ErrorCode::WorkgraphError,
-                "unexpected row shape for a count query",
-            )),
+            _ => Err(WgError::workgraph("unexpected row shape for a count query")),
         })
         .collect()
 }
@@ -119,9 +116,6 @@ pub fn pairs_from_rows(rows: &[Vec<Raw>]) -> Result<Vec<(String, i64)>, WgError>
 pub fn scalar_from_rows(rows: &[Vec<Raw>]) -> Result<i64, WgError> {
     match rows.first().map(Vec::as_slice) {
         Some([Raw::Int(count)]) => Ok(*count),
-        _ => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            "unexpected row shape for a count query",
-        )),
+        _ => Err(WgError::workgraph("unexpected row shape for a count query")),
     }
 }

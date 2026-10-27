@@ -8,7 +8,7 @@ use wg_git::{Git, GitError};
 use wg_runtime::{App, index_written};
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::effects::GIT_TIMEOUT_MS;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::spec::conclude::Captured;
 use crate::spec::outcome::{capture_decision, read_entries, unprepared};
@@ -22,10 +22,7 @@ pub fn capture_outcome(
 ) -> Result<Captured, WgError> {
     let entries = app.runtime.store.read(|session| {
         let attempt = session.attempt_by_id(attempt_id)?.ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("attempt {attempt_id} has no prepared workspace"),
-            )
+            WgError::not_found(format!("attempt {attempt_id} has no prepared workspace"))
         })?;
         let baseline = match attempt.baseline_manifest_id {
             Some(id) => session.manifest_by_id(id)?,
@@ -36,7 +33,7 @@ pub fn capture_outcome(
         read_entries(&rows)
     })?;
     // What git says about each checkout: its head, its uncommitted files, the commits since the base.
-    let git_failure = |error: GitError| WgError::new(ErrorCode::GitError, error.to_string());
+    let git_failure = |error: GitError| WgError::git(error.to_string());
     let observations = entries
         .iter()
         .map(|entry| {
@@ -81,12 +78,9 @@ pub fn capture_outcome(
     let outcome = app.runtime.decide_then(
         context,
         |session| {
-            let attempt = session.attempt_by_id(attempt_id)?.ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::NotFound,
-                    format!("attempt {attempt_id} not found"),
-                )
-            })?;
+            let attempt = session
+                .attempt_by_id(attempt_id)?
+                .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))?;
             let set = match session
                 .change_sets_of_attempt(attempt_id)?
                 .into_iter()

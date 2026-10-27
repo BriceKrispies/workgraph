@@ -5,7 +5,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use wg_model::{Task, TaskSlice};
-use wg_types::{ErrorCode, Id, TaskStatus, WgError};
+use wg_types::{Id, TaskStatus, WgError};
 
 /// Progress of the descendants of a task (`TaskRollup`).
 #[derive(Debug, Clone, PartialEq)]
@@ -77,17 +77,14 @@ fn walk_up(tasks: &TaskSlice, candidate: Id, current: Option<Id>, seen: BTreeSet
 /// The cycle check of a parent change: `parent_id` may not be the task or one of its
 /// descendants.
 pub fn check_set_parent(tasks: &TaskSlice, task_id: Id, parent_id: Id) -> Result<(), WgError> {
-    let missing = |id: Id| WgError::new(ErrorCode::NotFound, format!("task {id} not found"));
+    let missing = |id: Id| WgError::not_found(format!("task {id} not found"));
     let task = tasks.task(task_id).ok_or_else(|| missing(task_id))?;
     let parent = tasks.task(parent_id).ok_or_else(|| missing(parent_id))?;
     if parent.id == task.id || is_ancestor(tasks, task.id, parent.id) {
-        return Err(WgError::new(
-            ErrorCode::DependencyCycle,
-            format!(
-                "setting {} as parent of {} would create a hierarchy cycle",
-                parent.key, task.key
-            ),
-        ));
+        return Err(WgError::dependency_cycle(format!(
+            "setting {} as parent of {} would create a hierarchy cycle",
+            parent.key, task.key
+        )));
     }
     Ok(())
 }

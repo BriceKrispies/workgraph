@@ -12,7 +12,7 @@ use wg_model::{
     Decision, EventDraft, EventPayload, JsonObject, RegistrySlice, Repository, Stamp, Write,
     py_repr_str,
 };
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 
 use crate::resolve;
 
@@ -36,13 +36,10 @@ pub fn rename_repository(
                 .any(|repo| repo.workspace_id == workspace_id && repo.name == name)
     });
     if let Some(name) = name.filter(|_| taken) {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!(
-                "repository name {} is already used in this workspace",
-                py_repr_str(name)
-            ),
-        ));
+        return Err(WgError::conflict(format!(
+            "repository name {} is already used in this workspace",
+            py_repr_str(name)
+        )));
     }
     let changes = [
         ("name", name.filter(|name| *name != found.name), &found.name),
@@ -98,8 +95,7 @@ pub fn resave_config(
         .filter_map(|check| check.get("name").and_then(Value::as_str))
         .collect();
     if checks.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "a verification configuration needs at least one check",
         ));
     }
@@ -107,8 +103,7 @@ pub fn resave_config(
         .iter()
         .any(|name| names.iter().filter(|n| *n == name).count() > 1)
     {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "check names must be unique within a configuration",
         ));
     }

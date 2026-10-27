@@ -27,7 +27,7 @@ use wg_registry::resolve;
 use wg_runtime::App;
 use wg_runtimespec::RequestContext;
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 
 use crate::service::classify as classify_reads;
 use crate::service::llm::Providers;
@@ -71,7 +71,7 @@ const EVALUATION_ERROR_CHARS: usize = 300;
 pub fn load_task(session: &mut Session<'_>, id: Id) -> Result<Loaded, WgError> {
     let task = session
         .fetch::<Task>(&RowKey::Task(id))?
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("task {id} not found")))?;
+        .ok_or_else(|| WgError::not_found(format!("task {id} not found")))?;
     let world = session.task_world(Some(task.workspace_id), &[])?;
     let tags = world.tasks.tags_of(id).map(str::to_owned).collect();
     Ok((task, tags))
@@ -138,7 +138,7 @@ pub fn request(
         .runtime
         .store
         .read(|session| session.job(job_id))?
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("job {job_id} not found")))?
+        .ok_or_else(|| WgError::not_found(format!("job {job_id} not found")))?
         .status
         .as_str()
         .to_owned();
@@ -384,10 +384,9 @@ pub fn promote(
                 .fetch::<Classification>(&RowKey::Classification(classification_id))?
                 .filter(|row| row.status == "succeeded")
                 .ok_or_else(|| {
-                    WgError::new(
-                        ErrorCode::NotFound,
-                        format!("successful classification {classification_id} not found"),
-                    )
+                    WgError::not_found(format!(
+                        "successful classification {classification_id} not found"
+                    ))
                 })?;
             let (task, _) = load_task(session, row.task_id)?;
             let current = current_of(session, &task)?;
@@ -431,10 +430,9 @@ fn classification_id_task(session: &mut Session<'_>, classification_id: Id) -> R
         .fetch::<Classification>(&RowKey::Classification(classification_id))?
         .map(|row| row.task_id)
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("successful classification {classification_id} not found"),
-            )
+            WgError::not_found(format!(
+                "successful classification {classification_id} not found"
+            ))
         })
 }
 
@@ -619,10 +617,9 @@ pub fn add_gold(
 ) -> Result<ClassificationGoldLabel, WgError> {
     app.require_permission(context, Permission::ClassifyConfirm)?;
     if !CATEGORIES.contains(&category) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("unknown category '{category}'"),
-        ));
+        return Err(WgError::validation(format!(
+            "unknown category '{category}'"
+        )));
     }
     let ws = app.workspace_or_default(workspace)?;
     let outcome = app.runtime.decide(
@@ -635,8 +632,7 @@ pub fn add_gold(
         },
         |task, stamp| {
             if task.is_none() && title.is_none_or(str::is_empty) {
-                return Err(WgError::new(
-                    ErrorCode::ValidationFailed,
+                return Err(WgError::validation(
                     "provide a task or a title for the gold label",
                 ));
             }
@@ -680,8 +676,7 @@ pub fn evaluate(
         |labels| Ok(labels.clone()),
     )?;
     if labels.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "no gold-standard labels exist; confirm classifications or add gold labels first",
         ));
     }

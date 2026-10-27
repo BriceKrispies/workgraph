@@ -7,7 +7,7 @@ use wg_model::entity::TaskDecision;
 use wg_store::Session;
 use wg_storecodec::Raw;
 use wg_storecodec::rows::TableRow;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::spec::sql::{
     self, DecisionFilter, DecisionWithTask, attach_tags, decode_decision_with_task, decode_task_tag,
@@ -115,8 +115,7 @@ pub fn open_decision_count(session: &mut Session<'_>, task_id: Id) -> Result<i64
         .and_then(|row| row.first())
     {
         Some(Raw::Int(count)) => Ok(*count),
-        _ => Err(WgError::new(
-            ErrorCode::WorkgraphError,
+        _ => Err(WgError::workgraph(
             "open decision count returned no integer",
         )),
     }

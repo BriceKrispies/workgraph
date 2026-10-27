@@ -10,7 +10,7 @@ use wg_model::{
     Decision, EventDraft, EventPayload, JsonObject, RegistrySlice, Stamp, Workspace, Write,
     py_repr_str,
 };
-use wg_types::{ErrorCode, Permission, WgError};
+use wg_types::{Permission, WgError};
 
 use crate::{resolve, settings};
 
@@ -63,10 +63,10 @@ pub fn create(
     stamp.require(&[Permission::WorkspaceAdmin])?;
     let slug = field(dump, "slug");
     if slice.workspace_by_slug(&slug).is_some() {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!("workspace {} already exists", py_repr_str(&slug)),
-        ));
+        return Err(WgError::conflict(format!(
+            "workspace {} already exists",
+            py_repr_str(&slug)
+        )));
     }
     Ok(insert(stamp, dump))
 }

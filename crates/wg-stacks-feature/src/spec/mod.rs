@@ -29,7 +29,7 @@ use wg_model::entity::{Stack, StackItem, Task};
 use wg_registry::resolve;
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::deps::INACTIVE_STACK_STATUSES;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 /// The `stack` group's clap command, built from the snapshot (`contracts/cli.json`), so its
 /// parameters and help match the Python CLI.
@@ -56,11 +56,8 @@ pub(crate) fn active_stack<'a>(world: &'a TaskWorld, parent: &Task) -> Result<&'
         .stacks
         .active_stack_of_parent(parent.id)
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("{} has no active stack", parent.key),
-            )
-            .with_detail("parent", parent.key.to_string().into())
+            WgError::not_found(format!("{} has no active stack", parent.key))
+                .detail("parent", parent.key.to_string())
         })
 }
 
@@ -73,8 +70,8 @@ pub(crate) fn latest_stack<'a>(world: &'a TaskWorld, parent: &Task) -> Result<&'
         .filter(|stack| stack.parent_task_id == parent.id)
         .max_by_key(|stack| stack.created_at)
         .ok_or_else(|| {
-            WgError::new(ErrorCode::NotFound, format!("{} has no stack", parent.key))
-                .with_detail("parent", parent.key.to_string().into())
+            WgError::not_found(format!("{} has no stack", parent.key))
+                .detail("parent", parent.key.to_string())
         })
 }
 
@@ -89,11 +86,8 @@ pub(crate) fn item_of<'a>(
         .items_of(stack.id)
         .find(|item| item.task_id == task.id)
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("{} is not in the stack", task.key),
-            )
-            .with_detail("task", task.key.to_string().into())
+            WgError::not_found(format!("{} is not in the stack", task.key))
+                .detail("task", task.key.to_string())
         })
 }
 
@@ -114,22 +108,19 @@ pub(crate) fn is_inactive(stack: &Stack) -> bool {
 /// A failure of the git runner, as `GitError` is raised by the Python runner.
 #[must_use]
 pub fn git_failure(err: &wg_git::GitError) -> WgError {
-    WgError::new(ErrorCode::GitError, err.to_string())
+    WgError::git(err.to_string())
 }
 
 /// A file operation that failed on `path`.
 #[must_use]
 pub fn io_failure(path: &std::path::Path, err: &std::io::Error) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("{}: {err}", path.display()),
-    )
+    WgError::workgraph(format!("{}: {err}", path.display()))
 }
 
 /// A file operation that failed, with no path to name.
 #[must_use]
 pub fn io_error(err: &std::io::Error) -> WgError {
-    WgError::new(ErrorCode::WorkgraphError, err.to_string())
+    WgError::workgraph(err.to_string())
 }
 
 /// The directory managed worktrees live under, in the platform's own separators.

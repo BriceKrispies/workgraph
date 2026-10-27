@@ -8,7 +8,7 @@
 
 use wg_model::Table;
 use wg_model::entity::Classification;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use wg_storecodec::codec::{Cols, Raw, id_sql, text_sql};
 use wg_storecodec::rows::{TableRow, columns};
@@ -105,8 +105,7 @@ impl ClassificationWithKey {
     pub fn from_raw(values: &[Raw]) -> Result<Self, WgError> {
         let width = columns(Table::Classification).len();
         let (Some(own), Some(rest)) = (values.get(..width), values.get(width..)) else {
-            return Err(WgError::new(
-                ErrorCode::WorkgraphError,
+            return Err(WgError::workgraph(
                 "classification join row is shorter than the classification columns",
             ));
         };

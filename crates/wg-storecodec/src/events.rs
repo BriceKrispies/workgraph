@@ -7,7 +7,7 @@
 
 use serde_json::{Value, json};
 use wg_model::{EventDraft, JsonObject, StoredEvent};
-use wg_types::{Correlation, ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Correlation, Id, Timestamp, WgError};
 
 use crate::codec::{Cols, Raw, correlation_sql, id_sql, json_text, opt_id_sql, ts_sql};
 use crate::sql::Statement;
@@ -175,7 +175,7 @@ pub const EVENT_COLUMNS: &[&str] = &[
 /// The insert for one event; `seq` is assigned by the database.
 pub fn append_statement(draft: &EventDraft) -> Result<Statement, WgError> {
     let data = json_text(&Value::Object(draft.data()?))?
-        .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, "event data serialised to null"))?;
+        .ok_or_else(|| WgError::workgraph("event data serialised to null"))?;
     Ok(Statement {
         sql: "INSERT INTO events (id, workspace_id, event_type, entity_type, entity_id, actor, \
               actor_kind, occurred_at, correlation_id, causation_id, attempt_id, schema_version, \

@@ -12,7 +12,7 @@ use wg_model::{Decision, Write};
 use wg_registry::checkout::primary_checkout;
 use wg_stacks::merge::{directory_name, is_inactive};
 use wg_storecodec::task_world_sql::TaskWorld;
-use wg_types::{ErrorCode, Id, WgError, WorktreeStatus};
+use wg_types::{Id, WgError, WorktreeStatus};
 
 /// One repository of a stack: where its integration branch lives and what it starts from.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -35,10 +35,9 @@ pub fn integration_target(
     checkouts: &[RepositoryCheckout],
 ) -> Result<Option<IntegrationTarget>, WgError> {
     let missing = || {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("stack {stack_id} has no repository {repository_id}"),
-        )
+        WgError::not_found(format!(
+            "stack {stack_id} has no repository {repository_id}"
+        ))
     };
     let stack = world.stacks.stack(stack_id).ok_or_else(missing)?;
     let link = world
@@ -55,10 +54,10 @@ pub fn integration_target(
         return Ok(None);
     }
     let checkout = primary_checkout(checkouts, true).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::GitError,
-            format!("repository {} has no available checkout", repository.name),
-        )
+        WgError::git(format!(
+            "repository {} has no available checkout",
+            repository.name
+        ))
     })?;
     Ok(Some(IntegrationTarget {
         stack_id,

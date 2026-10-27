@@ -11,7 +11,7 @@
 //! `decisions` (WG-3690); this module does not create one.
 
 use serde_json::{Map, Value};
-use wg_types::{ErrorCode, Id, TaskPriority, TaskStatus, WgError};
+use wg_types::{Id, TaskPriority, TaskStatus, WgError};
 
 use crate::lifecycle::check_task_transition;
 
@@ -283,12 +283,10 @@ pub struct TriagePlan {
 
 /// The top level of a triage file must be a JSON array of verdicts.
 pub fn verdict_list(value: &Value) -> Result<&[Value], WgError> {
-    value.as_array().map(Vec::as_slice).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            "triage file must contain a JSON array of verdicts",
-        )
-    })
+    value
+        .as_array()
+        .map(Vec::as_slice)
+        .ok_or_else(|| WgError::validation("triage file must contain a JSON array of verdicts"))
 }
 
 /// Plans a triage file. `lookup` resolves a key to its task; its error (not found, a malformed

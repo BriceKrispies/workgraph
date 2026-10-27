@@ -15,7 +15,7 @@ use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::accept::*;
 use wg_tasks::promote::promote_dependents as promotable;
 use wg_tasks::transition::{Applied, Change, transition};
-use wg_types::{ErrorCode, Id, Permission, TaskStatus, VerificationStatus, WgError};
+use wg_types::{Id, Permission, TaskStatus, VerificationStatus, WgError};
 use wg_verify::{LatestRun, TaskScope, accept_refusal, applicable_checks, ran_fast_tier_only};
 use wg_wire::convention::text;
 use wg_wire::dto::verification::acceptance_from_model;
@@ -64,23 +64,19 @@ pub fn accept_task(
 ) -> Result<Decision<Route>, WgError> {
     stamp.require(&[Permission::TaskAccept])?;
     if manual && reason.trim().is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "manual acceptance requires a recorded reason",
         ));
     }
     let tasks = &loaded.world.tasks;
     let task = resolve::task(tasks, workspace, reference)?;
     if let Some(item) = tasks.external_item_of(task.id) {
-        return Err(WgError::new(
-            ErrorCode::PermissionDenied,
-            format!(
-                "{} is tracked by {}; the tracker closes it when {} reaches done",
-                task.key, item.connection, item.external_key
-            ),
-        )
-        .with_detail("connection", item.connection.as_str().into())
-        .with_detail("external_key", item.external_key.as_str().into()));
+        return Err(WgError::permission_denied(format!(
+            "{} is tracked by {}; the tracker closes it when {} reaches done",
+            task.key, item.connection, item.external_key
+        ))
+        .detail("connection", item.connection.as_str())
+        .detail("external_key", item.external_key.as_str()));
     }
     if let Some(stack) = loaded.world.stacks.active_stack_of_parent(task.id) {
         return Ok(Decision::new(Route::Land { stack_id: stack.id }));
@@ -158,17 +154,14 @@ pub fn reject_task(
 ) -> Result<Decision<Value>, WgError> {
     stamp.require(&[Permission::TaskAccept])?;
     if reason.trim().is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "rejection requires a reason",
-        ));
+        return Err(WgError::validation("rejection requires a reason"));
     }
     let task = resolve::task(&world.tasks, workspace, reference)?;
     if !ACCEPTABLE_TASK_STATUSES.contains(&task.status) {
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!("{} is {}; nothing to reject", task.key, task.status),
-        ));
+        return Err(WgError::invalid_transition(format!(
+            "{} is {}; nothing to reject",
+            task.key, task.status
+        )));
     }
     let ([acceptance_id, event_id], ids) = stamp.ids().take::<2>();
     let acceptance = TaskAcceptance {

@@ -27,7 +27,7 @@ use wg_stacks::verify::{
     error_tails, in_scope, is_cancellable_verify_job, judge_against_base, judge_tip,
     missing_base_checks, pending_checks, with_base_run,
 };
-use wg_types::{ErrorCode, Id, VerificationStatus, WgError, parse_id};
+use wg_types::{Id, VerificationStatus, WgError, parse_id};
 use wg_verify::{ApplicableCheck, CheckSpec};
 use wg_verify_feature::service::reads::{verification_check_results, verification_runs};
 use wg_verify_feature::spec::sql::{Page, RunFilter};
@@ -197,10 +197,10 @@ impl Exec<'_> {
                 .head()
                 .map_err(|err| git_failure(&err))?
                 .ok_or_else(|| {
-                    WgError::new(
-                        ErrorCode::GitError,
-                        format!("integration worktree {} has no HEAD", path.display()),
-                    )
+                    WgError::git(format!(
+                        "integration worktree {} has no HEAD",
+                        path.display()
+                    ))
                 })?;
             tree.paths.insert(repo.name.clone(), path);
             tree.tips.insert(repo.name.clone(), tip);
@@ -498,7 +498,7 @@ impl Exec<'_> {
         let culprit = sequence
             .get(position.saturating_sub(1))
             .cloned()
-            .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, "bisection found no culprit"))?;
+            .ok_or_else(|| WgError::workgraph("bisection found no culprit"))?;
         let signatures = regressions(&high_run.checks, Some(base), &marks);
         let task_key = self
             .0

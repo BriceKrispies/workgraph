@@ -26,8 +26,7 @@ use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::lifecycle::check_attempt_transition;
 use wg_tasks::transition::{Change, transition};
 use wg_types::{
-    AttemptStatus, ChangeSetItemStatus, ErrorCode, Id, TaskStatus, VerificationStatus, WgError,
-    parse_id,
+    AttemptStatus, ChangeSetItemStatus, Id, TaskStatus, VerificationStatus, WgError, parse_id,
 };
 use wg_verify::{
     ApplicableCheck, CheckResult, CheckTier, ExecutedCheck, TaskScope, applicable_checks,
@@ -78,11 +77,11 @@ pub struct Plan {
 }
 
 fn missing_attempt(reference: &str) -> WgError {
-    WgError::new(
-        ErrorCode::NotFound,
-        format!("attempt {} not found", wg_model::py_repr_str(reference)),
-    )
-    .with_detail("ref", Json::String(reference.to_owned()))
+    WgError::not_found(format!(
+        "attempt {} not found",
+        wg_model::py_repr_str(reference)
+    ))
+    .detail("ref", Json::String(reference.to_owned()))
 }
 
 /// The task a reference names, found in the loaded world.
@@ -148,20 +147,17 @@ pub fn plan_run(world: &PrepareWorld, request: &RunRequest<'_>) -> Result<Plan, 
         .cloned()
         .collect();
     if checks.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            match request.tier {
-                Some(tier) => format!(
-                    "no {} verification checks are configured for {}",
-                    tier.as_str(),
-                    task.key
-                ),
-                None => format!(
-                    "no verification checks are configured for {}; record manual acceptance instead",
-                    task.key
-                ),
-            },
-        ));
+        return Err(WgError::validation(match request.tier {
+            Some(tier) => format!(
+                "no {} verification checks are configured for {}",
+                tier.as_str(),
+                task.key
+            ),
+            None => format!(
+                "no verification checks are configured for {}; record manual acceptance instead",
+                task.key
+            ),
+        }));
     }
     let attempt = match request.attempt {
         Some(reference) => Some(
@@ -262,17 +258,12 @@ pub fn filled(entry: &JsonObject, probe: &dyn Fn(&str) -> Option<Head>) -> JsonO
 
 /// A failure of the runner itself, outside any check.
 pub fn failure(message: String) -> WgError {
-    WgError::new(ErrorCode::WorkgraphError, message)
+    WgError::workgraph(message)
 }
 
 /// A file the runner could not create or write.
 pub fn io_failure(what: &str, path: &std::path::Path, error: &std::io::Error) -> WgError {
     failure(format!("cannot {what} {}: {error}", path.display()))
-}
-
-/// A row a decision needs that is not there.
-pub fn not_found(what: &str, id: Id) -> WgError {
-    WgError::new(ErrorCode::NotFound, format!("{what} {id} not found"))
 }
 
 /// What a started run is called.
@@ -795,5 +786,5 @@ fn task_in(world: &TaskWorld, task: Id) -> Result<&wg_model::Task, WgError> {
     world
         .tasks
         .task(task)
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("task {task} not found")))
+        .ok_or_else(|| WgError::not_found(format!("task {task} not found")))
 }

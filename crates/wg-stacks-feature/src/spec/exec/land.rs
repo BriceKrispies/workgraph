@@ -57,13 +57,6 @@ pub fn is_refusal(code: ErrorCode) -> bool {
     )
 }
 
-fn vanished(what: &str, id: Id) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("{what} {id} vanished from the slice"),
-    )
-}
-
 // ---------------------------------------------------------------- what landing reads
 
 /// One repository of the stack as landing reads it from the rows.
@@ -93,11 +86,13 @@ pub fn land_base(world: &TaskWorld, stack_id: Id) -> Result<LandBase, WgError> {
     let stack = world
         .stacks
         .stack(stack_id)
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("stack {stack_id} not found")))?;
-    let parent = world
-        .tasks
-        .task(stack.parent_task_id)
-        .ok_or_else(|| vanished("task", stack.parent_task_id))?;
+        .ok_or_else(|| WgError::not_found(format!("stack {stack_id} not found")))?;
+    let parent = world.tasks.task(stack.parent_task_id).ok_or_else(|| {
+        WgError::workgraph(format!(
+            "task {} vanished from the slice",
+            stack.parent_task_id
+        ))
+    })?;
     let items = item_rows(&world.stacks, &world.tasks, stack_id)
         .into_iter()
         .map(|(item, task)| LandItem {
@@ -267,12 +262,10 @@ pub fn move_bases(
         .map(|(link, name)| (name.clone(), link.base_sha.clone()))
         .collect();
     let chain = links.iter().try_fold(chain, |chain, (link, name)| {
-        let head = heads.get(name).cloned().ok_or_else(|| {
-            WgError::new(
-                ErrorCode::WorkgraphError,
-                format!("no new base for repository {name}"),
-            )
-        })?;
+        let head = heads
+            .get(name)
+            .cloned()
+            .ok_or_else(|| WgError::workgraph(format!("no new base for repository {name}")))?;
         Ok::<_, WgError>(chain.write(Write::update(StackRepository {
             base_sha: head,
             ..link.clone()
@@ -338,14 +331,11 @@ pub fn accept_task<'a>(
         task.status,
         TaskStatus::AwaitingReview | TaskStatus::AwaitingVerification
     ) {
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!(
-                "{} is {}; only completed work awaiting verification or review can be accepted",
-                task.key,
-                task.status.as_str()
-            ),
-        ));
+        return Err(WgError::invalid_transition(format!(
+            "{} is {}; only completed work awaiting verification or review can be accepted",
+            task.key,
+            task.status.as_str()
+        )));
     }
     let attempt = facts.attempts.get(&task_id).copied();
     let stamp = chain.stamp;
@@ -589,7 +579,12 @@ pub fn finish_landing(
             }
             _ => None,
         })
-        .ok_or_else(|| vanished("acceptance of", parent.id))?;
+        .ok_or_else(|| {
+            WgError::workgraph(format!(
+                "acceptance of {} vanished from the slice",
+                parent.id
+            ))
+        })?;
     let released_keys: Vec<wg_types::TaskKey> = released
         .iter()
         .filter_map(|key| wg_types::TaskKey::parse(key).ok())

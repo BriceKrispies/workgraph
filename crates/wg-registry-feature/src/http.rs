@@ -18,7 +18,7 @@ use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::{BodyRef, RouteSpec};
-use wg_types::{ErrorCode, Permission, WgError};
+use wg_types::{Permission, WgError};
 use wg_wire::convention::json_object;
 
 use crate::service;
@@ -378,10 +378,7 @@ fn run_providers(app: &mut App, id: &str, request: RouteRequest) -> Result<Value
             request.context.require(&[Permission::WorkspaceRead])?;
             llm_health_document(app)
         }
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 
@@ -414,10 +411,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             app.save_config(&next)?;
             Ok(settings_dto::patched(json_object(&next)))
         }
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 

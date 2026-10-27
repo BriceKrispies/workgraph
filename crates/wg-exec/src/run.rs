@@ -9,7 +9,7 @@
 use std::path::{Path, PathBuf};
 
 use serde_json::{Map, Value, json};
-use wg_types::{AttemptStatus as A, ErrorCode, TaskStatus as S, WgError};
+use wg_types::{AttemptStatus as A, TaskStatus as S, WgError};
 
 use crate::attempt::{
     ACTIVE_STATUSES, failure_exit_reason, is_success, is_terminal, task_after_attempt_end,
@@ -104,8 +104,7 @@ pub fn require_execution(enabled: bool) -> Result<(), WgError> {
     if enabled {
         Ok(())
     } else {
-        Err(WgError::new(
-            ErrorCode::PermissionDenied,
+        Err(WgError::permission_denied(
             "agent code execution is disabled; opt in with `workgraph config set execution.enabled true`",
         ))
     }
@@ -160,10 +159,9 @@ pub fn resource_keys(agent: &str, isolation: &str, task_id: &str) -> Vec<String>
 pub fn check_isolation(isolation: Option<&str>) -> Result<(), WgError> {
     match isolation {
         None | Some("worktree" | "in_place") => Ok(()),
-        Some(other) => Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("isolation must be worktree or in_place, not {other:?}"),
-        )),
+        Some(other) => Err(WgError::validation(format!(
+            "isolation must be worktree or in_place, not {other:?}"
+        ))),
     }
 }
 
@@ -525,12 +523,8 @@ pub fn conclude(
     error: Option<&str>,
     facts: &CaptureFacts,
 ) -> Result<Conclusion, WgError> {
-    let attempt = unsuccessful_status(status).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("unknown agent result status {status:?}"),
-        )
-    })?;
+    let attempt = unsuccessful_status(status)
+        .ok_or_else(|| WgError::validation(format!("unknown agent result status {status:?}")))?;
     if is_success(
         status,
         facts.has_violations(),
@@ -689,5 +683,5 @@ pub fn truncate_chars(text: &str, limit: usize) -> String {
 }
 
 fn invalid(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::InvalidTransition, message)
+    WgError::invalid_transition(message)
 }

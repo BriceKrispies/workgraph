@@ -15,7 +15,7 @@ use wg_model::{Decision, Write};
 use wg_stacks::regression::{RunCheck, RunResult};
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::Change;
-use wg_types::{ErrorCode, Id, Permission, TaskStatus, VerificationStatus, WgError};
+use wg_types::{Id, Permission, TaskStatus, VerificationStatus, WgError};
 use wg_verify::{
     ApplicableCheck, CheckResult, CheckSpec, CheckTier, TaskScope, applicable_checks,
     checks_for_tier, run_outcome,
@@ -53,7 +53,7 @@ pub fn selected_checks(
     let task = world
         .tasks
         .task(task_id)
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("task {task_id} not found")))?;
+        .ok_or_else(|| WgError::not_found(format!("task {task_id} not found")))?;
     let scope = TaskScope {
         workspace_id: task.workspace_id,
         task_id,
@@ -75,20 +75,17 @@ pub fn selected_checks(
         .cloned()
         .collect();
     if checks.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            match tier {
-                Some(tier) => format!(
-                    "no {} verification checks are configured for {}",
-                    tier.as_str(),
-                    task.key
-                ),
-                None => format!(
-                    "no verification checks are configured for {}; record manual acceptance instead",
-                    task.key
-                ),
-            },
-        ));
+        return Err(WgError::validation(match tier {
+            Some(tier) => format!(
+                "no {} verification checks are configured for {}",
+                tier.as_str(),
+                task.key
+            ),
+            None => format!(
+                "no verification checks are configured for {}; record manual acceptance instead",
+                task.key
+            ),
+        }));
     }
     Ok(checks)
 }
@@ -108,7 +105,7 @@ pub fn prepare_run(
     let task = world
         .tasks
         .task(task_id)
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("task {task_id} not found")))?;
+        .ok_or_else(|| WgError::not_found(format!("task {task_id} not found")))?;
     let chain = Chain::start(world, stamp);
     let (manifest_id, chain) = chain.next_id();
     let (run_id, chain) = chain.next_id();

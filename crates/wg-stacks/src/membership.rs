@@ -4,7 +4,7 @@
 
 use std::collections::BTreeSet;
 
-use wg_types::{ErrorCode, Id, StackItemState, TaskStatus, WgError};
+use wg_types::{Id, StackItemState, TaskStatus, WgError};
 
 use crate::item::is_removable;
 
@@ -41,27 +41,24 @@ pub fn check_add_item(
     outside: &[String],
 ) -> Result<(), WgError> {
     if !is_child_of_parent {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("{task_key} is not a child of {parent_key}"),
-        )
-        .with_detail("task", task_key.into()));
+        return Err(
+            WgError::validation(format!("{task_key} is not a child of {parent_key}"))
+                .detail("task", task_key),
+        );
     }
     if already_member {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!("{task_key} is already in the stack"),
-        )
-        .with_detail("task", task_key.into()));
+        return Err(
+            WgError::conflict(format!("{task_key} is already in the stack"))
+                .detail("task", task_key),
+        );
     }
     if !outside.is_empty() {
         let names: Vec<String> = outside.to_vec();
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("{task_key} links repositories that are not part of the stack"),
-        )
-        .with_detail("task", task_key.into())
-        .with_detail("repositories", serde_json::json!(names)));
+        return Err(WgError::validation(format!(
+            "{task_key} links repositories that are not part of the stack"
+        ))
+        .detail("task", task_key)
+        .detail("repositories", names));
     }
     Ok(())
 }
@@ -71,12 +68,11 @@ pub fn check_remove_item(task_key: &str, state: StackItemState) -> Result<(), Wg
     if is_removable(state) {
         return Ok(());
     }
-    Err(WgError::new(
-        ErrorCode::Conflict,
-        format!("{task_key} is {state} on the integration branch and cannot leave the stack"),
-    )
-    .with_detail("task", task_key.into())
-    .with_detail("state", state.as_str().into()))
+    Err(WgError::conflict(format!(
+        "{task_key} is {state} on the integration branch and cannot leave the stack"
+    ))
+    .detail("task", task_key)
+    .detail("state", state.as_str()))
 }
 
 /// Checks a readmit of an item in `state`: only an ejected or pending child may be readmitted.
@@ -84,12 +80,11 @@ pub fn check_readmit(task_key: &str, state: StackItemState) -> Result<(), WgErro
     if matches!(state, StackItemState::Ejected | StackItemState::Pending) {
         return Ok(());
     }
-    Err(WgError::new(
-        ErrorCode::Conflict,
-        format!("{task_key} is {state}; only an ejected or pending child can be readmitted"),
-    )
-    .with_detail("task", task_key.into())
-    .with_detail("state", state.as_str().into()))
+    Err(WgError::conflict(format!(
+        "{task_key} is {state}; only an ejected or pending child can be readmitted"
+    ))
+    .detail("task", task_key)
+    .detail("state", state.as_str()))
 }
 
 /// The task statuses a readmit walks the task through.

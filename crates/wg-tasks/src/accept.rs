@@ -36,7 +36,7 @@ use wg_model::slice::{QueueSlice, StackSlice};
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, RowKey, Write};
 use wg_storecodec::task_world_sql::TaskWorld;
-use wg_types::{ErrorCode, Id, StackItemState, StackStatus, TaskKey, TaskStatus, WgError};
+use wg_types::{Id, StackItemState, StackStatus, TaskKey, TaskStatus, WgError};
 
 use wg_stacks::item::{check_item_transition, satisfies_stack_dependency};
 use wg_stacks::landing::{ACCEPTABLE_TASK_STATUSES, Dependent, release_plan};
@@ -89,21 +89,15 @@ impl Run {
 }
 
 fn gone(task: Id) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("task {task} vanished from the slice"),
-    )
+    WgError::workgraph(format!("task {task} vanished from the slice"))
 }
 
 /// The stack rebuild a release or deferral needs belongs to the stack integration service, which
 /// this build does not have; the decision refuses instead of leaving the branch stale.
 pub fn rebuild_unavailable(what: &str) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!(
-            "{what} needs the stack's integration branches rebuilt, which this build cannot do yet"
-        ),
-    )
+    WgError::workgraph(format!(
+        "{what} needs the stack's integration branches rebuilt, which this build cannot do yet"
+    ))
 }
 
 /// What the acceptance of one task reads besides the task world.
@@ -152,13 +146,10 @@ pub fn accept_in(
         .task(task_id)
         .ok_or_else(|| gone(task_id))?;
     if !ACCEPTABLE_TASK_STATUSES.contains(&task.status) {
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!(
-                "{} is {}; only completed work awaiting verification or review can be accepted",
-                task.key, task.status
-            ),
-        ));
+        return Err(WgError::invalid_transition(format!(
+            "{} is {}; only completed work awaiting verification or review can be accepted",
+            task.key, task.status
+        )));
     }
     let ([manifest_id, acceptance_id, event_id], ids) = run.applied.ids.take::<3>();
     let attempt = facts.attempt.as_ref().map(|found| found.id);

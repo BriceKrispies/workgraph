@@ -101,10 +101,7 @@ pub fn to_json_value(value: &Value) -> wg_json::Value {
 }
 
 fn dump_error(err: DumpError) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("cannot serialise JSON column: {err}"),
-    )
+    WgError::workgraph(format!("cannot serialise JSON column: {err}"))
 }
 
 /// The O10 text of a JSON value; `None` (SQL `NULL`) for JSON `null`.
@@ -181,10 +178,7 @@ pub fn values_sql(items: &VectorSync<Value>) -> Result<Raw, WgError> {
 }
 
 fn corrupt(column: &str, what: &str) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("column {column}: {what}"),
-    )
+    WgError::workgraph(format!("column {column}: {what}"))
 }
 
 /// Named-column reader over the values of one result row; `names` is the column order the row

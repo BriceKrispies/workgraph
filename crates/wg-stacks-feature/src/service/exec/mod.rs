@@ -35,7 +35,7 @@ use wg_runtime::{App, RequestContext};
 use wg_stacks::merge::MergeOutcome;
 use wg_store::Session;
 use wg_storecodec::task_world_sql::TaskWorld;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::service::load_world;
 use crate::spec::git_failure;
@@ -47,7 +47,7 @@ pub(crate) struct Exec<'a>(pub(crate) &'a mut App);
 pub(crate) fn stack_world(session: &mut Session<'_>, stack_id: Id) -> Result<TaskWorld, WgError> {
     let stack = session
         .stack_by_id(stack_id)?
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("stack {stack_id} not found")))?;
+        .ok_or_else(|| WgError::not_found(format!("stack {stack_id} not found")))?;
     load_world(session, stack.workspace_id)
 }
 
@@ -64,10 +64,10 @@ impl Exec<'_> {
             .head()
             .map_err(|err| git_failure(&err))?
             .ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::GitError,
-                    format!("integration worktree {} has no HEAD", git.path.display()),
-                )
+                WgError::git(format!(
+                    "integration worktree {} has no HEAD",
+                    git.path.display()
+                ))
             })?;
         if git
             .is_ancestor(head, &tip)
@@ -194,13 +194,12 @@ pub fn land_stack_accepted(
     guard: bool,
 ) -> Result<wg_json::Value, WgError> {
     let Some(acceptance_id) = land_stack(app, context, stack_id, mode, reason, guard)? else {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
+        return Err(WgError::conflict(
             "the default branch moved since the stack was verified; the stack was rebuilt on the \
              new branch and lands automatically once it verifies",
         )
-        .with_detail("stack_id", stack_id.to_string().into())
-        .with_detail("landing", "deferred".into()));
+        .detail("stack_id", stack_id.to_string())
+        .detail("landing", "deferred"));
     };
     app.runtime.query(
         |session| {
@@ -211,12 +210,7 @@ pub fn land_stack_accepted(
         |row| {
             row.as_ref()
                 .map(wg_wire::dto::verification::acceptance_from_model)
-                .ok_or_else(|| {
-                    WgError::new(
-                        ErrorCode::NotFound,
-                        format!("acceptance {acceptance_id} not found"),
-                    )
-                })
+                .ok_or_else(|| WgError::not_found(format!("acceptance {acceptance_id} not found")))
         },
     )
 }

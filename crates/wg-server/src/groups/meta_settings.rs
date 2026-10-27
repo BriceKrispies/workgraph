@@ -10,7 +10,7 @@ use wg_json::Value;
 use wg_runtime::App;
 use wg_runtimespec::settings::meta_inputs;
 use wg_serverspec::groups::META_SETTINGS;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_wire::convention::json_value;
 use wg_wire::dto::health;
 
@@ -42,9 +42,6 @@ fn run(app: &mut App, id: &str, _request: RouteRequest) -> Result<Value, WgError
                 json_value(&inputs.embeddings),
             ))
         }
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }

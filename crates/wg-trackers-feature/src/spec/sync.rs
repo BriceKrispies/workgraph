@@ -35,7 +35,7 @@ use wg_trackers::{
     pull_request_changes, reconcile, repository_list, snapshot_hash, timestamp_ms,
     tracker_target_status,
 };
-use wg_types::{ErrorCode, Id, TaskKey, TaskStatus, Timestamp, WgError, parse_id};
+use wg_types::{Id, TaskKey, TaskStatus, Timestamp, WgError, parse_id};
 use wg_verify_feature::spec::external::record_external_acceptance;
 
 /// The `created_by` of the rows a sync writes.
@@ -333,7 +333,7 @@ impl Page {
         self.tasks
             .task(id)
             .cloned()
-            .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, format!("task {id} is missing")))
+            .ok_or_else(|| WgError::workgraph(format!("task {id} is missing")))
     }
 
     /// The workspace's task with `key`, as the state holds it now.
@@ -723,7 +723,7 @@ impl Page {
             .registry
             .workspace(self.workspace_id)
             .cloned()
-            .ok_or_else(|| WgError::new(ErrorCode::NotFound, "workspace not found"))?;
+            .ok_or_else(|| WgError::not_found("workspace not found"))?;
         let repositories: Vec<RepositoryLink> = repos
             .iter()
             .filter_map(|text| self.repository_by_text(text))

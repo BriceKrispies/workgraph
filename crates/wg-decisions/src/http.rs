@@ -10,7 +10,7 @@ use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::{BodyRef, RouteSpec};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::service;
 use crate::spec::{choose_parts, items, list_args, request_parts, withdraw_reason};
@@ -122,10 +122,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             let reason = withdraw_reason(&request.body);
             service::withdraw(app, context, ws, decision_id, reason.as_deref())
         }
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 

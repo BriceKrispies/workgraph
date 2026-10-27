@@ -52,13 +52,6 @@ fn parse(text: &str) -> Result<Id, WgError> {
     parse_id(text)
 }
 
-fn vanished(what: &str, id: Id) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("{what} {id} vanished from the slice"),
-    )
-}
-
 /// `_entries`: the revision manifest of a verification, one entry per repository. `paths` names
 /// the checkout each repository runs in; `branch` records the integration branch as the ref.
 #[must_use]
@@ -155,10 +148,12 @@ pub fn verify_start(
     if !settled(world, stack_id) {
         return Ok(Start::Waiting);
     }
-    let parent = world
-        .tasks
-        .task(stack.parent_task_id)
-        .ok_or_else(|| vanished("task", stack.parent_task_id))?;
+    let parent = world.tasks.task(stack.parent_task_id).ok_or_else(|| {
+        WgError::workgraph(format!(
+            "task {} vanished from the slice",
+            stack.parent_task_id
+        ))
+    })?;
     let repos = repos_of(world, stack_id);
     let scope = TaskScope {
         workspace_id: parent.workspace_id,
@@ -776,10 +771,7 @@ pub fn rebuild_apply(
                             outcome: found.outcome.clone(),
                         })
                         .ok_or_else(|| {
-                            WgError::new(
-                                ErrorCode::WorkgraphError,
-                                format!("no replay of {} in {name}", entry.task_key),
-                            )
+                            WgError::workgraph(format!("no replay of {} in {name}", entry.task_key))
                         })
                 })
                 .collect::<Result<_, _>>()?;

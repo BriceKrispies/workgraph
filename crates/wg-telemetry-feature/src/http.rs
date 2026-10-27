@@ -7,7 +7,7 @@
 use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_serverspec::groups::RouteSpec;
-use wg_types::{ErrorCode, Permission, WgError};
+use wg_types::{Permission, WgError};
 use wg_wire::convention::json_value;
 use wg_wire::dto::claude;
 
@@ -34,10 +34,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             request.context.require(&[Permission::WorkspaceRead])?;
             document(app, &ClaudeEnv::from_process())
         }
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 

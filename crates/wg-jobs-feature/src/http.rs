@@ -5,7 +5,7 @@
 use serde_json::{Map, Value as Json};
 use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::service::{self, JobQuery};
 use crate::spec::{SPECS, strings};
@@ -42,10 +42,7 @@ fn run_jobs(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgE
         "H082" => service::cancel(app, &context, job_id),
         "H083" => service::retry(app, &context, job_id),
         "H084" => service::workers(app, &context),
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 

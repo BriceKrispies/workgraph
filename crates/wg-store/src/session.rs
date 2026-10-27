@@ -13,7 +13,7 @@ use wg_storecodec::{
     EventQuery, EventRecord, Raw, Statement, TableRow, append_statement, decode_event,
     latest_seq_statement, select_by_key, update_failure, version_probe, write_statement,
 };
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// Maps a rusqlite result to a domain result: a constraint violation (unique, foreign key, check,
 /// immutability trigger) is a `conflict`, a locked database `resource_busy`, anything else a
@@ -173,24 +173,18 @@ impl Session<'_> {
             .and_then(|r| r.first())
         {
             Some(Raw::Int(seq)) => Ok(*seq),
-            _ => Err(WgError::new(
-                ErrorCode::WorkgraphError,
-                "latest_seq returned no integer",
-            )),
+            _ => Err(WgError::workgraph("latest_seq returned no integer")),
         }
     }
 
     /// Reads the row with primary key `key`, if it exists.
     pub fn fetch<T: TableRow>(&mut self, key: &RowKey) -> Result<Option<T>, WgError> {
         if key.table() != T::TABLE {
-            return Err(WgError::new(
-                ErrorCode::WorkgraphError,
-                format!(
-                    "key for {} used to read {}",
-                    key.table().name(),
-                    T::TABLE.name()
-                ),
-            ));
+            return Err(WgError::workgraph(format!(
+                "key for {} used to read {}",
+                key.table().name(),
+                T::TABLE.name()
+            )));
         }
         self.rows(&select_by_key(key))?
             .first()

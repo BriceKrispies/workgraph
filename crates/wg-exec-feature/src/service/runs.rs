@@ -8,7 +8,7 @@ use wg_model::entity::{AgentAttempt, Job};
 use wg_model::py_repr_str;
 use wg_runtime::App;
 use wg_store::{EventQuery, Session};
-use wg_types::{ErrorCode, WgError, parse_id};
+use wg_types::{WgError, parse_id};
 
 use crate::spec::cli_run::run_document;
 
@@ -22,11 +22,8 @@ pub(crate) fn find_attempt(
         Err(_) => None,
     };
     found.ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("attempt {} not found", py_repr_str(reference)),
-        )
-        .with_detail("ref", Json::String(reference.to_owned()))
+        WgError::not_found(format!("attempt {} not found", py_repr_str(reference)))
+            .detail("ref", Json::String(reference.to_owned()))
     })
 }
 

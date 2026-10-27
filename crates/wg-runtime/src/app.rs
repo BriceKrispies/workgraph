@@ -12,7 +12,7 @@ use wg_runtimespec::app::{
     workspace_id_not_found, workspace_not_found, workspace_rows,
 };
 use wg_store::{Location, Session, Store};
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::cycle::Runtime;
 use crate::effects::{Interpreter, NetHttp, write_atomic};
@@ -70,7 +70,7 @@ pub fn resolve_paths(home: Option<&Path>) -> Result<AppPaths, WgError> {
         workgraph_home: root,
         ..env
     })
-    .map_err(|err| WgError::new(ErrorCode::ConfigError, err.to_string()))
+    .map_err(|err| WgError::config(err.to_string()))
 }
 
 /// Reads a text file; a missing file is `None`.
@@ -178,8 +178,7 @@ impl App {
             return Ok(text.trim().to_owned());
         }
         if !create {
-            return Err(WgError::new(
-                ErrorCode::ConfigError,
+            return Err(WgError::config(
                 "API token has not been generated; run `workgraph init`",
             ));
         }

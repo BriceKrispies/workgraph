@@ -8,7 +8,7 @@ use wg_registry::resolve;
 use wg_runtime::App;
 use wg_runtimespec::RequestContext;
 
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::service::classify;
 use crate::service::embed;
@@ -423,10 +423,9 @@ fn semantic_leg(
         |loaded| Ok(loaded.clone()),
     )?;
     if vectors.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ProviderUnavailable,
-            format!("no embeddings stored for {provider}/{model}; run `workgraph search reindex`"),
-        ));
+        return Err(WgError::provider_unavailable(format!(
+            "no embeddings stored for {provider}/{model}; run `workgraph search reindex`"
+        )));
     }
     let (_, _, query_vector) = embed::query_vector(app, providers, ws, query)?;
     let mut scored: Vec<(f64, Id)> = vectors

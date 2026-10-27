@@ -16,7 +16,7 @@ use wg_model::{
     Decision, EventDraft, EventPayload, JsonObject, Project, ProjectRepository, RegistrySlice,
     Stamp, Write, py_repr_str,
 };
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 
 use crate::resolve;
 
@@ -45,7 +45,7 @@ fn view_after(
             project,
             repository_ids: ids.into_iter().collect(),
         })
-        .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, "the project is not loaded"))
+        .ok_or_else(|| WgError::workgraph("the project is not loaded"))
 }
 
 /// A decision whose reply is the project the writes leave behind.
@@ -96,21 +96,18 @@ pub fn create(
     stamp.require(&[Permission::ProjectWrite])?;
     let workspace = slice
         .workspace(workspace_id)
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, "workspace not found"))?;
+        .ok_or_else(|| WgError::not_found("workspace not found"))?;
     let slug = text(dump, "slug");
     let taken = slice
         .projects
         .values()
         .any(|project| project.workspace_id == workspace_id && project.slug == slug);
     if taken {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!(
-                "project {} already exists in workspace {}",
-                py_repr_str(&slug),
-                workspace.slug
-            ),
-        ));
+        return Err(WgError::conflict(format!(
+            "project {} already exists in workspace {}",
+            py_repr_str(&slug),
+            workspace.slug
+        )));
     }
     let ([project_id, event_id], _) = stamp.ids().take::<2>();
     let project = Project {
@@ -222,13 +219,10 @@ pub fn update(
             .values()
             .any(|project| project.workspace_id == workspace_id && project.slug == slug);
         if taken {
-            return Err(WgError::new(
-                ErrorCode::Conflict,
-                format!(
-                    "project slug {} is already used in this workspace",
-                    py_repr_str(slug)
-                ),
-            ));
+            return Err(WgError::conflict(format!(
+                "project slug {} is already used in this workspace",
+                py_repr_str(slug)
+            )));
         }
     }
     let (row, changes) = UPDATABLE.iter().fold(

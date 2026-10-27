@@ -131,12 +131,9 @@ fn bind_session(
         .decide(
             &state.context,
             |session| {
-                let attempt = session.attempt_by_id(attempt_id)?.ok_or_else(|| {
-                    WgError::new(
-                        ErrorCode::NotFound,
-                        format!("attempt {attempt_id} not found"),
-                    )
-                })?;
+                let attempt = session
+                    .attempt_by_id(attempt_id)?
+                    .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))?;
                 let existing = session
                     .rows(&session_by_external(&key, session_id))?
                     .first()
@@ -194,12 +191,9 @@ fn finalize(
     app.runtime.decide(
         context,
         |session| {
-            let attempt = session.attempt_by_id(attempt_id)?.ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::NotFound,
-                    format!("attempt {attempt_id} not found"),
-                )
-            })?;
+            let attempt = session
+                .attempt_by_id(attempt_id)?
+                .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))?;
             let world = session.task_world(Some(attempt.workspace_id), &[])?;
             let attempts = session.attempts_of_task(attempt.task_id, &[])?;
             Ok((attempt, world, attempts))
@@ -255,12 +249,8 @@ fn store_prompt(
     let name = "prompt.md";
     let path = stored_path(workspace, id, name);
     let file = PathBuf::from(app.paths.artifacts_dir().as_str()).join(&path);
-    wg_runtime::write_atomic(&file, prompt.as_bytes()).map_err(|error| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("cannot write {}: {error}", file.display()),
-        )
-    })?;
+    wg_runtime::write_atomic(&file, prompt.as_bytes())
+        .map_err(|error| WgError::workgraph(format!("cannot write {}: {error}", file.display())))?;
     Ok(artifact_row(
         id,
         stamp.at,
@@ -333,12 +323,7 @@ pub fn execute(
         .runtime
         .store
         .read(|session| session.attempt_by_id(attempt_id))?
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("attempt {attempt_id} not found"),
-            )
-        })?;
+        .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))?;
     match execute_entry(attempt.status, attempt.cancel_requested) {
         ExecuteEntry::Skip(reason) => return Ok(json!({ "skipped": reason })),
         ExecuteEntry::CancelBeforeStart => {
@@ -380,12 +365,9 @@ pub fn execute(
     app.runtime.decide(
         &context,
         |session| {
-            let attempt = session.attempt_by_id(attempt_id)?.ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::NotFound,
-                    format!("attempt {attempt_id} not found"),
-                )
-            })?;
+            let attempt = session
+                .attempt_by_id(attempt_id)?
+                .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))?;
             let world = session.task_world(Some(workspace_id), &[])?;
             Ok((attempt, world))
         },
@@ -429,10 +411,7 @@ pub fn execute(
     let attempt_text = attempt_id.to_string();
     let runs_dir = PathBuf::from(app.paths.runs_dir().as_str()).join(&attempt_text);
     std::fs::create_dir_all(&runs_dir).map_err(|error| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("cannot create {}: {error}", runs_dir.display()),
-        )
+        WgError::workgraph(format!("cannot create {}: {error}", runs_dir.display()))
     })?;
     let log_path = PathBuf::from(app.paths.artifacts_dir().as_str())
         .join(workspace_id.to_string())
@@ -460,12 +439,9 @@ pub fn execute(
     app.runtime.decide(
         &context,
         |session| {
-            session.attempt_by_id(attempt_id)?.ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::NotFound,
-                    format!("attempt {attempt_id} not found"),
-                )
-            })
+            session
+                .attempt_by_id(attempt_id)?
+                .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))
         },
         |fresh, stamp| running_decision(fresh, artifact.clone(), environment.clone(), stamp),
     )?;

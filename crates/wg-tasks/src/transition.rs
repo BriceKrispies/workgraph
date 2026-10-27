@@ -14,7 +14,7 @@ use wg_model::event::{EventDraft, EventPayload, TaskKeyed, TaskReopened, TaskSta
 use wg_model::slice::StackSlice;
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, TaskSlice, Write};
-use wg_types::{ErrorCode, Id, TaskStatus, WgError};
+use wg_types::{Id, TaskStatus, WgError};
 
 use crate::deps::BLOCKED_BY_DEPENDENCIES;
 use crate::lifecycle::check_task_transition;
@@ -60,7 +60,7 @@ fn truthy(value: &Value) -> bool {
 }
 
 fn missing(task_id: Id) -> WgError {
-    WgError::new(ErrorCode::NotFound, format!("task {task_id} not found"))
+    WgError::not_found(format!("task {task_id} not found"))
 }
 
 /// The metadata with `key` set to `value`.

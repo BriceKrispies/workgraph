@@ -76,17 +76,11 @@ pub struct Ended {
 
 /// The error a collaborator that is not ported yet answers with.
 pub fn blocked(what: &str) -> WgError {
-    WgError::new(
-        wg_types::ErrorCode::WorkgraphError,
-        format!("{what} is not ported yet"),
-    )
+    WgError::workgraph(format!("{what} is not ported yet"))
 }
 
 fn gone(what: &str, id: Id) -> WgError {
-    WgError::new(
-        wg_types::ErrorCode::NotFound,
-        format!("{what} {id} not found"),
-    )
+    WgError::not_found(format!("{what} {id} not found"))
 }
 
 /// `_maybe_escalate`: a failed task whose failed attempts reached the limit is flagged for review.

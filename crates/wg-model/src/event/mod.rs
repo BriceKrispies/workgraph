@@ -24,7 +24,7 @@ pub mod worktree;
 use rpds::VectorSync;
 use serde::{Serialize, Serializer};
 use serde_json::Value;
-use wg_types::{Actor, Correlation, ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Actor, Correlation, Id, Timestamp, WgError};
 
 use crate::entity::JsonObject;
 use crate::stamp::Stamp;
@@ -329,14 +329,12 @@ event_payloads! {
 fn object<T: Serialize>(payload: &T) -> Result<JsonObject, WgError> {
     match serde_json::to_value(payload) {
         Ok(Value::Object(map)) => Ok(map),
-        Ok(other) => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("event data is not an object: {other}"),
-        )),
-        Err(err) => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("event data does not serialise: {err}"),
-        )),
+        Ok(other) => Err(WgError::workgraph(format!(
+            "event data is not an object: {other}"
+        ))),
+        Err(err) => Err(WgError::workgraph(format!(
+            "event data does not serialise: {err}"
+        ))),
     }
 }
 

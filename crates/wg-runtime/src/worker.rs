@@ -223,10 +223,7 @@ impl Worker {
         if drained {
             Ok(self.summary())
         } else {
-            Err(WgError::new(
-                ErrorCode::WorkgraphError,
-                "jobs did not drain before the timeout",
-            ))
+            Err(WgError::workgraph("jobs did not drain before the timeout"))
         }
     }
 

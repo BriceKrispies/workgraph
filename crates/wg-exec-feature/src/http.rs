@@ -9,7 +9,7 @@
 use serde_json::{Map, Value as Json};
 use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
-use wg_types::{ErrorCode, Permission, WgError};
+use wg_types::{Permission, WgError};
 
 use crate::service::agents::LiveAgents;
 use crate::service::attempt_reads;
@@ -77,10 +77,7 @@ fn run_exec(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgE
             let workspace = app.workspace_id(ws)?;
             scheduler::overview(app, Some(workspace))
         }
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 

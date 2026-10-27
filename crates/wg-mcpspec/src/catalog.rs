@@ -12,7 +12,7 @@
 //! the wire stays the snapshot's.
 
 use serde_json::{Map, Value, json};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_validate::{LoadOptions, Model, model_from_json_schema};
 
 /// The tool names in registration order.
@@ -55,10 +55,7 @@ pub struct Catalog {
 }
 
 fn broken(what: impl Into<String>) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("embedded mcp snapshot: {}", what.into()),
-    )
+    WgError::workgraph(format!("embedded mcp snapshot: {}", what.into()))
 }
 
 fn text<'a>(item: &'a Value, key: &str, what: &str) -> Result<&'a str, WgError> {

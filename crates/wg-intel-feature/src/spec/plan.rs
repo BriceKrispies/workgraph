@@ -6,7 +6,7 @@ use serde_json::{Map, Value as Json};
 use wg_intel::RunRow;
 use wg_model::entity::JsonObject;
 use wg_model::{EventDraft, EventPayload, IdSeq, Stamp};
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 /// The first `count` ids of a decision's stamp, in order.
 #[must_use]
@@ -110,16 +110,13 @@ pub fn prompt_of(title: &str, description: &str, criteria: &[String], tags: &[St
 /// The error of a category outside the taxonomy.
 #[must_use]
 pub fn unknown_category(category: &str) -> WgError {
-    WgError::new(
-        ErrorCode::ValidationFailed,
-        format!("unknown category '{category}'"),
-    )
+    WgError::validation(format!("unknown category '{category}'"))
 }
 
 /// The error of a `classify promote` id that names no succeeded row, or any text that is not an id.
 pub fn parse_id(text: &str, not_found: &str) -> Result<Id, WgError> {
     text.parse::<Id>()
-        .map_err(|_| WgError::new(ErrorCode::NotFound, not_found))
+        .map_err(|_| WgError::not_found(not_found))
 }
 
 /// The `{"category": ..., "model": ...}` of the former current classification of a confirmation.

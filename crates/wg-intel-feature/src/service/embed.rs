@@ -15,7 +15,7 @@ use wg_registry::resolve;
 use wg_runtime::App;
 use wg_runtimespec::RequestContext;
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 
 use crate::service::llm::Providers;
 use crate::service::ops::{GPU_RESOURCE, load_task};
@@ -67,12 +67,7 @@ fn one_vector(
         .map_err(embedding_call_error)?
         .into_iter()
         .next()
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::WorkgraphError,
-                "embedding provider returned no vector",
-            )
-        })
+        .ok_or_else(|| WgError::workgraph("embedding provider returned no vector"))
 }
 
 /// `SearchService.embed_task`: embeds the task's text under the embedding provider and model (or

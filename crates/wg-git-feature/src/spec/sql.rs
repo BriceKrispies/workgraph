@@ -10,7 +10,7 @@
 
 use wg_model::Table;
 use wg_model::entity::{Commit, CommitTaskLink};
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Id, Timestamp, WgError};
 
 use wg_storecodec::codec::{Cols, Raw, bool_sql, id_sql, opt_ts_sql, text_sql};
 use wg_storecodec::rows::{TableRow, columns};
@@ -449,14 +449,11 @@ impl CommitReachability {
 fn split_after(values: &[Raw], table: Table) -> Result<(&[Raw], &[Raw]), WgError> {
     let width = columns(table).len();
     if values.len() < width {
-        return Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!(
-                "joined row has {} values, expected at least {width} for {}",
-                values.len(),
-                table.name()
-            ),
-        ));
+        return Err(WgError::workgraph(format!(
+            "joined row has {} values, expected at least {width} for {}",
+            values.len(),
+            table.name()
+        )));
     }
     Ok(values.split_at(width))
 }

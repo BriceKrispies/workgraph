@@ -28,7 +28,7 @@ use wg_runtimespec::RequestContext;
 use wg_runtimespec::app::{config_failure, io_error};
 use wg_store::head_revision;
 use wg_storecodec::EventQuery;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_wire::convention::json_value;
 use wg_wire::dto::{agents as agents_dto, llm as llm_dto};
 
@@ -422,8 +422,8 @@ pub fn agent_listing<P: HealthProbe>(
         .into_iter()
         .map(|(name, entry)| {
             let (available, detail) = probe.agent(name, entry);
-            let described = describe_adapter(entry)
-                .map_err(|error| WgError::new(ErrorCode::ConfigError, error.to_string()))?;
+            let described =
+                describe_adapter(entry).map_err(|error| WgError::config(error.to_string()))?;
             Ok(agents_dto::agent(
                 name,
                 described.adapter,
@@ -536,7 +536,7 @@ fn event_projections(app: &mut App) -> Result<Vec<EventProjection>, WgError> {
                 events.into_iter().map(StoredEvent::from).collect(),
                 &task_states(&tasks),
             )
-            .map_err(|error| WgError::new(ErrorCode::WorkgraphError, error.to_string()))?;
+            .map_err(|error| WgError::workgraph(error.to_string()))?;
             Ok(EventProjection {
                 slug: workspace.slug,
                 tasks: report.tasks,

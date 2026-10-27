@@ -336,14 +336,12 @@ pub fn promote_scope(m: &ArgMatches) -> Result<(Vec<String>, Option<String>, boo
     let project = one(m, "--project").filter(|p| !p.is_empty());
     let all = flag(m, "--all");
     if all && (project.is_some() || !tags.is_empty()) {
-        return Err(CliFailure::Domain(WgError::new(
-            wg_types::ErrorCode::ValidationFailed,
+        return Err(CliFailure::Domain(WgError::validation(
             "--all cannot be combined with --project or --tag",
         )));
     }
     if !(all || project.is_some() || !tags.is_empty()) {
-        return Err(CliFailure::Domain(WgError::new(
-            wg_types::ErrorCode::ValidationFailed,
+        return Err(CliFailure::Domain(WgError::validation(
             "give --project, --tag or --all to choose the tasks to promote",
         )));
     }

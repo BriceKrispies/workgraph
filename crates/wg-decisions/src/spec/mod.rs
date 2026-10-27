@@ -26,7 +26,7 @@ use wg_registry::resolve;
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::edit::tag_writes;
 use wg_tasks::requests::{component, run};
-use wg_types::{ErrorCode, Id, Permission, WgError, parse_id};
+use wg_types::{Id, Permission, WgError, parse_id};
 use wg_validate::Model;
 use wg_wire::convention::dict;
 
@@ -77,11 +77,11 @@ pub fn locate(
     found
         .filter(|row| scope.is_none_or(|ws| row.workspace_id == ws))
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("decision {} not found", wg_model::py_repr_str(reference)),
-            )
-            .with_detail("ref", Json::String(reference.to_owned()))
+            WgError::not_found(format!(
+                "decision {} not found",
+                wg_model::py_repr_str(reference)
+            ))
+            .detail("ref", Json::String(reference.to_owned()))
         })
 }
 
@@ -338,7 +338,7 @@ fn task_of(load: &DecisionWorld) -> Result<&Task, WgError> {
     load.world
         .tasks
         .task(load.decision.task_id)
-        .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, "the decision's task vanished"))
+        .ok_or_else(|| WgError::workgraph("the decision's task vanished"))
 }
 
 /// `DecisionService.choose`: answers the loaded decision.

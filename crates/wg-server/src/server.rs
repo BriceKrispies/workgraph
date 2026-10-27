@@ -9,7 +9,7 @@ use wg_serverspec::request::{Declared, operation, params};
 use wg_serverspec::routes::Entry;
 use wg_serverspec::security::{Lan, Policy};
 use wg_serverspec::{Target, openapi_body, route_table};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::route::ApiRoute;
 use crate::ui::Ui;
@@ -65,7 +65,7 @@ impl Server {
     /// missing), the `WORKGRAPH_ALLOWED_HOSTS` and `WORKGRAPH_ALLOWED_ORIGINS` overrides, and the
     /// parameter schemas of each route from the OpenAPI snapshot.
     pub fn new(options: ServerOptions, app: App) -> Result<Server, WgError> {
-        let setup_error = |message: String| WgError::new(ErrorCode::ConfigError, message);
+        let setup_error = |message: String| WgError::config(message);
         let token = app.api_token(true)?;
         let lan = options
             .lan
@@ -145,12 +145,7 @@ impl Server {
         let app = Arc::clone(&self.app);
         tokio::task::spawn_blocking(move || work(&mut lock(&app)))
             .await
-            .map_err(|err| {
-                WgError::new(
-                    ErrorCode::WorkgraphError,
-                    format!("request task failed: {err}"),
-                )
-            })?
+            .map_err(|err| WgError::workgraph(format!("request task failed: {err}")))?
     }
 
     /// One pairing attempt under the lock: `apply` gets the current state (`None` without LAN

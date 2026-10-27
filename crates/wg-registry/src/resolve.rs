@@ -5,14 +5,8 @@
 //! falls through to the name-like lookup, as in Python. Error messages and the `ref` detail are
 //! Python's.
 
-use serde_json::Value;
 use wg_model::{Project, RegistrySlice, Repository, Task, TaskSlice, Workspace, py_repr_str};
-use wg_types::{ErrorCode, Id, WgError, parse_id};
-
-fn not_found(message: String, reference: &str) -> WgError {
-    WgError::new(ErrorCode::NotFound, message)
-        .with_detail("ref", Value::String(reference.to_owned()))
-}
+use wg_types::{Id, WgError, parse_id};
 
 /// The reference as a UUID, when it is one (Python's `is_uuid`).
 fn as_uuid(reference: &str) -> Option<Id> {
@@ -25,10 +19,8 @@ pub fn workspace<'a>(slice: &'a RegistrySlice, reference: &str) -> Result<&'a Wo
         .and_then(|id| slice.workspace(id))
         .or_else(|| slice.workspace_by_slug(reference))
         .ok_or_else(|| {
-            not_found(
-                format!("workspace {} not found", py_repr_str(reference)),
-                reference,
-            )
+            WgError::not_found(format!("workspace {} not found", py_repr_str(reference)))
+                .detail("ref", reference)
         })
 }
 
@@ -48,10 +40,11 @@ pub fn project<'a>(
                 .find(|project| project.workspace_id == workspace_id && project.slug == reference)
         })
         .ok_or_else(|| {
-            not_found(
-                format!("project {} not found in workspace", py_repr_str(reference)),
-                reference,
-            )
+            WgError::not_found(format!(
+                "project {} not found in workspace",
+                py_repr_str(reference)
+            ))
+            .detail("ref", reference)
         })
 }
 
@@ -74,13 +67,11 @@ pub fn repository<'a>(
         })
         .filter(|repo| include_archived || repo.archived_at.is_none())
         .ok_or_else(|| {
-            not_found(
-                format!(
-                    "repository {} not found in workspace",
-                    py_repr_str(reference)
-                ),
-                reference,
-            )
+            WgError::not_found(format!(
+                "repository {} not found in workspace",
+                py_repr_str(reference)
+            ))
+            .detail("ref", reference)
         })
 }
 
@@ -93,10 +84,7 @@ pub fn task<'a>(
     reference: &str,
 ) -> Result<&'a Task, WgError> {
     if reference.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "task reference must not be empty",
-        ));
+        return Err(WgError::validation("task reference must not be empty"));
     }
     let found = match as_uuid(reference).and_then(|id| slice.task(id)) {
         Some(task) => Some(task),
@@ -113,22 +101,19 @@ pub fn task<'a>(
                 .take(2)
                 .collect();
             if matches.len() > 1 {
-                return Err(WgError::new(
-                    ErrorCode::ValidationFailed,
-                    format!(
-                        "task key {} is ambiguous across workspaces; pass a workspace",
-                        py_repr_str(reference)
-                    ),
-                ));
+                return Err(WgError::validation(format!(
+                    "task key {} is ambiguous across workspaces; pass a workspace",
+                    py_repr_str(reference)
+                )));
             }
             matches.first().copied()
         }
     };
     match found {
         Some(task) if workspace_id.is_none_or(|ws| task.workspace_id == ws) => Ok(task),
-        _ => Err(not_found(
-            format!("task {} not found", py_repr_str(reference)),
-            reference,
-        )),
+        _ => Err(
+            WgError::not_found(format!("task {} not found", py_repr_str(reference)))
+                .detail("ref", reference),
+        ),
     }
 }

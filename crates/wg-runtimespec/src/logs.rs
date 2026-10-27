@@ -9,7 +9,7 @@
 use std::path::{Path, PathBuf};
 
 use wg_json::{DumpError, PyStr, Value, log_json};
-use wg_types::{ErrorCode, Timestamp, WgError};
+use wg_types::{Timestamp, WgError};
 
 /// The log file in `<logs>`.
 pub const LOG_FILE_NAME: &str = "workgraph.log";
@@ -71,10 +71,10 @@ impl Level {
             "WARNING" | "WARN" => Ok(Level::Warning),
             "ERROR" => Ok(Level::Error),
             "CRITICAL" | "FATAL" => Ok(Level::Critical),
-            other => Err(WgError::new(
-                ErrorCode::ConfigError,
-                format!("Unknown level: {}", wg_model::py_repr_str(other)),
-            )),
+            other => Err(WgError::config(format!(
+                "Unknown level: {}",
+                wg_model::py_repr_str(other)
+            ))),
         }
     }
 

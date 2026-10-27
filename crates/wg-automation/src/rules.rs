@@ -2,7 +2,7 @@
 //! `AutomationService.catalog`, `_describe`, `preview`).
 
 use serde_json::{Map, Value, json};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::condition::OPERATORS;
 use crate::cron::Cron;
@@ -58,10 +58,6 @@ pub fn catalog() -> Value {
     })
 }
 
-fn invalid(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
-}
-
 /// Validates a trigger document (`Trigger` in `rules.py`): one of the three kinds, event types
 /// from [`TRIGGER_EVENTS`], exactly one of `cron` or `interval_seconds` for schedules (the cron
 /// expression must parse), and an interval of at least 60 seconds.
@@ -72,7 +68,9 @@ pub fn validate_trigger(trigger: &Map<String, Value>) -> Result<(), WgError> {
             "type" | "event_types" | "cron" | "interval_seconds"
         )
     }) {
-        return Err(invalid(format!("extra field {extra} is not permitted")));
+        return Err(WgError::validation(format!(
+            "extra field {extra} is not permitted"
+        )));
     }
     let interval = trigger
         .get("interval_seconds")
@@ -81,7 +79,7 @@ pub fn validate_trigger(trigger: &Map<String, Value>) -> Result<(), WgError> {
         match value.as_i64() {
             Some(seconds) if seconds >= 60 => {}
             _ => {
-                return Err(invalid(
+                return Err(WgError::validation(
                     "interval_seconds must be an integer of at least 60",
                 ));
             }
@@ -92,7 +90,7 @@ pub fn validate_trigger(trigger: &Map<String, Value>) -> Result<(), WgError> {
         .and_then(Value::as_str)
         .unwrap_or_default();
     if !TRIGGER_TYPES.contains(&kind) {
-        return Err(invalid(format!(
+        return Err(WgError::validation(format!(
             "trigger type must be one of {TRIGGER_TYPES:?}"
         )));
     }
@@ -104,7 +102,9 @@ pub fn validate_trigger(trigger: &Map<String, Value>) -> Result<(), WgError> {
                 .map(|items| items.iter().filter_map(Value::as_str).collect())
                 .unwrap_or_default();
             if types.is_empty() {
-                return Err(invalid("event triggers need at least one event type"));
+                return Err(WgError::validation(
+                    "event triggers need at least one event type",
+                ));
             }
             let allowed = |name: &str| TRIGGER_EVENTS.iter().any(|(event, _)| *event == name);
             let unknown: Vec<&str> = types
@@ -113,7 +113,9 @@ pub fn validate_trigger(trigger: &Map<String, Value>) -> Result<(), WgError> {
                 .filter(|name| !allowed(name))
                 .collect();
             if !unknown.is_empty() {
-                return Err(invalid(format!("unknown trigger events {unknown:?}")));
+                return Err(WgError::validation(format!(
+                    "unknown trigger events {unknown:?}"
+                )));
             }
         }
         "schedule" => {
@@ -123,7 +125,7 @@ pub fn validate_trigger(trigger: &Map<String, Value>) -> Result<(), WgError> {
                 .and_then(Value::as_str);
             let interval = interval.filter(|value| truthy(value));
             if cron.is_some() == interval.is_some() {
-                return Err(invalid(
+                return Err(WgError::validation(
                     "schedule triggers need exactly one of cron or interval_seconds",
                 ));
             }

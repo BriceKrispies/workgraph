@@ -10,7 +10,7 @@ use wg_agents::{
 };
 use wg_model::py_repr_str;
 use wg_proc::Cancel;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// What a run launches an agent through.
 pub trait AgentHost {
@@ -100,11 +100,11 @@ pub fn get(
         .ok_or_else(|| {
             let mut configured: Vec<&String> = agents.keys().collect();
             configured.sort();
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("agent adapter {} is not configured", py_repr_str(name)),
-            )
-            .with_detail(
+            WgError::not_found(format!(
+                "agent adapter {} is not configured",
+                py_repr_str(name)
+            ))
+            .detail(
                 "configured",
                 Json::Array(
                     configured
@@ -114,8 +114,7 @@ pub fn get(
                 ),
             )
         })?;
-    let described = describe_adapter(&entry)
-        .map_err(|error| WgError::new(ErrorCode::ConfigError, error.to_string()))?;
+    let described = describe_adapter(&entry).map_err(|error| WgError::config(error.to_string()))?;
     let snapshot = described.config.as_object().cloned().unwrap_or_default();
     Ok((
         entry.clone(),
@@ -140,12 +139,9 @@ pub fn require_available(
     if ok {
         Ok(Provider { detail, ..provider })
     } else {
-        Err(WgError::new(
-            ErrorCode::ProviderUnavailable,
-            format!(
-                "agent adapter {} is unavailable: {detail}",
-                py_repr_str(name)
-            ),
-        ))
+        Err(WgError::provider_unavailable(format!(
+            "agent adapter {} is unavailable: {detail}",
+            py_repr_str(name)
+        )))
     }
 }

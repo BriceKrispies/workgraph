@@ -10,7 +10,7 @@ use wg_model::TaskSlice;
 use wg_model::entity::{JsonObject, Task, TaskFile};
 use wg_model::event::{Changes, TaskUpdated};
 use wg_model::stamp::Stamp;
-use wg_types::{ErrorCode, Id, TaskPriority, TaskStatus, Timestamp, WgError};
+use wg_types::{Id, TaskPriority, TaskStatus, Timestamp, WgError};
 
 use crate::claims::check_version;
 use crate::content::content_hash;
@@ -250,10 +250,7 @@ pub fn update_plan(
     guard_tracker_owned(&stamp.actor, task, &touched, tracked_by(tasks, task.id))?;
 
     if patch.status == Some(TaskStatus::Claimed) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "use task_claim to claim a task",
-        ));
+        return Err(WgError::validation("use task_claim to claim a task"));
     }
 
     let changes = log

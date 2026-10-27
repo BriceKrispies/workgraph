@@ -35,12 +35,7 @@ fn heads_of(
         .items
         .get(&item_id)
         .map(|item| item.task_id)
-        .ok_or_else(|| {
-            WgError::new(
-                wg_types::ErrorCode::WorkgraphError,
-                format!("stack item {item_id} vanished"),
-            )
-        })?;
+        .ok_or_else(|| WgError::workgraph(format!("stack item {item_id} vanished")))?;
     world
         .stacks
         .repositories_of(stack_id)
@@ -69,10 +64,9 @@ impl Exec<'_> {
         let (world, checkouts) = self.0.runtime.query(
             |session| {
                 let missing = || {
-                    WgError::new(
-                        wg_types::ErrorCode::NotFound,
-                        format!("stack {stack_id} has no repository {repository_id}"),
-                    )
+                    WgError::not_found(format!(
+                        "stack {stack_id} has no repository {repository_id}"
+                    ))
                 };
                 if session.stack_by_id(stack_id)?.is_none() {
                     return Err(missing());

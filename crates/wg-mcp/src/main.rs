@@ -7,7 +7,7 @@ use std::process::ExitCode;
 
 use wg_mcp::{AppBackend, serve_stdio};
 use wg_mcpspec::options::{ServeOptions, Transport};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// The features this program serves: the tasks, decisions, registry, automation, exec and stacks
 /// features, as the `workgraph` binary lists them.
@@ -26,7 +26,7 @@ const HTTP_REFUSED: &str = "the standalone wg-mcp serves stdio only; \
 fn run(args: &[String]) -> Result<(), WgError> {
     let options = ServeOptions::parse(args)?;
     if options.transport == Transport::Http {
-        return Err(WgError::new(ErrorCode::WorkgraphError, HTTP_REFUSED));
+        return Err(WgError::workgraph(HTTP_REFUSED));
     }
     let app = wg_runtime::App::open(None)?;
     let backend = Box::new(AppBackend {
@@ -37,7 +37,7 @@ fn run(args: &[String]) -> Result<(), WgError> {
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
-        .map_err(|err| WgError::new(ErrorCode::WorkgraphError, err.to_string()))?;
+        .map_err(|err| WgError::workgraph(err.to_string()))?;
     runtime.block_on(serve_stdio(agent, backend))
 }
 

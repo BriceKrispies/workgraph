@@ -2,7 +2,7 @@
 //! as Python reads them. Pure functions of the payload map.
 
 use serde_json::{Map, Value as Json};
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 /// A payload's text, when it is a string.
 #[must_use]
@@ -25,10 +25,5 @@ pub fn flag(payload: &Map<String, Json>, key: &str) -> bool {
 pub fn id_of(payload: &Map<String, Json>, key: &str) -> Result<Id, WgError> {
     text(payload, key)
         .and_then(|value| value.parse::<Id>().ok())
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("job payload has no valid {key}"),
-            )
-        })
+        .ok_or_else(|| WgError::validation(format!("job payload has no valid {key}")))
 }

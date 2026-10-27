@@ -20,7 +20,7 @@ use wg_runtimespec::RequestContext;
 use wg_store::Session;
 use wg_tasks::accept::active_item;
 use wg_tasks_feature::spec::claims::Reported;
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 use wg_verify::CheckTier;
 use wg_verify_feature::service::run::RunInput;
 use wg_wire::convention::json_value;
@@ -161,10 +161,9 @@ pub fn conclude_attempt(
             |session| load_reported(session, attempt_id),
             |reported, stamp| {
                 let Some(attempt) = reported.attempt.as_ref() else {
-                    return Err(WgError::new(
-                        ErrorCode::NotFound,
-                        format!("attempt {attempt_id} not found"),
-                    ));
+                    return Err(WgError::not_found(format!(
+                        "attempt {attempt_id} not found"
+                    )));
                 };
                 complete_stage(
                     reported,
@@ -208,12 +207,9 @@ type EndLoad = (
 );
 
 fn load(session: &mut wg_store::Session<'_>, attempt_id: Id) -> Result<EndLoad, WgError> {
-    let attempt = session.attempt_by_id(attempt_id)?.ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("attempt {attempt_id} not found"),
-        )
-    })?;
+    let attempt = session
+        .attempt_by_id(attempt_id)?
+        .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))?;
     let world = session.task_world(Some(attempt.workspace_id), &[])?;
     let attempts = session.attempts_of_task(attempt.task_id, &[])?;
     Ok((attempt, world, attempts))
@@ -326,12 +322,11 @@ struct SubmitFacts {
 fn load_submit(session: &mut Session<'_>, reference: &str) -> Result<SubmitFacts, WgError> {
     let attempt = find_attempt(session, reference)?;
     let world = session.task_world(Some(attempt.workspace_id), &[])?;
-    let task = world.tasks.task(attempt.task_id).cloned().ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("task {} not found", attempt.task_id),
-        )
-    })?;
+    let task = world
+        .tasks
+        .task(attempt.task_id)
+        .cloned()
+        .ok_or_else(|| WgError::not_found(format!("task {} not found", attempt.task_id)))?;
     Ok(SubmitFacts {
         stacked: active_item(&world.stacks, task.id).is_some(),
         attempt,
@@ -373,8 +368,7 @@ pub fn attempt_submit(
         // A stack child succeeds through the stack's gate, which the stacks feature does not
         // serve yet: refused before anything is written.
         if !failed {
-            return Err(WgError::new(
-                ErrorCode::WorkgraphError,
+            return Err(WgError::workgraph(
                 "submitting a stack child is not ported yet (the stacks gate service)",
             ));
         }

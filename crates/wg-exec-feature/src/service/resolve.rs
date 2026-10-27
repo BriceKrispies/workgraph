@@ -6,7 +6,7 @@ use serde_json::Value;
 use wg_model::entity::AgentAttempt;
 use wg_model::{RowKey, Task, py_repr_str};
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, TaskKey, WgError, parse_id};
+use wg_types::{Id, TaskKey, WgError, parse_id};
 
 /// `resolve.task`: by UUID, else by key, within `workspace` when one is given. A key held by
 /// tasks of more than one workspace is ambiguous when no workspace is given; a task outside
@@ -17,10 +17,7 @@ pub fn find_task(
     reference: &str,
 ) -> Result<Task, WgError> {
     if reference.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "task reference must not be empty",
-        ));
+        return Err(WgError::validation("task reference must not be empty"));
     }
     let by_id = match parse_id(reference) {
         Ok(id) => session.fetch::<Task>(&RowKey::Task(id))?,
@@ -35,13 +32,10 @@ pub fn find_task(
                     // At most one match is needed to tell "one" from "ambiguous".
                     let mut matches = session.tasks_by_key(&key)?;
                     if matches.len() > 1 {
-                        return Err(WgError::new(
-                            ErrorCode::ValidationFailed,
-                            format!(
-                                "task key {} is ambiguous across workspaces; pass a workspace",
-                                py_repr_str(reference)
-                            ),
-                        ));
+                        return Err(WgError::validation(format!(
+                            "task key {} is ambiguous across workspaces; pass a workspace",
+                            py_repr_str(reference)
+                        )));
                     }
                     matches.pop()
                 }
@@ -52,11 +46,8 @@ pub fn find_task(
     found
         .filter(|task| workspace.is_none_or(|ws| task.workspace_id == ws))
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("task {} not found", py_repr_str(reference)),
-            )
-            .with_detail("ref", Value::String(reference.to_owned()))
+            WgError::not_found(format!("task {} not found", py_repr_str(reference)))
+                .detail("ref", Value::String(reference.to_owned()))
         })
 }
 
@@ -67,10 +58,7 @@ pub fn find_attempt(session: &mut Session<'_>, reference: &str) -> Result<AgentA
         Err(_) => None,
     };
     found.ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("attempt {} not found", py_repr_str(reference)),
-        )
-        .with_detail("ref", Value::String(reference.to_owned()))
+        WgError::not_found(format!("attempt {} not found", py_repr_str(reference)))
+            .detail("ref", Value::String(reference.to_owned()))
     })
 }

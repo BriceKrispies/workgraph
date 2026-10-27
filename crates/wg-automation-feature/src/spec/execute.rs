@@ -142,12 +142,7 @@ pub fn target_task(context: &Json) -> Result<String, WgError> {
         .and_then(|task| task.get("id"))
         .and_then(Json::as_str)
         .map(str::to_owned)
-        .ok_or_else(|| {
-            WgError::new(
-                wg_types::ErrorCode::ValidationFailed,
-                "this action needs a task in its trigger context",
-            )
-        })
+        .ok_or_else(|| WgError::validation("this action needs a task in its trigger context"))
 }
 
 /// The `update_task` body: the action's fields that are set, and the `automation` reason.

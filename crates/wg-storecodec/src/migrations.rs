@@ -8,7 +8,7 @@
 use std::collections::HashSet;
 
 use serde_json::Value;
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Id, Timestamp, WgError};
 
 use crate::codec::Raw;
 use crate::sql::Statement;
@@ -150,7 +150,7 @@ pub fn upgrade_path(
     current: Option<&str>,
     target: &str,
 ) -> Result<Vec<&'static Revision>, WgError> {
-    let fail = |message: String| WgError::new(ErrorCode::WorkgraphError, message);
+    let fail = |message: String| WgError::workgraph(message);
     let position = |id: &str| REVISIONS.iter().position(|revision| revision.id == id);
     let end = if target == "head" {
         REVISIONS.len()
@@ -199,19 +199,15 @@ pub fn external_ref_links(
         let refs = match raw.as_deref() {
             None | Some("") => Vec::new(),
             Some(text) => match serde_json::from_str::<Value>(text).map_err(|err| {
-                WgError::new(
-                    ErrorCode::WorkgraphError,
-                    format!("task {task_id}: external_refs is not JSON: {err}"),
-                )
+                WgError::workgraph(format!("task {task_id}: external_refs is not JSON: {err}"))
             })? {
                 Value::Array(items) => items,
                 // Python iterates a string or an object without error, yielding no dict entries.
                 Value::Object(_) | Value::String(_) => Vec::new(),
                 other => {
-                    return Err(WgError::new(
-                        ErrorCode::WorkgraphError,
-                        format!("task {task_id}: external_refs is not a list: {other}"),
-                    ));
+                    return Err(WgError::workgraph(format!(
+                        "task {task_id}: external_refs is not a list: {other}"
+                    )));
                 }
             },
         };
@@ -227,10 +223,7 @@ pub fn external_ref_links(
                 continue;
             }
             let Some(link_id) = ids.next() else {
-                return Err(WgError::new(
-                    ErrorCode::WorkgraphError,
-                    "external_ref_links ran out of link ids",
-                ));
+                return Err(WgError::workgraph("external_ref_links ran out of link ids"));
             };
             statements.push(Statement {
                 sql: INSERT_TASK_LINK.to_owned(),

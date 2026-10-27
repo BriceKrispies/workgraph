@@ -11,7 +11,7 @@ use serde_json::{Value as Json, json};
 use wg_proc::{CaptureLimits, run_capture};
 use wg_procspec::ProcessSpec;
 use wg_runtime::{App, human_context, write_atomic};
-use wg_types::{ErrorCode, WgError, parse_id};
+use wg_types::{WgError, parse_id};
 
 use crate::service::hooks;
 use crate::spec::installer::{self, InstallerStatus};
@@ -122,8 +122,7 @@ pub fn workgraph_executable() -> Result<String, WgError> {
         .filter(|candidate| candidate.exists())
         .map(|candidate| hooks::resolved_path(&candidate.to_string_lossy()))
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::ConfigError,
+            WgError::config(
                 "could not locate the workgraph executable; install it or pass --command",
             )
         })
@@ -210,10 +209,7 @@ fn write_settings(
     data: &serde_json::Map<String, Json>,
 ) -> Result<Option<String>, WgError> {
     let io_error = |action: &str, target: &Path, err: &std::io::Error| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("could not {action} {}: {err}", target.display()),
-        )
+        WgError::workgraph(format!("could not {action} {}: {err}", target.display()))
     };
     let backup = if path.exists() {
         let name = path
@@ -250,15 +246,12 @@ fn register_mcp(scope: &str, exe: &str) -> Result<String, WgError> {
     let mut spec = ProcessSpec::new(argv);
     spec.timeout_ms = Some(MCP_ADD_TIMEOUT_MS);
     let result = run_capture(&spec, CaptureLimits::default(), None)
-        .map_err(|err| WgError::new(ErrorCode::WorkgraphError, err.to_string()))?;
+        .map_err(|err| WgError::workgraph(err.to_string()))?;
     if result.timed_out {
-        return Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!(
-                "claude mcp add timed out after {} seconds",
-                MCP_ADD_TIMEOUT_MS / 1000
-            ),
-        ));
+        return Err(WgError::workgraph(format!(
+            "claude mcp add timed out after {} seconds",
+            MCP_ADD_TIMEOUT_MS / 1000
+        )));
     }
     Ok(installer::mcp_output(
         &String::from_utf8_lossy(&result.stdout),

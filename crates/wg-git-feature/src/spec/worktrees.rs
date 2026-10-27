@@ -11,7 +11,7 @@ use wg_model::entity::run::ManagedWorktree;
 use wg_model::event::{EventDraft, EventPayload, WorktreeRemoved};
 use wg_model::stamp::Stamp;
 use wg_model::write::Write;
-use wg_types::{ErrorCode, Id, WgError, WorktreeStatus};
+use wg_types::{Id, WgError, WorktreeStatus};
 use wg_wire::convention::{
     TimeFormat, dict, id, optional_id, optional_text, optional_timestamp, text, timestamp,
 };
@@ -169,23 +169,12 @@ impl Removal {
     }
 }
 
-/// `NotFoundError` for a worktree id.
-pub fn not_found(worktree_id: Id) -> WgError {
-    WgError::new(
-        ErrorCode::NotFound,
-        format!("managed worktree {worktree_id} not found"),
-    )
-}
-
 /// A git failure that could not run at all, as a `GitError` of the API.
 pub fn git_failure(err: GitError) -> WgError {
-    WgError::new(ErrorCode::GitError, err.to_string())
+    WgError::git(err.to_string())
 }
 
 /// A file-system failure on `path`.
 pub fn io_failure(path: &Path, err: &std::io::Error) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("cannot remove {}: {err}", path.display()),
-    )
+    WgError::workgraph(format!("cannot remove {}: {err}", path.display()))
 }

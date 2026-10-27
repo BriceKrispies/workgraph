@@ -31,7 +31,7 @@ use wg_trackers::{
     fetch_candidates, listed_ids, map_issue, newest_update, referenced_keys, since_seconds,
     timestamp_ms,
 };
-use wg_types::{Correlation, ErrorCode, Id, TaskKey, WgError};
+use wg_types::{Correlation, Id, TaskKey, WgError};
 
 use crate::spec;
 use crate::spec::run::{TrackerSettings, settings_of, sync_json};
@@ -87,8 +87,7 @@ pub fn jira_client(settings: &TrackerSettings) -> Result<JiraClient, WgError> {
     let flavour = match settings.flavour.as_str() {
         "cloud" => {
             let Some(email_env) = settings.email_env.as_deref() else {
-                return Err(WgError::new(
-                    ErrorCode::ConfigError,
+                return Err(WgError::config(
                     "Jira Cloud needs email_env: the variable holding the account email",
                 ));
             };
@@ -275,8 +274,7 @@ fn map_one<S: IssueSource>(
         pr_fields: settings.pr_fields.clone(),
         dev_panel: settings.dev_panel,
     };
-    map_issue(issue, &pull_requests, &config)
-        .map_err(|err| WgError::new(ErrorCode::WorkgraphError, err.message()))
+    map_issue(issue, &pull_requests, &config).map_err(|err| WgError::workgraph(err.message()))
 }
 
 /// `_fetch_referenced`: the parents and blockers of the searched issues that are not synced yet and
@@ -469,11 +467,8 @@ fn credential(name: &str) -> Result<String, WgError> {
         .ok()
         .filter(|value| !value.is_empty())
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::ConfigError,
-                format!(
-                    "environment variable {name} is not set; Jira credentials are read from it"
-                ),
-            )
+            WgError::config(format!(
+                "environment variable {name} is not set; Jira credentials are read from it"
+            ))
         })
 }

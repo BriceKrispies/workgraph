@@ -18,7 +18,7 @@ use wg_model::py_repr_str;
 use wg_registry::checkout::primary_checkout;
 use wg_runtime::{App, RequestContext};
 use wg_store::{Session, many};
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 use wg_wire::dto::experiment_shapes::trial_start;
 
 use crate::service::exec::{
@@ -60,22 +60,14 @@ fn repository_of(
         .tasks
         .repositories_of(task_id)
         .min_by_key(|link| (link.created_at, link.repository_id))
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::ValidationFailed,
-                "the trial's task has no linked repository",
-            )
-        })?;
+        .ok_or_else(|| WgError::validation("the trial's task has no linked repository"))?;
     let found = world
         .tasks
         .registry
         .repository(first.repository_id)
         .cloned()
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("repository {} not found", first.repository_id),
-            )
+            WgError::not_found(format!("repository {} not found", first.repository_id))
         })?;
     let checkouts = session.checkouts(found.id)?;
     Ok((found, checkouts))
@@ -90,25 +82,21 @@ fn load_start(
     runner::require_planned(&trial)?;
     let experiment = experiment_of(session, &trial)?;
     let world = session.task_world(Some(scope), &[])?;
-    let task = world.tasks.task(trial.task_id).cloned().ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("task {} not found", trial.task_id),
-        )
-    })?;
+    let task = world
+        .tasks
+        .task(trial.task_id)
+        .cloned()
+        .ok_or_else(|| WgError::not_found(format!("task {} not found", trial.task_id)))?;
     let tags: Vec<String> = world.tasks.tags_of(task.id).map(str::to_owned).collect();
     let spec = spec_of(&task, &tags)?;
     let (repository, checkouts) = repository_of(session, &world, task.id)?;
     let checkout = primary_checkout(&checkouts, true)
         .map(|checkout| PathBuf::from(&checkout.path))
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::ValidationFailed,
-                format!(
-                    "repository {} has no available checkout",
-                    py_repr_str(&repository.name)
-                ),
-            )
+            WgError::validation(format!(
+                "repository {} has no available checkout",
+                py_repr_str(&repository.name)
+            ))
         })?;
     Ok(StartWorld {
         trial,
@@ -256,19 +244,15 @@ pub fn trial_start_run(
         .join("trials")
         .join(&short);
     if dest.exists() {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!("trial directory {} already exists", dest.display()),
-        )
-        .with_detail("path", json!(dest.display().to_string())));
+        return Err(WgError::conflict(format!(
+            "trial directory {} already exists",
+            dest.display()
+        ))
+        .detail("path", dest.display().to_string()));
     }
     if let Some(parent) = dest.parent() {
-        std::fs::create_dir_all(parent).map_err(|error| {
-            WgError::new(
-                ErrorCode::WorkgraphError,
-                format!("{}: {error}", parent.display()),
-            )
-        })?;
+        std::fs::create_dir_all(parent)
+            .map_err(|error| WgError::workgraph(format!("{}: {error}", parent.display())))?;
     }
     let started = start_in(app, context, scope, &world, &dest, &branch);
     if started.is_err() {
@@ -356,12 +340,11 @@ fn load_grade(
     runner::require_gradable(&trial)?;
     let experiment = experiment_of(session, &trial)?;
     let world = session.task_world(Some(scope), &[])?;
-    let task = world.tasks.task(trial.task_id).cloned().ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("task {} not found", trial.task_id),
-        )
-    })?;
+    let task = world
+        .tasks
+        .task(trial.task_id)
+        .cloned()
+        .ok_or_else(|| WgError::not_found(format!("task {} not found", trial.task_id)))?;
     let run = match trial.subagent_run_id {
         None => latest_run(session, trial.id)?,
         Some(run_id) => wg_store::one::<SubagentRun>(session, &runner_sql::run_by_id(run_id))?
@@ -468,11 +451,11 @@ pub fn trial_grade_run(
     let trial_id = world.trial.id.to_string();
     let worktree = PathBuf::from(world.trial.worktree_path.clone().unwrap_or_default());
     if !worktree.is_dir() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("trial worktree {} is missing", worktree.display()),
-        )
-        .with_detail("path", json!(worktree.display().to_string())));
+        return Err(WgError::validation(format!(
+            "trial worktree {} is missing",
+            worktree.display()
+        ))
+        .detail("path", worktree.display().to_string()));
     }
     let base_sha = world.trial.base_ref.clone().unwrap_or_default();
     let protocol = &world.experiment.protocol;

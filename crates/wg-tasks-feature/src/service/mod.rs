@@ -31,7 +31,7 @@ use wg_store::{EventQuery, Session, TaskWorld};
 use wg_tasks::bulk::bulk_results;
 use wg_tasks::edit::{self, read_update, validate_update};
 use wg_tasks::shape::{bulk_result_out, key_of};
-use wg_types::{ErrorCode, Id, Permission, WgError, parse_id};
+use wg_types::{Id, Permission, WgError, parse_id};
 
 /// `TaskService.create`.
 pub fn task_create(
@@ -137,9 +137,7 @@ pub fn task_bulk_update(
             shared.insert("expected_version".to_owned(), Json::Null);
             let done = update_checked(app, context, workspace, &reference, &shared, &given, enrich)
                 .and_then(|out| {
-                    key_of(&out).ok_or_else(|| {
-                        WgError::new(ErrorCode::WorkgraphError, "a task output has no key")
-                    })
+                    key_of(&out).ok_or_else(|| WgError::workgraph("a task output has no key"))
                 });
             (reference, done)
         })

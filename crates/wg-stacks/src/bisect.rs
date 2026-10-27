@@ -9,7 +9,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use serde_json::{Map, Value};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_verify::Baseline;
 
 use crate::item::is_on_branch;
@@ -57,13 +57,10 @@ impl Entry {
             .and_then(|merge| merge.get(field))
             .and_then(Value::as_str)
             .ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::WorkgraphError,
-                    format!(
-                        "{}'s merge record for {repository} has no {field}",
-                        self.task_key
-                    ),
-                )
+                WgError::workgraph(format!(
+                    "{}'s merge record for {repository} has no {field}",
+                    self.task_key
+                ))
             })
     }
 }

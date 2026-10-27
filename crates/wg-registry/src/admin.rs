@@ -17,7 +17,7 @@ use wg_model::{
     Changes, Decision, EventDraft, EventPayload, Repository, RepositoryCheckout,
     RepositoryDependency, Row, RowKey, Stamp, Write, py_repr_str,
 };
-use wg_types::{AccessMode, ErrorCode, Id, Permission, WgError};
+use wg_types::{AccessMode, Id, Permission, WgError};
 
 use crate::checkout::KIND_MANAGED_WORKTREE;
 use crate::register::Matched;
@@ -101,13 +101,10 @@ pub fn update(
         && name != repo.name
         && taken_names.iter().any(|taken| taken == name)
     {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!(
-                "repository name {} is already used in this workspace",
-                py_repr_str(name)
-            ),
-        ));
+        return Err(WgError::conflict(format!(
+            "repository name {} is already used in this workspace",
+            py_repr_str(name)
+        )));
     }
     let tracked = tracked_after(repo, patch);
     let string = |value: &String| json!(value);
@@ -211,14 +208,13 @@ pub fn remove_checkout(
         .iter()
         .find(|c| c.path == path || c.path == resolved)
     else {
-        return Err(WgError::new(
-            ErrorCode::NotFound,
-            format!("checkout {path} is not registered for {}", repo.name),
-        ));
+        return Err(WgError::not_found(format!(
+            "checkout {path} is not registered for {}",
+            repo.name
+        )));
     };
     if target.kind == KIND_MANAGED_WORKTREE {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "managed worktrees are removed through the worktree manager",
         ));
     }
@@ -259,10 +255,7 @@ pub fn add_dependency(
 ) -> Result<Decision<Id>, WgError> {
     stamp.require(&[Permission::RepoAdmin])?;
     if repo.id == other.id {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "a repository cannot depend on itself",
-        ));
+        return Err(WgError::validation("a repository cannot depend on itself"));
     }
     if existing.is_some() {
         return Ok(Decision::new(repo.id));

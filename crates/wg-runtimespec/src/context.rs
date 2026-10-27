@@ -10,8 +10,8 @@ use std::collections::BTreeSet;
 use rpds::RedBlackTreeSetSync;
 use wg_model::{Stamp, py_repr_str};
 use wg_types::{
-    Actor, ActorKind, Correlation, ErrorCode, Id, Permission, Timestamp, WgError,
-    default_agent_permissions, human_permissions, system_permissions,
+    Actor, ActorKind, Correlation, Id, Permission, Timestamp, WgError, default_agent_permissions,
+    human_permissions, system_permissions,
 };
 
 /// The environment variables `getpass.getuser()` reads, in its order.
@@ -140,16 +140,13 @@ impl RequestContext {
         }
         let names: Vec<&str> = missing.iter().copied().collect();
         let actor = self.actor.to_string();
-        Err(WgError::new(
-            ErrorCode::PermissionDenied,
-            format!(
-                "actor {} lacks permission(s): {}",
-                py_repr_str(&actor),
-                names.join(", ")
-            ),
-        )
-        .with_detail("actor", serde_json::Value::String(actor))
-        .with_detail(
+        Err(WgError::permission_denied(format!(
+            "actor {} lacks permission(s): {}",
+            py_repr_str(&actor),
+            names.join(", ")
+        ))
+        .detail("actor", serde_json::Value::String(actor))
+        .detail(
             "missing",
             serde_json::Value::Array(
                 names
@@ -188,18 +185,15 @@ pub fn getuser(values: &[Option<String>]) -> Option<&str> {
 /// A wall-clock reading in nanoseconds since the Unix epoch as a [`Timestamp`] (truncated to
 /// microseconds, as Python's `datetime` holds it).
 pub fn timestamp_from_unix_nanos(nanos: i128) -> Result<Timestamp, WgError> {
-    let value = time::OffsetDateTime::from_unix_timestamp_nanos(nanos).map_err(|err| {
-        WgError::new(
-            wg_types::ErrorCode::WorkgraphError,
-            format!("clock reading out of range: {err}"),
-        )
-    })?;
+    let value = time::OffsetDateTime::from_unix_timestamp_nanos(nanos)
+        .map_err(|err| WgError::workgraph(format!("clock reading out of range: {err}")))?;
     Timestamp::from_offset_datetime(value)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use wg_types::ErrorCode;
 
     fn id(n: u32) -> Id {
         wg_model::derive_id(&[7; 32], n)

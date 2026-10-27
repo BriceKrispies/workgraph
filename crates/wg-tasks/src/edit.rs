@@ -21,8 +21,8 @@ use wg_model::{Decision, Write};
 use wg_registry::resolve;
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_types::Permission;
-use wg_types::{ErrorCode, Timestamp, WgError};
 use wg_types::{Id, TaskPriority, TaskStatus};
+use wg_types::{Timestamp, WgError};
 
 pub const UPDATE_ORDER: [&str; 22] = [
     "expected_version",
@@ -360,7 +360,7 @@ pub fn update_task(
     }
     let after = state
         .task(task.id)
-        .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, "the updated task vanished"))?;
+        .ok_or_else(|| WgError::workgraph("the updated task vanished"))?;
     if let (true, true, Some(cause)) = (
         plan.material_change,
         enrich != Enrichment::default(),

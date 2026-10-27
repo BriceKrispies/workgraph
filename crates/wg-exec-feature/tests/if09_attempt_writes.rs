@@ -1,7 +1,7 @@
 //! IF-09: the pure helpers of the attempt writes and the agent group.
 
 use serde_json::json;
-use wg_exec_feature::spec::attempt_writes::{attempt_limit, validation};
+use wg_exec_feature::spec::attempt_writes::attempt_limit;
 use wg_exec_feature::spec::cli_agent::unknown_placeholder;
 use wg_exec_feature::spec::conclude::Captured;
 use wg_types::ErrorCode;
@@ -41,5 +41,4 @@ fn an_unknown_placeholder_names_the_allowed_ones_sorted() {
         err.message,
         "unknown placeholder {nope} in agent argument template"
     );
-    assert_eq!(validation("x").code, ErrorCode::ValidationFailed);
 }

@@ -14,7 +14,7 @@ use wg_model::entity::{
     TaskFile, TaskLink, TaskProject, TaskRelation, TaskRepository, TaskTag, Workspace,
 };
 use wg_model::{Row, Table};
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::codec::{Raw, id_sql};
 use crate::rows::TableRow;
@@ -205,10 +205,7 @@ pub fn decode_row(table: Table, values: &[Raw]) -> Result<Row, WgError> {
         ($($variant:ident),+ $(,)?) => {
             match table {
                 $(Table::$variant => Ok(Row::from($variant::from_raw(values)?)),)+
-                other => Err(WgError::new(
-                    ErrorCode::WorkgraphError,
-                    format!("the task world does not load {}", other.name()),
-                )),
+                other => Err(WgError::workgraph(format!("the task world does not load {}", other.name()))),
             }
         };
     }

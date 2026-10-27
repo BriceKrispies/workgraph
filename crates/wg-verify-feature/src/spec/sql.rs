@@ -16,7 +16,7 @@ use wg_model::entity::VerificationCheckResult;
 use wg_storecodec::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
 use wg_storecodec::rows::{TableRow, columns};
 use wg_storecodec::sql::{Statement, select_list};
-use wg_types::{ErrorCode, Id, TaskKey, Timestamp, VerificationStatus, WgError};
+use wg_types::{Id, TaskKey, Timestamp, VerificationStatus, WgError};
 
 /// Appends a bound parameter and returns its `?N` placeholder.
 fn bind(params: &mut Vec<Raw>, value: Raw) -> String {
@@ -157,14 +157,11 @@ pub fn failures(workspace_id: Id, filter: &FailureFilter, page: Page) -> Stateme
 pub fn decode_failure(values: &[Raw]) -> Result<FailureRow, WgError> {
     let check_width = columns(Table::VerificationCheckResult).len();
     if values.len() != check_width + 4 {
-        return Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!(
-                "failure row has {} columns, expected {}",
-                values.len(),
-                check_width + 4
-            ),
-        ));
+        return Err(WgError::workgraph(format!(
+            "failure row has {} columns, expected {}",
+            values.len(),
+            check_width + 4
+        )));
     }
     let check = VerificationCheckResult::from_raw(&values[..check_width])?;
     let run = Cols::new(&["id", "attempt_id"], &values[check_width..check_width + 2]);

@@ -7,8 +7,7 @@
 
 use std::collections::BTreeSet;
 
-use serde_json::json;
-use wg_types::{ErrorCode, Permission, WgError, default_agent_permissions, parse_permissions};
+use wg_types::{Permission, WgError, default_agent_permissions, parse_permissions};
 
 /// The default agent permissions plus every permission in `grants`. An unknown name is a
 /// `permission_denied` error, as in Python.
@@ -53,15 +52,12 @@ pub fn require(
         return Ok(());
     }
     missing.sort_unstable();
-    Err(WgError::new(
-        ErrorCode::PermissionDenied,
-        format!(
-            "actor '{actor}' lacks permission(s): {}",
-            missing.join(", ")
-        ),
-    )
-    .with_detail("actor", json!(actor))
-    .with_detail("missing", json!(missing)))
+    Err(WgError::permission_denied(format!(
+        "actor '{actor}' lacks permission(s): {}",
+        missing.join(", ")
+    ))
+    .detail("actor", actor)
+    .detail("missing", missing))
 }
 
 #[cfg(test)]

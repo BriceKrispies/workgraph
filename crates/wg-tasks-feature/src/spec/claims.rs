@@ -26,7 +26,7 @@ use wg_tasks::claims::{
 use wg_tasks::comments::check_attempt_owner;
 use wg_tasks::deps::unsatisfied_dependencies;
 use wg_tasks::transition::{Applied, Change, transition};
-use wg_types::{AttemptStatus, CommentKind, ErrorCode, Id, Permission, TaskStatus, WgError};
+use wg_types::{AttemptStatus, CommentKind, Id, Permission, TaskStatus, WgError};
 use wg_verify::{TaskScope, applicable_checks};
 
 use super::bodies::{ClaimRead, CompleteRead, ResultRead};
@@ -55,11 +55,7 @@ pub fn attempt_of<'a>(
     found: Option<&'a AgentAttempt>,
 ) -> Result<&'a AgentAttempt, WgError> {
     found.ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("attempt {} not found", py_repr_str(given)),
-        )
-        .with_detail("ref", json!(given))
+        WgError::not_found(format!("attempt {} not found", py_repr_str(given))).detail("ref", given)
     })
 }
 
@@ -86,10 +82,7 @@ fn caller_of<'a>(stamp: &Stamp, actor: &'a str) -> Caller<'a> {
 }
 
 fn gone(task: Id) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("task {task} vanished from the slice"),
-    )
+    WgError::workgraph(format!("task {task} vanished from the slice"))
 }
 
 /// `TaskService.claim`.

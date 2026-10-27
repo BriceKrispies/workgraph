@@ -28,7 +28,7 @@ use std::time::Duration;
 
 use rusqlite::{Connection, TransactionBehavior};
 use wg_model::Decision;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use session::db;
 
@@ -65,10 +65,7 @@ impl Store {
             Location::File(path) => {
                 if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
                     std::fs::create_dir_all(parent).map_err(|err| {
-                        WgError::new(
-                            ErrorCode::WorkgraphError,
-                            format!("cannot create {}: {err}", parent.display()),
-                        )
+                        WgError::workgraph(format!("cannot create {}: {err}", parent.display()))
                     })?;
                 }
                 db!(Connection::open(path))?

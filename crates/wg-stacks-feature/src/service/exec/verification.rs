@@ -15,7 +15,7 @@ use wg_model::entity::JsonObject;
 use wg_proc::{LineOptions, ProcError, ProcessSpec, base_environment, run_process};
 use wg_runtimespec::RequestContext;
 use wg_stacks::regression::RunResult;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 use wg_verify::{ApplicableCheck, CheckTier};
 
 use super::stack_world;
@@ -53,10 +53,7 @@ impl Exec<'_> {
                             .task(parent_id)
                             .map(|task| task.workspace_id)
                             .ok_or_else(|| {
-                                WgError::new(
-                                    ErrorCode::NotFound,
-                                    format!("task {parent_id} not found"),
-                                )
+                                WgError::not_found(format!("task {parent_id} not found"))
                             })?,
                     )?;
                     Ok((world, configs))
@@ -108,7 +105,7 @@ impl Exec<'_> {
         std::fs::create_dir_all(&run_dir).map_err(|err| io_failure(&run_dir, &err))?;
         let manifest_path = run_dir.join("manifest.json");
         let manifest = serde_json::to_string_pretty(&prepared.entries)
-            .map_err(|err| WgError::new(ErrorCode::WorkgraphError, err.to_string()))?;
+            .map_err(|err| WgError::workgraph(err.to_string()))?;
         std::fs::write(&manifest_path, manifest).map_err(|err| io_failure(&manifest_path, &err))?;
         let (cwd, repository_id) = match check_place(&prepared.entries, spec) {
             CheckPlace::Missing(done) => return Ok(*done),
@@ -133,7 +130,7 @@ impl Exec<'_> {
         let finished = match run_process(&process, options, Some(cancel)) {
             Ok(finished) => finished,
             Err(err @ (ProcError::LogFile { .. } | ProcError::Wait(_))) => {
-                return Err(WgError::new(ErrorCode::WorkgraphError, err.to_string()));
+                return Err(WgError::workgraph(err.to_string()));
             }
             Err(err) => return Ok(errored(spec, repository_id, &err.to_string())),
         };

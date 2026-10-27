@@ -216,13 +216,10 @@ pub fn finish(
     let FinishPlan::Apply { event } = finish_plan(attempt.status, status).map_err(|error| {
         // The message names the attempt, as `finish_attempt` does.
         if wg_exec::attempt::is_terminal(attempt.status) && attempt.status != status {
-            WgError::new(
-                wg_types::ErrorCode::ValidationFailed,
-                format!(
-                    "attempt {} already finished as {}",
-                    attempt.id, attempt.status
-                ),
-            )
+            WgError::validation(format!(
+                "attempt {} already finished as {}",
+                attempt.id, attempt.status
+            ))
         } else {
             error
         }

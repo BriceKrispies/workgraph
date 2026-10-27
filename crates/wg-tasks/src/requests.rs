@@ -3,7 +3,7 @@
 //! bodies through these functions.
 
 use serde_json::{Map, Value};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_validate::{
     Check, Field, LoadOptions, Model, Schema, ValidationError, model_from_json_schema, validate,
 };
@@ -30,11 +30,7 @@ pub fn validation_failure(errors: &[ValidationError]) -> WgError {
             format!("{place}: {}", error.msg)
         })
         .collect();
-    WgError::new(
-        ErrorCode::ValidationFailed,
-        format!("invalid input: {}", summary.join("; ")),
-    )
-    .with_detail(
+    WgError::validation(format!("invalid input: {}", summary.join("; "))).detail(
         "errors",
         Value::Array(errors.iter().map(ValidationError::to_json).collect()),
     )
@@ -103,17 +99,14 @@ pub fn component_with(name: &str, order: &[&str], strip: bool) -> Result<Model, 
             strip_whitespace: strip,
         },
     )
-    .map_err(|err| WgError::new(ErrorCode::WorkgraphError, format!("{name}: {err}")))?;
+    .map_err(|err| WgError::workgraph(format!("{name}: {err}")))?;
     Ok(with_checks(model.ordered(order)))
 }
 
 pub fn run(model: &Model, body: &Value) -> Result<Map<String, Value>, WgError> {
     match validate(model, body) {
         Ok(Value::Object(dump)) => Ok(dump),
-        Ok(_) => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            "a request model did not give an object",
-        )),
+        Ok(_) => Err(WgError::workgraph("a request model did not give an object")),
         Err(errors) => Err(validation_failure(&errors)),
     }
 }

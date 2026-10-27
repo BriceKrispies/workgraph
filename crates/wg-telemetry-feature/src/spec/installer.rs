@@ -9,7 +9,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use serde_json::{Map, Value, json};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// `DEFAULT_EVENTS`: the hook events Workgraph installs, in Python's order.
 pub const DEFAULT_EVENTS: [&str; 10] = [
@@ -294,7 +294,7 @@ pub fn uninstall_hooks(mut data: Map<String, Value>) -> (Map<String, Value>, Vec
 /// The `_load` refusals, which are `ConfigError`s (exit 7).
 #[must_use]
 pub fn config_error(message: String) -> WgError {
-    WgError::new(ErrorCode::ConfigError, message)
+    WgError::config(message)
 }
 
 /// The groups of one event after the uninstall edit; `removed` collects the event per changed group.

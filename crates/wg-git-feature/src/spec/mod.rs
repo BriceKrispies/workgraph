@@ -26,13 +26,7 @@ pub mod sql;
 pub mod surface;
 pub mod worktrees;
 
-use wg_types::{ErrorCode, WgError};
-
 /// Maps a git failure into the error an interface reports (`git_error`).
 pub fn git_error(err: wg_gitcore::GitError) -> wg_types::WgError {
-    wg_types::WgError::new(wg_types::ErrorCode::GitError, err.to_string())
-}
-
-pub fn not_found(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::NotFound, message)
+    wg_types::WgError::git(err.to_string())
 }

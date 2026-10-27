@@ -9,7 +9,7 @@
 //! `sorted(...)` does.
 
 use serde_json::{Value, json};
-use wg_types::{AttemptStatus, ErrorCode, TaskStatus, WgError};
+use wg_types::{AttemptStatus, TaskStatus, WgError};
 
 use AttemptStatus as A;
 use TaskStatus as S;
@@ -149,14 +149,11 @@ pub fn check_task_transition(
         return Ok(());
     }
     if RESTRICTED_TARGETS.contains(&target) && !privileged {
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!(
+        return Err(WgError::invalid_transition(format!(
                 "tasks enter {target} only through acceptance (verification or recorded manual acceptance)"
-            ),
-        )
-        .with_detail("from", json!(current.as_str()))
-        .with_detail("to", json!(target.as_str())));
+            ))
+        .detail("from", current.as_str())
+        .detail("to", target.as_str()));
     }
     let targets = task_targets(current);
     if !targets.contains(&target) {
@@ -165,13 +162,12 @@ pub fn check_task_transition(
             .filter(|status| targets.contains(*status))
             .map(|status| json!(status.as_str()))
             .collect();
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!("cannot move task from {current} to {target}"),
-        )
-        .with_detail("from", json!(current.as_str()))
-        .with_detail("to", json!(target.as_str()))
-        .with_detail("allowed", Value::Array(allowed)));
+        return Err(WgError::invalid_transition(format!(
+            "cannot move task from {current} to {target}"
+        ))
+        .detail("from", current.as_str())
+        .detail("to", target.as_str())
+        .detail("allowed", Value::Array(allowed)));
     }
     Ok(())
 }
@@ -191,13 +187,12 @@ pub fn check_attempt_transition(
             .filter(|status| targets.contains(*status))
             .map(|status| json!(status.as_str()))
             .collect();
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!("cannot move attempt from {current} to {target}"),
-        )
-        .with_detail("from", json!(current.as_str()))
-        .with_detail("to", json!(target.as_str()))
-        .with_detail("allowed", Value::Array(allowed)));
+        return Err(WgError::invalid_transition(format!(
+            "cannot move attempt from {current} to {target}"
+        ))
+        .detail("from", current.as_str())
+        .detail("to", target.as_str())
+        .detail("allowed", Value::Array(allowed)));
     }
     Ok(())
 }

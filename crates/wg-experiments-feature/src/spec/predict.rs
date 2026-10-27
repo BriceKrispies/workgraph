@@ -22,7 +22,7 @@ use wg_model::{
     Decision, EventDraft, EventPayload, RegistrySlice, Stamp, TaskSlice, Write, py_repr_str,
 };
 use wg_pyrand::Random;
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Id, Timestamp, WgError};
 use wg_wire::dto::predictor::Prediction;
 
 use super::planning::replay_features;
@@ -38,11 +38,7 @@ pub struct FitRow {
 }
 
 fn value_error(error: ValueError) -> WgError {
-    WgError::new(ErrorCode::WorkgraphError, error.message())
-}
-
-fn failed(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
+    WgError::workgraph(error.message())
 }
 
 /// `_number`: an int or float that is not a bool.
@@ -63,7 +59,8 @@ pub fn check_settings(
     feature_penalty: f64,
     samples: i64,
 ) -> Result<(), WgError> {
-    check_fit_settings(repo_penalty, feature_penalty, samples).map_err(|e| failed(e.message()))
+    check_fit_settings(repo_penalty, feature_penalty, samples)
+        .map_err(|e| WgError::validation(e.message()))
 }
 
 /// `Predictor._rows`: the graded trials of `model` (actual model, else requested) that carry
@@ -104,19 +101,19 @@ pub fn fit_rows(
 /// The rejection of a set of rows, as the validation error `fit` reports.
 fn rejection(model: &str, rows: usize, passes: usize, why: FitRejection) -> WgError {
     match why {
-        FitRejection::TooFewRows { rows } => failed(format!(
+        FitRejection::TooFewRows { rows } => WgError::validation(format!(
             "the predictor for {model} needs at least {MIN_ROWS} graded trials with src_lines, \
              src_files and packages; has {rows}"
         ))
-        .with_detail("model", json!(model))
-        .with_detail("rows", json!(rows)),
-        FitRejection::OnlyPasses | FitRejection::OnlyFails => failed(format!(
+        .detail("model", model)
+        .detail("rows", rows),
+        FitRejection::OnlyPasses | FitRejection::OnlyFails => WgError::validation(format!(
             "the predictor for {model} needs both pass and fail outcomes; has only {}",
             if passes > 0 { "passes" } else { "fails" }
         ))
-        .with_detail("model", json!(model))
-        .with_detail("rows", json!(rows))
-        .with_detail("passes", json!(passes)),
+        .detail("model", model)
+        .detail("rows", rows)
+        .detail("passes", passes),
     }
 }
 
@@ -140,7 +137,7 @@ fn bootstrap(
         |(draws, rng), _| {
             let (picked, rng) = rng
                 .choices(&indices, None, None, indices.len())
-                .map_err(|e| WgError::new(ErrorCode::WorkgraphError, format!("{e:?}")))?;
+                .map_err(|e| WgError::workgraph(format!("{e:?}")))?;
             let xs: Vec<Vec<f64>> = picked.iter().map(|i| matrix[**i].clone()).collect();
             let ys: Vec<i64> = picked.iter().map(|i| outcomes[**i]).collect();
             let refit = fit_logistic(&xs, &ys, penalty, DEFAULT_MAX_ITER, DEFAULT_TOL)
@@ -282,33 +279,30 @@ pub fn select_fit(
 ) -> Result<PredictorFit, WgError> {
     let Some(requested) = fit_id else {
         return latest.ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!(
-                    "no predictor fit for model {model}; create one with \
+            WgError::not_found(format!(
+                "no predictor fit for model {model}; create one with \
                      `workgraph experiment fit --model {model}`"
-                ),
-            )
-            .with_detail("model", json!(model))
+            ))
+            .detail("model", model)
         });
     };
     let row = by_id
         .filter(|row| row.workspace_id == workspace_id)
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("predictor fit {} not found", py_repr_str(requested)),
-            )
-            .with_detail("fit", json!(requested))
+            WgError::not_found(format!(
+                "predictor fit {} not found",
+                py_repr_str(requested)
+            ))
+            .detail("fit", requested)
         })?;
     if row.model == model {
         Ok(row)
     } else {
-        Err(failed(format!(
+        Err(WgError::validation(format!(
             "predictor fit {requested} is for model {}, not {model}",
             row.model
         ))
-        .with_detail("fit", json!(requested)))
+        .detail("fit", requested))
     }
 }
 
@@ -353,7 +347,7 @@ fn floats(values: impl Iterator<Item = Json>) -> Vec<f64> {
 ///
 /// Returns `validation_failed` for a negative size.
 pub fn check_sizes(src_lines: f64, src_files: f64) -> Result<(), WgError> {
-    check_prediction_sizes(src_lines, src_files).map_err(|e| failed(e.message()))
+    check_prediction_sizes(src_lines, src_files).map_err(|e| WgError::validation(e.message()))
 }
 
 /// `Predictor.predict`: the probability of success for a leaf of this size and repository, with
@@ -440,7 +434,7 @@ pub fn predict_request(options: &PredictOptions) -> Result<PredictRequest, WgErr
             || options.files.is_some()
             || options.packages.is_some();
         return if others {
-            Err(failed(
+            Err(WgError::validation(
                 "give either --task or --repo, --lines, --files and --packages, not both",
             ))
         } else {
@@ -473,7 +467,7 @@ pub fn predict_request(options: &PredictOptions) -> Result<PredictRequest, WgErr
             .filter(|(_, absent)| *absent)
             .map(|(flag, _)| flag)
             .collect();
-            Err(failed(format!(
+            Err(WgError::validation(format!(
                 "predict needs --task or all of --repo, --lines, --files, --packages; missing {}",
                 missing.join(", ")
             )))
@@ -491,11 +485,11 @@ pub fn task_features(
     metadata: &Map<String, Json>,
 ) -> Result<(f64, f64, usize), WgError> {
     let missing = |field: &str, what: &str| {
-        failed(format!(
+        WgError::validation(format!(
             "task {task_key} is missing contract.predicted.{field} ({what})"
         ))
-        .with_detail("task", json!(task_key))
-        .with_detail("field", json!(field))
+        .detail("task", task_key)
+        .detail("field", field)
     };
     let predicted = metadata
         .get("contract")
@@ -503,10 +497,10 @@ pub fn task_features(
         .and_then(|contract| contract.get("predicted"))
         .and_then(Json::as_object)
         .ok_or_else(|| {
-            failed(format!(
+            WgError::validation(format!(
                 "task {task_key} has no metadata contract.predicted (src_lines, src_files, packages)"
             ))
-            .with_detail("task", json!(task_key))
+            .detail("task", task_key)
         })?;
     let size = |field: &str| {
         number(predicted.get(field))

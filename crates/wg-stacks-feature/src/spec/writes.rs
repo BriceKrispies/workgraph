@@ -27,7 +27,7 @@ use wg_stacks::membership::{
 use wg_stacks::verify::{verify_job_key, verify_resource_keys};
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Applied, Change, refresh_dependents, transition};
-use wg_types::{ErrorCode, Id, Permission, StackItemState, StackStatus, TaskStatus, WgError};
+use wg_types::{Id, Permission, StackItemState, StackStatus, TaskStatus, WgError};
 use wg_wire::convention::{dict, id as id_value, text};
 
 use super::out::{Tips, stack_out};
@@ -62,18 +62,16 @@ pub fn create_plan<'a>(
         .collect();
     children.sort_by_key(|task| task.number);
     if children.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("{} has no child tasks to stack", parent.key),
-        )
-        .with_detail("parent", parent.key.to_string().into()));
+        return Err(
+            WgError::validation(format!("{} has no child tasks to stack", parent.key))
+                .detail("parent", parent.key.to_string()),
+        );
     }
     if world.stacks.active_stack_of_parent(parent.id).is_some() {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!("{} already has an active stack", parent.key),
-        )
-        .with_detail("parent", parent.key.to_string().into()));
+        return Err(
+            WgError::conflict(format!("{} already has an active stack", parent.key))
+                .detail("parent", parent.key.to_string()),
+        );
     }
     let linked: std::collections::BTreeSet<Id> = world
         .tasks
@@ -90,14 +88,11 @@ pub fn create_plan<'a>(
         .collect();
     repositories.sort_by(|a, b| a.name.cmp(&b.name));
     if repositories.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "{} and its children are not linked to any repository",
-                parent.key
-            ),
-        )
-        .with_detail("parent", parent.key.to_string().into()));
+        return Err(WgError::validation(format!(
+            "{} and its children are not linked to any repository",
+            parent.key
+        ))
+        .detail("parent", parent.key.to_string()));
     }
     Ok(CreatePlan {
         parent,
@@ -109,13 +104,10 @@ pub fn create_plan<'a>(
 /// `repository <name> has no available checkout`.
 #[must_use]
 pub fn no_checkout(repository: &str) -> WgError {
-    WgError::new(
-        ErrorCode::ValidationFailed,
-        format!(
-            "repository {} has no available checkout",
-            py_repr_str(repository)
-        ),
-    )
+    WgError::validation(format!(
+        "repository {} has no available checkout",
+        py_repr_str(repository)
+    ))
 }
 
 /// `StackService._base_sha`, before git: the checkout directory and the default branch whose head
@@ -129,13 +121,10 @@ pub fn base_source(
         .clone()
         .filter(|name| !name.is_empty())
         .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::ValidationFailed,
-                format!(
-                    "repository {} has no default branch",
-                    py_repr_str(&repository.name)
-                ),
-            )
+            WgError::validation(format!(
+                "repository {} has no default branch",
+                py_repr_str(&repository.name)
+            ))
         })?;
     let checkout =
         primary_checkout(checkouts, true).ok_or_else(|| no_checkout(&repository.name))?;
@@ -159,12 +148,7 @@ pub fn create(
             .iter()
             .find(|(known, _)| known == name)
             .map(|(_, sha)| sha.clone())
-            .ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::WorkgraphError,
-                    format!("no base commit for repository {name}"),
-                )
-            })
+            .ok_or_else(|| WgError::workgraph(format!("no base commit for repository {name}")))
     };
     let (stack_id, ids) = stamp.ids().next();
     let stack = Stack {
@@ -593,22 +577,19 @@ pub fn check_recorded(task_key: &str, recorded: &[RecordedBranch]) -> Result<(),
         None => Ok(()),
         Some(entry) => {
             let tip = entry.tip.clone().unwrap_or_default();
-            Err(WgError::new(
-                ErrorCode::Conflict,
-                format!(
+            Err(WgError::conflict(format!(
                     "{task_key}'s attempt branch {} in {} is at {tip}, but the head recorded \
                      at submit is {}: commits added after submit would be left out of the readmit. \
                      Resubmit through a new attempt (attempt start, then submit) so the new head is recorded.",
                     entry.branch,
                     py_repr_str(&entry.repository),
                     entry.head
-                ),
-            )
-            .with_detail("task", task_key.into())
-            .with_detail("repository", entry.repository.clone().into())
-            .with_detail("branch", entry.branch.clone().into())
-            .with_detail("branch_tip", tip.into())
-            .with_detail("recorded_head", entry.head.clone().into()))
+                ))
+            .detail("task", task_key)
+            .detail("repository", entry.repository.clone())
+            .detail("branch", entry.branch.clone())
+            .detail("branch_tip", tip)
+            .detail("recorded_head", entry.head.clone()))
         }
     }
 }
@@ -853,6 +834,7 @@ pub fn request_verification(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use wg_types::ErrorCode;
 
     fn branch(tip: Option<&str>) -> RecordedBranch {
         RecordedBranch {

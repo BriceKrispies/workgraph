@@ -4,7 +4,7 @@
 //! `http` keeps only the glue.
 
 use serde_json::{Map, Value as Json};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// A boolean query parameter, `false` when unset.
 #[must_use]
@@ -27,8 +27,5 @@ pub fn body_text<'a>(body: &'a Json, key: &str) -> &'a str {
 /// The error of an operation id the route table does not name.
 #[must_use]
 pub fn no_handler(id: &str) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("route {id} has no handler"),
-    )
+    WgError::workgraph(format!("route {id} has no handler"))
 }

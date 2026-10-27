@@ -10,7 +10,7 @@
 //! stable key and its doc comment says which one.
 
 use wg_model::Table;
-use wg_types::{AttemptStatus, ErrorCode, Id, TaskStatus, Timestamp, WgError};
+use wg_types::{AttemptStatus, Id, TaskStatus, Timestamp, WgError};
 
 use wg_storecodec::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
 use wg_storecodec::rows::columns;
@@ -77,10 +77,7 @@ fn in_list(first: usize, count: usize) -> String {
 }
 
 fn corrupt(what: &str) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("unexpected query result: {what}"),
-    )
+    WgError::workgraph(format!("unexpected query result: {what}"))
 }
 
 /// The one-column, one-row answer of a count, decoded.

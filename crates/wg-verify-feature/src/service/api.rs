@@ -8,7 +8,7 @@ use wg_model::RowKey;
 use wg_model::entity::{VerificationConfig, VerificationRun};
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext};
-use wg_types::{ErrorCode, Permission, VerificationStatus, WgError, parse_id};
+use wg_types::{Permission, VerificationStatus, WgError, parse_id};
 use wg_wire::dto::verification::{config_from_model, failure_row};
 
 use crate::service::config;
@@ -124,12 +124,8 @@ pub fn run(app: &mut App, context: &RequestContext, run_id: &str) -> Result<Valu
             Some(found) => session.fetch::<VerificationRun>(&RowKey::VerificationRun(found))?,
             None => None,
         };
-        let run = found.ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("verification run {run_id} not found"),
-            )
-        })?;
+        let run = found
+            .ok_or_else(|| WgError::not_found(format!("verification run {run_id} not found")))?;
         run_document(session, &run)
     })
 }

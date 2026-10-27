@@ -2,8 +2,8 @@
 
 use std::collections::BTreeSet;
 
+use crate::WgError;
 use crate::repr::py_repr_str;
-use crate::{ErrorCode, WgError};
 
 string_enum! {
     pub enum Permission {
@@ -94,10 +94,10 @@ pub fn parse_permissions<S: AsRef<str>>(values: &[S]) -> Result<BTreeSet<Permiss
         .iter()
         .map(|value| {
             Permission::parse(value.as_ref()).ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::PermissionDenied,
-                    format!("unknown permission {}", py_repr_str(value.as_ref())),
-                )
+                WgError::permission_denied(format!(
+                    "unknown permission {}",
+                    py_repr_str(value.as_ref())
+                ))
             })
         })
         .collect()
@@ -106,6 +106,7 @@ pub fn parse_permissions<S: AsRef<str>>(values: &[S]) -> Result<BTreeSet<Permiss
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ErrorCode;
 
     #[test]
     fn unknown_grant_error_text_matches_python() {

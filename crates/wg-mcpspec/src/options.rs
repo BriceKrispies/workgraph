@@ -6,7 +6,7 @@
 
 use std::collections::BTreeSet;
 
-use wg_types::{ErrorCode, Permission, WgError};
+use wg_types::{Permission, WgError};
 
 use crate::permissions::agent_permissions;
 
@@ -45,10 +45,6 @@ impl ServeOptions {
     }
 }
 
-fn usage(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
-}
-
 /// Whether `host` is a loopback address, the only kind the HTTP transport binds.
 pub fn is_loopback(host: &str) -> bool {
     host == "localhost" || host == "::1" || host.starts_with("127.")
@@ -69,13 +65,13 @@ impl ServeOptions {
         while let Some(flag) = it.next() {
             let value = it
                 .next()
-                .ok_or_else(|| usage(format!("{flag} needs a value")))?;
+                .ok_or_else(|| WgError::validation(format!("{flag} needs a value")))?;
             match flag.as_str() {
                 "--transport" => {
                     transport = match value.as_str() {
                         "stdio" => Transport::Stdio,
                         "http" => Transport::Http,
-                        _ => return Err(usage("transport must be stdio or http")),
+                        _ => return Err(WgError::validation("transport must be stdio or http")),
                     }
                 }
                 "--agent-name" => agent_name = value.clone(),
@@ -84,13 +80,13 @@ impl ServeOptions {
                 "--port" => {
                     port = value
                         .parse()
-                        .map_err(|_| usage(format!("invalid --port {value:?}")))?
+                        .map_err(|_| WgError::validation(format!("invalid --port {value:?}")))?
                 }
-                other => return Err(usage(format!("unknown option {other:?}"))),
+                other => return Err(WgError::validation(format!("unknown option {other:?}"))),
             }
         }
         if transport == Transport::Http && !is_loopback(&host) {
-            return Err(usage(
+            return Err(WgError::validation(
                 "the MCP HTTP transport only binds to loopback addresses",
             ));
         }

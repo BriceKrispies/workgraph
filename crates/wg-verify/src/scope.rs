@@ -5,7 +5,7 @@
 use std::collections::BTreeMap;
 
 use wg_model::entity::VerificationConfig;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::config::{CheckSpec, CheckTier};
 
@@ -115,10 +115,9 @@ pub fn parse_tier(value: Option<&str>) -> Result<Option<CheckTier>, WgError> {
     match value {
         None => Ok(None),
         Some(text) => CheckTier::parse(text).map(Some).ok_or_else(|| {
-            WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("unknown check tier '{text}'; expected one of: fast, full"),
-            )
+            WgError::validation(format!(
+                "unknown check tier '{text}'; expected one of: fast, full"
+            ))
         }),
     }
 }

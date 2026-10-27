@@ -11,7 +11,7 @@ use std::iter::once;
 use serde_json::{Value, json};
 use wg_model::event::RepositoryCheckoutDiscovered;
 use wg_model::{EventDraft, EventPayload, RepositoryCheckout, RepositoryRemote, Row, Stamp, Write};
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Id, Timestamp, WgError};
 
 use crate::remote::normalize_remote_url;
 
@@ -45,16 +45,14 @@ pub fn check_boundary(
 ) -> Result<(), WgError> {
     if !allowed_roots.is_empty() && !allowed_roots.iter().any(|root| is_within(path, root)) {
         let roots = Value::Array(allowed_roots.iter().cloned().map(Value::String).collect());
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("{path} is outside the workspace's allowed roots"),
-        )
-        .with_detail("path", Value::String(path.to_owned()))
-        .with_detail("allowed_roots", roots));
+        return Err(WgError::validation(format!(
+            "{path} is outside the workspace's allowed roots"
+        ))
+        .detail("path", Value::String(path.to_owned()))
+        .detail("allowed_roots", roots));
     }
     if managed_roots.iter().any(|root| is_within(path, root)) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "Workgraph-managed directories cannot be registered as repositories",
         ));
     }

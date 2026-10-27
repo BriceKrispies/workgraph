@@ -8,7 +8,7 @@
 
 use serde_json::{Map, Value};
 use wg_model::entity::JsonObject;
-use wg_types::{CheckKind, ErrorCode, WgError};
+use wg_types::{CheckKind, WgError};
 
 use crate::signatures::FailureParser;
 
@@ -117,7 +117,7 @@ pub struct CheckSpec {
 }
 
 fn invalid(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
+    WgError::validation(message)
 }
 
 /// A string field that may be absent or `null`.

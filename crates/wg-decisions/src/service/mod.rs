@@ -16,7 +16,7 @@ use wg_model::entity::TaskDecision;
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext, index_written};
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 
 use crate::core::Answer;
 use crate::spec::{self as spec, DecisionFilter, DecisionWorld};
@@ -96,9 +96,9 @@ pub fn get(
             reads::decision_by_id_with_task(session, row.workspace_id, row.id)
         },
         |row| {
-            row.as_ref().map(spec::with_task_out).ok_or_else(|| {
-                WgError::new(ErrorCode::WorkgraphError, "the decision's task vanished")
-            })
+            row.as_ref()
+                .map(spec::with_task_out)
+                .ok_or_else(|| WgError::workgraph("the decision's task vanished"))
         },
     )
 }

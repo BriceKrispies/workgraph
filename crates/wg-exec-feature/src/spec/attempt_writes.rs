@@ -23,7 +23,7 @@ use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Applied, Change, transition};
 use wg_tasks_feature::spec::bodies::ClaimRead;
 use wg_tasks_feature::spec::claims::claim_task;
-use wg_types::{AttemptStatus, ErrorCode, Id, TaskStatus, WgError};
+use wg_types::{AttemptStatus, Id, TaskStatus, WgError};
 
 use crate::spec::attempts;
 
@@ -212,18 +212,10 @@ pub fn start_chain(stamp: &Stamp, tasks: &TaskSlice) -> Applied {
     }
 }
 
-/// A `validation_failed` error.
-pub fn validation(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
-}
-
 /// A task that the slice should hold but does not.
 #[must_use]
 pub fn gone(task: Id) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("task {task} vanished from the slice"),
-    )
+    WgError::workgraph(format!("task {task} vanished from the slice"))
 }
 
 /// The failed and timed-out attempts of a task, counting `row` in place of its stored version.

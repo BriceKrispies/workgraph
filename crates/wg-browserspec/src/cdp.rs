@@ -2,7 +2,7 @@
 
 use base64::Engine;
 use serde_json::{Value, json};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_validate::pydantic::py_repr;
 
 use crate::options::CaptureOptions;
@@ -138,13 +138,10 @@ pub fn wait_timeout_error(
     if let Some(selector) = wait_gone {
         waits.push(format!("{} to disappear", quoted(selector)));
     }
-    WgError::new(
-        ErrorCode::ProviderUnavailable,
-        format!(
-            "timed out after {timeout:.0}s waiting for {} at {url}",
-            waits.join(" and ")
-        ),
-    )
+    WgError::provider_unavailable(format!(
+        "timed out after {timeout:.0}s waiting for {} at {url}",
+        waits.join(" and ")
+    ))
 }
 
 /// The DevTools WebSocket of the first page target in a `/json/list` body.
@@ -171,19 +168,16 @@ pub fn devtools_port(file_text: &str) -> Option<u16> {
 /// # Errors
 /// [`ErrorCode::ProviderUnavailable`] when the reply has no valid base64 `data`.
 pub fn screenshot_bytes(result: &Value) -> Result<Vec<u8>, WgError> {
-    let data = result.get("data").and_then(Value::as_str).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::ProviderUnavailable,
-            "browser returned no screenshot data",
-        )
-    })?;
+    let data = result
+        .get("data")
+        .and_then(Value::as_str)
+        .ok_or_else(|| WgError::provider_unavailable("browser returned no screenshot data"))?;
     base64::engine::general_purpose::STANDARD
         .decode(data)
         .map_err(|err| {
-            WgError::new(
-                ErrorCode::ProviderUnavailable,
-                format!("browser returned invalid screenshot data: {err}"),
-            )
+            WgError::provider_unavailable(format!(
+                "browser returned invalid screenshot data: {err}"
+            ))
         })
 }
 
@@ -195,6 +189,7 @@ fn json_string(text: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use wg_types::ErrorCode;
 
     #[test]
     fn dark_touch_phone_emulates_media_and_touch_in_order() {

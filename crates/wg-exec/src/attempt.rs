@@ -7,7 +7,7 @@
 //! (GV-01) and is re-exported here, so there is one copy of it.
 
 use serde_json::{Map, Value, json};
-use wg_types::{AttemptStatus as A, ErrorCode, TaskStatus as S, WgError};
+use wg_types::{AttemptStatus as A, TaskStatus as S, WgError};
 
 pub use wg_tasks::lifecycle::{attempt_targets, check_attempt_transition};
 
@@ -71,7 +71,7 @@ pub enum FinishPlan {
 /// Decides a request to finish an attempt that is currently `current` with status `target`.
 pub fn finish_plan(current: A, target: A) -> Result<FinishPlan, WgError> {
     if !is_terminal(target) {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "{target} is not a terminal attempt status"
         )));
     }
@@ -79,7 +79,9 @@ pub fn finish_plan(current: A, target: A) -> Result<FinishPlan, WgError> {
         if current == target {
             return Ok(FinishPlan::Unchanged);
         }
-        return Err(validation(format!("attempt already finished as {current}")));
+        return Err(WgError::validation(format!(
+            "attempt already finished as {current}"
+        )));
     }
     check_attempt_transition(current, target)?;
     Ok(FinishPlan::Apply {
@@ -148,17 +150,16 @@ pub fn start_plan(
                 (S::Claimed, Some(name)) => format!(" by {name}"),
                 _ => String::new(),
             };
-            return Err(validation(format!(
+            return Err(WgError::validation(format!(
                 "task {task_key} is {task}{by}; an external attempt needs a ready task or one claimed by {actor}"
             ))
-            .with_detail("status", json!(task.as_str())));
+            .detail("status", task.as_str()));
         }
     };
     if let Some(number) = active_attempt_number {
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!("task {task_key} already has an active attempt #{number}"),
-        ));
+        return Err(WgError::invalid_transition(format!(
+            "task {task_key} already has an active attempt #{number}"
+        )));
     }
     Ok(StartPlan { claim_first })
 }
@@ -194,23 +195,23 @@ pub fn submit_check(
     task: S,
 ) -> Result<(), WgError> {
     if requested != "succeeded" && requested != "failed" {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "status must be succeeded or failed, not {}",
             python_repr(requested)
         )));
     }
     if !matches!(attempt, A::Running | A::Preparing) {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "attempt {attempt_id} is {attempt}; only a running attempt can be submitted"
         )));
     }
     if !has_worktree {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "attempt {attempt_id} has no managed worktree; submit applies to attempts from `attempt start`"
         )));
     }
     if !matches!(task, S::Running | S::Claimed) {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "task {task_key} is {task}; only a running task can be submitted"
         )));
     }
@@ -228,15 +229,15 @@ pub fn abandon_plan(
     task: S,
 ) -> Result<Option<S>, WgError> {
     if reason.trim().is_empty() {
-        return Err(validation("abandoning an attempt needs a reason"));
+        return Err(WgError::validation("abandoning an attempt needs a reason"));
     }
     if !external {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "attempt {attempt_id} was not started with attempt start; only external attempts are abandoned"
         )));
     }
     if !matches!(attempt, A::Running | A::Preparing) {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "attempt {attempt_id} is {attempt}; only a running attempt can be abandoned"
         )));
     }
@@ -286,8 +287,4 @@ fn python_repr(text: &str) -> String {
     } else {
         format!("'{}'", text.replace('\\', "\\\\").replace('\'', "\\'"))
     }
-}
-
-fn validation(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
 }

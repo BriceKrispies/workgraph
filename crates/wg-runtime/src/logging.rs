@@ -22,7 +22,7 @@ use wg_runtimespec::logs::{
     should_rollover,
 };
 use wg_runtimespec::{Level, LogRecord, format_record, timestamp_from_unix_nanos};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// `configure_logging(level, log_dir, stderr=...)`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -47,12 +47,8 @@ pub fn configure_logging(settings: &LogSettings) -> Result<(), WgError> {
     if INSTALLED.set(Arc::clone(&layer.sink)).is_err() {
         return Ok(());
     }
-    tracing::subscriber::set_global_default(Registry::default().with(layer)).map_err(|err| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("cannot install the log subscriber: {err}"),
-        )
-    })
+    tracing::subscriber::set_global_default(Registry::default().with(layer))
+        .map_err(|err| WgError::workgraph(format!("cannot install the log subscriber: {err}")))
 }
 
 /// A layer writing O14 lines as `settings` says, for callers that compose their own subscriber
@@ -62,10 +58,10 @@ pub fn json_layer(settings: &LogSettings) -> Result<JsonLayer, WgError> {
         Some(dir) => Some(Mutex::new(
             RotatingFile::open(&dir.join(LOG_FILE_NAME), MAX_BYTES, BACKUP_COUNT).map_err(
                 |err| {
-                    WgError::new(
-                        ErrorCode::WorkgraphError,
-                        format!("cannot open the log file in {}: {err}", dir.display()),
-                    )
+                    WgError::workgraph(format!(
+                        "cannot open the log file in {}: {err}",
+                        dir.display()
+                    ))
                 },
             )?,
         )),

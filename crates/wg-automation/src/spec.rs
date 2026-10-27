@@ -824,10 +824,7 @@ pub fn validate_rule(value: &Value) -> Result<RuleSpec, Failure> {
     };
     let dumped = check_fields(map, &root, RULE_FIELDS).map_err(|issues| {
         match issues.iter().find(|issue| issue.kind == RAISED) {
-            Some(raised) => Failure::Raised(wg_types::WgError::new(
-                wg_types::ErrorCode::ValidationFailed,
-                raised.msg.clone(),
-            )),
+            Some(raised) => Failure::Raised(wg_types::WgError::validation(raised.msg.clone())),
             None => Failure::Invalid(issues),
         }
     })?;

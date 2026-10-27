@@ -32,12 +32,8 @@ pub fn log(
     if !path.exists() {
         return Ok(attempt_dicts::log_missing());
     }
-    let bytes = std::fs::read(&path).map_err(|error| {
-        WgError::new(
-            wg_types::ErrorCode::WorkgraphError,
-            format!("cannot read {}: {error}", path.display()),
-        )
-    })?;
+    let bytes = std::fs::read(&path)
+        .map_err(|error| WgError::workgraph(format!("cannot read {}: {error}", path.display())))?;
     let text = String::from_utf8_lossy(&bytes);
     let lines = wg_json::py_splitlines(&text);
     let total = lines.len();

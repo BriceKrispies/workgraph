@@ -6,14 +6,14 @@ use std::collections::BTreeMap;
 
 use wg_json::{http_json, log_json};
 use wg_model::StoredEvent;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_wire::convention::counts;
 use wg_wire::dto::event::from_stored;
 
 use crate::sse::SseEvent;
 
 fn dump_error(err: wg_json::DumpError) -> WgError {
-    WgError::new(ErrorCode::WorkgraphError, err.to_string())
+    WgError::workgraph(err.to_string())
 }
 
 /// One domain event: `ServerSentEvent(data=model_dump_json(), event="domain", id=str(seq))`.

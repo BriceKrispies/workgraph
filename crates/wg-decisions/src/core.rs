@@ -9,13 +9,13 @@
 //! The waiting tags ([`CLEARED_TAGS`]) are dropped once none of the task's decisions is open.
 
 use rpds::VectorSync;
-use serde_json::{Map, json};
+use serde_json::Map;
 use wg_model::EventPayload;
 use wg_model::entity::{DecisionOption, TaskComment, TaskDecision};
 use wg_model::event::{TaskCommentRecorded, TaskDecisionChanged};
 use wg_model::stamp::{Stamp, py_repr_str};
 use wg_model::{Task, TaskSlice};
-use wg_types::{CommentKind, ErrorCode, Permission, WgError};
+use wg_types::{CommentKind, Permission, WgError};
 
 use wg_tasks::comments;
 use wg_tasks::promote::PARKED_TAG;
@@ -76,10 +76,9 @@ pub struct DecisionPlan {
 /// than [`MAX_OPTIONS`] options (`normalize_options`).
 pub fn normalize_options(options: &[OptionInput]) -> Result<VectorSync<DecisionOption>, WgError> {
     if options.len() > MAX_OPTIONS {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("a decision carries at most {MAX_OPTIONS} options"),
-        ));
+        return Err(WgError::validation(format!(
+            "a decision carries at most {MAX_OPTIONS} options"
+        )));
     }
     options.iter().enumerate().try_fold(
         VectorSync::new_sync(),
@@ -90,10 +89,10 @@ pub fn normalize_options(options: &[OptionInput]) -> Result<VectorSync<DecisionO
                 .filter(|id| !id.is_empty())
                 .map_or_else(|| letter(position), str::to_owned);
             if out.iter().any(|seen| seen.id == id) {
-                return Err(WgError::new(
-                    ErrorCode::ValidationFailed,
-                    format!("duplicate option id {}", py_repr_str(&id)),
-                ));
+                return Err(WgError::validation(format!(
+                    "duplicate option id {}",
+                    py_repr_str(&id)
+                )));
             }
             let row = DecisionOption {
                 id,
@@ -120,10 +119,7 @@ pub fn check_request(
 ) -> Result<(String, VectorSync<DecisionOption>), WgError> {
     let question = question.trim();
     if question.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "question must not be empty",
-        ));
+        return Err(WgError::validation("question must not be empty"));
     }
     Ok((question.to_owned(), normalize_options(options)?))
 }
@@ -176,16 +172,12 @@ pub fn plan_request(
 /// `other_text`, and a non-blank `other_text`.
 pub fn check_answer(answer: Answer<'_>) -> Result<(), WgError> {
     if answer.option_id.is_some() == answer.other_text.is_some() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "give exactly one of option_id and other_text",
         ));
     }
     if answer.other_text.is_some_and(|text| text.trim().is_empty()) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "other_text must not be empty",
-        ));
+        return Err(WgError::validation("other_text must not be empty"));
     }
     Ok(())
 }
@@ -204,8 +196,7 @@ pub fn plan_choose(
     stamp.require(&[Permission::TaskWrite])?;
     check_answer(answer)?;
     if decision.status == "withdrawn" {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "decision was withdrawn; request a new one",
         ));
     }
@@ -223,14 +214,11 @@ pub fn plan_choose(
         } else {
             known
         };
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "unknown option {}; options are: {known}",
-                py_repr_str(option_id)
-            ),
-        )
-        .with_detail("option_id", json!(option_id)));
+        return Err(WgError::validation(format!(
+            "unknown option {}; options are: {known}",
+            py_repr_str(option_id)
+        ))
+        .detail("option_id", option_id));
     }
 
     let note = answer
@@ -295,13 +283,10 @@ pub fn plan_withdraw(
 ) -> Result<DecisionPlan, WgError> {
     stamp.require(&[Permission::TaskWrite])?;
     if decision.status != "open" {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "only an open decision can be withdrawn; this one is {}",
-                decision.status
-            ),
-        ));
+        return Err(WgError::validation(format!(
+            "only an open decision can be withdrawn; this one is {}",
+            decision.status
+        )));
     }
     let next = TaskDecision {
         status: "withdrawn".to_owned(),

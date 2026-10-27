@@ -7,7 +7,7 @@ use serde_json::Value as Json;
 use wg_hash::sha256_hex;
 use wg_json::{LocalDateTime, Value};
 use wg_model::entity::{Finding, JsonObject, Real};
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Id, Timestamp, WgError};
 use wg_wire::convention::json_value;
 
 /// A `[since, until)` window as the CLI typed it (typer's naive `datetime`).
@@ -77,7 +77,7 @@ pub fn finding_row(
     let sample_size = report
         .get("sample_size")
         .and_then(Json::as_i64)
-        .ok_or_else(|| WgError::new(ErrorCode::WorkgraphError, "finding without a sample size"))?;
+        .ok_or_else(|| WgError::workgraph("finding without a sample size"))?;
     let evidence: JsonObject = report
         .get("evidence")
         .and_then(Json::as_object)

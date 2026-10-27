@@ -2,7 +2,7 @@
 
 use core::fmt;
 
-use crate::{ErrorCode, WgError};
+use crate::WgError;
 
 /// A validated task key. The original spelling is kept, so `WG-007` round-trips unchanged.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -12,12 +12,7 @@ impl TaskKey {
     /// Parses `<PREFIX>-<n>`: the prefix is an uppercase letter followed by up to nine uppercase
     /// letters or digits; `<n>` is one or more ASCII digits.
     pub fn parse(text: &str) -> Result<Self, WgError> {
-        let invalid = || {
-            WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("invalid task key {text:?}"),
-            )
-        };
+        let invalid = || WgError::validation(format!("invalid task key {text:?}"));
         let (prefix, number) = text.split_once('-').ok_or_else(invalid)?;
         let prefix_ok = prefix.len() <= 10
             && prefix.starts_with(|c: char| c.is_ascii_uppercase())

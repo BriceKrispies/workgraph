@@ -22,7 +22,7 @@ use crate::spec::dto::{project, project_summary, workspace, workspace_summary};
 use crate::spec::mcp_shapes;
 use crate::spec::repos::RegisterInput;
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 use wg_wire::dto::task_brief;
 
 use wg_mcpspec::options::Agent;
@@ -92,9 +92,9 @@ fn workspace_list(app: &mut App) -> Result<Dto, WgError> {
 fn workspace_get(app: &mut App, arguments: &Value) -> Result<Dto, WgError> {
     let ws = workspace_of(app, arguments)?;
     app.runtime.store.read(|session| {
-        let row = session.workspace_by_id(ws)?.ok_or_else(|| {
-            WgError::new(ErrorCode::NotFound, format!("workspace {ws} not found"))
-        })?;
+        let row = session
+            .workspace_by_id(ws)?
+            .ok_or_else(|| WgError::not_found(format!("workspace {ws} not found")))?;
         let jobs = reads::workspace_job_counts(session, ws)?;
         let job_count = |status: &str| {
             jobs.iter()

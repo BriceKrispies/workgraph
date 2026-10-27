@@ -7,7 +7,7 @@ use wg_model::entity::JsonObject;
 use wg_model::py_repr_str;
 use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::limits::tracker_key;
 use crate::queue::{ACTIVE_STATUSES, NewJob, enqueue};
@@ -29,14 +29,11 @@ pub fn enqueue_tracker_sync(
     stamp: &Stamp,
 ) -> Result<Decision<Id>, WgError> {
     if !known_connections.contains(&connection) {
-        return Err(WgError::new(
-            ErrorCode::NotFound,
-            format!(
-                "tracker connection {} is not configured",
-                py_repr_str(connection)
-            ),
-        )
-        .with_detail("connection", Value::String(connection.to_owned())));
+        return Err(WgError::not_found(format!(
+            "tracker connection {} is not configured",
+            py_repr_str(connection)
+        ))
+        .detail("connection", Value::String(connection.to_owned())));
     }
     let active = slice.jobs.values().find(|job| {
         job.kind == TRACKER_SYNC_KIND

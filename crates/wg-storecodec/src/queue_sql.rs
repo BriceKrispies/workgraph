@@ -11,7 +11,7 @@
 use std::collections::BTreeMap;
 
 use wg_model::Table;
-use wg_types::{ErrorCode, Id, JobStatus, Timestamp, WgError};
+use wg_types::{Id, JobStatus, Timestamp, WgError};
 
 use crate::codec::{Raw, bool_sql, id_sql, text_sql, ts_sql};
 use crate::sql::{Statement, select_list};
@@ -279,8 +279,5 @@ pub fn count_from_rows(rows: &[Vec<Raw>]) -> Result<usize, WgError> {
 }
 
 fn shape_error(what: &str) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("unexpected row shape from {what}"),
-    )
+    WgError::workgraph(format!("unexpected row shape from {what}"))
 }

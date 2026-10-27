@@ -26,8 +26,8 @@ use wg_verify::{
 use crate::spec::auto_accept::{AutoAcceptWorld, auto_accept, enabled_in};
 use crate::spec::run::{
     FinishWorld, LogFile, Plan, PrepareWorld, RunRequest, checkout_of, failure, filled, finish_run,
-    io_failure, manifest_repositories, manifest_wanted, not_found, plan_run, read_log,
-    repositories_wanted, start_failure, start_run, task_of,
+    io_failure, manifest_repositories, manifest_wanted, plan_run, read_log, repositories_wanted,
+    start_failure, start_run, task_of,
 };
 use crate::spec::sql::stack_repository_hits;
 
@@ -183,7 +183,7 @@ fn load_finish(
 ) -> Result<FinishWorld, WgError> {
     let run = session
         .fetch::<VerificationRun>(&RowKey::VerificationRun(run_id))?
-        .ok_or_else(|| not_found("verification run", run_id))?;
+        .ok_or_else(|| WgError::not_found(format!("verification run {run_id} not found")))?;
     let attempt_row = match attempt {
         Some(id) => session.attempt_by_id(id)?,
         None => None,
@@ -215,7 +215,7 @@ fn load_auto_accept(
 ) -> Result<AutoAcceptWorld, WgError> {
     let run = session
         .fetch::<VerificationRun>(&RowKey::VerificationRun(run_id))?
-        .ok_or_else(|| not_found("verification run", run_id))?;
+        .ok_or_else(|| WgError::not_found(format!("verification run {run_id} not found")))?;
     let manifest = match run.manifest_id {
         Some(id) => session.manifest_by_id(id)?,
         None => None,

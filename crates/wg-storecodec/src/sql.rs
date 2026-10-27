@@ -2,7 +2,7 @@
 //! key. The store only binds and runs them.
 
 use wg_model::{Row, RowKey, Table, Write};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::codec::Raw;
 use crate::rows::{columns, key_values, primary_key, row_values};
@@ -147,20 +147,14 @@ pub fn version_probe(key: &RowKey) -> Statement {
 /// row is missing and the error is `not_found`.
 pub fn update_failure(table: Table, expected: Option<i64>, actual: Option<i64>) -> WgError {
     match (expected, actual) {
-        (Some(expected), Some(actual)) => WgError::new(
-            ErrorCode::VersionConflict,
-            format!(
-                "{} row was modified concurrently (expected version {expected}, found \
+        (Some(expected), Some(actual)) => WgError::version_conflict(format!(
+            "{} row was modified concurrently (expected version {expected}, found \
                  {actual}); re-read and retry",
-                table.name()
-            ),
-        )
-        .with_detail("expected", expected.into())
-        .with_detail("actual", actual.into()),
-        _ => WgError::new(
-            ErrorCode::NotFound,
-            format!("no {} row to update", table.name()),
-        ),
+            table.name()
+        ))
+        .detail("expected", expected)
+        .detail("actual", actual),
+        _ => WgError::not_found(format!("no {} row to update", table.name())),
     }
 }
 

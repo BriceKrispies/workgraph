@@ -131,7 +131,7 @@ pub fn restore_backup(
     at: Timestamp,
 ) -> Result<RestoreReport, WgError> {
     if !archive.exists() {
-        return Err(spec::validation_failed(format!(
+        return Err(WgError::validation(format!(
             "{} does not exist",
             archive.display()
         )));
@@ -139,7 +139,7 @@ pub fn restore_backup(
     let scratch = Scratch::new("wg-restore")?;
     let tmp = scratch.path.as_path();
     let not_a_backup =
-        || spec::validation_failed(format!("{} is not a Workgraph backup", archive.display()));
+        || WgError::validation(format!("{} is not a Workgraph backup", archive.display()));
     let file =
         std::fs::File::open(archive).map_err(|err| spec::io_failure("open", archive, &err))?;
     let mut zip = ZipArchive::new(file).map_err(|_| not_a_backup())?;
@@ -149,7 +149,7 @@ pub fn restore_backup(
     }
     for name in &names {
         if !spec::is_safe_entry(name) {
-            return Err(spec::validation_failed(format!(
+            return Err(WgError::validation(format!(
                 "unsafe path in archive: {name}"
             )));
         }
@@ -185,7 +185,7 @@ pub fn restore_backup(
         spec::first_text(&rows).unwrap_or_default()
     };
     if integrity != "ok" {
-        return Err(spec::validation_failed(format!(
+        return Err(WgError::validation(format!(
             "backup database failed integrity check: {integrity}"
         )));
     }
@@ -200,7 +200,7 @@ pub fn restore_backup(
             .and_then(|rows| spec::first_int(&rows))
             .unwrap_or(0);
         if running > 0 {
-            return Err(spec::conflict(
+            return Err(WgError::conflict(
                 "a worker is running; stop Workgraph processes before restoring (or pass --force)",
             ));
         }
@@ -247,8 +247,8 @@ pub fn restore_backup(
 
     let mut store = Store::open(&Location::File(database))?;
     let schema_before = store.current_revision()?;
-    let head = head_revision()
-        .ok_or_else(|| spec::validation_failed("no migration revisions".to_string()))?;
+    let head =
+        head_revision().ok_or_else(|| WgError::validation("no migration revisions".to_string()))?;
     store.upgrade(head)?;
     let schema_after = store.current_revision()?;
     Ok(RestoreReport {

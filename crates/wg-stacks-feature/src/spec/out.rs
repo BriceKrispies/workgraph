@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use wg_json::Value;
 use wg_model::entity::{Stack, StackItem, StackRepository, Task};
 use wg_storecodec::task_world_sql::TaskWorld;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 use wg_wire::dto::stack;
 
 /// The integration tip each prepared worktree reported, by stack and repository name. A
@@ -44,12 +44,10 @@ fn items<'a>(world: &'a TaskWorld, stack: &Stack) -> Vec<(&'a StackItem, &'a Tas
 /// `StackOut` of `stack`; `tips` fills each repository's `integration_tip` (`_with_tips`), and an
 /// empty map leaves them null (`stack_out`).
 pub fn stack_out(world: &TaskWorld, stack_row: &Stack, tips: &Tips) -> Result<Value, WgError> {
-    let parent = world.tasks.task(stack_row.parent_task_id).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            "the stack's parent task vanished",
-        )
-    })?;
+    let parent = world
+        .tasks
+        .task(stack_row.parent_task_id)
+        .ok_or_else(|| WgError::workgraph("the stack's parent task vanished"))?;
     let repositories = repositories(world, stack_row);
     Ok(stack::with_tips(
         stack_row,

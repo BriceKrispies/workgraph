@@ -6,7 +6,7 @@ use serde_json::{Map, Value as Json, json};
 use wg_model::entity::Experiment;
 use wg_model::event::experiment::{ExperimentClosed, ExperimentCreated, ExperimentFrozen};
 use wg_model::{Decision, EventDraft, EventPayload, Stamp, Write, py_repr_str};
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use super::protocol::{arms, validate_protocol};
 
@@ -40,19 +40,13 @@ pub fn check_create(
     protocol: &Json,
 ) -> Result<Map<String, Json>, WgError> {
     if !slug_matches(slug) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "experiment slug {} must be lowercase letters, digits and hyphens",
-                py_repr_str(slug)
-            ),
-        ));
+        return Err(WgError::validation(format!(
+            "experiment slug {} must be lowercase letters, digits and hyphens",
+            py_repr_str(slug)
+        )));
     }
     if title.trim().is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "experiment title must not be empty",
-        ));
+        return Err(WgError::validation("experiment title must not be empty"));
     }
     validate_protocol(protocol)
 }
@@ -73,14 +67,11 @@ pub fn create(
     exists: bool,
 ) -> Result<Decision<Experiment>, WgError> {
     if exists {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!(
-                "experiment {} already exists in this workspace",
-                py_repr_str(slug)
-            ),
-        )
-        .with_detail("slug", json!(slug)));
+        return Err(WgError::conflict(format!(
+            "experiment {} already exists in this workspace",
+            py_repr_str(slug)
+        ))
+        .detail("slug", slug));
     }
     let ([experiment_id, event_id], _) = stamp.ids().take::<2>();
     let mut names: Vec<String> = arms(&protocol).into_iter().map(|(name, _)| name).collect();
@@ -114,9 +105,9 @@ pub fn create(
 
 /// The `conflict` error of a lifecycle step the experiment's status does not allow.
 fn wrong_status(experiment: &Experiment, message: String) -> WgError {
-    WgError::new(ErrorCode::Conflict, message)
-        .with_detail("experiment", json!(experiment.slug))
-        .with_detail("status", json!(experiment.status))
+    WgError::conflict(message)
+        .detail("experiment", &experiment.slug)
+        .detail("status", &experiment.status)
 }
 
 /// `ExperimentService.freeze`: validates the protocol, freezes it and starts the experiment.

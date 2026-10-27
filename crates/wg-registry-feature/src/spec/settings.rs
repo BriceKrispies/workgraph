@@ -7,7 +7,7 @@
 use serde_json::{Map, Value};
 use wg_config::validate_global;
 use wg_runtimespec::app::configured_default_workspace;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_validate::pydantic::error_text;
 
 /// The dotted-key prefixes a settings patch may change (`EDITABLE_PREFIXES`). A key is editable
@@ -43,18 +43,17 @@ pub fn patched_config(
             .iter()
             .any(|prefix| key.starts_with(prefix))
         {
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("{key} cannot be edited from the API; use the config file"),
-            ));
+            return Err(WgError::validation(format!(
+                "{key} cannot be edited from the API; use the config file"
+            )));
         }
         set_dotted(&mut data, key, value.clone())?;
     }
     validate_global(&Value::Object(data)).map_err(|errors| {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("invalid settings: {}", error_text("GlobalConfig", &errors)),
-        )
+        WgError::validation(format!(
+            "invalid settings: {}",
+            error_text("GlobalConfig", &errors)
+        ))
     })
 }
 
@@ -70,10 +69,7 @@ fn set_dotted(table: &mut Map<String, Value>, key: &str, value: Value) -> Result
             .entry((*part).to_owned())
             .or_insert_with(|| Value::Object(Map::new()));
         cursor = entry.as_object_mut().ok_or_else(|| {
-            WgError::new(
-                ErrorCode::WorkgraphError,
-                format!("cannot set {key}: {part} is not a table"),
-            )
+            WgError::workgraph(format!("cannot set {key}: {part} is not a table"))
         })?;
     }
     cursor.insert((*last).to_owned(), value);
@@ -108,6 +104,7 @@ mod tests {
     use wg_config::default_global;
 
     use super::*;
+    use wg_types::ErrorCode;
 
     fn values(value: Value) -> Map<String, Value> {
         value.as_object().cloned().unwrap_or_default()

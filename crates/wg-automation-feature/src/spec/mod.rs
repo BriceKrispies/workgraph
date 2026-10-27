@@ -35,7 +35,7 @@ use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, EventDraft, EventPayload, Write};
 use wg_storecodec::EventRecord;
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Id, Timestamp, WgError};
 use wg_wire::convention as wire_convention;
 
 /// The name of the job that runs a queued run's actions.
@@ -46,7 +46,7 @@ pub const CURSOR: &str = "automation";
 
 /// `NotFoundError` for an event a preview names.
 pub fn event_not_found(id: &str) -> WgError {
-    WgError::new(ErrorCode::NotFound, format!("event {id} not found"))
+    WgError::not_found(format!("event {id} not found"))
 }
 
 /// The name a preview rule of `spec` carries.
@@ -56,7 +56,7 @@ pub fn preview_name(name: &str) -> String {
 
 /// `ValidationFailed("invalid automation rule", details={"errors": ...})`.
 pub fn invalid_rule(issues: &[Issue]) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, "invalid automation rule").with_detail(
+    WgError::validation("invalid automation rule").detail(
         "errors",
         Value::Array(issues.iter().map(Issue::to_json).collect()),
     )
@@ -162,10 +162,10 @@ pub fn create_rule(
     config_max_depth: i64,
 ) -> Result<Decision<AutomationRule>, WgError> {
     if existing.is_some() {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!("rule {} already exists", wg_model::py_repr_str(&spec.name)),
-        ));
+        return Err(WgError::conflict(format!(
+            "rule {} already exists",
+            wg_model::py_repr_str(&spec.name)
+        )));
     }
     let row = rule_row(
         stamp,
@@ -446,7 +446,7 @@ pub fn plan_run_row(
         actions: &actions,
         context: &request.context,
     })
-    .map_err(|message| WgError::new(ErrorCode::WorkgraphError, message))?;
+    .map_err(WgError::workgraph)?;
     let outcome = plan.outcome(request.dry_run);
     let correlation = request.event.map_or_else(
         || stamp.correlation.clone(),
@@ -513,23 +513,18 @@ pub fn trigger(
     is_human: bool,
 ) -> Result<Decision<AutomationRun>, WgError> {
     if !request.rule.enabled {
-        return Err(WgError::new(
-            ErrorCode::Conflict,
-            format!("rule {} is disabled", request.rule.name),
-        ));
+        return Err(WgError::conflict(format!(
+            "rule {} is disabled",
+            request.rule.name
+        )));
     }
     if request.rule.trigger.get("type").and_then(Value::as_str) != Some("manual") && !is_human {
-        return Err(WgError::new(
-            ErrorCode::PermissionDenied,
+        return Err(WgError::permission_denied(
             "agents may only trigger rules whose trigger type is manual",
         ));
     }
-    let planned = plan_run_row(stamp, stamp.id(0), request)?.ok_or_else(|| {
-        WgError::new(
-            ErrorCode::Conflict,
-            "this manual trigger key was already used",
-        )
-    })?;
+    let planned = plan_run_row(stamp, stamp.id(0), request)?
+        .ok_or_else(|| WgError::conflict("this manual trigger key was already used"))?;
     let run = planned.run.clone();
     Ok(run_changes(&planned, stamp, stamp.id(1)).with_reply(run))
 }
@@ -542,7 +537,7 @@ pub fn preview_run(
     request: &RunRequest<'_>,
 ) -> Result<Decision<AutomationRun>, WgError> {
     let planned = plan_run_row(stamp, stamp.id(2), request)?
-        .ok_or_else(|| WgError::new(ErrorCode::Conflict, "the dry run was already recorded"))?;
+        .ok_or_else(|| WgError::conflict("the dry run was already recorded"))?;
     let run = planned.run.clone();
     let base = match target {
         Some(write) => Decision::new(()).write(write),

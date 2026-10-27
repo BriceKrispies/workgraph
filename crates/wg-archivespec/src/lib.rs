@@ -21,7 +21,7 @@ use std::path::Path;
 use serde_json::Value as JsonValue;
 use wg_json::{PyStr, Value, cli_json, db_json, log_json};
 use wg_storecodec::{Raw, Statement};
-use wg_types::{ErrorCode, Timestamp, WgError};
+use wg_types::{Timestamp, WgError};
 
 pub use layout::EXPORT_TABLES;
 
@@ -176,7 +176,7 @@ pub fn export_header(workspace_id: &str, version: &str, windows: bool) -> Result
 /// `row` holds the values in the order of `table.columns`.
 pub fn export_line(table: &ExportTable, row: &[Raw]) -> Result<String, WgError> {
     if row.len() != table.columns.len() {
-        return Err(invalid(format!(
+        return Err(WgError::validation(format!(
             "row of {} has {} values, expected {}",
             table.name,
             row.len(),
@@ -201,7 +201,7 @@ fn export_value(kind: Kind, raw: &Raw) -> Result<Value, WgError> {
         (_, Raw::Blob(bytes)) => bytes_value(bytes),
         (Kind::Json, Raw::Text(text)) => {
             let parsed: JsonValue = serde_json::from_str(text)
-                .map_err(|err| invalid(format!("stored JSON does not parse: {err}")))?;
+                .map_err(|err| WgError::validation(format!("stored JSON does not parse: {err}")))?;
             to_py(&parsed)
         }
         (Kind::Ts, Raw::Text(text)) => {
@@ -250,30 +250,32 @@ impl ImportRow {
 /// format is not [`EXPORT_FORMAT`], is refused.
 pub fn parse_header(line: &str) -> Result<String, WgError> {
     let value: JsonValue = serde_json::from_str(line)
-        .map_err(|_| invalid("not a Workgraph workspace export".to_string()))?;
+        .map_err(|_| WgError::validation("not a Workgraph workspace export".to_string()))?;
     if value.get("format").and_then(JsonValue::as_str) != Some(EXPORT_FORMAT) {
-        return Err(invalid("not a Workgraph workspace export".to_string()));
+        return Err(WgError::validation(
+            "not a Workgraph workspace export".to_string(),
+        ));
     }
     value
         .get("workspace_id")
         .and_then(JsonValue::as_str)
         .map(str::to_string)
-        .ok_or_else(|| invalid("not a Workgraph workspace export".to_string()))
+        .ok_or_else(|| WgError::validation("not a Workgraph workspace export".to_string()))
 }
 
 /// Parses one record of an export, converting each value the way `import_workspace` binds it.
 pub fn parse_row(line: &str) -> Result<ImportRow, WgError> {
     let value: JsonValue = serde_json::from_str(line)
-        .map_err(|err| invalid(format!("export record does not parse: {err}")))?;
+        .map_err(|err| WgError::validation(format!("export record does not parse: {err}")))?;
     let name = value
         .get("table")
         .and_then(JsonValue::as_str)
-        .ok_or_else(|| invalid("export record has no table".to_string()))?;
-    let table = table(name).ok_or_else(|| invalid(format!("unknown table {name}")))?;
+        .ok_or_else(|| WgError::validation("export record has no table".to_string()))?;
+    let table = table(name).ok_or_else(|| WgError::validation(format!("unknown table {name}")))?;
     let fields = value
         .get("row")
         .and_then(JsonValue::as_object)
-        .ok_or_else(|| invalid("export record has no row".to_string()))?;
+        .ok_or_else(|| WgError::validation("export record has no row".to_string()))?;
     let mut columns = Vec::with_capacity(fields.len());
     let mut params = Vec::with_capacity(fields.len());
     for (column, item) in fields {
@@ -281,7 +283,9 @@ pub fn parse_row(line: &str) -> Result<ImportRow, WgError> {
             .columns
             .iter()
             .find(|(candidate, _)| *candidate == column.as_str())
-            .ok_or_else(|| invalid(format!("unknown column {}.{column}", table.name)))?;
+            .ok_or_else(|| {
+                WgError::validation(format!("unknown column {}.{column}", table.name))
+            })?;
         columns.push(*name);
         params.push(import_value(*kind, item)?);
     }
@@ -309,11 +313,17 @@ fn import_value(kind: Kind, item: &JsonValue) -> Result<Raw, WgError> {
         (_, JsonValue::Number(number)) => match (number.as_i64(), number.as_f64()) {
             (Some(int), _) => Raw::Int(int),
             (None, Some(real)) => Raw::Real(real),
-            (None, None) => return Err(invalid(format!("number {number} is out of range"))),
+            (None, None) => {
+                return Err(WgError::validation(format!(
+                    "number {number} is out of range"
+                )));
+            }
         },
         (_, JsonValue::String(text)) => Raw::Text(text.clone()),
         (_, other) => {
-            return Err(invalid(format!("a {kind:?} column cannot hold {other}")));
+            return Err(WgError::validation(format!(
+                "a {kind:?} column cannot hold {other}"
+            )));
         }
     })
 }
@@ -397,7 +407,7 @@ pub fn is_safe_entry(name: &str) -> bool {
 /// The fields a restore reads from a manifest, or the reason the archive is not a backup.
 pub fn parse_manifest(text: &str) -> Result<JsonValue, WgError> {
     let value: JsonValue = serde_json::from_str(text)
-        .map_err(|err| invalid(format!("manifest.json does not parse: {err}")))?;
+        .map_err(|err| WgError::validation(format!("manifest.json does not parse: {err}")))?;
     Ok(value)
 }
 
@@ -470,7 +480,9 @@ pub fn parse_format(text: &str) -> Result<Format, WgError> {
         "csv" => Ok(Format::Csv),
         "json" => Ok(Format::Json),
         "parquet" => Ok(Format::Parquet),
-        _ => Err(invalid("format must be csv, json or parquet".to_string())),
+        _ => Err(WgError::validation(
+            "format must be csv, json or parquet".to_string(),
+        )),
     }
 }
 
@@ -585,7 +597,8 @@ pub fn json_text(dataset: &Dataset) -> Result<String, WgError> {
 
 /// A JSON string literal with the escapes JSON requires; non-ASCII text stays as it is.
 fn json_string(text: &str) -> Result<String, WgError> {
-    serde_json::to_string(text).map_err(|err| invalid(format!("cannot encode text: {err}")))
+    serde_json::to_string(text)
+        .map_err(|err| WgError::validation(format!("cannot encode text: {err}")))
 }
 
 /// A finite float in fixed notation: the shortest digits that round-trip, with `.0` when the value
@@ -645,28 +658,12 @@ pub fn sidecar_files(database: &Path) -> Vec<std::path::PathBuf> {
 
 /// The error of a failed file operation: `cannot <action> <path>: <err>`.
 pub fn io_failure(action: &str, path: &Path, err: &std::io::Error) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("cannot {action} {}: {err}", path.display()),
-    )
+    WgError::workgraph(format!("cannot {action} {}: {err}", path.display()))
 }
 
 /// The error of a failed zip write to `path`.
 pub fn zip_failure(path: &Path, err: &str) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("cannot write {}: {err}", path.display()),
-    )
-}
-
-/// A refused archive or request: `ValidationFailed` with `message`.
-pub fn validation_failed(message: String) -> WgError {
-    invalid(message)
-}
-
-/// A refused write because the target exists: `Conflict` with `message`.
-pub fn conflict(message: &str) -> WgError {
-    WgError::new(ErrorCode::Conflict, message)
+    WgError::workgraph(format!("cannot write {}: {err}", path.display()))
 }
 
 /// The last component of a path as text (empty when it has none).
@@ -715,12 +712,5 @@ fn to_py(value: &JsonValue) -> Value {
 }
 
 fn dump_failure(error: wg_json::DumpError) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("cannot serialise a value: {}", error.python_name()),
-    )
-}
-
-fn invalid(message: String) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
+    WgError::workgraph(format!("cannot serialise a value: {}", error.python_name()))
 }

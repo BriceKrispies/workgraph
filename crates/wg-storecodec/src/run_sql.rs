@@ -9,7 +9,7 @@
 
 use wg_model::Table;
 use wg_model::entity::ManagedWorktree;
-use wg_types::{AttemptStatus, ErrorCode, Id, Timestamp, WgError, WorktreeStatus};
+use wg_types::{AttemptStatus, Id, Timestamp, WgError, WorktreeStatus};
 
 use crate::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
 use crate::rows::{TableRow, columns};
@@ -365,14 +365,11 @@ pub fn decode_worktree_with_repository(values: &[Raw]) -> Result<WorktreeWithRep
     static NAMES: [&str; 1] = ["repository_name"];
     let width = columns(Table::ManagedWorktree).len();
     if values.len() != width + 1 {
-        return Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!(
-                "worktree row has {} columns, expected {}",
-                values.len(),
-                width + 1
-            ),
-        ));
+        return Err(WgError::workgraph(format!(
+            "worktree row has {} columns, expected {}",
+            values.len(),
+            width + 1
+        )));
     }
     let worktree = ManagedWorktree::from_raw(&values[..width])?;
     let repository_name = Cols::new(&NAMES, &values[width..]).text("repository_name")?;

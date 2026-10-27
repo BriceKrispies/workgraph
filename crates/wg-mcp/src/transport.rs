@@ -16,7 +16,7 @@ use rmcp::transport::streamable_http_server::session::local::LocalSessionManager
 use rmcp::transport::{StreamableHttpServerConfig, StreamableHttpService, stdio};
 use tokio_util::sync::CancellationToken;
 use wg_mcpspec::{Plan, plan, verb_of};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::backend::{Agent, ToolBackend};
 use crate::handler::WgMcp;
@@ -24,21 +24,17 @@ use crate::handler::WgMcp;
 /// The largest request body the endpoint reads before answering.
 const BODY_LIMIT: usize = 4 * 1024 * 1024;
 
-fn failure(what: &str, err: impl std::fmt::Display) -> WgError {
-    WgError::new(ErrorCode::WorkgraphError, format!("{what}: {err}"))
-}
-
 /// Serves one client over this process's stdin and stdout until it closes the pipe.
 pub async fn serve_stdio(agent: Agent, backend: Box<dyn ToolBackend>) -> Result<(), WgError> {
     let server = WgMcp::new(agent, backend)?;
     let running = server
         .serve(stdio())
         .await
-        .map_err(|err| failure("mcp stdio", err))?;
+        .map_err(|err| WgError::workgraph(format!("mcp stdio: {err}")))?;
     running
         .waiting()
         .await
-        .map_err(|err| failure("mcp stdio", err))?;
+        .map_err(|err| WgError::workgraph(format!("mcp stdio: {err}")))?;
     Ok(())
 }
 

@@ -125,12 +125,9 @@ pub fn registry_slice(
     session: &mut Session<'_>,
     workspace_id: Id,
 ) -> Result<RegistrySlice, WgError> {
-    let workspace = session.workspace_by_id(workspace_id)?.ok_or_else(|| {
-        WgError::new(
-            wg_types::ErrorCode::NotFound,
-            format!("workspace {workspace_id} not found"),
-        )
-    })?;
+    let workspace = session
+        .workspace_by_id(workspace_id)?
+        .ok_or_else(|| WgError::not_found(format!("workspace {workspace_id} not found")))?;
     let mut writes = vec![Write::insert(Row::Workspace(workspace))];
     for project in session.projects(workspace_id, true)? {
         for link in session.project_repositories(project.id)? {

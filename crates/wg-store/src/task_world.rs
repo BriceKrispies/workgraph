@@ -7,7 +7,7 @@ use std::collections::BTreeSet;
 
 use wg_storecodec::Raw;
 use wg_storecodec::task_world_sql::{TaskWorld, decode_row, fts_task_ids, statements};
-use wg_types::{ErrorCode, Id, WgError, parse_id};
+use wg_types::{Id, WgError, parse_id};
 
 use crate::Session;
 
@@ -18,10 +18,7 @@ impl Session<'_> {
             .iter()
             .map(|values| match values.first() {
                 Some(Raw::Text(text)) => parse_id(text),
-                _ => Err(WgError::new(
-                    ErrorCode::WorkgraphError,
-                    "task_fts returned no task id",
-                )),
+                _ => Err(WgError::workgraph("task_fts returned no task id")),
             })
             .collect()
     }

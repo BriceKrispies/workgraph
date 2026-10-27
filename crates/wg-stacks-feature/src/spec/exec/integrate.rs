@@ -21,7 +21,7 @@ use wg_stacks::merge::{
 use wg_stacks::queue::{DueItem, ItemDetail, is_settled, next_due};
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::Change;
-use wg_types::{ErrorCode, Id, StackItemState, StackStatus, TaskStatus, WgError, parse_id};
+use wg_types::{Id, StackItemState, StackStatus, TaskStatus, WgError, parse_id};
 
 use super::chain::Chain;
 use super::text::dumps_sorted;
@@ -38,13 +38,6 @@ const SKIPPED_REASON: &str = "no change in this repository";
 
 /// The reason on the status change that starts an integration.
 const STARTED_REASON: &str = "integration started";
-
-fn vanished(what: &str, id: Id) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("{what} {id} vanished from the slice"),
-    )
-}
 
 /// The item's detail as stored text (`dump_detail`).
 #[must_use]
@@ -375,14 +368,12 @@ pub fn in_progress(status: StackStatus) -> bool {
 
 /// The task of an item, for a caller that needs its key.
 pub fn item_task(world: &TaskWorld, item_id: Id) -> Result<Task, WgError> {
-    let item = world
-        .stacks
-        .items
-        .get(&item_id)
-        .ok_or_else(|| vanished("stack item", item_id))?;
+    let item = world.stacks.items.get(&item_id).ok_or_else(|| {
+        WgError::workgraph(format!("stack item {} vanished from the slice", item_id))
+    })?;
     world
         .tasks
         .task(item.task_id)
         .cloned()
-        .ok_or_else(|| vanished("task", item.task_id))
+        .ok_or_else(|| WgError::workgraph(format!("task {} vanished from the slice", item.task_id)))
 }

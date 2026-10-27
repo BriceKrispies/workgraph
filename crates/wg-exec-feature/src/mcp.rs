@@ -17,7 +17,7 @@ use wg_mcpspec::options::Agent;
 use wg_mcpspec::{require, structured, tool_permissions};
 use wg_runtime::{App, ToolRun, agent_context};
 use wg_store::AttemptPage;
-use wg_types::{AttemptStatus, ErrorCode, Id, WgError};
+use wg_types::{AttemptStatus, Id, WgError};
 use wg_wire::dto::{attempt, page};
 
 use crate::service::agents::LiveAgents;
@@ -200,10 +200,7 @@ fn unwired(app: &mut App, name: &str, arguments: &Value) -> Result<Value, WgErro
             .store
             .read(|session| find_task(session, workspace, reference))?;
     }
-    Err(WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("tool {name} is not wired yet"),
-    ))
+    Err(WgError::workgraph(format!("tool {name} is not wired yet")))
 }
 
 /// The workspace the arguments name, else the default one (the tools that list a workspace).

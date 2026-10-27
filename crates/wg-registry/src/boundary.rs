@@ -11,7 +11,7 @@ use std::iter::once;
 
 use serde_json::Value;
 use wg_model::{JsonObject, py_repr_str};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// A path split into its anchor (`""` for relative, `"/"`, or `"C:"` / `"C:/"`) and its
 /// components, with `.` dropped and `..` resolved lexically.
@@ -96,15 +96,12 @@ pub fn require_within(child: &str, parent: &str) -> Result<String, WgError> {
     if is_within(child, parent) {
         Ok(normalised)
     } else {
-        Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "path {normalised} escapes the permitted boundary {}",
-                lexical(parent).render()
-            ),
-        )
-        .with_detail("path", Value::String(normalised))
-        .with_detail("boundary", Value::String(lexical(parent).render())))
+        Err(WgError::validation(format!(
+            "path {normalised} escapes the permitted boundary {}",
+            lexical(parent).render()
+        ))
+        .detail("path", Value::String(normalised))
+        .detail("boundary", Value::String(lexical(parent).render())))
     }
 }
 
@@ -112,21 +109,15 @@ pub fn require_within(child: &str, parent: &str) -> Result<String, WgError> {
 /// no drive, no `..` component. Returns its normalised form (Python's `safe_relative_path`).
 pub fn safe_relative_path(value: &str) -> Result<String, WgError> {
     if value.is_empty() || value.contains('\0') {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "empty or NUL-containing path",
-        ));
+        return Err(WgError::validation("empty or NUL-containing path"));
     }
     let candidate = lexical(value);
     let traverses = value.replace('\\', "/").split('/').any(|part| part == "..");
     if !candidate.root.is_empty() || traverses {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "path {} must be relative and must not traverse upwards",
-                py_repr_str(value)
-            ),
-        ));
+        return Err(WgError::validation(format!(
+            "path {} must be relative and must not traverse upwards",
+            py_repr_str(value)
+        )));
     }
     Ok(candidate.render())
 }
@@ -153,13 +144,12 @@ pub fn check_allowed_roots(path: &str, settings: &JsonObject) -> Result<(), WgEr
     if roots.is_empty() || roots.iter().any(|root| is_within(path, root)) {
         return Ok(());
     }
-    Err(WgError::new(
-        ErrorCode::ValidationFailed,
-        format!("{path} is outside the workspace's allowed roots"),
+    Err(
+        WgError::validation(format!("{path} is outside the workspace's allowed roots"))
+            .detail("path", Value::String(path.to_owned()))
+            .detail(
+                "allowed_roots",
+                Value::Array(roots.into_iter().map(Value::String).collect()),
+            ),
     )
-    .with_detail("path", Value::String(path.to_owned()))
-    .with_detail(
-        "allowed_roots",
-        Value::Array(roots.into_iter().map(Value::String).collect()),
-    ))
 }

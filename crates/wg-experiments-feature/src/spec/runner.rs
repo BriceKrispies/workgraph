@@ -19,9 +19,7 @@ use wg_model::event::{
 };
 use wg_model::{Decision, EventDraft, Row, Stamp, Write};
 use wg_render::Console;
-use wg_types::{
-    ErrorCode, FailureCause, FailureCauseSource, Id, TrialOutcome, TrialStatus, WgError,
-};
+use wg_types::{FailureCause, FailureCauseSource, Id, TrialOutcome, TrialStatus, WgError};
 use wg_wire::dto::trial::from_model;
 
 use crate::spec::trial::{choice, parse_status, require_running};
@@ -80,7 +78,7 @@ fn argv_lists(value: Option<&Json>) -> Commands {
 }
 
 fn missing_key(key: &str) -> WgError {
-    WgError::new(ErrorCode::WorkgraphError, format!("'{key}'"))
+    WgError::workgraph(format!("'{key}'"))
 }
 
 /// `_task_spec`: the spec of a replay task, or of a leaf whose `metadata.contract` is complete.
@@ -97,10 +95,9 @@ pub fn task_spec(
 ) -> Result<Spec, WgError> {
     if let Some(meta) = metadata.get("replay").and_then(Json::as_object) {
         if !meta.get("sha").is_some_and(Json::is_string) {
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("task {key} is not a replay task"),
-            ));
+            return Err(WgError::validation(format!(
+                "task {key} is not a replay task"
+            )));
         }
         let field = |name: &str| meta.get(name).ok_or_else(|| missing_key(name));
         return Ok(Spec {
@@ -128,16 +125,13 @@ pub fn task_spec(
                     .map(|name| format!("missing {name}")),
             )
             .collect();
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "task {key} has no replay metadata and cannot run as a leaf: {}",
-                listed.join("; ")
-            ),
-        )
-        .with_detail("task", json!(key))
-        .with_detail("missing", json!(problems.missing))
-        .with_detail("not_delegable", json!(problems.not_delegable)));
+        return Err(WgError::validation(format!(
+            "task {key} has no replay metadata and cannot run as a leaf: {}",
+            listed.join("; ")
+        ))
+        .detail("task", key)
+        .detail("missing", problems.missing)
+        .detail("not_delegable", problems.not_delegable));
     }
     let contract = metadata
         .get("contract")
@@ -210,8 +204,7 @@ pub fn commands(
         _ => spec.oracle.clone(),
     };
     if oracle.is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "the trial has no oracle command, so it cannot be run or graded",
         ));
     }
@@ -279,20 +272,17 @@ pub fn record_exit(record: &Json) -> i64 {
 ///
 /// Always returns the `ValidationFailed` the setup failure raises.
 pub fn setup_failure(argv: &[String], record: &Json) -> WgError {
-    WgError::new(
-        ErrorCode::ValidationFailed,
-        format!(
-            "setup command {} exited {}: {}",
-            wg_experiments::briefs::shlex_join(argv),
-            record_exit(record),
-            record
-                .get("output_tail")
-                .and_then(Json::as_str)
-                .unwrap_or_default()
-        ),
-    )
-    .with_detail("command", json!(argv))
-    .with_detail("exit", json!(record_exit(record)))
+    WgError::validation(format!(
+        "setup command {} exited {}: {}",
+        wg_experiments::briefs::shlex_join(argv),
+        record_exit(record),
+        record
+            .get("output_tail")
+            .and_then(Json::as_str)
+            .unwrap_or_default()
+    ))
+    .detail("command", argv)
+    .detail("exit", record_exit(record))
 }
 
 /// The protocol's `setup` commands: argv lists whose parts are text.
@@ -360,9 +350,9 @@ pub fn render_brief(protocol: &JsonObject, input: &BriefInput<'_>) -> Result<Str
         out_of_scope: input.spec.out_of_scope.clone(),
     };
     wg_experiments::briefs::render(&template, &context).map_err(|error| {
-        WgError::new(ErrorCode::ValidationFailed, error.message())
-            .with_detail("template", json!(template))
-            .with_detail("known", json!(wg_experiments::briefs::TEMPLATE_IDS))
+        WgError::validation(error.message())
+            .detail("template", template)
+            .detail("known", wg_experiments::briefs::TEMPLATE_IDS)
     })
 }
 
@@ -505,12 +495,12 @@ pub fn source_roots(clone: &str, checkouts: &[String]) -> Vec<String> {
 
 /// The conflict of an operation refused on the trial's status.
 fn status_conflict(trial: &ExperimentTrial, requirement: &str) -> WgError {
-    WgError::new(
-        ErrorCode::Conflict,
-        format!("trial {} is {}; {requirement}", trial.id, trial.status),
-    )
-    .with_detail("trial", json!(trial.id.to_string()))
-    .with_detail("status", json!(trial.status))
+    WgError::conflict(format!(
+        "trial {} is {}; {requirement}",
+        trial.id, trial.status
+    ))
+    .detail("trial", trial.id.to_string())
+    .detail("status", &trial.status)
 }
 
 /// The runner's own status check at the head of `start`.
@@ -543,13 +533,10 @@ pub fn require_gradable(trial: &ExperimentTrial) -> Result<(), WgError> {
         ));
     }
     if trial.worktree_path.is_none() || trial.base_ref.is_none() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "trial {} has no worktree; start it before grading it",
-                trial.id
-            ),
-        ));
+        return Err(WgError::validation(format!(
+            "trial {} has no worktree; start it before grading it",
+            trial.id
+        )));
     }
     Ok(())
 }
@@ -758,11 +745,10 @@ pub fn run_detail(trial: &ExperimentTrial) -> Json {
 /// The refusal of a checkout with no default branch.
 #[must_use]
 pub fn no_default_branch(checkout: &str) -> WgError {
-    WgError::new(
-        ErrorCode::ValidationFailed,
-        format!("checkout {checkout} has no default branch; set contract.base_ref on the task"),
-    )
-    .with_detail("path", json!(checkout))
+    WgError::validation(format!(
+        "checkout {checkout} has no default branch; set contract.base_ref on the task"
+    ))
+    .detail("path", checkout)
 }
 
 /// An exit code as Python reports it: Windows codes are unsigned.

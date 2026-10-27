@@ -3,12 +3,12 @@
 
 use serde_json::Value;
 use wg_telemetry::ingest::Failure;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// A failure carried through a transaction as a `WgError`: the type name rides in the details.
 pub fn failure_error(failure: &Failure) -> WgError {
-    WgError::new(ErrorCode::WorkgraphError, failure.message.clone())
-        .with_detail("failure_type", Value::String(failure.type_name.clone()))
+    WgError::workgraph(failure.message.clone())
+        .detail("failure_type", Value::String(failure.type_name.clone()))
 }
 
 /// The failure a transaction's error stands for.

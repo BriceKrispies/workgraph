@@ -4,7 +4,7 @@
 
 use serde_json::{Map, Value as Json};
 use time::{Date, Duration, Month, PrimitiveDateTime, Time};
-use wg_types::{ErrorCode, Timestamp, WgError};
+use wg_types::{Timestamp, WgError};
 
 /// The `limit` of `GET /ws/{ws}/verification/runs` when the client sends none.
 pub const RUNS_LIMIT: i64 = 50;
@@ -16,10 +16,9 @@ pub fn enabled_of(action: &str) -> Result<bool, WgError> {
     match action {
         "enable" => Ok(true),
         "disable" => Ok(false),
-        other => Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("unknown verification action {other}"),
-        )),
+        other => Err(WgError::validation(format!(
+            "unknown verification action {other}"
+        ))),
     }
 }
 
@@ -57,12 +56,7 @@ pub fn run_args(params: &Map<String, Json>) -> (Option<&str>, i64) {
 /// an optional `.fraction`), then optionally an offset (`Z`, or `+`/`-` with `HH[:MM[:SS]]` or
 /// `HH[MM[SS]]`). A value without an offset is UTC, as the `UTCDateTime` column binds it.
 pub fn parse_since(text: &str) -> Result<Timestamp, WgError> {
-    let bad = || {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("invalid datetime {text:?}"),
-        )
-    };
+    let bad = || WgError::validation(format!("invalid datetime {text:?}"));
     if !text.is_ascii() {
         return Err(bad());
     }

@@ -2,12 +2,12 @@
 
 use std::fmt::Display;
 
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// A browser that is missing, refused the connection or did not answer in time.
 #[must_use]
 pub fn unavailable(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ProviderUnavailable, message)
+    WgError::provider_unavailable(message)
 }
 
 /// A local failure while starting the browser or reading and writing its files.

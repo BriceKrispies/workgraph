@@ -11,7 +11,7 @@ use wg_storecodec::migrations::{
     CREATE_VERSION_TABLE, DataStep, INSERT_VERSION, SELECT_EXTERNAL_REFS, SELECT_VERSION,
     UPDATE_VERSION, external_ref_links, head_revision, upgrade_path,
 };
-use wg_types::{ErrorCode, Timestamp, WgError};
+use wg_types::{Timestamp, WgError};
 
 use crate::session::db;
 use crate::{Session, Store};
@@ -34,8 +34,7 @@ fn recorded(session: &mut Session<'_>) -> Result<Option<String>, WgError> {
     match versions.as_slice() {
         [] => Ok(None),
         [only] => Ok(Some(only.clone())),
-        _ => Err(WgError::new(
-            ErrorCode::WorkgraphError,
+        _ => Err(WgError::workgraph(
             "alembic_version records more than one revision",
         )),
     }

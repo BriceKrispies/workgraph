@@ -57,10 +57,8 @@ pub fn error_result(text: &str) -> Value {
 /// The structured output of a tool, from a wire value (`wg-json` dialect) into the `serde_json`
 /// value the result carries. Key order is kept, so the indented text matches the Python dump.
 pub fn structured_output(value: &wg_json::Value) -> Result<Value, WgError> {
-    let text = wg_json::http_json(value)
-        .map_err(|err| WgError::new(wg_types::ErrorCode::WorkgraphError, err.to_string()))?;
-    serde_json::from_str(&text)
-        .map_err(|err| WgError::new(wg_types::ErrorCode::WorkgraphError, err.to_string()))
+    let text = wg_json::http_json(value).map_err(|err| WgError::workgraph(err.to_string()))?;
+    serde_json::from_str(&text).map_err(|err| WgError::workgraph(err.to_string()))
 }
 
 /// The string argument `key` of a call, when it is given and not empty (Python's
@@ -115,12 +113,10 @@ pub fn respond_to_call(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use wg_types::ErrorCode;
 
     #[test]
     fn domain_error_text_matches_the_transcript() {
-        let error = WgError::new(ErrorCode::NotFound, "workspace 'x' not found")
-            .with_detail("ref", json!("x"));
+        let error = WgError::not_found("workspace 'x' not found").detail("ref", "x");
         assert_eq!(
             tool_error_text("workspace_get", &error),
             "Error executing tool workspace_get: {\"error\": {\"code\": \"not_found\", \"message\": \"workspace 'x' not found\", \"details\": {\"ref\": \"x\"}}}"

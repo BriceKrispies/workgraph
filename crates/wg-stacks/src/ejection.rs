@@ -5,7 +5,7 @@
 use std::collections::BTreeSet;
 
 use serde_json::{Map, Value, json};
-use wg_types::{ErrorCode, StackItemState, TaskStatus, WgError};
+use wg_types::{StackItemState, TaskStatus, WgError};
 
 use crate::item::is_on_branch;
 
@@ -41,8 +41,7 @@ pub fn bisected_ejection(
 /// The ejection record of an operator's ejection. The reason must name evidence.
 pub fn manual_ejection(reason: &str) -> Result<Value, WgError> {
     if reason.trim().is_empty() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
+        return Err(WgError::validation(
             "an ejection needs a reason (the evidence that names this child)",
         ));
     }
@@ -80,13 +79,10 @@ pub fn check_ejectable(
     if is_on_branch(state) && has_merges {
         return Ok(());
     }
-    Err(WgError::new(
-        ErrorCode::Conflict,
-        format!(
-            "{task_key} is not merged on {parent_key}'s stack; only a merged child can be ejected"
-        ),
-    )
-    .with_detail("task", task_key.into()))
+    Err(WgError::conflict(format!(
+        "{task_key} is not merged on {parent_key}'s stack; only a merged child can be ejected"
+    ))
+    .detail("task", task_key))
 }
 
 /// The comment left on a child that bisection ejected.

@@ -11,7 +11,7 @@ use wg_json::Value as Dto;
 use wg_mcpspec::options::Agent;
 use wg_mcpspec::{structured_output, text_argument};
 use wg_runtime::{App, ToolRun, agent_context};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_wire::dto::experiment_shapes;
 
 use crate::service::{self, runner, trials};
@@ -211,13 +211,10 @@ fn sizes(arguments: &Value) -> Result<PredictRequest, WgError> {
             .filter(|(_, absent)| *absent)
             .map(|(name, _)| name)
             .collect();
-            Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                format!(
-                    "experiment_predict needs task or all of the features; missing {}",
-                    missing.join(", ")
-                ),
-            ))
+            Err(WgError::validation(format!(
+                "experiment_predict needs task or all of the features; missing {}",
+                missing.join(", ")
+            )))
         }
     }
 }

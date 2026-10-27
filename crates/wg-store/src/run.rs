@@ -164,10 +164,9 @@ impl Session<'_> {
             .and_then(|row| row.first())
             .map(|value| match value {
                 Raw::Int(count) => Ok(*count),
-                other => Err(WgError::new(
-                    wg_types::ErrorCode::WorkgraphError,
-                    format!("attempt count is not an integer: {other:?}"),
-                )),
+                other => Err(WgError::workgraph(format!(
+                    "attempt count is not an integer: {other:?}"
+                ))),
             })
             .transpose()?
             .unwrap_or(0);

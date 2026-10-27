@@ -7,7 +7,7 @@
 //! not after, since that check touches the disk.
 
 use serde_json::{Map, Value};
-use wg_types::{ErrorCode, Id, TaskStatus, WgError};
+use wg_types::{Id, TaskStatus, WgError};
 
 /// Closed tasks keep their text: accepted and cancelled work, and anything archived.
 fn is_closed(status: TaskStatus, archived: bool) -> bool {
@@ -35,15 +35,13 @@ impl Term {
     pub fn new(old: &str, new: &str, keep: &[&str]) -> Result<Self, WgError> {
         for word in [old, new] {
             if !is_name(word) {
-                return Err(WgError::new(
-                    ErrorCode::ValidationFailed,
-                    format!("'{word}' is not a name: one ASCII word, letters only"),
-                ));
+                return Err(WgError::validation(format!(
+                    "'{word}' is not a name: one ASCII word, letters only"
+                )));
             }
         }
         if old.eq_ignore_ascii_case(new) {
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
+            return Err(WgError::validation(
                 "the old and new names are the same word",
             ));
         }

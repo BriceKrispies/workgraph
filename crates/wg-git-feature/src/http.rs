@@ -11,7 +11,7 @@ use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::RouteSpec;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::service;
 
@@ -37,10 +37,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             Some(text_param(&request.params, "ws")),
             request.params.get("status").and_then(Json::as_str),
         ),
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 

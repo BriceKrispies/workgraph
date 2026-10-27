@@ -13,7 +13,7 @@ use wg_jobs::dispatch::JOB_KINDS;
 use wg_json::Value;
 use wg_model::entity::{Job, JobRun, Worker};
 use wg_model::py_repr_str;
-use wg_types::{ErrorCode, Id, JobStatus, WgError};
+use wg_types::{Id, JobStatus, WgError};
 use wg_wire::convention::{
     TimeFormat, counts, dict, id, int, json_object, optional_id, optional_text, optional_timestamp,
     text, texts, timestamp,
@@ -48,24 +48,17 @@ pub fn unknown_job_kind(kind: &str) -> Option<String> {
 
 /// The payload of `job enqueue --payload`: a JSON object. Anything else is a validation error.
 pub fn enqueue_payload(text: &str) -> Result<wg_model::entity::JsonObject, WgError> {
-    let value: Json = serde_json::from_str(text).map_err(|err| {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("payload is not valid JSON: {err}"),
-        )
-    })?;
+    let value: Json = serde_json::from_str(text)
+        .map_err(|err| WgError::validation(format!("payload is not valid JSON: {err}")))?;
     match value {
         Json::Object(map) => Ok(map.into_iter().collect()),
-        _ => Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "payload must be a JSON object",
-        )),
+        _ => Err(WgError::validation("payload must be a JSON object")),
     }
 }
 
 /// The reason a job reference names no job. A reference that is not an id names none either.
 pub fn job_not_found(job_id: &str) -> WgError {
-    WgError::new(ErrorCode::NotFound, format!("job {job_id} not found"))
+    WgError::not_found(format!("job {job_id} not found"))
 }
 
 /// The job id of a reference, or the not-found error for a reference that is not an id.

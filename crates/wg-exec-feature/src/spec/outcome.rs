@@ -9,7 +9,7 @@ use wg_model::entity::{AgentAttempt, ChangeSet, ChangeSetItem, JsonObject, Revis
 use wg_model::event::{AttemptOutcomeCaptured, EventDraft, EventPayload};
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, Write};
-use wg_types::{ChangeSetItemStatus, ErrorCode, WgError};
+use wg_types::{ChangeSetItemStatus, WgError};
 
 use crate::spec::conclude::Captured;
 
@@ -17,22 +17,15 @@ use crate::spec::conclude::Captured;
 pub fn read_entries(rows: &[JsonObject]) -> Result<Vec<ManifestEntry>, WgError> {
     rows.iter()
         .map(|row| {
-            ManifestEntry::from_json(&Value::Object(row.clone())).ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::ValidationFailed,
-                    "a manifest entry is missing a required field",
-                )
-            })
+            ManifestEntry::from_json(&Value::Object(row.clone()))
+                .ok_or_else(|| WgError::validation("a manifest entry is missing a required field"))
         })
         .collect()
 }
 
 /// The error when the attempt has no prepared workspace.
 pub fn unprepared(attempt: &AgentAttempt) -> WgError {
-    WgError::new(
-        ErrorCode::NotFound,
-        format!("attempt {} has no prepared workspace", attempt.id),
-    )
+    WgError::not_found(format!("attempt {} has no prepared workspace", attempt.id))
 }
 
 fn object(value: Value) -> JsonObject {

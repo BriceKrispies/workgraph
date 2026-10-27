@@ -6,7 +6,7 @@ use serde_json::{Map, Value as Json};
 use wg_model::entity::Notification;
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, Write};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// The `limit` of `GET /ws/{ws}/automation/runs` when the client sends none.
 pub const RUNS_LIMIT: i64 = 100;
@@ -74,7 +74,7 @@ pub fn unread_only(params: &Map<String, Json>) -> bool {
 /// `NotificationService.mark_read`: the notification with `read_at` set to the call's time. An
 /// unknown notification is `NotFound`; no event is recorded, as the Python service records none.
 pub fn mark_read(found: Option<Notification>, stamp: &Stamp) -> Result<Decision<()>, WgError> {
-    let note = found.ok_or_else(|| WgError::new(ErrorCode::NotFound, "notification not found"))?;
+    let note = found.ok_or_else(|| WgError::not_found("notification not found"))?;
     let row = Notification {
         read_at: Some(stamp.at),
         ..note

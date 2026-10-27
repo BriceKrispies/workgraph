@@ -14,7 +14,7 @@ use wg_gitcore::RunOptions;
 use wg_proc::{CaptureLimits, run_capture};
 use wg_procspec::ProcessSpec;
 use wg_runtimespec::effects::GIT_TIMEOUT_MS;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::spec::replay::git_failure;
 use crate::spec::runner::{command_record, python_exit, record_exit};
@@ -182,10 +182,7 @@ pub fn scratch_dir(prefix: &str) -> Result<PathBuf, WgError> {
     );
     let path = std::env::temp_dir().join(name);
     std::fs::create_dir_all(&path).map_err(|error| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("cannot create {}: {error}", path.display()),
-        )
+        WgError::workgraph(format!("cannot create {}: {error}", path.display()))
     })?;
     Ok(path)
 }

@@ -16,7 +16,7 @@ use wg_store::Session;
 use wg_store::query::one;
 use wg_storecodec::codec::{id_sql, text_sql};
 use wg_storecodec::sql::{Statement, select_list};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 use wg_wire::dto::contract_check;
 
 use crate::spec::contract::{prediction_out, verdict_out};
@@ -34,14 +34,11 @@ pub fn task_contract_check(
 ) -> Result<Value, WgError> {
     app.require_read(context)?;
     if !(0.0..=1.0).contains(&target) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "target must be between 0 and 1, got {}",
-                py_float_repr(target)
-            ),
-        )
-        .with_detail("target", Json::from(target)));
+        return Err(WgError::validation(format!(
+            "target must be between 0 and 1, got {}",
+            py_float_repr(target)
+        ))
+        .detail("target", Json::from(target)));
     }
     let task_scope = app.workspace_or_all(workspace)?;
     let fit_scope = app.workspace_or_default(workspace)?;
@@ -94,7 +91,7 @@ pub fn task_contract_check(
                                 repository.name.clone(),
                             )
                         })
-                        .map_err(|err| WgError::new(ErrorCode::WorkgraphError, err.message()));
+                        .map_err(|err| WgError::workgraph(err.message()));
                         let fit_state = match &result {
                             Ok(out) => Fit::Predicted(Forecast {
                                 probability: out.probability,
@@ -109,7 +106,7 @@ pub fn task_contract_check(
                 model,
                 target,
             )
-            .map_err(|message| WgError::new(ErrorCode::ValidationFailed, message))?;
+            .map_err(WgError::validation)?;
             let predicted = forecast.into_inner().transpose()?;
             Ok(verdict_out(decided, predicted, model, target))
         },

@@ -7,7 +7,7 @@
 use serde_json::{Value, json};
 use wg_model::entity::{Repository, TaskRepository};
 use wg_model::{Task, TaskSlice};
-use wg_types::{AccessMode, ErrorCode, Id, RelationType, WgError};
+use wg_types::{AccessMode, Id, RelationType, WgError};
 
 /// The access values a task link accepts (`link_repository`).
 pub const ACCESS_VALUES: &[&str] = &["read_only", "read_write"];
@@ -22,7 +22,7 @@ pub enum RelationAdd {
 }
 
 fn missing(kind: &str, id: Id) -> WgError {
-    WgError::new(ErrorCode::NotFound, format!("{kind} {id} not found"))
+    WgError::not_found(format!("{kind} {id} not found"))
 }
 
 /// The decision of `add_relation`: `source` relates to `target` by `relation_type`.
@@ -38,10 +38,7 @@ pub fn check_add_relation(
         return Err(missing("task", target));
     }
     if target == source {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "a task cannot relate to itself",
-        ));
+        return Err(WgError::validation("a task cannot relate to itself"));
     }
     let existing = tasks.relations.values().find(|row| {
         row.source_task_id == source
@@ -90,20 +87,18 @@ pub fn plan_link_repository(
     }
     let requested = match access {
         None => None,
-        Some(text) => Some(access_value(text).ok_or_else(|| {
-            WgError::new(
-                ErrorCode::ValidationFailed,
-                "access must be read_only or read_write",
-            )
-        })?),
+        Some(text) => Some(
+            access_value(text)
+                .ok_or_else(|| WgError::validation("access must be read_only or read_write"))?,
+        ),
     };
     let effective = requested.unwrap_or_else(|| repository.access_mode.as_str());
     if effective == AccessMode::ReadWrite.as_str() && repository.access_mode == AccessMode::ReadOnly
     {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("repository {} is registered read-only", repository.name),
-        ));
+        return Err(WgError::validation(format!(
+            "repository {} is registered read-only",
+            repository.name
+        )));
     }
     Ok(match existing {
         None => RepoLinkPlan::Insert { access: effective },

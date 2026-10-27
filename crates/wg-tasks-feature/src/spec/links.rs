@@ -18,7 +18,7 @@ use wg_tasks::links::{
 };
 use wg_tasks::ownership::SYNC_ACTOR;
 use wg_tasks::transition::{Applied, refresh_one};
-use wg_types::{CommentKind, ErrorCode, Id, Permission, WgError};
+use wg_types::{CommentKind, Id, Permission, WgError};
 use wg_wire::dto::{comment, relation};
 
 use super::bodies::{CommentRead, ProgressRead, RelationRead, RepoRead};
@@ -28,10 +28,7 @@ use wg_tasks::comments::progress_data;
 use wg_tasks::shape::task_out;
 
 fn gone(task: Id) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("task {task} vanished from the slice"),
-    )
+    WgError::workgraph(format!("task {task} vanished from the slice"))
 }
 
 /// `TaskService._comment` and the reply of `add_comment`: a `CommentOut`.
@@ -180,13 +177,10 @@ pub fn remove_dependency(
         && row.created_by == SYNC_ACTOR
         && stamp.actor.to_string() != SYNC_ACTOR
     {
-        return Err(WgError::new(
-            ErrorCode::PermissionDenied,
-            format!(
-                "the dependency of {} on {} comes from the tracker; remove it there",
-                task.key, dep.key
-            ),
-        ));
+        return Err(WgError::permission_denied(format!(
+            "the dependency of {} on {} comes from the tracker; remove it there",
+            task.key, dep.key
+        )));
     }
     let start = Applied {
         decision: Decision::new(()),

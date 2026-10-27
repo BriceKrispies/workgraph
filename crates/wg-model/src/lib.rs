@@ -113,7 +113,7 @@
 //!     stamp.require(&[Permission::TaskWrite])?;
 //!     let task = slice
 //!         .task(task_id)
-//!         .ok_or_else(|| WgError::new(ErrorCode::NotFound, "task not found"))?;
+//!         .ok_or_else(|| WgError::not_found("task not found"))?;
 //!     if task.archived_at.is_some() {
 //!         return Ok(Decision::new(task.id));
 //!     }

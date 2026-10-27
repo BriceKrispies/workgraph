@@ -8,7 +8,7 @@
 use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_serverspec::groups::RouteSpec;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::service;
 use crate::spec::acceptance::body_parts;
@@ -313,10 +313,7 @@ fn run_tasks(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, Wg
             number(&params, "limit", 50),
             number(&params, "offset", 0),
         ),
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 
@@ -333,10 +330,7 @@ fn run_acceptance(app: &mut App, id: &str, request: RouteRequest) -> Result<Valu
         "H033" => service::acceptance::task_accept(app, context, ws, reference, &reason),
         "H034" => service::acceptance::task_reject(app, context, ws, reference, &reason),
         "H035" => service::acceptance::task_acceptances(app, context, ws, reference),
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("route {other} has no handler"),
-        )),
+        other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
 

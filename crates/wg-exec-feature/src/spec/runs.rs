@@ -22,7 +22,7 @@ use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Change, transition};
 use wg_tasks_feature::spec::bodies::ClaimRead;
 use wg_tasks_feature::spec::claims::claim_task;
-use wg_types::{AttemptStatus, ErrorCode, Id, JobStatus, Permission, WgError};
+use wg_types::{AttemptStatus, Id, JobStatus, Permission, WgError};
 use wg_wire::convention::{dict, text};
 use wg_wire::dto::attempt;
 
@@ -190,7 +190,7 @@ pub fn rerun_document(started: wg_json::Value, plan: &RerunPlan) -> wg_json::Val
 }
 
 fn gone(what: &str, id: Id) -> WgError {
-    WgError::new(ErrorCode::NotFound, format!("{what} {id} not found"))
+    WgError::not_found(format!("{what} {id} not found"))
 }
 
 /// The same stamp with other entropy and the claim permission: the claim of a run start draws

@@ -10,18 +10,12 @@ use wg_registry::admin::Patch;
 use wg_registry::checkout::{KIND_CLONE, KIND_WORKTREE, WorktreeDetail, WorktreeRecord};
 use wg_registry::identity::fingerprint;
 use wg_registry::register::Request;
-use wg_types::{AccessMode, ErrorCode, Id, WgError};
+use wg_types::{AccessMode, Id, WgError};
 
 /// A git call that failed, as the error the services raise (`GitError`), with its message.
 #[must_use]
 pub fn git_failure(message: String) -> WgError {
-    WgError::new(ErrorCode::GitError, message)
-}
-
-/// A request the services refuse before any write, with the message the Python service gives.
-#[must_use]
-pub fn validation(message: String) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
+    WgError::git(message)
 }
 
 /// `RepositoryRegister`: what the caller asks for.
@@ -124,7 +118,7 @@ pub fn repository_patch(body: &Json) -> Result<Patch, WgError> {
         Some("read_only") => Some(AccessMode::ReadOnly),
         Some("read_write") => Some(AccessMode::ReadWrite),
         Some(other) => {
-            return Err(validation(format!(
+            return Err(WgError::validation(format!(
                 "access_mode {other:?} is not one of 'read_only', 'read_write'"
             )));
         }

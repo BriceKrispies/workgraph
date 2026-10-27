@@ -4,7 +4,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::spec::worktrees::{Removal, git_failure, io_failure, not_found, removed_decision};
+use crate::spec::worktrees::{Removal, git_failure, io_failure, removed_decision};
 use wg_git::{Git, RunOptions};
 use wg_model::entity::{ManagedWorktree, RepositoryCheckout};
 use wg_model::write::RowKey;
@@ -13,7 +13,7 @@ use wg_runtime::App;
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::effects::GIT_TIMEOUT_MS;
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, WgError, WorktreeStatus};
+use wg_types::{Id, WgError, WorktreeStatus};
 
 /// The file an attempt directory keeps its manifest in.
 pub const MANIFEST_FILE: &str = "workgraph-manifest.json";
@@ -34,18 +34,15 @@ pub fn worktree_remove(
         .runtime
         .store
         .read(|session| removal_target(session, worktree_id))?
-        .ok_or_else(|| not_found(worktree_id))?;
+        .ok_or_else(|| WgError::not_found(format!("managed worktree {worktree_id} not found")))?;
     if row.status == WorktreeStatus::Removed {
         return Ok(Removal::refused(worktree_id, "already removed"));
     }
     if !is_within(&row.path, &root_text) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "refusing to remove {}: not inside Workgraph's worktree directory",
-                row.path
-            ),
-        ));
+        return Err(WgError::validation(format!(
+            "refusing to remove {}: not inside Workgraph's worktree directory",
+            row.path
+        )));
     }
     let path = PathBuf::from(&row.path);
     // The checkout the worktree was made from, when it is still a repository.
@@ -91,7 +88,9 @@ pub fn worktree_remove(
         |session| {
             session
                 .fetch::<ManagedWorktree>(&RowKey::ManagedWorktree(worktree_id))?
-                .ok_or_else(|| not_found(worktree_id))
+                .ok_or_else(|| {
+                    WgError::not_found(format!("managed worktree {worktree_id} not found"))
+                })
         },
         |row, stamp| Ok(removed_decision(row, stamp)),
     )?;

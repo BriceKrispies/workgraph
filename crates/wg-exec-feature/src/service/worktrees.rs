@@ -12,9 +12,9 @@ use std::path::{Path, PathBuf};
 use crate::spec::worktrees::{
     Candidate, PrepareFacts, PrepareRequest, RecoveryInput, RecoveryReport, RecoveryRow,
     ReleaseTarget, Removal, WorktreeDraft, acquire_lease_decision, activated_decision,
-    configured_isolation, git_failure, io_failure, not_found, not_found_attempt, orphaned_decision,
-    path_key, plan_failure, prepare_decision, preparing_decision, recovery_decision,
-    recovery_report_out, release_decision, stack_of, worktree_list_out,
+    configured_isolation, git_failure, io_failure, orphaned_decision, path_key, plan_failure,
+    prepare_decision, preparing_decision, recovery_decision, recovery_report_out, release_decision,
+    stack_of, worktree_list_out,
 };
 use serde_json::json;
 use wg_exec::manifest::{
@@ -33,9 +33,7 @@ use wg_runtime::App;
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::effects::GIT_TIMEOUT_MS;
 use wg_store::{Session, TaskWorld};
-use wg_types::{
-    AccessMode, ErrorCode, Id, Permission, StackStatus, TaskStatus, WgError, WorktreeStatus,
-};
+use wg_types::{AccessMode, Id, Permission, StackStatus, TaskStatus, WgError, WorktreeStatus};
 use wg_verify::TaskScope;
 
 /// The directory name under the worktrees root that holds stack worktrees.
@@ -329,23 +327,20 @@ fn prepare_repo(
             .fetch::<Repository>(&RowKey::Repository(request.repository_id))?
             .filter(|repo| repo.workspace_id == workspace_id)
             .ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::NotFound,
-                    format!("repository {} not found", request.repository_id),
-                )
+                WgError::not_found(format!("repository {} not found", request.repository_id))
             })?;
         if request.access == "read_write" && repo.access_mode == AccessMode::ReadOnly {
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("repository {} is read-only", repo.name),
-            ));
+            return Err(WgError::validation(format!(
+                "repository {} is read-only",
+                repo.name
+            )));
         }
         let checkouts = session.checkouts(repo.id)?;
         let checkout = primary_checkout(&checkouts, true).cloned().ok_or_else(|| {
-            WgError::new(
-                ErrorCode::GitError,
-                format!("repository {} has no available checkout", repo.name),
-            )
+            WgError::git(format!(
+                "repository {} has no available checkout",
+                repo.name
+            ))
         })?;
         Ok((repo, checkout))
     })?;
@@ -474,15 +469,10 @@ fn prepare_start(
 ) -> Result<PrepareStart, WgError> {
     let attempt = session
         .attempt_by_id(attempt_id)?
-        .ok_or_else(|| not_found_attempt(attempt_id))?;
+        .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))?;
     let task = session
         .fetch::<Task>(&RowKey::Task(attempt.task_id))?
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("task {} not found", attempt.task_id),
-            )
-        })?;
+        .ok_or_else(|| WgError::not_found(format!("task {} not found", attempt.task_id)))?;
     let requests = match requests {
         Some(requests) => requests,
         None => default_requests(session, &task)?,
@@ -496,13 +486,10 @@ fn prepare_start(
                 .active_repository_for_task(task.id, request.repository_id)?
                 .is_some()
             {
-                return Err(WgError::new(
-                    ErrorCode::WorkgraphError,
-                    format!(
-                        "task {} is a stack child: choosing its stack base is not ported yet",
-                        task.key
-                    ),
-                ));
+                return Err(WgError::workgraph(format!(
+                    "task {} is a stack child: choosing its stack base is not ported yet",
+                    task.key
+                )));
             }
         }
     }
@@ -547,15 +534,10 @@ fn default_requests(
 fn prepare_world(session: &mut Session<'_>, attempt_id: Id) -> Result<PrepareWorld, WgError> {
     let attempt = session
         .attempt_by_id(attempt_id)?
-        .ok_or_else(|| not_found_attempt(attempt_id))?;
+        .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))?;
     let task = session
         .fetch::<Task>(&RowKey::Task(attempt.task_id))?
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("task {} not found", attempt.task_id),
-            )
-        })?;
+        .ok_or_else(|| WgError::not_found(format!("task {} not found", attempt.task_id)))?;
     let world: TaskWorld = session.task_world(Some(task.workspace_id), &[])?;
     let scope = TaskScope {
         workspace_id: task.workspace_id,
@@ -584,7 +566,7 @@ fn prepare_world(session: &mut Session<'_>, attempt_id: Id) -> Result<PrepareWor
 fn worktree_row(session: &mut Session<'_>, id: Id) -> Result<ManagedWorktree, WgError> {
     session
         .fetch::<ManagedWorktree>(&RowKey::ManagedWorktree(id))?
-        .ok_or_else(|| not_found(id))
+        .ok_or_else(|| WgError::not_found(format!("managed worktree {id} not found")))
 }
 
 /// The `worktrees` entry of `worker recover`'s report: the recovery pass as the system, printed

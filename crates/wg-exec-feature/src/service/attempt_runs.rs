@@ -16,7 +16,7 @@ use wg_runtime::{App, index_written};
 use wg_runtimespec::RequestContext;
 use wg_store::Session;
 use wg_storecodec::task_world_sql::TaskWorld;
-use wg_types::{AttemptStatus, ErrorCode, Id, Permission, TaskStatus, WgError};
+use wg_types::{AttemptStatus, Id, Permission, TaskStatus, WgError};
 use wg_wire::convention::json_value;
 use wg_wire::dto::attempt;
 
@@ -24,7 +24,7 @@ use super::resolve::{find_attempt, find_task};
 use super::worktrees::{worktree_prepare, worktree_release};
 use crate::spec::attempt_writes::{
     Finish, NewAttempt, attempt_limit, claimed, claimed_chain, created, escalated, failures,
-    finished, gone, reason_text, start_chain, start_out, status_set, task_moved, validation,
+    finished, gone, reason_text, start_chain, start_out, status_set, task_moved,
 };
 
 /// `decide` for decisions that may write tasks: the search index follows the writes in the same
@@ -61,12 +61,9 @@ pub(super) fn load_attempt_world(
     session: &mut Session<'_>,
     attempt_id: Id,
 ) -> Result<AttemptWorld, WgError> {
-    let attempt = session.attempt_by_id(attempt_id)?.ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("attempt {attempt_id} not found"),
-        )
-    })?;
+    let attempt = session
+        .attempt_by_id(attempt_id)?
+        .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))?;
     let world = session.task_world(Some(attempt.workspace_id), &[])?;
     let attempts = session.attempts_of_task(attempt.task_id, &[])?;
     Ok(AttemptWorld {
@@ -100,7 +97,7 @@ pub fn attempt_start(
         .isolation
         .filter(|text| *text != "worktree" && *text != "in_place")
     {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "isolation must be worktree or in_place, not {}",
             py_repr_str(isolation)
         )));
@@ -314,7 +311,7 @@ pub fn attempt_abandon(
     app.require_permission(context, Permission::TaskClaim)?;
     app.require_permission(context, Permission::AttemptWrite)?;
     if reason.trim().is_empty() {
-        return Err(validation("abandoning an attempt needs a reason"));
+        return Err(WgError::validation("abandoning an attempt needs a reason"));
     }
     let found = app
         .runtime
@@ -408,7 +405,9 @@ pub fn attempt_create(
             Some(reference) => {
                 let parent = find_attempt(session, reference)?;
                 if parent.workspace_id != task.workspace_id {
-                    return Err(validation("parent attempt belongs to another workspace"));
+                    return Err(WgError::validation(
+                        "parent attempt belongs to another workspace",
+                    ));
                 }
                 Some(parent.id)
             }
@@ -491,7 +490,7 @@ pub fn attempt_finish(
 ) -> Result<Value, WgError> {
     app.require_permission(context, Permission::AttemptWrite)?;
     let target = AttemptStatus::parse(status)
-        .ok_or_else(|| validation(format!("{status} is not a valid attempt status")))?;
+        .ok_or_else(|| WgError::validation(format!("{status} is not a valid attempt status")))?;
     let found = app
         .runtime
         .store

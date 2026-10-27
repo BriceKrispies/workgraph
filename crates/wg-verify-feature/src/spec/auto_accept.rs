@@ -10,7 +10,7 @@ use wg_model::entity::VerificationRun;
 use wg_model::stamp::Stamp;
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::accept::{AcceptFacts, Run, accept_in, active_item};
-use wg_types::{ErrorCode, Id, Permission, TaskStatus, WgError};
+use wg_types::{Id, Permission, TaskStatus, WgError};
 use wg_verify::{ApplicableCheck, AutoAcceptFacts, auto_accept_skip, ran_fast_tier_only};
 
 /// The mode and reason an automatic acceptance records.
@@ -52,7 +52,7 @@ pub fn auto_accept(
     let tasks = &loaded.world.tasks;
     let task = tasks
         .task(task_id)
-        .ok_or_else(|| WgError::new(ErrorCode::NotFound, format!("task {task_id} not found")))?;
+        .ok_or_else(|| WgError::not_found(format!("task {task_id} not found")))?;
     let snapshot: Vec<_> = loaded.run.config_snapshot.iter().cloned().collect();
     let facts = AutoAcceptFacts {
         holds_task_accept: stamp.has(Permission::TaskAccept),

@@ -14,7 +14,6 @@ use super::store;
 use super::sync::{ingest_batch, repo_state};
 use crate::spec::analysis::{self, FileResult, manifest_shas};
 use crate::spec::links::{self, ExplicitLinkIds};
-use crate::spec::not_found;
 use crate::spec::reads::{
     self, ChangeCommit, ChangesInput, DetailInput, LogItem, TaskRef, commit_ids as ids_of,
     group_by_commit, missing_gap_targets, short_sha, to_i64, unique_commit_ids,
@@ -39,7 +38,7 @@ use wg_model::{Decision, EventDraft, Row, RowKey, Write};
 use wg_registry::resolve;
 use wg_runtimespec::RequestContext;
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, Permission, WgError, WorktreeStatus};
+use wg_types::{Id, Permission, WgError, WorktreeStatus};
 use wg_wire::convention::{dict, int, text};
 use wg_wire::dto::task_diff::{DiffPart, Missing};
 
@@ -196,7 +195,7 @@ pub fn git_show(
         )))
     })?;
     let Some((commit, files, symbols, analysis, equivalences, links)) = loaded else {
-        return Err(not_found(format!(
+        return Err(WgError::not_found(format!(
             "commit {sha} has not been ingested for {}",
             repo.repository.name
         )));
@@ -261,14 +260,14 @@ pub fn git_link(
         }
     }
     let Some((repository_id, commit_id)) = found else {
-        return Err(not_found(format!(
+        return Err(WgError::not_found(format!(
             "commit {sha} not found in the task's repositories"
         )));
     };
     let repository_name_access = app.runtime.store.read(|session| {
         let repo = session
             .fetch::<Repository>(&RowKey::Repository(repository_id))?
-            .ok_or_else(|| not_found("repository not found"))?;
+            .ok_or_else(|| WgError::not_found("repository not found"))?;
         let exists = session
             .fetch::<wg_model::entity::task::TaskRepository>(&RowKey::TaskRepository {
                 task_id: task.id,
@@ -279,7 +278,7 @@ pub fn git_link(
         let commit = store::commits_by_ids(session, &[commit_id])?
             .into_iter()
             .next()
-            .ok_or_else(|| not_found("commit not found"))?;
+            .ok_or_else(|| WgError::not_found("commit not found"))?;
         let existing: Vec<CommitTaskLink> = links.into_iter().map(|row| row.link).collect();
         Ok((repo, exists, commit, existing))
     })?;
@@ -1084,13 +1083,10 @@ fn remove_released_worktree(
     })?;
     let id = worktree.id.to_string();
     if !is_within(&path.to_string_lossy(), root) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "refusing to remove {}: not inside Workgraph's worktree directory",
-                path.display()
-            ),
-        ));
+        return Err(WgError::validation(format!(
+            "refusing to remove {}: not inside Workgraph's worktree directory",
+            path.display()
+        )));
     }
     if path.exists() {
         let git = Git {
@@ -1206,7 +1202,7 @@ pub fn git_install_hook(
             ),
             3,
         )),
-        Err(err) => Err(WgError::new(ErrorCode::GitError, err.to_string()).into()),
+        Err(err) => Err(WgError::git(err.to_string()).into()),
     }
 }
 

@@ -6,7 +6,7 @@
 
 use wg_model::{Stamp, derive_id};
 use wg_runtimespec::{GETUSER_VARIABLES, RequestContext, getuser, timestamp_from_unix_nanos};
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Id, Timestamp, WgError};
 
 /// Where the runtime gets each decision's stamp.
 pub trait StampSource: Send {
@@ -29,16 +29,12 @@ impl StampSource for SystemStamps {
 pub fn draw() -> Result<(Timestamp, [u8; 32]), WgError> {
     let nanos = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .map_err(|err| WgError::new(ErrorCode::WorkgraphError, format!("clock error: {err}")))?
+        .map_err(|err| WgError::workgraph(format!("clock error: {err}")))?
         .as_nanos();
     let at = timestamp_from_unix_nanos(i128::try_from(nanos).unwrap_or(i128::MAX))?;
     let mut entropy = [0_u8; 32];
-    getrandom::fill(&mut entropy).map_err(|err| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("cannot draw entropy from the OS: {err}"),
-        )
-    })?;
+    getrandom::fill(&mut entropy)
+        .map_err(|err| WgError::workgraph(format!("cannot draw entropy from the OS: {err}")))?;
     Ok((at, entropy))
 }
 

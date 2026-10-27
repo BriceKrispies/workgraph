@@ -8,7 +8,7 @@ use std::collections::BTreeSet;
 
 use serde_json::Value;
 use wg_model::{JsonObject, py_repr_str};
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// The setting keys a workspace may store (Python's `ALLOWED_SETTINGS`).
 pub const ALLOWED_SETTINGS: [&str; 3] = [
@@ -28,18 +28,17 @@ pub fn validate_update(update: &JsonObject) -> Result<(), WgError> {
         .collect();
     if !unknown.is_empty() {
         let listed: Vec<String> = unknown.iter().map(|key| py_repr_str(key)).collect();
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("unknown workspace settings: [{}]", listed.join(", ")),
-        ));
+        return Err(WgError::validation(format!(
+            "unknown workspace settings: [{}]",
+            listed.join(", ")
+        )));
     }
     if let Some(roots) = update.get("allowed_roots") {
         let valid = roots
             .as_array()
             .is_some_and(|items| items.iter().all(Value::is_string));
         if !valid {
-            return Err(WgError::new(
-                ErrorCode::ValidationFailed,
+            return Err(WgError::validation(
                 "allowed_roots must be a list of directory paths",
             ));
         }

@@ -8,7 +8,7 @@
 
 use wg_model::Table;
 use wg_model::entity::AutomationRun;
-use wg_types::{ErrorCode, Id, Timestamp, WgError};
+use wg_types::{Id, Timestamp, WgError};
 
 use wg_storecodec::codec::{Raw, bool_sql, id_sql, text_sql, ts_sql};
 use wg_storecodec::rows::{TableRow, columns};
@@ -198,22 +198,16 @@ pub fn runs_with_rule(
 /// Decodes a row of [`runs_with_rule`]: the run's columns, then the rule's name.
 pub fn decode_rule_run(values: &[Raw]) -> Result<RuleRun, WgError> {
     let width = columns(Table::AutomationRun).len();
-    let run_values = values.get(..width).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            "a runs_with_rule row is missing the run columns",
-        )
-    })?;
+    let run_values = values
+        .get(..width)
+        .ok_or_else(|| WgError::workgraph("a runs_with_rule row is missing the run columns"))?;
     let run = AutomationRun::from_raw(run_values)?;
     match values.get(width) {
         Some(Raw::Text(rule_name)) => Ok(RuleRun {
             run,
             rule_name: rule_name.clone(),
         }),
-        _ => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            "a runs_with_rule row has no rule name",
-        )),
+        _ => Err(WgError::workgraph("a runs_with_rule row has no rule name")),
     }
 }
 

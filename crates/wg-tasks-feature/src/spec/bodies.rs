@@ -7,7 +7,7 @@
 //! reads as the model with every default.
 
 use serde_json::{Map, Value};
-use wg_types::{CommentKind, ErrorCode, RelationType, WgError};
+use wg_types::{CommentKind, RelationType, WgError};
 
 use wg_tasks::edit::{object_of, string_of};
 use wg_tasks::requests::{component_with, run};
@@ -28,10 +28,7 @@ fn validated(
 }
 
 fn bad_value(name: &str, value: &str) -> WgError {
-    WgError::new(
-        ErrorCode::ValidationFailed,
-        format!("invalid {name}: {value}"),
-    )
+    WgError::validation(format!("invalid {name}: {value}"))
 }
 
 /// A validated `ClaimRequest`.

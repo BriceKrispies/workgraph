@@ -10,7 +10,7 @@ use std::collections::BTreeMap;
 use serde_json::{Value, json};
 use time::Duration;
 use wg_model::{Task, TaskSlice};
-use wg_types::{ErrorCode, TaskStatus, Timestamp, WgError};
+use wg_types::{TaskStatus, Timestamp, WgError};
 
 use crate::lifecycle::check_task_transition;
 
@@ -59,15 +59,12 @@ pub enum ClaimPlan {
 /// Checks the optimistic-concurrency version of a write (`_touch`).
 pub fn check_version(task: &Task, expected_version: Option<i64>) -> Result<(), WgError> {
     match expected_version {
-        Some(expected) if expected != task.version => Err(WgError::new(
-            ErrorCode::VersionConflict,
-            format!(
+        Some(expected) if expected != task.version => Err(WgError::version_conflict(format!(
                 "task {} was modified concurrently (expected version {expected}, found {}); re-read and retry",
                 task.key, task.version
-            ),
-        )
-        .with_detail("expected", json!(expected))
-        .with_detail("actual", json!(task.version))),
+            ))
+        .detail("expected", expected)
+        .detail("actual", task.version)),
         _ => Ok(()),
     }
 }
@@ -75,10 +72,9 @@ pub fn check_version(task: &Task, expected_version: Option<i64>) -> Result<(), W
 /// `at` plus `minutes`, rejecting leases outside `1..=MAX_LEASE_MINUTES`.
 pub fn lease_expiry(at: Timestamp, minutes: i64) -> Result<Timestamp, WgError> {
     if !(1..=MAX_LEASE_MINUTES).contains(&minutes) {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!("lease_minutes must be between 1 and {MAX_LEASE_MINUTES}"),
-        ));
+        return Err(WgError::validation(format!(
+            "lease_minutes must be between 1 and {MAX_LEASE_MINUTES}"
+        )));
     }
     Timestamp::from_offset_datetime(at.to_offset_datetime() + Duration::minutes(minutes))
 }
@@ -101,51 +97,46 @@ pub fn plan_claim(
     let claimant = agent.map_or_else(|| caller.to_owned(), |name| format!("agent:{name}"));
     let expires_at = lease_expiry(now, lease_minutes)?;
 
-    let (release_expired, from) =
-        if matches!(task.status, TaskStatus::Claimed | TaskStatus::Running)
-            && let Some(holder) = task.claimed_by.as_deref()
-        {
-            let lease_valid = task.claim_expires_at.is_none_or(|expiry| expiry > now);
-            if holder != claimant && lease_valid {
-                return Err(WgError::new(
-                    ErrorCode::ResourceBusy,
-                    format!("task {} is already claimed by {holder}", task.key),
-                )
-                .with_detail("claimed_by", json!(holder))
+    let (release_expired, from) = if matches!(
+        task.status,
+        TaskStatus::Claimed | TaskStatus::Running
+    ) && let Some(holder) = task.claimed_by.as_deref()
+    {
+        let lease_valid = task.claim_expires_at.is_none_or(|expiry| expiry > now);
+        if holder != claimant && lease_valid {
+            return Err(
+                WgError::resource_busy(format!("task {} is already claimed by {holder}", task.key))
+                .detail("claimed_by", holder)
                 // `str(task.claim_expires_at)`: a space between date and time, `None` for no lease.
-                .with_detail(
-                    "expires_at",
-                    json!(task.claim_expires_at.map_or_else(
+                .detail("expires_at", task.claim_expires_at.map_or_else(
                         || "None".to_owned(),
                         |expiry| expiry.format_isoformat().replacen('T', " ", 1)
                     )),
-                ));
-            }
-            if holder == claimant {
-                return Ok(ClaimPlan::Renew { expires_at });
-            }
-            // An expired foreign claim is released before the task is re-claimed.
-            (Some(holder.to_owned()), TaskStatus::Ready)
-        } else if !matches!(task.status, TaskStatus::Ready | TaskStatus::Failed) {
-            return Err(WgError::new(
-                ErrorCode::InvalidTransition,
-                format!(
-                    "task {} is {}; only ready (or failed) tasks can be claimed",
-                    task.key, task.status
-                ),
-            )
-            .with_detail("status", json!(task.status.as_str())));
-        } else {
-            (None, task.status)
-        };
+            );
+        }
+        if holder == claimant {
+            return Ok(ClaimPlan::Renew { expires_at });
+        }
+        // An expired foreign claim is released before the task is re-claimed.
+        (Some(holder.to_owned()), TaskStatus::Ready)
+    } else if !matches!(task.status, TaskStatus::Ready | TaskStatus::Failed) {
+        return Err(WgError::invalid_transition(format!(
+            "task {} is {}; only ready (or failed) tasks can be claimed",
+            task.key, task.status
+        ))
+        .detail("status", task.status.as_str()));
+    } else {
+        (None, task.status)
+    };
 
     if !blockers.is_empty() {
         let keys: Vec<String> = blockers.iter().map(|b| b.key.to_string()).collect();
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!("task {} is blocked by {}", task.key, keys.join(", ")),
-        )
-        .with_detail("blocked_by", json!(keys)));
+        return Err(WgError::invalid_transition(format!(
+            "task {} is blocked by {}",
+            task.key,
+            keys.join(", ")
+        ))
+        .detail("blocked_by", keys));
     }
     check_task_transition(from, TaskStatus::Claimed, false, false)?;
 
@@ -175,19 +166,19 @@ pub fn plan_release(
     reason: Option<&str>,
 ) -> Result<ReleasePlan, WgError> {
     if !matches!(task.status, TaskStatus::Claimed | TaskStatus::Running) {
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!("task {} is {}, not claimed", task.key, task.status),
-        ));
+        return Err(WgError::invalid_transition(format!(
+            "task {} is {}, not claimed",
+            task.key, task.status
+        )));
     }
     if let Some(holder) = task.claimed_by.as_deref()
         && holder != caller.actor
         && !caller.is_admin
     {
-        return Err(WgError::new(
-            ErrorCode::PermissionDenied,
-            format!("task {} is claimed by {holder}", task.key),
-        ));
+        return Err(WgError::permission_denied(format!(
+            "task {} is claimed by {holder}",
+            task.key
+        )));
     }
     check_task_transition(task.status, TaskStatus::Ready, false, false)?;
     Ok(ReleasePlan {
@@ -232,24 +223,21 @@ pub fn plan_complete(
     has_checks: bool,
 ) -> Result<CompletePlan, WgError> {
     if !matches!(task.status, TaskStatus::Claimed | TaskStatus::Running) {
-        return Err(WgError::new(
-            ErrorCode::InvalidTransition,
-            format!(
-                "task {} is {}; claim it before completing",
-                task.key, task.status
-            ),
-        )
-        .with_detail("status", json!(task.status.as_str())));
+        return Err(WgError::invalid_transition(format!(
+            "task {} is {}; claim it before completing",
+            task.key, task.status
+        ))
+        .detail("status", task.status.as_str()));
     }
     if let Some(holder) = task.claimed_by.as_deref()
         && holder != caller.actor
         && !caller.actor.starts_with(SYSTEM_ACTOR_PREFIX)
         && !caller.is_admin
     {
-        return Err(WgError::new(
-            ErrorCode::PermissionDenied,
-            format!("task {} is claimed by {holder}", task.key),
-        ));
+        return Err(WgError::permission_denied(format!(
+            "task {} is claimed by {holder}",
+            task.key
+        )));
     }
     let target = if has_checks {
         TaskStatus::AwaitingVerification

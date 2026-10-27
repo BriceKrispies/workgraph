@@ -3,7 +3,7 @@
 
 use serde_json::{Value as Json, json};
 use wg_model::entity::JsonObject;
-use wg_types::{ErrorCode, Id, WgError, parse_id};
+use wg_types::{Id, WgError, parse_id};
 
 use super::ingest::SyncResult;
 
@@ -23,10 +23,7 @@ pub fn full_mode(mode: Option<&Json>) -> Result<bool, WgError> {
         None => Ok(false),
         Some(Json::String(text)) if text == "full" => Ok(true),
         Some(Json::String(text)) if text == "incremental" => Ok(false),
-        Some(_) => Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            "mode must be incremental or full",
-        )),
+        Some(_) => Err(WgError::validation("mode must be incremental or full")),
     }
 }
 
@@ -38,10 +35,7 @@ pub fn repository_of(reference: &str) -> Result<Id, WgError> {
 
 /// The NotFound of an unknown repository, worded as `GitService._repo_info` words it.
 pub fn unknown_repository(reference: &str) -> WgError {
-    WgError::new(
-        ErrorCode::NotFound,
-        format!("repository {reference} not found"),
-    )
+    WgError::not_found(format!("repository {reference} not found"))
 }
 
 /// The job's result: the `SyncResult` dict (`model_dump()`), fields in the Python class's order.

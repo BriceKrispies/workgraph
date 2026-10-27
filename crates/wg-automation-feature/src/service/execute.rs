@@ -9,7 +9,7 @@ use wg_model::entity::{AutomationRule, AutomationRun};
 use wg_runtime::{App, RequestContext, system_context};
 use wg_store::Session;
 use wg_tasks_feature::service as tasks;
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use super::{load_rows, reads};
 use crate::spec::execute::{self as exec, Claim, Loaded, Running};
@@ -82,7 +82,7 @@ pub fn execute_run(app: &mut App, run_id: Id) -> Result<Json, WgError> {
         },
     )?;
     match error {
-        Some(message) => Err(WgError::new(ErrorCode::WorkgraphError, message)),
+        Some(message) => Err(WgError::workgraph(message)),
         None => Ok(json!({"status": "succeeded", "actions": results.len()})),
     }
 }
@@ -92,12 +92,7 @@ fn load_claim(session: &mut Session<'_>, run_id: Id) -> Result<Loaded, WgError> 
     let run = load_run(session, run_id)?;
     let rule = session
         .fetch::<AutomationRule>(&RowKey::AutomationRule(run.rule_id))?
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("automation rule {} not found", run.rule_id),
-            )
-        })?;
+        .ok_or_else(|| WgError::not_found(format!("automation rule {} not found", run.rule_id)))?;
     let event = match run.trigger_event_id {
         Some(event_id) => reads::event(session, event_id)?,
         None => None,
@@ -109,12 +104,7 @@ fn load_claim(session: &mut Session<'_>, run_id: Id) -> Result<Loaded, WgError> 
 fn load_run(session: &mut Session<'_>, run_id: Id) -> Result<AutomationRun, WgError> {
     session
         .fetch::<AutomationRun>(&RowKey::AutomationRun(run_id))?
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("automation run {run_id} not found"),
-            )
-        })
+        .ok_or_else(|| WgError::not_found(format!("automation run {run_id} not found")))
 }
 
 /// Runs one action (`_execute_action`) and returns its output.
@@ -212,10 +202,9 @@ fn run_action(
                 .reply;
             Ok(json!({"notification_id": note.to_string()}))
         }
-        other => Err(WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("automation action {other} is not ported to Rust yet"),
-        )),
+        other => Err(WgError::workgraph(format!(
+            "automation action {other} is not ported to Rust yet"
+        ))),
     }
 }
 

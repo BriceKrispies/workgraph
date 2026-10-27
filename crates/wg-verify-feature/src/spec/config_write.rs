@@ -15,7 +15,7 @@ use wg_model::event::{
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, TaskSlice, Write, py_repr_str};
 use wg_registry::resolve;
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 use wg_verify::CheckSpec;
 use wg_wire::dto::verification::config_from_model;
 
@@ -36,7 +36,7 @@ pub struct ConfigRequest<'a> {
 }
 
 fn invalid(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
+    WgError::validation(message)
 }
 
 /// The check validated as the `CheckSpec` model validates it.
@@ -177,12 +177,8 @@ pub fn toggle(
     enabled: bool,
 ) -> Result<Decision<Value>, WgError> {
     stamp.require(&[Permission::ConfigManage])?;
-    let config = found.ok_or_else(|| {
-        WgError::new(
-            ErrorCode::NotFound,
-            format!("verification config {reference} not found"),
-        )
-    })?;
+    let config = found
+        .ok_or_else(|| WgError::not_found(format!("verification config {reference} not found")))?;
     let row = VerificationConfig { enabled, ..config };
     let payload = if enabled {
         EventPayload::VerificationConfigEnabled(VerificationConfigToggled {})

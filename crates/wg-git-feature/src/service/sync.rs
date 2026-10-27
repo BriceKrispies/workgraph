@@ -25,7 +25,7 @@ use wg_model::event::{EventPayload, RepositoryChangesDetected};
 use wg_model::{Decision, EventDraft, Row, RowKey, Write};
 use wg_registry::resolve;
 use wg_runtimespec::RequestContext;
-use wg_types::{ErrorCode, Id, Permission, WgError, parse_id};
+use wg_types::{Id, Permission, WgError, parse_id};
 
 use wg_runtime::App;
 
@@ -122,20 +122,15 @@ pub(crate) fn repo_state(app: &mut App, repository_id: Id) -> Result<RepoState, 
     app.runtime.store.read(|session| {
         let repository = session
             .fetch::<Repository>(&RowKey::Repository(repository_id))?
-            .ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::NotFound,
-                    format!("repository {repository_id} not found"),
-                )
-            })?;
+            .ok_or_else(|| WgError::not_found(format!("repository {repository_id} not found")))?;
         let checkouts = session.checkouts(repository_id)?;
         let path = wg_registry::checkout::primary_checkout(&checkouts, true)
             .map(|checkout| checkout.path.clone())
             .ok_or_else(|| {
-                WgError::new(
-                    ErrorCode::GitError,
-                    format!("repository {} has no available checkout", repository.name),
-                )
+                WgError::git(format!(
+                    "repository {} has no available checkout",
+                    repository.name
+                ))
             })?;
         let known_refs = session
             .refs(repository_id)?
@@ -144,7 +139,7 @@ pub(crate) fn repo_state(app: &mut App, repository_id: Id) -> Result<RepoState, 
             .collect();
         let workspace = session
             .workspace_by_id(repository.workspace_id)?
-            .ok_or_else(|| WgError::new(ErrorCode::NotFound, "workspace not found"))?;
+            .ok_or_else(|| WgError::not_found("workspace not found"))?;
         let world = session.task_world(Some(repository.workspace_id), &[])?;
         let mut prefixes: BTreeSet<String> = BTreeSet::new();
         prefixes.insert(workspace.key_prefix.to_uppercase());
@@ -755,7 +750,7 @@ fn record_sync(
     let (repository, existing_refs, links, new_commits) = app.runtime.store.read(|session| {
         let repository = session
             .fetch::<Repository>(&RowKey::Repository(repository_id))?
-            .ok_or_else(|| WgError::new(ErrorCode::NotFound, "repository not found"))?;
+            .ok_or_else(|| WgError::not_found("repository not found"))?;
         let existing: Vec<RepositoryRef> = session.refs(repository_id)?;
         let links = store::links_with_task_keys(session, new_ids)?;
         let commits = store::commits_by_ids(session, new_ids)?;

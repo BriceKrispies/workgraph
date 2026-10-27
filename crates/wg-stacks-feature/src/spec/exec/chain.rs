@@ -15,7 +15,7 @@ use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, Task, Write};
 use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Change, transition};
-use wg_types::{CommentKind, ErrorCode, Id, StackItemState, StackStatus, TaskStatus, WgError};
+use wg_types::{CommentKind, Id, StackItemState, StackStatus, TaskStatus, WgError};
 
 use crate::spec::writes::{Step, integration_jobs, repository_ids, transition_item};
 use wg_tasks::accept::comment_step;
@@ -27,13 +27,6 @@ pub struct Chain<'a> {
     pub(crate) step: Step,
     /// Salts for the sub-stamps of jobs enqueued by this chain, so that their ids differ.
     salt: u32,
-}
-
-fn gone(what: &str, id: Id) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("{what} {id} vanished from the slice"),
-    )
 }
 
 impl<'a> Chain<'a> {
@@ -54,12 +47,18 @@ impl<'a> Chain<'a> {
 
     /// The task as the chain has it now.
     pub fn task(&self, id: Id) -> Result<&Task, WgError> {
-        self.step.tasks.task(id).ok_or_else(|| gone("task", id))
+        self.step
+            .tasks
+            .task(id)
+            .ok_or_else(|| WgError::workgraph(format!("task {} vanished from the slice", id)))
     }
 
     /// The stack as the chain has it now.
     pub fn stack(&self, id: Id) -> Result<&Stack, WgError> {
-        self.step.stacks.stack(id).ok_or_else(|| gone("stack", id))
+        self.step
+            .stacks
+            .stack(id)
+            .ok_or_else(|| WgError::workgraph(format!("stack {} vanished from the slice", id)))
     }
 
     /// The item as the chain has it now.
@@ -68,7 +67,7 @@ impl<'a> Chain<'a> {
             .stacks
             .items
             .get(&id)
-            .ok_or_else(|| gone("stack item", id))
+            .ok_or_else(|| WgError::workgraph(format!("stack item {} vanished from the slice", id)))
     }
 
     /// The stack's repository rows as the chain has them now.
@@ -174,7 +173,12 @@ impl<'a> Chain<'a> {
             .items_of(stack_id)
             .find(|item| item.task_id == task_id)
             .cloned()
-            .ok_or_else(|| gone("stack item of task", task_id))?;
+            .ok_or_else(|| {
+                WgError::workgraph(format!(
+                    "stack item of task {} vanished from the slice",
+                    task_id
+                ))
+            })?;
         let next = transition_item(
             &self.step, self.stamp, &stack, &parent, &child, &item, target, detail,
         )?;

@@ -53,14 +53,11 @@ pub fn guard_child(task_key: &str, stack_id: &str, busy: bool) -> Result<(), WgE
     if !busy {
         return Ok(());
     }
-    Err(WgError::new(
-        ErrorCode::Conflict,
-        format!(
-            "{task_key} is in a stack whose integration is queued or running; retry once it settles"
-        ),
-    )
-    .with_detail("task", task_key.into())
-    .with_detail("stack_id", stack_id.into()))
+    Err(WgError::conflict(format!(
+        "{task_key} is in a stack whose integration is queued or running; retry once it settles"
+    ))
+    .detail("task", task_key)
+    .detail("stack_id", stack_id))
 }
 
 /// The guard of the rebuild a deferral needs (`_defer` with `guard`).
@@ -68,11 +65,10 @@ pub fn guard_defer(stack_id: &str, busy: bool) -> Result<(), WgError> {
     if !busy {
         return Ok(());
     }
-    Err(WgError::new(
-        ErrorCode::Conflict,
-        "the stack's integration is queued or running; retry once it settles",
+    Err(
+        WgError::conflict("the stack's integration is queued or running; retry once it settles")
+            .detail("stack_id", stack_id),
     )
-    .with_detail("stack_id", stack_id.into()))
 }
 
 /// One stack item as landing sees it.
@@ -183,13 +179,13 @@ impl Refusal {
                 self.error_code(),
                 format!("{parent}'s stack is {status}; only a verified stack can land"),
             )
-            .with_detail("parent", parent.as_str().into())
-            .with_detail("stack_status", status.to_string().into()),
+            .detail("parent", parent.as_str())
+            .detail("stack_status", status.to_string()),
             Self::ParentNotAcceptable { parent, status } => WgError::new(
                 self.error_code(),
                 format!("{parent} is {status}; only completed work awaiting review can be accepted"),
             )
-            .with_detail("parent", parent.as_str().into()),
+            .detail("parent", parent.as_str()),
             Self::UnverifiedChildrenWithMerges { parent, unfinished } => WgError::new(
                 self.error_code(),
                 format!(
@@ -197,13 +193,13 @@ impl Refusal {
                     unfinished.join(", ")
                 ),
             )
-            .with_detail("parent", parent.as_str().into())
-            .with_detail("unfinished", json!(unfinished)),
+            .detail("parent", parent.as_str())
+            .detail("unfinished", unfinished),
             Self::ChildNotAcceptable { task, status } => WgError::new(
                 self.error_code(),
                 format!("{task} is {status}; a verified child cannot be accepted in that state"),
             )
-            .with_detail("task", task.as_str().into()),
+            .detail("task", task.as_str()),
             Self::NoVerificationEvent { stack_id } => WgError::new(
                 self.error_code(),
                 format!("stack {stack_id} has no recorded verification"),
@@ -218,8 +214,8 @@ impl Refusal {
                     "the integration branch of {repository} moved since {parent} was verified; verify the stack again before accepting it"
                 ),
             )
-            .with_detail("parent", parent.as_str().into())
-            .with_detail("repository", repository.as_str().into()),
+            .detail("parent", parent.as_str())
+            .detail("repository", repository.as_str()),
         }
     }
 }
@@ -432,27 +428,21 @@ pub fn fast_forward_plan(checks: &[FfCheck]) -> Result<Vec<FfMove>, WgError> {
         .iter()
         .map(|check| {
             if !check.descends {
-                return Err(WgError::new(
-                    ErrorCode::Conflict,
-                    format!(
+                return Err(WgError::conflict(format!(
                         "the integration tip {} of {} does not descend from {} at {}",
                         check.tip, check.repository, check.default_branch, check.base_sha
-                    ),
-                )
-                .with_detail("repository", check.repository.as_str().into()));
+                    ))
+                .detail("repository", check.repository.as_str()));
             }
             let step = match &check.holder {
                 Some((path, false)) => {
-                    return Err(WgError::new(
-                        ErrorCode::ValidationFailed,
-                        format!(
+                    return Err(WgError::validation(format!(
                             "{path} has uncommitted changes and has {branch} checked out, so {branch} cannot be fast-forwarded there; commit or stash them, then accept again",
                             branch = check.default_branch
-                        ),
-                    )
-                    .with_detail("repository", check.repository.as_str().into())
-                    .with_detail("path", path.as_str().into())
-                    .with_detail("branch", check.default_branch.as_str().into()));
+                        ))
+                    .detail("repository", check.repository.as_str())
+                    .detail("path", path.as_str())
+                    .detail("branch", check.default_branch.as_str()));
                 }
                 Some((path, true)) => FfStep::MergeFfOnly {
                     holder: path.clone(),
@@ -505,8 +495,7 @@ pub fn rollback_order(moved: &[FfMove]) -> Vec<&FfMove> {
 
 /// The refusal when a default branch moved under the landing.
 pub fn moved_while_landing() -> WgError {
-    WgError::new(
-        ErrorCode::Conflict,
+    WgError::conflict(
         "a default branch moved while the stack was landing; nothing was moved, verify and accept again",
     )
 }

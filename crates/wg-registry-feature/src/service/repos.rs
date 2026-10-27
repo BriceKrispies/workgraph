@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 
 use crate::spec::dto::repository;
 use crate::spec::dto::repository_status::{self, Status};
-use crate::spec::repos::{GitFacts, RegisterInput, git_failure, register_request, validation};
+use crate::spec::repos::{GitFacts, RegisterInput, git_failure, register_request};
 use wg_git::Git;
 use wg_json::Value;
 use wg_model::entity::{Job, Repository, RepositoryCheckout, RepositoryRemote};
@@ -23,7 +23,7 @@ use wg_registry::{boundary, refresh, remote, resolve};
 use wg_runtimespec::RequestContext;
 use wg_runtimespec::effects::GIT_TIMEOUT_MS;
 use wg_store::Session;
-use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_types::{Id, Permission, WgError};
 
 use crate::service::reads;
 use wg_runtime::App;
@@ -192,12 +192,9 @@ fn require_repo(
 /// The roots a path must lie under (when set) and the directories it must stay out of.
 fn boundary_roots(app: &mut App, workspace_id: Id) -> Result<(Vec<String>, Vec<String>), WgError> {
     let allowed = app.runtime.store.read(|session| {
-        let row = session.workspace_by_id(workspace_id)?.ok_or_else(|| {
-            WgError::new(
-                ErrorCode::NotFound,
-                format!("workspace {workspace_id} not found"),
-            )
-        })?;
+        let row = session
+            .workspace_by_id(workspace_id)?
+            .ok_or_else(|| WgError::not_found(format!("workspace {workspace_id} not found")))?;
         Ok(boundary::allowed_roots(&row.settings))
     })?;
     let managed = [
@@ -230,9 +227,7 @@ fn repository_value(app: &mut App, workspace_id: Id, id: Id) -> Result<Value, Wg
         let registry = reads::registry_slice(session, workspace_id)?;
         let repo = session
             .fetch::<Repository>(&RowKey::Repository(id))?
-            .ok_or_else(|| {
-                WgError::new(ErrorCode::NotFound, format!("repository {id} not found"))
-            })?;
+            .ok_or_else(|| WgError::not_found(format!("repository {id} not found")))?;
         repository_out(session, &registry, &repo)
     })
 }
@@ -248,7 +243,7 @@ pub fn repo_register(
     require_repo(app, context, Permission::RepoRegister)?;
     let raw = expand_user(&input.path);
     if !raw.is_dir() {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "path {} does not exist or is not a directory",
             raw.display()
         )));
@@ -258,7 +253,7 @@ pub fn repo_register(
         .is_repository()
         .map_err(|err| git_failure(err.to_string()))?
     {
-        return Err(validation(format!(
+        return Err(WgError::validation(format!(
             "{} is not a Git repository",
             raw.display()
         )));

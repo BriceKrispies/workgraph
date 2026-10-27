@@ -5,7 +5,7 @@
 use serde_json::{Map, Value as Json};
 use wg_netspec::{ProviderError, Structured};
 use wg_registry::providers::llm_selection;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// What a provider call failed with. The services map each case as Python's exception handling
 /// does: an unavailable provider and invalid output are stored or raised by the caller.
@@ -48,7 +48,7 @@ pub fn is_unavailable(error: &ProviderError) -> bool {
 /// The provider error as the `WgError` the caller raises when the provider is unavailable.
 #[must_use]
 pub fn unavailable_error(error: &ProviderError) -> WgError {
-    WgError::new(ErrorCode::ProviderUnavailable, error.message())
+    WgError::provider_unavailable(error.message())
 }
 
 /// The error of an embedding call that failed: an unavailable provider is raised as such, any
@@ -57,8 +57,8 @@ pub fn unavailable_error(error: &ProviderError) -> WgError {
 pub fn embedding_call_error(error: CallError) -> WgError {
     match error {
         CallError::Provider(error) if is_unavailable(&error) => unavailable_error(&error),
-        CallError::Provider(error) => WgError::new(ErrorCode::WorkgraphError, error.message()),
-        CallError::Unsupported(message) => WgError::new(ErrorCode::WorkgraphError, message),
+        CallError::Provider(error) => WgError::workgraph(error.message()),
+        CallError::Unsupported(message) => WgError::workgraph(message),
         CallError::Raised(error) => error,
     }
 }
@@ -71,10 +71,5 @@ pub fn selection(
 ) -> Result<(String, String), WgError> {
     llm_selection(config, capability)
         .map(|(provider, model)| (provider.to_owned(), model.to_owned()))
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::ValidationFailed,
-                format!("llm.{capability} is not set"),
-            )
-        })
+        .ok_or_else(|| WgError::validation(format!("llm.{capability} is not set")))
 }

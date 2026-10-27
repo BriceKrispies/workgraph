@@ -8,7 +8,7 @@ use arrow_array::{ArrayRef, Float64Array, Int64Array, RecordBatch, StringArray};
 use arrow_schema::{DataType, Field, Schema};
 use parquet::arrow::ArrowWriter;
 use wg_storecodec::Raw;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 use crate::{ColumnType, Dataset, cell_text, column_types};
 
@@ -60,8 +60,5 @@ pub fn parquet_bytes(dataset: &Dataset) -> Result<Vec<u8>, WgError> {
 }
 
 fn parquet_failure(err: impl std::fmt::Display) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("cannot write parquet: {err}"),
-    )
+    WgError::workgraph(format!("cannot write parquet: {err}"))
 }

@@ -5,7 +5,7 @@
 use serde_json::Value;
 use wg_model::entity::JsonObject;
 use wg_runtime::{HandlerError, HandlerResult, JobContext, JobKind, Queue, system_context};
-use wg_types::{ErrorCode, Id, WgError};
+use wg_types::{Id, WgError};
 
 use crate::service::exec;
 use crate::spec::exec::job_result;
@@ -28,12 +28,7 @@ fn payload_id(payload: &JsonObject, key: &str) -> Result<Id, WgError> {
     payload
         .get(key)
         .and_then(Value::as_str)
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::WorkgraphError,
-                format!("the job payload has no {key}"),
-            )
-        })
+        .ok_or_else(|| WgError::workgraph(format!("the job payload has no {key}")))
         .and_then(wg_types::parse_id)
 }
 

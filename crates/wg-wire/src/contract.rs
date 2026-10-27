@@ -6,7 +6,7 @@
 //! snapshots (plan 4.8).
 
 use serde_json::Value;
-use wg_types::{ErrorCode, WgError};
+use wg_types::WgError;
 
 /// The OpenAPI document, as recorded.
 pub const OPENAPI_JSON: &str = include_str!("../../../contracts/openapi.json");
@@ -16,10 +16,7 @@ pub const MCP_JSON: &str = include_str!("../../../contracts/mcp.json");
 
 fn parse(name: &str, text: &str) -> Result<Value, WgError> {
     serde_json::from_str(text).map_err(|err| {
-        WgError::new(
-            ErrorCode::WorkgraphError,
-            format!("embedded {name} snapshot is not valid JSON: {err}"),
-        )
+        WgError::workgraph(format!("embedded {name} snapshot is not valid JSON: {err}"))
     })
 }
 
@@ -41,12 +38,7 @@ pub fn component_schemas() -> Result<serde_json::Map<String, Value>, WgError> {
         .and_then(|components| components.get("schemas"))
         .and_then(Value::as_object)
         .cloned()
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::WorkgraphError,
-                "embedded openapi snapshot has no components.schemas",
-            )
-        })
+        .ok_or_else(|| WgError::workgraph("embedded openapi snapshot has no components.schemas"))
 }
 
 /// The MCP tool descriptors, in snapshot order.
@@ -56,10 +48,5 @@ pub fn mcp_tools() -> Result<Vec<Value>, WgError> {
         .get("tools")
         .and_then(Value::as_array)
         .cloned()
-        .ok_or_else(|| {
-            WgError::new(
-                ErrorCode::WorkgraphError,
-                "embedded mcp snapshot has no tools",
-            )
-        })
+        .ok_or_else(|| WgError::workgraph("embedded mcp snapshot has no tools"))
 }

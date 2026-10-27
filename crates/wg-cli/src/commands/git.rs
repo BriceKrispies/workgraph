@@ -5,7 +5,7 @@
 //! each handler reads the options, calls one `App` entry point and prints the result.
 
 use clap::ArgMatches;
-use wg_clispec::args::{option_flag, option_text};
+use wg_clispec::args::{self, option_flag, option_text};
 use wg_clispec::git as view;
 use wg_clispec::{CliFailure, not_implemented_message};
 use wg_runtime::human_context;
@@ -19,32 +19,6 @@ pub const GROUP: Group = Group {
     command: view::command,
     run,
 };
-
-/// An integer option, with its default when it is not given.
-fn int_option(m: &ArgMatches, id: &str, default: i64) -> Result<i64, CliFailure> {
-    match option_text(m, id) {
-        None => Ok(default),
-        Some(text) => text.parse().map_err(|_| {
-            CliFailure::fail(
-                format!("Invalid value for '{id}': '{text}' is not a valid integer."),
-                2,
-            )
-        }),
-    }
-}
-
-/// A float option, with its default when it is not given.
-fn float_option(m: &ArgMatches, id: &str, default: f64) -> Result<f64, CliFailure> {
-    match option_text(m, id) {
-        None => Ok(default),
-        Some(text) => text.parse().map_err(|_| {
-            CliFailure::fail(
-                format!("Invalid value for '{id}': '{text}' is not a valid float."),
-                2,
-            )
-        }),
-    }
-}
 
 fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
     let workspace = state.workspace_ref(option_text(m, "--workspace").as_deref());
@@ -61,7 +35,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("log") => {
             let repository = option_text(m, "repository").unwrap_or_default();
-            let limit = int_option(m, "--limit", 30)?;
+            let limit = args::number(m, "--limit", 30, view::LOG)?;
             let linked = option_flag(m, "--linked");
             let out = state
                 .app()?
@@ -93,7 +67,8 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("changes") => {
             let task = option_text(m, "task").unwrap_or_default();
-            let min_confidence = float_option(m, "--min-confidence", 0.5)?;
+            let min_confidence =
+                args::float_value(m, "--min-confidence", view::CHANGES)?.unwrap_or(0.5);
             let out = state
                 .app()?
                 .git_changes(&context, ws, &task, min_confidence)?;
@@ -114,7 +89,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("analyze") => {
             let repository = option_text(m, "repository").unwrap_or_default();
-            let limit = int_option(m, "--limit", 200)?;
+            let limit = args::number(m, "--limit", 200, view::ANALYZE)?;
             let out = state.app()?.git_analyze(&context, ws, &repository, limit)?;
             state.emit(&out, Some(&|c| view::analyze_line(c, &out)))
         }

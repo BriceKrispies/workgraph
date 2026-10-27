@@ -76,18 +76,84 @@ pub struct Usage {
     pub command: &'static str,
 }
 
+/// The kind of path a Click `Path` type checks, which names the error (`File`, `Directory` or
+/// `Path`): `file_okay` alone is `file`, `dir_okay` alone is `directory`, both is `path`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PathKind {
+    File,
+    Directory,
+    Path,
+}
+
+/// What is wrong with a path that Click's `Path` type rejects.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PathProblem {
+    /// The path does not exist (`exists=True`).
+    Missing,
+    /// A regular file where only directories are allowed.
+    IsFile,
+    /// A directory where only files are allowed.
+    IsDirectory,
+}
+
 impl Usage {
-    /// Click's `BadParameter` for `option` given `value`, which its type `kind` (`int` or
-    /// `float`) cannot read: `Invalid value for '--x': 'v' is not a valid int.`
+    /// Click's `BadParameter` for `option` given `value`, which its type `kind` (`integer` or
+    /// `float`, the names Click gives those types) cannot read:
+    /// `Invalid value for '--x': 'v' is not a valid integer.`
     #[must_use]
     pub fn invalid_value(self, option: &str, value: &str, kind: &str) -> CliFailure {
+        self.bad_parameter(
+            option,
+            &format!("{} is not a valid {kind}.", py_repr_str(value)),
+        )
+    }
+
+    /// Click's `Choice` check: `Invalid value for '--x': 'v' is not one of 'a', 'b'.`, or
+    /// `is not 'a'.` when there is one choice. Each choice is quoted as Python's `repr` does.
+    #[must_use]
+    pub fn invalid_choice(self, option: &str, value: &str, choices: &[&str]) -> CliFailure {
+        let shown = choices
+            .iter()
+            .map(|choice| py_repr_str(choice))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let reason = if choices.len() == 1 {
+            format!("{} is not {shown}.", py_repr_str(value))
+        } else {
+            format!("{} is not one of {shown}.", py_repr_str(value))
+        };
+        self.bad_parameter(option, &reason)
+    }
+
+    /// Click's `Path` check: `Invalid value for 'path': File 'x' does not exist.`. `hint` is the
+    /// parameter as Click names it: an option such as `--x`, or an argument such as `path`.
+    #[must_use]
+    pub fn invalid_path(
+        self,
+        hint: &str,
+        value: &str,
+        kind: PathKind,
+        problem: PathProblem,
+    ) -> CliFailure {
+        let name = match kind {
+            PathKind::File => "File",
+            PathKind::Directory => "Directory",
+            PathKind::Path => "Path",
+        };
+        let reason = match problem {
+            PathProblem::Missing => "does not exist",
+            PathProblem::IsFile => "is a file",
+            PathProblem::IsDirectory => "is a directory",
+        };
+        self.bad_parameter(hint, &format!("{name} {} {reason}.", py_repr_str(value)))
+    }
+
+    /// The usage error of a `BadParameter` with `reason` as its message.
+    fn bad_parameter(self, hint: &str, reason: &str) -> CliFailure {
         CliFailure::Usage {
             usage: self.usage.to_owned(),
             command: self.command.to_owned(),
-            message: format!(
-                "Invalid value for '{option}': {} is not a valid {kind}.",
-                py_repr_str(value)
-            ),
+            message: format!("Invalid value for '{hint}': {reason}"),
         }
     }
 }

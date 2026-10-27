@@ -4,9 +4,27 @@
 use wg_json::Value;
 use wg_render::Console;
 
-use crate::Snapshot;
 use crate::args::{get, items, python, s};
 use crate::tree::{SNAPSHOT_JSON, placeholder};
+use crate::{Snapshot, Usage};
+
+/// Click's usage line of `git log`, for its `--limit` usage error.
+pub const LOG: Usage = Usage {
+    usage: "workgraph git log [OPTIONS] {repository}",
+    command: "workgraph git log",
+};
+
+/// Click's usage line of `git analyze`, for its `--limit` usage error.
+pub const ANALYZE: Usage = Usage {
+    usage: "workgraph git analyze [OPTIONS] {repository}",
+    command: "workgraph git analyze",
+};
+
+/// Click's usage line of `git changes`, for its `--min-confidence` usage error.
+pub const CHANGES: Usage = Usage {
+    usage: "workgraph git changes [OPTIONS] {task}",
+    command: "workgraph git changes",
+};
 
 /// The clap command of the `git` group, from the snapshot's own tree.
 #[must_use]

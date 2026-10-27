@@ -98,6 +98,11 @@ wg-runtimespec Pure
 wg-server Shell
 wg-serverspec Pure
 wg-stacks Core
+wg-stacks-feature Shell
+wg-stacks-feature::spec Pure
+wg-stacks-feature::service Shell
+wg-stacks-feature::cli Shell
+wg-stacks-feature::mcp Shell
 wg-store Shell
 wg-storecodec Pure
 wg-tasks Core

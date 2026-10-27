@@ -2595,6 +2595,7 @@ dependencies = [
  "wg-git",
  "wg-gitcore",
  "wg-json",
+ "wg-mcpspec",
  "wg-model",
  "wg-proc",
  "wg-procspec",

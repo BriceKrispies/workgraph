@@ -63,6 +63,7 @@ wg-experiments-feature Shell
 wg-experiments-feature::spec Pure
 wg-experiments-feature::service Shell
 wg-experiments-feature::cli Shell
+wg-experiments-feature::mcp Shell
 wg-git Shell
 wg-git-feature Shell
 wg-git-feature::spec Pure

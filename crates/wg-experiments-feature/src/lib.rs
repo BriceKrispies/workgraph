@@ -5,23 +5,25 @@
 //!
 //! * [`spec`] (Pure): the statements, the row decoding and the human views;
 //! * [`service`] (Shell): the readers over `&mut Session`, and the entry points over `&mut App`;
-//! * [`cli`] (Shell): the clap group.
+//! * [`cli`] (Shell): the clap group;
+//! * [`mcp`] (Shell): the experiment tool table (M17 to M22).
 //!
 //! The feature exports [`FEATURE`]; the binary collects it into its ordered feature list.
 
 pub mod cli;
+pub mod mcp;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The experiments feature: its CLI group (`experiment list, show`). It has no routes, tools,
-/// resources or jobs yet.
+/// The experiments feature: its CLI group (`experiment list, show`) and its experiment tools. It
+/// has no routes or resources, and no jobs yet.
 pub static FEATURE: Feature = Feature {
     name: "experiments",
     cli: &[cli::GROUP],
     routes: &[],
-    tools: &[],
+    tools: mcp::TOOLS,
     resources: &[],
     jobs: &[],
     maintenance: &[],

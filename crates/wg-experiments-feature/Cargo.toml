@@ -20,6 +20,7 @@ wg-experiments = { path = "../wg-experiments" }
 wg-git = { path = "../wg-git" }
 wg-gitcore = { path = "../wg-gitcore" }
 wg-json = { path = "../wg-json" }
+wg-mcpspec = { path = "../wg-mcpspec" }
 wg-model = { path = "../wg-model" }
 wg-proc = { path = "../wg-proc" }
 wg-procspec = { path = "../wg-procspec" }

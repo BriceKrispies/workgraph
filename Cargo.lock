@@ -2508,6 +2508,7 @@ dependencies = [
  "wg-clispec",
  "wg-experiments",
  "wg-json",
+ "wg-mcpspec",
  "wg-model",
  "wg-pyrand",
  "wg-registry",

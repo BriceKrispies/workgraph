@@ -47,6 +47,7 @@ wg-experiments-feature Shell
 wg-experiments-feature::spec Pure
 wg-experiments-feature::service Shell
 wg-experiments-feature::cli Shell
+wg-experiments-feature::mcp Shell
 wg-git Shell
 wg-gitcore Core
 wg-hash Core

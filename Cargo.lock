@@ -2248,9 +2248,10 @@ dependencies = [
  "clap",
  "rpds",
  "serde_json",
- "time",
  "wg-analytics",
+ "wg-automation-feature",
  "wg-clispec",
+ "wg-hash",
  "wg-json",
  "wg-model",
  "wg-registry",
@@ -2258,7 +2259,10 @@ dependencies = [
  "wg-runtime",
  "wg-store",
  "wg-storecodec",
+ "wg-tasks",
  "wg-types",
+ "wg-validate",
+ "wg-wire",
 ]
 
 [[package]]
@@ -2661,6 +2665,7 @@ dependencies = [
  "wg-store",
  "wg-storecodec",
  "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

@@ -268,3 +268,138 @@ fn bad_datetime_is_a_click_usage_error() -> TestResult {
     assert_eq!(err.exit_code(), 2);
     Ok(())
 }
+
+#[test]
+fn pydantic_errors_list_both_fields_in_python_text() -> TestResult {
+    let Err(err) = query::check_inputs("drop_table", "fortnight") else {
+        return Err("both fields are wrong".into());
+    };
+    assert_eq!(err.code, ErrorCode::ValidationFailed);
+    assert!(
+        err.message.starts_with(
+            "invalid input: metric: Value error, unknown metric 'drop_table'; known metrics: "
+        ),
+        "{}",
+        err.message
+    );
+    assert!(
+        err.message
+            .ends_with("; period: Input should be 'day', 'week', 'month', 'quarter' or 'year'"),
+        "{}",
+        err.message
+    );
+    let errors = err.details.get("errors").and_then(|e| e.as_array());
+    assert_eq!(errors.map(Vec::len), Some(2));
+    Ok(())
+}
+
+#[test]
+fn refused_dimension_carries_the_allowed_list() {
+    let err = wg_analytics::core::query::QueryError::Dimension {
+        metric: "tasks_created".to_owned(),
+        dimension: "colour".to_owned(),
+    };
+    let refused = query::refusal(&err);
+    assert_eq!(
+        refused.message,
+        "metric tasks_created cannot be grouped by 'colour'"
+    );
+    let allowed = refused.details.get("allowed").and_then(|a| a.as_array());
+    let names: Vec<&str> = allowed
+        .map(|list| list.iter().filter_map(|v| v.as_str()).collect())
+        .unwrap_or_default();
+    assert_eq!(
+        names,
+        [
+            "agent",
+            "category",
+            "period",
+            "priority",
+            "project",
+            "repository",
+            "status"
+        ]
+    );
+}
+
+#[test]
+fn compare_windows_are_the_naive_datetimes_typed() -> TestResult {
+    let input = AnalyticsInput::default();
+    let facts = wg_analytics::build(&input);
+    let at = |day: u8| wg_json::LocalDateTime {
+        year: 2026,
+        month: 10,
+        day,
+        hour: 0,
+        minute: 0,
+        second: 0,
+        microsecond: 0,
+        offset_seconds: None,
+    };
+    let (a, b) = ((at(1), at(8)), (at(8), at(15)));
+    let window = |(since, until): (wg_json::LocalDateTime, wg_json::LocalDateTime)| {
+        Ok::<_, wg_types::WgError>((query::instant(since)?, query::instant(until)?))
+    };
+    let core = wg_analytics::core::service::compare(
+        &input,
+        &facts,
+        "w1",
+        "tasks_created",
+        window(a)?,
+        window(b)?,
+        &[],
+    )
+    .map_err(|e| e.to_string())?;
+    let out = wg_analytics_feature::spec::analyses::compare_out(&core, a, b);
+    assert_eq!(
+        keys(&out),
+        [
+            "metric",
+            "statistic",
+            "period_a",
+            "period_b",
+            "rows",
+            "notes"
+        ]
+    );
+    assert_eq!(
+        key(&out, "period_a"),
+        Some(Value::List(vec![
+            Value::LocalDateTime(a.0),
+            Value::LocalDateTime(a.1)
+        ]))
+    );
+    Ok(())
+}
+
+#[test]
+fn fingerprint_is_the_first_32_hex_digits_of_sha256() {
+    let digest = wg_analytics_feature::spec::analyses::fingerprint("retry_loop|x");
+    assert_eq!(digest.len(), 32);
+    assert!(digest.chars().all(|c| c.is_ascii_hexdigit()));
+}
+
+#[test]
+fn history_view_sums_churn_and_cuts_titles() {
+    let row = Value::Dict(
+        [
+            ("key", Value::Str(PyStr::from("WG-1"))),
+            ("category", Value::Null),
+            ("attempts", Value::Int(2)),
+            ("commits", Value::Int(3)),
+            ("churn_insertions", Value::Int(10)),
+            ("churn_deletions", Value::Int(5)),
+            ("final_insertions", Value::Null),
+            ("final_deletions", Value::Null),
+            ("title", Value::Str(PyStr::from("x".repeat(80).as_str()))),
+        ]
+        .into_iter()
+        .map(|(k, v)| (PyStr::from(k), v))
+        .collect(),
+    );
+    let text = view::history_view(&Console::new(120), &Value::List(vec![row]));
+    assert!(text.contains("WG-1"), "{text}");
+    assert!(text.contains("15"), "{text}");
+    assert!(text.contains(&"x".repeat(50)), "{text}");
+    assert!(!text.contains(&"x".repeat(51)), "{text}");
+}

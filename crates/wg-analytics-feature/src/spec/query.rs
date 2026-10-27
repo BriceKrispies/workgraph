@@ -7,15 +7,19 @@
 
 use std::collections::BTreeSet;
 
-use serde_json::Value as Json;
+use serde_json::{Map, Value as Json, json};
 use wg_analytics::Facts;
+use wg_analytics::core::bases::dimensions;
 use wg_analytics::core::metrics::{Metric, describe, find, registry};
 use wg_analytics::core::period::Period;
 use wg_analytics::core::query::{Answer, Filters, Query, QueryError, run};
 use wg_analytics::core::service::CAUSATION_NOTE;
 use wg_analytics::source::AnalyticsInput;
 use wg_json::{LocalDateTime, PyStr, Value};
+use wg_tasks::requests::validation_failure;
 use wg_types::{ErrorCode, Timestamp, WgError};
+use wg_validate::{Loc, ValidationError};
+use wg_wire::convention::json_value;
 
 /// The `source` of the provenance block (`AnalyticsService.query`).
 pub const SOURCE: &str = "DuckDB snapshot of the SQLite database";
@@ -26,6 +30,9 @@ pub const SQL_DESCRIPTION: &str =
 
 /// The row limit of an `AnalyticsQuery` (its default).
 pub const LIMIT: usize = 500;
+
+/// What pydantic lists as the expected values of the `period` literal.
+const PERIOD_CHOICES: &str = "'day', 'week', 'month', 'quarter' or 'year'";
 
 /// The `analytics query` options, as the command reads them. Dates are naive (typer's `datetime`).
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -60,26 +67,6 @@ fn optional_text(value: Option<&str>) -> Value {
     value.map_or(Value::Null, text)
 }
 
-/// A `serde_json` value as a Python-shaped value (object key order kept).
-#[must_use]
-pub fn json_value(value: &Json) -> Value {
-    match value {
-        Json::Null => Value::Null,
-        Json::Bool(flag) => Value::Bool(*flag),
-        Json::Number(number) => number.as_i64().map_or_else(
-            || Value::Float(number.as_f64().unwrap_or(f64::NAN)),
-            |int| Value::Int(i128::from(int)),
-        ),
-        Json::String(string) => text(string),
-        Json::Array(items) => Value::List(items.iter().map(json_value).collect()),
-        Json::Object(map) => Value::Dict(
-            map.iter()
-                .map(|(key, value)| (PyStr::from(key.as_str()), json_value(value)))
-                .collect(),
-        ),
-    }
-}
-
 /// The metric registry as `metric_definition` dicts, in registry order (`AnalyticsService
 /// .definitions`).
 #[must_use]
@@ -98,33 +85,62 @@ fn known_metrics() -> String {
     ids.into_iter().collect::<Vec<_>>().join(", ")
 }
 
-/// The pydantic checks of `AnalyticsQuery` (metric name, period literal), which the CLI runs
-/// before any store read. Returns the metric.
-pub fn check_request(request: &QueryRequest) -> Result<Metric, WgError> {
-    let metric = find(&request.metric).ok_or_else(|| {
-        WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "unknown metric {:?}; known metrics: {}",
-                request.metric,
-                known_metrics()
-            ),
-        )
-    })?;
-    if Period::parse(&request.period).is_none() {
-        return Err(WgError::new(
-            ErrorCode::ValidationFailed,
-            format!(
-                "period: input should be 'day', 'week', 'month', 'quarter' or 'year' ({:?})",
-                request.period
-            ),
-        ));
+/// The pydantic error of the `metric` validator: `ValueError` text, which `--json` prints as the
+/// `ctx.error` string (`json.dumps(default=str)`).
+fn unknown_metric(metric: &str) -> ValidationError {
+    let reason = format!(
+        "unknown metric {}; known metrics: {}",
+        wg_types::py_repr_str(metric),
+        known_metrics()
+    );
+    ValidationError {
+        kind: "value_error".to_owned(),
+        loc: vec![Loc::Key("metric".to_owned())],
+        msg: format!("Value error, {reason}"),
+        input: json!(metric),
+        ctx: Some(Map::from_iter([("error".to_owned(), json!(reason))])),
     }
-    Ok(metric)
+}
+
+/// The pydantic error of the `period` literal.
+fn bad_period(period: &str) -> ValidationError {
+    ValidationError {
+        kind: "literal_error".to_owned(),
+        loc: vec![Loc::Key("period".to_owned())],
+        msg: format!("Input should be {PERIOD_CHOICES}"),
+        input: json!(period),
+        ctx: Some(Map::from_iter([(
+            "expected".to_owned(),
+            json!(PERIOD_CHOICES),
+        )])),
+    }
+}
+
+/// The pydantic checks of `AnalyticsQuery` (metric name, period literal), which every command runs
+/// before any permission or store read. Both fields are reported when both are wrong, `metric`
+/// first, as `handle_errors` reports a `ValidationError`. Returns the metric.
+pub fn check_inputs(metric: &str, period: &str) -> Result<Metric, WgError> {
+    let found = find(metric);
+    let errors: Vec<ValidationError> = [
+        found.is_none().then(|| unknown_metric(metric)),
+        Period::parse(period).is_none().then(|| bad_period(period)),
+    ]
+    .into_iter()
+    .flatten()
+    .collect();
+    match found {
+        Some(known) if errors.is_empty() => Ok(known),
+        _ => Err(validation_failure(&errors)),
+    }
+}
+
+/// [`check_inputs`] for an `analytics query` request.
+pub fn check_request(request: &QueryRequest) -> Result<Metric, WgError> {
+    check_inputs(&request.metric, &request.period)
 }
 
 /// A naive typer datetime as the UTC instant the warehouse compares it with.
-fn instant(at: LocalDateTime) -> Result<Timestamp, WgError> {
+pub fn instant(at: LocalDateTime) -> Result<Timestamp, WgError> {
     Timestamp::from_components(
         at.year,
         at.month,
@@ -145,7 +161,7 @@ pub fn engine_query(
     let period = Period::parse(&request.period).ok_or_else(|| {
         WgError::new(
             ErrorCode::ValidationFailed,
-            format!("unknown period {:?}", request.period),
+            format!("unknown period {}", wg_types::py_repr_str(&request.period)),
         )
     })?;
     Ok(Query {
@@ -169,6 +185,27 @@ pub fn engine_query(
     })
 }
 
+/// A refused query as `ValidationFailed`: a dimension the metric cannot be grouped by lists the
+/// ones it can (`details.allowed`, sorted, with `period`).
+#[must_use]
+pub fn refusal(err: &QueryError) -> WgError {
+    let refused = WgError::new(ErrorCode::ValidationFailed, err.to_string());
+    match err {
+        QueryError::Dimension { metric, .. } => find(metric).map_or(refused.clone(), |known| {
+            let allowed: BTreeSet<&str> = dimensions(known.base)
+                .iter()
+                .copied()
+                .chain(std::iter::once("period"))
+                .collect();
+            refused.with_detail(
+                "allowed",
+                Json::Array(allowed.into_iter().map(Json::from).collect()),
+            )
+        }),
+        _ => refused,
+    }
+}
+
 /// Runs the engine. A refused query (dimension, filter) is a validation failure.
 pub fn run_query(
     input: &AnalyticsInput,
@@ -176,8 +213,7 @@ pub fn run_query(
     workspace: &str,
     query: &Query,
 ) -> Result<Answer, WgError> {
-    run(input, facts, workspace, query)
-        .map_err(|err: QueryError| WgError::new(ErrorCode::ValidationFailed, err.to_string()))
+    run(input, facts, workspace, query).map_err(|err| refusal(&err))
 }
 
 /// The `query` echo: `AnalyticsQuery.model_dump(mode="json")`, with the dates as they were typed.

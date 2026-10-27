@@ -148,32 +148,35 @@ const fn nullable(inner: &'static Shape) -> Shape {
 
 // Tasks.
 const TASK: Shape = Shape::Dto {
-    fields: &task::FIELDS,
-    nested: &[("files", list(&dto(&task_file::FIELDS)))],
+    fields: task::TaskOut::FIELDS,
+    nested: &[("files", list(&dto(task_file::TaskFileOut::FIELDS)))],
 };
-const COMMENT: Shape = dto(&comment::FIELDS);
-const EVENT: Shape = dto(&event::FIELDS);
+const COMMENT: Shape = dto(comment::CommentOut::FIELDS);
+const EVENT: Shape = dto(event::EventOut::FIELDS);
 const PAGE_OF_TASKS: Shape = Shape::Dto {
-    fields: &page::FIELDS,
+    fields: page::Page::FIELDS,
     nested: &[("items", list(&TASK))],
 };
-const ATTEMPT: Shape = dto(&attempt::FIELDS);
+const ATTEMPT: Shape = dto(attempt::AttemptOut::FIELDS);
 const PAGE_OF_ATTEMPTS: Shape = Shape::Dto {
-    fields: &page::FIELDS,
+    fields: page::Page::FIELDS,
     nested: &[("items", list(&ATTEMPT))],
 };
 
 // Stacks.
 const STACK: Shape = Shape::Dto {
-    fields: &stack::FIELDS,
+    fields: stack::StackOut::FIELDS,
     nested: &[
-        ("repositories", list(&dto(&stack_repository::FIELDS))),
-        ("items", list(&dto(&stack_item::FIELDS))),
+        (
+            "repositories",
+            list(&dto(stack_repository::StackRepositoryOut::FIELDS)),
+        ),
+        ("items", list(&dto(stack_item::StackItemOut::FIELDS))),
     ],
 };
 
 // Experiments.
-const TRIAL: Shape = dto(&trial::FIELDS);
+const TRIAL: Shape = dto(trial::TrialOut::FIELDS);
 const STEP: Shape = Shape::Object(&[
     ("phase", Shape::Any),
     ("band", Shape::Any),
@@ -193,8 +196,8 @@ const EXPERIMENT_REPORT_ARM: Shape = Shape::Object(&[
 ]);
 
 // Analytics.
-const METRIC: Shape = dto(&metric_definition::FIELDS);
-const WINDOW: Shape = dto(&agent_time_out::WINDOW_FIELDS);
+const METRIC: Shape = dto(metric_definition::MetricDefinition::FIELDS);
+const WINDOW: Shape = dto(agent_time_out::Window::FIELDS);
 const TOTALS: Shape = dto(&agent_time_out::TOTALS_FIELDS);
 
 const ANALYTICS_REPORT: Shape = Shape::OneOf(&[
@@ -203,7 +206,10 @@ const ANALYTICS_REPORT: Shape = Shape::OneOf(&[
     // catalog
     Shape::Object(&[("metrics", list(&METRIC))]),
     // history
-    Shape::Object(&[("tasks", list(&dto(&task_history_row::FIELDS)))]),
+    Shape::Object(&[(
+        "tasks",
+        list(&dto(task_history_row::TaskHistoryRow::FIELDS)),
+    )]),
     // coupling
     Shape::Dto {
         fields: &coupling_out::FIELDS,
@@ -211,19 +217,19 @@ const ANALYTICS_REPORT: Shape = Shape::OneOf(&[
     },
     // failures
     Shape::Dto {
-        fields: &failures_out::FIELDS,
-        nested: &[("findings", list(&dto(&failures_out::FINDING_FIELDS)))],
+        fields: failures_out::FailuresOut::FIELDS,
+        nested: &[("findings", list(&dto(failures_out::Finding::FIELDS)))],
     },
     // estimate, enough history and not
     Shape::Dto {
         fields: &estimate_out::OK_FIELDS,
         nested: &[
             ("distributions", dto(&estimate_out::DISTRIBUTIONS_FIELDS)),
-            ("verification", dto(&estimate_out::VERIFICATION_FIELDS)),
-            ("basis", list(&dto(&estimate_out::BASIS_FIELDS))),
+            ("verification", dto(estimate_out::VerificationBlock::FIELDS)),
+            ("basis", list(&dto(estimate_out::BasisRow::FIELDS))),
         ],
     },
-    dto(&estimate_out::INSUFFICIENT_FIELDS),
+    dto(estimate_out::Insufficient::FIELDS),
 ]);
 
 const TASK_IMPORT: Shape = Shape::Object(&[
@@ -326,12 +332,12 @@ static SHAPES: &[(&str, Shape)] = &[
     // M17-M25, M28: experiments, trials, predictor, contract check.
     (
         "experiment_list",
-        Shape::Object(&[("experiments", list(&dto(&experiment::FIELDS)))]),
+        Shape::Object(&[("experiments", list(&dto(experiment::ExperimentOut::FIELDS)))]),
     ),
     (
         "experiment_get",
         Shape::Object(&[
-            ("experiment", dto(&experiment::FIELDS)),
+            ("experiment", dto(experiment::ExperimentOut::FIELDS)),
             ("trials", list(&TRIAL)),
         ]),
     ),
@@ -344,8 +350,8 @@ static SHAPES: &[(&str, Shape)] = &[
             ("arms", list(&EXPERIMENT_REPORT_ARM)),
         ]),
     ),
-    ("experiment_fit", dto(&predictor::FIT_FIELDS)),
-    ("experiment_predict", dto(&predictor::PREDICTION_FIELDS)),
+    ("experiment_fit", dto(predictor::PredictorFitOut::FIELDS)),
+    ("experiment_predict", dto(predictor::PredictionOut::FIELDS)),
     (
         "trial_start",
         Shape::Object(&[
@@ -364,7 +370,10 @@ static SHAPES: &[(&str, Shape)] = &[
             ("verdict", Shape::Any),
             ("reasons", Shape::Any),
             ("missing", Shape::Any),
-            ("prediction", nullable(&dto(&predictor::PREDICTION_FIELDS))),
+            (
+                "prediction",
+                nullable(&dto(predictor::PredictionOut::FIELDS)),
+            ),
             ("target", Shape::Any),
             ("model", Shape::Any),
         ]),
@@ -382,21 +391,24 @@ static SHAPES: &[(&str, Shape)] = &[
     (
         "task_get",
         Shape::Dto {
-            fields: &task_detail::FIELDS,
+            fields: task_detail::TaskDetail::FIELDS,
             nested: &[
-                ("files", list(&dto(&task_file::FIELDS))),
-                ("relations", list(&dto(&relation::FIELDS))),
+                ("files", list(&dto(task_file::TaskFileOut::FIELDS))),
+                ("relations", list(&dto(relation::RelationOut::FIELDS))),
                 ("comments", list(&COMMENT)),
-                ("rollup", nullable(&dto(&task_rollup::FIELDS))),
-                ("dependency_state", dto(&dependency_state::FIELDS)),
+                ("rollup", nullable(&dto(task_rollup::TaskRollup::FIELDS))),
+                (
+                    "dependency_state",
+                    dto(dependency_state::DependencyState::FIELDS),
+                ),
             ],
         },
     ),
     (
         "task_search",
         Shape::Dto {
-            fields: &search_result::FIELDS,
-            nested: &[("hits", list(&dto(&search_result::HIT_FIELDS)))],
+            fields: search_result::SearchResult::FIELDS,
+            nested: &[("hits", list(&dto(search_result::Hit::FIELDS)))],
         },
     ),
     ("task_list", PAGE_OF_TASKS),
@@ -410,14 +422,14 @@ static SHAPES: &[(&str, Shape)] = &[
         ]),
     ),
     ("task_import_breakdown", TASK_IMPORT),
-    ("task_add_relation", dto(&relation::FIELDS)),
+    ("task_add_relation", dto(relation::RelationOut::FIELDS)),
     ("task_add_comment", COMMENT),
     ("task_report_progress", COMMENT),
     ("task_get_attempts", PAGE_OF_ATTEMPTS),
     ("attempt_list", PAGE_OF_ATTEMPTS),
     (
         "task_link_commit",
-        Shape::Object(&[("links", list(&dto(&commit_link::FIELDS)))]),
+        Shape::Object(&[("links", list(&dto(commit_link::CommitLinkOut::FIELDS)))]),
     ),
     // M47-M54: attempts and runs.
     ("attempt_create", ATTEMPT),
@@ -451,37 +463,46 @@ static SHAPES: &[(&str, Shape)] = &[
     (
         "git_get_changes",
         Shape::Dto {
-            fields: &task_changes::FIELDS,
+            fields: task_changes::TaskChangesOut::FIELDS,
             nested: &[
-                ("commits", list(&dto(&task_changes::COMMIT_FIELDS))),
+                ("commits", list(&dto(task_changes::CommitOut::FIELDS))),
                 (
                     "final_change_surface",
-                    list(&dto(&task_changes::SURFACE_FIELDS)),
+                    list(&dto(task_changes::SurfaceOut::FIELDS)),
                 ),
             ],
         },
     ),
-    ("git_get_task_diff", dto(&task_diff::FIELDS)),
+    ("git_get_task_diff", dto(task_diff::TaskDiffOut::FIELDS)),
     // M57-M63: classification, analytics.
     (
         "classification_get",
         Shape::Dto {
-            fields: &classification_task::FIELDS,
+            fields: classification_task::TaskClassifications::FIELDS,
             nested: &[
-                ("current", nullable(&dto(&classification_out::FIELDS))),
-                ("history", list(&dto(&classification_out::FIELDS))),
+                (
+                    "current",
+                    nullable(&dto(classification_out::ClassificationOut::FIELDS)),
+                ),
+                (
+                    "history",
+                    list(&dto(classification_out::ClassificationOut::FIELDS)),
+                ),
             ],
         },
     ),
-    ("classification_request", dto(&classification_job::FIELDS)),
+    (
+        "classification_request",
+        dto(classification_job::ClassificationRequestOut::FIELDS),
+    ),
     (
         "analytics_query",
         Shape::Dto {
-            fields: &analytics_query_out::FIELDS,
+            fields: analytics_query_out::AnalyticsQueryOut::FIELDS,
             nested: &[
                 ("metric", METRIC),
-                ("query", dto(&analytics_query::FIELDS)),
-                ("provenance", dto(&analytics_query_out::PROVENANCE_FIELDS)),
+                ("query", dto(analytics_query::QueryEcho::FIELDS)),
+                ("provenance", dto(analytics_query_out::Provenance::FIELDS)),
             ],
         },
     ),
@@ -496,14 +517,14 @@ static SHAPES: &[(&str, Shape)] = &[
     (
         "analytics_agent_time",
         Shape::Dto {
-            fields: &agent_time_out::BREAKDOWN_FIELDS,
+            fields: agent_time_out::Breakdown::FIELDS,
             nested: &[("window", WINDOW), ("totals", TOTALS)],
         },
     ),
     (
         "analytics_bottlenecks",
         Shape::Dto {
-            fields: &agent_time_out::BOTTLENECKS_FIELDS,
+            fields: agent_time_out::Bottlenecks::FIELDS,
             nested: &[
                 ("window", WINDOW),
                 ("totals", TOTALS),

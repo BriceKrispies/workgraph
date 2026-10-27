@@ -56,7 +56,7 @@ fn events_carry_the_stored_columns_in_python_order() {
         }),
     };
     let value = event::from_model(7, &draft).expect("event");
-    assert_eq!(names(&value), event::FIELDS);
+    assert_eq!(names(&value), event::EventOut::FIELDS);
     let text = http_json(&value).expect("dump");
     assert!(text.contains(r#""seq":7"#), "{text}");
     assert!(text.contains(r#""actor":"human:Brice""#), "{text}");
@@ -97,7 +97,7 @@ fn session_rows_print_isoformat_timestamps() {
         updated_at: at(0),
     };
     let value = claude::session(&session);
-    assert_eq!(names(&value), claude::SESSION_FIELDS);
+    assert_eq!(names(&value), claude::SessionOut::FIELDS);
     let text = http_json(&value).expect("dump");
     assert!(
         text.contains(r#""started_at":"2026-10-25T13:56:00.000005+00:00""#),
@@ -119,22 +119,22 @@ fn claude_status_document_and_its_parts() {
         &missing,
         true,
     );
-    assert_eq!(names(&user), claude::INSTALLER_FIELDS);
+    assert_eq!(names(&user), claude::InstallerStatus::FIELDS);
     let hooks = claude::hook_stats(4, Some(at(9)), &[("PreToolUse".to_string(), 3)], 0, 0);
-    assert_eq!(names(&hooks), claude::HOOK_FIELDS);
+    assert_eq!(names(&hooks), claude::HookStats::FIELDS);
     assert!(
         http_json(&hooks)
             .expect("dump")
             .contains(r#""last_received_at":"2026-10-25T13:56:00.000009+00:00""#)
     );
     let status = claude::status(user, hooks, Vec::new());
-    assert_eq!(names(&status), claude::FIELDS);
+    assert_eq!(names(&status), claude::ClaudeStatus::FIELDS);
 }
 
 #[test]
 fn health_and_meta_documents() {
     let report = health::health("0.1.0");
-    assert_eq!(names(&report), health::HEALTH_FIELDS);
+    assert_eq!(names(&report), health::HealthOut::FIELDS);
     assert_eq!(
         http_json(&report).expect("dump"),
         r#"{"status":"ok","version":"0.1.0"}"#
@@ -149,7 +149,7 @@ fn health_and_meta_documents() {
         Value::Dict(Vec::new()),
         Value::Dict(Vec::new()),
     );
-    assert_eq!(names(&meta), health::META_FIELDS);
+    assert_eq!(names(&meta), health::MetaOut::FIELDS);
 }
 
 #[test]
@@ -162,13 +162,13 @@ fn agents_and_llm_health_entries() {
         Value::Dict(Vec::new()),
         Value::Dict(Vec::new()),
     );
-    assert_eq!(names(&entry), agents::FIELDS);
+    assert_eq!(names(&entry), agents::AgentEntry::FIELDS);
 
     let health = llm::health([("local", true, "3 models")]);
     match &health {
         Value::Dict(fields) => {
             assert_eq!(fields.len(), 1);
-            assert_eq!(names(&fields[0].1), llm::ENTRY_FIELDS);
+            assert_eq!(names(&fields[0].1), llm::Entry::FIELDS);
         }
         other => panic!("not a dict: {other:?}"),
     }

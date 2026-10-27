@@ -5,10 +5,10 @@
 //! [`super::implemented`]. The nested prediction is the dump of a `PredictionOut`, whose
 //! timestamps print in the `Z` form.
 
-use wg_json::{Value, dict};
+use wg_json::Value;
 
 use super::predictor::{self, Prediction};
-use crate::convention::{text, texts};
+use crate::wire_dto;
 
 /// A contract verdict, as the contract checker decides it.
 #[derive(Debug, Clone, PartialEq)]
@@ -22,17 +22,14 @@ pub struct ContractVerdict {
     pub model: String,
 }
 
-/// The verdict as its dict, keys in Python's order.
-pub fn verdict(check: &ContractVerdict) -> Value {
-    dict!({
-        "verdict": text(&check.verdict),
-        "reasons": texts(check.reasons.iter().map(String::as_str)),
-        "missing": texts(check.missing.iter().map(String::as_str)),
-        "prediction": check
-            .prediction
-            .as_ref()
-            .map_or(Value::Null, predictor::prediction),
-        "target": Value::Float(check.target),
-        "model": text(&check.model),
-    })
+wire_dto! {
+    /// The verdict as its dict, keys in Python's order.
+    pub struct VerdictOut<'a>("ContractVerdict") dict verdict(c: &'a ContractVerdict) {
+        verdict: &'a str = &c.verdict,
+        reasons: &'a [String] = &c.reasons,
+        missing: &'a [String] = &c.missing,
+        prediction: Option<Value> = c.prediction.as_ref().map(predictor::prediction),
+        target: f64 = c.target,
+        model: &'a str = &c.model,
+    }
 }

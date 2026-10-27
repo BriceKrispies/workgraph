@@ -4,59 +4,16 @@
 //!
 //! The service computes the commit list, the churn and the surfaces; this module only prints
 //! them in the service's key order. `committed_at` and the churn are the service's own
-//! `isoformat()` output, so timestamps use `TimeFormat::Isoformat` (the MCP recording shows
+//! `isoformat()` output, so timestamps use the `isoformat` adapter (the MCP recording shows
 //! `+00:00`).
 
-use wg_json::{Value, dict};
+use serde::{Serialize, Serializer};
+use serde_json::{Map, Value as Json};
 use wg_model::entity::git::{Commit, CommitTaskLink, TaskChangeSurface};
-use wg_types::Id;
+use wg_types::{Id, Timestamp};
 
-use crate::convention::{TimeFormat, id, int, json_object, optional_timestamp, text};
-
-/// The keys of the top-level dict, in the order the service builds them.
-pub const FIELDS: [&str; 7] = [
-    "task_id",
-    "task_key",
-    "min_confidence",
-    "commits",
-    "cumulative_churn",
-    "final_change_surface",
-    "definitions",
-];
-
-/// The keys of one entry of `commits`.
-pub const COMMIT_FIELDS: [&str; 15] = [
-    "commit_id",
-    "sha",
-    "repository_id",
-    "repository",
-    "subject",
-    "author",
-    "committed_at",
-    "insertions",
-    "deletions",
-    "files_changed",
-    "is_merge",
-    "reachable",
-    "object_available",
-    "links",
-    "confidence",
-];
-
-/// The keys of one entry of `final_change_surface`.
-pub const SURFACE_FIELDS: [&str; 11] = [
-    "repository_id",
-    "base_sha",
-    "final_sha",
-    "files_changed",
-    "insertions",
-    "deletions",
-    "renames",
-    "binary_files",
-    "functions_affected",
-    "types_affected",
-    "detail",
-];
+use crate::convention::{isoformat, json_map};
+use crate::wire_dto;
 
 /// The `definitions` text of the service, verbatim.
 pub const CUMULATIVE_CHURN_DEFINITION: &str = "Sum of lines added/removed across distinct linked non-merge commits; cherry-picked/rewritten duplicates of the same change are counted once.";
@@ -81,8 +38,8 @@ pub enum Churn {
     Counted(ChurnTotals),
 }
 
-/// The counted totals of a non-empty commit set.
-#[derive(Debug, Clone, PartialEq)]
+/// The counted totals of a non-empty commit set; the fields are the keys of `cumulative_churn`.
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct ChurnTotals {
     pub commits: i64,
     pub insertions: i64,
@@ -95,15 +52,23 @@ pub struct ChurnTotals {
     pub excluded_duplicates: i64,
     pub excluded_merges: i64,
     /// Per file class, in the order the caller lists them.
+    #[serde(serialize_with = "by_class")]
     pub by_file_class: Vec<(String, ClassTotals)>,
 }
 
 /// The totals of one file class.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct ClassTotals {
     pub insertions: i64,
     pub deletions: i64,
     pub files: i64,
+}
+
+fn by_class<S: Serializer>(
+    classes: &[(String, ClassTotals)],
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    serializer.collect_map(classes.iter().map(|(class, totals)| (class, totals)))
 }
 
 /// The whole output dict. `commits` and `surfaces` keep the order the caller gives.
@@ -116,122 +81,128 @@ pub struct TaskChanges<'a> {
     pub surfaces: &'a [&'a TaskChangeSurface],
 }
 
-/// The task-changes dict.
-pub fn from_parts(changes: &TaskChanges<'_>) -> Value {
-    dict!({
-        "task_id": id(changes.task_id),
-        "task_key": text(changes.task_key),
-        "min_confidence": Value::Float(changes.min_confidence),
-        "commits": Value::List(changes.commits.iter().map(commit_entry).collect()),
-        "cumulative_churn": churn(changes.churn),
-        "final_change_surface": Value::List(changes.surfaces.iter().copied().map(surface).collect()),
-        "definitions": dict!({
-            "cumulative_churn": text(CUMULATIVE_CHURN_DEFINITION),
-            "final_change_surface": text(FINAL_SURFACE_DEFINITION),
-        }),
-    })
+/// The `cumulative_churn` dict when no commit is linked: nine keys, all zero.
+#[derive(Debug, Serialize)]
+pub struct NoCommitsChurn {
+    pub commits: i64,
+    pub insertions: i64,
+    pub deletions: i64,
+    pub files_touched: i64,
+    pub repeated_file_edits: i64,
+    pub functions_affected: i64,
+    pub types_affected: i64,
+    pub excluded_duplicates: i64,
+    pub excluded_merges: i64,
 }
 
-/// One entry of `commits`. `confidence` is the highest link confidence, starting from `0.0`.
-pub fn commit_entry(entry: &CommitEntry<'_>) -> Value {
-    let commit = entry.commit;
-    let confidence = entry
-        .links
-        .iter()
-        .fold(0.0_f64, |best, link| best.max(link.confidence.0));
-    dict!({
-        "commit_id": id(commit.id),
-        "sha": text(&commit.sha),
-        "repository_id": id(commit.repository_id),
-        "repository": text(entry.repository_name),
-        "subject": text(&commit.subject),
-        "author": text(&commit.author_name),
-        "committed_at": optional_timestamp(commit.committed_at, TimeFormat::Isoformat),
-        "insertions": int(commit.insertions),
-        "deletions": int(commit.deletions),
-        "files_changed": int(commit.files_changed),
-        "is_merge": Value::Bool(commit.is_merge),
-        "reachable": Value::Bool(commit.reachable),
-        "object_available": Value::Bool(commit.object_available),
-        "links": Value::List(entry.links.iter().map(|link| link_entry(link)).collect()),
-        "confidence": Value::Float(confidence),
-    })
+/// The `cumulative_churn` value: the zero dict or the counted totals.
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+pub enum ChurnOut<'a> {
+    None(NoCommitsChurn),
+    Counted(&'a ChurnTotals),
 }
 
-fn link_entry(link: &CommitTaskLink) -> Value {
-    dict!({
-        "source": text(&link.source),
-        "confidence": Value::Float(link.confidence.0),
-        "evidence": json_object(&link.evidence),
-        "attempt_id": link.attempt_id.map_or(Value::Null, id),
-    })
+/// The `definitions` block.
+#[derive(Debug, Serialize)]
+pub struct Definitions {
+    pub cumulative_churn: &'static str,
+    pub final_change_surface: &'static str,
 }
 
-/// The `cumulative_churn` dict: nine keys when no commit is linked, eleven otherwise.
-pub fn churn(churn: &Churn) -> Value {
-    match churn {
-        Churn::NoCommits => dict!({
-            "commits": int(0),
-            "insertions": int(0),
-            "deletions": int(0),
-            "files_touched": int(0),
-            "repeated_file_edits": int(0),
-            "functions_affected": int(0),
-            "types_affected": int(0),
-            "excluded_duplicates": int(0),
-            "excluded_merges": int(0),
-        }),
-        Churn::Counted(totals) => dict!({
-            "commits": int(totals.commits),
-            "insertions": int(totals.insertions),
-            "deletions": int(totals.deletions),
-            "files_touched": int(totals.files_touched),
-            "repeated_file_edits": int(totals.repeated_file_edits),
-            "functions_affected": int(totals.functions_affected),
-            "types_affected": int(totals.types_affected),
-            "structurally_analyzed_commits": int(totals.structurally_analyzed_commits),
-            "excluded_duplicates": int(totals.excluded_duplicates),
-            "excluded_merges": int(totals.excluded_merges),
-            "by_file_class": dict(
-                totals
-                    .by_file_class
-                    .iter()
-                    .map(|(class, t)| {
-                        (
-                            class.as_str(),
-                            dict!({
-                                "insertions": int(t.insertions),
-                                "deletions": int(t.deletions),
-                                "files": int(t.files),
-                            }),
-                        )
-                    })
-                    .collect(),
-            ),
-        }),
+wire_dto! {
+    /// The task-changes dict, keys in the order the service builds them.
+    pub struct TaskChangesOut<'a>("TaskChangesOut") dict from_parts(c: &'a TaskChanges<'a>) {
+        task_id: Id = c.task_id,
+        task_key: &'a str = c.task_key,
+        min_confidence: f64 = c.min_confidence,
+        commits: Vec<CommitOut<'a>> = c.commits.iter().map(CommitOut::new).collect(),
+        cumulative_churn: ChurnOut<'a> = churn_out(c.churn),
+        final_change_surface: Vec<SurfaceOut<'a>> = c.surfaces.iter().copied().map(SurfaceOut::new).collect(),
+        definitions: Definitions = Definitions {
+            cumulative_churn: CUMULATIVE_CHURN_DEFINITION,
+            final_change_surface: FINAL_SURFACE_DEFINITION,
+        },
     }
 }
 
-/// One entry of `final_change_surface`.
-pub fn surface(surface: &TaskChangeSurface) -> Value {
-    dict!({
-        "repository_id": id(surface.repository_id),
-        "base_sha": text(&surface.base_sha),
-        "final_sha": text(&surface.final_sha),
-        "files_changed": int(surface.files_changed),
-        "insertions": int(surface.insertions),
-        "deletions": int(surface.deletions),
-        "renames": int(surface.renames),
-        "binary_files": int(surface.binary_files),
-        "functions_affected": int(surface.functions_affected),
-        "types_affected": int(surface.types_affected),
-        "detail": json_object(&surface.detail),
-    })
+wire_dto! {
+    /// One entry of `commits`. `confidence` is the highest link confidence, starting from `0.0`.
+    pub struct CommitOut<'a>("CommitOut") dict commit_entry(e: &'a CommitEntry<'a>) {
+        commit_id: Id = e.commit.id,
+        sha: &'a str = &e.commit.sha,
+        repository_id: Id = e.commit.repository_id,
+        repository: &'a str = e.repository_name,
+        subject: &'a str = &e.commit.subject,
+        author: &'a str = &e.commit.author_name,
+        #[serde(serialize_with = "isoformat")]
+        committed_at: Option<Timestamp> = e.commit.committed_at,
+        insertions: i64 = e.commit.insertions,
+        deletions: i64 = e.commit.deletions,
+        files_changed: i64 = e.commit.files_changed,
+        is_merge: bool = e.commit.is_merge,
+        reachable: bool = e.commit.reachable,
+        object_available: bool = e.commit.object_available,
+        links: Vec<LinkOut<'a>> = e.links.iter().copied().map(LinkOut::new).collect(),
+        confidence: f64 = e.links.iter().fold(0.0_f64, |best, link| best.max(link.confidence.0)),
+    }
+}
+
+wire_dto! {
+    /// One link that attributes a commit to the task.
+    pub struct LinkOut<'a>("LinkOut") dict link_entry(l: &'a CommitTaskLink) {
+        source: &'a str = &l.source,
+        confidence: f64 = l.confidence.0,
+        #[serde(serialize_with = "json_map")]
+        evidence: &'a Map<String, Json> = &l.evidence,
+        attempt_id: Option<Id> = l.attempt_id,
+    }
+}
+
+wire_dto! {
+    /// One entry of `final_change_surface`.
+    pub struct SurfaceOut<'a>("SurfaceOut") dict surface(s: &'a TaskChangeSurface) {
+        repository_id: Id = s.repository_id,
+        base_sha: &'a str = &s.base_sha,
+        final_sha: &'a str = &s.final_sha,
+        files_changed: i64 = s.files_changed,
+        insertions: i64 = s.insertions,
+        deletions: i64 = s.deletions,
+        renames: i64 = s.renames,
+        binary_files: i64 = s.binary_files,
+        functions_affected: i64 = s.functions_affected,
+        types_affected: i64 = s.types_affected,
+        #[serde(serialize_with = "json_map")]
+        detail: &'a Map<String, Json> = &s.detail,
+    }
+}
+
+fn churn_out(churn: &Churn) -> ChurnOut<'_> {
+    match churn {
+        Churn::NoCommits => ChurnOut::None(NoCommitsChurn {
+            commits: 0,
+            insertions: 0,
+            deletions: 0,
+            files_touched: 0,
+            repeated_file_edits: 0,
+            functions_affected: 0,
+            types_affected: 0,
+            excluded_duplicates: 0,
+            excluded_merges: 0,
+        }),
+        Churn::Counted(totals) => ChurnOut::Counted(totals),
+    }
+}
+
+/// The `cumulative_churn` dict: nine keys when no commit is linked, eleven otherwise.
+pub fn churn(churn: &Churn) -> wg_json::Value {
+    wg_json::to_dict(&churn_out(churn))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use wg_json::Value;
 
     #[test]
     fn empty_churn_has_nine_keys() {

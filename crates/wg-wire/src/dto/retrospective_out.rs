@@ -1,29 +1,18 @@
 //! The result of `POST /reports/retrospective` (`generate_retrospective`).
 
-use wg_json::{Value, dict};
+use wg_json::Value;
 
-use crate::convention::text;
+use crate::wire_dto;
 
-/// The name of the result dict; it has no OpenAPI component schema.
-pub const NAME: &str = "RetrospectiveOut";
-
-/// The fields in the order `generate_retrospective` returns them.
-pub const FIELDS: [&str; 5] = ["id", "title", "narrative_source", "content", "facts"];
-
-/// A generated retrospective. `facts` is the measured block the narrative was written from; its
-/// own shape is built by the analytics engine and passed in as a value.
-pub fn from_parts(
-    id: &str,
-    title: &str,
-    narrative_source: &str,
-    content: &str,
-    facts: Value,
-) -> Value {
-    dict!({
-        "id": text(id),
-        "title": text(title),
-        "narrative_source": text(narrative_source),
-        "content": text(content),
-        "facts": facts,
-    })
+wire_dto! {
+    /// A generated retrospective. `facts` is the measured block the narrative was written from;
+    /// its own shape is built by the analytics engine and passed in as a value.
+    pub struct RetrospectiveOut<'a>("RetrospectiveOut")
+    dict from_parts(id: &'a str, title: &'a str, narrative_source: &'a str, content: &'a str, facts: Value) {
+        id: &'a str = id,
+        title: &'a str = title,
+        narrative_source: &'a str = narrative_source,
+        content: &'a str = content,
+        facts: Value = facts,
+    }
 }

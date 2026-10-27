@@ -1,22 +1,10 @@
 //! The result of `POST /analytics/compare`: one metric over two periods, with the change per group.
 
-use wg_json::{PyStr, Value, dict};
+use wg_json::{PyStr, Value};
 use wg_types::Timestamp;
 
-use crate::convention::{TimeFormat, text, texts, timestamp};
-
-/// The name of the result dict; it has no OpenAPI component schema.
-pub const NAME: &str = "AnalyticsCompareOut";
-
-/// The fields in the order `AnalyticsService.compare` builds them.
-pub const FIELDS: [&str; 6] = [
-    "metric",
-    "statistic",
-    "period_a",
-    "period_b",
-    "rows",
-    "notes",
-];
+use crate::convention::{TimeFormat, timestamp};
+use crate::wire_dto;
 
 /// The fields of a comparison row after its group keys, in order.
 pub const ROW_FIELDS: [&str; 6] = ["a", "b", "delta", "relative_change", "n_a", "n_b"];
@@ -36,27 +24,33 @@ pub fn row(group: Vec<(String, Value)>, values: [Value; 6]) -> Value {
     Value::Dict(fields)
 }
 
-/// A comparison. The periods print as `isoformat()` of the bounds (aware UTC from the request).
-pub fn from_parts(
-    metric: Value,
-    statistic: &str,
-    period_a: (Timestamp, Timestamp),
-    period_b: (Timestamp, Timestamp),
-    rows: Vec<Value>,
-    notes: &[&str],
-) -> Value {
-    let period = |(since, until): (Timestamp, Timestamp)| {
-        Value::List(vec![
-            timestamp(since, TimeFormat::Isoformat),
-            timestamp(until, TimeFormat::Isoformat),
-        ])
-    };
-    dict!({
-        "metric": metric,
-        "statistic": text(statistic),
-        "period_a": period(period_a),
-        "period_b": period(period_b),
-        "rows": Value::List(rows),
-        "notes": texts(notes.iter().copied()),
-    })
+wire_dto! {
+    /// A comparison. The periods print as `isoformat()` of the bounds (aware UTC from the request).
+    pub struct CompareOut<'a>("AnalyticsCompareOut")
+    dict from_parts(
+        metric: Value,
+        statistic: &'a str,
+        period_a: (Timestamp, Timestamp),
+        period_b: (Timestamp, Timestamp),
+        rows: Vec<Value>,
+        notes: &'a [&'a str]
+    ) {
+        metric: Value = metric,
+        statistic: &'a str = statistic,
+        #[serde(serialize_with = "bounds")]
+        period_a: (Timestamp, Timestamp) = period_a,
+        #[serde(serialize_with = "bounds")]
+        period_b: (Timestamp, Timestamp) = period_b,
+        rows: Vec<Value> = rows,
+        notes: &'a [&'a str] = notes,
+    }
+}
+
+/// A `[since, until]` pair of `isoformat()` bounds.
+fn bounds<S: serde::Serializer>(
+    period: &(Timestamp, Timestamp),
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    let at = |ts| timestamp(ts, TimeFormat::Isoformat);
+    serde::Serialize::serialize(&Value::List(vec![at(period.0), at(period.1)]), serializer)
 }

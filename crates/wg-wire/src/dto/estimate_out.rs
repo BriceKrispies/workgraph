@@ -3,13 +3,11 @@
 
 use wg_json::{Value, dict};
 
-use crate::convention::{int, optional_float, text, texts};
+use crate::convention::{text, texts};
+use crate::wire_dto;
 
 /// The name of the estimate dict; it has no OpenAPI component schema.
 pub const NAME: &str = "EstimateOut";
-
-/// The fields of the insufficient-data variant, in order.
-pub const INSUFFICIENT_FIELDS: [&str; 4] = ["status", "message", "comparable_tasks", "min_sample"];
 
 /// The fields of the ok variant, in order.
 pub const OK_FIELDS: [&str; 9] = [
@@ -38,20 +36,37 @@ pub const DISTRIBUTIONS_FIELDS: [&str; 7] = [
 /// The fields of one distribution (`distribution`), in order.
 pub const DISTRIBUTION_FIELDS: [&str; 7] = ["n", "p25", "median", "p75", "p90", "min", "max"];
 
-/// The fields of one comparable-task entry of `basis`, in order.
-pub const BASIS_FIELDS: [&str; 5] = ["task_id", "key", "title", "score", "reasons"];
+wire_dto! {
+    /// The refusal: fewer comparable tasks than the minimum sample.
+    pub struct Insufficient<'a>("EstimateInsufficient")
+    dict insufficient(message: &'a str, comparable_tasks: Vec<Value>, min_sample: i64) {
+        status: &'static str = "insufficient_data",
+        message: &'a str = message,
+        comparable_tasks: Vec<Value> = comparable_tasks,
+        min_sample: i64 = min_sample,
+    }
+}
 
-/// The fields of `verification`, in order.
-pub const VERIFICATION_FIELDS: [&str; 3] = ["runs", "passed", "pass_rate"];
+wire_dto! {
+    /// One comparable-task entry of `basis`.
+    pub struct BasisRow<'a>("EstimateBasis")
+    dict basis_row(task_id: &'a str, key: &'a str, title: &'a str, score: f64, reasons: &'a [&'a str]) {
+        task_id: &'a str = task_id,
+        key: &'a str = key,
+        title: &'a str = title,
+        score: f64 = score,
+        reasons: &'a [&'a str] = reasons,
+    }
+}
 
-/// The refusal: fewer comparable tasks than the minimum sample.
-pub fn insufficient(message: &str, comparable_tasks: Vec<Value>, min_sample: i64) -> Value {
-    dict!({
-        "status": text("insufficient_data"),
-        "message": text(message),
-        "comparable_tasks": Value::List(comparable_tasks),
-        "min_sample": int(min_sample),
-    })
+wire_dto! {
+    /// The `verification` block: the number of runs, how many passed and the rate, if any run.
+    pub struct VerificationBlock("EstimateVerification")
+    dict verification(runs: i64, passed: i64, pass_rate: Option<f64>) {
+        runs: i64 = runs,
+        passed: i64 = passed,
+        pass_rate: Option<f64> = pass_rate,
+    }
 }
 
 /// The ok estimate. `status` is always `ok`; `values` holds the other eight fields in
@@ -76,24 +91,4 @@ pub fn distribution(values: [Value; 7]) -> Value {
 /// The `distributions` block; the values are in [`DISTRIBUTIONS_FIELDS`] order.
 pub fn distributions(values: [Value; 7]) -> Value {
     dict(DISTRIBUTIONS_FIELDS.into_iter().zip(values).collect())
-}
-
-/// One comparable-task entry of `basis`.
-pub fn basis_row(task_id: &str, key: &str, title: &str, score: f64, reasons: &[&str]) -> Value {
-    dict!({
-        "task_id": text(task_id),
-        "key": text(key),
-        "title": text(title),
-        "score": Value::Float(score),
-        "reasons": texts(reasons.iter().copied()),
-    })
-}
-
-/// The `verification` block: the number of runs, how many passed and the rate, if any run.
-pub fn verification(runs: i64, passed: i64, pass_rate: Option<f64>) -> Value {
-    dict!({
-        "runs": int(runs),
-        "passed": int(passed),
-        "pass_rate": optional_float(pass_rate),
-    })
 }

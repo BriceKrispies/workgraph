@@ -6,30 +6,8 @@
 use wg_json::{Value, dict};
 use wg_types::Timestamp;
 
-use crate::convention::{TimeFormat, optional_text, optional_timestamp, text, texts};
-
-/// The name of the breakdown dict; it has no OpenAPI component schema.
-pub const BREAKDOWN_NAME: &str = "AgentTimeOut";
-
-/// The name of the bottleneck dict; it has no OpenAPI component schema.
-pub const BOTTLENECKS_NAME: &str = "BottlenecksOut";
-
-/// The fields of the breakdown, in order.
-pub const BREAKDOWN_FIELDS: [&str; 6] = ["by", "window", "model", "totals", "notes", "rows"];
-
-/// The fields of the bottleneck report, in order.
-pub const BOTTLENECKS_FIELDS: [&str; 7] = [
-    "window",
-    "totals",
-    "classes",
-    "slowest_calls",
-    "concurrency",
-    "by_task",
-    "notes",
-];
-
-/// The fields of `window`.
-pub const WINDOW_FIELDS: [&str; 2] = ["since", "until"];
+use crate::convention::isoformat;
+use crate::wire_dto;
 
 /// The fields of `totals`, in order.
 pub const TOTALS_FIELDS: [&str; 10] = [
@@ -78,12 +56,14 @@ pub const SLOWEST_FIELDS: [&str; 9] = [
 pub const CONCURRENCY_FIELDS: [&str; 3] =
     ["peak_during_window", "median_at_slowest_calls", "scope"];
 
-/// The `window` block: the optional bounds as `isoformat()` of aware UTC datetimes.
-pub fn window(since: Option<Timestamp>, until: Option<Timestamp>) -> Value {
-    dict!({
-        "since": optional_timestamp(since, TimeFormat::Isoformat),
-        "until": optional_timestamp(until, TimeFormat::Isoformat),
-    })
+wire_dto! {
+    /// The `window` block: the optional bounds as `isoformat()` of aware UTC datetimes.
+    pub struct Window("Window") dict window(since: Option<Timestamp>, until: Option<Timestamp>) {
+        #[serde(serialize_with = "isoformat")]
+        since: Option<Timestamp> = since,
+        #[serde(serialize_with = "isoformat")]
+        until: Option<Timestamp> = until,
+    }
 }
 
 /// The `totals` block; the values are in [`TOTALS_FIELDS`] order.
@@ -111,42 +91,37 @@ pub fn concurrency(values: [Value; 3]) -> Value {
     dict(CONCURRENCY_FIELDS.into_iter().zip(values).collect())
 }
 
-/// The breakdown. `rows` are class rows when `by` is `class`, group rows otherwise.
-pub fn breakdown(
-    by: &str,
-    window: Value,
-    model: Option<&str>,
-    totals: Value,
-    notes: &[&str],
-    rows: Vec<Value>,
-) -> Value {
-    dict!({
-        "by": text(by),
-        "window": window,
-        "model": optional_text(model),
-        "totals": totals,
-        "notes": texts(notes.iter().copied()),
-        "rows": Value::List(rows),
-    })
+wire_dto! {
+    /// The breakdown. `rows` are class rows when `by` is `class`, group rows otherwise.
+    pub struct Breakdown<'a>("AgentTimeOut")
+    dict breakdown(by: &'a str, window: Value, model: Option<&'a str>, totals: Value, notes: &'a [&'a str], rows: Vec<Value>) {
+        by: &'a str = by,
+        window: Value = window,
+        model: Option<&'a str> = model,
+        totals: Value = totals,
+        notes: &'a [&'a str] = notes,
+        rows: Vec<Value> = rows,
+    }
 }
 
-/// The bottleneck report. `classes` are class rows, `by_task` group rows.
-pub fn bottlenecks(
-    window: Value,
-    totals: Value,
-    classes: Vec<Value>,
-    slowest_calls: Vec<Value>,
-    concurrency: Value,
-    by_task: Vec<Value>,
-    notes: &[&str],
-) -> Value {
-    dict!({
-        "window": window,
-        "totals": totals,
-        "classes": Value::List(classes),
-        "slowest_calls": Value::List(slowest_calls),
-        "concurrency": concurrency,
-        "by_task": Value::List(by_task),
-        "notes": texts(notes.iter().copied()),
-    })
+wire_dto! {
+    /// The bottleneck report. `classes` are class rows, `by_task` group rows.
+    pub struct Bottlenecks<'a>("BottlenecksOut")
+    dict bottlenecks(
+        window: Value,
+        totals: Value,
+        classes: Vec<Value>,
+        slowest_calls: Vec<Value>,
+        concurrency: Value,
+        by_task: Vec<Value>,
+        notes: &'a [&'a str]
+    ) {
+        window: Value = window,
+        totals: Value = totals,
+        classes: Vec<Value> = classes,
+        slowest_calls: Vec<Value> = slowest_calls,
+        concurrency: Value = concurrency,
+        by_task: Vec<Value> = by_task,
+        notes: &'a [&'a str] = notes,
+    }
 }

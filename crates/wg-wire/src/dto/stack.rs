@@ -3,26 +3,32 @@
 use wg_json::Value;
 use wg_model::entity::stack::{Stack, StackItem, StackRepository};
 use wg_model::entity::task::Task;
+use wg_types::{Id, TaskKey, Timestamp};
 
-use crate::convention::{TimeFormat, id, model, text, timestamp};
-use crate::dto::{stack_item, stack_repository};
+use crate::convention::{display, model_z};
+use crate::dto::Dto;
+use crate::dto::stack_item::StackItemOut;
+use crate::dto::stack_repository::StackRepositoryOut;
+use crate::wire_dto;
 
-/// The OpenAPI component schema this DTO mirrors.
-pub const NAME: &str = "StackOut";
-
-/// The fields in Python declaration order.
-pub const FIELDS: [&str; 10] = [
-    "id",
-    "workspace_id",
-    "parent_task_id",
-    "parent_key",
-    "parent_title",
-    "status",
-    "repositories",
-    "items",
-    "created_at",
-    "updated_at",
-];
+wire_dto! {
+    /// A stack as the API returns it.
+    pub struct StackOut<'a>("StackOut") {
+        pub id: Id,
+        pub workspace_id: Id,
+        pub parent_task_id: Id,
+        #[serde(serialize_with = "display")]
+        pub parent_key: &'a TaskKey,
+        pub parent_title: &'a str,
+        pub status: &'a str,
+        pub repositories: Vec<StackRepositoryOut<'a>>,
+        pub items: Vec<StackItemOut<'a>>,
+        #[serde(serialize_with = "model_z")]
+        pub created_at: Timestamp,
+        #[serde(serialize_with = "model_z")]
+        pub updated_at: Timestamp,
+    }
+}
 
 /// A stack as the API returns it. `parent` is the stack's parent task. `repositories` pairs each
 /// repository row with its repository name, and `items` pairs each item with its child task; the
@@ -52,41 +58,23 @@ pub fn with_tips<'a>(
     repositories: impl IntoIterator<Item = (&'a StackRepository, &'a str, Option<&'a str>)>,
     items: impl IntoIterator<Item = (&'a StackItem, &'a Task)>,
 ) -> Value {
-    model(
-        NAME,
-        vec![
-            ("id", id(stack.id)),
-            ("workspace_id", id(stack.workspace_id)),
-            ("parent_task_id", id(stack.parent_task_id)),
-            ("parent_key", text(&parent.key.to_string())),
-            ("parent_title", text(&parent.title)),
-            ("status", text(stack.status.as_str())),
-            (
-                "repositories",
-                Value::List(
-                    repositories
-                        .into_iter()
-                        .map(|(row, name, tip)| stack_repository::with_tip(row, name, tip))
-                        .collect(),
-                ),
-            ),
-            (
-                "items",
-                Value::List(
-                    items
-                        .into_iter()
-                        .map(|(item, task)| stack_item::from_model(item, task))
-                        .collect(),
-                ),
-            ),
-            (
-                "created_at",
-                timestamp(stack.created_at, TimeFormat::ModelZ),
-            ),
-            (
-                "updated_at",
-                timestamp(stack.updated_at, TimeFormat::ModelZ),
-            ),
-        ],
-    )
+    StackOut {
+        id: stack.id,
+        workspace_id: stack.workspace_id,
+        parent_task_id: stack.parent_task_id,
+        parent_key: &parent.key,
+        parent_title: &parent.title,
+        status: stack.status.as_str(),
+        repositories: repositories
+            .into_iter()
+            .map(|(row, name, tip)| StackRepositoryOut::new(row, name, tip))
+            .collect(),
+        items: items
+            .into_iter()
+            .map(|(item, task)| StackItemOut::new(item, task))
+            .collect(),
+        created_at: stack.created_at,
+        updated_at: stack.updated_at,
+    }
+    .value()
 }

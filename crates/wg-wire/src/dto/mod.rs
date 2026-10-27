@@ -239,29 +239,34 @@ pub const fn concat_fields<const N: usize>(
     all
 }
 
+/// A DTO's schema name and field names, for [`implemented`].
+fn of<T: Dto>() -> (&'static str, &'static [&'static str]) {
+    (T::NAME, T::FIELDS)
+}
+
 /// The DTOs that exist: the OpenAPI component schema name and the field names in order.
 pub fn implemented() -> Vec<(&'static str, &'static [&'static str])> {
     let mut list = vec![
-        (repository_brief::NAME, repository_brief::FIELDS.as_slice()),
-        (task::NAME, task::FIELDS.as_slice()),
-        (task_detail::NAME, task_detail::FIELDS.as_slice()),
-        (task_brief::NAME, task_brief::FIELDS.as_slice()),
-        (task_file::NAME, task_file::FIELDS.as_slice()),
-        (task_link::NAME, task_link::FIELDS.as_slice()),
-        (task_rollup::NAME, task_rollup::FIELDS.as_slice()),
-        (dependency_state::NAME, dependency_state::FIELDS.as_slice()),
-        (comment::NAME, comment::FIELDS.as_slice()),
-        (relation::NAME, relation::FIELDS.as_slice()),
-        (graph_node::NAME, graph_node::FIELDS.as_slice()),
-        (graph_edge::NAME, graph_edge::FIELDS.as_slice()),
-        (task_graph::NAME, task_graph::FIELDS.as_slice()),
-        (page::NAME, page::FIELDS.as_slice()),
-        (stack::NAME, stack::FIELDS.as_slice()),
-        (stack_item::NAME, stack_item::FIELDS.as_slice()),
-        (stack_repository::NAME, stack_repository::FIELDS.as_slice()),
+        of::<repository_brief::RepositoryBrief>(),
+        of::<task::TaskOut>(),
+        of::<task_detail::TaskDetail>(),
+        of::<task_brief::TaskBrief>(),
+        of::<task_file::TaskFileOut>(),
+        of::<task_link::TaskLinkOut>(),
+        of::<task_rollup::TaskRollup>(),
+        of::<dependency_state::DependencyState>(),
+        of::<comment::CommentOut>(),
+        of::<relation::RelationOut>(),
+        of::<graph_node::GraphNode>(),
+        of::<graph_edge::GraphEdge>(),
+        of::<task_graph::TaskGraph>(),
+        of::<page::Page>(),
+        of::<stack::StackOut>(),
+        of::<stack_item::StackItemOut>(),
+        of::<stack_repository::StackRepositoryOut>(),
         (stack_create::NAME, stack_create::FIELDS.as_slice()),
         (stack_item_add::NAME, stack_item_add::FIELDS.as_slice()),
-        (event::NAME, event::FIELDS.as_slice()),
+        of::<event::EventOut>(),
         (
             analytics_compare_body::NAME,
             analytics_compare_body::FIELDS.as_slice(),
@@ -274,11 +279,8 @@ pub fn implemented() -> Vec<(&'static str, &'static [&'static str])> {
             analytics_export_body::NAME,
             analytics_export_body::FIELDS.as_slice(),
         ),
-        (
-            analytics_filters::NAME,
-            analytics_filters::FIELDS.as_slice(),
-        ),
-        (analytics_query::NAME, analytics_query::FIELDS.as_slice()),
+        of::<analytics_filters::Filters>(),
+        of::<analytics_query::QueryEcho>(),
         (retro_body::NAME, retro_body::FIELDS.as_slice()),
     ];
     list.extend(bodies::ALL.iter().map(|body| (body.name, body.fields)));

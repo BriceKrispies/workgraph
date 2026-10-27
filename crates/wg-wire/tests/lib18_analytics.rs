@@ -118,7 +118,7 @@ fn sample_evaluation() -> ClassificationEvaluation {
 #[test]
 fn classification_out_lists_its_fields_and_prints_z_timestamps() {
     let value = classification_out::from_model(&sample_classification());
-    assert_eq!(names(&value), classification_out::FIELDS);
+    assert_eq!(names(&value), classification_out::ClassificationOut::FIELDS);
     let text = printed(&value);
     assert!(
         text.contains("\"created_at\":\"2026-10-25T13:56:00.411471Z\""),
@@ -138,17 +138,26 @@ fn task_classifications_wraps_current_and_history() {
         history,
         false,
     );
-    assert_eq!(names(&value), classification_task::FIELDS);
+    assert_eq!(
+        names(&value),
+        classification_task::TaskClassifications::FIELDS
+    );
     assert!(printed(&value).contains("\"note\":\"Model classifications are inferences"));
 }
 
 #[test]
 fn classification_job_and_evaluation_are_dicts_with_isoformat_times() {
     let job = classification_job::from_parts("j", "t", "DEMO-1", "queued");
-    assert_eq!(names(&job), classification_job::FIELDS);
+    assert_eq!(
+        names(&job),
+        classification_job::ClassificationRequestOut::FIELDS
+    );
 
     let evaluation = classification_evaluation::from_model(&sample_evaluation());
-    assert_eq!(names(&evaluation), classification_evaluation::FIELDS);
+    assert_eq!(
+        names(&evaluation),
+        classification_evaluation::Evaluation::FIELDS
+    );
     let text = printed(&evaluation);
     assert!(
         text.contains("\"created_at\":\"2026-10-25T13:56:00+00:00\""),
@@ -160,9 +169,12 @@ fn classification_job_and_evaluation_are_dicts_with_isoformat_times() {
 #[test]
 fn disagreement_items_list_their_fields() {
     let item = classification_disagreement::item_from_model(&sample_classification());
-    assert_eq!(names(&item), classification_disagreement::ITEM_FIELDS);
+    assert_eq!(names(&item), classification_disagreement::Item::FIELDS);
     let entry = classification_disagreement::from_parts("t", "DEMO-1", vec![item]);
-    assert_eq!(names(&entry), classification_disagreement::FIELDS);
+    assert_eq!(
+        names(&entry),
+        classification_disagreement::Disagreement::FIELDS
+    );
 }
 
 #[test]
@@ -179,9 +191,9 @@ fn search_result_and_hit_print_as_models() {
         similarity: None,
         snippet: Some("Improve [token] validation"),
     });
-    assert_eq!(names(&hit), search_result::HIT_FIELDS);
+    assert_eq!(names(&hit), search_result::Hit::FIELDS);
     let result = search_result::from_parts("token", "lexical", false, None, vec![hit], None);
-    assert_eq!(names(&result), search_result::FIELDS);
+    assert_eq!(names(&result), search_result::SearchResult::FIELDS);
     assert!(printed(&result).contains("\"semantic_available\":false"));
 }
 
@@ -192,7 +204,7 @@ fn filters_echo_prints_datetimes_in_the_z_form() {
         ..Filters::default()
     };
     let value = analytics_filters::echo(&filters);
-    assert_eq!(names(&value), analytics_filters::FIELDS);
+    assert_eq!(names(&value), analytics_filters::Filters::FIELDS);
     assert!(
         printed(&value).contains("\"since\":\"2026-10-25T13:56:00Z\""),
         "{}",
@@ -204,10 +216,10 @@ fn filters_echo_prints_datetimes_in_the_z_form() {
 fn query_echo_and_result_list_their_fields() {
     let filters = analytics_filters::echo(&Filters::default());
     let echo = analytics_query::echo("tasks_created", &["period"], "week", filters, 500);
-    assert_eq!(names(&echo), analytics_query::FIELDS);
+    assert_eq!(names(&echo), analytics_query::QueryEcho::FIELDS);
 
     let provenance = analytics_query_out::provenance("SELECT 1", "snapshot", at(0));
-    assert_eq!(names(&provenance), analytics_query_out::PROVENANCE_FIELDS);
+    assert_eq!(names(&provenance), analytics_query_out::Provenance::FIELDS);
     assert!(printed(&provenance).contains("\"generated_at\":\"2026-10-25T13:56:00+00:00\""));
 
     let metric = metric_definition::from_parts(&MetricDefinition {
@@ -221,7 +233,7 @@ fn query_echo_and_result_list_their_fields() {
         dimensions: vec!["agent", "category", "period"],
         caveats: vec![],
     });
-    assert_eq!(names(&metric), metric_definition::FIELDS);
+    assert_eq!(names(&metric), metric_definition::MetricDefinition::FIELDS);
 
     let result = analytics_query_out::from_parts(
         metric,
@@ -231,7 +243,10 @@ fn query_echo_and_result_list_their_fields() {
         provenance,
         &["Metrics describe observed associations."],
     );
-    assert_eq!(names(&result), analytics_query_out::FIELDS);
+    assert_eq!(
+        names(&result),
+        analytics_query_out::AnalyticsQueryOut::FIELDS
+    );
 }
 
 #[test]
@@ -267,7 +282,7 @@ fn compare_rows_put_group_keys_first_then_the_values() {
         vec![row],
         &[],
     );
-    assert_eq!(names(&value), analytics_compare_out::FIELDS);
+    assert_eq!(names(&value), analytics_compare_out::CompareOut::FIELDS);
     assert!(printed(&value).contains("\"period_a\""));
 }
 
@@ -310,7 +325,7 @@ fn task_history_row_prints_accepted_at_without_offset() {
             offset_seconds: None,
         },
     });
-    assert_eq!(names(&row), task_history_row::FIELDS);
+    assert_eq!(names(&row), task_history_row::TaskHistoryRow::FIELDS);
     assert!(printed(&row).contains("\"accepted_at\":\"2026-10-25T13:56:00\""));
 }
 
@@ -318,10 +333,10 @@ fn task_history_row_prints_accepted_at_without_offset() {
 fn report_entries_retrospectives_and_failures_list_their_fields() {
     let report =
         analytics_report_entry::from_parts("r", "retrospective", "Retro", "model", at(0), "body");
-    assert_eq!(names(&report), analytics_report_entry::FIELDS);
+    assert_eq!(names(&report), analytics_report_entry::ReportOut::FIELDS);
 
     let retro = retrospective_out::from_parts("r", "Retro", "model", "body", Value::Null);
-    assert_eq!(names(&retro), retrospective_out::FIELDS);
+    assert_eq!(names(&retro), retrospective_out::RetrospectiveOut::FIELDS);
 
     let finding = failures_out::finding(
         "dependency_bottleneck",
@@ -332,9 +347,9 @@ fn report_entries_retrospectives_and_failures_list_their_fields() {
         Value::Null,
         "fp",
     );
-    assert_eq!(names(&finding), failures_out::FINDING_FIELDS);
+    assert_eq!(names(&finding), failures_out::Finding::FIELDS);
     let report = failures_out::from_parts(at(0), vec![finding], "note");
-    assert_eq!(names(&report), failures_out::FIELDS);
+    assert_eq!(names(&report), failures_out::FailuresOut::FIELDS);
 }
 
 #[test]
@@ -348,14 +363,17 @@ fn coupling_report_and_summary_list_their_fields() {
 #[test]
 fn estimate_variants_list_their_fields() {
     let refusal = estimate_out::insufficient("too few", Vec::new(), 5);
-    assert_eq!(names(&refusal), estimate_out::INSUFFICIENT_FIELDS);
+    assert_eq!(names(&refusal), estimate_out::Insufficient::FIELDS);
 
     let basis = estimate_out::basis_row("id", "DEMO-1", "Title", 0.5, &["same category"]);
-    assert_eq!(names(&basis), estimate_out::BASIS_FIELDS);
+    assert_eq!(names(&basis), estimate_out::BasisRow::FIELDS);
     let distribution = estimate_out::distribution(std::array::from_fn(|_| Value::Null));
     assert_eq!(names(&distribution), estimate_out::DISTRIBUTION_FIELDS);
     let verification = estimate_out::verification(3, 2, Some(0.667));
-    assert_eq!(names(&verification), estimate_out::VERIFICATION_FIELDS);
+    assert_eq!(
+        names(&verification),
+        estimate_out::VerificationBlock::FIELDS
+    );
 
     let ok = estimate_out::ok(std::array::from_fn(|_| Value::Null));
     assert_eq!(names(&ok), estimate_out::OK_FIELDS);
@@ -364,7 +382,7 @@ fn estimate_variants_list_their_fields() {
 #[test]
 fn agent_time_and_bottleneck_reports_list_their_fields() {
     let window = agent_time_out::window(None, Some(at(0)));
-    assert_eq!(names(&window), agent_time_out::WINDOW_FIELDS);
+    assert_eq!(names(&window), agent_time_out::Window::FIELDS);
     assert!(printed(&window).contains("\"until\":\"2026-10-25T13:56:00+00:00\""));
 
     let totals = agent_time_out::totals(std::array::from_fn(|_| Value::Null));
@@ -380,11 +398,11 @@ fn agent_time_and_bottleneck_reports_list_their_fields() {
 
     let breakdown =
         agent_time_out::breakdown("class", window.clone(), None, totals.clone(), &[], vec![]);
-    assert_eq!(names(&breakdown), agent_time_out::BREAKDOWN_FIELDS);
+    assert_eq!(names(&breakdown), agent_time_out::Breakdown::FIELDS);
 
     let bottlenecks =
         agent_time_out::bottlenecks(window, totals, vec![], vec![], concurrency, vec![], &[]);
-    assert_eq!(names(&bottlenecks), agent_time_out::BOTTLENECKS_FIELDS);
+    assert_eq!(names(&bottlenecks), agent_time_out::Bottlenecks::FIELDS);
 }
 
 #[test]

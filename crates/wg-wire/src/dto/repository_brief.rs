@@ -1,25 +1,16 @@
 //! `RepositoryBrief`.
 
-use wg_json::Value;
 use wg_model::entity::repository::Repository;
+use wg_types::Id;
 
-use crate::convention::{id, model, text};
+use crate::wire_dto;
 
-/// The OpenAPI component schema this DTO mirrors.
-pub const NAME: &str = "RepositoryBrief";
-
-/// The fields in Python declaration order.
-pub const FIELDS: [&str; 4] = ["id", "name", "access_mode", "health_status"];
-
-/// The short form of a repository, as project summaries list it.
-pub fn from_model(repository: &Repository) -> Value {
-    model(
-        NAME,
-        vec![
-            ("id", id(repository.id)),
-            ("name", text(&repository.name)),
-            ("access_mode", text(repository.access_mode.as_str())),
-            ("health_status", text(&repository.health_status)),
-        ],
-    )
+wire_dto! {
+    /// The short form of a repository, as project summaries list it.
+    pub struct RepositoryBrief<'a>("RepositoryBrief") value from_model(r: &'a Repository) {
+        id: Id = r.id,
+        name: &'a str = &r.name,
+        access_mode: &'a str = r.access_mode.as_str(),
+        health_status: &'a str = &r.health_status,
+    }
 }

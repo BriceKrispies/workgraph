@@ -21,7 +21,7 @@ use wg_model::{Decision, EventDraft, EventPayload, Stamp, Write, derive_id};
 use wg_runtime::{App, RequestContext};
 use wg_server::{Server, ServerOptions, Ui, groups, router};
 use wg_types::{Id, WgError};
-use wg_wire::dto::event::FIELDS;
+use wg_wire::dto::event::EventOut;
 
 type TestResult = Result<(), Box<dyn Error>>;
 
@@ -208,7 +208,7 @@ async fn history_lists_the_workspace_events_as_event_out() -> TestResult {
         .map(String::as_str)
         .collect();
     keys.sort_unstable();
-    let mut expected = FIELDS.to_vec();
+    let mut expected = EventOut::FIELDS.to_vec();
     expected.sort_unstable();
     assert_eq!(keys, expected);
 

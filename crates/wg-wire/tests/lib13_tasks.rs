@@ -112,7 +112,10 @@ fn every_task_dto_lists_its_fields_in_order() {
         ..TaskRelated::default()
     };
 
-    assert_eq!(names(&task::from_model(&task_row, &related)), task::FIELDS);
+    assert_eq!(
+        names(&task::from_model(&task_row, &related)),
+        task::TaskOut::FIELDS
+    );
     assert_eq!(
         names(&task_detail::from_model(
             &task_row,
@@ -122,25 +125,31 @@ fn every_task_dto_lists_its_fields_in_order() {
             None,
             None,
         )),
-        task_detail::FIELDS
+        task_detail::TaskDetail::FIELDS
     );
     assert_eq!(
         names(&task_brief::from_model(&task_row)),
-        task_brief::FIELDS
+        task_brief::TaskBrief::FIELDS
     );
-    assert_eq!(names(&task_file::from_model(&files[0])), task_file::FIELDS);
-    assert_eq!(names(&task_link::from_model(&links[0])), task_link::FIELDS);
+    assert_eq!(
+        names(&task_file::from_model(&files[0])),
+        task_file::TaskFileOut::FIELDS
+    );
+    assert_eq!(
+        names(&task_link::from_model(&links[0])),
+        task_link::TaskLinkOut::FIELDS
+    );
     assert_eq!(
         names(&task_rollup::from_model(2, &[("ready".into(), 2)], 0, 0.0)),
-        task_rollup::FIELDS
+        task_rollup::TaskRollup::FIELDS
     );
     assert_eq!(
         names(&dependency_state::from_model(true, Vec::new())),
-        dependency_state::FIELDS
+        dependency_state::DependencyState::FIELDS
     );
     assert_eq!(
         names(&graph_node::from_model(&task_row, &[], &[], &tags, false)),
-        graph_node::FIELDS
+        graph_node::GraphNode::FIELDS
     );
     assert_eq!(
         names(&graph_edge::from_model(
@@ -149,15 +158,15 @@ fn every_task_dto_lists_its_fields_in_order() {
             graph_edge::EdgeKind::Relation,
             Some(RelationType::RelatesTo.as_str()),
         )),
-        graph_edge::FIELDS
+        graph_edge::GraphEdge::FIELDS
     );
     assert_eq!(
         names(&task_graph::from_model(Vec::new(), Vec::new())),
-        task_graph::FIELDS
+        task_graph::TaskGraph::FIELDS
     );
     assert_eq!(
         names(&page::from_model(Vec::new(), 0, 50, 0, None)),
-        page::FIELDS
+        page::Page::FIELDS
     );
 }
 
@@ -183,10 +192,13 @@ fn every_comment_and_relation_dto_lists_its_fields_in_order() {
         created_at: at(0),
     };
 
-    assert_eq!(names(&comment::from_model(&comment_row)), comment::FIELDS);
+    assert_eq!(
+        names(&comment::from_model(&comment_row)),
+        comment::CommentOut::FIELDS
+    );
     assert_eq!(
         names(&relation::from_model(&relation_row)),
-        relation::FIELDS
+        relation::RelationOut::FIELDS
     );
 }
 

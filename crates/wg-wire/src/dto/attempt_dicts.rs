@@ -5,17 +5,14 @@
 //! `attempt_log`), so they have no OpenAPI component. A manifest's `created_at` is Python's
 //! `isoformat()` text (`+00:00`); nothing else here is a datetime.
 
-use serde_json::Value as Json;
+use rpds::VectorSync;
+use serde_json::{Map, Value as Json};
 use wg_json::{PyStr, Value, dict};
 use wg_model::entity::run::{AgentAttempt, RevisionManifest};
+use wg_types::{Id, Timestamp};
 
-use crate::convention::{TimeFormat, id, int, json_object, json_value, text, timestamp};
-
-/// The name of the manifest dict; it has no OpenAPI component schema.
-pub const MANIFEST_NAME: &str = "ManifestOut";
-
-/// The keys of one manifest, in the order `AttemptService.manifests` builds them.
-pub const MANIFEST_FIELDS: [&str; 4] = ["id", "kind", "entries", "created_at"];
+use crate::convention::{id, isoformat, json_object, json_objects, json_value};
+use crate::wire_dto;
 
 /// The keys of the comparison, in the order `AttemptService.compare` builds them.
 pub const COMPARE_FIELDS: [&str; 7] = [
@@ -43,17 +40,35 @@ pub const COMPARED_FIELDS: [&str; 11] = [
     "modified_repository_ids",
 ];
 
-/// The keys of `GET /attempts/{id}/log` when the log exists.
-pub const LOG_FIELDS: [&str; 3] = ["lines", "available", "total_lines"];
+wire_dto! {
+    /// One manifest of an attempt, keys in the order `AttemptService.manifests` builds them.
+    pub struct ManifestOut<'a>("ManifestOut") dict manifest(row: &'a RevisionManifest) {
+        id: Id = row.id,
+        kind: &'a str = &row.kind,
+        #[serde(serialize_with = "json_objects")]
+        entries: &'a VectorSync<Map<String, Json>> = &row.entries,
+        #[serde(serialize_with = "isoformat")]
+        created_at: Timestamp = row.created_at,
+    }
+}
 
-/// One manifest of an attempt.
-pub fn manifest(row: &RevisionManifest) -> Value {
-    dict!({
-        "id": id(row.id),
-        "kind": text(&row.kind),
-        "entries": Value::List(row.entries.iter().map(json_object).collect()),
-        "created_at": timestamp(row.created_at, TimeFormat::Isoformat),
-    })
+wire_dto! {
+    /// `GET /attempts/{id}/log`: `lines` is the tail already cut; `total_lines` is the line count
+    /// of the whole log. A missing log answers `{"lines": [], "available": false}` (see
+    /// [`log_missing`]).
+    pub struct LogOut<'a>("LogOut") dict log(lines: &'a [&'a str], total_lines: i64) {
+        lines: &'a [&'a str] = lines,
+        available: bool = true,
+        total_lines: i64 = total_lines,
+    }
+}
+
+wire_dto! {
+    /// `GET /attempts/{id}/log` when the log file does not exist.
+    pub struct LogMissing("LogMissing") dict log_missing() {
+        lines: [&'static str; 0] = [],
+        available: bool = false,
+    }
 }
 
 /// The manifests of an attempt, in the order given (`created_at` ascending).
@@ -165,23 +180,5 @@ pub fn compare(
             "a": by_kind(manifests_a),
             "b": by_kind(manifests_b),
         }),
-    })
-}
-
-/// `GET /attempts/{id}/log`. `lines` is the tail already cut; `total_lines` is the line count of
-/// the whole log. A missing log answers `{"lines": [], "available": false}` (see [`log_missing`]).
-pub fn log(lines: &[&str], total_lines: i64) -> Value {
-    dict!({
-        "lines": Value::List(lines.iter().map(|line| text(line)).collect()),
-        "available": Value::Bool(true),
-        "total_lines": int(total_lines),
-    })
-}
-
-/// `GET /attempts/{id}/log` when the log file does not exist.
-pub fn log_missing() -> Value {
-    dict!({
-        "lines": Value::List(Vec::new()),
-        "available": Value::Bool(false),
     })
 }

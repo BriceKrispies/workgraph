@@ -4,44 +4,28 @@
 //! It is a Pydantic model of `integrations/git/service.py`, not of `schemas.py`, and no route
 //! declares it as a response model, so the OpenAPI snapshot has no component for it.
 
-use wg_json::Value;
+use serde_json::{Map, Value as Json};
 use wg_model::entity::git::CommitTaskLink;
-use wg_types::Id;
+use wg_types::{Id, Timestamp};
 
-use crate::convention::{TimeFormat, id, json_object, model, optional_id, text, timestamp};
+use crate::convention::{json_map, model_z};
+use crate::wire_dto;
 
-/// The Python class name.
-pub const NAME: &str = "CommitLinkOut";
-
-/// The fields in Python declaration order.
-pub const FIELDS: [&str; 10] = [
-    "id",
-    "commit_id",
-    "sha",
-    "repository_id",
-    "task_id",
-    "source",
-    "confidence",
-    "evidence",
-    "attempt_id",
-    "created_at",
-];
-
-/// A link row with the commit's `sha` and `repository_id` (columns of the commit it points at).
-pub fn from_model(link: &CommitTaskLink, sha: &str, repository_id: Id) -> Value {
-    model(
-        NAME,
-        vec![
-            ("id", id(link.id)),
-            ("commit_id", id(link.commit_id)),
-            ("sha", text(sha)),
-            ("repository_id", id(repository_id)),
-            ("task_id", id(link.task_id)),
-            ("source", text(&link.source)),
-            ("confidence", Value::Float(link.confidence.0)),
-            ("evidence", json_object(&link.evidence)),
-            ("attempt_id", optional_id(link.attempt_id)),
-            ("created_at", timestamp(link.created_at, TimeFormat::ModelZ)),
-        ],
-    )
+wire_dto! {
+    /// A link row with the commit's `sha` and `repository_id` (columns of the commit it points at).
+    pub struct CommitLinkOut<'a>("CommitLinkOut")
+    value from_model(l: &'a CommitTaskLink, sha: &'a str, repository_id: Id) {
+        id: Id = l.id,
+        commit_id: Id = l.commit_id,
+        sha: &'a str = sha,
+        repository_id: Id = repository_id,
+        task_id: Id = l.task_id,
+        source: &'a str = &l.source,
+        confidence: f64 = l.confidence.0,
+        #[serde(serialize_with = "json_map")]
+        evidence: &'a Map<String, Json> = &l.evidence,
+        attempt_id: Option<Id> = l.attempt_id,
+        #[serde(serialize_with = "model_z")]
+        created_at: Timestamp = l.created_at,
+    }
 }

@@ -5,103 +5,88 @@
 //! statistics of a report (band rows, the size fit, usage) are computed by the core crates and
 //! arrive here already as values; this module fixes only their keys and order.
 
-use wg_json::{Value, dict};
+use serde_json::{Map, Value as Json};
+use wg_json::Value;
 use wg_model::entity::JsonObject;
 
-use crate::convention::{counts, int, json_object, optional_float, optional_text, text};
+use crate::convention::{counts_field, json_map};
+use crate::wire_dto;
 
-/// `experiment_list`: `{"experiments": [ExperimentOut, ...]}`.
-pub fn experiments(items: Vec<Value>) -> Value {
-    dict!({ "experiments": Value::List(items) })
+wire_dto! {
+    /// `experiment_list`: `{"experiments": [ExperimentOut, ...]}`.
+    pub struct Experiments("Experiments") dict experiments(experiments: Vec<Value>) {
+        experiments: Vec<Value> = experiments,
+    }
 }
 
-/// `experiment_get`: `{"experiment": ExperimentOut, "trials": [TrialOut, ...]}`.
-pub fn experiment(experiment: Value, trials: Vec<Value>) -> Value {
-    dict!({
-        "experiment": experiment,
-        "trials": Value::List(trials),
-    })
+wire_dto! {
+    /// `experiment_get`: `{"experiment": ExperimentOut, "trials": [TrialOut, ...]}`.
+    pub struct ExperimentGet("ExperimentGet") dict experiment(experiment: Value, trials: Vec<Value>) {
+        experiment: Value = experiment,
+        trials: Vec<Value> = trials,
+    }
 }
 
-/// The staircase state of a `Step` dict: `phase`, `band`, `reversals`, `threshold`, `visits`.
-/// Each visit is a `(band, passes, trials)` triple, printed as a list.
-pub fn step(
-    phase: &str,
-    band: Option<i64>,
-    reversals: i64,
-    threshold: Option<f64>,
-    visits: &[(i64, i64, i64)],
-) -> Value {
-    dict!({
-        "phase": text(phase),
-        "band": band.map_or(Value::Null, int),
-        "reversals": int(reversals),
-        "threshold": optional_float(threshold),
-        "visits": Value::List(
-            visits
-                .iter()
-                .map(|(band, passes, trials)| {
-                    Value::List(vec![int(*band), int(*passes), int(*trials)])
-                })
-                .collect(),
-        ),
-    })
+wire_dto! {
+    /// The staircase state of a `Step` dict. Each visit is a `(band, passes, trials)` triple,
+    /// printed as a list.
+    pub struct StepOut<'a>("StepOut")
+    dict step(phase: &'a str, band: Option<i64>, reversals: i64, threshold: Option<f64>, visits: &'a [(i64, i64, i64)]) {
+        phase: &'a str = phase,
+        band: Option<i64> = band,
+        reversals: i64 = reversals,
+        threshold: Option<f64> = threshold,
+        visits: &'a [(i64, i64, i64)] = visits,
+    }
 }
 
-/// `experiment_next`: `{"done", "phase", "trial", "reason", "step"}`. `trial` is `TrialOut` or
-/// `null`; `phase` is `null` when the experiment is done.
-pub fn next_plan(
-    done: bool,
-    phase: Option<&str>,
-    trial: Option<Value>,
-    reason: &str,
-    step: Value,
-) -> Value {
-    dict!({
-        "done": Value::Bool(done),
-        "phase": optional_text(phase),
-        "trial": trial.unwrap_or(Value::Null),
-        "reason": text(reason),
-        "step": step,
-    })
+wire_dto! {
+    /// `experiment_next`. `trial` is `TrialOut` or `null`; `phase` is `null` when the experiment
+    /// is done.
+    pub struct NextPlan<'a>("NextPlan")
+    dict next_plan(done: bool, phase: Option<&'a str>, trial: Option<Value>, reason: &'a str, step: Value) {
+        done: bool = done,
+        phase: Option<&'a str> = phase,
+        trial: Option<Value> = trial,
+        reason: &'a str = reason,
+        step: Value = step,
+    }
 }
 
-/// `trial_start`: `{"trial", "worktree", "branch", "base_sha", "brief"}`.
-pub fn trial_start(
-    trial: Value,
-    worktree: &str,
-    branch: &str,
-    base_sha: &str,
-    brief: &str,
-) -> Value {
-    dict!({
-        "trial": trial,
-        "worktree": text(worktree),
-        "branch": text(branch),
-        "base_sha": text(base_sha),
-        "brief": text(brief),
-    })
+wire_dto! {
+    /// `trial_start`.
+    pub struct TrialStart<'a>("TrialStart")
+    dict trial_start(trial: Value, worktree: &'a str, branch: &'a str, base_sha: &'a str, brief: &'a str) {
+        trial: Value = trial,
+        worktree: &'a str = worktree,
+        branch: &'a str = branch,
+        base_sha: &'a str = base_sha,
+        brief: &'a str = brief,
+    }
 }
 
-/// One `band_rows` entry of an arm report: `band`, `n`, `passes`, `rate`, `wilson` (a
-/// `[low, high]` pair).
-pub fn band_row(band: i64, n: i64, passes: i64, rate: f64, wilson: (f64, f64)) -> Value {
-    dict!({
-        "band": int(band),
-        "n": int(n),
-        "passes": int(passes),
-        "rate": Value::Float(rate),
-        "wilson": Value::List(vec![Value::Float(wilson.0), Value::Float(wilson.1)]),
-    })
+wire_dto! {
+    /// One `band_rows` entry of an arm report; `wilson` is a `[low, high]` pair.
+    pub struct BandRow("BandRow")
+    dict band_row(band: i64, n: i64, passes: i64, rate: f64, wilson: (f64, f64)) {
+        band: i64 = band,
+        n: i64 = n,
+        passes: i64 = passes,
+        rate: f64 = rate,
+        wilson: (f64, f64) = wilson,
+    }
 }
 
-/// The `trials` entry of an arm report: `total`, `by_status`, `by_phase`.
-pub fn trial_counts(total: i64, by_status: &[(String, i64)], by_phase: &[(String, i64)]) -> Value {
-    dict!({
-        "total": int(total),
-        "by_status": counts(by_status),
-        "by_phase": counts(by_phase),
-    })
+wire_dto! {
+    /// The `trials` entry of an arm report.
+    pub struct TrialCounts<'a>("TrialCounts")
+    dict trial_counts(total: i64, by_status: &'a [(String, i64)], by_phase: &'a [(String, i64)]) {
+        total: i64 = total,
+        #[serde(serialize_with = "counts_field")]
+        by_status: &'a [(String, i64)] = by_status,
+        #[serde(serialize_with = "counts_field")]
+        by_phase: &'a [(String, i64)] = by_phase,
+    }
 }
 
 /// One arm of `experiment_report`, with its computed parts already built.
@@ -122,36 +107,38 @@ pub struct ArmReport {
     pub invalid: Value,
 }
 
-/// An [`ArmReport`] as its dict: `arm`, `trials`, `bands`, `fit`, `fit_reason`, `usage`,
-/// `failure_causes`, `invalid`.
-pub fn arm(report: &ArmReport) -> Value {
-    dict!({
-        "arm": text(&report.arm),
-        "trials": report.trials.clone(),
-        "bands": report.bands.clone(),
-        "fit": report.fit.clone(),
-        "fit_reason": optional_text(report.fit_reason.as_deref()),
-        "usage": report.usage.clone(),
-        "failure_causes": counts(&report.failure_causes),
-        "invalid": report.invalid.clone(),
-    })
+wire_dto! {
+    /// An [`ArmReport`] as its dict: `arm`, `trials`, `bands`, `fit`, `fit_reason`, `usage`,
+    /// `failure_causes`, `invalid`.
+    pub struct ArmOut<'a>("ArmOut") dict arm(r: &'a ArmReport) {
+        arm: &'a str = &r.arm,
+        trials: &'a Value = &r.trials,
+        bands: &'a Value = &r.bands,
+        fit: &'a Value = &r.fit,
+        fit_reason: Option<&'a str> = r.fit_reason.as_deref(),
+        usage: &'a Value = &r.usage,
+        #[serde(serialize_with = "counts_field")]
+        failure_causes: &'a [(String, i64)] = &r.failure_causes,
+        invalid: &'a Value = &r.invalid,
+    }
 }
 
-/// `experiment_report`: `{"experiment": {"slug", "status", "protocol"}, "step", "arms"}`.
-pub fn report(
-    slug: &str,
-    status: &str,
-    protocol: &JsonObject,
-    step: Value,
-    arms: Vec<Value>,
-) -> Value {
-    dict!({
-        "experiment": dict!({
-            "slug": text(slug),
-            "status": text(status),
-            "protocol": json_object(protocol),
-        }),
-        "step": step,
-        "arms": Value::List(arms),
-    })
+wire_dto! {
+    /// `experiment_report`: `{"experiment": {"slug", "status", "protocol"}, "step", "arms"}`.
+    pub struct ReportOut<'a>("ReportOut")
+    dict report(slug: &'a str, status: &'a str, protocol: &'a JsonObject, step: Value, arms: Vec<Value>) {
+        experiment: ReportExperiment<'a> = ReportExperiment { slug, status, protocol },
+        step: Value = step,
+        arms: Vec<Value> = arms,
+    }
+}
+
+wire_dto! {
+    /// The `experiment` block of `experiment_report`.
+    pub struct ReportExperiment<'a>("ReportExperiment") {
+        pub slug: &'a str,
+        pub status: &'a str,
+        #[serde(serialize_with = "json_map")]
+        pub protocol: &'a Map<String, Json>,
+    }
 }

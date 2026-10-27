@@ -2,9 +2,8 @@
 //! subagent runs by period, by model and by task size.
 
 use wg_json::{Value, dict};
-use wg_types::Timestamp;
 
-use crate::convention::{TimeFormat, optional_timestamp, text};
+use crate::convention::text;
 
 /// The name of the report dict; it has no OpenAPI component schema.
 pub const NAME: &str = "SubagentReportOut";
@@ -50,13 +49,7 @@ pub const BY_SIZE_FIELDS: [&str; 8] = [
     "median_lines",
 ];
 
-/// The `window` block; the bounds are `isoformat()` of aware UTC datetimes.
-pub fn window(since: Option<Timestamp>, until: Option<Timestamp>) -> Value {
-    dict!({
-        "since": optional_timestamp(since, TimeFormat::Isoformat),
-        "until": optional_timestamp(until, TimeFormat::Isoformat),
-    })
-}
+pub use super::agent_time_out::window;
 
 /// The summary pairs, `SUMMARY_FIELDS` order.
 fn summary_pairs(values: [Value; 13]) -> Vec<(&'static str, Value)> {

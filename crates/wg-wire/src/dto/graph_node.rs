@@ -1,55 +1,27 @@
 //! `GraphNode`.
 
-use wg_json::Value;
 use wg_model::entity::task::{Task, TaskTag};
-use wg_types::Id;
+use wg_types::{Id, TaskKey, TaskPriority, TaskStatus};
 
-use crate::convention::{id, ids, model, optional_id, optional_text, text};
+use crate::convention::display;
+use crate::wire_dto;
 
-/// The OpenAPI component schema this DTO mirrors.
-pub const NAME: &str = "GraphNode";
-
-/// The fields in Python declaration order.
-pub const FIELDS: [&str; 11] = [
-    "id",
-    "key",
-    "title",
-    "status",
-    "priority",
-    "category",
-    "parent_id",
-    "project_ids",
-    "repository_ids",
-    "tags",
-    "blocked",
-];
-
-/// One task of the dependency graph. `blocked` is the service's verdict (an unsatisfied
-/// dependency); the satisfaction rules are not decided here.
-pub fn from_model(
-    task: &Task,
-    project_ids: &[Id],
-    repository_ids: &[Id],
-    tags: &[TaskTag],
-    blocked: bool,
-) -> Value {
-    model(
-        NAME,
-        vec![
-            ("id", id(task.id)),
-            ("key", text(&task.key.to_string())),
-            ("title", text(&task.title)),
-            ("status", text(task.status.as_str())),
-            ("priority", text(task.priority.as_str())),
-            ("category", optional_text(task.category.as_deref())),
-            ("parent_id", optional_id(task.parent_id)),
-            ("project_ids", ids(project_ids.iter().copied())),
-            ("repository_ids", ids(repository_ids.iter().copied())),
-            (
-                "tags",
-                Value::List(tags.iter().map(|tag| text(&tag.tag)).collect()),
-            ),
-            ("blocked", Value::Bool(blocked)),
-        ],
-    )
+wire_dto! {
+    /// One task of the dependency graph. `blocked` is the service's verdict (an unsatisfied
+    /// dependency); the satisfaction rules are not decided here.
+    pub struct GraphNode<'a>("GraphNode")
+    value from_model(t: &'a Task, project_ids: &'a [Id], repository_ids: &'a [Id], tags: &'a [TaskTag], blocked: bool) {
+        id: Id = t.id,
+        #[serde(serialize_with = "display")]
+        key: &'a TaskKey = &t.key,
+        title: &'a str = &t.title,
+        status: TaskStatus = t.status,
+        priority: TaskPriority = t.priority,
+        category: Option<&'a str> = t.category.as_deref(),
+        parent_id: Option<Id> = t.parent_id,
+        project_ids: &'a [Id] = project_ids,
+        repository_ids: &'a [Id] = repository_ids,
+        tags: Vec<&'a str> = tags.iter().map(|tag| tag.tag.as_str()).collect(),
+        blocked: bool = blocked,
+    }
 }

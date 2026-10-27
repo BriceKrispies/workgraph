@@ -3,14 +3,20 @@
 //! `analytics_report` answers `catalog` with `{"metrics": [...]}` and `history` with
 //! `{"tasks": [...]}`; the other reports return the bare report dict (see the report DTOs).
 
-use wg_json::{Value, dict};
+use wg_json::Value;
 
-/// `analytics_report` `catalog`: `{"metrics": [MetricDefinition, ...]}`.
-pub fn catalog(metrics: Vec<Value>) -> Value {
-    dict!({ "metrics": Value::List(metrics) })
+use crate::wire_dto;
+
+wire_dto! {
+    /// `analytics_report` `catalog`: `{"metrics": [MetricDefinition, ...]}`.
+    pub struct Catalog("Catalog") dict catalog(metrics: Vec<Value>) {
+        metrics: Vec<Value> = metrics,
+    }
 }
 
-/// `analytics_report` `history`: `{"tasks": [TaskHistoryRow, ...]}`.
-pub fn history(tasks: Vec<Value>) -> Value {
-    dict!({ "tasks": Value::List(tasks) })
+wire_dto! {
+    /// `analytics_report` `history`: `{"tasks": [TaskHistoryRow, ...]}`.
+    pub struct History("History") dict history(tasks: Vec<Value>) {
+        tasks: Vec<Value> = tasks,
+    }
 }

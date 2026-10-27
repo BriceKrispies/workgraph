@@ -1,26 +1,23 @@
 //! `GET /api/v1/llm/health`: a dict keyed by provider name, each value `{available, detail}`.
 
-use wg_json::{PyStr, Value, dict};
+use wg_json::{PyStr, Value};
 
-use crate::convention::text;
+use crate::wire_dto;
 
-/// The keys of one provider entry.
-pub const ENTRY_FIELDS: [&str; 2] = ["available", "detail"];
+wire_dto! {
+    /// One provider entry.
+    pub struct Entry<'a>("LlmHealthEntry") dict entry(available: bool, detail: &'a str) {
+        available: bool = available,
+        detail: &'a str = detail,
+    }
+}
 
 /// The health report: one entry per provider, in the order given.
 pub fn health<'a>(providers: impl IntoIterator<Item = (&'a str, bool, &'a str)>) -> Value {
     Value::Dict(
         providers
             .into_iter()
-            .map(|(name, available, detail)| {
-                (
-                    PyStr::from(name),
-                    dict!({
-                        "available": Value::Bool(available),
-                        "detail": text(detail),
-                    }),
-                )
-            })
+            .map(|(name, available, detail)| (PyStr::from(name), entry(available, detail)))
             .collect(),
     )
 }

@@ -133,7 +133,7 @@ fn area_dtos_list_their_fields_in_order() {
     );
     assert_eq!(
         names(&repository_brief::from_model(&repo)),
-        repository_brief::FIELDS
+        repository_brief::RepositoryBrief::FIELDS
     );
     assert_eq!(
         names(&repository_status::from_model(

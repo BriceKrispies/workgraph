@@ -2,18 +2,12 @@
 
 use wg_json::Value;
 
-use crate::convention::model;
+use crate::wire_dto;
 
-/// The OpenAPI component schema this DTO mirrors.
-pub const NAME: &str = "TaskGraph";
-
-/// The fields in Python declaration order.
-pub const FIELDS: [&str; 2] = ["nodes", "edges"];
-
-/// The dependency graph: `GraphNode` and `GraphEdge` values, in the order the caller gives them.
-pub fn from_model(nodes: Vec<Value>, edges: Vec<Value>) -> Value {
-    model(
-        NAME,
-        vec![("nodes", Value::List(nodes)), ("edges", Value::List(edges))],
-    )
+wire_dto! {
+    /// The dependency graph: `GraphNode` and `GraphEdge` values, in the order the caller gives them.
+    pub struct TaskGraph("TaskGraph") value from_model(nodes: Vec<Value>, edges: Vec<Value>) {
+        nodes: Vec<Value> = nodes,
+        edges: Vec<Value> = edges,
+    }
 }

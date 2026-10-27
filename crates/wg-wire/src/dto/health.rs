@@ -1,51 +1,44 @@
 //! The unauthenticated health probe and the `meta` document. Both are dicts the handlers build
 //! from the version and the configuration, so they take those values as arguments.
 
-use wg_json::{Value, dict};
+use wg_json::Value;
 
-use crate::convention::{optional_text, text};
+use crate::wire_dto;
 
-/// The keys of `GET /api/v1/health`.
-pub const HEALTH_FIELDS: [&str; 2] = ["status", "version"];
-
-/// The keys of `GET /api/v1/meta`.
-pub const META_FIELDS: [&str; 6] = [
-    "version",
-    "default_workspace",
-    "execution_enabled",
-    "auto_schedule",
-    "agents",
-    "llm",
-];
-
-/// The keys of the `llm` object of `meta`.
-pub const META_LLM_FIELDS: [&str; 2] = ["classification", "embeddings"];
-
-/// `GET /api/v1/health`: always `ok` while the process answers.
-pub fn health(version: &str) -> Value {
-    dict!({ "status": text("ok"), "version": text(version) })
+wire_dto! {
+    /// `GET /api/v1/health`: always `ok` while the process answers.
+    pub struct HealthOut<'a>("HealthOut") dict health(version: &'a str) {
+        status: &'static str = "ok",
+        version: &'a str = version,
+    }
 }
 
-/// `GET /api/v1/meta`. `agents` are the configured agent names; `classification` and
-/// `embeddings` are the dumped LLM sections of the configuration.
-pub fn meta(
-    version: &str,
-    default_workspace: Option<&str>,
-    execution_enabled: bool,
-    auto_schedule: bool,
-    agents: &[String],
-    classification: Value,
-    embeddings: Value,
-) -> Value {
-    dict!({
-        "version": text(version),
-        "default_workspace": optional_text(default_workspace),
-        "execution_enabled": Value::Bool(execution_enabled),
-        "auto_schedule": Value::Bool(auto_schedule),
-        "agents": Value::List(agents.iter().map(|name| text(name)).collect()),
-        "llm": dict!({
-            "classification": classification,
-            "embeddings": embeddings,
-        }),
-    })
+wire_dto! {
+    /// The `llm` object of `meta`.
+    pub struct MetaLlm("MetaLlm") {
+        pub classification: Value,
+        pub embeddings: Value,
+    }
+}
+
+wire_dto! {
+    /// `GET /api/v1/meta`. `agents` are the configured agent names; `classification` and
+    /// `embeddings` are the dumped LLM sections of the configuration.
+    pub struct MetaOut<'a>("MetaOut")
+    dict meta(
+        version: &'a str,
+        default_workspace: Option<&'a str>,
+        execution_enabled: bool,
+        auto_schedule: bool,
+        agents: &'a [String],
+        classification: Value,
+        embeddings: Value
+    ) {
+        version: &'a str = version,
+        default_workspace: Option<&'a str> = default_workspace,
+        execution_enabled: bool = execution_enabled,
+        auto_schedule: bool = auto_schedule,
+        agents: &'a [String] = agents,
+        llm: MetaLlm = MetaLlm { classification, embeddings },
+    }
 }

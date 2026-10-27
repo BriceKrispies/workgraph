@@ -3,60 +3,24 @@
 use wg_json::Value;
 use wg_model::entity::task::{Task, TaskComment, TaskRelation};
 
-use crate::convention::model;
-use crate::dto::task::{self, TaskRelated};
-use crate::dto::{comment, relation};
+use crate::dto::Dto;
+use crate::dto::comment::CommentOut;
+use crate::dto::relation::RelationOut;
+use crate::dto::task::{TaskOut, TaskRelated};
+use crate::wire_dto;
 
-/// The OpenAPI component schema this DTO mirrors.
-pub const NAME: &str = "TaskDetail";
+wire_dto! {
+    /// The task with its relations and comments. `rollup` and `dependency_state` are the values the
+    /// caller computed (see `TaskRollup` and `DependencyState`), or `None` when the task has none.
+    pub struct TaskDetail<'a>("TaskDetail") extends TaskOut<'a>, fields_of TaskOut<'static> {
+        pub relations: Vec<RelationOut>,
+        pub comments: Vec<CommentOut<'a>>,
+        pub rollup: Option<Value>,
+        pub dependency_state: Option<Value>,
+    }
+}
 
-/// The fields in Python declaration order: the `TaskOut` fields, then the four of `TaskDetail`.
-pub const FIELDS: [&str; 41] = [
-    "id",
-    "workspace_id",
-    "key",
-    "number",
-    "title",
-    "description",
-    "acceptance_criteria",
-    "status",
-    "priority",
-    "category",
-    "tags",
-    "files",
-    "project_ids",
-    "repository_ids",
-    "parent_id",
-    "child_ids",
-    "depends_on",
-    "blocks",
-    "assignee",
-    "assigned_agent",
-    "claimed_by",
-    "claim_expires_at",
-    "auto_execute",
-    "estimated_effort",
-    "links",
-    "metadata",
-    "due_at",
-    "scheduled_at",
-    "created_by",
-    "version",
-    "created_at",
-    "updated_at",
-    "started_at",
-    "completed_at",
-    "accepted_at",
-    "archived_at",
-    "current_classification_id",
-    "relations",
-    "comments",
-    "rollup",
-    "dependency_state",
-];
-
-/// The task with its relations and comments. `rollup` and `dependency_state` are the values the
-/// caller computed (see `TaskRollup` and `DependencyState`), or `None` when the task has none.
+/// The task with its relations and comments.
 pub fn from_model(
     task: &Task,
     related: &TaskRelated<'_>,
@@ -65,16 +29,12 @@ pub fn from_model(
     rollup: Option<Value>,
     dependency_state: Option<Value>,
 ) -> Value {
-    let mut fields = task::fields(task, related);
-    fields.push((
-        "relations",
-        Value::List(relations.iter().map(relation::from_model).collect()),
-    ));
-    fields.push((
-        "comments",
-        Value::List(comments.iter().map(comment::from_model).collect()),
-    ));
-    fields.push(("rollup", rollup.unwrap_or(Value::Null)));
-    fields.push(("dependency_state", dependency_state.unwrap_or(Value::Null)));
-    model(NAME, fields)
+    TaskDetail {
+        base: TaskOut::new(task, related),
+        relations: relations.iter().map(RelationOut::new).collect(),
+        comments: comments.iter().map(CommentOut::new).collect(),
+        rollup,
+        dependency_state,
+    }
+    .value()
 }

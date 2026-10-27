@@ -58,8 +58,11 @@ pub const OUTPUT_SHAPES: &[(&str, Shape)] = &[
             fields: &project_summary::FIELDS,
             nested: &[
                 ("project", dto(&project::FIELDS)),
-                ("repositories", list(&dto(&repository_brief::FIELDS))),
-                ("recent_tasks", list(&dto(&task_brief::FIELDS))),
+                (
+                    "repositories",
+                    list(&dto(repository_brief::RepositoryBrief::FIELDS)),
+                ),
+                ("recent_tasks", list(&dto(task_brief::TaskBrief::FIELDS))),
             ],
         },
     ),

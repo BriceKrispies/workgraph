@@ -1,35 +1,19 @@
 //! `RelationOut`.
 
-use wg_json::Value;
 use wg_model::entity::task::TaskRelation;
+use wg_types::{Id, RelationType, Timestamp};
 
-use crate::convention::{TimeFormat, id, model, text, timestamp};
+use crate::convention::model_z;
+use crate::wire_dto;
 
-/// The OpenAPI component schema this DTO mirrors.
-pub const NAME: &str = "RelationOut";
-
-/// The fields in Python declaration order.
-pub const FIELDS: [&str; 5] = [
-    "id",
-    "source_task_id",
-    "target_task_id",
-    "relation_type",
-    "created_at",
-];
-
-/// A typed, non-blocking relation between two tasks.
-pub fn from_model(relation: &TaskRelation) -> Value {
-    model(
-        NAME,
-        vec![
-            ("id", id(relation.id)),
-            ("source_task_id", id(relation.source_task_id)),
-            ("target_task_id", id(relation.target_task_id)),
-            ("relation_type", text(relation.relation_type.as_str())),
-            (
-                "created_at",
-                timestamp(relation.created_at, TimeFormat::ModelZ),
-            ),
-        ],
-    )
+wire_dto! {
+    /// A typed, non-blocking relation between two tasks.
+    pub struct RelationOut("RelationOut") value from_model(r: &TaskRelation) {
+        id: Id = r.id,
+        source_task_id: Id = r.source_task_id,
+        target_task_id: Id = r.target_task_id,
+        relation_type: RelationType = r.relation_type,
+        #[serde(serialize_with = "model_z")]
+        created_at: Timestamp = r.created_at,
+    }
 }

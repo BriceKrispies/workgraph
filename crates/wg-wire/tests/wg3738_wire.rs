@@ -335,7 +335,7 @@ fn event_out_prints_the_recorded_history_row() {
             recorded.to_string(),
             "{label} {pointer}"
         );
-        assert_eq!(keys(&printed(&value)), strings(&event::FIELDS));
+        assert_eq!(keys(&printed(&value)), strings(event::EventOut::FIELDS));
     }
 }
 
@@ -553,46 +553,46 @@ fn job_worker_and_scheduler_dicts_follow_the_python_builders() {
         "def _job(",
         "@router.get(\"/jobs\")",
     ));
-    assert_eq!(job_fields, strings(&job::FIELDS));
+    assert_eq!(job_fields, strings(job::JobOut::FIELDS));
 
     let run_fields = dict_keys(&python_block(
         "src/workgraph/api/routes/ops.py",
         "def get_job(",
         "return {**_job",
     ));
-    assert_eq!(run_fields, strings(&job::RUN_FIELDS));
+    assert_eq!(run_fields, strings(job::RunOut::FIELDS));
 
-    let mut detail = strings(&job::FIELDS);
+    let mut detail = strings(job::JobOut::FIELDS);
     detail.push("runs".into());
-    assert_eq!(detail, strings(&job::DETAIL_FIELDS));
+    assert_eq!(detail, strings(job::JobDetail::FIELDS));
 
     let worker_fields = tuple_names(&python_block(
         "src/workgraph/api/routes/ops.py",
         "def workers(",
         "for w in app.queue.workers()",
     ));
-    assert_eq!(worker_fields, strings(&worker::FIELDS));
+    assert_eq!(worker_fields, strings(worker::WorkerOut::FIELDS));
 
     let scheduler_fields = dict_keys(&python_block(
         "src/workgraph/api/routes/ops.py",
         "def scheduler(",
         "# ----",
     ));
-    assert_eq!(scheduler_fields, strings(&scheduler::FIELDS));
+    assert_eq!(scheduler_fields, strings(scheduler::SchedulerOut::FIELDS));
 
     let eligible = dict_keys(&python_block(
         "src/workgraph/orchestration/scheduler.py",
         "eligible.append(",
         "return self._fair_order",
     ));
-    assert_eq!(eligible, strings(&scheduler::ELIGIBLE_FIELDS));
+    assert_eq!(eligible, strings(scheduler::Eligible::FIELDS));
 
     let manifest = dict_keys(&python_block(
         "src/workgraph/core/services/attempts.py",
         "def manifests(",
         "def compare(",
     ));
-    assert_eq!(manifest, strings(&attempt_dicts::MANIFEST_FIELDS));
+    assert_eq!(manifest, strings(attempt_dicts::ManifestOut::FIELDS));
 
     let compare = python_block(
         "src/workgraph/core/services/attempts.py",
@@ -606,27 +606,27 @@ fn job_worker_and_scheduler_dicts_follow_the_python_builders() {
         "return {\"lines\": lines[-tail:]",
         "\n",
     ));
-    assert_eq!(log, strings(&attempt_dicts::LOG_FIELDS));
+    assert_eq!(log, strings(attempt_dicts::LogOut::FIELDS));
 }
 
 #[test]
 fn printed_dicts_list_their_fields_in_order() {
     assert_eq!(
         keys(&printed(&job::from_model(&sample_job()))),
-        strings(&job::FIELDS)
+        strings(job::JobOut::FIELDS)
     );
     assert_eq!(
         keys(&printed(&job::detail_from_model(&sample_job(), &[]))),
-        strings(&job::DETAIL_FIELDS)
+        strings(job::JobDetail::FIELDS)
     );
     assert_eq!(
         keys(&printed(&worker::from_model(&sample_worker()))),
-        strings(&worker::FIELDS)
+        strings(worker::WorkerOut::FIELDS)
     );
     let eligible = scheduler::eligible_entry("t", "WG-1", "medium", None, None, "w");
     assert_eq!(
         keys(&printed(&eligible)),
-        strings(&scheduler::ELIGIBLE_FIELDS)
+        strings(scheduler::Eligible::FIELDS)
     );
     assert_eq!(
         keys(&printed(&scheduler::from_parts(
@@ -634,6 +634,6 @@ fn printed_dicts_list_their_fields_in_order() {
             false,
             vec![eligible]
         ))),
-        strings(&scheduler::FIELDS)
+        strings(scheduler::SchedulerOut::FIELDS)
     );
 }

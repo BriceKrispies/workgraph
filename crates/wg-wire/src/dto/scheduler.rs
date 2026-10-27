@@ -1,49 +1,36 @@
-//! The scheduler dict of `GET /ws/{ws}/scheduler`.
+//! The scheduler dict of `GET /ws/{ws}/scheduler`. It has no OpenAPI component schema.
 
-use wg_json::{Value, dict};
+use wg_json::Value;
 
-use crate::convention::{optional_text, text};
+use crate::wire_dto;
 
-/// The name of the scheduler dict; it has no OpenAPI component schema.
-pub const NAME: &str = "SchedulerOut";
-
-/// The fields in the order the route builds them.
-pub const FIELDS: [&str; 3] = ["enabled", "auto_schedule", "eligible"];
-
-/// The keys of one eligible-task entry, in the order `Scheduler.eligible` builds them.
-pub const ELIGIBLE_FIELDS: [&str; 6] = [
-    "task_id",
-    "key",
-    "priority",
-    "project_id",
-    "agent",
-    "workspace_id",
-];
-
-/// The scheduler state. `eligible` holds the entries the scheduler ranked, in that order.
-pub fn from_parts(enabled: bool, auto_schedule: bool, eligible: Vec<Value>) -> Value {
-    dict!({
-        "enabled": Value::Bool(enabled),
-        "auto_schedule": Value::Bool(auto_schedule),
-        "eligible": Value::List(eligible),
-    })
+wire_dto! {
+    /// The scheduler state, fields in the order the route builds them. `eligible` holds the
+    /// entries the scheduler ranked, in that order.
+    pub struct SchedulerOut("SchedulerOut")
+    dict from_parts(enabled: bool, auto_schedule: bool, eligible: Vec<Value>) {
+        enabled: bool = enabled,
+        auto_schedule: bool = auto_schedule,
+        eligible: Vec<Value> = eligible,
+    }
 }
 
-/// One eligible-task entry, from the values `Scheduler.eligible` collects.
-pub fn eligible_entry(
-    task_id: &str,
-    key: &str,
-    priority: &str,
-    project_id: Option<&str>,
-    agent: Option<&str>,
-    workspace_id: &str,
-) -> Value {
-    dict!({
-        "task_id": text(task_id),
-        "key": text(key),
-        "priority": text(priority),
-        "project_id": optional_text(project_id),
-        "agent": optional_text(agent),
-        "workspace_id": text(workspace_id),
-    })
+wire_dto! {
+    /// One eligible-task entry, from the values `Scheduler.eligible` collects.
+    pub struct Eligible<'a>("SchedulerEligible")
+    dict eligible_entry(
+        task_id: &'a str,
+        key: &'a str,
+        priority: &'a str,
+        project_id: Option<&'a str>,
+        agent: Option<&'a str>,
+        workspace_id: &'a str
+    ) {
+        task_id: &'a str = task_id,
+        key: &'a str = key,
+        priority: &'a str = priority,
+        project_id: Option<&'a str> = project_id,
+        agent: Option<&'a str> = agent,
+        workspace_id: &'a str = workspace_id,
+    }
 }

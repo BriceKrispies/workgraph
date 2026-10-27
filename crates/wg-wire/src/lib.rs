@@ -15,17 +15,19 @@
 //! * Fields are listed in declaration order of the Python class. The OpenAPI snapshot sorts
 //!   `properties` by name, so only `required` keeps Python's order; the DTOs are therefore
 //!   checked against the snapshot's field names and against the Python source for the order.
-//! * `to_value` returns a [`wg_json::Value::Model`], so the CLI and HTTP dialects print it as
-//!   `model_dump(mode="json")` does: every field is present, an absent optional is `null`
-//!   (never omitted), and `Value::DateTime` fields print in the `Z` form.
-//! * A timestamp field names its format explicitly with [`convention::TimeFormat`], because the
-//!   same instant prints as `...Z` under a model and as `...+00:00` where Python calls
-//!   `isoformat()` on a bare datetime.
-//! * A DTO is built from model values with `from_model`; it holds no state of its own.
-//! * Each DTO module exports `NAME` (the OpenAPI component schema) and `FIELDS` (the field names
-//!   in order); [`dto::implemented`] lists the DTOs that exist, which is the list the
-//!   component-schema test checks. Schemas not on the list are reported by the test, never failed
-//!   (plan 5.5).
+//! * A DTO is one struct declared with [`wire_dto!`]: `#[derive(Serialize)]` with the fields in
+//!   Python order, so `Dto::value` prints a [`wg_json::Value::Model`] (the CLI and HTTP dialects
+//!   print it as `model_dump(mode="json")` does: every field is present, an absent optional is
+//!   `null`, never omitted) and `Dto::dict` a plain dict where Python builds a dict literal.
+//! * A timestamp field names its format with a `serialize_with` adapter of [`convention`]
+//!   (`model_z`, `z_text`, `isoformat`), because the same instant prints as `...Z` under a model
+//!   and as `...+00:00` where Python calls `isoformat()` on a bare datetime.
+//! * A DTO is built from model values with `from_model` (or `From<&Model>`); it holds no state
+//!   of its own.
+//! * The macro also gives each DTO `NAME` (the OpenAPI component schema) and `FIELDS` (the field
+//!   names in order) from the same declaration; [`dto::implemented`] lists the DTOs that exist,
+//!   which is the list the component-schema test checks. Schemas not on the list are reported by
+//!   the test, never failed (plan 5.5).
 
 pub mod contract;
 pub mod convention;

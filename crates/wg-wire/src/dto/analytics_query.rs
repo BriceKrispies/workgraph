@@ -1,22 +1,17 @@
 //! `AnalyticsQuery`: the body of `POST /analytics/query`, and its echo in a query result.
 
-use wg_json::{Value, dict};
+use wg_json::Value;
 
-use crate::convention::{int, text, texts};
+use crate::wire_dto;
 
-/// The OpenAPI component schema this DTO mirrors.
-pub const NAME: &str = "AnalyticsQuery";
-
-/// The fields in Python declaration order.
-pub const FIELDS: [&str; 5] = ["metric", "group_by", "period", "filters", "limit"];
-
-/// The query as a result echoes it. `filters` is the [`super::analytics_filters::echo`] value.
-pub fn echo(metric: &str, group_by: &[&str], period: &str, filters: Value, limit: i64) -> Value {
-    dict!({
-        "metric": text(metric),
-        "group_by": texts(group_by.iter().copied()),
-        "period": text(period),
-        "filters": filters,
-        "limit": int(limit),
-    })
+wire_dto! {
+    /// The query as a result echoes it. `filters` is the [`super::analytics_filters::echo`] value.
+    pub struct QueryEcho<'a>("AnalyticsQuery")
+    dict echo(metric: &'a str, group_by: &'a [&'a str], period: &'a str, filters: Value, limit: i64) {
+        metric: &'a str = metric,
+        group_by: &'a [&'a str] = group_by,
+        period: &'a str = period,
+        filters: Value = filters,
+        limit: i64 = limit,
+    }
 }

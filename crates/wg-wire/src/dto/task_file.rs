@@ -1,24 +1,14 @@
 //! `TaskFileOut`.
 
-use wg_json::Value;
 use wg_model::entity::task::TaskFile;
 
-use crate::convention::{model, optional_text, text};
+use crate::wire_dto;
 
-/// The OpenAPI component schema this DTO mirrors.
-pub const NAME: &str = "TaskFileOut";
-
-/// The fields in Python declaration order.
-pub const FIELDS: [&str; 3] = ["path", "anchor", "note"];
-
-/// One file the task expects to change.
-pub fn from_model(file: &TaskFile) -> Value {
-    model(
-        NAME,
-        vec![
-            ("path", text(&file.path)),
-            ("anchor", optional_text(file.anchor.as_deref())),
-            ("note", text(&file.note)),
-        ],
-    )
+wire_dto! {
+    /// One file the task expects to change.
+    pub struct TaskFileOut<'a>("TaskFileOut") value from_model(f: &'a TaskFile) {
+        path: &'a str = &f.path,
+        anchor: Option<&'a str> = f.anchor.as_deref(),
+        note: &'a str = &f.note,
+    }
 }

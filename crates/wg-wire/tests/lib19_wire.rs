@@ -12,7 +12,7 @@ use wg_json::{PyStr, Value, http_json};
 use wg_model::entity::{Experiment, ExperimentTrial, PredictorFit};
 use wg_types::{Id, Timestamp, parse_id};
 use wg_wire::dto::contract_check::{self, ContractVerdict};
-use wg_wire::dto::experiment::{self, NAME as EXPERIMENT_NAME};
+use wg_wire::dto::experiment::{self, ExperimentOut};
 use wg_wire::dto::experiment_shapes::{self, ArmReport};
 use wg_wire::dto::predictor::{self, Prediction};
 use wg_wire::dto::trial;
@@ -156,18 +156,24 @@ fn texts(list: &[&str]) -> Vec<String> {
 #[test]
 fn experiment_and_trial_field_order_matches_the_recorded_outputs() {
     let experiment_value = experiment::from_model(&sample_experiment());
-    assert_eq!(names(&experiment_value), experiment::FIELDS);
-    assert_eq!(EXPERIMENT_NAME, "ExperimentOut");
+    assert_eq!(names(&experiment_value), experiment::ExperimentOut::FIELDS);
+    assert_eq!(ExperimentOut::NAME, "ExperimentOut");
 
     let trial_value = trial::from_model(&sample_trial(), "DEMO-16");
-    assert_eq!(names(&trial_value), trial::FIELDS);
+    assert_eq!(names(&trial_value), trial::TrialOut::FIELDS);
 
     let listed = recorded_mcp_output("experiment_list:ok");
-    assert_eq!(keys(&listed["experiments"][0]), texts(&experiment::FIELDS));
+    assert_eq!(
+        keys(&listed["experiments"][0]),
+        texts(experiment::ExperimentOut::FIELDS)
+    );
 
     let got = recorded_mcp_output("experiment_get:ok");
-    assert_eq!(keys(&got["experiment"]), texts(&experiment::FIELDS));
-    assert_eq!(keys(&got["trials"][0]), texts(&trial::FIELDS));
+    assert_eq!(
+        keys(&got["experiment"]),
+        texts(experiment::ExperimentOut::FIELDS)
+    );
+    assert_eq!(keys(&got["trials"][0]), texts(trial::TrialOut::FIELDS));
 
     for label in ["trial_start:ok", "trial_grade:ok", "trial_classify:ok"] {
         let output = recorded_mcp_output(label);
@@ -176,7 +182,11 @@ fn experiment_and_trial_field_order_matches_the_recorded_outputs() {
         } else {
             &output
         };
-        assert_eq!(keys(trial_output), texts(&trial::FIELDS), "{label}");
+        assert_eq!(
+            keys(trial_output),
+            texts(trial::TrialOut::FIELDS),
+            "{label}"
+        );
     }
 }
 
@@ -208,7 +218,7 @@ fn experiment_and_trial_timestamps_print_in_the_z_form() {
 #[test]
 fn predictor_fit_and_prediction_fields_match_the_recorded_outputs() {
     let fit = predictor::fit_from_model(&sample_fit());
-    assert_eq!(names(&fit), predictor::FIT_FIELDS);
+    assert_eq!(names(&fit), predictor::PredictorFitOut::FIELDS);
     let text = http_json(&fit).expect("dump");
     assert!(text.contains(r#""coef":[6.0,-1.0]"#), "{text}");
     assert!(
@@ -221,16 +231,16 @@ fn predictor_fit_and_prediction_fields_match_the_recorded_outputs() {
     );
 
     let recorded = recorded_mcp_output("experiment_fit:ok");
-    assert_eq!(keys(&recorded), texts(&predictor::FIT_FIELDS));
+    assert_eq!(keys(&recorded), texts(predictor::PredictorFitOut::FIELDS));
 
     let prediction = predictor::prediction(&sample_prediction());
-    assert_eq!(names(&prediction), predictor::PREDICTION_FIELDS);
+    assert_eq!(names(&prediction), predictor::PredictionOut::FIELDS);
     let text = http_json(&prediction).expect("dump");
     assert!(text.contains(r#""inference":true"#), "{text}");
     assert!(text.contains(r#""repository_known":true"#), "{text}");
 
     let recorded = recorded_mcp_output("experiment_predict:ok");
-    assert_eq!(keys(&recorded), texts(&predictor::PREDICTION_FIELDS));
+    assert_eq!(keys(&recorded), texts(predictor::PredictionOut::FIELDS));
 }
 
 #[test]

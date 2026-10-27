@@ -2,9 +2,16 @@
 //! plan. Ported from `WorktreeManager.list` and `WorktreeManager.cleanup` in
 //! `integrations/git/worktrees.py`; the removal itself is the shell's.
 
+use std::path::Path;
+
+use wg_git::GitError;
 use wg_json::Value;
+use wg_model::decision::Decision;
 use wg_model::entity::run::ManagedWorktree;
-use wg_types::{Id, WorktreeStatus};
+use wg_model::event::{EventDraft, EventPayload, WorktreeRemoved};
+use wg_model::stamp::Stamp;
+use wg_model::write::Write;
+use wg_types::{ErrorCode, Id, WgError, WorktreeStatus};
 use wg_wire::convention::{
     TimeFormat, dict, id, optional_id, optional_text, optional_timestamp, text, timestamp,
 };
@@ -91,4 +98,94 @@ pub fn removal_result(worktree_id: &str, removed: bool, reason: Option<&str>) ->
         fields.push(("reason", text(reason)));
     }
     dict(fields)
+}
+
+// ------------------------------------------------------------------ removal
+
+/// Decides a removal that went through: the row is removed at the stamp's time and the
+/// `worktree.removed` event names its branch, which is kept.
+pub fn removed_decision(row: &ManagedWorktree, stamp: &Stamp) -> Decision<()> {
+    let (event_id, _) = stamp.ids().next();
+    Decision::new(())
+        .write(Write::update(ManagedWorktree {
+            status: WorktreeStatus::Removed,
+            removed_at: Some(stamp.at),
+            updated_at: stamp.at,
+            ..row.clone()
+        }))
+        .event(EventDraft {
+            attempt_id: row.attempt_id,
+            ..EventDraft::new(
+                stamp,
+                event_id,
+                Some(row.workspace_id),
+                row.id,
+                EventPayload::WorktreeRemoved(WorktreeRemoved {
+                    path: row.path.clone(),
+                    branch_kept: row.branch.clone(),
+                }),
+            )
+        })
+}
+
+/// What `WorktreeManager.remove` answered: whether the worktree was removed, and why not when it
+/// was not.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Removal {
+    pub worktree_id: Id,
+    pub removed: bool,
+    pub reason: Option<String>,
+}
+
+/// The dict `remove` returns: `worktree_id`, `removed` and `reason` when it was not removed.
+pub fn removal_out(removal: &Removal) -> Value {
+    let mut fields = vec![
+        ("worktree_id", id(removal.worktree_id)),
+        ("removed", Value::Bool(removal.removed)),
+    ];
+    if let Some(reason) = &removal.reason {
+        fields.push(("reason", text(reason)));
+    }
+    dict(fields)
+}
+
+impl Removal {
+    /// A worktree that was removed.
+    pub fn removed(worktree_id: Id) -> Self {
+        Removal {
+            worktree_id,
+            removed: true,
+            reason: None,
+        }
+    }
+
+    /// A worktree that was kept, and why.
+    pub fn refused(worktree_id: Id, reason: impl Into<String>) -> Self {
+        Removal {
+            worktree_id,
+            removed: false,
+            reason: Some(reason.into()),
+        }
+    }
+}
+
+/// `NotFoundError` for a worktree id.
+pub fn not_found(worktree_id: Id) -> WgError {
+    WgError::new(
+        ErrorCode::NotFound,
+        format!("managed worktree {worktree_id} not found"),
+    )
+}
+
+/// A git failure that could not run at all, as a `GitError` of the API.
+pub fn git_failure(err: GitError) -> WgError {
+    WgError::new(ErrorCode::GitError, err.to_string())
+}
+
+/// A file-system failure on `path`.
+pub fn io_failure(path: &Path, err: &std::io::Error) -> WgError {
+    WgError::new(
+        ErrorCode::WorkgraphError,
+        format!("cannot remove {}: {err}", path.display()),
+    )
 }

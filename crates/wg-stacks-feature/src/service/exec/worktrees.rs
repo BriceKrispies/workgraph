@@ -130,13 +130,13 @@ impl Exec<'_> {
     }
 
     /// `WorktreeService.remove(force=True)`: the worktree is removed from disk and its row marked,
-    /// by the exec feature's worktree service (the one implementation of the removal).
+    /// by the git feature's worktree service (the one implementation of the removal).
     pub(crate) fn remove_worktree(
         &mut self,
         context: &RequestContext,
         row_id: Id,
     ) -> Result<(), WgError> {
-        wg_exec_feature::service::worktrees::worktree_remove(self.0, context, row_id, true)
+        wg_git_feature::service::worktree_remove::worktree_remove(self.0, context, row_id, true)
             .map(|_| ())
     }
 }

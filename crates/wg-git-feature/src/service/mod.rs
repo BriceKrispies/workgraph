@@ -6,6 +6,8 @@
 
 pub mod store;
 
+pub mod worktree_remove;
+
 mod attempt_links;
 mod entries;
 mod sync;

@@ -15,7 +15,7 @@ clap = { version = "4.5", default-features = false, features = ["std", "help", "
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-clispec = { path = "../wg-clispec" }
-wg-exec-feature = { path = "../wg-exec-feature" }
+wg-git-feature = { path = "../wg-git-feature" }
 wg-git = { path = "../wg-git" }
 wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }

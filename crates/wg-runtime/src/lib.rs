@@ -13,6 +13,8 @@
 //! context's rules) is `wg-runtimespec`; this crate keeps the I/O.
 
 mod app;
+mod attempts;
+pub use attempts::latest_succeeded;
 mod bus;
 mod cli_state;
 mod cycle;

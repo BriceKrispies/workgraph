@@ -14,7 +14,9 @@ use wg_exec::manifest::{
     ExecutionManifest, ManifestEntry, PlanError, change_set_plan, expected_changes,
 };
 use wg_exec::recovery::{RecoveryAction, WorktreeFacts, recovery_action};
-use wg_git::GitError;
+pub use wg_git_feature::spec::worktrees::{
+    Removal, git_failure, io_failure, not_found, removal_out, removed_decision,
+};
 use wg_json::Value;
 use wg_model::decision::Decision;
 use wg_model::entity::{
@@ -23,7 +25,6 @@ use wg_model::entity::{
 };
 use wg_model::event::{
     AttemptWorkspacePrepared, EventDraft, EventPayload, WorktreeCreated, WorktreeRecovered,
-    WorktreeRemoved,
 };
 use wg_model::stamp::Stamp;
 use wg_model::write::{RowKey, Write};
@@ -272,32 +273,6 @@ pub fn release_decision(
         })
         .collect();
     released.with_reply(targets)
-}
-
-/// Decides a removal that went through: the row is removed at the stamp's time and the
-/// `worktree.removed` event names its branch, which is kept.
-pub fn removed_decision(row: &ManagedWorktree, stamp: &Stamp) -> Decision<()> {
-    let (event_id, _) = stamp.ids().next();
-    Decision::new(())
-        .write(Write::update(ManagedWorktree {
-            status: WorktreeStatus::Removed,
-            removed_at: Some(stamp.at),
-            updated_at: stamp.at,
-            ..row.clone()
-        }))
-        .event(EventDraft {
-            attempt_id: row.attempt_id,
-            ..EventDraft::new(
-                stamp,
-                event_id,
-                Some(row.workspace_id),
-                row.id,
-                EventPayload::WorktreeRemoved(WorktreeRemoved {
-                    path: row.path.clone(),
-                    branch_kept: row.branch.clone(),
-                }),
-            )
-        })
 }
 
 // ------------------------------------------------------------------ preparation (WG-3773)
@@ -636,73 +611,11 @@ fn entry_object(entry: &ManifestEntry) -> JsonObject {
     }
 }
 
-/// What `WorktreeManager.remove` answered: whether the worktree was removed, and why not when it
-/// was not.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Removal {
-    pub worktree_id: Id,
-    pub removed: bool,
-    pub reason: Option<String>,
-}
-
-/// The dict `remove` returns: `worktree_id`, `removed` and `reason` when it was not removed.
-pub fn removal_out(removal: &Removal) -> Value {
-    let mut fields = vec![
-        ("worktree_id", id(removal.worktree_id)),
-        ("removed", Value::Bool(removal.removed)),
-    ];
-    if let Some(reason) = &removal.reason {
-        fields.push(("reason", text(reason)));
-    }
-    dict(fields)
-}
-
-impl Removal {
-    /// A worktree that was removed.
-    pub fn removed(worktree_id: Id) -> Self {
-        Removal {
-            worktree_id,
-            removed: true,
-            reason: None,
-        }
-    }
-
-    /// A worktree that was kept, and why.
-    pub fn refused(worktree_id: Id, reason: impl Into<String>) -> Self {
-        Removal {
-            worktree_id,
-            removed: false,
-            reason: Some(reason.into()),
-        }
-    }
-}
-
-/// `NotFoundError` for a worktree id.
-pub fn not_found(worktree_id: Id) -> WgError {
-    WgError::new(
-        ErrorCode::NotFound,
-        format!("managed worktree {worktree_id} not found"),
-    )
-}
-
 /// `NotFoundError` for an attempt id.
 pub fn not_found_attempt(attempt_id: Id) -> WgError {
     WgError::new(
         ErrorCode::NotFound,
         format!("attempt {attempt_id} not found"),
-    )
-}
-
-/// A git failure that could not run at all, as a `GitError` of the API.
-pub fn git_failure(err: GitError) -> WgError {
-    WgError::new(ErrorCode::GitError, err.to_string())
-}
-
-/// A file-system failure on `path`.
-pub fn io_failure(path: &Path, err: &std::io::Error) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("cannot remove {}: {err}", path.display()),
     )
 }
 

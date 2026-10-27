@@ -18,6 +18,7 @@ wg-clispec = { path = "../wg-clispec" }
 wg-agents = { path = "../wg-agents" }
 wg-agentspec = { path = "../wg-agentspec" }
 wg-exec = { path = "../wg-exec" }
+wg-hash = { path = "../wg-hash" }
 wg-intel = { path = "../wg-intel" }
 wg-net = { path = "../wg-net" }
 wg-netspec = { path = "../wg-netspec" }

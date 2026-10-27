@@ -6,10 +6,10 @@
 //! the call names or across all workspaces when it names none (an ambiguous key is refused), and
 //! an attempt by UUID. A reference that names nothing is the same `not_found` error Python gives.
 //!
-//! `attempt_get` and `attempt_list` are answered from the store and the `wg-wire` DTOs. The other
-//! tools stop after their references resolve: their success paths need the run flow (queued jobs,
-//! adapters, worktree preparation) and the git runner, and those are not wired yet, so they answer
-//! with a `workgraph_error` that names the tool. The git tools of the same family are answered by
+//! `attempt_get`, `attempt_list`, `run_get`, `run_start` and `run_cancel` are answered from the
+//! store and the run flow. The other tools stop after their references resolve: their success
+//! paths belong to the attempt group, which is not ported yet, so they answer with a
+//! `workgraph_error` that names the tool. The git tools of the same family are answered by
 //! `wg-mcp` until the git feature moves.
 
 use serde_json::Value;
@@ -182,7 +182,7 @@ fn attempt_list(app: &mut App, arguments: &Value) -> Result<Value, WgError> {
 
 /// The tools whose references resolve here and whose success path is not wired yet.
 fn unwired(app: &mut App, name: &str, arguments: &Value) -> Result<Value, WgError> {
-    if matches!(name, "attempt_submit" | "run_get" | "run_cancel") {
+    if matches!(name, "attempt_submit") {
         let reference = arguments
             .get("attempt")
             .or_else(|| arguments.get("attempt_id"))

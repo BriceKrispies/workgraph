@@ -8,10 +8,15 @@
 //! * [`schedule`] and [`decompose`]: the scheduler and the child proposal; [`sql`]: the statements
 //!   they read with.
 
+pub mod artifacts;
 pub mod attempts;
 pub mod cli_run;
+pub mod conclude;
 pub mod config;
 pub mod decompose;
+pub mod execute;
+pub mod gate;
+pub mod outcome;
 pub mod prompt;
 pub mod runs;
 pub mod schedule;

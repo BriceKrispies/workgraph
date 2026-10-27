@@ -7,6 +7,20 @@ use wg_storecodec::sql::{quote, select_list};
 use wg_storecodec::{Raw, Statement};
 use wg_types::AttemptStatus;
 
+/// The session an agent reported: the row of `provider` and its external session id.
+pub fn session_by_external(provider: &str, external_session_id: &str) -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM {} WHERE {} = ?1 AND {} = ?2",
+            select_list(Table::AgentSession, None),
+            quote(Table::AgentSession.name()),
+            quote("provider"),
+            quote("external_session_id"),
+        ),
+        params: vec![text_sql(provider), text_sql(external_session_id)],
+    }
+}
+
 /// The attempts in any of `statuses`, in every workspace, oldest first.
 pub fn attempts_in(statuses: &[AttemptStatus]) -> Statement {
     let marks: Vec<String> = (1..=statuses.len()).map(|n| format!("?{n}")).collect();

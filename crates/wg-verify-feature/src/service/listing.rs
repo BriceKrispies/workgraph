@@ -107,7 +107,10 @@ fn resolve_task(session: &mut Session<'_>, ws: Id, reference: &str) -> Result<Id
 }
 
 /// One run as `VerificationRunOut`: its manifest entries and its check results.
-fn run_document(session: &mut Session<'_>, run: &VerificationRun) -> Result<Value, WgError> {
+pub(crate) fn run_document(
+    session: &mut Session<'_>,
+    run: &VerificationRun,
+) -> Result<Value, WgError> {
     let manifest = match run.manifest_id {
         Some(id) => session
             .manifest_by_id(id)?

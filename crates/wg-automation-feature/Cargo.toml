@@ -24,6 +24,7 @@ wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
 wg-registry = { path = "../wg-registry" }
 wg-runtimespec = { path = "../wg-runtimespec" }
+wg-serverspec = { path = "../wg-serverspec" }
 wg-store = { path = "../wg-store" }
 wg-storecodec = { path = "../wg-storecodec" }
 wg-types = { path = "../wg-types" }

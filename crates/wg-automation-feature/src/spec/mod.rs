@@ -10,6 +10,7 @@
 pub mod args;
 pub mod dto;
 pub mod execute;
+pub mod routes;
 pub mod shapes;
 pub mod sql;
 pub mod view;

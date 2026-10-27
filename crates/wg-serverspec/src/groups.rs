@@ -168,18 +168,28 @@ pub const EVENTS: [RouteSpec; 2] = [
 
 /// The request body a [`BodyRef`] names, read from the OpenAPI document: the component's object
 /// model, which the route validates bodies against. `None` when the component is missing.
+/// The `component` of a body the Python route takes as a plain `dict[str, Any]`: the snapshot
+/// declares no component for it, only an open object, which [`body_spec`] reads inline.
+pub const OPEN_OBJECT: &str = "object";
+
 pub fn body_spec(openapi: &Json, body: &BodyRef) -> Option<BodySpec> {
-    let reference = format!("#/components/schemas/{}", body.component);
-    let model = model_from_json_schema(
-        openapi,
-        &serde_json::json!({"$ref": reference}),
-        LoadOptions {
-            strip_whitespace: body.strip,
-        },
-    )
-    .ok()?;
+    let schema = if body.component == OPEN_OBJECT {
+        // `dict[str, Any]`: any object, its values unchecked.
+        Schema::Dict(None)
+    } else {
+        let reference = format!("#/components/schemas/{}", body.component);
+        let model = model_from_json_schema(
+            openapi,
+            &serde_json::json!({"$ref": reference}),
+            LoadOptions {
+                strip_whitespace: body.strip,
+            },
+        )
+        .ok()?;
+        Schema::Model(Box::new(model))
+    };
     Some(BodySpec {
-        schema: Schema::Model(Box::new(model)),
+        schema,
         required: body.required,
     })
 }

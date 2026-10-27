@@ -13,22 +13,23 @@
 //! The reads base code shares (the workspace configs, the newest run, the task acceptances) stay
 //! in `wg-store`. The check runner (`verify run`, the `verify` job) and `verify config` are
 //! [`service::run`] and [`service::config`] over the decisions of [`spec::run`],
-//! [`spec::auto_accept`] and [`spec::config_write`]. The feature exports [`FEATURE`]. Not yet
-//! served: the routes and the tools.
+//! [`spec::auto_accept`] and [`spec::config_write`]. The routes (H085 to H090) are [`http`] over
+//! [`service::api`]. The feature exports [`FEATURE`]. Not yet served: the tools.
 
 pub mod cli;
+pub mod http;
 pub mod jobs;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The verification feature: its `verify` command group and the `verify` job. It has no routes,
-/// tools or resources yet.
+/// The verification feature: its `verify` command group, its routes (H085 to H090) and the
+/// `verify` job. It has no tools or resources yet.
 pub static FEATURE: Feature = Feature {
     name: "verify",
     cli: &[cli::GROUP],
-    routes: &[],
+    routes: &[http::GROUP],
     tools: &[],
     resources: &[],
     jobs: jobs::JOBS,

@@ -2747,6 +2747,7 @@ dependencies = [
 name = "wg-json"
 version = "0.1.0"
 dependencies = [
+ "serde",
  "serde_json",
  "wg-types",
 ]
@@ -3304,6 +3305,7 @@ name = "wg-wire"
 version = "0.1.0"
 dependencies = [
  "rpds",
+ "serde",
  "serde_json",
  "wg-json",
  "wg-model",

@@ -11,7 +11,9 @@ description = "the three JSON dialects and timestamp formats"
 workspace = true
 
 [dependencies]
+serde = "1"
 wg-types = { path = "../wg-types" }
 
 [dev-dependencies]
+serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["arbitrary_precision"] }

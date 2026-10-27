@@ -1,5 +1,6 @@
 //! Helpers that fix the DTO conventions described in the crate documentation.
 
+use serde::{Serialize, Serializer};
 use serde_json::Value as Json;
 use wg_json::{PyStr, Value};
 use wg_types::{Id, Timestamp};
@@ -148,4 +149,93 @@ pub fn page(
             ("next_offset", optional_int(next_offset)),
         ],
     )
+}
+
+// Adapters for `#[serde(serialize_with = "...")]` on DTO fields (see `wire_dto!`). A field whose
+// serde form already is the wire form (text, numbers, ids, `Option`, `Vec`) needs none.
+
+/// A timestamp field, or an optional one (`null` when absent), for the time adapters below.
+pub trait TimeField {
+    /// The field in the given format.
+    fn time_value(&self, format: TimeFormat) -> Value;
+}
+
+impl TimeField for Timestamp {
+    fn time_value(&self, format: TimeFormat) -> Value {
+        timestamp(*self, format)
+    }
+}
+
+impl TimeField for Option<Timestamp> {
+    fn time_value(&self, format: TimeFormat) -> Value {
+        optional_timestamp(*self, format)
+    }
+}
+
+/// [`TimeFormat::ModelZ`]: a `datetime` field of a Pydantic model.
+pub fn model_z<T: TimeField, S: Serializer>(at: &T, serializer: S) -> Result<S::Ok, S::Error> {
+    at.time_value(TimeFormat::ModelZ).serialize(serializer)
+}
+
+/// [`TimeFormat::Z`]: `Z` text in a plain dict.
+pub fn z_text<T: TimeField, S: Serializer>(at: &T, serializer: S) -> Result<S::Ok, S::Error> {
+    at.time_value(TimeFormat::Z).serialize(serializer)
+}
+
+/// [`TimeFormat::Isoformat`]: `isoformat()` text.
+pub fn isoformat<T: TimeField, S: Serializer>(at: &T, serializer: S) -> Result<S::Ok, S::Error> {
+    at.time_value(TimeFormat::Isoformat).serialize(serializer)
+}
+
+/// A naive wall-clock datetime, printed as `isoformat()` without an offset.
+pub fn local_datetime<S: Serializer>(
+    at: &wg_json::LocalDateTime,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    Value::LocalDateTime(*at).serialize(serializer)
+}
+
+/// A JSON column or detail map ([`json_object`]).
+pub fn json_map<S: Serializer>(
+    map: &serde_json::Map<String, Json>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    json_object(map).serialize(serializer)
+}
+
+/// A list of JSON objects.
+pub fn json_objects<S: Serializer>(
+    maps: &rpds::VectorSync<serde_json::Map<String, Json>>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    Value::List(maps.iter().map(json_object).collect()).serialize(serializer)
+}
+
+/// An optional JSON object ([`optional_json_object`]).
+pub fn json_map_opt<S: Serializer>(
+    map: &Option<&serde_json::Map<String, Json>>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    optional_json_object(*map).serialize(serializer)
+}
+
+/// A `dict[str, int]` of counts in the order given ([`counts`]).
+pub fn counts_field<S: Serializer>(
+    pairs: &[(String, i64)],
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    counts(pairs).serialize(serializer)
+}
+
+/// Any JSON value ([`json_value`]).
+pub fn json_any<S: Serializer>(value: &Json, serializer: S) -> Result<S::Ok, S::Error> {
+    json_value(value).serialize(serializer)
+}
+
+/// A value written with its `Display` text, such as a task key.
+pub fn display<T: std::fmt::Display + ?Sized, S: Serializer>(
+    value: &T,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    serializer.collect_str(value)
 }

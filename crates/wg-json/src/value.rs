@@ -15,6 +15,11 @@ impl PyStr {
         &self.0
     }
 
+    /// The text as a Rust `String`, or `None` when it holds a lone surrogate.
+    pub fn to_text(&self) -> Option<String> {
+        self.0.iter().map(|point| char::from_u32(*point)).collect()
+    }
+
     /// Builds a string from code points, which may include surrogates.
     pub fn from_code_points(code_points: Vec<u32>) -> Self {
         Self(code_points)

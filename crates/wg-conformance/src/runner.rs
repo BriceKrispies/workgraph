@@ -73,6 +73,27 @@ pub struct StepRecord {
     pub stderr: String,
     pub status: Status,
     pub note: String,
+    /// Wall-clock window of the step in microseconds since the epoch: just before it started to
+    /// just after it returned. The normaliser attributes timestamps to the step whose window
+    /// holds them. `None` for steps that never ran and for replayed records.
+    pub window: Option<(i64, i64)>,
+}
+
+/// Now, in microseconds since the epoch.
+fn now_micros() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| i64::try_from(d.as_micros()).unwrap_or(i64::MAX))
+}
+
+/// Runs `f` and stamps the record it returns with the wall-clock window it took.
+fn windowed(f: impl FnOnce() -> StepRecord) -> StepRecord {
+    let start = now_micros();
+    let rec = f();
+    StepRecord {
+        window: Some((start, now_micros())),
+        ..rec
+    }
 }
 
 impl StepRecord {
@@ -504,6 +525,7 @@ fn record(index: usize, kind: &'static str, label: String) -> StepRecord {
         stderr: String::new(),
         status: Status::Passed,
         note: String::new(),
+        window: None,
     }
 }
 
@@ -1212,6 +1234,7 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
     let mut steps = Vec::new();
     let mut setup_ok = true;
     for (i, s) in scenario.setup.iter().enumerate() {
+        let start = now_micros();
         let rec = record(i, "setup", format!("git {} {}", s.git, s.repo));
         let rec = match setup_step(&mut ctx, s) {
             Ok(o) if o.exit == 0 => rec,
@@ -1231,14 +1254,18 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
                 fail(rec, e)
             }
         };
-        steps.push(StepRecord { index: None, ..rec });
+        steps.push(StepRecord {
+            index: None,
+            window: Some((start, now_micros())),
+            ..rec
+        });
         if !setup_ok {
             break;
         }
     }
     if setup_ok {
         for (i, step) in scenario.steps.iter().enumerate() {
-            steps.push(run_step(&mut ctx, i, step));
+            steps.push(windowed(|| run_step(&mut ctx, i, step)));
         }
     }
     // Stop the MCP and HTTP servers before their sandbox is removed.

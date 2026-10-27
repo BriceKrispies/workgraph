@@ -68,6 +68,7 @@ wg-git-feature::spec Pure
 wg-git-feature::service Shell
 wg-git-feature::jobs Shell
 wg-git-feature::cli Shell
+wg-git-feature::http Shell
 wg-gitcore Core
 wg-hash Core
 wg-intel Core

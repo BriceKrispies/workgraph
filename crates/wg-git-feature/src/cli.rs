@@ -35,7 +35,16 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             let repository = option_text(m, "repository").unwrap_or_default();
             let limit = view::int_option(m, "--limit", 30)?;
             let linked = option_flag(m, "--linked");
-            let out = service::git_log(state.app()?, &context, ws, &repository, limit, linked)?;
+            let out = service::git_log(
+                state.app()?,
+                &context,
+                ws,
+                &repository,
+                limit,
+                linked,
+                0,
+                false,
+            )?;
             state.emit(&out, Some(&|c| view::log_view(c, &out)))
         }
         Some("show") => {

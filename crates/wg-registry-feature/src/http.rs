@@ -3,13 +3,17 @@
 //! `api/routes/core.py`, `GET /api/v1/settings` (H117) and `PATCH /api/v1/settings` (H118) from
 //! `api/routes/ops.py`, and the provider routes `GET /api/v1/agents` (H119) and
 //! `GET /api/v1/llm/health` (H120). The health and meta routes stay in the server's base group.
+//! The project routes (H006 to H011) and the repository routes (H012 to H021) of `core.py` are
+//! here too; the worktree listing (H022) is the git feature's.
 //!
-//! [`SPECS`] and [`PROVIDER_SPECS`] are the tables of operations; the server binds each one to
-//! [`run`] or [`run_providers`], which read the validated request and call the feature's
-//! [`crate::service`] entry point or the rules of [`crate::spec::settings`] and
-//! [`crate::service::setup`] on the application. The workspace routes take no permission check
+//! [`SPECS`], [`PROVIDER_SPECS`], [`PROJECT_SPECS`] and [`REPOSITORY_SPECS`] are the tables of
+//! operations; the server binds each one to its group's `run` function, which reads the validated
+//! request and calls the feature's [`crate::service`] entry point, the rules of
+//! [`crate::spec::settings`] and [`crate::service::setup`] on the application, or the git feature's
+//! services for the git operations of a repository. The workspace routes take no permission check
 //! of their own: the service makes it, as the Python service does.
 
+use serde_json::Value as Json;
 use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
@@ -20,6 +24,8 @@ use wg_wire::convention::json_object;
 use crate::service;
 use crate::service::setup::{agents_document, llm_health_document};
 use crate::spec::dto::settings as settings_dto;
+use crate::spec::query::{body_text, flag, no_handler, number};
+use crate::spec::repos;
 use crate::spec::settings::{patch_values, patched_config, settings_workspace};
 
 /// The operations of the group, in registration order.
@@ -103,6 +109,262 @@ pub const PROVIDER_GROUP: RouteGroup = RouteGroup {
     specs: &PROVIDER_SPECS,
     run: run_providers,
 };
+
+/// The project routes (`api/routes/core.py`): the list and creation of projects (H006, H007), one
+/// project (H008, H009) and its repository links (H010, H011), in registration order.
+pub const PROJECT_SPECS: [RouteSpec; 6] = [
+    RouteSpec {
+        id: "H006",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/projects",
+        status: 200,
+        query: &["include_archived"],
+        body: None,
+    },
+    RouteSpec {
+        id: "H007",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/projects",
+        status: 201,
+        query: &[],
+        body: Some(BodyRef {
+            component: "ProjectCreate",
+            required: true,
+            strip: true,
+        }),
+    },
+    RouteSpec {
+        id: "H008",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/projects/{ref}",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
+        id: "H009",
+        method: "PATCH",
+        path: "/api/v1/ws/{ws}/projects/{ref}",
+        status: 200,
+        query: &[],
+        body: Some(BodyRef {
+            component: "ProjectUpdate",
+            required: true,
+            strip: true,
+        }),
+    },
+    RouteSpec {
+        id: "H010",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/projects/{ref}/repositories",
+        status: 200,
+        query: &[],
+        body: Some(BodyRef {
+            component: "RepoLink",
+            required: true,
+            strip: false,
+        }),
+    },
+    RouteSpec {
+        id: "H011",
+        method: "DELETE",
+        path: "/api/v1/ws/{ws}/projects/{ref}/repositories/{repository}",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+];
+
+/// The project group as the feature descriptor takes it.
+pub const PROJECT_GROUP: RouteGroup = RouteGroup {
+    specs: &PROJECT_SPECS,
+    run: run_projects,
+};
+
+/// The repository routes (`api/routes/core.py`): the list and registration of repositories (H012,
+/// H013), one repository (H014 to H016), its refresh and status (H017, H018), its sync and commits
+/// (H019 to H021). H022, the worktree listing, is the git feature's.
+pub const REPOSITORY_SPECS: [RouteSpec; 10] = [
+    RouteSpec {
+        id: "H012",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/repositories",
+        status: 200,
+        query: &["include_archived", "project"],
+        body: None,
+    },
+    RouteSpec {
+        id: "H013",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/repositories",
+        status: 201,
+        query: &[],
+        body: Some(BodyRef {
+            component: "RepositoryRegister",
+            required: true,
+            strip: true,
+        }),
+    },
+    RouteSpec {
+        id: "H014",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/repositories/{ref}",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
+        id: "H015",
+        method: "PATCH",
+        path: "/api/v1/ws/{ws}/repositories/{ref}",
+        status: 200,
+        query: &[],
+        body: Some(BodyRef {
+            component: "RepositoryUpdate",
+            required: true,
+            strip: true,
+        }),
+    },
+    RouteSpec {
+        id: "H016",
+        method: "DELETE",
+        path: "/api/v1/ws/{ws}/repositories/{ref}",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
+        id: "H017",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/repositories/{ref}/refresh",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
+        id: "H018",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/repositories/{ref}/status",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
+        id: "H019",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/repositories/{ref}/sync",
+        status: 200,
+        query: &["mode"],
+        body: None,
+    },
+    RouteSpec {
+        id: "H020",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/repositories/{ref}/commits",
+        status: 200,
+        query: &["limit", "offset", "linked_only", "include_unreachable"],
+        body: None,
+    },
+    RouteSpec {
+        id: "H021",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/repositories/{ref}/commits/{sha}",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+];
+
+/// The repository group as the feature descriptor takes it.
+pub const REPOSITORY_GROUP: RouteGroup = RouteGroup {
+    specs: &REPOSITORY_SPECS,
+    run: run_repositories,
+};
+
+/// The project operations: each makes its permission check in the service, as the Python service
+/// does.
+fn run_projects(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {
+    let params = &request.params;
+    let ws = Some(text_param(params, "ws"));
+    let context = &request.context;
+    let reference = text_param(params, "ref");
+    match id {
+        "H006" => service::project_list(app, context, ws, flag(params, "include_archived")),
+        "H007" => service::project_create(app, context, ws, &request.body),
+        "H008" => service::project_summary(app, context, ws, reference),
+        "H009" => service::project_update(app, context, ws, reference, &request.given),
+        "H010" => {
+            let repository = body_text(&request.body, "repository");
+            let role = body_text(&request.body, "role");
+            let role = if role.is_empty() { "member" } else { role };
+            service::project_add_repository(app, context, ws, reference, repository, role)
+        }
+        "H011" => service::project_remove_repository(
+            app,
+            context,
+            ws,
+            reference,
+            text_param(params, "repository"),
+        ),
+        other => Err(no_handler(other)),
+    }
+}
+
+/// The repository operations: each makes its permission check in the service, and the git reads
+/// and writes run through the git feature's services.
+fn run_repositories(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {
+    let params = &request.params;
+    let ws = Some(text_param(params, "ws"));
+    let context = &request.context;
+    let reference = text_param(params, "ref");
+    match id {
+        "H012" => service::repo_list(
+            app,
+            context,
+            ws,
+            flag(params, "include_archived"),
+            params.get("project").and_then(Json::as_str),
+        )
+        .map(Value::List),
+        "H013" => service::repo_register(app, context, ws, &repos::register_input(&request.body)),
+        "H014" => service::repo_get(app, context, ws, reference),
+        "H015" => service::repo_update(
+            app,
+            context,
+            ws,
+            reference,
+            &repos::repository_patch(&request.body)?,
+        ),
+        "H016" => service::repo_remove(app, context, ws, reference),
+        "H017" => service::repo_refresh(app, context, ws, reference),
+        "H018" => service::repo_status(app, context, ws, reference),
+        "H019" => wg_git_feature::service::git_sync_ref(
+            app,
+            context,
+            ws,
+            reference,
+            text_param(params, "mode"),
+        ),
+        "H020" => wg_git_feature::service::git_log(
+            app,
+            context,
+            ws,
+            reference,
+            number(params, "limit", 50),
+            flag(params, "linked_only"),
+            number(params, "offset", 0),
+            flag(params, "include_unreachable"),
+        ),
+        "H021" => wg_git_feature::service::git_show(
+            app,
+            context,
+            ws,
+            reference,
+            text_param(params, "sha"),
+        ),
+        other => Err(no_handler(other)),
+    }
+}
 
 /// The provider operations: both read the workspace permission, then the adapters or providers
 /// of the configuration.

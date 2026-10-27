@@ -20,6 +20,7 @@ pub mod cli;
 pub mod ingest;
 pub mod jobs;
 pub mod links;
+pub mod mode;
 pub mod reads;
 pub mod sql;
 pub mod surface;

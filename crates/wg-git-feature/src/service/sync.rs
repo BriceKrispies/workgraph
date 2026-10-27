@@ -12,6 +12,7 @@ use crate::spec::ingest::{
     count, diff_line, equivalence_facts as to_facts, offset_time, sync_result_value as result_value,
 };
 use crate::spec::links::{self as attribution, LinkDraft};
+use crate::spec::mode::sync_is_full;
 use wg_git::{Git, RunOptions};
 use wg_gitcore::{
     CarriedLink, CommitDiff, CommitFacts, CommitMeta, Equivalence, OriginalLink,
@@ -162,6 +163,27 @@ pub(crate) fn repo_state(app: &mut App, repository_id: Id) -> Result<RepoState, 
             repository,
         })
     })
+}
+
+/// `GitService.sync_ref` (`git sync` of one repository, the `mode` of the route): the repository
+/// is resolved first (not found), then the caller's `git:ingest` permission is checked, then the
+/// mode is validated, as the Python service orders them. Returns the sync result of the repository.
+pub fn git_sync_ref(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    reference: &str,
+    mode: &str,
+) -> Result<Value, WgError> {
+    let workspace_id = app.workspace_or_default(workspace)?;
+    let repo = super::entries::repository_row(app, workspace_id, reference, false)?;
+    app.runtime
+        .stamps
+        .stamp(context)?
+        .require(&[Permission::GitIngest])?;
+    let full = sync_is_full(mode)?;
+    let result = sync_repository(app, context, repo.repository.id, full)?;
+    Ok(result_value(&result))
 }
 
 /// `GitService.sync`: imports the commits of one repository and reconciles its refs.

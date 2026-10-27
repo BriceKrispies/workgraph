@@ -18,6 +18,7 @@ fn registered_routes_match_the_openapi_snapshot() {
         &wg_verify_feature::FEATURE,
         &wg_automation_feature::FEATURE,
         &wg_telemetry_feature::FEATURE,
+        &wg_git_feature::FEATURE,
     ]);
     let problems: Vec<String> = registered
         .iter()

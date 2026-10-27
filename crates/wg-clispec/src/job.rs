@@ -8,7 +8,7 @@ use clap::ArgMatches;
 use wg_json::{PyStr, Value};
 use wg_render::{Console, escape};
 
-use crate::args::{flag, get, items, many, number, one, python, s, when};
+use crate::args::{flag, float_value, get, items, many, number, one, python, s, when};
 use crate::tree::{SNAPSHOT_JSON, placeholder};
 use crate::{CliFailure, Snapshot, Usage};
 
@@ -71,15 +71,7 @@ pub fn once(m: &ArgMatches) -> bool {
 
 /// `--max-idle`, in seconds.
 pub fn max_idle(m: &ArgMatches) -> Result<Option<f64>, CliFailure> {
-    match one(m, "--max-idle") {
-        None => Ok(None),
-        Some(text) => text.trim().parse::<f64>().map(Some).map_err(|_| {
-            CliFailure::fail(
-                format!("Invalid value for '--max-idle': {text:?} is not a valid float."),
-                2,
-            )
-        }),
-    }
+    float_value(m, "--max-idle", WORKER_RUN)
 }
 
 /// `--status`/`-s` (repeatable) of `job list`.

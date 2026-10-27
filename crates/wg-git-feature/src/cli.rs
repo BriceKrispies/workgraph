@@ -6,7 +6,7 @@
 //! with [`crate::spec::cli`]'s views.
 
 use clap::ArgMatches;
-use wg_clispec::args::{option_flag, option_text};
+use wg_clispec::args::{self, option_flag, option_text};
 use wg_clispec::{CliFailure, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
@@ -33,7 +33,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("log") => {
             let repository = option_text(m, "repository").unwrap_or_default();
-            let limit = view::int_option(m, "--limit", 30)?;
+            let limit = args::number(m, "--limit", 30, view::LOG)?;
             let linked = option_flag(m, "--linked");
             let out = service::git_log(
                 state.app()?,
@@ -77,7 +77,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("changes") => {
             let task = option_text(m, "task").unwrap_or_default();
-            let min_confidence = view::float_option(m, "--min-confidence", 0.5)?;
+            let min_confidence = args::float_value(m, "--min-confidence", view::CHANGES)?.unwrap_or(0.5);
             let out = service::git_changes(state.app()?, &context, ws, &task, min_confidence)?;
             state.emit(&out, Some(&|c| view::changes_view(c, &out)))
         }
@@ -94,7 +94,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("analyze") => {
             let repository = option_text(m, "repository").unwrap_or_default();
-            let limit = view::int_option(m, "--limit", 200)?;
+            let limit = args::number(m, "--limit", 200, view::ANALYZE)?;
             let out = service::git_analyze(state.app()?, &context, ws, &repository, limit)?;
             state.emit(&out, Some(&|c| view::analyze_line(c, &out)))
         }

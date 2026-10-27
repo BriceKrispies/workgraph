@@ -39,8 +39,20 @@ pub fn number(m: &ArgMatches, id: &str, default: i64, at: Usage) -> Result<i64, 
         None => Ok(default),
         Some(text) => python_number_text(&text)
             .and_then(|digits| digits.parse().ok())
-            .ok_or_else(|| at.invalid_value(id, &text, "int")),
+            .ok_or_else(|| at.invalid_value(id, &text, "integer")),
     }
+}
+
+/// The `float` option `id`, when given. Click's `float` check: Python's `float()` must read the
+/// text, else it is a usage error (`at` names the command it is reported under).
+pub fn float_value(m: &ArgMatches, id: &str, at: Usage) -> Result<Option<f64>, CliFailure> {
+    one(m, id)
+        .map(|text| {
+            python_number_text(&text)
+                .and_then(|digits| digits.parse().ok())
+                .ok_or_else(|| at.invalid_value(id, &text, "float"))
+        })
+        .transpose()
 }
 
 /// The option values `task ready`, `graph` and `history` read.

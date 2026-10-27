@@ -6,7 +6,7 @@
 
 use crate::gitfix;
 use crate::http;
-use crate::scenario::{Assertion, JsonExpect, Scenario, Setup, Step};
+use crate::scenario::{Assertion, HeaderExpect, JsonExpect, Scenario, Setup, Step};
 use serde_json::{Map, Value, json};
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -158,6 +158,10 @@ struct Ctx<'a> {
     mcp_grants: Vec<String>,
     /// The `serve` process, started by the first `http` step and killed when the run ends.
     server: Option<http::Server>,
+    /// Directories that `PATH` prefixes of the run add (from the implementation and from steps).
+    path_dirs: Vec<String>,
+    /// The headers of the last `http` response, read by `header` assertions.
+    last_headers: Option<Vec<(String, String)>>,
 }
 
 fn display(p: &Path) -> String {
@@ -169,8 +173,12 @@ pub(crate) fn env_for(
     sb: &Sandbox,
     extra: &[(String, String)],
 ) -> Vec<(String, String)> {
+    // HOME and USERPROFILE point into the sandbox, so a command that reads the user's settings
+    // (`~/.claude/settings.json`) reads the sandbox's copy on every machine.
     let mut env = vec![
         ("WORKGRAPH_HOME".to_owned(), display(&sb.home)),
+        ("HOME".to_owned(), display(&sb.home)),
+        ("USERPROFILE".to_owned(), display(&sb.home)),
         ("COLUMNS".to_owned(), "120".to_owned()),
         ("NO_COLOR".to_owned(), "1".to_owned()),
         ("TMPDIR".to_owned(), display(&sb.tmp)),
@@ -179,7 +187,43 @@ pub(crate) fn env_for(
     ];
     env.extend(imp.env.iter().cloned());
     env.extend(extra.iter().cloned());
-    env
+    merge_path_prefixes(env)
+}
+
+/// The separator of a `PATH` value on this platform.
+fn path_separator() -> &'static str {
+    if cfg!(windows) { ";" } else { ":" }
+}
+
+/// Every `PATH` entry in `env` is a prefix: the entries it names come first, then the `PATH` the
+/// runner itself inherited, so a fake agent in a `--env PATH=<dir>` prefix is found while the
+/// system tools still are. Both implementations resolve executables from the `PATH` they run
+/// with, so the merged value is what `workgraph-demo-agent` is looked up through.
+pub(crate) fn merge_path_prefixes(env: Vec<(String, String)>) -> Vec<(String, String)> {
+    let (paths, mut rest): (Vec<_>, Vec<_>) = env
+        .into_iter()
+        .partition(|(k, _)| k.eq_ignore_ascii_case("PATH"));
+    if paths.is_empty() {
+        return rest;
+    }
+    let inherited = std::env::var("PATH").unwrap_or_default();
+    let value = paths
+        .iter()
+        .map(|(_, v)| v.as_str())
+        .chain(std::iter::once(inherited.as_str()))
+        .filter(|v| !v.is_empty())
+        .collect::<Vec<_>>()
+        .join(path_separator());
+    rest.push(("PATH".to_owned(), value));
+    rest
+}
+
+/// The directories a `PATH` prefix adds, as written in `value`.
+fn path_prefix_dirs(value: &str) -> Vec<String> {
+    std::env::split_paths(value)
+        .map(|p| p.display().to_string())
+        .filter(|d| !d.is_empty())
+        .collect()
 }
 
 pub(crate) fn run_process(cmd: &mut Command, stdin: Option<&str>) -> Result<Outcome, String> {
@@ -316,6 +360,12 @@ impl Ctx<'_> {
 
     /// Replace `{name}` and `{name:arg}` placeholders; other braces stay as they are.
     fn resolve(&self, text: &str) -> Result<String, String> {
+        self.resolve_with(text, false)
+    }
+
+    /// As `resolve`, and with `escape` each substituted value is escaped as the text of a JSON
+    /// string, so a Windows path substituted into JSON stays valid JSON.
+    fn resolve_with(&self, text: &str, escape: bool) -> Result<String, String> {
         let mut out = String::with_capacity(text.len());
         let mut rest = text;
         while let Some(open) = rest.find('{') {
@@ -333,7 +383,8 @@ impl Ctx<'_> {
             let plain = !name.is_empty() && name.bytes().all(|c| c.is_ascii_lowercase());
             match plain.then(|| self.lookup(name, arg)).flatten() {
                 Some(r) => {
-                    out.push_str(&r?);
+                    let value = r?;
+                    out.push_str(&if escape { json_escape(&value) } else { value });
                     rest = &tail[close + 1..];
                 }
                 None => {
@@ -419,6 +470,16 @@ fn json_document(stdout: &str) -> Value {
             None => return Value::Null,
         }
     }
+}
+
+/// `text` as the inside of a JSON string literal (the quotes are not included).
+fn json_escape(text: &str) -> String {
+    let quoted = serde_json::to_string(text).unwrap_or_default();
+    quoted
+        .strip_prefix('"')
+        .and_then(|q| q.strip_suffix('"'))
+        .unwrap_or_default()
+        .to_owned()
 }
 
 fn pointer_text(stdout: &str, ptr: &str) -> Result<String, String> {
@@ -509,6 +570,79 @@ fn inside_home(sb: &Sandbox, path: &Path) -> bool {
             .any(|c| matches!(c, std::path::Component::ParentDir))
 }
 
+/// The files a file assertion path names: the path itself when it is a file, or, when its file name
+/// has `*`, every file of the directory whose name matches (sorted).
+fn matching_files(path: &Path) -> Vec<PathBuf> {
+    let name = path
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or_default();
+    if !name.contains('*') {
+        return if path.is_file() {
+            vec![path.to_path_buf()]
+        } else {
+            Vec::new()
+        };
+    }
+    let dir = path.parent().unwrap_or(Path::new("."));
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return Vec::new();
+    };
+    let mut found: Vec<PathBuf> = entries
+        .flatten()
+        .filter(|e| {
+            e.path().is_file()
+                && e.file_name()
+                    .to_str()
+                    .is_some_and(|n| wildcard_match(name, n))
+        })
+        .map(|e| e.path())
+        .collect();
+    found.sort();
+    found
+}
+
+/// Whether `name` matches `pattern`, where `*` stands for any run of characters.
+fn wildcard_match(pattern: &str, name: &str) -> bool {
+    let parts: Vec<&str> = pattern.split('*').collect();
+    let Some((first, tail)) = parts.split_first() else {
+        return false;
+    };
+    let Some((last, middle)) = tail.split_last() else {
+        return pattern == name;
+    };
+    let Some(mut rest) = name.strip_prefix(first) else {
+        return false;
+    };
+    for part in middle {
+        match rest.find(part) {
+            Some(at) => rest = &rest[at + part.len()..],
+            None => return false,
+        }
+    }
+    rest.ends_with(last)
+}
+
+/// JSON equality with numbers compared by value, so an integer expectation matches a float the
+/// Python implementation writes for the same number (`30` and `30.0`).
+fn same_json(a: &Value, b: &Value) -> bool {
+    match (a, b) {
+        (Value::Number(x), Value::Number(y)) => match (x.as_f64(), y.as_f64()) {
+            (Some(x), Some(y)) => x == y,
+            _ => x == y,
+        },
+        (Value::Array(x), Value::Array(y)) => {
+            x.len() == y.len() && x.iter().zip(y).all(|(p, q)| same_json(p, q))
+        }
+        (Value::Object(x), Value::Object(y)) => {
+            x.len() == y.len()
+                && x.iter()
+                    .all(|(k, v)| y.get(k).is_some_and(|w| same_json(v, w)))
+        }
+        _ => a == b,
+    }
+}
+
 fn run_assertion(ctx: &Ctx<'_>, a: &Assertion) -> Result<Result<(), String>, String> {
     let last = || {
         ctx.last
@@ -548,7 +682,7 @@ fn run_assertion(ctx: &Ctx<'_>, a: &Assertion) -> Result<Result<(), String>, Str
                 (JsonExpect::Equals(want), got) => {
                     let want = ctx.resolve_value(want)?;
                     match got {
-                        Some(got) if *got == want => Ok(()),
+                        Some(got) if same_json(got, &want) => Ok(()),
                         Some(got) => Err(format!("{path} is {got}, wanted {want}")),
                         None => Err(format!("no value at {path}")),
                     }
@@ -566,7 +700,9 @@ fn run_assertion(ctx: &Ctx<'_>, a: &Assertion) -> Result<Result<(), String>, Str
                 (JsonExpect::Excludes(item), got) => {
                     let item = ctx.resolve_value(item)?;
                     match got {
-                        Some(Value::Array(items)) if !items.contains(&item) => Ok(()),
+                        Some(Value::Array(items)) if !items.iter().any(|x| same_json(x, &item)) => {
+                            Ok(())
+                        }
                         Some(Value::Array(_)) => Err(format!("{path} contains {item}")),
                         Some(_) => Err(format!("{path} is not an array")),
                         None => Err(format!("no value at {path}")),
@@ -585,12 +721,16 @@ fn run_assertion(ctx: &Ctx<'_>, a: &Assertion) -> Result<Result<(), String>, Str
             } else {
                 ctx.sb.home.join(p)
             };
-            match (p.is_file(), exists) {
+            // A path whose file name has `*` matches every file of that name pattern in its directory.
+            let found = matching_files(&p);
+            match (!found.is_empty(), exists) {
                 (true, true) => match contains {
                     Some(c) => {
                         let want = ctx.resolve(c)?;
-                        let text = std::fs::read_to_string(&p).map_err(|e| e.to_string())?;
-                        if text.contains(&want) {
+                        let hit = found.iter().any(|f| {
+                            std::fs::read_to_string(f).is_ok_and(|text| text.contains(&want))
+                        });
+                        if hit {
                             Ok(())
                         } else {
                             Err(format!("{} does not contain {want:?}", p.display()))
@@ -606,8 +746,47 @@ fn run_assertion(ctx: &Ctx<'_>, a: &Assertion) -> Result<Result<(), String>, Str
                 )),
             }
         }
+        Assertion::Header { name, expect } => {
+            let headers = ctx
+                .last_headers
+                .as_ref()
+                .ok_or("assertion needs an earlier http step")?;
+            let found = headers
+                .iter()
+                .find(|(h, _)| h.eq_ignore_ascii_case(name))
+                .map(|(_, v)| v.as_str());
+            match (expect, found) {
+                (HeaderExpect::Absent, None) => Ok(()),
+                (HeaderExpect::Absent, Some(v)) => Err(format!("header {name} is present: {v}")),
+                (HeaderExpect::Equals(want), found) => {
+                    let want = ctx.resolve(want)?;
+                    match found {
+                        Some(got) if got == want => Ok(()),
+                        Some(got) => Err(format!("header {name} is {got:?}, wanted {want:?}")),
+                        None => Err(format!("no header {name}, wanted {want:?}")),
+                    }
+                }
+            }
+        }
         Assertion::Db { .. } => unreachable!("db assertions are skipped by the caller"),
     })
+}
+
+/// The environment of a `cli` step with its placeholders resolved, like its arguments. A `PATH`
+/// value also records the directories it adds, which the report names with a placeholder.
+fn resolve_env(
+    ctx: &mut Ctx<'_>,
+    env: &[(String, String)],
+) -> Result<Vec<(String, String)>, String> {
+    env.iter()
+        .map(|(k, v)| {
+            let value = ctx.resolve(v)?;
+            if k.eq_ignore_ascii_case("PATH") {
+                ctx.path_dirs.extend(path_prefix_dirs(&value));
+            }
+            Ok((k.clone(), value))
+        })
+        .collect()
 }
 
 fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
@@ -628,11 +807,23 @@ fn run_step(ctx: &mut Ctx<'_>, index: usize, step: &Step) -> StepRecord {
                 Ok(r) => r,
                 Err(e) => return fail(rec, e),
             };
-            let stdin = match stdin.as_deref().map(|s| ctx.resolve(s)).transpose() {
+            // Stdin that is JSON takes its placeholders escaped, so a Windows path stays valid JSON.
+            let escape = stdin
+                .as_deref()
+                .is_some_and(|s| serde_json::from_str::<Value>(s).is_ok());
+            let stdin = match stdin
+                .as_deref()
+                .map(|s| ctx.resolve_with(s, escape))
+                .transpose()
+            {
                 Ok(s) => s,
                 Err(e) => return fail(rec, e),
             };
-            let outcome = match ctx.cli(&resolved, *json, stdin.as_deref(), env) {
+            let env = match resolve_env(ctx, env) {
+                Ok(e) => e,
+                Err(e) => return fail(rec, e),
+            };
+            let outcome = match ctx.cli(&resolved, *json, stdin.as_deref(), &env) {
                 Ok(o) => o,
                 Err(e) => return fail(rec, e),
             };
@@ -933,6 +1124,7 @@ fn http_step(ctx: &mut Ctx<'_>, index: usize, call: HttpCall<'_>) -> StepRecord 
         stdout,
         stderr: String::new(),
     });
+    ctx.last_headers = Some(exchange.headers.clone());
     for (name, ptr) in save {
         match pointer_text(&text, ptr) {
             Ok(v) => {
@@ -1014,6 +1206,8 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
         mcp: None,
         mcp_grants: Vec::new(),
         server: None,
+        path_dirs: Vec::new(),
+        last_headers: None,
     };
     let mut steps = Vec::new();
     let mut setup_ok = true;
@@ -1048,13 +1242,29 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
         }
     }
     // Stop the MCP and HTTP servers before their sandbox is removed.
+    let mut path_dirs = std::mem::take(&mut ctx.path_dirs);
     drop(ctx);
-    let roots = vec![
+    for (_, value) in imp
+        .env
+        .iter()
+        .filter(|(k, _)| k.eq_ignore_ascii_case("PATH"))
+    {
+        path_dirs.extend(path_prefix_dirs(value));
+    }
+    // The directories a `PATH` prefix adds (a fake agent's directory) and the checkout the run
+    // starts in are machine-specific: they are named by placeholders, most specific first.
+    let mut roots = vec![
         (display(&sb.repos), "<tmp>/repos"),
         (display(&sb.home), "<home>"),
         (display(&sb.tmp), "<tmp>"),
         (display(&sb.root), "<tmp>"),
     ];
+    roots.extend(path_dirs.into_iter().map(|d| (d, "<bin>")));
+    if let Ok(checkout) = std::env::current_dir()
+        && checkout.parent().is_some()
+    {
+        roots.push((display(&checkout), "<repo>"));
+    }
     let _ = std::fs::remove_dir_all(&sb.root);
     Ok(RunResult {
         scenario: scenario.id.clone(),
@@ -1080,6 +1290,8 @@ mod tests {
             mcp: None,
             mcp_grants: Vec::new(),
             server: None,
+            path_dirs: Vec::new(),
+            last_headers: None,
         }
     }
 
@@ -1216,6 +1428,151 @@ mod tests {
         assert!(!inside_home(&sb, &sb.home.join("..").join("elsewhere")));
         assert!(!inside_home(&sb, Path::new("relative/dir")));
         let _ = std::fs::remove_dir_all(&sb.root);
+    }
+
+    #[test]
+    fn home_is_the_sandbox_and_path_prefixes_come_before_the_inherited_path() {
+        let imp = Implementation::from_command("t", "x", Vec::new()).unwrap();
+        let sb = Sandbox::create().unwrap();
+        let env = env_for(&imp, &sb, &[]);
+        let get = |k: &str| env.iter().find(|(n, _)| n == k).map(|(_, v)| v.clone());
+        assert_eq!(get("HOME").as_deref(), Some(display(&sb.home).as_str()));
+        assert_eq!(
+            get("USERPROFILE").as_deref(),
+            Some(display(&sb.home).as_str())
+        );
+        assert_eq!(get("PATH"), None, "no PATH prefix, no PATH override");
+        // A PATH prefix from the implementation and from a step: both come first, then the rest.
+        let prefixed = env_for(
+            &Implementation::from_command("t", "x", vec![("PATH".into(), "/fake/bin".into())])
+                .unwrap(),
+            &sb,
+            &[("PATH".into(), "/step/bin".into())],
+        );
+        let path = prefixed
+            .iter()
+            .find(|(n, _)| n == "PATH")
+            .map(|(_, v)| v.clone())
+            .unwrap();
+        let inherited = std::env::var("PATH").unwrap_or_default();
+        let expected = ["/fake/bin", "/step/bin", inherited.as_str()]
+            .into_iter()
+            .filter(|v| !v.is_empty())
+            .collect::<Vec<_>>()
+            .join(path_separator());
+        assert_eq!(path, expected);
+        assert_eq!(prefixed.iter().filter(|(n, _)| n == "PATH").count(), 1);
+        let _ = std::fs::remove_dir_all(&sb.root);
+    }
+
+    #[test]
+    fn step_env_and_stdin_placeholders_resolve() {
+        let imp = Implementation::from_command("t", "x", Vec::new()).unwrap();
+        let sb = Sandbox::create().unwrap();
+        let mut ctx = ctx_for(&imp, &sb);
+        let home = display(&sb.home);
+        let env = resolve_env(
+            &mut ctx,
+            &[
+                ("WG_PROBE".into(), "{home}/probe".into()),
+                ("PATH".into(), "{home}/bin".into()),
+            ],
+        )
+        .unwrap();
+        assert_eq!(env[0].1, format!("{home}/probe"));
+        assert_eq!(env[1].1, format!("{home}/bin"));
+        assert_eq!(ctx.path_dirs, [format!("{home}/bin")]);
+        // Inside JSON a Windows-style path stays valid: its backslashes are escaped.
+        assert_eq!(json_escape(r"C:\repo\x"), r"C:\\repo\\x");
+        ctx.vars.insert("p".into(), r"C:\tmp\b.zip".into());
+        let json = ctx.resolve_with(r#"{"path": "{var:p}"}"#, true).unwrap();
+        let parsed: Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed["path"], r"C:\tmp\b.zip");
+        let _ = std::fs::remove_dir_all(&sb.root);
+    }
+
+    #[test]
+    fn json_numbers_compare_by_value() {
+        assert!(same_json(&json!(30), &json!(30.0)));
+        assert!(same_json(&json!({"a": [1, 2.0]}), &json!({"a": [1.0, 2]})));
+        assert!(!same_json(&json!(30), &json!(31.0)));
+        assert!(!same_json(&json!({"a": 1}), &json!({"a": 1, "b": 2})));
+        assert!(!same_json(&json!("30"), &json!(30)));
+    }
+
+    #[test]
+    fn wildcards_match_file_names_in_a_directory() {
+        assert!(wildcard_match("*.json", "rec-1.json"));
+        assert!(wildcard_match("rec-*.json", "rec-1.json"));
+        assert!(wildcard_match("a*a", "aba"));
+        assert!(!wildcard_match("a*a", "a"));
+        assert!(!wildcard_match("rec-*.json", "rec-1.txt"));
+        assert!(wildcard_match("plain", "plain"));
+        assert!(!wildcard_match("plain", "plainer"));
+        let sb = Sandbox::create().unwrap();
+        std::fs::write(sb.home.join("spool-1.json"), "{}").unwrap();
+        std::fs::write(sb.home.join("spool-2.json"), "{}").unwrap();
+        std::fs::write(sb.home.join("other.txt"), "x").unwrap();
+        let found = matching_files(&sb.home.join("spool-*.json"));
+        assert_eq!(found.len(), 2, "{found:?}");
+        assert!(matching_files(&sb.home.join("missing-*.json")).is_empty());
+        let _ = std::fs::remove_dir_all(&sb.root);
+    }
+
+    #[test]
+    fn header_assertions_parse_and_check_the_last_response() {
+        let good = r#"{"id":"h","covers":[],"steps":[
+          {"assert":{"header":{"name":"Access-Control-Allow-Origin","absent":true}}},
+          {"assert":{"header":{"name":"X-Frame-Options","equals":"DENY"}}}
+        ]}"#;
+        let scenario = crate::scenario::parse_scenario(good).unwrap();
+        assert_eq!(scenario.steps.len(), 2);
+        assert!(
+            crate::scenario::parse_scenario(
+                r#"{"id":"h","covers":[],"steps":[{"assert":{"header":{"name":"X"}}}]}"#
+            )
+            .is_err()
+        );
+        let imp = Implementation::from_command("t", "x", Vec::new()).unwrap();
+        let sb = Sandbox::create().unwrap();
+        let mut ctx = ctx_for(&imp, &sb);
+        let absent = Assertion::Header {
+            name: "Access-Control-Allow-Origin".into(),
+            expect: crate::scenario::HeaderExpect::Absent,
+        };
+        assert!(run_assertion(&ctx, &absent).is_err(), "no response yet");
+        ctx.last_headers = Some(vec![("x-frame-options".into(), "DENY".into())]);
+        assert!(run_assertion(&ctx, &absent).unwrap().is_ok());
+        let equals = Assertion::Header {
+            name: "X-Frame-Options".into(),
+            expect: crate::scenario::HeaderExpect::Equals("DENY".into()),
+        };
+        assert!(run_assertion(&ctx, &equals).unwrap().is_ok());
+        let wrong = Assertion::Header {
+            name: "X-Frame-Options".into(),
+            expect: crate::scenario::HeaderExpect::Equals("SAMEORIGIN".into()),
+        };
+        assert!(run_assertion(&ctx, &wrong).unwrap().is_err());
+        let _ = std::fs::remove_dir_all(&sb.root);
+    }
+
+    #[test]
+    fn path_prefix_directories_are_named_by_a_placeholder() {
+        let dir = std::env::temp_dir().join("wgconf-fake-bin");
+        let text = format!(
+            r#"{{"id":"bin","covers":[],"steps":[{{"cli":["--version"],"env":{{"PATH":"{}"}}}}]}}"#,
+            display(&dir).replace('\\', "\\\\")
+        );
+        let scenario = crate::scenario::parse_scenario(&text).unwrap();
+        let imp = Implementation::from_command("git", "git", Vec::new()).unwrap();
+        let run = run_scenario(&scenario, &imp).unwrap();
+        assert!(
+            run.roots
+                .iter()
+                .any(|(d, p)| *p == "<bin>" && *d == display(&dir)),
+            "{:?}",
+            run.roots
+        );
     }
 
     #[test]

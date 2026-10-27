@@ -39,6 +39,9 @@ impl Normaliser for FullNormaliser {
         let mut numbering = Numbering::from_outputs(&outputs);
         let bytes = out.as_bytes();
         let clusters = instant_clusters(&stamps_of(text));
+        // The archive size of a backup is a zip byte count that differs between two Python runs,
+        // so it is masked only in output that names a backup format. Other `bytes` keys stay.
+        let archive = out.contains("\"format\": \"workgraph-backup-");
 
         let mut spans: Vec<(usize, usize, String)> = Vec::new();
         for (s, e, key) in scan(bytes, uuid_at) {
@@ -50,7 +53,7 @@ impl Normaliser for FullNormaliser {
         for (s, e, key) in scan(bytes, sha_at) {
             spans.push((s, e, format!("<sha:{}>", numbering.sha(&key))));
         }
-        for (s, e, stamp) in scan(bytes, timestamp_at) {
+        for (s, e, stamp) in scan(bytes, any_timestamp_at) {
             let rank = numbering.rank(stamp.micros, &clusters);
             spans.push((s, e, format!("<ts:{rank}|{}>", stamp.format)));
         }
@@ -59,6 +62,14 @@ impl Normaliser for FullNormaliser {
         }
         for (s, e, placeholder) in scan(bytes, json_field_at) {
             spans.push((s, e, placeholder.to_owned()));
+        }
+        for (s, e, masked) in scan(bytes, ms_object_at) {
+            spans.push((s, e, masked));
+        }
+        if archive {
+            for (s, e, placeholder) in scan(bytes, archive_bytes_at) {
+                spans.push((s, e, placeholder.to_owned()));
+            }
         }
         for (s, e, ()) in scan(bytes, local_port_at) {
             spans.push((s, e, "<port>".to_owned()));
@@ -253,6 +264,57 @@ fn timestamp_at(bytes: &[u8], i: usize) -> Option<Span<Stamp>> {
     Some((i, pos, Stamp { micros, format }))
 }
 
+/// Any timestamp this normaliser knows: the extended forms of `timestamp_at`, or the compact form
+/// `YYYYMMDDTHHMMSSZ` that backup archives use (`20261026T144947Z`).
+fn any_timestamp_at(bytes: &[u8], i: usize) -> Option<Span<Stamp>> {
+    timestamp_at(bytes, i).or_else(|| compact_stamp_at(bytes, i))
+}
+
+/// `YYYYMMDDTHHMMSSZ`, exactly sixteen characters with no word character on either side.
+fn compact_stamp_at(bytes: &[u8], i: usize) -> Option<Span<Stamp>> {
+    const LEN: usize = 16;
+    let end = i + LEN;
+    if end > bytes.len() || !bounded(bytes, i, end) {
+        return None;
+    }
+    let digits = |from: usize, n: usize| -> Option<i64> {
+        let part = bytes.get(from..from + n)?;
+        part.iter().all(u8::is_ascii_digit).then(|| {
+            part.iter()
+                .fold(0_i64, |acc, d| acc * 10 + i64::from(d - b'0'))
+        })
+    };
+    let shaped = bytes[i + 8] == b'T' && bytes[end - 1] == b'Z';
+    if !shaped {
+        return None;
+    }
+    let year = digits(i, 4)?;
+    let month = digits(i + 4, 2)?;
+    let day = digits(i + 6, 2)?;
+    let hour = digits(i + 9, 2)?;
+    let minute = digits(i + 11, 2)?;
+    let second = digits(i + 13, 2)?;
+    if !(1..=12).contains(&month)
+        || !(1..=31).contains(&day)
+        || hour > 23
+        || minute > 59
+        || second > 60
+    {
+        return None;
+    }
+    let days = days_from_civil(year, month, day);
+    let seconds = (hour * 60 + minute) * 60 + second;
+    let micros = (days * 86_400 + seconds) * 1_000_000;
+    Some((
+        i,
+        end,
+        Stamp {
+            micros,
+            format: "compact",
+        },
+    ))
+}
+
 /// Days since 1970-01-01 of a proleptic Gregorian date.
 fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
     let y = if month <= 2 { year - 1 } else { year };
@@ -267,7 +329,30 @@ fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
 /// A JSON number under a key whose value is normalised: durations, pids and ports.
 /// Returns the span of the number and its placeholder.
 fn json_field_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
-    // A key is `"key"`, or `\"key\"` inside a JSON document embedded as a string value.
+    keyed_number_at(bytes, i, |key| match key {
+        "pid" => Some("<pid>"),
+        "port" => Some("<port>"),
+        "duration_seconds" => Some("<dur>"),
+        _ if is_ms_key(key) => Some("<dur>"),
+        _ => None,
+    })
+}
+
+/// The `bytes` number of a backup archive (`"bytes": 27069`). Only the caller that has seen the
+/// backup format masks it.
+fn archive_bytes_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
+    keyed_number_at(bytes, i, |key| (key == "bytes").then_some("<bytes>"))
+}
+
+/// A JSON key that names a duration in milliseconds: `*_ms`, or a key with `_ms_` inside such as
+/// `median_elapsed_ms_cross_repo`.
+fn is_ms_key(key: &str) -> bool {
+    key.ends_with("_ms") || key.contains("_ms_")
+}
+
+/// The key at `i` and the position of its value. A key is `"key"`, or `\"key\"` inside a JSON
+/// document embedded as a string value. The value starts after the colon and the spaces around it.
+fn key_value_at(bytes: &[u8], i: usize) -> Option<(&str, usize)> {
     let key_start = if bytes[i..].starts_with(b"\\\"") {
         i + 2
     } else if bytes[i] == b'"' {
@@ -285,13 +370,6 @@ fn json_field_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
     }
     let key = std::str::from_utf8(&bytes[key_start..j]).ok()?;
     let close_len = if bytes.get(j) == Some(&b'"') { 1 } else { 2 };
-    let placeholder = match key {
-        "pid" => "<pid>",
-        "port" => "<port>",
-        "duration_seconds" => "<dur>",
-        _ if key.ends_with("_ms") => "<dur>",
-        _ => return None,
-    };
     let mut k = j + close_len;
     while bytes.get(k) == Some(&b' ') {
         k += 1;
@@ -303,7 +381,19 @@ fn json_field_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
     while bytes.get(k) == Some(&b' ') {
         k += 1;
     }
-    let start = k;
+    Some((key, k))
+}
+
+/// A JSON number under a key that `placeholder` names, with the key's placeholder. The span
+/// covers the number only.
+fn keyed_number_at(
+    bytes: &[u8],
+    i: usize,
+    placeholder: impl Fn(&str) -> Option<&'static str>,
+) -> Option<Span<&'static str>> {
+    let (key, start) = key_value_at(bytes, i)?;
+    let placeholder = placeholder(key)?;
+    let mut k = start;
     let digits = |mut p: usize| {
         let from = p;
         while bytes.get(p).is_some_and(u8::is_ascii_digit) {
@@ -330,6 +420,26 @@ fn json_field_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
     Some((start, end, placeholder))
 }
 
+/// A `*_ms` key whose value is a flat object of figures, such as the `elapsed_ms` distribution
+/// (`{"n": 4, "p25": 96323.75, ...}`). Every number in it is a duration except the sample count
+/// `n`, which is exact and stays. Returns the span of the object and its text with the durations
+/// replaced.
+fn ms_object_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
+    let (key, start) = key_value_at(bytes, i)?;
+    if !is_ms_key(key) || bytes.get(start) != Some(&b'{') {
+        return None;
+    }
+    let end = start + bytes[start..].iter().position(|b| *b == b'}')? + 1;
+    let object = std::str::from_utf8(&bytes[start..end]).ok()?;
+    let durations: Vec<Span<String>> = scan(object.as_bytes(), |b, j| {
+        keyed_number_at(b, j, |k: &str| (k != "n").then_some("<dur>"))
+    })
+    .into_iter()
+    .map(|(s, e, p)| (s, e, p.to_owned()))
+    .collect();
+    Some((start, end, splice(object, durations)))
+}
+
 /// The digits after `127.0.0.1:` or `localhost:`.
 fn local_port_at(bytes: &[u8], i: usize) -> Option<Span<()>> {
     let prefix_len = [&b"127.0.0.1:"[..], &b"localhost:"[..]]
@@ -353,7 +463,7 @@ const SAME_COMMAND_MICROS: i64 = 900_000;
 
 /// The distinct instants written in `text`, in order.
 fn stamps_of(text: &str) -> BTreeSet<i64> {
-    scan(text.as_bytes(), timestamp_at)
+    scan(text.as_bytes(), any_timestamp_at)
         .into_iter()
         .map(|(_, _, stamp)| stamp.micros)
         .collect()
@@ -491,18 +601,20 @@ fn worker_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
 
 /// The list-valued id keys that the normaliser sorts (docs/rust-rewrite.md section 12, item 2).
 /// Ordered lists (list outputs) are not in this set and keep their order.
-const SET_LIST_KEYS: [&str; 5] = [
+const SET_LIST_KEYS: [&str; 6] = [
     "depends_on",
     "blocks",
     "child_ids",
     "project_ids",
     "repository_ids",
+    "pair",
 ];
 
 /// Lists of objects that the normaliser sorts. The `task graph` edges come from an unordered
 /// dependency query, so Python's order follows the random UUIDs of the tasks (WG-3799). Graph
-/// nodes are not here: they are sorted by task number, which is deterministic.
-const OBJECT_LIST_KEYS: [&str; 1] = ["edges"];
+/// nodes are not here: they are sorted by task number, which is deterministic. Coupling evidence
+/// (one object per task) comes out of an unordered query the same way (WG-3462).
+const OBJECT_LIST_KEYS: [&str; 2] = ["edges", "evidence"];
 
 /// Sorts the elements of every set-like id list and every sorted object list, after placeholder
 /// substitution. Each slot keeps its own leading and trailing whitespace, so the layout of the
@@ -927,5 +1039,58 @@ mod tests {
         let r = run("py", &[("{\"id\": \"WG-1\"}\n", "")]);
         let obs: Vec<Observed> = observe(&r, &FullNormaliser::default());
         assert_eq!(obs[0].stdout, "{\"id\": \"WG-1\"}\n");
+    }
+
+    #[test]
+    fn compact_backup_stamps_rank_by_instant() {
+        let n = FullNormaliser::default();
+        let text = "created 20261026T144947Z then 20261026T145157Z again 20261026T144947Z";
+        let r = run("py", &[(text, "")]);
+        assert_eq!(
+            n.normalise(&r, text),
+            "created <ts:1|compact> then <ts:2|compact> again <ts:1|compact>"
+        );
+        // Another run one second apart on the same ordering compares equal, a different order does not.
+        let same = "created 20270101T000001Z then 20270101T000009Z again 20270101T000001Z";
+        let rs = run("rs", &[(same, "")]);
+        assert!(compare("s", &observe(&r, &n), &observe(&rs, &n), &[]).is_empty());
+        // Digit runs that are not a compact stamp are left alone.
+        let other = "id 1234567T123456Z 20261026T1449Z x20261026T144947Z";
+        assert_eq!(n.normalise(&r, other), other);
+    }
+
+    #[test]
+    fn archive_byte_counts_are_masked_only_in_backup_output() {
+        let n = FullNormaliser::default();
+        let backup = "{\n  \"path\": \"<tmp>/b.zip\",\n  \"bytes\": 27069,\n  \"format\": \"workgraph-backup-v1\"\n}";
+        let r = run("py", &[(backup, "")]);
+        assert_eq!(
+            n.normalise(&r, backup),
+            "{\n  \"path\": \"<tmp>/b.zip\",\n  \"bytes\": <bytes>,\n  \"format\": \"workgraph-backup-v1\"\n}"
+        );
+        let other = "{\"bytes\": 775, \"format\": \"csv\"}";
+        assert_eq!(n.normalise(&r, other), other);
+    }
+
+    #[test]
+    fn ms_keys_with_object_values_and_mid_name_ms_are_durations() {
+        let n = FullNormaliser::default();
+        let r = run("py", &[("", "")]);
+        let text = "{\"median_elapsed_ms_cross_repo\": 110181.5, \"median_elapsed_ms_single_repo\": null, \"distributions\": {\"elapsed_ms\": {\"n\": 4, \"p25\": 96323.75, \"median\": null, \"max\": 132215}}, \"msg_count\": 3}";
+        assert_eq!(
+            n.normalise(&r, text),
+            "{\"median_elapsed_ms_cross_repo\": <dur>, \"median_elapsed_ms_single_repo\": null, \"distributions\": {\"elapsed_ms\": {\"n\": 4, \"p25\": <dur>, \"median\": null, \"max\": <dur>}}, \"msg_count\": 3}"
+        );
+    }
+
+    #[test]
+    fn coupling_evidence_and_pairs_are_set_like() {
+        let n = FullNormaliser::default();
+        let r = run("py", &[("", "")]);
+        let text = r#"{"pair": ["shared-sdk", "auth-service"], "evidence": [{"task_key": "WG-4"}, {"task_key": "WG-2"}], "other": ["b", "a"]}"#;
+        assert_eq!(
+            n.normalise(&r, text),
+            r#"{"pair": ["auth-service", "shared-sdk"], "evidence": [{"task_key": "WG-2"}, {"task_key": "WG-4"}], "other": ["b", "a"]}"#
+        );
     }
 }

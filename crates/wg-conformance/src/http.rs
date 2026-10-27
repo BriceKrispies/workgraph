@@ -535,6 +535,15 @@ impl Server {
 
 impl Drop for Server {
     fn drop(&mut self) {
+        // On Windows a plain kill leaves the serve process's children running, and each run left
+        // orphans behind, so the whole tree goes (as the Python runner's taskkill /T does).
+        if cfg!(windows) {
+            let _ = Command::new("taskkill")
+                .args(["/F", "/T", "/PID", &self.child.id().to_string()])
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .status();
+        }
         let _ = self.child.kill();
         let _ = self.child.wait();
     }

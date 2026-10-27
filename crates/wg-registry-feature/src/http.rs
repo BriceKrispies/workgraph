@@ -338,13 +338,13 @@ fn run_repositories(app: &mut App, id: &str, request: RouteRequest) -> Result<Va
         "H016" => service::repo_remove(app, context, ws, reference),
         "H017" => service::repo_refresh(app, context, ws, reference),
         "H018" => service::repo_status(app, context, ws, reference),
-        "H019" => {
-            let full = repos::sync_is_full(text_param(params, "mode"))?;
-            match wg_git_feature::service::git_sync(app, context, ws, Some(reference), full)? {
-                Value::List(mut results) if !results.is_empty() => Ok(results.swap_remove(0)),
-                other => Ok(other),
-            }
-        }
+        "H019" => wg_git_feature::service::git_sync_ref(
+            app,
+            context,
+            ws,
+            reference,
+            text_param(params, "mode"),
+        ),
         "H020" => wg_git_feature::service::git_log(
             app,
             context,

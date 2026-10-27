@@ -2906,6 +2906,7 @@ dependencies = [
  "tokio",
  "tower",
  "wg-decisions",
+ "wg-git-feature",
  "wg-json",
  "wg-model",
  "wg-registry-feature",

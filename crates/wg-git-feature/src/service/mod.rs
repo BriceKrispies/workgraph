@@ -10,4 +10,4 @@ mod entries;
 mod sync;
 
 pub use entries::*;
-pub use sync::git_sync;
+pub use sync::{git_sync, git_sync_ref};

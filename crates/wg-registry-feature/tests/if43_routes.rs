@@ -4,8 +4,12 @@
 #![allow(clippy::expect_used)]
 
 use serde_json::{Value, json};
+use wg_git_feature::service::git_sync_ref;
+use wg_git_feature::spec::mode::sync_is_full;
 use wg_registry_feature::http::{PROJECT_SPECS, REPOSITORY_SPECS};
-use wg_registry_feature::spec::repos::{register_input, repository_patch, sync_is_full};
+use wg_registry_feature::service::workspace_create;
+use wg_registry_feature::spec::repos::{register_input, repository_patch};
+use wg_runtime::{App, human_context};
 use wg_serverspec::groups::RouteSpec;
 use wg_types::{AccessMode, ErrorCode};
 
@@ -260,6 +264,34 @@ fn sync_mode_is_incremental_or_full_and_nothing_else() {
     let err = sync_is_full("quick").expect_err("refused");
     assert_eq!(err.code, ErrorCode::ValidationFailed);
     assert_eq!(err.message, "mode must be incremental or full");
+}
+
+// covers: H019
+#[test]
+fn sync_resolves_the_repository_before_it_checks_the_mode() {
+    let root = std::env::temp_dir().join(format!(
+        "wg-if43-sync-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos()
+    ));
+    let mut app = App::open(Some(&root.join("home"))).expect("open the home");
+    let context = human_context(None).expect("a context");
+    workspace_create(
+        &mut app,
+        &context,
+        &json!({"slug": "demo", "name": "Demo"}),
+        false,
+    )
+    .expect("the workspace");
+    // Both wrong: the repository does not exist and the mode is not one the service knows. Python
+    // resolves the repository first, so the answer is the not-found error, not the mode error.
+    let err = git_sync_ref(&mut app, &context, Some("demo"), "no-such-repo", "sideways")
+        .expect_err("refused");
+    assert_eq!(err.code, ErrorCode::NotFound);
+    let _ = std::fs::remove_dir_all(&root);
 }
 
 // covers: H007

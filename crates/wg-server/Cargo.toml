@@ -30,6 +30,7 @@ wg-wire = { path = "../wg-wire" }
 [dev-dependencies]
 rpds = "1"
 wg-decisions = { path = "../wg-decisions" }
+wg-git-feature = { path = "../wg-git-feature" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }
 wg-registry-feature = { path = "../wg-registry-feature" }
 wg-model = { path = "../wg-model" }

@@ -140,13 +140,3 @@ pub fn repository_patch(body: &Json) -> Result<Patch, WgError> {
             .map(|_| strings_field(body, "tracked_branches")),
     })
 }
-
-/// The `mode` query of `POST /repositories/{ref}/sync`: `true` for a full reconcile. Any other
-/// mode is refused, as `GitService.sync` refuses it.
-pub fn sync_is_full(mode: &str) -> Result<bool, WgError> {
-    match mode {
-        "incremental" => Ok(false),
-        "full" => Ok(true),
-        _ => Err(validation("mode must be incremental or full".to_owned())),
-    }
-}

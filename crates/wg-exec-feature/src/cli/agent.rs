@@ -1,14 +1,12 @@
 //! `workgraph agent list, add-command` (IF-09). The clap command is the snapshot's own tree.
 
-use clap::{ArgMatches, Command};
-use wg_clispec::args::{get, items, option_flag, option_list, option_text, python, truncate};
-use wg_clispec::tree::snapshot_command;
+use clap::ArgMatches;
+use wg_clispec::args::{option_flag, option_list, option_text};
 use wg_clispec::{CliFailure, not_implemented_message};
-use wg_json::Value;
-use wg_render::Console;
 use wg_runtime::{CliGroup, CliState, human_context};
 
 use crate::service::agents::{self, CommandAgent};
+use crate::spec::cli_agent::{command, list_view};
 
 /// The `agent` group.
 pub const GROUP: CliGroup = CliGroup {
@@ -16,10 +14,6 @@ pub const GROUP: CliGroup = CliGroup {
     command,
     run,
 };
-
-fn command() -> Command {
-    snapshot_command("agent")
-}
 
 fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
     match path.get(1).map(String::as_str) {
@@ -55,41 +49,4 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         _ => Err(CliFailure::fail(not_implemented_message(path), 1)),
     }
-}
-
-/// The human view of `agent list`: name, adapter, availability, detail and the capabilities that
-/// are on.
-fn list_view(console: &Console, rows: &Value) -> String {
-    let cells: Vec<Vec<String>> = items(Some(rows))
-        .iter()
-        .map(|row| {
-            let available = matches!(get(row, "available"), Some(Value::Bool(true)));
-            let capabilities: Vec<String> = match get(row, "capabilities") {
-                Some(Value::Dict(entries)) => entries
-                    .iter()
-                    .filter(|(_, on)| matches!(on, Value::Bool(true)))
-                    .map(|(key, _)| python(&Value::Str(key.clone())))
-                    .collect(),
-                _ => Vec::new(),
-            };
-            vec![
-                text(get(row, "name")),
-                text(get(row, "adapter")),
-                if available { "yes" } else { "NO" }.to_owned(),
-                truncate(&text(get(row, "detail")), 60),
-                capabilities.join(","),
-            ]
-        })
-        .collect();
-    console
-        .table(
-            &cells,
-            &["name", "adapter", "available", "detail", "capabilities"],
-            None,
-        )
-        .text
-}
-
-fn text(value: Option<&Value>) -> String {
-    value.map(python).unwrap_or_default()
 }

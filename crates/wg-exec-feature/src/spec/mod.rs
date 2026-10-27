@@ -4,6 +4,8 @@
 //!   and the outputs the worktree commands print.
 //! * [`cli_attempt`]: the clap command of the `attempt` group and the human views of its reads.
 
+pub mod attempt_capture;
 pub mod attempt_writes;
+pub mod cli_agent;
 pub mod cli_attempt;
 pub mod worktrees;

@@ -8,5 +8,6 @@
 pub mod agents;
 pub mod attempt_runs;
 pub mod attempts;
+pub mod conclude;
 pub mod resolve;
 pub mod worktrees;

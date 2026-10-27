@@ -4,7 +4,7 @@
 //! `abandon`, `finish`) are not ported yet and answer with the placeholder message.
 
 use clap::ArgMatches;
-use wg_clispec::args::{number, option_list, option_text};
+use wg_clispec::args::{number, option_flag, option_list, option_text};
 use wg_clispec::{CliFailure, Usage, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
@@ -12,6 +12,7 @@ use wg_types::AttemptStatus;
 
 use crate::service::attempt_runs::{self as runs, CreateRequest, StartRequest};
 use crate::service::attempts::{self, ListQuery};
+use crate::service::conclude;
 use crate::spec::cli_attempt as view;
 
 /// The `attempt` group.
@@ -104,6 +105,20 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 .unwrap_or_else(|| "agent stopped without submitting".to_owned());
             let out = runs::attempt_abandon(state.app()?, &context, &reference, &reason)?;
             state.emit(&out, Some(&|c| view::abandon_line(c, &out)))
+        }
+        Some("submit") => {
+            let reference = option_text(m, "attempt").unwrap_or_default();
+            let summary = option_text(m, "--summary");
+            let error = option_text(m, "--error");
+            let out = conclude::attempt_submit(
+                state.app()?,
+                &context,
+                &reference,
+                option_flag(m, "--failed"),
+                summary.as_deref(),
+                error.as_deref(),
+            )?;
+            state.emit(&out, Some(&|c| view::submit_view(c, &reference, &out)))
         }
         Some("finish") => {
             let reference = option_text(m, "attempt_id").unwrap_or_default();

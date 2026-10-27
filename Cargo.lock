@@ -2539,6 +2539,7 @@ dependencies = [
  "wg-clispec",
  "wg-exec",
  "wg-git",
+ "wg-git-feature",
  "wg-json",
  "wg-mcpspec",
  "wg-model",

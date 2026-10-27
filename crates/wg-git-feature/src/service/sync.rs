@@ -481,7 +481,7 @@ fn reconcile_reachability(
 
 /// `_detect_equivalences`: pairs the new commits with the commits they replace or repeat, and
 /// carries the task links of rewritten commits. Returns the number of equivalences written.
-fn detect_equivalences(
+pub(crate) fn detect_equivalences(
     app: &mut App,
     context: &RequestContext,
     state: &RepoState,

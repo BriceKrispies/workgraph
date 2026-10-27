@@ -6,8 +6,10 @@
 
 pub mod store;
 
+mod attempt_links;
 mod entries;
 mod sync;
 
+pub use attempt_links::link_attempt_commits;
 pub use entries::*;
 pub use sync::git_sync;

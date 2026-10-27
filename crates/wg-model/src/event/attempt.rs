@@ -73,7 +73,9 @@ pub struct AttemptWorkspacePrepared {
 pub struct AttemptOutcomeCaptured {
     pub outcome_manifest_id: Id,
     pub modified_repositories: VectorSync<String>,
-    pub read_only_violations: VectorSync<String>,
+    /// One object per read-only repository that changed: `repository`, `commits` and
+    /// `uncommitted_files`.
+    pub read_only_violations: VectorSync<JsonObject>,
     /// Repository name to the number of commits the attempt made there.
     pub commits: JsonObject,
 }

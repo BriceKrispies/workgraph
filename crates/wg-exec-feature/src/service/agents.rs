@@ -2,11 +2,13 @@
 //! (`AgentRegistry.describe`) and the registration of a command agent in the global configuration.
 
 use serde_json::{Map, Value as Json, json};
-use wg_agentspec::{PLACEHOLDERS, validate_template};
+use wg_agentspec::validate_template;
 use wg_json::Value;
 use wg_runtime::App;
 use wg_types::{ErrorCode, WgError};
 use wg_wire::convention::json_value;
+
+use crate::spec::cli_agent::unknown_placeholder;
 
 /// `agents.describe()`: one entry per adapter in configuration order, with availability and
 /// capabilities.
@@ -21,17 +23,6 @@ pub struct CommandAgent<'a> {
     pub args: &'a [String],
     pub timeout_seconds: f64,
     pub supports_usage: bool,
-}
-
-/// `validate_template`'s refusal, as the `ConfigError` Python raises.
-fn unknown_placeholder(name: &str) -> WgError {
-    let mut allowed: Vec<&str> = PLACEHOLDERS.to_vec();
-    allowed.sort_unstable();
-    WgError::new(
-        ErrorCode::ConfigError,
-        format!("unknown placeholder {{{name}}} in agent argument template"),
-    )
-    .with_detail("allowed", json!(allowed))
 }
 
 /// `agent add-command`: registers a generic command agent under `name` in `config.toml`, replacing

@@ -9,8 +9,12 @@
 
 use serde_json::{Map, Value, json};
 use wg_exec::attempt::{
-    FinishPlan, check_attempt_transition, duration_ms, escalates, finish_plan, sanitize_usage,
+    FinishPlan, check_attempt_transition, counts_as_failure, duration_ms, escalates, finish_plan,
+    sanitize_usage,
 };
+use wg_exec::manifest::ExecutionManifest;
+use wg_model::Decision;
+use wg_model::TaskSlice;
 use wg_model::entity::{AgentAttempt, Real, TaskTag};
 use wg_model::event::{
     AttemptCreated, AttemptFinished, AttemptStatusChanged, EventDraft, EventPayload, TaskEscalated,
@@ -18,7 +22,10 @@ use wg_model::event::{
 use wg_model::slice::StackSlice;
 use wg_model::stamp::Stamp;
 use wg_model::{Task, Write};
+use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Applied, Change, transition};
+use wg_tasks_feature::spec::bodies::ClaimRead;
+use wg_tasks_feature::spec::claims::claim_task;
 use wg_types::{AttemptStatus, ErrorCode, Id, TaskStatus, Timestamp, WgError};
 
 /// The longest `error` an attempt keeps (`error[:20_000]`).
@@ -416,6 +423,128 @@ pub fn escalated(start: Applied, stamp: &Stamp, task_id: Id, failures: u64, limi
         ids,
         tasks,
     }
+}
+
+/// An empty chain over the task slice, with the stamp's ids.
+#[must_use]
+pub fn start_chain(stamp: &Stamp, tasks: &TaskSlice) -> Applied {
+    Applied {
+        decision: Decision::new(()),
+        ids: stamp.ids(),
+        tasks: tasks.clone(),
+    }
+}
+
+/// A `validation_failed` error.
+pub fn validation(message: impl Into<String>) -> WgError {
+    WgError::new(ErrorCode::ValidationFailed, message)
+}
+
+/// A step that needs work another task owns (running checks, stacks).
+#[must_use]
+pub fn not_ported(what: &str) -> WgError {
+    WgError::new(
+        ErrorCode::WorkgraphError,
+        format!("{what} is not ported yet"),
+    )
+}
+
+/// A task that the slice should hold but does not.
+#[must_use]
+pub fn gone(task: Id) -> WgError {
+    WgError::new(
+        ErrorCode::WorkgraphError,
+        format!("task {task} vanished from the slice"),
+    )
+}
+
+/// The failed and timed-out attempts of a task, counting `row` in place of its stored version.
+#[must_use]
+pub fn failures(attempts: &[AgentAttempt], row: &AgentAttempt) -> u64 {
+    attempts
+        .iter()
+        .map(|other| if other.id == row.id { row } else { other })
+        .filter(|other| counts_as_failure(other.status))
+        .count() as u64
+}
+
+/// `execution.max_attempts_per_task` of a configuration document.
+#[must_use]
+pub fn attempt_limit(config: &Map<String, Value>) -> u64 {
+    config
+        .get("execution")
+        .and_then(|execution| execution.get("max_attempts_per_task"))
+        .and_then(Value::as_u64)
+        .unwrap_or(3)
+}
+
+/// How many ids the claim may draw from a decision's sequence; the attempt's ids follow them.
+const CLAIM_IDS: usize = 16;
+
+/// `TaskService._claim_in_session` with a default `ClaimRequest`, as the first step of a decision.
+pub fn claimed_chain(
+    world: &TaskWorld,
+    stamp: &Stamp,
+    workspace: Id,
+    task: Id,
+) -> Result<Applied, WgError> {
+    let read = ClaimRead {
+        agent: None,
+        lease_minutes: 120,
+        expected_version: None,
+    };
+    let claim = claim_task(world, stamp, Some(workspace), &task.to_string(), &read)?;
+    let tasks = world.tasks.apply_all(claim.writes.iter());
+    let ids = (0..CLAIM_IDS).fold(stamp.ids(), |ids, _| ids.next().1);
+    Ok(Applied {
+        decision: claim.with_reply(()),
+        ids,
+        tasks,
+    })
+}
+
+/// `task.claimed_by = task.claimed_by or ctx.actor`.
+#[must_use]
+pub fn claimed(chain: Applied, task_id: Id, actor: &str) -> Applied {
+    match chain.tasks.task(task_id) {
+        Some(task) if task.claimed_by.is_none() => {
+            let write = Write::update(Task {
+                claimed_by: Some(actor.to_owned()),
+                ..task.clone()
+            });
+            Applied {
+                tasks: chain.tasks.apply(&write),
+                decision: chain.decision.write(write),
+                ids: chain.ids,
+            }
+        }
+        _ => chain,
+    }
+}
+
+/// `AttemptStartOut`.
+#[must_use]
+pub fn start_out(attempt_id: Id, number: i64, task: &Task, manifest: &ExecutionManifest) -> Value {
+    let repositories: Vec<Value> = manifest
+        .repositories
+        .iter()
+        .map(|entry| {
+            json!({
+                "repository": entry.repository,
+                "checkout_path": entry.checkout_path,
+                "branch": entry.branch,
+                "base_sha": entry.sha,
+                "base": entry.base,
+            })
+        })
+        .collect();
+    json!({
+        "attempt_id": attempt_id.to_string(),
+        "attempt_number": number,
+        "task_key": task.key.to_string(),
+        "repositories": repositories,
+        "agent_checks": manifest.agent_checks,
+    })
 }
 
 /// The text a task reason is cut to (`reason[:200]`).

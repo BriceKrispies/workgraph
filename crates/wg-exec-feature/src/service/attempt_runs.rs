@@ -3,21 +3,19 @@
 //! its Python session read, asks [`crate::spec::attempt_writes`] and the `wg-exec` plans what to
 //! write, and applies the answer as one decision per Python session.
 
-use serde_json::{Map, Value as Json, json};
+use serde_json::{Map, json};
 use wg_exec::attempt::{
-    ACTIVE_STATUSES, abandon_plan, counts_as_failure, is_terminal, next_attempt_number, start_plan,
+    ACTIVE_STATUSES, abandon_plan, is_terminal, next_attempt_number, start_plan,
 };
-use wg_exec::manifest::ExecutionManifest;
 use wg_exec::run::EarlyEnd;
 use wg_json::Value;
+use wg_model::Decision;
 use wg_model::entity::AgentAttempt;
 use wg_model::stamp::py_repr_str;
-use wg_model::{Decision, Task, Write};
-use wg_runtime::App;
+use wg_runtime::{App, index_written};
 use wg_runtimespec::RequestContext;
 use wg_store::Session;
 use wg_storecodec::task_world_sql::TaskWorld;
-use wg_tasks::transition::Applied;
 use wg_types::{AttemptStatus, ErrorCode, Id, Permission, TaskStatus, WgError};
 use wg_wire::convention::json_value;
 use wg_wire::dto::attempt;
@@ -25,22 +23,44 @@ use wg_wire::dto::attempt;
 use super::resolve::{find_attempt, find_task};
 use super::worktrees::{worktree_prepare, worktree_release};
 use crate::spec::attempt_writes::{
-    Finish, NewAttempt, created, escalated, finished, reason_text, status_set, task_moved,
+    Finish, NewAttempt, attempt_limit, claimed, claimed_chain, created, escalated, failures,
+    finished, gone, reason_text, start_chain, start_out, status_set, task_moved, validation,
 };
 
-fn validation(message: impl Into<String>) -> WgError {
-    WgError::new(ErrorCode::ValidationFailed, message)
+/// `decide` for decisions that may write tasks: the search index follows the writes in the same
+/// transaction, as it does for every task service.
+pub(super) trait DecideWritten {
+    fn decide_written<S, R>(
+        &mut self,
+        context: &RequestContext,
+        load: impl FnOnce(&mut Session<'_>) -> Result<S, WgError>,
+        decide: impl FnOnce(&S, &wg_model::Stamp) -> Result<Decision<R>, WgError>,
+    ) -> Result<wg_runtime::Outcome<R>, WgError>;
+}
+
+impl DecideWritten for wg_runtime::Runtime {
+    fn decide_written<S, R>(
+        &mut self,
+        context: &RequestContext,
+        load: impl FnOnce(&mut Session<'_>) -> Result<S, WgError>,
+        decide: impl FnOnce(&S, &wg_model::Stamp) -> Result<Decision<R>, WgError>,
+    ) -> Result<wg_runtime::Outcome<R>, WgError> {
+        self.decide_then(context, load, decide, index_written)
+    }
 }
 
 /// The rows a decision about one attempt reads: the attempt, its task's world and the task's
 /// attempts (for the next number and the failure count).
-struct AttemptWorld {
-    attempt: AgentAttempt,
-    world: TaskWorld,
-    attempts: Vec<AgentAttempt>,
+pub(super) struct AttemptWorld {
+    pub(super) attempt: AgentAttempt,
+    pub(super) world: TaskWorld,
+    pub(super) attempts: Vec<AgentAttempt>,
 }
 
-fn load_attempt_world(session: &mut Session<'_>, attempt_id: Id) -> Result<AttemptWorld, WgError> {
+pub(super) fn load_attempt_world(
+    session: &mut Session<'_>,
+    attempt_id: Id,
+) -> Result<AttemptWorld, WgError> {
     let attempt = session.attempt_by_id(attempt_id)?.ok_or_else(|| {
         WgError::new(
             ErrorCode::NotFound,
@@ -54,40 +74,6 @@ fn load_attempt_world(session: &mut Session<'_>, attempt_id: Id) -> Result<Attem
         world,
         attempts,
     })
-}
-
-fn start_chain(stamp: &wg_model::Stamp, world: &TaskWorld) -> Applied {
-    Applied {
-        decision: Decision::new(()),
-        ids: stamp.ids(),
-        tasks: world.tasks.clone(),
-    }
-}
-
-fn gone(task: Id) -> WgError {
-    WgError::new(
-        ErrorCode::WorkgraphError,
-        format!("task {task} vanished from the slice"),
-    )
-}
-
-/// The failed and timed-out attempts of a task, counting `row` in place of its stored version.
-fn failures(attempts: &[AgentAttempt], row: &AgentAttempt) -> u64 {
-    attempts
-        .iter()
-        .map(|other| if other.id == row.id { row } else { other })
-        .filter(|other| counts_as_failure(other.status))
-        .count() as u64
-}
-
-/// `execution.max_attempts_per_task`.
-fn attempt_limit(app: &App) -> Result<u64, WgError> {
-    Ok(app
-        .config()?
-        .get("execution")
-        .and_then(|execution| execution.get("max_attempts_per_task"))
-        .and_then(Json::as_u64)
-        .unwrap_or(3))
 }
 
 /// What `attempt start` is asked for.
@@ -110,13 +96,14 @@ pub fn attempt_start(
 ) -> Result<Value, WgError> {
     app.require_permission(context, Permission::TaskClaim)?;
     app.require_permission(context, Permission::AttemptWrite)?;
-    if let Some(isolation) = request.isolation {
-        if isolation != "worktree" && isolation != "in_place" {
-            return Err(validation(format!(
-                "isolation must be worktree or in_place, not {}",
-                py_repr_str(isolation)
-            )));
-        }
+    if let Some(isolation) = request
+        .isolation
+        .filter(|text| *text != "worktree" && *text != "in_place")
+    {
+        return Err(validation(format!(
+            "isolation must be worktree or in_place, not {}",
+            py_repr_str(isolation)
+        )));
     }
     let actor = context.actor.to_string();
     let agent = request
@@ -145,15 +132,6 @@ pub fn attempt_start(
         task.claimed_by.as_deref(),
         active_number,
     )?;
-    if plan.claim_first {
-        wg_tasks_feature::service::task_claim(
-            app,
-            context,
-            None,
-            &task.id.to_string(),
-            &Json::Null,
-        )?;
-    }
     let spec = NewAttempt {
         provider: agent.clone(),
         adapter: request.adapter.to_owned(),
@@ -173,7 +151,7 @@ pub fn attempt_start(
     };
     let (attempt_id, number) = app
         .runtime
-        .decide(
+        .decide_then(
             context,
             |session| {
                 let world = session.task_world(Some(task.workspace_id), &[])?;
@@ -185,17 +163,29 @@ pub fn attempt_start(
                 Ok((world, numbers))
             },
             |(world, numbers), stamp| {
-                let current = world.tasks.task(task.id).ok_or_else(|| gone(task.id))?;
+                // One session, as Python's: the claim, the attempt and its first move.
+                let begun = start_chain(stamp, &world.tasks);
+                let chain = if plan.claim_first {
+                    claimed_chain(world, stamp, task.workspace_id, task.id)?
+                } else {
+                    begun
+                };
+                let current = chain
+                    .tasks
+                    .task(task.id)
+                    .ok_or_else(|| gone(task.id))?
+                    .clone();
                 let (chain, row) = created(
-                    start_chain(stamp, world),
+                    chain,
                     stamp,
-                    current,
+                    &current,
                     next_attempt_number(numbers),
                     spec.clone(),
                 );
                 let (chain, row) = status_set(chain, stamp, &row, AttemptStatus::Preparing)?;
                 Ok(chain.decision.with_reply((row.id, row.number)))
             },
+            index_written,
         )?
         .reply;
     let manifest = match worktree_prepare(app, context, attempt_id, None, request.isolation, &[]) {
@@ -211,7 +201,7 @@ pub fn attempt_start(
         let _ = finalize_failure(app, context, attempt_id, &end);
         return Err(err);
     }
-    Ok(start_out(attempt_id, number, &task, &manifest))
+    Ok(json_value(&start_out(attempt_id, number, &task, &manifest)))
 }
 
 /// The second session of `start_external`: a claimed task and the attempt move to running.
@@ -221,7 +211,7 @@ fn run_attempt(
     attempt_id: Id,
     number: i64,
 ) -> Result<(), WgError> {
-    app.runtime.decide(
+    app.runtime.decide_written(
         context,
         |session| load_attempt_world(session, attempt_id),
         |loaded, stamp| {
@@ -230,7 +220,7 @@ fn run_attempt(
                 .tasks
                 .task(loaded.attempt.task_id)
                 .ok_or_else(|| gone(loaded.attempt.task_id))?;
-            let chain = start_chain(stamp, &loaded.world);
+            let chain = start_chain(stamp, &loaded.world.tasks);
             let chain = if task.status == TaskStatus::Claimed {
                 task_moved(
                     chain,
@@ -250,30 +240,6 @@ fn run_attempt(
     Ok(())
 }
 
-/// `AttemptStartOut`.
-fn start_out(attempt_id: Id, number: i64, task: &Task, manifest: &ExecutionManifest) -> Value {
-    let repositories: Vec<Json> = manifest
-        .repositories
-        .iter()
-        .map(|entry| {
-            json!({
-                "repository": entry.repository,
-                "checkout_path": entry.checkout_path,
-                "branch": entry.branch,
-                "base_sha": entry.sha,
-                "base": entry.base,
-            })
-        })
-        .collect();
-    json_value(&json!({
-        "attempt_id": attempt_id.to_string(),
-        "attempt_number": number,
-        "task_key": task.key.to_string(),
-        "repositories": repositories,
-        "agent_checks": manifest.agent_checks,
-    }))
-}
-
 /// `RunService._finalize_failure`: an attempt that ends without a conclusion is finished, the task
 /// it holds is failed (or returned to ready when cancelled) and escalated, and the attempt's
 /// worktrees are released.
@@ -283,12 +249,12 @@ pub fn finalize_failure(
     attempt_id: Id,
     end: &EarlyEnd,
 ) -> Result<(), WgError> {
-    let limit = attempt_limit(app)?;
-    app.runtime.decide(
+    let limit = attempt_limit(&app.config()?);
+    app.runtime.decide_written(
         context,
         |session| load_attempt_world(session, attempt_id),
         |loaded, stamp| {
-            let chain = start_chain(stamp, &loaded.world);
+            let chain = start_chain(stamp, &loaded.world.tasks);
             let (chain, row) = if is_terminal(loaded.attempt.status) {
                 (chain, loaded.attempt.clone())
             } else {
@@ -356,7 +322,7 @@ pub fn attempt_abandon(
         .read(|session| find_attempt(session, reference))?;
     let (task_key, attempt_id) = app
         .runtime
-        .decide(
+        .decide_written(
             context,
             |session| load_attempt_world(session, found.id),
             |loaded, stamp| {
@@ -378,7 +344,7 @@ pub fn attempt_abandon(
                     task.status,
                 )?;
                 let (chain, _) = finished(
-                    start_chain(stamp, &loaded.world),
+                    start_chain(stamp, &loaded.world.tasks),
                     stamp,
                     attempt,
                     AttemptStatus::Abandoned,
@@ -472,7 +438,7 @@ pub fn attempt_create(
     };
     let row = app
         .runtime
-        .decide(
+        .decide_written(
             context,
             |session| {
                 let world = session.task_world(Some(task.workspace_id), &[])?;
@@ -486,7 +452,7 @@ pub fn attempt_create(
             |(world, numbers), stamp| {
                 let current = world.tasks.task(task.id).ok_or_else(|| gone(task.id))?;
                 let (chain, row) = created(
-                    start_chain(stamp, world),
+                    start_chain(stamp, &world.tasks),
                     stamp,
                     current,
                     next_attempt_number(numbers),
@@ -514,24 +480,6 @@ pub fn attempt_create(
     Ok(attempt::from_model(&row))
 }
 
-/// `task.claimed_by = task.claimed_by or ctx.actor`.
-fn claimed(chain: Applied, task_id: Id, actor: &str) -> Applied {
-    match chain.tasks.task(task_id) {
-        Some(task) if task.claimed_by.is_none() => {
-            let write = Write::update(Task {
-                claimed_by: Some(actor.to_owned()),
-                ..task.clone()
-            });
-            Applied {
-                tasks: chain.tasks.apply(&write),
-                decision: chain.decision.write(write),
-                ids: chain.ids,
-            }
-        }
-        _ => chain,
-    }
-}
-
 /// `AttemptService.finish`: an externally-run attempt reported as finished.
 pub fn attempt_finish(
     app: &mut App,
@@ -555,7 +503,7 @@ pub fn attempt_finish(
             |session| load_attempt_world(session, found.id),
             |loaded, stamp| {
                 let (chain, row) = finished(
-                    start_chain(stamp, &loaded.world),
+                    start_chain(stamp, &loaded.world.tasks),
                     stamp,
                     &loaded.attempt,
                     target,

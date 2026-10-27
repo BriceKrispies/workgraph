@@ -129,10 +129,11 @@ pub struct StartPlan {
     pub claim_first: bool,
 }
 
-/// Checks an external `attempt start` on a task. `claimed_by_actor` says whether the actor holds
-/// the task's claim, `holder` names another claimant, and `active_attempt_number` is the number
-/// of an attempt that already holds the task, if there is one.
+/// Checks an external `attempt start` on a task. `actor` is the acting identity, `claimed_by_actor`
+/// says whether it holds the task's claim, `holder` names another claimant, and
+/// `active_attempt_number` is the number of an attempt that already holds the task, if any.
 pub fn start_plan(
+    actor: &str,
     task_key: &str,
     task: S,
     claimed_by_actor: bool,
@@ -148,7 +149,7 @@ pub fn start_plan(
                 _ => String::new(),
             };
             return Err(validation(format!(
-                "task {task_key} is {task}{by}; an external attempt needs a ready task or one claimed by the actor"
+                "task {task_key} is {task}{by}; an external attempt needs a ready task or one claimed by {actor}"
             ))
             .with_detail("status", json!(task.as_str())));
         }
@@ -186,6 +187,7 @@ pub fn task_after_attempt_end(task: S, attempt: A) -> Option<S> {
 /// and the task must still be running or claimed.
 pub fn submit_check(
     requested: &str,
+    attempt_id: &str,
     attempt: A,
     has_worktree: bool,
     task_key: &str,
@@ -193,18 +195,19 @@ pub fn submit_check(
 ) -> Result<(), WgError> {
     if requested != "succeeded" && requested != "failed" {
         return Err(validation(format!(
-            "status must be succeeded or failed, not {requested:?}"
+            "status must be succeeded or failed, not {}",
+            python_repr(requested)
         )));
     }
     if !matches!(attempt, A::Running | A::Preparing) {
         return Err(validation(format!(
-            "attempt is {attempt}; only a running attempt can be submitted"
+            "attempt {attempt_id} is {attempt}; only a running attempt can be submitted"
         )));
     }
     if !has_worktree {
-        return Err(validation(
-            "attempt has no managed worktree; submit applies to attempts from `attempt start`",
-        ));
+        return Err(validation(format!(
+            "attempt {attempt_id} has no managed worktree; submit applies to attempts from `attempt start`"
+        )));
     }
     if !matches!(task, S::Running | S::Claimed) {
         return Err(validation(format!(
@@ -219,6 +222,7 @@ pub fn submit_check(
 /// attempt can be abandoned. A claimed or running task returns to ready.
 pub fn abandon_plan(
     external: bool,
+    attempt_id: &str,
     attempt: A,
     reason: &str,
     task: S,
@@ -227,13 +231,13 @@ pub fn abandon_plan(
         return Err(validation("abandoning an attempt needs a reason"));
     }
     if !external {
-        return Err(validation(
-            "only external attempts are abandoned; this attempt was not started with attempt start",
-        ));
+        return Err(validation(format!(
+            "attempt {attempt_id} was not started with attempt start; only external attempts are abandoned"
+        )));
     }
     if !matches!(attempt, A::Running | A::Preparing) {
         return Err(validation(format!(
-            "attempt is {attempt}; only a running attempt can be abandoned"
+            "attempt {attempt_id} is {attempt}; only a running attempt can be abandoned"
         )));
     }
     Ok(matches!(task, S::Claimed | S::Running).then_some(S::Ready))
@@ -272,6 +276,16 @@ pub fn failure_exit_reason(status: &str, capture_error: bool) -> String {
 /// failed, its failed or timed-out attempts reached the limit, and it is not flagged already.
 pub fn escalates(task: S, failures: u64, limit: u64, already_flagged: bool) -> bool {
     task == S::Failed && failures >= limit && !already_flagged
+}
+
+/// Python `repr()` of a short string: single quotes, or double quotes when it holds a single quote
+/// and no double quote.
+fn python_repr(text: &str) -> String {
+    if text.contains('\'') && !text.contains('"') {
+        format!("\"{text}\"")
+    } else {
+        format!("'{}'", text.replace('\\', "\\\\").replace('\'', "\\'"))
+    }
 }
 
 fn validation(message: impl Into<String>) -> WgError {

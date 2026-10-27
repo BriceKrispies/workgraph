@@ -82,9 +82,10 @@ fn sanitize_usage_keeps_known_counters_as_whole_non_negative_numbers() {
 
 #[test]
 fn external_start_claims_a_ready_task_and_continues_an_owned_claim() {
-    let plan = start_plan("WG-1", S::Ready, false, None, None).expect("ready starts");
+    let plan = start_plan("human:b", "WG-1", S::Ready, false, None, None).expect("ready starts");
     assert!(plan.claim_first);
-    let plan = start_plan("WG-1", S::Claimed, true, None, None).expect("own claim continues");
+    let plan =
+        start_plan("human:b", "WG-1", S::Claimed, true, None, None).expect("own claim continues");
     assert!(!plan.claim_first);
     assert_eq!(task_after_prepare(S::Claimed), S::Running);
     assert_eq!(task_after_prepare(S::Ready), S::Ready);
@@ -92,11 +93,13 @@ fn external_start_claims_a_ready_task_and_continues_an_owned_claim() {
 
 #[test]
 fn external_start_names_another_holder_and_refuses_an_active_attempt() {
-    let err = start_plan("WG-1", S::Claimed, false, Some("bob"), None).expect_err("held by bob");
+    let err = start_plan("human:b", "WG-1", S::Claimed, false, Some("bob"), None)
+        .expect_err("held by bob");
     assert_eq!(err.code, ErrorCode::ValidationFailed);
     assert!(err.message.contains("by bob"), "{}", err.message);
 
-    let err = start_plan("WG-1", S::Ready, false, None, Some(2)).expect_err("active attempt");
+    let err =
+        start_plan("human:b", "WG-1", S::Ready, false, None, Some(2)).expect_err("active attempt");
     assert_eq!(err.code, ErrorCode::InvalidTransition);
     assert_eq!(err.message, "task WG-1 already has an active attempt #2");
 }
@@ -116,33 +119,33 @@ fn task_after_attempt_end_returns_cancelled_work_to_ready_and_leaves_others_alon
 
 #[test]
 fn submit_checks_status_attempt_worktree_and_task_in_order() {
-    assert!(submit_check("succeeded", A::Running, true, "WG-1", S::Running).is_ok());
-    let err =
-        submit_check("cancelled", A::Running, true, "WG-1", S::Running).expect_err("bad status");
+    assert!(submit_check("succeeded", "a1", A::Running, true, "WG-1", S::Running).is_ok());
+    let err = submit_check("cancelled", "a1", A::Running, true, "WG-1", S::Running)
+        .expect_err("bad status");
     assert_eq!(err.code, ErrorCode::ValidationFailed);
-    let err = submit_check("failed", A::Succeeded, true, "WG-1", S::Running)
+    let err = submit_check("failed", "a1", A::Succeeded, true, "WG-1", S::Running)
         .expect_err("finished attempt");
     assert!(err.message.contains("only a running attempt"));
-    let err =
-        submit_check("failed", A::Running, false, "WG-1", S::Running).expect_err("no worktree");
+    let err = submit_check("failed", "a1", A::Running, false, "WG-1", S::Running)
+        .expect_err("no worktree");
     assert!(err.message.contains("no managed worktree"));
-    let err =
-        submit_check("failed", A::Running, true, "WG-1", S::Ready).expect_err("task not running");
+    let err = submit_check("failed", "a1", A::Running, true, "WG-1", S::Ready)
+        .expect_err("task not running");
     assert!(err.message.contains("only a running task"));
 }
 
 #[test]
 fn abandon_needs_a_reason_an_external_attempt_and_a_live_attempt() {
-    let err = abandon_plan(true, A::Running, "  ", S::Running).expect_err("reason");
+    let err = abandon_plan(true, "a1", A::Running, "  ", S::Running).expect_err("reason");
     assert_eq!(err.code, ErrorCode::ValidationFailed);
-    assert!(abandon_plan(false, A::Running, "gone", S::Running).is_err());
-    assert!(abandon_plan(true, A::Succeeded, "gone", S::Running).is_err());
+    assert!(abandon_plan(false, "a1", A::Running, "gone", S::Running).is_err());
+    assert!(abandon_plan(true, "a1", A::Succeeded, "gone", S::Running).is_err());
     assert_eq!(
-        abandon_plan(true, A::Preparing, "gone", S::Claimed).ok(),
+        abandon_plan(true, "a1", A::Preparing, "gone", S::Claimed).ok(),
         Some(Some(S::Ready))
     );
     assert_eq!(
-        abandon_plan(true, A::Running, "gone", S::Failed).ok(),
+        abandon_plan(true, "a1", A::Running, "gone", S::Failed).ok(),
         Some(None)
     );
 }

@@ -14,6 +14,7 @@
 //! * [`cli`]: the clap command of the `git` group and its human views.
 
 pub mod analysis;
+pub mod attempt_links;
 pub mod cli;
 pub mod ingest;
 pub mod links;

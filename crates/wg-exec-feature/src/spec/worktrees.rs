@@ -353,7 +353,10 @@ pub fn acquire_lease_decision(
             Err(WgError::new(
                 ErrorCode::ResourceBusy,
                 format!("resource {resource_key} is leased by {}", current.holder),
-            ))
+            )
+            .with_detail("resource", serde_json::json!(resource_key))
+            .with_detail("holder", serde_json::json!(current.holder))
+            .with_detail("purpose", serde_json::json!(current.purpose)))
         }
         Some(_) => Ok(Decision::new(()).write(Write::update(fresh))),
     }

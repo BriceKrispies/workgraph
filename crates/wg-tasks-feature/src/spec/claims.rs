@@ -273,7 +273,7 @@ pub fn release_task(
 }
 
 /// The facts about a task that decide which verification checks apply to it.
-fn scope_of(tasks: &TaskSlice, task: &wg_model::Task) -> TaskScope {
+pub fn scope_of(tasks: &TaskSlice, task: &wg_model::Task) -> TaskScope {
     TaskScope {
         workspace_id: task.workspace_id,
         task_id: task.id,
@@ -290,7 +290,7 @@ fn scope_of(tasks: &TaskSlice, task: &wg_model::Task) -> TaskScope {
 
 /// `_complete_in_session`: moves a claimed or running task to verification or review, records
 /// `task.completed` and, with a summary, the result comment.
-fn complete_in(
+pub fn complete_in(
     start: Applied,
     reported: &Reported,
     stamp: &Stamp,

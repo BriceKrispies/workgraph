@@ -2245,14 +2245,24 @@ dependencies = [
 name = "wg-analytics-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rpds",
  "serde_json",
  "wg-analytics",
+ "wg-automation-feature",
+ "wg-clispec",
+ "wg-hash",
+ "wg-json",
  "wg-model",
+ "wg-registry",
+ "wg-render",
  "wg-runtime",
  "wg-store",
  "wg-storecodec",
+ "wg-tasks",
  "wg-types",
+ "wg-validate",
+ "wg-wire",
 ]
 
 [[package]]
@@ -2364,6 +2374,7 @@ dependencies = [
  "tokio",
  "tokio-util",
  "ureq",
+ "wg-analytics-feature",
  "wg-archive-feature",
  "wg-automation-feature",
  "wg-browser",
@@ -2699,6 +2710,7 @@ dependencies = [
  "wg-store",
  "wg-storecodec",
  "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

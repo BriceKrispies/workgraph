@@ -11,7 +11,7 @@ use std::fmt;
 
 use rpds::VectorSync;
 use serde_json::Value;
-use wg_types::Timestamp;
+use wg_types::{Timestamp, py_repr_str};
 
 use super::bases::{self, Base, Row, dimensions};
 use super::metrics::{Metric, Ratio, Statistic, TimeColumn, find};
@@ -81,9 +81,15 @@ pub enum QueryError {
 impl fmt::Display for QueryError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            QueryError::UnknownMetric(metric) => write!(f, "unknown metric {metric:?}"),
+            QueryError::UnknownMetric(metric) => {
+                write!(f, "unknown metric {}", py_repr_str(metric))
+            }
             QueryError::Dimension { metric, dimension } => {
-                write!(f, "metric {metric} cannot be grouped by {dimension:?}")
+                write!(
+                    f,
+                    "metric {metric} cannot be grouped by {}",
+                    py_repr_str(dimension)
+                )
             }
             QueryError::Filter { metric, column } => {
                 write!(f, "metric {metric} cannot be filtered by {column}")

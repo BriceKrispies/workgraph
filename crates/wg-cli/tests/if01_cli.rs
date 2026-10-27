@@ -126,32 +126,32 @@ fn missing_argument_is_a_usage_error() {
 
 #[test]
 fn unimplemented_command_reports_itself_in_human_mode() {
-    let out = workgraph(&["analytics", "overview"]);
+    let out = workgraph(&["analytics", "subagents"]);
     assert_eq!(out.status.code(), Some(1));
     assert!(out.stdout.is_empty());
     let err = text(&out.stderr);
     assert!(err.starts_with("error:"), "{err}");
-    assert!(err.contains("workgraph analytics overview"), "{err}");
+    assert!(err.contains("workgraph analytics subagents"), "{err}");
 }
 
 #[test]
 fn json_is_stripped_wherever_it_appears() {
     let expected = concat!(
         "{\"error\": {\"code\": \"cli_error\", \"message\": ",
-        "\"`workgraph analytics overview` is not implemented in this build of the Rust rewrite yet\", ",
+        "\"`workgraph analytics subagents` is not implemented in this build of the Rust rewrite yet\", ",
         "\"details\": {}}}\n"
     );
     for args in [
-        vec!["--json", "analytics", "overview"],
-        vec!["analytics", "--json", "overview"],
-        vec!["analytics", "overview", "--json"],
+        vec!["--json", "analytics", "subagents"],
+        vec!["analytics", "--json", "subagents"],
+        vec!["analytics", "subagents", "--json"],
         vec![
             "--home",
             "somewhere",
             "-w",
             "main",
             "analytics",
-            "overview",
+            "subagents",
             "--json",
         ],
     ] {

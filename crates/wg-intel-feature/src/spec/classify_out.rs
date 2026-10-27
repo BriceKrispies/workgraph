@@ -8,6 +8,7 @@ use std::collections::BTreeSet;
 use wg_json::{PyStr, Value};
 use wg_model::entity::{Classification, ClassificationEvaluation, ClassificationGoldLabel};
 use wg_types::Id;
+use wg_wire::convention::json_value;
 
 /// The note `TaskClassifications` carries.
 pub const NOTE: &str = "Model classifications are inferences, not objective facts.";
@@ -31,26 +32,6 @@ fn dict(entries: Vec<(&str, Value)>) -> Value {
             .map(|(key, value)| (PyStr::from(key), value))
             .collect(),
     )
-}
-
-/// A `serde_json` value as a Python-shaped value (object key order kept).
-#[must_use]
-pub fn json_value(value: &serde_json::Value) -> Value {
-    match value {
-        serde_json::Value::Null => Value::Null,
-        serde_json::Value::Bool(flag) => Value::Bool(*flag),
-        serde_json::Value::Number(number) => number.as_i64().map_or_else(
-            || Value::Float(number.as_f64().unwrap_or(f64::NAN)),
-            |int| Value::Int(i128::from(int)),
-        ),
-        serde_json::Value::String(text_value) => text(text_value),
-        serde_json::Value::Array(items) => Value::List(items.iter().map(json_value).collect()),
-        serde_json::Value::Object(map) => Value::Dict(
-            map.iter()
-                .map(|(key, value)| (PyStr::from(key.as_str()), json_value(value)))
-                .collect(),
-        ),
-    }
 }
 
 fn optional_float(value: Option<f64>) -> Value {

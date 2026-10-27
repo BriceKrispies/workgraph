@@ -27,6 +27,7 @@ pub const FEATURES: &[&Feature] = &[
     &wg_experiments_feature::FEATURE,
     &wg_registry_feature::FEATURE,
     &wg_automation_feature::FEATURE,
+    &wg_analytics_feature::FEATURE,
     &wg_git_feature::FEATURE,
     &wg_exec_feature::FEATURE,
     &wg_trackers_feature::FEATURE,

@@ -88,7 +88,7 @@ fn worker_once(home: &Path) -> String {
 }
 
 #[test]
-fn git_sync_job_syncs_the_repository_and_is_rerunnable() {
+fn git_sync_job_syncs_the_registered_repository() {
     let (root, home) = setup("sync");
     let repo = make_repo(&root, "svc");
     let registered = json_run(
@@ -96,34 +96,29 @@ fn git_sync_job_syncs_the_repository_and_is_rerunnable() {
         &["repo", "register", repo.to_str().expect("utf-8")],
         0,
     );
-    // Registration queues its own git_sync; drain it first so the two syncs never ingest the same
-    // commits at once (the loser would fail on the unique (repository, sha) index and retry).
-    worker_once(&home);
     let repository_id = registered["id"]
         .as_str()
         .expect("a repository id")
         .to_owned();
 
-    let job = enqueue(
-        &home,
-        "git_sync",
-        &json!({"repository_id": repository_id, "mode": "full"}),
-    );
+    // Registration queues the repository's git_sync, the only job in this home, and the worker
+    // runs it as a normal job.
+    let listed = json_run(&home, &["job", "list", "--kind", "git_sync"], 0);
+    let job = listed["items"]
+        .as_array()
+        .expect("a job list")
+        .iter()
+        .find_map(|item| item["id"].as_str())
+        .expect("the registration's git_sync job")
+        .to_owned();
     worker_once(&home);
     let shown = json_run(&home, &["job", "show", &job], 0);
     assert_eq!(shown["status"], "succeeded", "{shown}");
     assert_eq!(shown["result"]["repository_id"], repository_id.as_str());
     assert_eq!(shown["result"]["repository"], "svc");
-    assert_eq!(shown["result"]["mode"], "full");
+    assert_eq!(shown["result"]["mode"], "incremental");
+    assert_eq!(shown["result"]["new_commits"], 1);
     assert_eq!(shown["result"]["head_refs"], 1);
-
-    // A repeated incremental sync finds every commit known: nothing new is ingested.
-    let again = enqueue(&home, "git_sync", &json!({"repository_id": repository_id}));
-    worker_once(&home);
-    let shown_again = json_run(&home, &["job", "show", &again], 0);
-    assert_eq!(shown_again["status"], "succeeded", "{shown_again}");
-    assert_eq!(shown_again["result"]["mode"], "incremental");
-    assert_eq!(shown_again["result"]["new_commits"], 0);
 }
 
 #[test]

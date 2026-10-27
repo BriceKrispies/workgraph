@@ -10,6 +10,7 @@ use crate::service;
 use crate::spec::args::*;
 use crate::spec::contract::contract_target;
 use crate::spec::reads::GraphRequest;
+use crate::spec::triage::{triage_failed, triage_view};
 use crate::spec::view::*;
 use clap::ArgMatches;
 use wg_clispec::args::*;
@@ -182,6 +183,25 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             )?;
             state.emit(&out, Some(&|c| contract_view(c, &out)))
         }
+        Some("triage-apply") => {
+            let path = option_text(m, "path").unwrap_or_default();
+            check_triage_path(&path)?;
+            let dry_run = option_flag(m, "--dry-run");
+            let source = option_text(m, "--source");
+            let out = service::triage::task_triage_apply(
+                state.app()?,
+                &context,
+                ws,
+                &path,
+                dry_run,
+                source.as_deref(),
+            )?;
+            state.emit(&out, Some(&|c| triage_view(c, &out, dry_run)))?;
+            if triage_failed(&out) {
+                return Err(CliFailure::Exit(1));
+            }
+            Ok(())
+        }
         Some("depend") => {
             let reference = option_text(m, "ref").unwrap_or_default();
             let depends_on = option_text(m, "depends_on").unwrap_or_default();
@@ -214,6 +234,32 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         _ => Err(CliFailure::fail(not_implemented_message(path), 1)),
     }
+}
+
+/// The usage of `task triage-apply`, as Click prints it for its `PATH` argument.
+const TRIAGE_APPLY: wg_clispec::Usage = wg_clispec::Usage {
+    usage: "workgraph task triage-apply [OPTIONS] PATH",
+    command: "workgraph task triage-apply",
+};
+
+/// Click's `Path(exists=True, dir_okay=False, readable=True)` check of the `PATH` argument, which
+/// runs before the command: a usage error (exit 2) for a missing file, a directory or an
+/// unreadable one.
+fn check_triage_path(path: &str) -> Result<(), CliFailure> {
+    let problem = match std::fs::metadata(path) {
+        Err(_) => "does not exist.",
+        Ok(meta) if meta.is_dir() => "is a directory.",
+        Ok(_) if std::fs::File::open(path).is_err() => "is not readable.",
+        Ok(_) => return Ok(()),
+    };
+    Err(CliFailure::Usage {
+        usage: TRIAGE_APPLY.usage.to_owned(),
+        command: TRIAGE_APPLY.command.to_owned(),
+        message: format!(
+            "Invalid value for 'PATH': File {} {problem}",
+            wg_model::py_repr_str(path)
+        ),
+    })
 }
 
 /// `task show REF...`: one reference prints the task; several print `{items, errors}` and exit

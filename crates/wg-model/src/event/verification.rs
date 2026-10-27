@@ -24,7 +24,7 @@ pub struct VerificationStarted {
     pub manifest_id: Option<Id>,
     pub task_id: Id,
     pub task_key: String,
-    pub tier: String,
+    pub tier: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stack: Option<Id>,
 }

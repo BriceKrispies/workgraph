@@ -2,11 +2,100 @@
 //! read from the wire documents the service returns, so the human output and the `--json` output
 //! come from the same values, as the Python `emit` helper does.
 
-use clap::Command;
-use wg_clispec::args::{get, items, python, when};
+use clap::{ArgMatches, Command};
+use wg_clispec::CliFailure;
+use wg_clispec::args::{ReadFile, get, items, many, option_text, python, when};
 use wg_clispec::tree::snapshot_command;
 use wg_json::Value;
 use wg_render::Console;
+
+/// The arguments of `verify config`.
+#[derive(Debug, Clone)]
+pub struct ConfigArgs {
+    pub name: String,
+    pub scope_type: String,
+    pub scope: Option<String>,
+    pub checks: Vec<serde_json::Value>,
+}
+
+/// `parse_json_arg(value, "check")`: JSON text, or `@file` holding it.
+fn check_document(value: &str, read_file: ReadFile<'_>) -> Result<serde_json::Value, CliFailure> {
+    let source = match value.strip_prefix('@') {
+        Some(path) => read_file(path).map_err(|why| CliFailure::fail(why, 1))?,
+        None => value.to_owned(),
+    };
+    serde_json::from_str(&source)
+        .map_err(|error| CliFailure::fail(format!("check is not valid JSON: {error}"), 2))
+}
+
+/// The arguments of `verify config`, with the `--check` documents parsed.
+pub fn config_args(m: &ArgMatches, read_file: ReadFile<'_>) -> Result<ConfigArgs, CliFailure> {
+    Ok(ConfigArgs {
+        name: option_text(m, "name").unwrap_or_default(),
+        scope_type: option_text(m, "--scope-type").unwrap_or_else(|| "repository".to_owned()),
+        scope: option_text(m, "--scope"),
+        checks: many(m, "--check")
+            .iter()
+            .map(|text| check_document(text, read_file))
+            .collect::<Result<_, _>>()?,
+    })
+}
+
+/// `verify config`: the line it prints.
+#[must_use]
+pub fn config_line(console: &Console, config: &Value) -> String {
+    console
+        .print(&format!(
+            "verification config {} v{} ({} checks)",
+            python(get(config, "name").unwrap_or(&Value::Null)),
+            python(get(config, "version").unwrap_or(&Value::Null)),
+            items(get(config, "checks")).len()
+        ))
+        .text
+}
+
+/// `verify run`: the verdict line and the table of its checks.
+#[must_use]
+pub fn run_view(console: &Console, run: &Value) -> String {
+    let verdict = console.print(&format!(
+        "verification {} (required passed: {})",
+        python(get(run, "status").unwrap_or(&Value::Null)),
+        python(get(run, "required_passed").unwrap_or(&Value::Null))
+    ));
+    let rows: Vec<Vec<String>> = items(get(run, "checks"))
+        .iter()
+        .map(|check| {
+            let signatures: Vec<String> = items(get(check, "failure_signatures"))
+                .iter()
+                .map(python)
+                .collect();
+            vec![
+                cell(get(check, "name")),
+                cell(get(check, "kind")),
+                if matches!(get(check, "required"), Some(Value::Bool(true))) {
+                    "req".to_owned()
+                } else {
+                    "opt".to_owned()
+                },
+                cell(get(check, "status")),
+                cell(get(check, "exit_code")),
+                signatures.join(", ").chars().take(60).collect(),
+            ]
+        })
+        .collect();
+    let checks = console.table(
+        &rows,
+        &["check", "kind", "", "status", "exit", "failures"],
+        None,
+    );
+    format!("{}{}", verdict.text, checks.text)
+}
+
+/// Whether the run passed; `verify run` exits 3 when it did not.
+#[must_use]
+pub fn run_passed(run: &Value) -> bool {
+    get(run, "status").map(python).as_deref() == Some("passed")
+}
 
 /// The `verify` command, built from the snapshot so its help and parameters match.
 pub fn command() -> Command {

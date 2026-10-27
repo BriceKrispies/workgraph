@@ -298,7 +298,7 @@ fn samples() -> Vec<EventPayload> {
             manifest_id: None,
             task_id,
             task_key: "WG-1".into(),
-            tier: "task".into(),
+            tier: Some("task".into()),
             stack: None,
         }),
         EventPayload::VerificationCompleted(VerificationCompleted {
@@ -361,7 +361,7 @@ fn absent_optional_keys_are_left_out_of_the_data() -> TestResult {
         manifest_id: None,
         task_id: id(1),
         task_key: "WG-1".into(),
-        tier: "task".into(),
+        tier: Some("task".into()),
         stack: None,
     });
     assert!(!stack_less.to_data()?.contains_key("stack"));

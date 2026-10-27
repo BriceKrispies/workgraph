@@ -7,6 +7,7 @@
 
 pub mod replay;
 pub mod trial;
+mod ops;
 
 use crate::service;
 use crate::spec::command;
@@ -26,6 +27,9 @@ pub const GROUP: CliGroup = CliGroup {
 fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
     let workspace = state.workspace_ref(option_text(m, "--workspace").as_deref());
     let ws = workspace.as_deref();
+    if let Some(done) = ops::run(state, path, m, ws) {
+        return done;
+    }
     let context = human_context(None)?;
     match path.get(1).map(String::as_str) {
         Some("trial") => trial::run(state, path, m),

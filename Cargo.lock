@@ -2372,6 +2372,7 @@ dependencies = [
  "wg-decisions",
  "wg-events-feature",
  "wg-exec-feature",
+ "wg-experiments-feature",
  "wg-git-feature",
  "wg-intel-feature",
  "wg-json",
@@ -2584,14 +2585,31 @@ dependencies = [
 name = "wg-experiments-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
+ "regex",
  "rpds",
  "serde_json",
+ "toml",
+ "wg-clispec",
  "wg-experiments",
+ "wg-git",
+ "wg-gitcore",
+ "wg-json",
  "wg-model",
+ "wg-proc",
+ "wg-procspec",
+ "wg-pyrand",
+ "wg-registry",
+ "wg-render",
  "wg-runtime",
+ "wg-runtimespec",
  "wg-store",
  "wg-storecodec",
+ "wg-tasks-feature",
+ "wg-telemetry",
  "wg-types",
+ "wg-validate",
+ "wg-wire",
 ]
 
 [[package]]
@@ -3053,7 +3071,6 @@ dependencies = [
  "wg-decisions",
  "wg-exec",
  "wg-experiments",
- "wg-experiments-feature",
  "wg-git-feature",
  "wg-jobs",
  "wg-json",

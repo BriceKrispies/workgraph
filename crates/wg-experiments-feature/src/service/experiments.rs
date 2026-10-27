@@ -65,7 +65,7 @@ pub fn experiment_show(
 
 /// `ExperimentService._find`: an id (when the reference parses as one) or a slug, in the
 /// workspace. Anything else is a `not_found` error with the reference as its detail.
-fn find(
+pub(crate) fn find(
     session: &mut Session<'_>,
     workspace_id: Id,
     reference: &str,

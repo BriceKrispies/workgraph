@@ -18,7 +18,6 @@ wg-clispec = { path = "../wg-clispec" }
 wg-decisions = { path = "../wg-decisions" }
 wg-exec = { path = "../wg-exec" }
 wg-experiments = { path = "../wg-experiments" }
-wg-experiments-feature = { path = "../wg-experiments-feature" }
 wg-git-feature = { path = "../wg-git-feature" }
 wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }

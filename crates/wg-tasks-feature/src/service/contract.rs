@@ -7,11 +7,15 @@ use std::cell::RefCell;
 use serde_json::Value as Json;
 use wg_experiments::contract::{Fit, Prediction as Forecast, contract_problems, decide};
 use wg_experiments::predictor::{forecast_task, repository_ref};
-use wg_experiments_feature::service::reads;
 use wg_json::{Value, py_float_repr};
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext};
+use wg_model::Table;
+use wg_model::entity::PredictorFit;
 use wg_store::Session;
+use wg_store::query::one;
+use wg_storecodec::codec::{id_sql, text_sql};
+use wg_storecodec::sql::{Statement, select_list};
 use wg_types::{ErrorCode, WgError};
 use wg_wire::dto::contract_check;
 
@@ -44,7 +48,7 @@ pub fn task_contract_check(
     let verdict = app.runtime.query(
         |session: &mut Session<'_>| {
             let world = session.task_world(task_scope, &[])?;
-            let fit = reads::latest_predictor_fit(session, fit_scope, model)?;
+            let fit = latest_predictor_fit(session, fit_scope, model)?;
             Ok((world, fit))
         },
         |(world, fit)| {
@@ -111,4 +115,25 @@ pub fn task_contract_check(
         },
     )?;
     Ok(contract_check::verdict(&verdict))
+}
+
+/// The newest fit of `model` in `workspace_id`, if there is one: Python orders by `created_at`
+/// descending, `id` descending is the tiebreak. (The experiments feature reads it the same way;
+/// it depends on this crate for replay, so the read is repeated here.)
+fn latest_predictor_fit(
+    session: &mut Session<'_>,
+    workspace_id: wg_types::Id,
+    model: &str,
+) -> Result<Option<PredictorFit>, WgError> {
+    one(
+        session,
+        &Statement {
+            sql: format!(
+                "SELECT {} FROM \"predictor_fits\" WHERE \"workspace_id\" = ?1 AND \"model\" = ?2 \
+                 ORDER BY \"created_at\" DESC, \"id\" DESC LIMIT 1",
+                select_list(Table::PredictorFit, None)
+            ),
+            params: vec![id_sql(workspace_id), text_sql(model)],
+        },
+    )
 }

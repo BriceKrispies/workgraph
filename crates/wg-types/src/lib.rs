@@ -11,6 +11,7 @@ mod error;
 mod id;
 mod key;
 mod permission;
+pub mod pyval;
 mod repr;
 mod time;
 

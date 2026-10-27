@@ -85,6 +85,37 @@ pub enum Value {
     },
 }
 
+/// A Python dict literal as a [`Value::Dict`]: the keys in the order written, written like
+/// `serde_json::json!` writes an object.
+///
+/// ```
+/// use wg_json::{Value, dict};
+///
+/// let row = dict!({
+///     "name": Value::Str("build".into()),
+///     "tries": Value::Int(3),
+///     "tags": Value::List(vec![]),
+/// });
+/// assert!(matches!(row, Value::Dict(ref entries) if entries.len() == 3));
+/// ```
+#[macro_export]
+macro_rules! dict {
+    ({ $($key:literal : $value:expr),* $(,)? }) => {
+        $crate::dict(vec![$(($key, $value)),*])
+    };
+}
+
+/// A [`Value::Dict`] from fields built at run time, keys in the order given. A fixed set of keys
+/// reads better as [`dict!`].
+pub fn dict(fields: Vec<(&str, Value)>) -> Value {
+    Value::Dict(
+        fields
+            .into_iter()
+            .map(|(key, value)| (PyStr::from(key), value))
+            .collect(),
+    )
+}
+
 /// The Python exception a dialect raises when a value cannot be serialised.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DumpError {

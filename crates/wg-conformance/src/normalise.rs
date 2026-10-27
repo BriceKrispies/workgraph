@@ -13,6 +13,11 @@ use crate::compare::{Normaliser, RootsNormaliser};
 use crate::runner::RunResult;
 use std::collections::{BTreeMap, BTreeSet};
 
+/// How far outside a step's recorded wall-clock window a timestamp may fall and still belong to
+/// it: clock granularity (Windows ticks at about 15 ms) and the gap between a process stamping a
+/// row and the runner noticing it returned.
+const WINDOW_MARGIN_MICROS: i64 = 25_000;
+
 /// The section 3.4 normaliser. `literals` are values the runner knows (the API
 /// token, the pairing code, ...) and the placeholder each one becomes.
 #[derive(Debug, Clone, Default)]
@@ -36,9 +41,12 @@ impl Normaliser for FullNormaliser {
             .flat_map(|s| [s.stdout.as_str(), s.stderr.as_str()])
             .chain(std::iter::once(text))
             .collect();
-        let mut numbering = Numbering::from_outputs(&outputs);
+        let windows = step_windows(run);
+        let mut numbering = Numbering::from_outputs(&outputs, &windows);
         let bytes = out.as_bytes();
-        let clusters = instant_clusters(&stamps_of(text));
+        // The archive size of a backup is a zip byte count that differs between two Python runs,
+        // so it is masked only in output that names a backup format. Other `bytes` keys stay.
+        let archive = out.contains("\"format\": \"workgraph-backup-");
 
         let mut spans: Vec<(usize, usize, String)> = Vec::new();
         for (s, e, key) in scan(bytes, uuid_at) {
@@ -50,15 +58,26 @@ impl Normaliser for FullNormaliser {
         for (s, e, key) in scan(bytes, sha_at) {
             spans.push((s, e, format!("<sha:{}>", numbering.sha(&key))));
         }
-        for (s, e, stamp) in scan(bytes, timestamp_at) {
-            let rank = numbering.rank(stamp.micros, &clusters);
-            spans.push((s, e, format!("<ts:{rank}|{}>", stamp.format)));
+        for (s, e, stamp) in scan(bytes, any_timestamp_at) {
+            let placeholder = match step_of(&windows, &stamp) {
+                Some(k) => format!("<ts@{k}|{}>", stamp.format),
+                None => format!("<ts:{}|{}>", numbering.rank(stamp.micros), stamp.format),
+            };
+            spans.push((s, e, placeholder));
         }
         for (s, e, worker) in scan(bytes, worker_at) {
             spans.push((s, e, format!("<worker:{}>", numbering.worker(&worker))));
         }
         for (s, e, placeholder) in scan(bytes, json_field_at) {
             spans.push((s, e, placeholder.to_owned()));
+        }
+        for (s, e, masked) in scan(bytes, ms_object_at) {
+            spans.push((s, e, masked));
+        }
+        if archive {
+            for (s, e, placeholder) in scan(bytes, archive_bytes_at) {
+                spans.push((s, e, placeholder.to_owned()));
+            }
         }
         for (s, e, ()) in scan(bytes, local_port_at) {
             spans.push((s, e, "<port>".to_owned()));
@@ -171,6 +190,9 @@ fn lower(bytes: &[u8]) -> String {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct Stamp {
     micros: i64,
+    /// Width of the instant the text can denote: a second for forms without a fraction (the
+    /// writer truncated), one microsecond otherwise.
+    span: i64,
     format: &'static str,
 }
 
@@ -250,7 +272,68 @@ fn timestamp_at(bytes: &[u8], i: usize) -> Option<Span<Stamp>> {
     let days = days_from_civil(year, month, day);
     let seconds = (hour * 60 + minute) * 60 + second;
     let micros = (days * 86_400 + seconds) * 1_000_000 + frac_micros;
-    Some((i, pos, Stamp { micros, format }))
+    let span = if frac_digits == 0 { 1_000_000 } else { 1 };
+    Some((
+        i,
+        pos,
+        Stamp {
+            micros,
+            span,
+            format,
+        },
+    ))
+}
+
+/// Any timestamp this normaliser knows: the extended forms of `timestamp_at`, or the compact form
+/// `YYYYMMDDTHHMMSSZ` that backup archives use (`20261026T144947Z`).
+fn any_timestamp_at(bytes: &[u8], i: usize) -> Option<Span<Stamp>> {
+    timestamp_at(bytes, i).or_else(|| compact_stamp_at(bytes, i))
+}
+
+/// `YYYYMMDDTHHMMSSZ`, exactly sixteen characters with no word character on either side.
+fn compact_stamp_at(bytes: &[u8], i: usize) -> Option<Span<Stamp>> {
+    const LEN: usize = 16;
+    let end = i + LEN;
+    if end > bytes.len() || !bounded(bytes, i, end) {
+        return None;
+    }
+    let digits = |from: usize, n: usize| -> Option<i64> {
+        let part = bytes.get(from..from + n)?;
+        part.iter().all(u8::is_ascii_digit).then(|| {
+            part.iter()
+                .fold(0_i64, |acc, d| acc * 10 + i64::from(d - b'0'))
+        })
+    };
+    let shaped = bytes[i + 8] == b'T' && bytes[end - 1] == b'Z';
+    if !shaped {
+        return None;
+    }
+    let year = digits(i, 4)?;
+    let month = digits(i + 4, 2)?;
+    let day = digits(i + 6, 2)?;
+    let hour = digits(i + 9, 2)?;
+    let minute = digits(i + 11, 2)?;
+    let second = digits(i + 13, 2)?;
+    if !(1..=12).contains(&month)
+        || !(1..=31).contains(&day)
+        || hour > 23
+        || minute > 59
+        || second > 60
+    {
+        return None;
+    }
+    let days = days_from_civil(year, month, day);
+    let seconds = (hour * 60 + minute) * 60 + second;
+    let micros = (days * 86_400 + seconds) * 1_000_000;
+    Some((
+        i,
+        end,
+        Stamp {
+            micros,
+            span: 1_000_000,
+            format: "compact",
+        },
+    ))
 }
 
 /// Days since 1970-01-01 of a proleptic Gregorian date.
@@ -267,7 +350,30 @@ fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
 /// A JSON number under a key whose value is normalised: durations, pids and ports.
 /// Returns the span of the number and its placeholder.
 fn json_field_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
-    // A key is `"key"`, or `\"key\"` inside a JSON document embedded as a string value.
+    keyed_number_at(bytes, i, |key| match key {
+        "pid" => Some("<pid>"),
+        "port" => Some("<port>"),
+        "duration_seconds" => Some("<dur>"),
+        _ if is_ms_key(key) => Some("<dur>"),
+        _ => None,
+    })
+}
+
+/// The `bytes` number of a backup archive (`"bytes": 27069`). Only the caller that has seen the
+/// backup format masks it.
+fn archive_bytes_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
+    keyed_number_at(bytes, i, |key| (key == "bytes").then_some("<bytes>"))
+}
+
+/// A JSON key that names a duration in milliseconds: `*_ms`, or a key with `_ms_` inside such as
+/// `median_elapsed_ms_cross_repo`.
+fn is_ms_key(key: &str) -> bool {
+    key.ends_with("_ms") || key.contains("_ms_")
+}
+
+/// The key at `i` and the position of its value. A key is `"key"`, or `\"key\"` inside a JSON
+/// document embedded as a string value. The value starts after the colon and the spaces around it.
+fn key_value_at(bytes: &[u8], i: usize) -> Option<(&str, usize)> {
     let key_start = if bytes[i..].starts_with(b"\\\"") {
         i + 2
     } else if bytes[i] == b'"' {
@@ -285,13 +391,6 @@ fn json_field_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
     }
     let key = std::str::from_utf8(&bytes[key_start..j]).ok()?;
     let close_len = if bytes.get(j) == Some(&b'"') { 1 } else { 2 };
-    let placeholder = match key {
-        "pid" => "<pid>",
-        "port" => "<port>",
-        "duration_seconds" => "<dur>",
-        _ if key.ends_with("_ms") => "<dur>",
-        _ => return None,
-    };
     let mut k = j + close_len;
     while bytes.get(k) == Some(&b' ') {
         k += 1;
@@ -303,7 +402,19 @@ fn json_field_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
     while bytes.get(k) == Some(&b' ') {
         k += 1;
     }
-    let start = k;
+    Some((key, k))
+}
+
+/// A JSON number under a key that `placeholder` names, with the key's placeholder. The span
+/// covers the number only.
+fn keyed_number_at(
+    bytes: &[u8],
+    i: usize,
+    placeholder: impl Fn(&str) -> Option<&'static str>,
+) -> Option<Span<&'static str>> {
+    let (key, start) = key_value_at(bytes, i)?;
+    let placeholder = placeholder(key)?;
+    let mut k = start;
     let digits = |mut p: usize| {
         let from = p;
         while bytes.get(p).is_some_and(u8::is_ascii_digit) {
@@ -330,6 +441,26 @@ fn json_field_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
     Some((start, end, placeholder))
 }
 
+/// A `*_ms` key whose value is a flat object of figures, such as the `elapsed_ms` distribution
+/// (`{"n": 4, "p25": 96323.75, ...}`). Every number in it is a duration except the sample count
+/// `n`, which is exact and stays. Returns the span of the object and its text with the durations
+/// replaced.
+fn ms_object_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
+    let (key, start) = key_value_at(bytes, i)?;
+    if !is_ms_key(key) || bytes.get(start) != Some(&b'{') {
+        return None;
+    }
+    let end = start + bytes[start..].iter().position(|b| *b == b'}')? + 1;
+    let object = std::str::from_utf8(&bytes[start..end]).ok()?;
+    let durations: Vec<Span<String>> = scan(object.as_bytes(), |b, j| {
+        keyed_number_at(b, j, |k: &str| (k != "n").then_some("<dur>"))
+    })
+    .into_iter()
+    .map(|(s, e, p)| (s, e, p.to_owned()))
+    .collect();
+    Some((start, end, splice(object, durations)))
+}
+
 /// The digits after `127.0.0.1:` or `localhost:`.
 fn local_port_at(bytes: &[u8], i: usize) -> Option<Span<()>> {
     let prefix_len = [&b"127.0.0.1:"[..], &b"localhost:"[..]]
@@ -344,37 +475,34 @@ fn local_port_at(bytes: &[u8], i: usize) -> Option<Span<()>> {
     (end > start).then_some((start, end, ()))
 }
 
-/// Instants written within one command closer than this are one instant for ranking. Python
-/// stamps `created_at` and `updated_at` in separate calls, and under load the clock gives them
-/// values a few milliseconds or a few hundred milliseconds apart, so without this one run can
-/// rank them as two instants and the other run as one. Fixture dates are a second apart, so they
-/// keep their order.
-const SAME_COMMAND_MICROS: i64 = 900_000;
+/// A step's wall-clock window in microseconds since the epoch, with the step's position in the
+/// run's step list (setup steps first), which names it in the placeholder.
+type Window = (usize, i64, i64);
 
-/// The distinct instants written in `text`, in order.
-fn stamps_of(text: &str) -> BTreeSet<i64> {
-    scan(text.as_bytes(), timestamp_at)
-        .into_iter()
-        .map(|(_, _, stamp)| stamp.micros)
+/// The windows of the run's steps that recorded one.
+fn step_windows(run: &RunResult) -> Vec<Window> {
+    run.steps
+        .iter()
+        .enumerate()
+        .filter_map(|(k, s)| s.window.map(|(a, b)| (k, a, b)))
         .collect()
 }
 
-/// Maps each instant of one command's output to the representative of its cluster: instants
-/// less than `SAME_COMMAND_MICROS` apart, chained, form one cluster whose representative is its
-/// earliest instant.
-fn instant_clusters(stamps: &BTreeSet<i64>) -> BTreeMap<i64, i64> {
-    let mut clusters = BTreeMap::new();
-    let mut representative = None;
-    let mut previous: Option<i64> = None;
-    for &micros in stamps {
-        let same = previous.is_some_and(|p| micros - p < SAME_COMMAND_MICROS);
-        if !same {
-            representative = Some(micros);
-        }
-        clusters.insert(micros, representative.unwrap_or(micros));
-        previous = Some(micros);
-    }
-    clusters
+/// The step that wrote `stamp`: the one whose window holds it, else the nearest window within
+/// `WINDOW_MARGIN_MICROS` (earlier step on a tie). Provenance replaces proximity clustering, so
+/// the answer does not depend on how fast the run was: everything a step writes is one instant,
+/// however far from the next step's writes. `None` for dates the scenario supplied (fixtures,
+/// commit dates), which keep their rank.
+fn step_of(windows: &[Window], stamp: &Stamp) -> Option<usize> {
+    let (lo, hi) = (stamp.micros, stamp.micros + stamp.span);
+    windows
+        .iter()
+        .filter_map(|&(k, start, end)| {
+            let gap = (start - hi).max(lo - end).max(0);
+            (gap <= WINDOW_MARGIN_MICROS).then_some((gap, k))
+        })
+        .min()
+        .map(|(_, k)| k)
 }
 
 /// First-appearance numbers for UUIDs, SHAs and worker ids, and timestamp ranks, for one run.
@@ -383,13 +511,12 @@ struct Numbering {
     ids: BTreeMap<String, usize>,
     shas: BTreeMap<String, usize>,
     workers: BTreeMap<String, usize>,
-    /// One-based rank of each cluster representative among the run's clusters. Clusters are
-    /// formed per command, see `instant_clusters`.
+    /// One-based rank of each instant no step window holds, among the run's such instants.
     ranks: BTreeMap<i64, usize>,
 }
 
 impl Numbering {
-    fn from_outputs(outputs: &[&str]) -> Self {
+    fn from_outputs(outputs: &[&str], windows: &[Window]) -> Self {
         let mut n = Self::default();
         for text in outputs {
             for (_, _, key) in scan(text.as_bytes(), uuid_at) {
@@ -411,12 +538,15 @@ impl Numbering {
                 n.worker(&worker);
             }
         }
-        let representatives: BTreeSet<i64> = outputs
+        let unattributed: BTreeSet<i64> = outputs
             .iter()
-            .flat_map(|text| instant_clusters(&stamps_of(text)).into_values())
+            .flat_map(|text| scan(text.as_bytes(), any_timestamp_at))
+            .map(|(_, _, stamp)| stamp)
+            .filter(|stamp| step_of(windows, stamp).is_none())
+            .map(|stamp| stamp.micros)
             .collect();
-        for (rank, representative) in representatives.into_iter().enumerate() {
-            n.ranks.insert(representative, rank + 1);
+        for (rank, micros) in unattributed.into_iter().enumerate() {
+            n.ranks.insert(micros, rank + 1);
         }
         n
     }
@@ -447,15 +577,10 @@ impl Numbering {
         *self.workers.entry(key.to_owned()).or_insert(next)
     }
 
-    /// One-based rank of an instant: the rank of its cluster in `clusters`, the map of the
-    /// command the instant was written in. Every timestamp of the text being normalised is in
-    /// the run's outputs, so it has a rank.
-    fn rank(&self, micros: i64, clusters: &BTreeMap<i64, i64>) -> usize {
-        clusters
-            .get(&micros)
-            .and_then(|rep| self.ranks.get(rep))
-            .copied()
-            .unwrap_or(1)
+    /// One-based rank of an instant no step window holds. Every timestamp of the text being
+    /// normalised is in the run's outputs, so it has a rank.
+    fn rank(&self, micros: i64) -> usize {
+        self.ranks.get(&micros).copied().unwrap_or(1)
     }
 }
 
@@ -491,18 +616,20 @@ fn worker_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
 
 /// The list-valued id keys that the normaliser sorts (docs/rust-rewrite.md section 12, item 2).
 /// Ordered lists (list outputs) are not in this set and keep their order.
-const SET_LIST_KEYS: [&str; 5] = [
+const SET_LIST_KEYS: [&str; 6] = [
     "depends_on",
     "blocks",
     "child_ids",
     "project_ids",
     "repository_ids",
+    "pair",
 ];
 
 /// Lists of objects that the normaliser sorts. The `task graph` edges come from an unordered
 /// dependency query, so Python's order follows the random UUIDs of the tasks (WG-3799). Graph
-/// nodes are not here: they are sorted by task number, which is deterministic.
-const OBJECT_LIST_KEYS: [&str; 1] = ["edges"];
+/// nodes are not here: they are sorted by task number, which is deterministic. Coupling evidence
+/// (one object per task) comes out of an unordered query the same way (WG-3462).
+const OBJECT_LIST_KEYS: [&str; 2] = ["edges", "evidence"];
 
 /// Sorts the elements of every set-like id list and every sorted object list, after placeholder
 /// substitution. Each slot keeps its own leading and trailing whitespace, so the layout of the
@@ -657,9 +784,27 @@ mod tests {
                     stderr: (*stderr).into(),
                     status: Status::Passed,
                     note: String::new(),
+                    window: None,
                 })
                 .collect(),
         }
+    }
+
+    /// A run whose steps carry wall-clock windows `(start, end)` in microseconds.
+    fn run_w(name: &str, steps: &[(&str, (i64, i64))]) -> RunResult {
+        let mut r = run(
+            name,
+            &steps.iter().map(|(t, _)| (*t, "")).collect::<Vec<_>>(),
+        );
+        for (rec, (_, w)) in r.steps.iter_mut().zip(steps) {
+            rec.window = Some(*w);
+        }
+        r
+    }
+
+    /// Microseconds since the epoch of `2026-10-26T06:34:<sec>.<ms>Z`.
+    fn at(sec: i64, ms: i64) -> i64 {
+        (days_from_civil(2026, 10, 26) * 86_400 + 6 * 3600 + 34 * 60 + sec) * 1_000_000 + ms * 1000
     }
 
     fn norm(r: &RunResult, text: &str) -> String {
@@ -755,19 +900,78 @@ mod tests {
     }
 
     #[test]
-    fn stamps_a_clock_tick_apart_are_one_instant() {
-        // `created_at` and `updated_at` written in separate calls: equal in one run, a few
-        // milliseconds apart in the other. Both runs must normalise to the same text.
+    fn a_steps_created_and_updated_collapse_to_its_step() {
         let n = FullNormaliser::default();
-        let same = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:41.462098Z";
-        let apart = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:41.466000Z";
-        let a = run("py", &[(same, "")]);
-        let b = run("rs", &[(apart, "")]);
-        assert!(compare("s", &observe(&a, &n), &observe(&b, &n), &[]).is_empty());
-        // A second apart is a different instant, and the order is kept across the whole run.
-        let later = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:42.462098Z";
-        let c = run("rs", &[(later, "")]);
-        assert!(!compare("s", &observe(&a, &n), &observe(&c, &n), &[]).is_empty());
+        let text = "created 2026-10-26T06:34:41.462098Z updated 2026-10-26T06:34:41.466000Z";
+        let r = run_w(
+            "py",
+            &[
+                ("", (at(40, 0), at(40, 100))),
+                (text, (at(41, 400), at(41, 500))),
+            ],
+        );
+        assert_eq!(n.normalise(&r, text), "created <ts@1|Z> updated <ts@1|Z>");
+    }
+
+    /// Two steps, the second echoing both steps' stamps, with the steps `gap_ms` apart.
+    fn two_steps(gap_ms: i64) -> RunResult {
+        let (s0, e0) = (at(10, 0), at(10, 20));
+        let (s1, e1) = (e0 + gap_ms * 1000, e0 + gap_ms * 1000 + 20_000);
+        let first = "made 2026-10-26T06:34:10.005000Z".to_owned();
+        let stamp = |micros: i64| {
+            let ms = (micros - at(0, 0)) / 1000;
+            format!("2026-10-26T06:34:{:02}.{:03}000Z", ms / 1000, ms % 1000)
+        };
+        let second = format!("saw {} and {}", stamp(s0 + 5000), stamp(s1 + 5000));
+        run_w(
+            "py",
+            &[(first.as_str(), (s0, e0)), (second.as_str(), (s1, e1))],
+        )
+    }
+
+    #[test]
+    fn same_scenario_normalises_identically_whatever_the_speed() {
+        let n = FullNormaliser::default();
+        let (fast, slow) = (two_steps(50), two_steps(3000));
+        let norm_all = |r: &RunResult| -> Vec<String> {
+            r.steps.iter().map(|s| n.normalise(r, &s.stdout)).collect()
+        };
+        assert_eq!(norm_all(&fast), norm_all(&slow));
+        assert_eq!(norm_all(&fast)[1], "saw <ts@0|Z> and <ts@1|Z>");
+    }
+
+    #[test]
+    fn dates_outside_every_window_keep_their_rank() {
+        let n = FullNormaliser::default();
+        let text =
+            "due 2026-01-01T00:00:00Z at 2026-10-26T06:34:41.100000Z then 2026-01-01T00:00:01Z";
+        let r = run_w("py", &[(text, (at(41, 0), at(41, 200)))]);
+        assert_eq!(
+            n.normalise(&r, text),
+            "due <ts:1|Z> at <ts@0|Z> then <ts:2|Z>"
+        );
+    }
+
+    #[test]
+    fn whole_second_stamps_belong_to_the_step_they_were_truncated_in() {
+        let n = FullNormaliser::default();
+        let text = "2026-10-26 06:34:41 and 20261026T063441Z";
+        let r = run_w("py", &[(text, (at(41, 600), at(41, 700)))]);
+        assert_eq!(n.normalise(&r, text), "<ts@0|display> and <ts@0|compact>");
+    }
+
+    #[test]
+    fn overlapping_margins_prefer_the_window_that_holds_the_stamp() {
+        let n = FullNormaliser::default();
+        let text = "2026-10-26T06:34:41.010000Z 2026-10-26T06:34:41.035000Z";
+        let r = run_w(
+            "py",
+            &[
+                (text, (at(41, 0), at(41, 20))),
+                ("", (at(41, 30), at(41, 50))),
+            ],
+        );
+        assert_eq!(n.normalise(&r, text), "<ts@0|Z> <ts@1|Z>");
     }
 
     #[test]
@@ -817,23 +1021,6 @@ mod tests {
             n.normalise(&r, "myattempt-1-3f2b8c1e x attempt-x-3f2b8c1e"),
             "myattempt-1-3f2b8c1e x attempt-x-3f2b8c1e"
         );
-    }
-
-    #[test]
-    fn stamps_within_one_command_rank_together_across_commands_they_do_not() {
-        let n = FullNormaliser::default();
-        // 850 ms apart in one command: one instant.
-        let one = "a 2026-10-26T06:34:41.000000Z b 2026-10-26T06:34:41.850000Z\n";
-        let other = "a 2026-10-26T06:34:41.000000Z b 2026-10-26T06:34:41.000000Z\n";
-        let a = run("py", &[(one, "")]);
-        let b = run("rs", &[(other, "")]);
-        assert!(compare("s", &observe(&a, &n), &observe(&b, &n), &[]).is_empty());
-        // The same two instants written by two commands stay two instants.
-        let first = "a 2026-10-26T06:34:41.000000Z\n";
-        let second = "b 2026-10-26T06:34:41.850000Z\n";
-        let c = run("py", &[(first, ""), (second, "")]);
-        let d = run("rs", &[(first, ""), (first, "")]);
-        assert!(!compare("s", &observe(&c, &n), &observe(&d, &n), &[]).is_empty());
     }
 
     #[test]
@@ -927,5 +1114,58 @@ mod tests {
         let r = run("py", &[("{\"id\": \"WG-1\"}\n", "")]);
         let obs: Vec<Observed> = observe(&r, &FullNormaliser::default());
         assert_eq!(obs[0].stdout, "{\"id\": \"WG-1\"}\n");
+    }
+
+    #[test]
+    fn compact_backup_stamps_rank_by_instant() {
+        let n = FullNormaliser::default();
+        let text = "created 20261026T144947Z then 20261026T145157Z again 20261026T144947Z";
+        let r = run("py", &[(text, "")]);
+        assert_eq!(
+            n.normalise(&r, text),
+            "created <ts:1|compact> then <ts:2|compact> again <ts:1|compact>"
+        );
+        // Another run one second apart on the same ordering compares equal, a different order does not.
+        let same = "created 20270101T000001Z then 20270101T000009Z again 20270101T000001Z";
+        let rs = run("rs", &[(same, "")]);
+        assert!(compare("s", &observe(&r, &n), &observe(&rs, &n), &[]).is_empty());
+        // Digit runs that are not a compact stamp are left alone.
+        let other = "id 1234567T123456Z 20261026T1449Z x20261026T144947Z";
+        assert_eq!(n.normalise(&r, other), other);
+    }
+
+    #[test]
+    fn archive_byte_counts_are_masked_only_in_backup_output() {
+        let n = FullNormaliser::default();
+        let backup = "{\n  \"path\": \"<tmp>/b.zip\",\n  \"bytes\": 27069,\n  \"format\": \"workgraph-backup-v1\"\n}";
+        let r = run("py", &[(backup, "")]);
+        assert_eq!(
+            n.normalise(&r, backup),
+            "{\n  \"path\": \"<tmp>/b.zip\",\n  \"bytes\": <bytes>,\n  \"format\": \"workgraph-backup-v1\"\n}"
+        );
+        let other = "{\"bytes\": 775, \"format\": \"csv\"}";
+        assert_eq!(n.normalise(&r, other), other);
+    }
+
+    #[test]
+    fn ms_keys_with_object_values_and_mid_name_ms_are_durations() {
+        let n = FullNormaliser::default();
+        let r = run("py", &[("", "")]);
+        let text = "{\"median_elapsed_ms_cross_repo\": 110181.5, \"median_elapsed_ms_single_repo\": null, \"distributions\": {\"elapsed_ms\": {\"n\": 4, \"p25\": 96323.75, \"median\": null, \"max\": 132215}}, \"msg_count\": 3}";
+        assert_eq!(
+            n.normalise(&r, text),
+            "{\"median_elapsed_ms_cross_repo\": <dur>, \"median_elapsed_ms_single_repo\": null, \"distributions\": {\"elapsed_ms\": {\"n\": 4, \"p25\": <dur>, \"median\": null, \"max\": <dur>}}, \"msg_count\": 3}"
+        );
+    }
+
+    #[test]
+    fn coupling_evidence_and_pairs_are_set_like() {
+        let n = FullNormaliser::default();
+        let r = run("py", &[("", "")]);
+        let text = r#"{"pair": ["shared-sdk", "auth-service"], "evidence": [{"task_key": "WG-4"}, {"task_key": "WG-2"}], "other": ["b", "a"]}"#;
+        assert_eq!(
+            n.normalise(&r, text),
+            r#"{"pair": ["auth-service", "shared-sdk"], "evidence": [{"task_key": "WG-2"}, {"task_key": "WG-4"}], "other": ["b", "a"]}"#
+        );
     }
 }

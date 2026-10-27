@@ -28,6 +28,15 @@ pub enum JsonExpect {
     Excludes(Value),
 }
 
+/// What a `header` assertion expects of one response header.
+#[derive(Debug, Clone, PartialEq)]
+pub enum HeaderExpect {
+    /// The header is present with this value (placeholders resolved).
+    Equals(String),
+    /// The response carries no header of that name (a CORS or security header that must be absent).
+    Absent,
+}
+
 /// An assertion over the most recent `cli` result, or over files.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Assertion {
@@ -42,6 +51,11 @@ pub enum Assertion {
         path: String,
         exists: bool,
         contains: Option<String>,
+    },
+    /// A header of the most recent `http` response.
+    Header {
+        name: String,
+        expect: HeaderExpect,
     },
     Db {
         table: String,
@@ -268,6 +282,7 @@ fn parse_assert(v: &Value, at: &str) -> Res<Assertion> {
             "db",
             "where",
             "count",
+            "header",
         ],
         at,
     )?;
@@ -336,6 +351,25 @@ fn parse_assert(v: &Value, at: &str) -> Res<Assertion> {
                 .map(|s| string(s, &key("contains")))
                 .transpose()?,
         });
+    }
+    if let Some(h) = m.get("header") {
+        let hm = obj(h, &key("header"))?;
+        only_keys(hm, &["name", "equals", "absent"], &key("header"))?;
+        let name = string(
+            hm.get("name")
+                .ok_or_else(|| format!("{at}.header: missing `name`"))?,
+            &key("header.name"),
+        )?;
+        let expect = match (hm.get("equals"), hm.get("absent")) {
+            (Some(v), None) => HeaderExpect::Equals(string(v, &key("header.equals"))?),
+            (None, Some(v)) if boolean(v, &key("header.absent"))? => HeaderExpect::Absent,
+            _ => {
+                return Err(format!(
+                    "{at}.header: expected `equals`, or `absent` set to true"
+                ));
+            }
+        };
+        return Ok(Assertion::Header { name, expect });
     }
     if let Some(t) = m.get("db") {
         let count = m

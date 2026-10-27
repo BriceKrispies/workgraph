@@ -105,7 +105,8 @@ fn python_export_imports_and_exports_back_byte_for_byte() -> TestResult {
         ("task_files", 3),
         ("task_tags", 4),
     ];
-    let counts: Vec<(String, usize)> = report.tables.clone().into_iter().collect();
+    let mut counts: Vec<(String, usize)> = report.tables.clone();
+    counts.sort();
     let mut want: Vec<(String, usize)> =
         expected.iter().map(|(n, c)| (n.to_string(), *c)).collect();
     want.sort();

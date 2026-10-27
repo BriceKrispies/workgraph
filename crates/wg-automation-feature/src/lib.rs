@@ -17,17 +17,20 @@
 //! The feature exports [`FEATURE`]; the binary collects it into its ordered feature list.
 
 pub mod cli;
+pub mod jobs;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The automation feature: its CLI group. It has no routes, tools, resources or jobs yet.
+/// The automation feature: its CLI group, its job handler and its maintenance steps. It has no
+/// routes, tools or resources yet.
 pub static FEATURE: Feature = Feature {
     name: "automation",
     cli: &[cli::GROUP],
     routes: &[],
     tools: &[],
     resources: &[],
-    jobs: &[],
+    jobs: jobs::JOBS,
+    maintenance: jobs::MAINTENANCE,
 };

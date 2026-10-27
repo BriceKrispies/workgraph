@@ -21,6 +21,7 @@ use wg_runtimespec::RequestContext;
 use wg_types::{Id, JobStatus, WgError};
 
 use crate::app::App;
+use crate::feature::MaintenanceStep;
 use crate::stamp::system_context;
 
 /// The queue, over one [`App`] (one database connection).
@@ -209,23 +210,20 @@ impl Queue {
         Ok(())
     }
 
-    /// `worker recover`: expired job leases, lost workers and orphaned worktrees, now.
-    pub fn recover(&mut self) -> Result<Map<String, Value>, WgError> {
+    /// `worker recover`: expired job leases, lost workers and orphaned worktrees, now. The
+    /// worktree pass belongs to the exec feature, so the caller passes it in as `worktrees`
+    /// (`wg_exec_feature::service::worktrees::recovery_json`), which runs as the system.
+    pub fn recover(
+        &mut self,
+        worktrees: impl FnOnce(&mut App) -> Result<Value, WgError>,
+    ) -> Result<Map<String, Value>, WgError> {
         let jobs = self.recover_expired()?;
         let workers = self.mark_lost_workers()?;
-        // The maintenance pass recovers worktrees as the system, as the Python worker does.
-        let worktrees = self
-            .app
-            .worktree_recover(&crate::system_context("worker")?)?;
+        let worktrees = worktrees(&mut self.app)?;
         Ok(json!({
             "recovered_jobs": jobs.iter().map(ToString::to_string).collect::<Vec<_>>(),
             "lost_workers": workers,
-            "worktrees": {
-                "activated": worktrees.activated,
-                "released": worktrees.released,
-                "orphaned": worktrees.orphaned,
-                "unknown_dirs": worktrees.unknown_dirs,
-            },
+            "worktrees": worktrees,
         })
         .as_object()
         .cloned()
@@ -261,11 +259,13 @@ impl Queue {
 
     /// `run_maintenance`: elects, then runs the plan's steps in order. The reply names the steps'
     /// results; a step whose service is not ported yet reports `"not ported"`.
+    /// `steps` are the features' maintenance steps, each filling one slot of the plan.
     pub fn maintain(
         &mut self,
         worker_id: &str,
         settings: &WorkerSettings,
         lease_seconds: i64,
+        steps: &[MaintenanceStep],
     ) -> Result<Map<String, Value>, WgError> {
         let mut report = Map::new();
         if !self.elect(worker_id, lease_seconds)? {
@@ -274,10 +274,21 @@ impl Queue {
         }
         report.insert("leader".to_owned(), json!(true));
         for step in plan(settings.scheduler_enabled) {
-            let (name, value) = self.step(step, settings)?;
+            let (name, value) = self.step(step, settings, steps)?;
             report.insert(name.to_owned(), value);
         }
         Ok(report)
+    }
+
+    /// Runs the feature step that fills `slot`, as the maintenance context.
+    fn feature_step(&mut self, steps: &[MaintenanceStep], slot: Step) -> Result<Value, WgError> {
+        match steps.iter().find(|candidate| candidate.slot == slot) {
+            Some(candidate) => {
+                let context = system_context("maintenance")?;
+                (candidate.run)(&mut self.app, &context)
+            }
+            None => Ok(json!("not ported")),
+        }
     }
 
     /// One step of the plan.
@@ -285,6 +296,7 @@ impl Queue {
         &mut self,
         step: Step,
         settings: &WorkerSettings,
+        steps: &[MaintenanceStep],
     ) -> Result<(&'static str, Value), WgError> {
         Ok(match step {
             Step::RecoverExpired => ("recovered_jobs", json!(self.recover_expired()?.len())),
@@ -299,8 +311,8 @@ impl Queue {
                 },
             ),
             Step::ReleaseExpiredClaims => ("released_claims", json!("not ported")),
-            Step::ProcessAutomationEvents => ("automation", json!("not ported")),
-            Step::RunScheduledRules => ("scheduled_rules", json!("not ported")),
+            Step::ProcessAutomationEvents => ("automation", self.feature_step(steps, step)?),
+            Step::RunScheduledRules => ("scheduled_rules", self.feature_step(steps, step)?),
             Step::ScheduledRuns => ("scheduled_runs", json!("not ported")),
             Step::ReplayHooks => ("replayed_hooks", json!("not ported")),
         })

@@ -18,12 +18,10 @@ pub mod app;
 pub mod context;
 pub mod effects;
 pub mod events;
-pub mod git;
 pub mod jobs;
 pub mod logs;
 pub mod settings;
 pub mod stacks;
-pub mod worktrees;
 
 pub use context::{GETUSER_VARIABLES, RequestContext, getuser, timestamp_from_unix_nanos};
 pub use logs::{Level, LogRecord, format_record};

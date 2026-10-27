@@ -21,6 +21,9 @@ use wg_types::{
 type TestResult = Result<(), Box<dyn Error>>;
 
 /// Unwraps a fixture value that is valid by construction.
+/// The exec feature, as the binary lists it: the attempt tools are answered by its table.
+static EXEC: &[&wg_runtime::Feature] = &[&wg_exec_feature::FEATURE];
+
 fn ok<T>(result: Result<T, WgError>) -> T {
     match result {
         Ok(value) => value,
@@ -170,7 +173,10 @@ fn error_of(result: Result<Value, WgError>) -> (String, String) {
 #[test]
 fn attempt_get_returns_the_attempt() -> TestResult {
     let (app, home) = seeded_app("get")?;
-    let mut backend = AppBackend { app, features: &[] };
+    let mut backend = AppBackend {
+        app,
+        features: EXEC,
+    };
     let out = backend.call_tool(
         &agent(granted()?),
         "attempt_get",
@@ -189,7 +195,10 @@ fn attempt_get_returns_the_attempt() -> TestResult {
 #[test]
 fn attempt_get_names_an_unknown_attempt() -> TestResult {
     let (app, home) = seeded_app("get-missing")?;
-    let mut backend = AppBackend { app, features: &[] };
+    let mut backend = AppBackend {
+        app,
+        features: EXEC,
+    };
     let (code, message) = error_of(backend.call_tool(
         &agent(granted()?),
         "attempt_get",
@@ -205,7 +214,10 @@ fn attempt_get_names_an_unknown_attempt() -> TestResult {
 #[test]
 fn attempt_list_pages_and_filters() -> TestResult {
     let (app, home) = seeded_app("list")?;
-    let mut backend = AppBackend { app, features: &[] };
+    let mut backend = AppBackend {
+        app,
+        features: EXEC,
+    };
     let all = backend.call_tool(
         &agent(granted()?),
         "attempt_list",
@@ -237,7 +249,10 @@ fn attempt_list_pages_and_filters() -> TestResult {
 #[test]
 fn a_missing_permission_is_refused_before_the_read() -> TestResult {
     let (app, home) = seeded_app("permission")?;
-    let mut backend = AppBackend { app, features: &[] };
+    let mut backend = AppBackend {
+        app,
+        features: EXEC,
+    };
     let (code, message) = error_of(backend.call_tool(
         &agent(BTreeSet::new()),
         "attempt_get",
@@ -256,7 +271,10 @@ fn a_missing_permission_is_refused_before_the_read() -> TestResult {
 #[test]
 fn a_task_reference_that_names_nothing_is_not_found() -> TestResult {
     let (app, home) = seeded_app("task-missing")?;
-    let mut backend = AppBackend { app, features: &[] };
+    let mut backend = AppBackend {
+        app,
+        features: EXEC,
+    };
     let mut arguments = Map::new();
     arguments.insert("task".into(), json!("DEMO-999"));
     let (code, message) = error_of(backend.call_tool(
@@ -273,7 +291,10 @@ fn a_task_reference_that_names_nothing_is_not_found() -> TestResult {
 #[test]
 fn a_known_task_resolves_and_the_unwired_success_path_says_so() -> TestResult {
     let (app, home) = seeded_app("task-known")?;
-    let mut backend = AppBackend { app, features: &[] };
+    let mut backend = AppBackend {
+        app,
+        features: EXEC,
+    };
     let (code, message) = error_of(backend.call_tool(
         &agent(granted()?),
         "git_get_changes",
@@ -300,7 +321,10 @@ fn an_ambiguous_task_key_is_refused_without_a_workspace() -> TestResult {
         session.apply_write(&Write::insert(other))?;
         session.apply_write(&Write::insert(other_task))
     })?;
-    let mut backend = AppBackend { app, features: &[] };
+    let mut backend = AppBackend {
+        app,
+        features: EXEC,
+    };
 
     let (code, message) = error_of(backend.call_tool(
         &agent(granted()?),

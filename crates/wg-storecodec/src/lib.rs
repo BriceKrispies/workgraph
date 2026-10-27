@@ -8,7 +8,6 @@
 pub mod acceptance_sql;
 pub mod codec;
 pub mod events;
-pub mod git_sql;
 pub mod migrations;
 pub mod query;
 pub mod queue_sql;

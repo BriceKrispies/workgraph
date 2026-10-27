@@ -346,7 +346,11 @@ impl Worker {
         }
         self.last_maintenance = Some(Instant::now());
         let lease = maintenance_lease_seconds(interval.as_secs_f64());
-        match self.queue.maintain(&self.worker_id, &self.settings, lease) {
+        let steps = &self.registry.maintenance;
+        match self
+            .queue
+            .maintain(&self.worker_id, &self.settings, lease, steps)
+        {
             Ok(report) => Some(report),
             Err(error) => {
                 tracing::error!(target: "workgraph.worker", error = %error.message, "maintenance failed");
@@ -468,6 +472,13 @@ impl JobRunner {
             }
             Ended::Error(HandlerError::Exception(text)) | Ended::Panicked(text) => {
                 self.failed.fetch_add(1, Ordering::SeqCst);
+                tracing::error!(
+                    target: "workgraph.worker",
+                    job = %job,
+                    kind = %self.ctx.job.kind,
+                    error = %text,
+                    "job failed"
+                );
                 queue
                     .fail(job, worker, &text, true, ERROR_KIND_EXCEPTION)
                     .map(|_| ())

@@ -61,6 +61,54 @@ impl CommandConfig {
     }
 }
 
+impl CommandConfig {
+    /// The `CommandAgentConfig` of a dumped `agents` entry. The executable is required by the
+    /// model; the other settings take its defaults when absent.
+    #[must_use]
+    pub fn from_config(entry: &serde_json::Map<String, serde_json::Value>) -> Self {
+        let flag = |key: &str, default: bool| {
+            entry
+                .get(key)
+                .and_then(serde_json::Value::as_bool)
+                .unwrap_or(default)
+        };
+        let defaults = Self::new(String::new());
+        let mut config = Self::new(
+            entry
+                .get("executable")
+                .and_then(serde_json::Value::as_str)
+                .unwrap_or_default(),
+        );
+        config.args = entry
+            .get("args")
+            .and_then(serde_json::Value::as_array)
+            .map_or_else(Vec::new, |items| {
+                items
+                    .iter()
+                    .filter_map(|item| item.as_str().map(str::to_owned))
+                    .collect()
+            });
+        config.env = entry
+            .get("env")
+            .and_then(serde_json::Value::as_object)
+            .map_or_else(Vec::new, |env| {
+                env.iter()
+                    .filter_map(|(key, value)| {
+                        value.as_str().map(|value| (key.clone(), value.to_owned()))
+                    })
+                    .collect()
+            });
+        config.timeout_seconds = entry
+            .get("timeout_seconds")
+            .and_then(serde_json::Value::as_f64)
+            .unwrap_or(defaults.timeout_seconds);
+        config.supports_progress = flag("supports_progress", defaults.supports_progress);
+        config.supports_usage = flag("supports_usage", defaults.supports_usage);
+        config.supports_resume = flag("supports_resume", defaults.supports_resume);
+        config
+    }
+}
+
 /// The command agent provider: a name and its configuration. Running it is `wg-agents`.
 #[derive(Debug, Clone)]
 pub struct CommandAgentProvider {

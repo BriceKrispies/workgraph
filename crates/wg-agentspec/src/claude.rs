@@ -48,6 +48,40 @@ impl Default for ClaudeConfig {
     }
 }
 
+impl ClaudeConfig {
+    /// The `ClaudeCodeAgentConfig` of a dumped `agents` entry. Absent settings take the model's
+    /// defaults.
+    #[must_use]
+    pub fn from_config(entry: &Map<String, Value>) -> Self {
+        let defaults = Self::default();
+        let text = |key: &str| entry.get(key).and_then(Value::as_str).map(str::to_owned);
+        let list = |key: &str| -> Vec<String> {
+            entry
+                .get(key)
+                .and_then(Value::as_array)
+                .map_or_else(Vec::new, |items| {
+                    items
+                        .iter()
+                        .filter_map(|item| item.as_str().map(str::to_owned))
+                        .collect()
+                })
+        };
+        Self {
+            executable: text("executable").unwrap_or(defaults.executable),
+            model: text("model"),
+            permission_mode: text("permission_mode").unwrap_or(defaults.permission_mode),
+            allowed_tools: list("allowed_tools"),
+            max_turns: entry.get("max_turns").and_then(Value::as_u64),
+            max_budget_usd: entry.get("max_budget_usd").and_then(Value::as_f64),
+            timeout_seconds: entry
+                .get("timeout_seconds")
+                .and_then(Value::as_f64)
+                .unwrap_or(defaults.timeout_seconds),
+            extra_args: list("extra_args"),
+        }
+    }
+}
+
 /// The Claude Code provider: a name and its configuration. Running it is `wg-agents`.
 #[derive(Debug, Clone)]
 pub struct ClaudeCodeProvider {

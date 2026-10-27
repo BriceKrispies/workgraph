@@ -32,8 +32,9 @@ pub static FEATURE: Feature = Feature {
         cli::setup::DOCTOR,
         cli::setup::INIT,
     ],
-    routes: &[http::GROUP],
+    routes: &[http::GROUP, http::PROVIDER_GROUP],
     tools: mcp::TOOLS,
     resources: &[],
     jobs: &[],
+    maintenance: &[],
 };

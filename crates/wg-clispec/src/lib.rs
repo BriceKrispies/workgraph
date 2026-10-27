@@ -10,7 +10,6 @@ pub mod args;
 pub mod argv;
 pub mod datetime;
 pub mod failure;
-pub mod git;
 pub mod job;
 pub mod servers;
 pub mod snapshot;

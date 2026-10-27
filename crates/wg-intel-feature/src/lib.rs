@@ -1,25 +1,29 @@
 //! The intelligence feature (docs/rust-rewrite.md 4.16, D15): classification history, reuse,
 //! gold labels and evaluations, the lexical search candidates, the search scope and the embedding
-//! reads. The pure classification, taxonomy, evaluation and ranking code is the core crate
-//! `wg-intel`; this crate holds the statement text and the readers over a session. Two modules,
-//! one per tier:
+//! reads, and the `classify` and `search` commands. The pure classification, taxonomy, evaluation
+//! and ranking code is the core crate `wg-intel`. Three modules, one per tier:
 //!
-//! * [`spec`] (Pure): the statements and the row decoding;
-//! * [`service`] (Shell): free functions over `&mut Session`, the readers the store served.
+//! * [`spec`] (Pure): the statements, the row decoding, the output shapes and the command arguments
+//!   and views;
+//! * [`service`] (Shell): the readers over `&mut Session` and the entry points over `&mut App`;
+//! * [`cli`] (Shell): the clap groups `classify` and `search`, each a `fn`-pointer table into
+//!   [`service`].
 //!
-//! The feature exports [`FEATURE`]. Nothing is served yet, so its tables are empty.
+//! The feature exports [`FEATURE`]. It has no routes, tools, resources or jobs yet.
 
+pub mod cli;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The intelligence feature. It has no CLI group, routes, tools, resources or jobs yet.
+/// The intelligence feature: the `classify` and `search` command groups.
 pub static FEATURE: Feature = Feature {
     name: "intel",
-    cli: &[],
+    cli: &[cli::CLASSIFY, cli::SEARCH],
     routes: &[],
     tools: &[],
     resources: &[],
     jobs: &[],
+    maintenance: &[],
 };

@@ -6,6 +6,7 @@
 //! module holds the arithmetic and the decisions around it.
 
 use crate::stats::{ValueError, py_sum, quantile, sigmoid, sorted_values};
+use serde_json::Value;
 use std::iter::{once, repeat_n};
 
 /// Fewest graded trials a fit needs (`MIN_ROWS`).
@@ -169,4 +170,143 @@ pub fn check_prediction_sizes(src_lines: f64, src_files: f64) -> Result<(), Valu
         return Err(ValueError::new("src_lines and src_files must be >= 0"));
     }
     Ok(())
+}
+
+/// One leaf's forecast from a fit: the success probability, its bootstrap interval, and whether
+/// the fit has seen the repository (`Predictor.predict` after the fit row is read).
+#[derive(Clone, Debug, PartialEq)]
+pub struct LeafForecast {
+    /// Predicted probability of success.
+    pub probability: f64,
+    /// Lower end of the 95 % interval, when the fit has enough bootstrap draws.
+    pub low: Option<f64>,
+    /// Upper end of the 95 % interval, when the fit has enough bootstrap draws.
+    pub high: Option<f64>,
+    /// Whether `repository_id` is one of the fit's repositories.
+    pub repository_known: bool,
+}
+
+/// Forecasts one leaf of the given size. The design row is the three features followed by one
+/// 0/1 indicator per fitted repository, set when it is `repository_id`; `coef` and `draws` are
+/// the fit's point estimate and bootstrap samples (intercept first).
+///
+/// # Errors
+///
+/// Returns a [`ValueError`] when a coefficient vector does not match the feature row.
+pub fn forecast_leaf(
+    coef: &[f64],
+    draws: &[Vec<f64>],
+    fit_repositories: &[String],
+    repository_id: Option<&str>,
+    src_lines: f64,
+    src_files: f64,
+    packages: usize,
+) -> Result<LeafForecast, ValueError> {
+    let indicators = fit_repositories.iter().map(|repo| {
+        if repository_id == Some(repo.as_str()) {
+            1.0
+        } else {
+            0.0
+        }
+    });
+    let x: Vec<f64> = features_of(src_lines, src_files, packages)
+        .into_iter()
+        .chain(indicators)
+        .collect();
+    let probability = probability(coef, &x)?;
+    let (low, high) = match prediction_interval(draws, &x)? {
+        Some((low, high)) => (Some(low), Some(high)),
+        None => (None, None),
+    };
+    let repository_known =
+        repository_id.is_some_and(|id| fit_repositories.iter().any(|repo| repo == id));
+    Ok(LeafForecast {
+        probability,
+        low,
+        high,
+        repository_known,
+    })
+}
+
+/// The forecast for a task from a fit's stored lists (`Predictor.predict_task` after the fit row
+/// is read). `coef` and `samples` are the fit's stored numbers, `fit_repositories` its repository
+/// ids, `repository_id` the task's repository when the workspace knows it, and `metadata` the
+/// task's metadata, whose `contract.predicted` declares `src_lines`, `src_files` and `packages`.
+/// The callers reach it only once the contract is complete, so the declared sizes are present.
+///
+/// # Errors
+///
+/// Returns a [`ValueError`] when a stored coefficient or sample is not a number, or when a sample
+/// does not match the feature row.
+pub fn forecast_task(
+    coef: &[Value],
+    samples: &[Value],
+    fit_repositories: &[String],
+    repository_id: Option<&str>,
+    metadata: &Value,
+) -> Result<LeafForecast, ValueError> {
+    let malformed = || ValueError::new("predictor fit has malformed coefficients or samples");
+    let predicted = metadata
+        .get("contract")
+        .and_then(|contract| contract.get("predicted"));
+    let size = |name: &str| {
+        predicted
+            .and_then(|p| p.get(name))
+            .and_then(Value::as_f64)
+            .unwrap_or(0.0)
+    };
+    let packages = predicted
+        .and_then(|p| p.get("packages"))
+        .and_then(Value::as_array)
+        .map_or(0, Vec::len);
+    let coef_values = numbers(coef.iter()).ok_or_else(malformed)?;
+    let draws = samples
+        .iter()
+        .map(|draw| draw.as_array().and_then(|items| numbers(items.iter())))
+        .collect::<Option<Vec<Vec<f64>>>>()
+        .ok_or_else(malformed)?;
+    forecast_leaf(
+        &coef_values,
+        &draws,
+        fit_repositories,
+        repository_id,
+        size("src_lines"),
+        size("src_files"),
+        packages,
+    )
+}
+
+/// The numbers of a sequence of JSON values, or `None` when one is not a number.
+fn numbers<'a>(values: impl Iterator<Item = &'a Value>) -> Option<Vec<f64>> {
+    values.map(Value::as_f64).collect()
+}
+
+/// A task's repository as its forecast names it.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RepositoryRef {
+    /// The repository's name, or the reference text the workspace does not know.
+    pub name: Option<String>,
+    /// The repository's id when the workspace knows it.
+    pub id: Option<String>,
+}
+
+/// The repository of a task's forecast. `linked` is the task's first repository reference and
+/// `resolved` the `(name, id)` the workspace gives for it, if it knows it; a reference it does
+/// not know keeps its text and has no id.
+#[must_use]
+pub fn repository_ref(linked: Option<String>, resolved: Option<(String, String)>) -> RepositoryRef {
+    match (linked, resolved) {
+        (None, _) => RepositoryRef {
+            name: None,
+            id: None,
+        },
+        (Some(_), Some((name, id))) => RepositoryRef {
+            name: Some(name),
+            id: Some(id),
+        },
+        (Some(reference), None) => RepositoryRef {
+            name: Some(reference),
+            id: None,
+        },
+    }
 }

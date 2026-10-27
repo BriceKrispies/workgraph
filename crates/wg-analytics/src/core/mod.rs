@@ -3,7 +3,10 @@
 //! caller passes the [`AnalyticsInput`](crate::source::AnalyticsInput) and the [`Facts`](crate::Facts).
 
 pub mod bases;
+pub mod coupling;
+pub mod failures;
 pub mod metrics;
 pub mod period;
 pub mod query;
+pub mod service;
 pub mod stats;

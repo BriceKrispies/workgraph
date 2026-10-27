@@ -2269,6 +2269,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-archive-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde_json",
+ "wg-archive",
+ "wg-archivespec",
+ "wg-clispec",
+ "wg-config",
+ "wg-json",
+ "wg-render",
+ "wg-runtime",
+ "wg-types",
+ "wg-wire",
+]
+
+[[package]]
 name = "wg-archivespec"
 version = "0.1.0"
 dependencies = [
@@ -2310,6 +2327,7 @@ dependencies = [
  "wg-runtimespec",
  "wg-store",
  "wg-storecodec",
+ "wg-tasks-feature",
  "wg-types",
  "wg-wire",
 ]
@@ -2345,11 +2363,16 @@ dependencies = [
  "tokio",
  "tokio-util",
  "ureq",
+ "wg-archive-feature",
  "wg-automation-feature",
  "wg-browser",
  "wg-clispec",
  "wg-codeparse",
  "wg-decisions",
+ "wg-events-feature",
+ "wg-exec-feature",
+ "wg-git-feature",
+ "wg-intel-feature",
  "wg-json",
  "wg-mcp",
  "wg-mcpspec",
@@ -2363,6 +2386,7 @@ dependencies = [
  "wg-tasks-feature",
  "wg-telemetry",
  "wg-telemetry-feature",
+ "wg-trackers-feature",
  "wg-types",
  "wg-uispec",
 ]
@@ -2477,12 +2501,52 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-events-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde_json",
+ "wg-clispec",
+ "wg-events",
+ "wg-json",
+ "wg-model",
+ "wg-render",
+ "wg-runtime",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+ "wg-wire",
+]
+
+[[package]]
 name = "wg-exec"
 version = "0.1.0"
 dependencies = [
  "serde_json",
  "wg-tasks",
  "wg-types",
+]
+
+[[package]]
+name = "wg-exec-feature"
+version = "0.1.0"
+dependencies = [
+ "rpds",
+ "serde_json",
+ "time",
+ "wg-exec",
+ "wg-git",
+ "wg-json",
+ "wg-mcpspec",
+ "wg-model",
+ "wg-registry",
+ "wg-runtime",
+ "wg-runtimespec",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+ "wg-verify",
+ "wg-wire",
 ]
 
 [[package]]
@@ -2524,6 +2588,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "wg-git-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "rpds",
+ "serde_json",
+ "time",
+ "wg-clispec",
+ "wg-codeanalysis",
+ "wg-codeparse",
+ "wg-git",
+ "wg-gitcore",
+ "wg-json",
+ "wg-model",
+ "wg-registry",
+ "wg-render",
+ "wg-runtime",
+ "wg-runtimespec",
+ "wg-store",
+ "wg-storecodec",
+ "wg-types",
+ "wg-wire",
+]
+
+[[package]]
 name = "wg-gitcore"
 version = "0.1.0"
 dependencies = [
@@ -2551,11 +2640,17 @@ dependencies = [
 name = "wg-intel-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rpds",
  "serde_json",
+ "wg-clispec",
  "wg-intel",
+ "wg-json",
  "wg-model",
+ "wg-registry",
+ "wg-render",
  "wg-runtime",
+ "wg-runtimespec",
  "wg-store",
  "wg-storecodec",
  "wg-types",
@@ -2593,6 +2688,7 @@ dependencies = [
  "tokio-util",
  "wg-automation-feature",
  "wg-decisions",
+ "wg-exec-feature",
  "wg-git",
  "wg-json",
  "wg-mcpspec",
@@ -2696,14 +2792,17 @@ dependencies = [
  "clap",
  "rpds",
  "serde_json",
+ "wg-agents",
  "wg-clispec",
  "wg-codeparse",
  "wg-config",
  "wg-events",
  "wg-git",
+ "wg-intel",
  "wg-json",
  "wg-mcpspec",
  "wg-model",
+ "wg-net",
  "wg-registry",
  "wg-render",
  "wg-runtime",
@@ -2813,6 +2912,7 @@ dependencies = [
  "wg-serverspec",
  "wg-store",
  "wg-tasks-feature",
+ "wg-telemetry-feature",
  "wg-types",
  "wg-validate",
  "wg-wire",
@@ -2904,6 +3004,9 @@ dependencies = [
  "uuid",
  "wg-clispec",
  "wg-exec",
+ "wg-experiments",
+ "wg-experiments-feature",
+ "wg-git-feature",
  "wg-jobs",
  "wg-json",
  "wg-mcpspec",
@@ -2941,20 +3044,27 @@ dependencies = [
 name = "wg-telemetry-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rpds",
  "serde_json",
  "time",
  "uuid",
+ "wg-clispec",
+ "wg-json",
  "wg-model",
  "wg-registry",
+ "wg-render",
  "wg-runtime",
  "wg-runtimespec",
+ "wg-serverspec",
  "wg-store",
  "wg-storecodec",
  "wg-tasks-feature",
  "wg-telemetry",
  "wg-telemetryspec",
  "wg-types",
+ "wg-validate",
+ "wg-wire",
 ]
 
 [[package]]
@@ -2980,14 +3090,21 @@ dependencies = [
 name = "wg-trackers-feature"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "rpds",
  "serde_json",
+ "time",
+ "wg-clispec",
+ "wg-jobs",
+ "wg-json",
  "wg-model",
+ "wg-render",
  "wg-runtime",
  "wg-store",
  "wg-storecodec",
  "wg-trackers",
  "wg-types",
+ "wg-wire",
 ]
 
 [[package]]

@@ -9,14 +9,15 @@ use wg_mcp::{AppBackend, serve_stdio};
 use wg_mcpspec::options::{ServeOptions, Transport};
 use wg_types::{ErrorCode, WgError};
 
-/// The features this program serves: the tasks, decisions, registry and automation features,
-/// as the `workgraph` binary lists them.
+/// The features this program serves: the tasks, decisions, registry, automation, exec and stacks
+/// features, as the `workgraph` binary lists them.
 static FEATURES: &[&wg_runtime::Feature] = &[
     &wg_tasks_feature::FEATURE,
     &wg_decisions::FEATURE,
     &wg_registry_feature::FEATURE,
     &wg_automation_feature::FEATURE,
     &wg_exec_feature::FEATURE,
+    &wg_stacks_feature::FEATURE,
 ];
 
 const HTTP_REFUSED: &str = "the standalone wg-mcp serves stdio only; \

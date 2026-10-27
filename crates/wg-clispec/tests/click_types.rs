@@ -101,6 +101,16 @@ fn a_missing_file_argument_is_click_s_path_usage_error() {
         usage_message(&directory),
         "Invalid value for '--root': Directory 'src' is a file."
     );
+    let unreadable = LIST.invalid_path(
+        "path",
+        "locked.json",
+        PathKind::File,
+        PathProblem::Unreadable,
+    );
+    assert_eq!(
+        usage_message(&unreadable),
+        "Invalid value for 'path': File 'locked.json' is not readable."
+    );
     let either = LIST.invalid_path("--where", "dir", PathKind::Path, PathProblem::IsDirectory);
     assert_eq!(
         usage_message(&either),

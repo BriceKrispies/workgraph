@@ -10,7 +10,7 @@ use std::path::PathBuf;
 use serde_json::{Map, Value, json};
 use wg_agents::{AgentError, AgentEvent, AgentRunRequest, AgentRunResult, EventKind, RunStatus};
 use wg_exec_feature::service::agents::AgentHost;
-use wg_exec_feature::service::conclude::Unported;
+use wg_exec_feature::service::conclude::{Collaborators, Live, Unported};
 use wg_exec_feature::service::execute::execute;
 use wg_exec_feature::service::run_flow::run_start;
 use wg_exec_feature::spec::runs::StartRequest;
@@ -470,4 +470,29 @@ fn an_adapter_that_crashes_is_preserved_as_a_failed_attempt() {
     let attempt = attempt_row(&mut app, attempt_id);
     assert_eq!(attempt.status, AttemptStatus::Failed);
     assert_eq!(attempt.telemetry["exit_reason"], "adapter_crash");
+}
+
+// covers: C127
+#[test]
+fn the_live_collaborators_reach_the_commit_and_verify_features() {
+    let (mut app, _dir) = home("live", 3);
+    let attempt_id = queue_run(&mut app);
+    // Linking is served: an attempt without manifests links nothing.
+    Live.link_commits(&mut app, &ctx(), attempt_id)
+        .expect("linking is served");
+    // The verify feature answers: WG-1 has no verification checks, so the run is refused by it,
+    // not by a stand-in that names the missing feature.
+    let refused = Live
+        .verify(&mut app, &ctx(), id(11), attempt_id, false, &|| false)
+        .expect_err("no checks apply");
+    assert!(
+        !refused.message.contains("(verify feature)"),
+        "{}",
+        refused.message
+    );
+    // Stacks do not serve `mark_ready` yet.
+    let blocked = Live
+        .mark_ready(&mut app, &ctx(), id(11))
+        .expect_err("not served");
+    assert!(blocked.message.contains("stacks"), "{}", blocked.message);
 }

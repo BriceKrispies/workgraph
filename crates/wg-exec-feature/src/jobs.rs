@@ -37,8 +37,8 @@ pub static MAINTENANCE: &[MaintenanceStep] = &[MaintenanceStep {
 
 /// `agent_run`: `RunService.execute(job)`.
 fn agent_run(queue: &mut Queue, ctx: &mut JobContext) -> HandlerResult {
-    let result = execute(&mut queue.app, &mut LiveAgents, &mut Live, ctx)
-        .map_err(HandlerError::Failed)?;
+    let result =
+        execute(&mut queue.app, &mut LiveAgents, &mut Live, ctx).map_err(HandlerError::Failed)?;
     Ok(result.as_object().cloned())
 }
 

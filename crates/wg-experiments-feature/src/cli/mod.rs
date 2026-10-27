@@ -5,9 +5,9 @@
 //! The clap command is the snapshot's own tree, so help and parameters match `contracts/cli.json`;
 //! each handler calls one service entry point and prints the result.
 
+mod ops;
 pub mod replay;
 pub mod trial;
-mod ops;
 
 use crate::service;
 use crate::spec::command;

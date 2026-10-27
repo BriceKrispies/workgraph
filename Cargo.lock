@@ -2566,6 +2566,7 @@ dependencies = [
  "wg-types",
  "wg-validate",
  "wg-verify",
+ "wg-verify-feature",
  "wg-wire",
 ]
 
@@ -2741,6 +2742,7 @@ dependencies = [
  "wg-registry-feature",
  "wg-runtime",
  "wg-runtimespec",
+ "wg-stacks-feature",
  "wg-store",
  "wg-tasks-feature",
  "wg-types",
@@ -3175,6 +3177,7 @@ dependencies = [
  "wg-tasks",
  "wg-trackers",
  "wg-types",
+ "wg-verify-feature",
  "wg-wire",
 ]
 

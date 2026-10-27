@@ -94,6 +94,8 @@ pub enum PathProblem {
     IsFile,
     /// A directory where only files are allowed.
     IsDirectory,
+    /// A path that cannot be read (`readable=True`).
+    Unreadable,
 }
 
 impl Usage {
@@ -144,6 +146,7 @@ impl Usage {
             PathProblem::Missing => "does not exist",
             PathProblem::IsFile => "is a file",
             PathProblem::IsDirectory => "is a directory",
+            PathProblem::Unreadable => "is not readable",
         };
         self.bad_parameter(hint, &format!("{name} {} {reason}.", py_repr_str(value)))
     }

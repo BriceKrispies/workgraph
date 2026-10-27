@@ -111,15 +111,26 @@ fn experiment_predict_names_every_missing_size_argument() -> TestResult {
 }
 
 #[test]
-fn trial_tools_without_a_service_are_left_to_the_backend() -> TestResult {
+fn trial_tools_are_answered_here_and_other_tools_are_left_to_the_backend() -> TestResult {
     let (mut app, home) = seeded_app("trials")?;
-    let agent = ok(agent());
-    for name in ["trial_classify", "trial_start", "trial_grade", "task_list"] {
-        assert!(
-            mcp::call(&mut app, &agent, name, &json!({})).is_none(),
-            "{name} should not be answered here"
-        );
+    let agent = Agent {
+        name: "runner".into(),
+        permissions: ok(agent_permissions(&["experiment:write"])),
+    };
+    // Without the grant the tools answer, and refuse.
+    let denied = mcp::call(&mut app, &ok(self::agent()), "trial_start", &json!({}));
+    assert_eq!(
+        denied.and_then(Result::err).map(|failure| failure.code),
+        Some(ErrorCode::PermissionDenied)
+    );
+    for name in ["trial_classify", "trial_start", "trial_grade"] {
+        let arguments = json!({"trial": "no-such-trial", "cause": "x", "source": "manual"});
+        let answered = mcp::call(&mut app, &agent, name, &arguments)
+            .unwrap_or_else(|| panic!("{name} should be answered here"));
+        let failure = answered.expect_err("an unknown trial is refused");
+        assert_eq!(failure.code, ErrorCode::NotFound, "{name}: {failure:?}");
     }
+    assert!(mcp::call(&mut app, &agent, "task_list", &json!({})).is_none());
     let _ = std::fs::remove_dir_all(&home);
     Ok(())
 }

@@ -27,6 +27,7 @@ wg-storecodec = { path = "../wg-storecodec" }
 wg-tasks = { path = "../wg-tasks" }
 wg-trackers = { path = "../wg-trackers" }
 wg-types = { path = "../wg-types" }
+wg-verify-feature = { path = "../wg-verify-feature" }
 wg-wire = { path = "../wg-wire" }
 
 [dev-dependencies]

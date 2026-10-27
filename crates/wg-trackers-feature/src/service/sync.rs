@@ -20,6 +20,7 @@ use wg_net::{Flavour, JiraClient, Net};
 use wg_netspec::TrackerError;
 use wg_runtime::{
     App, HandlerError, HandlerResult, JobContext, Queue, RequestContext, index_written,
+    latest_succeeded,
 };
 use wg_store::Session;
 use wg_storecodec::Raw;
@@ -352,6 +353,7 @@ fn page_load(
     let world: TaskWorld = session.task_world(Some(workspace), &[])?;
     let cursor = session.system_cursor(cursor_name)?;
     let mut queue = QueueSlice::default();
+    let mut succeeded = Vec::new();
     for snap in batch {
         let Ok(key) = TaskKey::parse(&snap.key) else {
             continue;
@@ -359,6 +361,7 @@ fn page_load(
         let Some(task) = world.tasks.task_by_key(workspace, &key) else {
             continue;
         };
+        succeeded.extend(latest_succeeded(session, task.id)?);
         let jobs = session.task_jobs_slice(task.id)?;
         for (id, job) in jobs.jobs.iter() {
             queue.jobs = queue.jobs.insert(*id, job.clone());
@@ -366,6 +369,7 @@ fn page_load(
     }
     Ok(PageLoad {
         world,
+        succeeded,
         queue,
         cursor,
     })

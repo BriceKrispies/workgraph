@@ -77,7 +77,8 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("changes") => {
             let task = option_text(m, "task").unwrap_or_default();
-            let min_confidence = args::float_value(m, "--min-confidence", view::CHANGES)?.unwrap_or(0.5);
+            let min_confidence =
+                args::float_value(m, "--min-confidence", view::CHANGES)?.unwrap_or(0.5);
             let out = service::git_changes(state.app()?, &context, ws, &task, min_confidence)?;
             state.emit(&out, Some(&|c| view::changes_view(c, &out)))
         }

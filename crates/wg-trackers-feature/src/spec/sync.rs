@@ -11,7 +11,7 @@ use std::collections::{BTreeSet, HashSet};
 
 use serde_json::Value;
 use wg_model::entity::{
-    ExternalItem, JsonObject, Project, SystemCursor, Task, TaskDependency, TaskLink,
+    AgentAttempt, ExternalItem, JsonObject, Project, SystemCursor, Task, TaskDependency, TaskLink,
     TaskRepository, Workspace,
 };
 use wg_model::event::{
@@ -36,6 +36,7 @@ use wg_trackers::{
     tracker_target_status,
 };
 use wg_types::{ErrorCode, Id, TaskKey, TaskStatus, Timestamp, WgError, parse_id};
+use wg_verify_feature::spec::external::record_external_acceptance;
 
 /// The `created_by` of the rows a sync writes.
 const SYNC_ACTOR: &str = wg_trackers::SYNC_ACTOR;
@@ -80,6 +81,9 @@ pub struct PageInput<'a> {
 /// enrichment enqueue is idempotent against them).
 pub struct PageLoad {
     pub world: TaskWorld,
+    /// The latest succeeded attempt of each task the page touches (the external acceptance of a
+    /// done issue records it).
+    pub succeeded: Vec<AgentAttempt>,
     pub queue: QueueSlice,
     /// The `updated` cursor row, if it exists.
     pub cursor: Option<SystemCursor>,
@@ -227,6 +231,7 @@ struct Page {
     cancelled: Vec<String>,
     enrich: Enrichment,
     queue: QueueSlice,
+    succeeded: Vec<AgentAttempt>,
     stacks: StackSlice,
     tasks: TaskSlice,
     writes: Vec<Write>,
@@ -239,15 +244,18 @@ struct Page {
 
 impl Page {
     fn new(load: &PageLoad, input: &PageInput, stamp: &Stamp) -> Self {
-        Page::over(
-            &load.world,
-            stamp,
-            input.workspace_id,
-            input.connection,
-            input.cancelled_resolutions,
-            input.enrich,
-            load.queue.clone(),
-        )
+        Page {
+            succeeded: load.succeeded.clone(),
+            ..Page::over(
+                &load.world,
+                stamp,
+                input.workspace_id,
+                input.connection,
+                input.cancelled_resolutions,
+                input.enrich,
+                load.queue.clone(),
+            )
+        }
     }
 
     fn over(
@@ -266,6 +274,7 @@ impl Page {
             cancelled: cancelled.to_vec(),
             enrich,
             queue,
+            succeeded: Vec::new(),
             stacks: world.stacks.clone(),
             tasks: world.tasks.clone(),
             writes: Vec::new(),
@@ -991,8 +1000,8 @@ impl Page {
     }
 
     /// `apply_tracker_status`: the task moves to the status its issue requires. A close as done
-    /// needs the verification service's external acceptance, which is not ported: that case is
-    /// reported in the errors and the task stays where it is.
+    /// first records the verification service's external acceptance, and the move is caused by
+    /// the acceptance's event.
     fn apply_tracker_status(
         &mut self,
         task: &Task,
@@ -1009,13 +1018,18 @@ impl Page {
         let Some(target) = target else {
             return Ok(());
         };
-        if target == TaskStatus::Accepted {
-            self.counts.errors.push(format!(
-                "{}: closing it from {} as done needs external acceptance, which is not ported yet",
-                task.key, self.connection
-            ));
-            return Ok(());
-        }
+        let accepted = (target == TaskStatus::Accepted).then(|| {
+            let sub = self.next_stamp();
+            let latest = self
+                .succeeded
+                .iter()
+                .filter(|attempt| attempt.task_id == task.id)
+                .max_by_key(|attempt| attempt.number);
+            let acceptance = record_external_acceptance(&sub, task, latest, &self.connection);
+            let event = acceptance.reply;
+            self.absorb(&acceptance.with_reply(()));
+            event
+        });
         let reason = format!("external:{}: {}", self.connection, row.tracker_status);
         let mut extra = JsonObject::new();
         extra.insert("tracker".to_owned(), Value::String(self.connection.clone()));
@@ -1035,7 +1049,7 @@ impl Page {
                 reason: Some(&reason),
                 privileged: true,
                 tracker: true,
-                caused_by: None,
+                caused_by: accepted,
                 attempt_id: None,
                 run_id: None,
                 extra: Some(&extra),

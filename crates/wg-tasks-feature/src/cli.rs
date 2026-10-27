@@ -14,7 +14,7 @@ use crate::spec::triage::{triage_failed, triage_view};
 use crate::spec::view::*;
 use clap::ArgMatches;
 use wg_clispec::args::*;
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_clispec::{CliFailure, PathKind, PathProblem, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
 /// The `task` group.
@@ -247,19 +247,12 @@ const TRIAGE_APPLY: wg_clispec::Usage = wg_clispec::Usage {
 /// unreadable one.
 fn check_triage_path(path: &str) -> Result<(), CliFailure> {
     let problem = match std::fs::metadata(path) {
-        Err(_) => "does not exist.",
-        Ok(meta) if meta.is_dir() => "is a directory.",
-        Ok(_) if std::fs::File::open(path).is_err() => "is not readable.",
+        Err(_) => PathProblem::Missing,
+        Ok(meta) if meta.is_dir() => PathProblem::IsDirectory,
+        Ok(_) if std::fs::File::open(path).is_err() => PathProblem::Unreadable,
         Ok(_) => return Ok(()),
     };
-    Err(CliFailure::Usage {
-        usage: TRIAGE_APPLY.usage.to_owned(),
-        command: TRIAGE_APPLY.command.to_owned(),
-        message: format!(
-            "Invalid value for 'PATH': File {} {problem}",
-            wg_model::py_repr_str(path)
-        ),
-    })
+    Err(TRIAGE_APPLY.invalid_path("PATH", path, PathKind::File, problem))
 }
 
 /// `task show REF...`: one reference prints the task; several print `{items, errors}` and exit

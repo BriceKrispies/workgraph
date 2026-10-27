@@ -41,5 +41,6 @@ wg-tasks-feature = { path = "../wg-tasks-feature" }
 wg-types = { path = "../wg-types" }
 wg-validate = { path = "../wg-validate" }
 wg-verify = { path = "../wg-verify" }
+wg-verify-feature = { path = "../wg-verify-feature" }
 wg-wire = { path = "../wg-wire" }
 time = { version = "0.3", default-features = false, features = ["std"] }

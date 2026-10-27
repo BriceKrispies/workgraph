@@ -4,8 +4,7 @@
 //! Each call runs the [`crate::service`] entry point the CLI runs, under the agent's identity
 //! (`agent_context`), and the service checks the permissions its Python method checks. The
 //! arguments arrive validated, with defaults filled in, by the catalog. The trial tools (M23 to
-//! M25: `trial_classify`, `trial_start`, `trial_grade`) have no service in this crate yet, so
-//! [`call`] leaves them to the backend's fallback.
+//! M25: `trial_classify`, `trial_start`, `trial_grade`) run the trial and runner services.
 
 use serde_json::Value;
 use wg_json::Value as Dto;
@@ -15,7 +14,7 @@ use wg_runtime::{App, ToolRun, agent_context};
 use wg_types::{ErrorCode, WgError};
 use wg_wire::dto::experiment_shapes;
 
-use crate::service;
+use crate::service::{self, runner, trials};
 use crate::spec::predict::{FitSettings, PredictRequest};
 
 /// The feature's tool descriptor: one [`call`] that answers the experiment tool names.
@@ -35,9 +34,55 @@ pub fn call(
         "experiment_report" => report(app, agent, arguments),
         "experiment_fit" => fit(app, agent, arguments),
         "experiment_predict" => predict(app, agent, arguments),
+        "trial_classify" => classify(app, agent, arguments),
+        "trial_start" => start(app, agent, arguments),
+        "trial_grade" => grade(app, agent, arguments),
         _ => return None,
     };
     Some(answer.and_then(|dto| structured_output(&dto)))
+}
+
+/// `trial_classify`: records the cause of a failed trial; the trial as `TrialOut`.
+fn classify(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Dto, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    trials::trial_classify(
+        app,
+        &context,
+        text_argument(arguments, "workspace"),
+        text_argument(arguments, "trial").unwrap_or_default(),
+        text_argument(arguments, "cause").unwrap_or_default(),
+        text_argument(arguments, "source").unwrap_or_default(),
+        text_argument(arguments, "notes"),
+    )
+}
+
+/// `trial_start`: clones the replay base for a planned trial; the worktree, branch, base sha and
+/// the brief for the subagent.
+fn start(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Dto, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    runner::trial_start_run(
+        app,
+        &context,
+        text_argument(arguments, "workspace"),
+        text_argument(arguments, "trial").unwrap_or_default(),
+    )
+}
+
+/// `trial_grade`: measures a started trial's clone and records the outcome. `timeout` defaults to
+/// the catalog's 3600 seconds.
+fn grade(app: &mut App, agent: &Agent, arguments: &Value) -> Result<Dto, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let timeout = arguments
+        .get("timeout")
+        .and_then(Value::as_f64)
+        .unwrap_or(3600.0);
+    runner::trial_grade_run(
+        app,
+        &context,
+        text_argument(arguments, "workspace"),
+        text_argument(arguments, "trial").unwrap_or_default(),
+        timeout,
+    )
 }
 
 /// `experiment_list`: `{"experiments": [ExperimentOut, ...]}`, oldest first.

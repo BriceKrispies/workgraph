@@ -9,6 +9,7 @@
 //! reaches one ends visibly instead of pretending.
 
 use serde_json::{Map, Value as Json, json};
+use wg_clispec::args::{get, s};
 use wg_exec::attempt::submit_check;
 use wg_exec::run::{Gate, VerifyStep, marks_ready, verify_step};
 use wg_json::Value;
@@ -20,6 +21,8 @@ use wg_store::Session;
 use wg_tasks::accept::active_item;
 use wg_tasks_feature::spec::claims::Reported;
 use wg_types::{ErrorCode, Id, Permission, WgError};
+use wg_verify::CheckTier;
+use wg_verify_feature::service::run::RunInput;
 use wg_wire::convention::json_value;
 
 use crate::service::outcome::capture_outcome;
@@ -367,6 +370,14 @@ pub fn attempt_submit(
     )?;
     if facts.stacked {
         app.require_permission(context, Permission::StackWrite)?;
+        // A stack child succeeds through the stack's gate, which the stacks feature does not
+        // serve yet: refused before anything is written.
+        if !failed {
+            return Err(WgError::new(
+                ErrorCode::WorkgraphError,
+                "submitting a stack child is not ported yet (the stacks gate service)",
+            ));
+        }
     }
     let attempted = RequestContext {
         attempt: Some(attempt_id),
@@ -408,8 +419,9 @@ pub fn attempt_submit(
     Ok(json_value(&merged))
 }
 
-/// The collaborators of a live process: the git feature links an attempt's commits; the others
-/// are reached through [`Unported`] until their features serve them.
+/// The collaborators of a live process: the git feature links an attempt's commits and the verify
+/// feature runs the checks; marking a stack item ready is reached through [`Unported`] until the
+/// stacks feature serves it.
 pub struct Live;
 
 impl Collaborators for Live {
@@ -440,6 +452,16 @@ impl Collaborators for Live {
         fast_only: bool,
         should_cancel: &dyn Fn() -> bool,
     ) -> Result<(String, String), WgError> {
-        Unported.verify(app, context, task, attempt, fast_only, should_cancel)
+        // `verification.run(ctx, str(task_id), attempt_id=..., tier=FAST if fast_only else None)`.
+        let task = task.to_string();
+        let attempt = attempt.to_string();
+        let input = RunInput {
+            workspace: None,
+            task: &task,
+            attempt: Some(&attempt),
+            tier: fast_only.then_some(CheckTier::Fast),
+        };
+        let run = wg_verify_feature::service::run::run(app, context, &input, Some(should_cancel))?;
+        Ok((s(get(&run, "id")), s(get(&run, "status"))))
     }
 }

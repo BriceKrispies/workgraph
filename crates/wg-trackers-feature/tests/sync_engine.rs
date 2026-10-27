@@ -334,7 +334,8 @@ fn a_changed_title_updates_the_task_and_a_full_sync_marks_what_it_no_longer_list
 
 // covers: C170
 #[test]
-fn a_cancelled_resolution_closes_the_task_and_a_close_as_done_is_reported() -> TestResult {
+fn a_cancelled_resolution_closes_the_task_and_a_close_as_done_accepts_it_externally() -> TestResult
+{
     let (_dir, mut queue) = home("status")?;
     let ws = workspace(&mut queue)?;
     let fake = FakeJira {
@@ -364,17 +365,11 @@ fn a_cancelled_resolution_closes_the_task_and_a_close_as_done_is_reported() -> T
     assert_eq!(report.created, 2);
     let (world, events) = read(&mut queue, ws)?;
     assert_eq!(status_of(&world, ws, "WG-1"), Some(TaskStatus::Cancelled));
-    assert_eq!(
-        status_of(&world, ws, "WG-2"),
-        Some(TaskStatus::Backlog),
-        "accepting from the tracker is not ported"
-    );
-    assert!(count(&events, "task.status_changed") >= 1);
-    assert!(
-        report.errors.iter().any(|error| error.starts_with("WG-2:")),
-        "{:?}",
-        report.errors
-    );
+    assert_eq!(status_of(&world, ws, "WG-2"), Some(TaskStatus::Accepted));
+    assert!(count(&events, "task.status_changed") >= 2);
+    // The done issue records its external acceptance, as `record_external_acceptance` does.
+    assert_eq!(count(&events, "task.accepted"), 1);
+    assert!(report.errors.is_empty(), "{:?}", report.errors);
     Ok(())
 }
 

@@ -69,7 +69,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         Some("eject") => {
             let context = human_context(None)?;
             let reason = option_text(m, "--reason").unwrap_or_default();
-            let out = service::eject(state.app()?, &context, ws, &parent, &task, &reason)?;
+            let out = service::exec::eject(state.app()?, &context, ws, &parent, &task, &reason)?;
             state.emit(&out, None)
         }
         Some("history") => {

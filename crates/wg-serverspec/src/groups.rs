@@ -53,92 +53,6 @@ pub const META_SETTINGS: [RouteSpec; 2] = [
     },
 ];
 
-/// The stacks group (`api/routes/stacks.py`): the list and creation of stacks (H062, H063), one
-/// stack (H064), its items (H065, H066), its history (H067), the stacks of a task (H068) and the
-/// queued integration and verification (H069, H070), in registration order.
-pub const STACKS: [RouteSpec; 9] = [
-    RouteSpec {
-        id: "H062",
-        method: "GET",
-        path: "/api/v1/ws/{ws}/stacks",
-        status: 200,
-        query: &["include_inactive"],
-        body: None,
-    },
-    RouteSpec {
-        id: "H063",
-        method: "POST",
-        path: "/api/v1/ws/{ws}/stacks",
-        status: 201,
-        query: &[],
-        body: Some(BodyRef {
-            component: "StackCreate",
-            strip: true,
-            required: true,
-        }),
-    },
-    RouteSpec {
-        id: "H064",
-        method: "GET",
-        path: "/api/v1/ws/{ws}/stacks/{ref}",
-        status: 200,
-        query: &[],
-        body: None,
-    },
-    RouteSpec {
-        id: "H065",
-        method: "POST",
-        path: "/api/v1/ws/{ws}/stacks/{ref}/items",
-        status: 201,
-        query: &[],
-        body: Some(BodyRef {
-            component: "StackItemAdd",
-            strip: true,
-            required: true,
-        }),
-    },
-    RouteSpec {
-        id: "H066",
-        method: "DELETE",
-        path: "/api/v1/ws/{ws}/stacks/{ref}/items/{task}",
-        status: 200,
-        query: &[],
-        body: None,
-    },
-    RouteSpec {
-        id: "H067",
-        method: "GET",
-        path: "/api/v1/ws/{ws}/stacks/{ref}/history",
-        status: 200,
-        query: &[],
-        body: None,
-    },
-    RouteSpec {
-        id: "H068",
-        method: "GET",
-        path: "/api/v1/ws/{ws}/tasks/{ref}/stacks",
-        status: 200,
-        query: &[],
-        body: None,
-    },
-    RouteSpec {
-        id: "H069",
-        method: "POST",
-        path: "/api/v1/ws/{ws}/stacks/{ref}/integrate",
-        status: 202,
-        query: &[],
-        body: None,
-    },
-    RouteSpec {
-        id: "H070",
-        method: "POST",
-        path: "/api/v1/ws/{ws}/stacks/{ref}/verify",
-        status: 202,
-        query: &[],
-        body: None,
-    },
-];
-
 /// The events group (IF-49): the history (H123) and the server-sent stream (H124).
 pub const EVENTS: [RouteSpec; 2] = [
     RouteSpec {
@@ -194,30 +108,6 @@ mod tests {
         assert_eq!(ids, ["H001", "H002"]);
         for spec in &META_SETTINGS {
             assert_eq!(crate::operations::group_of(spec.id), "meta-settings");
-        }
-    }
-
-    #[test]
-    fn the_stacks_table_has_the_operations_of_its_group() {
-        let ids: Vec<&str> = STACKS.iter().map(|spec| spec.id).collect();
-        assert_eq!(
-            ids,
-            [
-                "H062", "H063", "H064", "H065", "H066", "H067", "H068", "H069", "H070"
-            ]
-        );
-        for spec in &STACKS {
-            assert_eq!(crate::operations::group_of(spec.id), "IF-53");
-        }
-    }
-
-    #[test]
-    fn the_stack_bodies_load_from_the_snapshot() {
-        let openapi = wg_wire::contract::openapi().unwrap_or_default();
-        for spec in &STACKS {
-            if let Some(body) = &spec.body {
-                assert!(body_spec(&openapi, body).is_some(), "{}", spec.id);
-            }
         }
     }
 

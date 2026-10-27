@@ -13,7 +13,6 @@
 
 pub mod events;
 pub mod meta_settings;
-pub mod stacks;
 
 use wg_runtime::{Feature, RouteRequest, RouteRun};
 use wg_serverspec::groups::{RouteSpec, body_spec};
@@ -59,7 +58,6 @@ pub fn routes_with(features: &[&Feature]) -> Vec<ApiRoute> {
     let mut table = Vec::new();
     meta_settings::register(&mut table);
     events::register(&mut table);
-    stacks::register(&mut table);
     for feature in features {
         for group in feature.routes {
             bind(&mut table, group.specs, group.run);

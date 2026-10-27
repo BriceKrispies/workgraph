@@ -24,9 +24,11 @@ pub struct VerificationStarted {
     pub manifest_id: Option<Id>,
     pub task_id: Id,
     pub task_key: String,
-    pub tier: String,
+    /// The tier the run was restricted to; `null` for a run of every tier.
+    pub tier: Option<String>,
+    /// Present for stack verification: the stack's `id` and the revisions checked.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub stack: Option<Id>,
+    pub stack: Option<Value>,
 }
 
 /// `verification.completed`. `stack` is present only for stack verification.
@@ -38,6 +40,7 @@ pub struct VerificationCompleted {
     pub status: String,
     pub task_id: Id,
     pub task_key: String,
+    /// Present for stack verification: the stack's `id` and the revisions checked.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub stack: Option<Id>,
+    pub stack: Option<Value>,
 }

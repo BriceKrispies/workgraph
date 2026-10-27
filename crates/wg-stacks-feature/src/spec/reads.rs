@@ -10,7 +10,7 @@ use wg_types::{Id, WgError, parse_id};
 
 use super::out::{Tips, stack_list_out, stack_out};
 use super::{is_inactive, latest_stack, task_in};
-use crate::events::event_out;
+use wg_runtimespec::events::event_out;
 
 /// One integration worktree whose tip a stack reply reports: `StackIntegrator.worktree_path`,
 /// relative to the worktrees directory.

@@ -282,6 +282,7 @@ pub fn removed_decision(row: &ManagedWorktree, stamp: &Stamp) -> Decision<()> {
         .write(Write::update(ManagedWorktree {
             status: WorktreeStatus::Removed,
             removed_at: Some(stamp.at),
+            updated_at: stamp.at,
             ..row.clone()
         }))
         .event(EventDraft {

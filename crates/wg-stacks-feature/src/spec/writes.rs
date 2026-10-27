@@ -385,17 +385,18 @@ pub fn remove_item(
 
 /// What a change leaves behind for the next one: the changes so far, the slices after them and the
 /// ids still free.
-struct Step {
-    decision: Decision<()>,
-    tasks: TaskSlice,
-    stacks: StackSlice,
-    ids: IdSeq,
+#[derive(Clone)]
+pub(crate) struct Step {
+    pub(crate) decision: Decision<()>,
+    pub(crate) tasks: TaskSlice,
+    pub(crate) stacks: StackSlice,
+    pub(crate) ids: IdSeq,
 }
 
 /// The `stack_integrate` job of each repository of `stack` (in repository-id order), keyed by the
 /// stack state `version` so that repeated requests for an unchanged stack collapse into one job
 /// (`StackService.enqueue_integration`). `queue` holds the jobs already stored under those keys.
-fn integration_jobs(
+pub(crate) fn integration_jobs(
     stack: &Stack,
     repository_ids: &[Id],
     version: Id,
@@ -426,12 +427,12 @@ fn integration_jobs(
 }
 
 /// The idempotency key of an integration job.
-fn integration_key(stack_id: Id, repository_id: Id, version: Id) -> String {
+pub(crate) fn integration_key(stack_id: Id, repository_id: Id, version: Id) -> String {
     format!("stack-integrate:{stack_id}:{repository_id}:{version}")
 }
 
 /// The repository ids of a stack, in id order.
-fn repository_ids(stacks: &StackSlice, stack_id: Id) -> Vec<Id> {
+pub(crate) fn repository_ids(stacks: &StackSlice, stack_id: Id) -> Vec<Id> {
     let mut ids: Vec<Id> = stacks
         .repositories_of(stack_id)
         .map(|row| row.repository_id)
@@ -443,7 +444,7 @@ fn repository_ids(stacks: &StackSlice, stack_id: Id) -> Vec<Id> {
 /// `StackService.transition_item`: moves an item to `target`, records the change, refreshes the
 /// dependents whose sibling dependency it flips, and queues integration when the item is ready.
 #[allow(clippy::too_many_arguments)]
-fn transition_item(
+pub(crate) fn transition_item(
     start: &Step,
     stamp: &Stamp,
     stack: &Stack,

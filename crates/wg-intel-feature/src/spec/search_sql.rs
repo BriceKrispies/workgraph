@@ -241,13 +241,9 @@ pub struct TaskVector {
     pub vector: VectorSync<u8>,
 }
 
-impl TaskVector {
-    /// Decodes a row of [`embedding_vectors`].
-    pub fn from_raw(values: &[Raw]) -> Result<Self, WgError> {
-        let cols = Cols::new(&["task_id", "vector"], values);
-        Ok(TaskVector {
-            task_id: cols.id("task_id")?,
-            vector: cols.blob("vector")?,
-        })
+wg_storecodec::row_projection! {
+    TaskVector {
+        task_id: id,
+        vector: blob,
     }
 }

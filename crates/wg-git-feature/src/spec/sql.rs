@@ -412,16 +412,12 @@ pub struct PathTotal {
     pub deletions: i64,
 }
 
-impl PathTotal {
-    /// Decodes a [`path_totals`] row.
-    pub fn from_raw(values: &[Raw]) -> Result<Self, WgError> {
-        let cols = Cols::new(&["path", "changes", "insertions", "deletions"], values);
-        Ok(PathTotal {
-            path: cols.text("path")?,
-            changes: cols.int("changes")?,
-            insertions: cols.int("insertions")?,
-            deletions: cols.int("deletions")?,
-        })
+wg_storecodec::row_projection! {
+    PathTotal {
+        path: text,
+        changes: int,
+        insertions: int,
+        deletions: int,
     }
 }
 
@@ -433,15 +429,11 @@ pub struct CommitReachability {
     pub reachable: bool,
 }
 
-impl CommitReachability {
-    /// Decodes a [`commit_reachability`] row.
-    pub fn from_raw(values: &[Raw]) -> Result<Self, WgError> {
-        let cols = Cols::new(&["id", "sha", "reachable"], values);
-        Ok(CommitReachability {
-            id: cols.id("id")?,
-            sha: cols.text("sha")?,
-            reachable: cols.flag("reachable")?,
-        })
+wg_storecodec::row_projection! {
+    CommitReachability {
+        id: id,
+        sha: text,
+        reachable: bool,
     }
 }
 

@@ -40,15 +40,11 @@ pub struct ImplementationCommit {
     pub repository_id: Id,
 }
 
-impl ImplementationCommit {
-    /// Decodes a row of [`implementation_commits`].
-    pub fn from_raw(values: &[Raw]) -> Result<Self, WgError> {
-        let cols = Cols::new(&["sha", "subject", "repository_id"], values);
-        Ok(ImplementationCommit {
-            sha: cols.text("sha")?,
-            subject: cols.text("subject")?,
-            repository_id: cols.id("repository_id")?,
-        })
+wg_storecodec::row_projection! {
+    ImplementationCommit {
+        sha: text,
+        subject: text,
+        repository_id: id,
     }
 }
 

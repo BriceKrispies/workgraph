@@ -51,8 +51,6 @@
 //! // PathTotal::COLUMNS, PathTotal::from_raw(&values)
 //! ```
 
-#![allow(unused_macros)]
-
 /// The bound parameter of one field value.
 macro_rules! row_encode {
     (id, $v:expr) => {

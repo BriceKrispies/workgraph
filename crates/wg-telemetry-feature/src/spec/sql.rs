@@ -12,7 +12,7 @@
 use wg_model::Table;
 use wg_types::{AttemptStatus, Id, TaskStatus, Timestamp, WgError};
 
-use wg_storecodec::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
+use wg_storecodec::codec::{Raw, id_sql, text_sql, ts_sql};
 use wg_storecodec::rows::columns;
 use wg_storecodec::sql::{Statement, quote};
 
@@ -107,22 +107,6 @@ pub fn ids_from_rows(rows: &[Vec<Raw>]) -> Result<Vec<Id>, WgError> {
         .collect()
 }
 
-/// Columns of [`SessionSummary`], in the order its decoder reads them.
-const SUMMARY_NAMES: &[&str] = &[
-    "id",
-    "external_session_id",
-    "binding_source",
-    "task_id",
-    "attempt_id",
-    "cwd",
-    "model",
-    "tool_calls",
-    "tool_failures",
-    "started_at",
-    "ended_at",
-    "end_reason",
-];
-
 /// The fields of an agent session that the session listing shows (`HookIngestor.sessions`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SessionSummary {
@@ -140,24 +124,20 @@ pub struct SessionSummary {
     pub end_reason: Option<String>,
 }
 
-impl SessionSummary {
-    /// Decodes a row selected with the summary's columns.
-    pub fn from_raw(values: &[Raw]) -> Result<Self, WgError> {
-        let c = Cols::new(SUMMARY_NAMES, values);
-        Ok(SessionSummary {
-            id: c.id("id")?,
-            external_session_id: c.text("external_session_id")?,
-            binding_source: c.text("binding_source")?,
-            task_id: c.opt_id("task_id")?,
-            attempt_id: c.opt_id("attempt_id")?,
-            cwd: c.opt_text("cwd")?,
-            model: c.opt_text("model")?,
-            tool_calls: c.int("tool_calls")?,
-            tool_failures: c.int("tool_failures")?,
-            started_at: c.opt_ts("started_at")?,
-            ended_at: c.opt_ts("ended_at")?,
-            end_reason: c.opt_text("end_reason")?,
-        })
+wg_storecodec::row_projection! {
+    SessionSummary {
+        id: id,
+        external_session_id: text,
+        binding_source: text,
+        task_id: opt_id,
+        attempt_id: opt_id,
+        cwd: opt_text,
+        model: opt_text,
+        tool_calls: int,
+        tool_failures: int,
+        started_at: opt_ts,
+        ended_at: opt_ts,
+        end_reason: opt_text,
     }
 }
 
@@ -168,15 +148,10 @@ pub struct HookEventCount {
     pub count: i64,
 }
 
-impl HookEventCount {
-    /// Decodes a row of `(hook_event_name, count)`.
-    pub fn from_raw(values: &[Raw]) -> Result<Self, WgError> {
-        const NAMES: &[&str] = &["hook_event_name", "count"];
-        let c = Cols::new(NAMES, values);
-        Ok(HookEventCount {
-            hook_event_name: c.text("hook_event_name")?,
-            count: c.int("count")?,
-        })
+wg_storecodec::row_projection! {
+    HookEventCount {
+        hook_event_name: text,
+        count: int,
     }
 }
 
@@ -191,17 +166,12 @@ pub struct StoppedRunOwner {
     pub status: TaskStatus,
 }
 
-impl StoppedRunOwner {
-    /// Decodes a row of `(run_id, task_id, workspace_id, status)`.
-    pub fn from_raw(values: &[Raw]) -> Result<Self, WgError> {
-        const NAMES: &[&str] = &["run_id", "task_id", "workspace_id", "status"];
-        let c = Cols::new(NAMES, values);
-        Ok(StoppedRunOwner {
-            run_id: c.id("run_id")?,
-            task_id: c.id("task_id")?,
-            workspace_id: c.id("workspace_id")?,
-            status: c.parsed("status")?,
-        })
+wg_storecodec::row_projection! {
+    StoppedRunOwner {
+        run_id: id,
+        task_id: id,
+        workspace_id: id,
+        status: parsed,
     }
 }
 
@@ -236,7 +206,7 @@ pub fn agent_session_summaries(
     let limit_at = params.len() - 1;
     let mut statement = select_named(
         Table::AgentSession.name(),
-        SUMMARY_NAMES,
+        SessionSummary::COLUMNS,
         &clause,
         "\"created_at\" DESC, \"id\" DESC",
         params,

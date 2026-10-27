@@ -10,7 +10,7 @@ use wg_model::entity::{
     RevisionManifest,
 };
 use wg_storecodec::run_sql::{
-    RecordedHead, WorktreeWithRepository, decode_recorded_head, decode_worktree_with_repository,
+    RecordedHead, WorktreeWithRepository, decode_worktree_with_repository,
 };
 use wg_storecodec::{Raw, run_sql};
 use wg_types::{AttemptStatus, Id, Timestamp, WgError, WorktreeStatus};
@@ -199,7 +199,7 @@ impl Session<'_> {
     ) -> Result<Option<RecordedHead>, WgError> {
         let rows = self.rows(&run_sql::latest_recorded_head(task_id, repository_id))?;
         rows.first()
-            .map(|values| decode_recorded_head(values))
+            .map(|values| RecordedHead::from_raw(values))
             .transpose()
     }
 

@@ -314,19 +314,16 @@ pub struct RecordedHead {
     pub branch: Option<String>,
 }
 
-/// Decodes a [`latest_recorded_head`] row: `head_sha`, then `branch`.
-pub fn decode_recorded_head(values: &[Raw]) -> Result<RecordedHead, WgError> {
-    static NAMES: [&str; 2] = ["head_sha", "branch"];
-    let cols = Cols::new(&NAMES, values);
-    Ok(RecordedHead {
-        head_sha: cols.text("head_sha")?,
-        branch: cols.opt_text("branch")?,
-    })
+crate::row_projection! {
+    RecordedHead {
+        head_sha: text,
+        branch: opt_text,
+    }
 }
 
 /// The newest succeeded attempt's recorded head of `task_id` in `repository_id`: the change-set
 /// item of the newest change set (then the newest attempt number) that has a head SHA. Selects
-/// `head_sha` and `branch`, decoded by [`decode_recorded_head`].
+/// `head_sha` and `branch`, decoded by `RecordedHead::from_raw`.
 pub fn latest_recorded_head(task_id: Id, repository_id: Id) -> Statement {
     Statement {
         sql: "SELECT i.\"head_sha\", i.\"branch\" FROM \"change_set_items\" AS i \

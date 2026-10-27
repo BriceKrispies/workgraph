@@ -1,41 +1,33 @@
 //! Row codecs: one [`TableRow`] implementation per model table.
 //!
-//! `COLUMNS` lists the table's columns in the order of `contracts/schema-0011.sql`; `values`
-//! returns the bound parameters in that order and `decode` reads a row back by column name. The
-//! model's entity structs are the rows (their fields are the columns), so the codecs add no
-//! intermediate type.
+//! Each table is declared once, in the [`table_rows!`](crate::rowmap) list at the end of this
+//! file: its fields in the column order of `contracts/schema-0011.sql`, each with the codec that
+//! encodes and decodes the column (see `rowmap.rs` for the codecs). The declaration gives the
+//! column list, `values` (the bound parameters in that order), `decode` (a row read back by
+//! column name) and the primary key. The model's entity structs are the rows (their fields are
+//! the columns), so the codecs add no intermediate type.
 
-use wg_model::entity::{
-    ExternalItem, Project, ProjectRepository, Repository, RepositoryCheckout, RepositoryDependency,
-    RepositoryRef, RepositoryRemote, Task, TaskComment, TaskDependency, TaskFile, TaskLink,
-    TaskProject, TaskRelation, TaskRepository, TaskTag, Workspace,
-};
-use wg_model::{Row, RowKey, Table};
-use wg_types::{TaskKey, WgError};
+use wg_model::entity::*;
+use wg_model::{RowKey, Table};
+use wg_types::WgError;
 
-use crate::codec::{
-    Cols, Raw, bool_sql, id_sql, object_sql, opt_id_sql, opt_int_sql, opt_object_sql, opt_text_sql,
-    opt_ts_sql, strings_sql, text_sql, ts_sql,
-};
-use crate::rows_more::{columns_more, key_values_more, primary_key_more, row_values_more};
+use crate::codec::{Cols, Raw};
 
 /// A model value that is one row of one table.
 pub trait TableRow: Sized {
     const TABLE: Table;
 
-    /// The table's columns, in schema order (defaulted until `row_codec!` declares them).
-    const COLUMNS: &'static [&'static str] = &[];
+    /// The table's columns, in schema order.
+    const COLUMNS: &'static [&'static str];
 
     /// The primary-key columns, in key order.
-    const PRIMARY_KEY: &'static [&'static str] = &[];
+    const PRIMARY_KEY: &'static [&'static str];
 
     /// The primary-key values of `key`, in the order of [`Self::PRIMARY_KEY`]; empty when `key`
     /// is another table's.
-    fn key_values(_key: &RowKey) -> Vec<Raw> {
-        Vec::new()
-    }
+    fn key_values(key: &RowKey) -> Vec<Raw>;
 
-    /// The bound parameters, in the order of [`columns`].
+    /// The bound parameters, in the order of [`Self::COLUMNS`].
     fn values(&self) -> Result<Vec<Raw>, WgError>;
 
     /// Reads the row from a result that selects at least [`columns`].
@@ -47,823 +39,933 @@ pub trait TableRow: Sized {
     }
 }
 
-/// The columns of `table`, in schema order.
-pub const fn columns(table: Table) -> &'static [&'static str] {
-    match table {
-        Table::Workspace => &[
-            "id",
-            "slug",
-            "name",
-            "description",
-            "key_prefix",
-            "next_task_number",
-            "settings",
-            "archived_at",
-            "created_at",
-            "updated_at",
-        ],
-        Table::Project => &[
-            "id",
-            "workspace_id",
-            "slug",
-            "name",
-            "description",
-            "status",
-            "settings",
-            "created_at",
-            "updated_at",
-        ],
-        Table::ProjectRepository => &[
-            "project_id",
-            "repository_id",
-            "role",
-            "access_mode",
-            "created_at",
-        ],
-        Table::Repository => &[
-            "id",
-            "workspace_id",
-            "name",
-            "description",
-            "identity_fingerprint",
-            "default_branch",
-            "tracked_branches",
-            "access_mode",
-            "health_status",
-            "health_detail",
-            "health_checked_at",
-            "is_shallow",
-            "last_scanned_at",
-            "archived_at",
-            "metadata",
-            "created_at",
-            "updated_at",
-        ],
-        Table::RepositoryCheckout => &[
-            "id",
-            "repository_id",
-            "path",
-            "kind",
-            "is_primary",
-            "access_mode",
-            "available",
-            "last_seen_at",
-            "created_at",
-            "updated_at",
-        ],
-        Table::RepositoryRemote => &[
-            "id",
-            "repository_id",
-            "name",
-            "url",
-            "normalized_url",
-            "created_at",
-            "updated_at",
-        ],
-        Table::RepositoryRef => &["id", "repository_id", "name", "sha", "updated_at"],
-        Table::RepositoryDependency => &[
-            "id",
-            "from_repository_id",
-            "to_repository_id",
-            "kind",
-            "description",
-            "created_at",
-        ],
-        Table::Task => &[
-            "id",
-            "workspace_id",
-            "number",
-            "key",
-            "title",
-            "description",
-            "description_hash",
-            "acceptance_criteria",
-            "status",
-            "priority",
-            "category",
-            "parent_id",
-            "assignee",
-            "assigned_agent",
-            "claimed_by",
-            "claim_expires_at",
-            "auto_execute",
-            "estimated_effort",
-            "metadata",
-            "due_at",
-            "scheduled_at",
-            "created_by",
-            "version",
-            "created_at",
-            "updated_at",
-            "started_at",
-            "completed_at",
-            "accepted_at",
-            "archived_at",
-            "current_classification_id",
-        ],
-        Table::TaskFile => &["task_id", "position", "path", "anchor", "note"],
-        Table::TaskTag => &["task_id", "tag"],
-        Table::TaskLink => &[
-            "id",
-            "task_id",
-            "kind",
-            "provider",
-            "url",
-            "normalized_url",
-            "repo_full_name",
-            "number",
-            "repository_id",
-            "sources",
-            "title",
-            "created_by",
-            "created_at",
-            "updated_at",
-        ],
-        Table::TaskComment => &[
-            "id",
-            "task_id",
-            "attempt_id",
-            "author",
-            "kind",
-            "body",
-            "data",
-            "created_at",
-        ],
-        Table::TaskDependency => &["id", "task_id", "depends_on_id", "created_by", "created_at"],
-        Table::TaskRelation => &[
-            "id",
-            "source_task_id",
-            "target_task_id",
-            "relation_type",
-            "created_by",
-            "created_at",
-        ],
-        Table::TaskProject => &["task_id", "project_id"],
-        Table::TaskRepository => &["task_id", "repository_id", "access", "created_at"],
-        Table::ExternalItem => &[
-            "id",
-            "workspace_id",
-            "task_id",
-            "connection",
-            "external_id",
-            "external_key",
-            "url",
-            "tracker_status",
-            "tracker_status_category",
-            "tracker_resolution",
-            "remote_updated_at",
-            "snapshot",
-            "snapshot_hash",
-            "synced_at",
-            "missing_since",
-            "created_at",
-            "updated_at",
-        ],
-        _ => columns_more(table),
-    }
-}
-
-/// The primary-key columns of `table`, in key order (the order of [`key_values`]).
-pub const fn primary_key(table: Table) -> &'static [&'static str] {
-    match table {
-        Table::ProjectRepository => &["project_id", "repository_id"],
-        Table::TaskFile => &["task_id", "position"],
-        Table::TaskTag => &["task_id", "tag"],
-        Table::TaskProject => &["task_id", "project_id"],
-        Table::TaskRepository => &["task_id", "repository_id"],
-        _ => primary_key_more(table),
-    }
-}
-
-/// The primary-key values of `key`, in the order of [`primary_key`].
-pub fn key_values(key: &RowKey) -> Vec<Raw> {
-    match key {
-        RowKey::Workspace(id)
-        | RowKey::Project(id)
-        | RowKey::Repository(id)
-        | RowKey::RepositoryCheckout(id)
-        | RowKey::RepositoryRemote(id)
-        | RowKey::RepositoryRef(id)
-        | RowKey::RepositoryDependency(id)
-        | RowKey::Task(id)
-        | RowKey::TaskLink(id)
-        | RowKey::TaskComment(id)
-        | RowKey::TaskDependency(id)
-        | RowKey::TaskRelation(id)
-        | RowKey::ExternalItem(id) => vec![id_sql(*id)],
-        RowKey::ProjectRepository {
-            project_id,
-            repository_id,
-        } => vec![id_sql(*project_id), id_sql(*repository_id)],
-        RowKey::TaskFile { task_id, position } => {
-            vec![id_sql(*task_id), Raw::Int(*position)]
-        }
-        RowKey::TaskTag { task_id, tag } => vec![id_sql(*task_id), text_sql(tag)],
-        RowKey::TaskProject {
-            task_id,
-            project_id,
-        } => vec![id_sql(*task_id), id_sql(*project_id)],
-        RowKey::TaskRepository {
-            task_id,
-            repository_id,
-        } => vec![id_sql(*task_id), id_sql(*repository_id)],
-        _ => key_values_more(key),
-    }
-}
-
-/// The bound parameters of any row, in the order of [`columns`] for its table.
-pub fn row_values(row: &Row) -> Result<Vec<Raw>, WgError> {
-    match row {
-        Row::Workspace(row) => row.values(),
-        Row::Project(row) => row.values(),
-        Row::ProjectRepository(row) => row.values(),
-        Row::Repository(row) => row.values(),
-        Row::RepositoryCheckout(row) => row.values(),
-        Row::RepositoryRemote(row) => row.values(),
-        Row::RepositoryRef(row) => row.values(),
-        Row::RepositoryDependency(row) => row.values(),
-        Row::Task(row) => row.values(),
-        Row::TaskFile(row) => row.values(),
-        Row::TaskTag(row) => row.values(),
-        Row::TaskLink(row) => row.values(),
-        Row::TaskComment(row) => row.values(),
-        Row::TaskDependency(row) => row.values(),
-        Row::TaskRelation(row) => row.values(),
-        Row::TaskProject(row) => row.values(),
-        Row::TaskRepository(row) => row.values(),
-        Row::ExternalItem(row) => row.values(),
-        _ => row_values_more(row),
-    }
-}
-
-impl TableRow for Workspace {
-    const TABLE: Table = Table::Workspace;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            text_sql(&self.slug),
-            text_sql(&self.name),
-            text_sql(&self.description),
-            text_sql(&self.key_prefix),
-            Raw::Int(self.next_task_number),
-            object_sql(&self.settings)?,
-            opt_ts_sql(self.archived_at),
-            ts_sql(self.created_at),
-            ts_sql(self.updated_at),
-        ])
+table_rows! {
+    Workspace key(id: id) {
+        id: id,
+        slug: text,
+        name: text,
+        description: text,
+        key_prefix: text,
+        next_task_number: int,
+        settings: object,
+        archived_at: opt_ts,
+        created_at: ts,
+        updated_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(Workspace {
-            id: c.id("id")?,
-            slug: c.text("slug")?,
-            name: c.text("name")?,
-            description: c.text("description")?,
-            key_prefix: c.text("key_prefix")?,
-            next_task_number: c.int("next_task_number")?,
-            settings: c.object("settings")?,
-            archived_at: c.opt_ts("archived_at")?,
-            created_at: c.ts("created_at")?,
-            updated_at: c.ts("updated_at")?,
-        })
-    }
-}
-
-impl TableRow for Project {
-    const TABLE: Table = Table::Project;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.workspace_id),
-            text_sql(&self.slug),
-            text_sql(&self.name),
-            text_sql(&self.description),
-            text_sql(&self.status),
-            object_sql(&self.settings)?,
-            ts_sql(self.created_at),
-            ts_sql(self.updated_at),
-        ])
+    Project key(id: id) {
+        id: id,
+        workspace_id: id,
+        slug: text,
+        name: text,
+        description: text,
+        status: text,
+        settings: object,
+        created_at: ts,
+        updated_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(Project {
-            id: c.id("id")?,
-            workspace_id: c.id("workspace_id")?,
-            slug: c.text("slug")?,
-            name: c.text("name")?,
-            description: c.text("description")?,
-            status: c.text("status")?,
-            settings: c.object("settings")?,
-            created_at: c.ts("created_at")?,
-            updated_at: c.ts("updated_at")?,
-        })
-    }
-}
-
-impl TableRow for ProjectRepository {
-    const TABLE: Table = Table::ProjectRepository;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.project_id),
-            id_sql(self.repository_id),
-            text_sql(&self.role),
-            opt_text_sql(&self.access_mode),
-            ts_sql(self.created_at),
-        ])
+    ProjectRepository key{project_id: id, repository_id: id} {
+        project_id: id,
+        repository_id: id,
+        role: text,
+        access_mode: opt_text,
+        created_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(ProjectRepository {
-            project_id: c.id("project_id")?,
-            repository_id: c.id("repository_id")?,
-            role: c.text("role")?,
-            access_mode: c.opt_text("access_mode")?,
-            created_at: c.ts("created_at")?,
-        })
-    }
-}
-
-impl TableRow for Repository {
-    const TABLE: Table = Table::Repository;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.workspace_id),
-            text_sql(&self.name),
-            text_sql(&self.description),
-            opt_text_sql(&self.identity_fingerprint),
-            opt_text_sql(&self.default_branch),
-            strings_sql(&self.tracked_branches)?,
-            text_sql(self.access_mode.as_str()),
-            text_sql(&self.health_status),
-            object_sql(&self.health_detail)?,
-            opt_ts_sql(self.health_checked_at),
-            bool_sql(self.is_shallow),
-            opt_ts_sql(self.last_scanned_at),
-            opt_ts_sql(self.archived_at),
-            object_sql(&self.metadata)?,
-            ts_sql(self.created_at),
-            ts_sql(self.updated_at),
-        ])
+    Repository key(id: id) {
+        id: id,
+        workspace_id: id,
+        name: text,
+        description: text,
+        identity_fingerprint: opt_text,
+        default_branch: opt_text,
+        tracked_branches: strings,
+        access_mode: parsed,
+        health_status: text,
+        health_detail: object,
+        health_checked_at: opt_ts,
+        is_shallow: bool,
+        last_scanned_at: opt_ts,
+        archived_at: opt_ts,
+        metadata: object,
+        created_at: ts,
+        updated_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(Repository {
-            id: c.id("id")?,
-            workspace_id: c.id("workspace_id")?,
-            name: c.text("name")?,
-            description: c.text("description")?,
-            identity_fingerprint: c.opt_text("identity_fingerprint")?,
-            default_branch: c.opt_text("default_branch")?,
-            tracked_branches: c.strings("tracked_branches")?,
-            access_mode: c.parsed("access_mode")?,
-            health_status: c.text("health_status")?,
-            health_detail: c.object("health_detail")?,
-            health_checked_at: c.opt_ts("health_checked_at")?,
-            is_shallow: c.flag("is_shallow")?,
-            last_scanned_at: c.opt_ts("last_scanned_at")?,
-            archived_at: c.opt_ts("archived_at")?,
-            metadata: c.object("metadata")?,
-            created_at: c.ts("created_at")?,
-            updated_at: c.ts("updated_at")?,
-        })
-    }
-}
-
-impl TableRow for RepositoryCheckout {
-    const TABLE: Table = Table::RepositoryCheckout;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.repository_id),
-            text_sql(&self.path),
-            text_sql(&self.kind),
-            bool_sql(self.is_primary),
-            opt_text_sql(&self.access_mode),
-            bool_sql(self.available),
-            opt_ts_sql(self.last_seen_at),
-            ts_sql(self.created_at),
-            ts_sql(self.updated_at),
-        ])
+    RepositoryCheckout key(id: id) {
+        id: id,
+        repository_id: id,
+        path: text,
+        kind: text,
+        is_primary: bool,
+        access_mode: opt_text,
+        available: bool,
+        last_seen_at: opt_ts,
+        created_at: ts,
+        updated_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(RepositoryCheckout {
-            id: c.id("id")?,
-            repository_id: c.id("repository_id")?,
-            path: c.text("path")?,
-            kind: c.text("kind")?,
-            is_primary: c.flag("is_primary")?,
-            access_mode: c.opt_text("access_mode")?,
-            available: c.flag("available")?,
-            last_seen_at: c.opt_ts("last_seen_at")?,
-            created_at: c.ts("created_at")?,
-            updated_at: c.ts("updated_at")?,
-        })
-    }
-}
-
-impl TableRow for RepositoryRemote {
-    const TABLE: Table = Table::RepositoryRemote;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.repository_id),
-            text_sql(&self.name),
-            text_sql(&self.url),
-            text_sql(&self.normalized_url),
-            ts_sql(self.created_at),
-            ts_sql(self.updated_at),
-        ])
+    RepositoryRemote key(id: id) {
+        id: id,
+        repository_id: id,
+        name: text,
+        url: text,
+        normalized_url: text,
+        created_at: ts,
+        updated_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(RepositoryRemote {
-            id: c.id("id")?,
-            repository_id: c.id("repository_id")?,
-            name: c.text("name")?,
-            url: c.text("url")?,
-            normalized_url: c.text("normalized_url")?,
-            created_at: c.ts("created_at")?,
-            updated_at: c.ts("updated_at")?,
-        })
-    }
-}
-
-impl TableRow for RepositoryRef {
-    const TABLE: Table = Table::RepositoryRef;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.repository_id),
-            text_sql(&self.name),
-            text_sql(&self.sha),
-            ts_sql(self.updated_at),
-        ])
+    RepositoryRef key(id: id) {
+        id: id,
+        repository_id: id,
+        name: text,
+        sha: text,
+        updated_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(RepositoryRef {
-            id: c.id("id")?,
-            repository_id: c.id("repository_id")?,
-            name: c.text("name")?,
-            sha: c.text("sha")?,
-            updated_at: c.ts("updated_at")?,
-        })
-    }
-}
-
-impl TableRow for RepositoryDependency {
-    const TABLE: Table = Table::RepositoryDependency;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.from_repository_id),
-            id_sql(self.to_repository_id),
-            text_sql(&self.kind),
-            text_sql(&self.description),
-            ts_sql(self.created_at),
-        ])
+    RepositoryDependency key(id: id) {
+        id: id,
+        from_repository_id: id,
+        to_repository_id: id,
+        kind: text,
+        description: text,
+        created_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(RepositoryDependency {
-            id: c.id("id")?,
-            from_repository_id: c.id("from_repository_id")?,
-            to_repository_id: c.id("to_repository_id")?,
-            kind: c.text("kind")?,
-            description: c.text("description")?,
-            created_at: c.ts("created_at")?,
-        })
-    }
-}
-
-impl TableRow for Task {
-    const TABLE: Table = Table::Task;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.workspace_id),
-            Raw::Int(self.number),
-            Raw::Text(self.key.to_string()),
-            text_sql(&self.title),
-            text_sql(&self.description),
-            text_sql(&self.description_hash),
-            strings_sql(&self.acceptance_criteria)?,
-            text_sql(self.status.as_str()),
-            text_sql(self.priority.as_str()),
-            opt_text_sql(&self.category),
-            opt_id_sql(self.parent_id),
-            opt_text_sql(&self.assignee),
-            opt_text_sql(&self.assigned_agent),
-            opt_text_sql(&self.claimed_by),
-            opt_ts_sql(self.claim_expires_at),
-            bool_sql(self.auto_execute),
-            opt_object_sql(&self.estimated_effort)?,
-            object_sql(&self.metadata)?,
-            opt_ts_sql(self.due_at),
-            opt_ts_sql(self.scheduled_at),
-            text_sql(&self.created_by),
-            Raw::Int(self.version),
-            ts_sql(self.created_at),
-            ts_sql(self.updated_at),
-            opt_ts_sql(self.started_at),
-            opt_ts_sql(self.completed_at),
-            opt_ts_sql(self.accepted_at),
-            opt_ts_sql(self.archived_at),
-            opt_id_sql(self.current_classification_id),
-        ])
+    Task key(id: id) {
+        id: id,
+        workspace_id: id,
+        number: int,
+        key: task_key,
+        title: text,
+        description: text,
+        description_hash: text,
+        acceptance_criteria: strings,
+        status: parsed,
+        priority: parsed,
+        category: opt_text,
+        parent_id: opt_id,
+        assignee: opt_text,
+        assigned_agent: opt_text,
+        claimed_by: opt_text,
+        claim_expires_at: opt_ts,
+        auto_execute: bool,
+        estimated_effort: opt_object,
+        metadata: object,
+        due_at: opt_ts,
+        scheduled_at: opt_ts,
+        created_by: text,
+        version: int,
+        created_at: ts,
+        updated_at: ts,
+        started_at: opt_ts,
+        completed_at: opt_ts,
+        accepted_at: opt_ts,
+        archived_at: opt_ts,
+        current_classification_id: opt_id,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        let key_text = c.text("key")?;
-        let key = TaskKey::parse(&key_text)?;
-        Ok(Task {
-            id: c.id("id")?,
-            workspace_id: c.id("workspace_id")?,
-            number: c.int("number")?,
-            key,
-            title: c.text("title")?,
-            description: c.text("description")?,
-            description_hash: c.text("description_hash")?,
-            acceptance_criteria: c.strings("acceptance_criteria")?,
-            status: c.parsed("status")?,
-            priority: c.parsed("priority")?,
-            category: c.opt_text("category")?,
-            parent_id: c.opt_id("parent_id")?,
-            assignee: c.opt_text("assignee")?,
-            assigned_agent: c.opt_text("assigned_agent")?,
-            claimed_by: c.opt_text("claimed_by")?,
-            claim_expires_at: c.opt_ts("claim_expires_at")?,
-            auto_execute: c.flag("auto_execute")?,
-            estimated_effort: c.opt_object("estimated_effort")?,
-            metadata: c.object("metadata")?,
-            due_at: c.opt_ts("due_at")?,
-            scheduled_at: c.opt_ts("scheduled_at")?,
-            created_by: c.text("created_by")?,
-            version: c.int("version")?,
-            created_at: c.ts("created_at")?,
-            updated_at: c.ts("updated_at")?,
-            started_at: c.opt_ts("started_at")?,
-            completed_at: c.opt_ts("completed_at")?,
-            accepted_at: c.opt_ts("accepted_at")?,
-            archived_at: c.opt_ts("archived_at")?,
-            current_classification_id: c.opt_id("current_classification_id")?,
-        })
-    }
-}
-
-impl TableRow for TaskFile {
-    const TABLE: Table = Table::TaskFile;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.task_id),
-            Raw::Int(self.position),
-            text_sql(&self.path),
-            opt_text_sql(&self.anchor),
-            text_sql(&self.note),
-        ])
+    TaskFile key{task_id: id, position: int} {
+        task_id: id,
+        position: int,
+        path: text,
+        anchor: opt_text,
+        note: text,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(TaskFile {
-            task_id: c.id("task_id")?,
-            position: c.int("position")?,
-            path: c.text("path")?,
-            anchor: c.opt_text("anchor")?,
-            note: c.text("note")?,
-        })
-    }
-}
-
-impl TableRow for TaskTag {
-    const TABLE: Table = Table::TaskTag;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![id_sql(self.task_id), text_sql(&self.tag)])
+    TaskTag key{task_id: id, tag: text} {
+        task_id: id,
+        tag: text,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(TaskTag {
-            task_id: c.id("task_id")?,
-            tag: c.text("tag")?,
-        })
-    }
-}
-
-impl TableRow for TaskLink {
-    const TABLE: Table = Table::TaskLink;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.task_id),
-            text_sql(&self.kind),
-            text_sql(&self.provider),
-            text_sql(&self.url),
-            text_sql(&self.normalized_url),
-            text_sql(&self.repo_full_name),
-            opt_int_sql(self.number),
-            opt_id_sql(self.repository_id),
-            strings_sql(&self.sources)?,
-            text_sql(&self.title),
-            text_sql(&self.created_by),
-            ts_sql(self.created_at),
-            ts_sql(self.updated_at),
-        ])
+    TaskLink key(id: id) {
+        id: id,
+        task_id: id,
+        kind: text,
+        provider: text,
+        url: text,
+        normalized_url: text,
+        repo_full_name: text,
+        number: opt_int,
+        repository_id: opt_id,
+        sources: strings,
+        title: text,
+        created_by: text,
+        created_at: ts,
+        updated_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(TaskLink {
-            id: c.id("id")?,
-            task_id: c.id("task_id")?,
-            kind: c.text("kind")?,
-            provider: c.text("provider")?,
-            url: c.text("url")?,
-            normalized_url: c.text("normalized_url")?,
-            repo_full_name: c.text("repo_full_name")?,
-            number: c.opt_int("number")?,
-            repository_id: c.opt_id("repository_id")?,
-            sources: c.strings("sources")?,
-            title: c.text("title")?,
-            created_by: c.text("created_by")?,
-            created_at: c.ts("created_at")?,
-            updated_at: c.ts("updated_at")?,
-        })
-    }
-}
-
-impl TableRow for TaskComment {
-    const TABLE: Table = Table::TaskComment;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.task_id),
-            opt_id_sql(self.attempt_id),
-            text_sql(&self.author),
-            text_sql(self.kind.as_str()),
-            text_sql(&self.body),
-            object_sql(&self.data)?,
-            ts_sql(self.created_at),
-        ])
+    TaskComment key(id: id) {
+        id: id,
+        task_id: id,
+        attempt_id: opt_id,
+        author: text,
+        kind: parsed,
+        body: text,
+        data: object,
+        created_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(TaskComment {
-            id: c.id("id")?,
-            task_id: c.id("task_id")?,
-            attempt_id: c.opt_id("attempt_id")?,
-            author: c.text("author")?,
-            kind: c.parsed("kind")?,
-            body: c.text("body")?,
-            data: c.object("data")?,
-            created_at: c.ts("created_at")?,
-        })
-    }
-}
-
-impl TableRow for TaskDependency {
-    const TABLE: Table = Table::TaskDependency;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.task_id),
-            id_sql(self.depends_on_id),
-            text_sql(&self.created_by),
-            ts_sql(self.created_at),
-        ])
+    TaskDependency key(id: id) {
+        id: id,
+        task_id: id,
+        depends_on_id: id,
+        created_by: text,
+        created_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(TaskDependency {
-            id: c.id("id")?,
-            task_id: c.id("task_id")?,
-            depends_on_id: c.id("depends_on_id")?,
-            created_by: c.text("created_by")?,
-            created_at: c.ts("created_at")?,
-        })
-    }
-}
-
-impl TableRow for TaskRelation {
-    const TABLE: Table = Table::TaskRelation;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.source_task_id),
-            id_sql(self.target_task_id),
-            text_sql(self.relation_type.as_str()),
-            text_sql(&self.created_by),
-            ts_sql(self.created_at),
-        ])
+    TaskRelation key(id: id) {
+        id: id,
+        source_task_id: id,
+        target_task_id: id,
+        relation_type: parsed,
+        created_by: text,
+        created_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(TaskRelation {
-            id: c.id("id")?,
-            source_task_id: c.id("source_task_id")?,
-            target_task_id: c.id("target_task_id")?,
-            relation_type: c.parsed("relation_type")?,
-            created_by: c.text("created_by")?,
-            created_at: c.ts("created_at")?,
-        })
-    }
-}
-
-impl TableRow for TaskProject {
-    const TABLE: Table = Table::TaskProject;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![id_sql(self.task_id), id_sql(self.project_id)])
+    TaskProject key{task_id: id, project_id: id} {
+        task_id: id,
+        project_id: id,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(TaskProject {
-            task_id: c.id("task_id")?,
-            project_id: c.id("project_id")?,
-        })
-    }
-}
-
-impl TableRow for TaskRepository {
-    const TABLE: Table = Table::TaskRepository;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.task_id),
-            id_sql(self.repository_id),
-            text_sql(&self.access),
-            ts_sql(self.created_at),
-        ])
+    TaskRepository key{task_id: id, repository_id: id} {
+        task_id: id,
+        repository_id: id,
+        access: text,
+        created_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(TaskRepository {
-            task_id: c.id("task_id")?,
-            repository_id: c.id("repository_id")?,
-            access: c.text("access")?,
-            created_at: c.ts("created_at")?,
-        })
-    }
-}
-
-impl TableRow for ExternalItem {
-    const TABLE: Table = Table::ExternalItem;
-
-    fn values(&self) -> Result<Vec<Raw>, WgError> {
-        Ok(vec![
-            id_sql(self.id),
-            id_sql(self.workspace_id),
-            id_sql(self.task_id),
-            text_sql(&self.connection),
-            text_sql(&self.external_id),
-            text_sql(&self.external_key),
-            text_sql(&self.url),
-            text_sql(&self.tracker_status),
-            text_sql(&self.tracker_status_category),
-            opt_text_sql(&self.tracker_resolution),
-            opt_ts_sql(self.remote_updated_at),
-            object_sql(&self.snapshot)?,
-            text_sql(&self.snapshot_hash),
-            opt_ts_sql(self.synced_at),
-            opt_ts_sql(self.missing_since),
-            ts_sql(self.created_at),
-            ts_sql(self.updated_at),
-        ])
+    ExternalItem key(id: id) {
+        id: id,
+        workspace_id: id,
+        task_id: id,
+        connection: text,
+        external_id: text,
+        external_key: text,
+        url: text,
+        tracker_status: text,
+        tracker_status_category: text,
+        tracker_resolution: opt_text,
+        remote_updated_at: opt_ts,
+        snapshot: object,
+        snapshot_hash: text,
+        synced_at: opt_ts,
+        missing_since: opt_ts,
+        created_at: ts,
+        updated_at: ts,
     }
 
-    fn decode(c: &Cols<'_>) -> Result<Self, WgError> {
-        Ok(ExternalItem {
-            id: c.id("id")?,
-            workspace_id: c.id("workspace_id")?,
-            task_id: c.id("task_id")?,
-            connection: c.text("connection")?,
-            external_id: c.text("external_id")?,
-            external_key: c.text("external_key")?,
-            url: c.text("url")?,
-            tracker_status: c.text("tracker_status")?,
-            tracker_status_category: c.text("tracker_status_category")?,
-            tracker_resolution: c.opt_text("tracker_resolution")?,
-            remote_updated_at: c.opt_ts("remote_updated_at")?,
-            snapshot: c.object("snapshot")?,
-            snapshot_hash: c.text("snapshot_hash")?,
-            synced_at: c.opt_ts("synced_at")?,
-            missing_since: c.opt_ts("missing_since")?,
-            created_at: c.ts("created_at")?,
-            updated_at: c.ts("updated_at")?,
-        })
+    TaskDecision key(id: id) {
+        id: id,
+        workspace_id: id,
+        task_id: id,
+        question: text,
+        options: decision_options,
+        status: text,
+        chosen_option_id: opt_text,
+        other_text: opt_text,
+        note: opt_text,
+        decided_by: opt_text,
+        decided_at: opt_ts,
+        created_by: text,
+        created_at: ts,
+        updated_at: ts,
+        version: int,
+    }
+
+    Commit key(id: id) {
+        id: id,
+        repository_id: id,
+        sha: text,
+        tree_sha: opt_text,
+        parents: strings,
+        author_name: text,
+        author_email: text,
+        authored_at: opt_ts,
+        committer_name: text,
+        committer_email: text,
+        committed_at: opt_ts,
+        subject: text,
+        message: text,
+        trailers: objects,
+        is_merge: bool,
+        patch_id: opt_text,
+        insertions: int,
+        deletions: int,
+        files_changed: int,
+        reachable: bool,
+        unreachable_since: opt_ts,
+        object_available: bool,
+        structure_analyzed: bool,
+        branches: strings,
+        ingested_at: ts,
+    }
+
+    CommitFileChange key(id: id) {
+        id: id,
+        commit_id: id,
+        path: text,
+        old_path: opt_text,
+        change_type: text,
+        similarity: opt_int,
+        insertions: int,
+        deletions: int,
+        is_binary: bool,
+        language: opt_text,
+        file_class: text,
+        module: text,
+    }
+
+    CommitSymbol key(id: id) {
+        id: id,
+        file_change_id: id,
+        symbol_kind: text,
+        name: text,
+        change_kind: text,
+        start_line: opt_int,
+        end_line: opt_int,
+        lines_changed: int,
+    }
+
+    CommitAnalysis key(commit_id: id) {
+        commit_id: id,
+        analyzer_version: text,
+        files_parsed: int,
+        files_fallback: int,
+        functions_affected: int,
+        types_affected: int,
+        detail: object,
+        analyzed_at: ts,
+    }
+
+    CommitEquivalence key(id: id) {
+        id: id,
+        repository_id: id,
+        original_commit_id: id,
+        equivalent_commit_id: id,
+        kind: text,
+        evidence: object,
+        created_at: ts,
+    }
+
+    CommitTaskLink key(id: id) {
+        id: id,
+        commit_id: id,
+        task_id: id,
+        source: text,
+        confidence: real,
+        evidence: object,
+        attempt_id: opt_id,
+        created_by: text,
+        created_at: ts,
+    }
+
+    GitObjectGap key(id: id) {
+        id: id,
+        repository_id: id,
+        sha: text,
+        context: text,
+        detected_at: ts,
+    }
+
+    TaskChangeSurface key(id: id) {
+        id: id,
+        task_id: id,
+        repository_id: id,
+        attempt_id: opt_id,
+        base_sha: text,
+        final_sha: text,
+        files_changed: int,
+        insertions: int,
+        deletions: int,
+        renames: int,
+        binary_files: int,
+        functions_affected: int,
+        types_affected: int,
+        detail: object,
+        computed_at: ts,
+        updated_at: ts,
+    }
+
+    VerificationConfig key(id: id) {
+        id: id,
+        workspace_id: id,
+        scope_type: text,
+        scope_id: id,
+        name: text,
+        checks: objects,
+        enabled: bool,
+        approved_by: text,
+        version: int,
+        created_at: ts,
+        updated_at: ts,
+    }
+
+    VerificationRun key(id: id) {
+        id: id,
+        workspace_id: id,
+        task_id: id,
+        attempt_id: opt_id,
+        manifest_id: opt_id,
+        config_snapshot: objects,
+        status: text,
+        required_passed: bool,
+        triggered_by: text,
+        started_at: opt_ts,
+        finished_at: opt_ts,
+        created_at: ts,
+    }
+
+    VerificationCheckResult key(id: id) {
+        id: id,
+        run_id: id,
+        name: text,
+        kind: text,
+        required: bool,
+        repository_id: opt_id,
+        status: text,
+        exit_code: opt_int,
+        duration_ms: opt_int,
+        timed_out: bool,
+        log_artifact_id: opt_id,
+        output_excerpt: text,
+        failure_signatures: strings,
+        created_at: ts,
+    }
+
+    TaskAcceptance key(id: id) {
+        id: id,
+        task_id: id,
+        attempt_id: opt_id,
+        verification_run_id: opt_id,
+        decision: text,
+        mode: text,
+        reason: text,
+        actor: text,
+        manifest_id: opt_id,
+        created_at: ts,
+    }
+
+    Classification key(id: id) {
+        id: id,
+        task_id: id,
+        source: text,
+        status: text,
+        provider: opt_text,
+        model: opt_text,
+        prompt_version: opt_text,
+        taxonomy_version: text,
+        input_hash: text,
+        category: opt_text,
+        subtype: opt_text,
+        domain: opt_text,
+        affected_systems: strings,
+        complexity: opt_text,
+        tags: strings,
+        confidence: opt_real,
+        rationale: opt_text,
+        raw_output: opt_object,
+        validation_status: text,
+        error: opt_text,
+        duration_ms: opt_int,
+        is_current: bool,
+        confirmed_by: opt_text,
+        batch_id: opt_id,
+        created_by: text,
+        created_at: ts,
+    }
+
+    ClassificationGoldLabel key(id: id) {
+        id: id,
+        workspace_id: id,
+        task_id: opt_id,
+        title: text,
+        description: text,
+        category: text,
+        labeled_by: text,
+        created_at: ts,
+    }
+
+    ClassificationEvaluation key(id: id) {
+        id: id,
+        workspace_id: id,
+        provider: text,
+        model: text,
+        prompt_version: text,
+        taxonomy_version: text,
+        sample_size: int,
+        failures: int,
+        accuracy: opt_real,
+        macro_f1: opt_real,
+        per_class: object,
+        confusion: object,
+        results: objects,
+        created_at: ts,
+    }
+
+    TaskEmbedding key(id: id) {
+        id: id,
+        task_id: id,
+        provider: text,
+        model: text,
+        dimensions: int,
+        vector: blob,
+        input_hash: text,
+        created_at: ts,
+    }
+
+    AutomationRule key(id: id) {
+        id: id,
+        workspace_id: id,
+        name: text,
+        description: text,
+        enabled: bool,
+        trigger: object,
+        conditions: object,
+        actions: objects,
+        retry_max_attempts: int,
+        max_depth: int,
+        last_scheduled_at: opt_ts,
+        next_run_at: opt_ts,
+        created_by: text,
+        version: int,
+        created_at: ts,
+        updated_at: ts,
+    }
+
+    AutomationRun key(id: id) {
+        id: id,
+        rule_id: id,
+        workspace_id: id,
+        trigger_type: text,
+        trigger_key: text,
+        trigger_event_id: opt_id,
+        depth: int,
+        dry_run: bool,
+        status: text,
+        matched: bool,
+        reason: text,
+        condition_trace: objects,
+        action_results: objects,
+        error: opt_text,
+        attempts: int,
+        correlation_id: opt_correlation,
+        created_at: ts,
+        finished_at: opt_ts,
+        inputs: object,
+    }
+
+    Notification key(id: id) {
+        id: id,
+        workspace_id: id,
+        level: text,
+        title: text,
+        body: text,
+        source: text,
+        data: object,
+        read_at: opt_ts,
+        created_at: ts,
+    }
+
+    Report key(id: id) {
+        id: id,
+        workspace_id: id,
+        kind: text,
+        title: text,
+        scope: object,
+        content_markdown: text,
+        data: object,
+        narrative_source: text,
+        created_by: text,
+        created_at: ts,
+    }
+
+    Finding key(id: id) {
+        id: id,
+        workspace_id: id,
+        kind: text,
+        fingerprint: text,
+        title: text,
+        severity: text,
+        metric_value: opt_real,
+        sample_size: int,
+        evidence: object,
+        first_detected_at: ts,
+        last_detected_at: ts,
+    }
+
+    AgentSession key(id: id) {
+        id: id,
+        provider: text,
+        external_session_id: text,
+        workspace_id: opt_id,
+        attempt_id: opt_id,
+        task_id: opt_id,
+        binding_source: text,
+        cwd: opt_text,
+        model: opt_text,
+        transcript_path: opt_text,
+        started_at: opt_ts,
+        ended_at: opt_ts,
+        end_reason: opt_text,
+        tool_calls: int,
+        tool_failures: int,
+        created_at: ts,
+        updated_at: ts,
+    }
+
+    SessionBinding key(id: id) {
+        id: id,
+        workspace_id: id,
+        task_id: id,
+        provider: text,
+        external_session_id: opt_text,
+        cwd_prefix: opt_text,
+        active: bool,
+        created_by: text,
+        created_at: ts,
+    }
+
+    SubagentRun key(id: id) {
+        id: id,
+        session_id: id,
+        external_agent_id: text,
+        agent_type: opt_text,
+        attempt_id: opt_id,
+        started_at: opt_ts,
+        stopped_at: opt_ts,
+        last_message_excerpt: opt_text,
+        transcript_path: opt_text,
+        requested_model: opt_text,
+        model: opt_text,
+        usage: opt_object,
+        telemetry: opt_object,
+        task_id: opt_id,
+    }
+
+    AgentInternalTask key(id: id) {
+        id: id,
+        session_id: id,
+        external_task_id: text,
+        subject: text,
+        description: opt_text,
+        status: text,
+        task_id: opt_id,
+        external_agent_id: opt_text,
+        created_at: ts,
+        completed_at: opt_ts,
+    }
+
+    AgentProfile key(id: id) {
+        id: id,
+        workspace_id: id,
+        name: text,
+        adapter: opt_text,
+        model: opt_text,
+        permissions: strings,
+        enabled: bool,
+        last_seen_at: opt_ts,
+        created_at: ts,
+    }
+
+    HookEvent key(id: id) {
+        id: id,
+        dedupe_key: text,
+        provider: text,
+        hook_event_name: text,
+        external_session_id: opt_text,
+        session_id: opt_id,
+        attempt_id: opt_id,
+        payload: opt_object,
+        payload_purged_at: opt_ts,
+        received_at: ts,
+        source: text,
+    }
+
+    ToolEvent key(id: id) {
+        id: id,
+        hook_event_id: id,
+        session_id: opt_id,
+        attempt_id: opt_id,
+        external_agent_id: opt_text,
+        phase: text,
+        tool_name: text,
+        tool_use_id: opt_text,
+        duration_ms: opt_int,
+        error_excerpt: opt_text,
+        summary: object,
+        occurred_at: ts,
+    }
+
+    Experiment key(id: id) {
+        id: id,
+        workspace_id: id,
+        slug: text,
+        title: text,
+        question: opt_text,
+        status: text,
+        protocol: object,
+        frozen_at: opt_ts,
+        created_at: ts,
+        updated_at: ts,
+    }
+
+    ExperimentTrial key(id: id) {
+        id: id,
+        experiment_id: id,
+        task_id: id,
+        attempt_id: opt_id,
+        subagent_run_id: opt_id,
+        arm: text,
+        requested_model: text,
+        actual_model: opt_text,
+        phase: text,
+        seq: int,
+        band: opt_int,
+        features: object,
+        base_ref: opt_text,
+        worktree_path: opt_text,
+        status: text,
+        outcome: opt_text,
+        outcome_detail: object,
+        failure_cause: opt_text,
+        failure_cause_source: opt_text,
+        notes: opt_text,
+        created_at: ts,
+        started_at: opt_ts,
+        graded_at: opt_ts,
+    }
+
+    PredictorFit key(id: id) {
+        id: id,
+        workspace_id: id,
+        model: text,
+        created_at: ts,
+        data_cutoff: opt_ts,
+        trial_ids: strings,
+        feature_names: strings,
+        repositories: strings,
+        coef: values,
+        penalty: values,
+        n: int,
+        converged: bool,
+        metrics: object,
+        samples: values,
+    }
+
+    AgentAttempt key(id: id) {
+        id: id,
+        workspace_id: id,
+        task_id: id,
+        number: int,
+        status: parsed,
+        provider: text,
+        adapter: text,
+        agent_id: opt_text,
+        model: opt_text,
+        session_id: opt_text,
+        parent_attempt_id: opt_id,
+        retry_of_attempt_id: opt_id,
+        rerun_of_attempt_id: opt_id,
+        created_by: text,
+        created_at: ts,
+        queued_at: opt_ts,
+        started_at: opt_ts,
+        finished_at: opt_ts,
+        queue_wait_ms: opt_int,
+        duration_ms: opt_int,
+        exit_reason: opt_text,
+        exit_code: opt_int,
+        error: opt_text,
+        summary: opt_text,
+        input_task_version: opt_int,
+        input_task_snapshot: object,
+        prompt_artifact_id: opt_id,
+        config_snapshot: object,
+        environment: object,
+        baseline_manifest_id: opt_id,
+        outcome_manifest_id: opt_id,
+        usage: object,
+        usage_source: opt_text,
+        cost_usd: opt_real,
+        cost_source: opt_text,
+        telemetry: object,
+        modified_repository_ids: strings,
+        retries: int,
+        cancel_requested: bool,
+        updated_at: ts,
+    }
+
+    RevisionManifest key(id: id) {
+        id: id,
+        workspace_id: id,
+        attempt_id: opt_id,
+        kind: text,
+        entries: objects,
+        created_at: ts,
+    }
+
+    ManagedWorktree key(id: id) {
+        id: id,
+        workspace_id: id,
+        repository_id: id,
+        source_checkout_id: id,
+        attempt_id: opt_id,
+        path: text,
+        branch: text,
+        base_sha: text,
+        status: parsed,
+        last_error: opt_text,
+        created_at: ts,
+        updated_at: ts,
+        removed_at: opt_ts,
+    }
+
+    ResourceLease key(resource_key: text) {
+        resource_key: text,
+        holder: text,
+        purpose: text,
+        acquired_at: ts,
+        expires_at: opt_ts,
+    }
+
+    ChangeSet key(id: id) {
+        id: id,
+        workspace_id: id,
+        task_id: id,
+        attempt_id: opt_id,
+        title: text,
+        status: parsed,
+        created_at: ts,
+        updated_at: ts,
+    }
+
+    ChangeSetItem key(id: id) {
+        id: id,
+        change_set_id: id,
+        repository_id: id,
+        base_sha: opt_text,
+        head_sha: opt_text,
+        branch: opt_text,
+        commit_shas: strings,
+        status: parsed,
+        detail: opt_text,
+        updated_at: ts,
+    }
+
+    Artifact key(id: id) {
+        id: id,
+        workspace_id: id,
+        task_id: opt_id,
+        attempt_id: opt_id,
+        kind: text,
+        name: text,
+        media_type: text,
+        path: text,
+        size_bytes: int,
+        sha256: text,
+        retention: text,
+        purged_at: opt_ts,
+        metadata: object,
+        created_at: ts,
+    }
+
+    Stack key(id: id) {
+        id: id,
+        workspace_id: id,
+        parent_task_id: id,
+        status: parsed,
+        created_at: ts,
+        updated_at: ts,
+        land_request: opt_text,
+    }
+
+    StackRepository key{stack_id: id, repository_id: id} {
+        stack_id: id,
+        repository_id: id,
+        base_sha: text,
+        integration_branch: text,
+        created_at: ts,
+    }
+
+    StackItem key(id: id) {
+        id: id,
+        stack_id: id,
+        task_id: id,
+        state: parsed,
+        merge_order: opt_int,
+        detail: opt_text,
+        created_at: ts,
+        updated_at: ts,
+    }
+
+    Job key(id: id) {
+        id: id,
+        workspace_id: opt_id,
+        kind: text,
+        status: parsed,
+        priority: int,
+        payload: object,
+        result: opt_object,
+        run_at: ts,
+        attempts: int,
+        max_attempts: int,
+        backoff_base_seconds: real,
+        timeout_seconds: opt_real,
+        lease_owner: opt_text,
+        lease_expires_at: opt_ts,
+        heartbeat_at: opt_ts,
+        started_at: opt_ts,
+        finished_at: opt_ts,
+        cancel_requested: bool,
+        idempotency_key: opt_text,
+        resource_keys: strings,
+        last_error: opt_text,
+        error_kind: opt_text,
+        correlation_id: opt_correlation,
+        causation_id: opt_id,
+        task_id: opt_id,
+        attempt_id: opt_id,
+        created_by: text,
+        created_at: ts,
+        updated_at: ts,
+    }
+
+    JobRun key(id: id) {
+        id: id,
+        job_id: id,
+        attempt_number: int,
+        worker_id: text,
+        status: text,
+        error: opt_text,
+        started_at: ts,
+        finished_at: opt_ts,
+    }
+
+    JobResourceClaim key{job_id: id, resource_key: text} {
+        job_id: id,
+        resource_key: text,
+    }
+
+    Worker key(id: text) {
+        id: text,
+        hostname: text,
+        pid: int,
+        status: text,
+        concurrency: int,
+        kinds: strings,
+        current_jobs: strings,
+        jobs_completed: int,
+        jobs_failed: int,
+        started_at: ts,
+        heartbeat_at: ts,
+        stopped_at: opt_ts,
+    }
+
+    SystemCursor key(name: text) {
+        name: text,
+        value: int,
+        updated_at: ts,
     }
 }

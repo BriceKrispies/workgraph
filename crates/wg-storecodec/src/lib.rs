@@ -15,7 +15,6 @@ pub mod query;
 pub mod queue_sql;
 pub mod repo_sql;
 pub mod rows;
-mod rows_more;
 pub mod run_sql;
 pub mod sql;
 pub mod stack_sql;

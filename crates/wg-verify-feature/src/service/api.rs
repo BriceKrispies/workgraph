@@ -8,13 +8,14 @@ use wg_model::RowKey;
 use wg_model::entity::{VerificationConfig, VerificationRun};
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext};
-use wg_types::{ErrorCode, Permission, Timestamp, VerificationStatus, WgError, parse_id};
+use wg_types::{ErrorCode, Permission, VerificationStatus, WgError, parse_id};
 use wg_wire::dto::verification::{config_from_model, failure_row};
 
 use crate::service::config;
 use crate::service::listing::run_document;
 use crate::service::reads;
 use crate::spec::config_write::{self, ConfigBody, ConfigRequest};
+use crate::spec::routes::parse_since;
 use crate::spec::sql::{FailureFilter, Page, RunFilter};
 
 /// The most failures `GET /ws/{ws}/verification/failures` returns (`failures`' default limit).
@@ -43,6 +44,9 @@ pub fn create_config(
     workspace: &str,
     body: &ConfigBody,
 ) -> Result<Value, WgError> {
+    // Python's order: the permission, then the checks, then the workspace is resolved.
+    require(app, context, Permission::ConfigManage)?;
+    config_write::check_specs(&body.checks)?;
     let request = ConfigRequest {
         scope_type: &body.scope_type,
         scope: body.scope.as_deref(),
@@ -142,7 +146,7 @@ pub fn failures(
 ) -> Result<Value, WgError> {
     require(app, context, Permission::TaskRead)?;
     let ws = app.workspace_or_default(Some(workspace))?;
-    let since = since.map(Timestamp::parse_iso).transpose()?;
+    let since = since.map(parse_since).transpose()?;
     app.runtime.store.read(|session| {
         let repository_id = match repository {
             Some(reference) => {

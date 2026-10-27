@@ -3,9 +3,11 @@
 //! status of the OpenAPI snapshot, and the rule bodies the Python route takes as a plain dict are
 //! read as open objects.
 
+use serde_json::json;
 use wg_server::groups::routes_with;
 use wg_serverspec::coverage::{RouteDecl, route_problems};
 use wg_serverspec::groups::{BodyRef, OPEN_OBJECT, body_spec};
+use wg_serverspec::request::check_body;
 
 /// The operation ids of IF-47 in order, H085 to H100.
 fn if47_ids() -> Vec<String> {
@@ -80,4 +82,23 @@ fn the_reads_and_actions_without_a_body_register_without_one() {
     }
     let create = registered.iter().find(|route| route.id == "H086").unwrap();
     assert!(create.body.is_some(), "H086 takes a body");
+}
+
+// covers: H093, H095, H096
+#[test]
+fn a_dict_body_must_be_an_object_or_422() {
+    let openapi = wg_wire::contract::openapi().unwrap();
+    let open = BodyRef {
+        component: OPEN_OBJECT,
+        strip: false,
+        required: true,
+    };
+    let spec = body_spec(&openapi, &open).unwrap();
+    assert!(check_body(&spec, Some(&json!({"name": "rule", "trigger": {}}))).is_ok());
+    let errors = check_body(&spec, Some(&json!(["not", "an", "object"]))).unwrap_err();
+    assert_eq!(errors[0]["loc"], json!(["body"]));
+    assert!(
+        check_body(&spec, None).is_err(),
+        "a required dict body is missing"
+    );
 }

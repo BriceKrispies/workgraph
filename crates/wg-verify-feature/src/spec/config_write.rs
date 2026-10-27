@@ -85,19 +85,12 @@ fn updated(
     }
 }
 
-/// `create_config`: writes the configuration and replies with it (`VerificationConfigOut`).
-pub fn write_config(
-    world: &ConfigWorld,
-    stamp: &Stamp,
-    workspace: Id,
-    request: &ConfigRequest<'_>,
-) -> Result<Decision<Value>, WgError> {
-    stamp.require(&[Permission::ConfigManage])?;
-    let specs = request
-        .checks
-        .iter()
-        .map(spec_of)
-        .collect::<Result<Vec<_>, _>>()?;
+/// The checks of a configuration, validated as `create_config` validates them, in its order: each
+/// check as the `CheckSpec` model reads it (the first invalid one is reported), then at least one
+/// check, then unique names. Nothing else is looked up, so a bad list is refused before the
+/// workspace is resolved.
+pub fn check_specs(checks: &[Json]) -> Result<Vec<CheckSpec>, WgError> {
+    let specs = checks.iter().map(spec_of).collect::<Result<Vec<_>, _>>()?;
     if specs.is_empty() {
         return Err(invalid(
             "a verification configuration needs at least one check",
@@ -108,6 +101,18 @@ pub fn write_config(
     if names.len() != specs.len() {
         return Err(invalid("check names must be unique within a configuration"));
     }
+    Ok(specs)
+}
+
+/// `create_config`: writes the configuration and replies with it (`VerificationConfigOut`).
+pub fn write_config(
+    world: &ConfigWorld,
+    stamp: &Stamp,
+    workspace: Id,
+    request: &ConfigRequest<'_>,
+) -> Result<Decision<Value>, WgError> {
+    stamp.require(&[Permission::ConfigManage])?;
+    let specs = check_specs(request.checks)?;
     let scope = scope_id(&world.tasks, workspace, request)?;
     specs
         .iter()

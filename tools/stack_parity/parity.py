@@ -490,7 +490,7 @@ def rows_of(db: sqlite3.Connection, table: str, live: str) -> list[dict[str, Any
     rows = []
     for raw in db.execute(f"SELECT * FROM {table}{order}"):
         row = {}
-        for column in raw:
+        for column in raw.keys():  # noqa: SIM118 - iterating a sqlite3.Row yields values, not names
             if column in skip:
                 continue
             value = decode(column, raw[column])

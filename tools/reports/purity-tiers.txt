@@ -148,4 +148,5 @@ wg-verify-feature Shell
 wg-verify-feature::spec Pure
 wg-verify-feature::service Shell
 wg-verify-feature::cli Shell
+wg-verify-feature::jobs Shell
 wg-wire Pure

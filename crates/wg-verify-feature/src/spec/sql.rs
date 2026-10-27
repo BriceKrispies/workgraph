@@ -177,3 +177,21 @@ pub fn decode_failure(values: &[Raw]) -> Result<FailureRow, WgError> {
         task_key: TaskKey::parse(&task.text("key")?)?,
     })
 }
+
+/// The repositories among `repository_ids` that have taken part in a stack
+/// (`_lands_through_stacks`): at most one row, empty when none has.
+pub fn stack_repository_hits(repository_ids: &[Id]) -> Statement {
+    let mut params = Vec::new();
+    let marks: Vec<String> = repository_ids
+        .iter()
+        .map(|id| bind(&mut params, id_sql(*id)))
+        .collect();
+    Statement {
+        sql: format!(
+            "SELECT \"repository_id\" FROM \"stack_repositories\" \
+             WHERE \"repository_id\" IN ({}) LIMIT 1",
+            marks.join(", ")
+        ),
+        params,
+    }
+}

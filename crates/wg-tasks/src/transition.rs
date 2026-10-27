@@ -33,6 +33,8 @@ pub struct Change<'a> {
     /// The `attempt_id` key of the status event (`extra={"attempt_id": ...}`): absent, or written
     /// as the id or as null.
     pub attempt_id: Option<Option<Id>>,
+    /// The `run_id` key of the status event (`extra={"run_id": ...}`), the same way.
+    pub run_id: Option<Option<Id>>,
 }
 
 /// What a status change produced: the changes, the ids still free and the slice afterwards.
@@ -202,7 +204,7 @@ pub fn transition(
             reason: gated.reason.clone(),
             version: next.version,
             attempt_id: change.attempt_id,
-            run_id: None,
+            run_id: change.run_id,
             extra: Map::new(),
         }),
     );

@@ -10,6 +10,7 @@
 mod acceptance;
 mod config;
 mod outcome;
+mod runner;
 mod scope;
 mod signatures;
 
@@ -22,6 +23,7 @@ pub use outcome::{
     CheckResult, ProcessOutcome, RunOutcome, check_signatures, check_status, is_fast_pass,
     ran_fast_tier_only, run_outcome,
 };
+pub use runner::{ExecutedCheck, RunIdentity, check_environment, log_file_name, manifest_entry};
 pub use scope::{
     ApplicableCheck, TaskScope, applicable_checks, applicable_configs, checks_for_tier, parse_tier,
 };

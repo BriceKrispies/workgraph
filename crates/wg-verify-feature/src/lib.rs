@@ -11,23 +11,26 @@
 //! * [`cli`] (Shell): the `verify` group, a table of handlers into [`service`].
 //!
 //! The reads base code shares (the workspace configs, the newest run, the task acceptances) stay
-//! in `wg-store`. The feature exports [`FEATURE`]. Not yet served: `verify config` and `verify
-//! run` (see [`cli`]), the routes, the tools and the jobs.
+//! in `wg-store`. The check runner (`verify run`, the `verify` job) and `verify config` are
+//! [`service::run`] and [`service::config`] over the decisions of [`spec::run`],
+//! [`spec::auto_accept`] and [`spec::config_write`]. The feature exports [`FEATURE`]. Not yet
+//! served: the routes and the tools.
 
 pub mod cli;
+pub mod jobs;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The verification feature: its `verify` command group. It has no routes, tools, resources or
-/// jobs yet.
+/// The verification feature: its `verify` command group and the `verify` job. It has no routes,
+/// tools or resources yet.
 pub static FEATURE: Feature = Feature {
     name: "verify",
     cli: &[cli::GROUP],
     routes: &[],
     tools: &[],
     resources: &[],
-    jobs: &[],
+    jobs: jobs::JOBS,
     maintenance: &[],
 };

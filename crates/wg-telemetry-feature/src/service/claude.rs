@@ -8,7 +8,9 @@
 use std::path::{Path, PathBuf};
 
 use serde_json::{Value as Json, json};
-use wg_runtime::{App, human_context};
+use wg_proc::{CaptureLimits, run_capture};
+use wg_procspec::ProcessSpec;
+use wg_runtime::{App, human_context, write_atomic};
 use wg_types::{ErrorCode, WgError, parse_id};
 
 use crate::service::hooks;
@@ -134,6 +136,134 @@ pub fn mcp_config(command: Option<&str>) -> Result<Json, WgError> {
         None => workgraph_executable()?,
     };
     Ok(installer::mcp_server_config(&exe))
+}
+
+/// `installer.install(scope, project_dir=..., events=..., command=...)` and, with `--mcp`, the
+/// `claude mcp add` registration. `events` empty means every default event; `command` empty or
+/// absent locates the executable. The result is the Python dict, keys in its order.
+pub fn install(
+    env: &ClaudeEnv,
+    scope: &str,
+    project_dir: Option<&Path>,
+    events: &[String],
+    command: Option<&str>,
+    mcp: bool,
+) -> Result<Json, WgError> {
+    let root = project_root(project_dir);
+    let path = installer::settings_path(scope, env.config_dir.as_deref(), &env.home, &root);
+    let shown = path.display().to_string();
+    let data = load(&path, &shown).map_err(installer::config_error)?;
+    let exe = match command.filter(|text| !text.is_empty()) {
+        Some(text) => text.to_owned(),
+        None => workgraph_executable()?,
+    };
+    let events: Vec<String> = if events.is_empty() {
+        installer::DEFAULT_EVENTS
+            .iter()
+            .map(|event| (*event).to_owned())
+            .collect()
+    } else {
+        events.to_vec()
+    };
+    let (data, added) =
+        installer::install_hooks(data, &shown, &events, &exe).map_err(installer::config_error)?;
+    let backup = if added.is_empty() {
+        None
+    } else {
+        write_settings(&path, &data)?
+    };
+    let mut out = installer::install_object(&shown, &added, backup.as_deref(), &exe);
+    if mcp {
+        let registration = register_mcp(scope, &exe)?;
+        out.insert("mcp".to_owned(), Json::String(registration));
+    }
+    Ok(Json::Object(out))
+}
+
+/// `installer.uninstall(scope, project_dir=...)`: removes only the Workgraph handlers.
+pub fn uninstall(
+    env: &ClaudeEnv,
+    scope: &str,
+    project_dir: Option<&Path>,
+) -> Result<Json, WgError> {
+    let root = project_root(project_dir);
+    let path = installer::settings_path(scope, env.config_dir.as_deref(), &env.home, &root);
+    let shown = path.display().to_string();
+    let data = load(&path, &shown).map_err(installer::config_error)?;
+    let (data, removed) = installer::uninstall_hooks(data);
+    let backup = if removed.is_empty() {
+        None
+    } else {
+        write_settings(&path, &data)?
+    };
+    Ok(Json::Object(installer::uninstall_object(
+        &shown,
+        &removed,
+        backup.as_deref(),
+    )))
+}
+
+/// `_write(path, data)`: a timestamped copy of an existing file, then the new text written
+/// atomically. Returns the backup's path when one was made.
+fn write_settings(
+    path: &Path,
+    data: &serde_json::Map<String, Json>,
+) -> Result<Option<String>, WgError> {
+    let io_error = |action: &str, target: &Path, err: &std::io::Error| {
+        WgError::new(
+            ErrorCode::WorkgraphError,
+            format!("could not {action} {}: {err}", target.display()),
+        )
+    };
+    let backup = if path.exists() {
+        let name = path
+            .file_name()
+            .map(|name| name.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        let now = time::OffsetDateTime::now_utc();
+        let stamp = installer::backup_stamp(
+            (now.year(), u8::from(now.month()), now.day()),
+            (now.hour(), now.minute(), now.second()),
+        );
+        let target = path.with_file_name(installer::backup_name(&name, &stamp));
+        std::fs::copy(path, &target).map_err(|err| io_error("copy", &target, &err))?;
+        Some(target.display().to_string())
+    } else {
+        None
+    };
+    let text = installer::settings_text(data).map_err(installer::config_error)?;
+    write_atomic(path, text.as_bytes()).map_err(|err| io_error("write", path, &err))?;
+    Ok(backup)
+}
+
+/// The timeout of `claude mcp add` (`subprocess.run(..., timeout=60)`).
+const MCP_ADD_TIMEOUT_MS: u64 = 60_000;
+
+/// `--mcp`: `claude mcp add --scope {scope} workgraph -- {exe} mcp` when the `claude` CLI is on the
+/// search path, else the manual hint with the MCP block.
+fn register_mcp(scope: &str, exe: &str) -> Result<String, WgError> {
+    let Some(claude) = find_on_path("claude") else {
+        return installer::mcp_manual_hint(&installer::mcp_server_config(exe))
+            .map_err(installer::config_error);
+    };
+    let argv = installer::mcp_add_argv(&claude.to_string_lossy(), scope, exe);
+    let mut spec = ProcessSpec::new(argv);
+    spec.timeout_ms = Some(MCP_ADD_TIMEOUT_MS);
+    let result = run_capture(&spec, CaptureLimits::default(), None)
+        .map_err(|err| WgError::new(ErrorCode::WorkgraphError, err.to_string()))?;
+    if result.timed_out {
+        return Err(WgError::new(
+            ErrorCode::WorkgraphError,
+            format!(
+                "claude mcp add timed out after {} seconds",
+                MCP_ADD_TIMEOUT_MS / 1000
+            ),
+        ));
+    }
+    Ok(installer::mcp_output(
+        &String::from_utf8_lossy(&result.stdout),
+        &String::from_utf8_lossy(&result.stderr),
+    ))
 }
 
 /// `status`: the installation of `scope`, the ingestion statistics and the ten newest sessions.

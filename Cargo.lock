@@ -3095,6 +3095,8 @@ dependencies = [
  "wg-clispec",
  "wg-json",
  "wg-model",
+ "wg-proc",
+ "wg-procspec",
  "wg-registry",
  "wg-render",
  "wg-runtime",

@@ -1,6 +1,6 @@
 //! `workgraph claude status, replay, bind, unbind, sessions, mcp-config, backfill-time,
-//! backfill-transcripts` (C047 to C049 and C052 to C056): the Claude Code commands other than the
-//! hook fast path (`claude hook`), `install` and `uninstall`, which their own tasks add.
+//! backfill-transcripts` (C047 to C049 and C052 to C056) and `install`, `uninstall` (C051, C057):
+//! the Claude Code commands other than the hook fast path (`claude hook`), which its own task adds.
 //!
 //! The clap command is the snapshot's own tree, so help and parameters match `contracts/cli.json`;
 //! each handler reads its matches with [`crate::spec::args`], calls one [`crate::service::claude`]
@@ -88,6 +88,41 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             state.emit(
                 &json_value(&out),
                 Some(&|c| view::kv_object(c, &out, "backfill-transcripts")),
+            )
+        }
+        Some("install") => {
+            let scope = args::scope(m);
+            if !matches!(scope.as_str(), "user" | "project" | "local") {
+                return Err(CliFailure::fail("scope must be user, project or local", 2));
+            }
+            // Python ensures the storage exists before installing, so hooks can ingest at once.
+            state.app()?;
+            let env = ClaudeEnv::from_process();
+            let project = args::project_dir(m);
+            let events = wg_clispec::args::many(m, "--event");
+            let command = args::text(m, "--command");
+            let mcp = wg_clispec::args::flag(m, "--mcp");
+            let out = claude::install(
+                &env,
+                &scope,
+                project.as_deref(),
+                &events,
+                command.as_deref(),
+                mcp,
+            )?;
+            state.emit(
+                &json_value(&out),
+                Some(&|c| view::kv_object(c, &out, "claude install")),
+            )
+        }
+        Some("uninstall") => {
+            let env = ClaudeEnv::from_process();
+            let scope = args::scope(m);
+            let project = args::project_dir(m);
+            let out = claude::uninstall(&env, &scope, project.as_deref())?;
+            state.emit(
+                &json_value(&out),
+                Some(&|c| view::kv_object(c, &out, "claude uninstall")),
             )
         }
         _ => Err(CliFailure::fail(

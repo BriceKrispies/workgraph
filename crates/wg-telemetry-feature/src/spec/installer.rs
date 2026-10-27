@@ -9,6 +9,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use serde_json::{Map, Value, json};
+use wg_types::{ErrorCode, WgError};
 
 /// `DEFAULT_EVENTS`: the hook events Workgraph installs, in Python's order.
 pub const DEFAULT_EVENTS: [&str; 10] = [
@@ -183,6 +184,238 @@ pub fn status(
 #[must_use]
 pub fn mcp_server_config(command: &str) -> Value {
     json!({"mcpServers": {"workgraph": {"type": "stdio", "command": command, "args": ["mcp"]}}})
+}
+
+/// The `timeout` of an installed hook handler (`install(timeout=10)`).
+pub const HOOK_TIMEOUT: i64 = 10;
+
+/// The matcher group Workgraph adds for one event: an async, passive exec-form handler.
+#[must_use]
+pub fn hook_group(command: &str) -> Value {
+    json!({
+        "matcher": "",
+        "hooks": [{
+            "type": "command",
+            "command": command,
+            "args": HOOK_ARGS,
+            "timeout": HOOK_TIMEOUT,
+            "async": true
+        }]
+    })
+}
+
+/// The items Python iterates for `group.get("hooks") or []`: a list yields its items, a
+/// non-empty string its characters and a non-empty object its keys. Any other truthy value is a
+/// Python `TypeError` the Rust port does not reproduce; it is read as no handlers.
+fn handlers_of(group: &Map<String, Value>) -> Vec<Value> {
+    match group.get("hooks") {
+        Some(Value::Array(items)) => items.clone(),
+        Some(Value::String(text)) => text.chars().map(|c| Value::String(c.to_string())).collect(),
+        Some(Value::Object(members)) => members
+            .keys()
+            .map(|key| Value::String(key.clone()))
+            .collect(),
+        _ => Vec::new(),
+    }
+}
+
+/// `any(is_workgraph_handler(h) for g in groups if isinstance(g, dict) for h in g.hooks or [])`.
+fn has_workgraph_handler(groups: &[Value]) -> bool {
+    groups
+        .iter()
+        .filter_map(Value::as_object)
+        .any(|group| handlers_of(group).iter().any(is_workgraph_handler))
+}
+
+/// The `install` edit of a loaded settings document: `hooks` is created when absent, and each
+/// event in `events` gets a Workgraph group unless one of its groups already has a handler.
+/// Returns the edited document and the events that were added, in order. `path` names the file in
+/// the refusals.
+pub fn install_hooks(
+    mut data: Map<String, Value>,
+    path: &str,
+    events: &[String],
+    command: &str,
+) -> Result<(Map<String, Value>, Vec<String>), String> {
+    let Value::Object(hooks) = data
+        .entry("hooks")
+        .or_insert_with(|| Value::Object(Map::new()))
+    else {
+        return Err(format!(
+            "'hooks' in {path} is not an object; refusing to modify it"
+        ));
+    };
+    let mut added = Vec::new();
+    for event in events {
+        let Value::Array(groups) = hooks
+            .entry(event.clone())
+            .or_insert_with(|| Value::Array(Vec::new()))
+        else {
+            return Err(format!(
+                "hooks.{event} in {path} is not a list; refusing to modify it"
+            ));
+        };
+        if has_workgraph_handler(groups) {
+            continue;
+        }
+        groups.push(hook_group(command));
+        added.push(event.clone());
+    }
+    Ok((data, added))
+}
+
+/// The `uninstall` edit: removes the Workgraph handlers from every event, drops the groups that
+/// end up with no handler (and events left with no group), and drops `hooks` when it is empty.
+/// Returns the edited document and the event of every group that lost a handler, repeats included.
+pub fn uninstall_hooks(mut data: Map<String, Value>) -> (Map<String, Value>, Vec<String>) {
+    let mut removed = Vec::new();
+    let mut drop_hooks = false;
+    if let Some(Value::Object(hooks)) = data.get_mut("hooks") {
+        let mut kept_events = Map::new();
+        for (event, groups) in std::mem::take(hooks) {
+            let Value::Array(groups) = groups else {
+                kept_events.insert(event, groups);
+                continue;
+            };
+            let new_groups = uninstall_groups(&event, groups, &mut removed);
+            if !new_groups.is_empty() {
+                kept_events.insert(event, Value::Array(new_groups));
+            }
+        }
+        drop_hooks = kept_events.is_empty();
+        *hooks = kept_events;
+    }
+    if drop_hooks {
+        data.shift_remove("hooks");
+    }
+    (data, removed)
+}
+
+/// The `_load` refusals, which are `ConfigError`s (exit 7).
+#[must_use]
+pub fn config_error(message: String) -> WgError {
+    WgError::new(ErrorCode::ConfigError, message)
+}
+
+/// The groups of one event after the uninstall edit; `removed` collects the event per changed group.
+fn uninstall_groups(event: &str, groups: Vec<Value>, removed: &mut Vec<String>) -> Vec<Value> {
+    let mut new_groups = Vec::new();
+    for group in groups {
+        let Value::Object(members) = &group else {
+            new_groups.push(group);
+            continue;
+        };
+        let handlers = handlers_of(members);
+        let kept: Vec<Value> = handlers
+            .iter()
+            .filter(|handler| !is_workgraph_handler(handler))
+            .cloned()
+            .collect();
+        if kept.len() != handlers.len() {
+            removed.push(event.to_owned());
+        }
+        if !kept.is_empty() {
+            let mut rebuilt = members.clone();
+            rebuilt.insert("hooks".to_owned(), Value::Array(kept));
+            new_groups.push(Value::Object(rebuilt));
+        } else if handlers.is_empty() {
+            new_groups.push(group);
+        }
+    }
+    new_groups
+}
+
+/// The settings text Python writes: `json.dumps(data, indent=2) + "\n"`.
+pub fn settings_text(data: &Map<String, Value>) -> Result<String, String> {
+    let document = wg_wire::convention::json_object(data);
+    wg_json::cli_json(&document).map_err(|err| err.to_string())
+}
+
+/// The `backup` file name: `{name}.workgraph-backup-{stamp}`, the stamp being `%Y%m%dT%H%M%SZ`.
+#[must_use]
+pub fn backup_name(file_name: &str, stamp: &str) -> String {
+    format!("{file_name}.workgraph-backup-{stamp}")
+}
+
+/// `datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")` from its fields.
+#[must_use]
+pub fn backup_stamp(
+    (year, month, day): (i32, u8, u8),
+    (hour, minute, second): (u8, u8, u8),
+) -> String {
+    format!("{year:04}{month:02}{day:02}T{hour:02}{minute:02}{second:02}Z")
+}
+
+/// The result of `installer.install`, keys in Python's order.
+#[must_use]
+pub fn install_object(
+    settings: &str,
+    added: &[String],
+    backup: Option<&str>,
+    command: &str,
+) -> Map<String, Value> {
+    match json!({
+        "settings": settings,
+        "added": added,
+        "backup": backup,
+        "command": command,
+    }) {
+        Value::Object(map) => map,
+        _ => Map::new(),
+    }
+}
+
+/// The result of `installer.uninstall`: the removed events sorted and without repeats.
+#[must_use]
+pub fn uninstall_object(
+    settings: &str,
+    removed: &[String],
+    backup: Option<&str>,
+) -> Map<String, Value> {
+    let unique: BTreeSet<&String> = removed.iter().collect();
+    let sorted: Vec<&String> = unique.into_iter().collect();
+    match json!({
+        "settings": settings,
+        "removed": sorted,
+        "backup": backup,
+    }) {
+        Value::Object(map) => map,
+        _ => Map::new(),
+    }
+}
+
+/// The `mcp` value when the `claude` CLI is not on the search path: a hint with the block as
+/// Python's `json.dumps` writes it (default separators, ASCII).
+pub fn mcp_manual_hint(config: &Value) -> Result<String, String> {
+    let line = wg_json::log_json(&wg_wire::convention::json_value(config))
+        .map_err(|err| err.to_string())?;
+    Ok(format!("claude CLI not found; add manually: {line}"))
+}
+
+/// The argument vector of `claude mcp add --scope {scope} workgraph -- {command} mcp`.
+#[must_use]
+pub fn mcp_add_argv(claude: &str, scope: &str, command: &str) -> Vec<String> {
+    [
+        claude,
+        "mcp",
+        "add",
+        "--scope",
+        scope,
+        "workgraph",
+        "--",
+        command,
+        "mcp",
+    ]
+    .iter()
+    .map(|part| (*part).to_owned())
+    .collect()
+}
+
+/// The `mcp` value of a finished `claude mcp add`: `(stdout or stderr).strip()[:500]`.
+#[must_use]
+pub fn mcp_output(stdout: &str, stderr: &str) -> String {
+    let text = if stdout.is_empty() { stderr } else { stdout };
+    text.trim().chars().take(500).collect()
 }
 
 #[cfg(test)]

@@ -23,6 +23,18 @@ use crate::rows_more::{columns_more, key_values_more, primary_key_more, row_valu
 pub trait TableRow: Sized {
     const TABLE: Table;
 
+    /// The table's columns, in schema order (defaulted until `row_codec!` declares them).
+    const COLUMNS: &'static [&'static str] = &[];
+
+    /// The primary-key columns, in key order.
+    const PRIMARY_KEY: &'static [&'static str] = &[];
+
+    /// The primary-key values of `key`, in the order of [`Self::PRIMARY_KEY`]; empty when `key`
+    /// is another table's.
+    fn key_values(_key: &RowKey) -> Vec<Raw> {
+        Vec::new()
+    }
+
     /// The bound parameters, in the order of [`columns`].
     fn values(&self) -> Result<Vec<Raw>, WgError>;
 

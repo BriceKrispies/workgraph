@@ -5,6 +5,8 @@
 //! row ([`sql`]), and the `events` log's rows, queries and upcasting ([`events`], [`query`]). The
 //! statements are values ([`sql::Statement`]); `wg-store` binds them to its driver and runs them.
 
+#[macro_use]
+mod rowmap;
 pub mod acceptance_sql;
 pub mod codec;
 pub mod events;
@@ -19,6 +21,12 @@ pub mod sql;
 pub mod stack_sql;
 pub mod task_sql;
 pub mod task_world_sql;
+
+/// Paths the exported macros expand to.
+#[doc(hidden)]
+pub mod __private {
+    pub use wg_types::{TaskKey, WgError};
+}
 
 pub use codec::{Cols, DbFailure, Raw, db_error};
 pub use events::{EVENT_COLUMNS, EventQuery, EventRecord, append_statement, decode_event};

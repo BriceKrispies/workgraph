@@ -2919,6 +2919,7 @@ dependencies = [
  "wg-serverspec",
  "wg-store",
  "wg-tasks-feature",
+ "wg-telemetry-feature",
  "wg-types",
  "wg-validate",
  "wg-wire",

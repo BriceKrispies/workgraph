@@ -2387,6 +2387,7 @@ dependencies = [
  "wg-clispec",
  "wg-codeparse",
  "wg-decisions",
+ "wg-demo-feature",
  "wg-events-feature",
  "wg-exec-feature",
  "wg-experiments-feature",
@@ -2502,6 +2503,22 @@ dependencies = [
  "serde_json",
  "wg-demoproto",
  "wg-proc",
+]
+
+[[package]]
+name = "wg-demo-feature"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde_json",
+ "wg-clispec",
+ "wg-config",
+ "wg-git-feature",
+ "wg-json",
+ "wg-registry-feature",
+ "wg-render",
+ "wg-runtime",
+ "wg-types",
 ]
 
 [[package]]

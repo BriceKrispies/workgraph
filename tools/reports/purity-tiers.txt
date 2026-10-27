@@ -52,6 +52,10 @@ wg-events-feature Shell
 wg-events-feature::spec Pure
 wg-events-feature::service Shell
 wg-events-feature::cli Shell
+wg-demo-feature Shell
+wg-demo-feature::spec Pure
+wg-demo-feature::service Shell
+wg-demo-feature::cli Shell
 wg-exec Core
 wg-exec-feature Shell
 wg-exec-feature::spec Pure

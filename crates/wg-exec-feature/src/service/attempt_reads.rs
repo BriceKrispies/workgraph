@@ -145,7 +145,7 @@ pub fn log(
         )
     })?;
     let text = String::from_utf8_lossy(&bytes);
-    let lines: Vec<&str> = text.lines().collect();
+    let lines = wg_json::py_splitlines(&text);
     let total = lines.len();
     let start = tail_start(total, tail);
     let kept: Vec<&str> = lines[start..].to_vec();

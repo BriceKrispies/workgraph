@@ -9,7 +9,9 @@
 use serde_json::Value as Json;
 use wg_json::Value;
 use wg_model::entity::{JsonObject, VerificationConfig};
-use wg_model::event::{EventDraft, EventPayload, VerificationConfigWritten};
+use wg_model::event::{
+    EventDraft, EventPayload, VerificationConfigToggled, VerificationConfigWritten,
+};
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, TaskSlice, Write, py_repr_str};
 use wg_registry::resolve;
@@ -83,19 +85,12 @@ fn updated(
     }
 }
 
-/// `create_config`: writes the configuration and replies with it (`VerificationConfigOut`).
-pub fn write_config(
-    world: &ConfigWorld,
-    stamp: &Stamp,
-    workspace: Id,
-    request: &ConfigRequest<'_>,
-) -> Result<Decision<Value>, WgError> {
-    stamp.require(&[Permission::ConfigManage])?;
-    let specs = request
-        .checks
-        .iter()
-        .map(spec_of)
-        .collect::<Result<Vec<_>, _>>()?;
+/// The checks of a configuration, validated as `create_config` validates them, in its order: each
+/// check as the `CheckSpec` model reads it (the first invalid one is reported), then at least one
+/// check, then unique names. Nothing else is looked up, so a bad list is refused before the
+/// workspace is resolved.
+pub fn check_specs(checks: &[Json]) -> Result<Vec<CheckSpec>, WgError> {
+    let specs = checks.iter().map(spec_of).collect::<Result<Vec<_>, _>>()?;
     if specs.is_empty() {
         return Err(invalid(
             "a verification configuration needs at least one check",
@@ -106,6 +101,18 @@ pub fn write_config(
     if names.len() != specs.len() {
         return Err(invalid("check names must be unique within a configuration"));
     }
+    Ok(specs)
+}
+
+/// `create_config`: writes the configuration and replies with it (`VerificationConfigOut`).
+pub fn write_config(
+    world: &ConfigWorld,
+    stamp: &Stamp,
+    workspace: Id,
+    request: &ConfigRequest<'_>,
+) -> Result<Decision<Value>, WgError> {
+    stamp.require(&[Permission::ConfigManage])?;
+    let specs = check_specs(request.checks)?;
     let scope = scope_id(&world.tasks, workspace, request)?;
     specs
         .iter()
@@ -158,4 +165,65 @@ pub fn write_config(
     Ok(Decision::new(config_from_model(&config))
         .write(write)
         .event(recorded))
+}
+
+/// `set_config_enabled`: switches the configuration on or off and records the toggle. The row
+/// keeps its checks, version and approver; `reference` is the id the caller named, for the
+/// `NotFound` message.
+pub fn toggle(
+    found: Option<VerificationConfig>,
+    reference: &str,
+    stamp: &Stamp,
+    enabled: bool,
+) -> Result<Decision<Value>, WgError> {
+    stamp.require(&[Permission::ConfigManage])?;
+    let config = found.ok_or_else(|| {
+        WgError::new(
+            ErrorCode::NotFound,
+            format!("verification config {reference} not found"),
+        )
+    })?;
+    let row = VerificationConfig { enabled, ..config };
+    let payload = if enabled {
+        EventPayload::VerificationConfigEnabled(VerificationConfigToggled {})
+    } else {
+        EventPayload::VerificationConfigDisabled(VerificationConfigToggled {})
+    };
+    let event = EventDraft::new(stamp, stamp.id(0), Some(row.workspace_id), row.id, payload);
+    Ok(Decision::new(config_from_model(&row))
+        .write(Write::update(row))
+        .event(event))
+}
+
+/// The body of `POST /ws/{ws}/verification/configs` (`VerificationConfigBody`), as the service
+/// takes it: the scope type and reference, the name and the checks, as the client sent them.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ConfigBody {
+    pub scope_type: String,
+    pub scope: Option<String>,
+    pub name: String,
+    pub checks: Vec<Json>,
+}
+
+/// The validated body of a configuration write (the model has already checked the fields).
+#[must_use]
+pub fn config_body(body: &Json) -> ConfigBody {
+    ConfigBody {
+        scope_type: body
+            .get("scope_type")
+            .and_then(Json::as_str)
+            .unwrap_or_default()
+            .to_owned(),
+        scope: body.get("scope").and_then(Json::as_str).map(str::to_owned),
+        name: body
+            .get("name")
+            .and_then(Json::as_str)
+            .unwrap_or_default()
+            .to_owned(),
+        checks: body
+            .get("checks")
+            .and_then(Json::as_array)
+            .cloned()
+            .unwrap_or_default(),
+    }
 }

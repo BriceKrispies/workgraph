@@ -28,6 +28,7 @@ wg-automation-feature::spec Pure
 wg-automation-feature::service Shell
 wg-automation-feature::jobs Shell
 wg-automation-feature::cli Shell
+wg-automation-feature::http Shell
 wg-browser Shell
 wg-browserspec Pure
 wg-cli Shell
@@ -150,4 +151,5 @@ wg-verify-feature::spec Pure
 wg-verify-feature::service Shell
 wg-verify-feature::cli Shell
 wg-verify-feature::jobs Shell
+wg-verify-feature::http Shell
 wg-wire Pure

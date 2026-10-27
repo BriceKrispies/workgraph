@@ -13,7 +13,9 @@ pub mod reads;
 use serde_json::{Map, Value as Json};
 use wg_jobs::shift;
 use wg_json::Value;
-use wg_model::entity::{AgentAttempt, AutomationRule, AutomationRun, Classification, Task};
+use wg_model::entity::{
+    AgentAttempt, AutomationRule, AutomationRun, Classification, Notification, Task,
+};
 use wg_model::{RowKey, Write};
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext};
@@ -425,6 +427,26 @@ pub fn notifications(
         |session| reads::notifications(session, ws, unread_only, Page::first(NOTIFICATION_LIMIT)),
         |rows| Ok(core::notifications_out(rows)),
     )
+}
+
+/// `NotificationService.mark_read`: stamps a notification read now. No permission is checked
+/// (the Python service checks none), so the route is open to any caller.
+pub fn mark_read(
+    app: &mut App,
+    context: &RequestContext,
+    notification_id: &str,
+) -> Result<(), WgError> {
+    let id = parse_id(notification_id).ok();
+    app.runtime
+        .decide(
+            context,
+            |session| match id {
+                Some(found) => session.fetch::<Notification>(&RowKey::Notification(found)),
+                None => Ok(None),
+            },
+            |found, stamp| core::routes::mark_read(found.clone(), stamp),
+        )
+        .map(|_| ())
 }
 
 /// `process`: `AutomationService.process_events` then `run_scheduled`, run now. The reply is

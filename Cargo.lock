@@ -2325,6 +2325,7 @@ dependencies = [
  "wg-render",
  "wg-runtime",
  "wg-runtimespec",
+ "wg-serverspec",
  "wg-store",
  "wg-storecodec",
  "wg-tasks-feature",
@@ -2920,6 +2921,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tower",
+ "wg-automation-feature",
  "wg-decisions",
  "wg-json",
  "wg-model",
@@ -2932,6 +2934,7 @@ dependencies = [
  "wg-telemetry-feature",
  "wg-types",
  "wg-validate",
+ "wg-verify-feature",
  "wg-wire",
 ]
 
@@ -3185,6 +3188,7 @@ dependencies = [
  "wg-render",
  "wg-runtime",
  "wg-runtimespec",
+ "wg-serverspec",
  "wg-store",
  "wg-storecodec",
  "wg-tasks",

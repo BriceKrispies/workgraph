@@ -41,10 +41,6 @@ use wg_verify::TaskScope;
 /// The directory name under the worktrees root that holds stack worktrees.
 const STACKS_DIR: &str = "stacks";
 
-/// The file a worktree directory's parent keeps for the manifest; it does not keep a parent alive.
-
-/// How much of git's refusal `remove` reports (`stderr.strip()[:300]`).
-
 /// `WorktreeManager.recover`: reconciles the managed worktree rows with the disk and their
 /// attempts, and reports the directories under the worktrees root that no row records.
 /// `worker recover` runs it as the system (`RequestContext.system("cli")`).

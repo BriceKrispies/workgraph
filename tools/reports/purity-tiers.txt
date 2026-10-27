@@ -107,6 +107,8 @@ wg-stacks-feature Shell
 wg-stacks-feature::spec Pure
 wg-stacks-feature::service Shell
 wg-stacks-feature::cli Shell
+wg-stacks-feature::http Shell
+wg-stacks-feature::jobs Shell
 wg-stacks-feature::mcp Shell
 wg-store Shell
 wg-storecodec Pure
@@ -123,7 +125,6 @@ wg-tasks::edit Pure
 wg-tasks::files Core
 wg-tasks::graph Core
 wg-tasks::hierarchy Core
-wg-tasks::landing Pure
 wg-tasks::lifecycle Core
 wg-tasks::links Core
 wg-tasks::shape Pure

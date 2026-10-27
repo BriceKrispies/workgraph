@@ -38,7 +38,6 @@ wg-net = { path = "../wg-net" }
 wg-proc = { path = "../wg-proc" }
 wg-registry = { path = "../wg-registry" }
 wg-runtimespec = { path = "../wg-runtimespec" }
-wg-stacks = { path = "../wg-stacks" }
 wg-store = { path = "../wg-store" }
 wg-wire = { path = "../wg-wire" }
 wg-tasks = { path = "../wg-tasks" }

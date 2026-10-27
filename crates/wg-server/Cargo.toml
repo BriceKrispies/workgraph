@@ -32,6 +32,7 @@ rpds = "1"
 wg-decisions = { path = "../wg-decisions" }
 wg-git-feature = { path = "../wg-git-feature" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }
+wg-stacks-feature = { path = "../wg-stacks-feature" }
 wg-registry-feature = { path = "../wg-registry-feature" }
 wg-automation-feature = { path = "../wg-automation-feature" }
 wg-verify-feature = { path = "../wg-verify-feature" }

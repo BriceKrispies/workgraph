@@ -308,7 +308,7 @@ fn samples() -> Vec<EventPayload> {
             status: "passed".into(),
             task_id,
             task_key: "WG-1".into(),
-            stack: Some(run_id),
+            stack: Some(json!({"id": run_id.to_string()})),
         }),
     ];
     out.sort_by_key(|payload| payload.event_type());

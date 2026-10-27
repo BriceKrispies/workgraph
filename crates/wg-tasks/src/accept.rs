@@ -7,7 +7,7 @@
 //! task's latest run, its latest succeeded attempt, whether the stack's integration is busy),
 //! run the guards of `wg-verify` and `wg-stacks`, and return the writes and events. Accepting the
 //! parent of a stack does not write anything here: the route says so and the shell lands the
-//! stack (see [`super::landing`]).
+//! stack (the stacks feature, `wg-stacks-feature`).
 
 use std::collections::BTreeMap;
 

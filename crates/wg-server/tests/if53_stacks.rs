@@ -158,7 +158,10 @@ impl Harness {
                 lan: None,
                 ui: Ui::Dir(ui),
                 mcp: None,
-                routes: groups::routes_with(&[&wg_tasks_feature::FEATURE]),
+                routes: groups::routes_with(&[
+                    &wg_tasks_feature::FEATURE,
+                    &wg_stacks_feature::FEATURE,
+                ]),
             },
             app,
         )?;
@@ -427,7 +430,7 @@ async fn the_stack_routes_answer_as_the_python_application_does() -> TestResult 
         .blocking(move |app| {
             let marker = app.runtime.store.read(|session| session.latest_seq())?;
             app.runtime.store.write(|session| {
-                let items = session.stack_items(stack_uuid)?;
+                let items = wg_stacks_feature::service::reads::stack_items(session, stack_uuid)?;
                 let first = items
                     .iter()
                     .find(|item| item.task_id == first_task)
@@ -449,9 +452,11 @@ async fn the_stack_routes_answer_as_the_python_application_does() -> TestResult 
         .server
         .blocking(move |app| {
             let ctx = human_context(Some("tester"))?;
-            let out = app.stack_readmit(&ctx, Some("main"), "WG-1", "WG-2")?;
-            let second = app.stack_readmit(&ctx, Some("main"), "WG-1", "WG-3");
-            let again = app.stack_readmit(&ctx, Some("main"), "WG-1", "WG-2");
+            let out = wg_stacks_feature::service::readmit(app, &ctx, Some("main"), "WG-1", "WG-2")?;
+            let second =
+                wg_stacks_feature::service::readmit(app, &ctx, Some("main"), "WG-1", "WG-3");
+            let again =
+                wg_stacks_feature::service::readmit(app, &ctx, Some("main"), "WG-1", "WG-2");
             let events = app.runtime.store.read(|session| {
                 session.query_events(&wg_store::EventQuery {
                     after_seq: Some(ejected),

@@ -59,6 +59,11 @@ impl JobContext {
         self.cancel.load(Ordering::SeqCst)
     }
 
+    /// The cancellation flag itself, for a probe that outlives a borrow of the context.
+    pub fn cancel_flag(&mut self) -> Arc<AtomicBool> {
+        Arc::clone(&self.cancel)
+    }
+
     /// `check_cancelled`: an error once cancellation was requested.
     pub fn check_cancelled(&mut self) -> Result<(), HandlerError> {
         if self.cancel_requested() {

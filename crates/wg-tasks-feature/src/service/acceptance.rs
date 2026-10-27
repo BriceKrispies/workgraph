@@ -1,19 +1,28 @@
 //! The acceptance entry points of the application (IF-24): `task accept`, `task reject`,
 //! `task promote-dependents` and the acceptance list. Each one loads what the decision reads,
 //! runs it in the transaction of the call and applies the route it returns. A route that lands
-//! a stack is run by the base `App::land_stack`.
+//! a stack is run by the stacks feature (`wg_stacks_feature::service::exec`).
 
 use crate::spec::acceptance::{
     AcceptWorld, Route, accept_task, acceptances_out, item_stack_id, land_request_of,
     promote_dependents, reject_task, with_promoted,
 };
 use wg_json::Value;
+use wg_model::entity::AgentAttempt;
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext, index_written};
-use wg_runtime::{integration_busy, latest_succeeded};
+use wg_stacks_feature::service::exec::{integration_busy, land_stack_accepted};
 use wg_store::{Session, TaskWorld};
 use wg_tasks::accept::AcceptFacts;
-use wg_types::{Id, Permission, WgError};
+use wg_types::{AttemptStatus, Id, Permission, WgError};
+
+/// The latest succeeded attempt of `task` (`_latest_succeeded_attempt`).
+fn latest_succeeded(session: &mut Session<'_>, task: Id) -> Result<Option<AgentAttempt>, WgError> {
+    Ok(session
+        .attempts_of_task(task, &[AttemptStatus::Succeeded])?
+        .into_iter()
+        .max_by_key(|attempt| attempt.number))
+}
 
 fn facts_of(session: &mut Session<'_>, task: Id) -> Result<AcceptFacts, WgError> {
     let run = session.latest_verification_run(task)?;
@@ -104,7 +113,7 @@ fn accept_with(
         Route::Done(out) => Ok(out),
         Route::Land { stack_id } => {
             let (mode, text) = land_request_of(manual, reason);
-            app.land_stack(context, stack_id, mode, &text, true)
+            land_stack_accepted(app, context, stack_id, mode, &text, true)
         }
     }
 }

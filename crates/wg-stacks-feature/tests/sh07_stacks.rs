@@ -11,6 +11,7 @@ use rpds::VectorSync;
 use serde_json::{Value, json};
 use wg_model::entity::{Repository, Stack, StackItem, StackRepository, Task, Workspace};
 use wg_model::{JsonObject, Row, Write, derive_id};
+use wg_stacks_feature::service::reads;
 use wg_store::{Location, Store};
 use wg_types::{
     AccessMode, ErrorCode, Id, StackItemState, StackStatus, TaskKey, TaskPriority, TaskStatus,
@@ -226,26 +227,24 @@ fn stack_lookups_pick_the_active_and_the_latest() -> TestResult {
         assert_eq!(by_id.status, StackStatus::Open);
         assert!(session.stack_by_id(id(99))?.is_none());
 
-        let active = session
-            .active_stack_for_parent(id(1))?
+        let active = reads::active_stack_for_parent(session, id(1))?
             .ok_or_else(|| WgError::new(ErrorCode::NotFound, "no active stack"))?;
         assert_eq!(active.id, id(31));
-        assert!(session.active_stack_for_parent(id(2))?.is_none());
+        assert!(reads::active_stack_for_parent(session, id(2))?.is_none());
 
         // The landed stack is newer, so it is the latest one even though it is not active.
-        let latest = session
-            .latest_stack_for_parent(id(1))?
+        let latest = reads::latest_stack_for_parent(session, id(1))?
             .ok_or_else(|| WgError::new(ErrorCode::NotFound, "no latest stack"))?;
         assert_eq!(latest.id, id(30));
 
-        let open_only = session.stacks_in_workspace(id(0), false)?;
+        let open_only = reads::stacks_in_workspace(session, id(0), false)?;
         let open_ids: Vec<Id> = open_only.iter().map(|s| s.id).collect();
         assert_eq!(open_ids, vec![id(31)]);
-        let all = session.stacks_in_workspace(id(0), true)?;
+        let all = reads::stacks_in_workspace(session, id(0), true)?;
         let all_ids: Vec<Id> = all.iter().map(|s| s.id).collect();
         assert_eq!(all_ids, vec![id(30), id(31)]);
 
-        let containing = session.stacks_containing_task(id(5))?;
+        let containing = reads::stacks_containing_task(session, id(5))?;
         assert_eq!(containing.len(), 1);
         assert_eq!(containing[0].id, id(30));
         Ok(())
@@ -259,17 +258,16 @@ fn stack_items_come_in_merge_order() -> TestResult {
     fixture(&mut store)?;
 
     store.read(|session| {
-        let items = session.stack_items(id(31))?;
+        let items = reads::stack_items(session, id(31))?;
         let tasks: Vec<Id> = items.iter().map(|item| item.task_id).collect();
         // Merge order 1 (task 3), merge order 2 (task 2), then the unordered item (task 4).
         assert_eq!(tasks, vec![id(3), id(2), id(4)]);
 
-        let one = session
-            .stack_item(id(31), id(2))?
+        let one = reads::stack_item(session, id(31), id(2))?
             .ok_or_else(|| WgError::new(ErrorCode::NotFound, "item missing"))?;
         assert_eq!(one.id, id(40));
         assert_eq!(one.merge_order, Some(2));
-        assert!(session.stack_item(id(31), id(5))?.is_none());
+        assert!(reads::stack_item(session, id(31), id(5))?.is_none());
         Ok(())
     })?;
     Ok(())
@@ -281,14 +279,13 @@ fn task_items_respect_the_active_stack() -> TestResult {
     fixture(&mut store)?;
 
     store.read(|session| {
-        let active = session
-            .active_item_for_task(id(2))?
+        let active = reads::active_item_for_task(session, id(2))?
             .ok_or_else(|| WgError::new(ErrorCode::NotFound, "task 2 has no active item"))?;
         assert_eq!(active.stack_id, id(31));
         // Task 5 is only in the landed stack, so it has no active item but one item overall.
-        assert!(session.active_item_for_task(id(5))?.is_none());
+        assert!(reads::active_item_for_task(session, id(5))?.is_none());
 
-        let across = session.items_for_task(id(5))?;
+        let across = reads::items_for_task(session, id(5))?;
         assert_eq!(across.len(), 1);
         assert_eq!(across[0].stack_id, id(30));
         Ok(())
@@ -302,16 +299,15 @@ fn stack_repositories_by_name_and_by_task() -> TestResult {
     fixture(&mut store)?;
 
     store.read(|session| {
-        let repos = session.stack_repositories(id(31))?;
+        let repos = reads::stack_repositories(session, id(31))?;
         let order: Vec<Id> = repos.iter().map(|r| r.repository_id).collect();
         // Repository 21 is named "alpha" and repository 20 "beta".
         assert_eq!(order, vec![id(21), id(20)]);
 
-        let covered = session
-            .stack_repository(id(31), id(20))?
+        let covered = reads::stack_repository(session, id(31), id(20))?
             .ok_or_else(|| WgError::new(ErrorCode::NotFound, "repository 20 not covered"))?;
         assert_eq!(covered.base_sha, "aaa111");
-        assert!(session.stack_repository(id(31), id(99))?.is_none());
+        assert!(reads::stack_repository(session, id(31), id(99))?.is_none());
 
         // Task 2 is in the active stack 31, which covers repository 21.
         let base = session

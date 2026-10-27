@@ -180,3 +180,130 @@ fn enqueued_reply_carries_the_job_connection_and_mode() {
     assert!(encoded.contains("\"connection\": \"acme\""), "{encoded}");
     assert!(encoded.contains("\"full\": true"), "{encoded}");
 }
+
+// covers: C168
+#[test]
+fn list_document_has_one_row_per_connection_with_python_keys() {
+    let rows = spec::connections(&config());
+    let encoded = wg_json::cli_json(&spec::list_out(&rows)).unwrap_or_default();
+    let keys = [
+        "\"name\": \"acme\"",
+        "\"flavour\": \"cloud\"",
+        "\"base_url\": \"https://acme.example.test\"",
+        "\"workspace\": \"acme\"",
+        "\"projects\": [",
+        "\"name\": \"ops\"",
+    ];
+    let mut at = 0;
+    for key in keys {
+        let Some(offset) = encoded[at..].find(key) else {
+            panic!("{key} is missing or out of order in {encoded}");
+        };
+        at += offset + key.len();
+    }
+}
+
+// covers: C169
+#[test]
+fn an_unknown_connection_is_not_found_with_the_python_message() {
+    let rows = spec::connections(&config());
+    let Err(err) = spec::connection_of(&rows, "nope") else {
+        panic!("an unconfigured connection must be refused");
+    };
+    assert_eq!(err.code, wg_types::ErrorCode::NotFound);
+    assert_eq!(err.message, "tracker connection 'nope' is not configured");
+    assert_eq!(
+        err.details.get("connection").and_then(|v| v.as_str()),
+        Some("nope")
+    );
+}
+
+// covers: C170
+#[test]
+fn sync_document_has_the_report_keys_in_python_order() {
+    let mut report = wg_trackers::SyncReport::new("acme", true);
+    report.fetched = 4;
+    report.created = 2;
+    report.cursor = Some(1_700_000_000_123);
+    let encoded = wg_json::cli_json(&spec::run::sync_out(&report)).unwrap_or_default();
+    let keys = [
+        "connection",
+        "full",
+        "fetched",
+        "created",
+        "updated",
+        "unchanged",
+        "missing",
+        "archived",
+        "unresolved_pull_requests",
+        "errors",
+        "cursor",
+    ];
+    let mut at = 0;
+    for key in keys {
+        let Some(offset) = encoded[at..].find(&format!("\"{key}\"")) else {
+            panic!("{key} is missing or out of order in {encoded}");
+        };
+        at += offset + key.len();
+    }
+    assert!(encoded.contains("\"full\": true"), "{encoded}");
+    assert!(
+        encoded.contains("\"cursor\": \"2023-11-14T22:13:20.123000+00:00\""),
+        "{encoded}"
+    );
+}
+
+// covers: C170
+#[test]
+fn a_report_without_a_cursor_writes_null() {
+    let report = wg_trackers::SyncReport::new("acme", false);
+    let encoded = wg_json::cli_json(&spec::run::sync_out(&report)).unwrap_or_default();
+    assert!(encoded.contains("\"cursor\": null"), "{encoded}");
+    assert!(
+        encoded.contains("\"unresolved_pull_requests\": []"),
+        "{encoded}"
+    );
+}
+
+// covers: C170
+#[test]
+fn sync_view_prints_the_python_labels_and_leaves_out_empty_lists() {
+    let mut report = wg_trackers::SyncReport::new("acme", false);
+    report.fetched = 1;
+    let text = view::sync_view(&Console::new(80), &report);
+    assert!(text.starts_with("tracker sync"), "{text}");
+    assert!(text.contains("  full: False"), "{text}");
+    assert!(text.contains("  fetched: 1"), "{text}");
+    assert!(text.contains("  connection: acme"), "{text}");
+    assert!(!text.contains("unresolved pull requests"), "{text}");
+    assert!(!text.contains("errors"), "{text}");
+    assert!(!text.contains("cursor"), "{text}");
+}
+
+// covers: C170
+#[test]
+fn sync_view_prints_the_error_list_as_a_python_repr() {
+    let mut report = wg_trackers::SyncReport::new("acme", true);
+    report.errors = vec!["boom".to_owned()];
+    let text = view::sync_view(&Console::new(80), &report);
+    assert!(text.contains("  full: True"), "{text}");
+    assert!(text.contains("  errors: ['boom']"), "{text}");
+}
+
+// covers: C170
+#[test]
+fn enqueued_line_names_the_job() {
+    let text = view::enqueued_line(&Console::new(80), "job-7");
+    assert!(text.contains("enqueued job-7"), "{text}");
+}
+
+// covers: C169
+#[test]
+fn status_view_prints_one_block_per_status_in_order() {
+    let mut second = synced_status();
+    second.connection = "ops".to_owned();
+    let text = view::status_view(&Console::new(80), &[synced_status(), second]);
+    let first_at = text.find("tracker acme");
+    assert!(first_at.is_some(), "{text}");
+    assert!(text.find("tracker ops") > first_at, "{text}");
+}

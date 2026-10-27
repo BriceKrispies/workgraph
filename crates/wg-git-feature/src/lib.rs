@@ -10,20 +10,24 @@
 //!   glue;
 //! * [`cli`] (Shell): the clap group, a table of `fn` pointers into [`service`].
 //!
-//! The feature has no routes, tools, resources or job handlers yet, so its tables are empty; the
-//! feature exports [`FEATURE`] and the binary collects it into its ordered feature list.
+//! * [`http`] (Shell): the worktree listing route (H022), a table of operations into [`service`].
+//!
+//! The feature has no tools, resources or job handlers yet, so its tables are empty; the feature
+//! exports [`FEATURE`] and the binary collects it into its ordered feature list.
 
 pub mod cli;
+pub mod http;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The git feature: its `git` command group. It has no routes, tools, resources or jobs.
+/// The git feature: its `git` command group and the worktree route. It has no tools, resources or
+/// jobs.
 pub static FEATURE: Feature = Feature {
     name: "git",
     cli: &[cli::GROUP],
-    routes: &[],
+    routes: &[http::GROUP],
     tools: &[],
     resources: &[],
     jobs: &[],

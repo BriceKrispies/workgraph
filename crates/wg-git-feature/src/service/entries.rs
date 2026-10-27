@@ -99,7 +99,9 @@ fn task_row(
     })
 }
 
-/// `GitService.repository_commits` (`git log`).
+/// `GitService.repository_commits` (`git log`): one page of the repository's commits, newest
+/// first, from `offset`; unreachable commits only with `include_unreachable`.
+#[allow(clippy::too_many_arguments)]
 pub fn git_log(
     app: &mut App,
     context: &RequestContext,
@@ -107,15 +109,25 @@ pub fn git_log(
     repository: &str,
     limit: i64,
     linked_only: bool,
+    offset: i64,
+    include_unreachable: bool,
 ) -> Result<Value, WgError> {
     git_require(app, context, Permission::GitRead)?;
     let workspace_id = app.workspace_or_default(workspace)?;
     let repo = repository_row(app, workspace_id, repository, true)?;
     let repository_id = repo.repository.id;
+    let reachable_only = !include_unreachable;
     let (total, commits, links) = app.runtime.store.read(|session| {
-        let total = store::repository_commits_count(session, repository_id, true, linked_only)?;
-        let commits =
-            store::repository_commits_page(session, repository_id, true, linked_only, limit, 0)?;
+        let total =
+            store::repository_commits_count(session, repository_id, reachable_only, linked_only)?;
+        let commits = store::repository_commits_page(
+            session,
+            repository_id,
+            reachable_only,
+            linked_only,
+            limit,
+            offset,
+        )?;
         let links = store::links_with_task_keys(session, &ids_of(&commits))?;
         Ok((total, commits, links))
     })?;

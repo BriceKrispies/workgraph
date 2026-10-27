@@ -12,6 +12,7 @@ pub mod cli_repo;
 pub mod cli_setup;
 pub mod dto;
 pub mod mcp_shapes;
+pub mod query;
 pub mod registry;
 pub mod repos;
 pub mod settings;

@@ -2509,11 +2509,14 @@ dependencies = [
  "wg-experiments",
  "wg-json",
  "wg-model",
+ "wg-pyrand",
+ "wg-registry",
  "wg-render",
  "wg-runtime",
  "wg-store",
  "wg-storecodec",
  "wg-types",
+ "wg-validate",
  "wg-wire",
 ]
 

@@ -5,6 +5,8 @@
 //! The clap command is the snapshot's own tree, so help and parameters match `contracts/cli.json`;
 //! each handler calls one service entry point and prints the result.
 
+mod ops;
+
 use crate::service;
 use crate::spec::command;
 use crate::spec::view::{list_view, show_view};
@@ -23,6 +25,9 @@ pub const GROUP: CliGroup = CliGroup {
 fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
     let workspace = state.workspace_ref(option_text(m, "--workspace").as_deref());
     let ws = workspace.as_deref();
+    if let Some(done) = ops::run(state, path, m, ws) {
+        return done;
+    }
     let context = human_context(None)?;
     match path.get(1).map(String::as_str) {
         Some("list") => {

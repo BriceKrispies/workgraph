@@ -57,6 +57,7 @@ wg-exec-feature::service Shell
 wg-exec-feature::jobs Shell
 wg-exec-feature::mcp Shell
 wg-exec-feature::cli Shell
+wg-exec-feature::http Shell
 wg-experiments Core
 wg-experiments-feature Shell
 wg-experiments-feature::spec Pure
@@ -74,6 +75,10 @@ wg-intel-feature::spec Pure
 wg-intel-feature::service Shell
 wg-intel-feature::cli Shell
 wg-jobs Core
+wg-jobs-feature Shell
+wg-jobs-feature::http Shell
+wg-jobs-feature::service Shell
+wg-jobs-feature::spec Pure
 wg-json Pure
 wg-mcp Shell
 wg-mcpspec Pure

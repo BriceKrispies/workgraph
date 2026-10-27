@@ -7,6 +7,7 @@
 //! * [`agents`]: the agent adapters a run is launched through.
 
 pub mod agents;
+pub mod attempt_reads;
 pub mod conclude;
 pub mod execute;
 pub mod outcome;

@@ -18,6 +18,13 @@ pub fn execution_enabled(config: &Map<String, Value>) -> bool {
         .unwrap_or(false)
 }
 
+/// A boolean `execution.<key>`, `false` when unset.
+pub fn execution_flag(config: &Map<String, Value>, key: &str) -> bool {
+    config_at(config, &["execution", key])
+        .and_then(Value::as_bool)
+        .unwrap_or(false)
+}
+
 /// The integer `execution.<key>`, or `default`.
 pub fn execution_number(config: &Map<String, Value>, key: &str, default: i64) -> i64 {
     config_at(config, &["execution", key])

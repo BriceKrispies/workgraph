@@ -18,6 +18,7 @@ pub mod execute;
 pub mod gate;
 pub mod outcome;
 pub mod prompt;
+pub mod routes;
 pub mod runs;
 pub mod schedule;
 pub mod sql;

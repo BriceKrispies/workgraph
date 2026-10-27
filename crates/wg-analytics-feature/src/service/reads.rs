@@ -3,13 +3,16 @@
 //!
 //! The statements are built by [`crate::spec::sql`]; this module asks the database which columns
 //! each table has, runs the copy and hands back the rows as values. Building the warehouse from
-//! them is the analytics crate's job (`wg-analytics`).
+//! them is the analytics crate's job (`wg-analytics`); [`analytics_input`] turns the copies into
+//! its typed source rows.
 
+use wg_analytics::source::AnalyticsInput;
 use wg_store::Session;
 use wg_types::WgError;
 
 use crate::spec::dto::AnalyticsSource;
-use crate::spec::sql::{self, TABLES};
+use crate::spec::load;
+use crate::spec::sql::{self, EVENT_COLUMNS, TABLES};
 
 /// Copies one table of [`TABLES`]. A table that is not listed there, or has none of its wanted
 /// columns, fails with `workgraph_error`.
@@ -39,4 +42,24 @@ pub fn analytics_sources(session: &mut Session<'_>) -> Result<Vec<AnalyticsSourc
         .iter()
         .map(|(table, _)| analytics_source(session, table))
         .collect()
+}
+
+/// The warehouse's copy of the `events` rows of [`sql::EVENT_TYPES`].
+pub fn analytics_events(session: &mut Session<'_>) -> Result<AnalyticsSource, WgError> {
+    let rows = session.rows(&sql::events_select())?;
+    Ok(AnalyticsSource {
+        table: "events".to_owned(),
+        columns: EVENT_COLUMNS
+            .iter()
+            .map(|column| (*column).to_owned())
+            .collect(),
+        rows,
+    })
+}
+
+/// Every source table of the warehouse, as the typed rows of `wg-analytics`.
+pub fn analytics_input(session: &mut Session<'_>) -> Result<AnalyticsInput, WgError> {
+    let mut sources = analytics_sources(session)?;
+    sources.push(analytics_events(session)?);
+    Ok(load::analytics_input(&sources))
 }

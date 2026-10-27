@@ -16,6 +16,7 @@ wg-analytics Core
 wg-analytics-feature Shell
 wg-analytics-feature::spec Pure
 wg-analytics-feature::service Shell
+wg-analytics-feature::cli Shell
 wg-archive Shell
 wg-archive-feature Shell
 wg-archive-feature::spec Pure

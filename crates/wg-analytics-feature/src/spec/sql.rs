@@ -271,6 +271,48 @@ pub fn source_columns(wanted: Option<&[&str]>, available: &[String]) -> Vec<Stri
     }
 }
 
+/// The event types the warehouse loads (`EVENT_TYPES` of `analytics/warehouse.py`).
+pub const EVENT_TYPES: [&str; 6] = [
+    "task.status_changed",
+    "task.reopened",
+    "task.completed",
+    "task.accepted",
+    "task.escalated",
+    "task.rejected",
+];
+
+/// The columns of the `events` copy, in the order `warehouse.py` reads them.
+pub const EVENT_COLUMNS: [&str; 7] = [
+    "seq",
+    "workspace_id",
+    "event_type",
+    "entity_id",
+    "actor",
+    "occurred_at",
+    "data",
+];
+
+/// The copy of the warehouse's events: the rows of [`EVENT_TYPES`], in rowid order. Python copies
+/// `events` by its own statement (not by [`TABLES`]), so this is separate from [`source_select`].
+#[must_use]
+pub fn events_select() -> Statement {
+    let names: Vec<String> = EVENT_COLUMNS
+        .iter()
+        .map(|column| format!("\"{column}\""))
+        .collect();
+    let placeholders = vec!["?"; EVENT_TYPES.len()].join(",");
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"events\" WHERE \"event_type\" IN ({placeholders}) ORDER BY rowid",
+            names.join(", ")
+        ),
+        params: EVENT_TYPES
+            .iter()
+            .map(|event| Raw::Text((*event).to_owned()))
+            .collect(),
+    }
+}
+
 /// `SELECT <columns> FROM <table> ORDER BY rowid`, with identifiers quoted. Fails with a
 /// `workgraph_error` when no column is left to read, since Python's copy of such a table is a
 /// syntax error.

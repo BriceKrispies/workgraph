@@ -17,12 +17,46 @@ impl Normaliser for RootsNormaliser {
     fn normalise(&self, run: &RunResult, text: &str) -> String {
         let mut out = text.to_owned();
         for (root, placeholder) in &run.roots {
-            out = out.replace(root.as_str(), placeholder);
-            out = out.replace(&root.replace('\\', "/"), placeholder);
-            out = out.replace(&root.replace('\\', "\\\\"), placeholder);
+            out = replace_root(&out, root, placeholder);
+            out = replace_root(&out, &root.replace('\\', "/"), placeholder);
+            out = replace_root(&out, &root.replace('\\', "\\\\"), placeholder);
         }
         out
     }
+}
+
+/// Replaces each occurrence of `root` that ends a path (see [`ends_a_path`]). `/w/sb/home` names
+/// `/w/sb/home/.wg` but not `/w/sb/home2` or `/w/sb/home.bak`, which are other directories. An
+/// occurrence that is not at a path boundary is kept as it is.
+fn replace_root(text: &str, root: &str, placeholder: &str) -> String {
+    if root.is_empty() {
+        return text.to_owned();
+    }
+    let mut out = String::with_capacity(text.len());
+    let mut rest = text;
+    while let Some(at) = rest.find(root) {
+        let after = &rest[at + root.len()..];
+        out.push_str(&rest[..at]);
+        if ends_a_path(after) {
+            out.push_str(placeholder);
+        } else {
+            out.push_str(root);
+        }
+        rest = after;
+    }
+    out.push_str(rest);
+    out
+}
+
+/// Whether a root that is followed by `after` ends a path: nothing follows, or the next character
+/// cannot continue a name. A separator (`/`, `\`) ends it, and so does a quote, a space or other
+/// punctuation, which the paths in quoted JSON and in messages are followed by. A letter, a digit,
+/// `_`, `-` or `.` continues the name.
+fn ends_a_path(after: &str) -> bool {
+    after
+        .chars()
+        .next()
+        .is_none_or(|c| !(c.is_alphanumeric() || matches!(c, '_' | '-' | '.')))
 }
 
 /// One allowlist entry from `divergences.toml`.
@@ -408,6 +442,35 @@ mod tests {
             stdout: stdout.into(),
             stderr: String::new(),
         }]
+    }
+
+    #[test]
+    fn roots_are_replaced_only_at_a_path_boundary() {
+        let run = |root: &str| RunResult {
+            scenario: "s".into(),
+            implementation: "rs".into(),
+            roots: vec![(root.into(), "<home>")],
+            steps: Vec::new(),
+        };
+        // POSIX form: a root followed by a separator, a quote, a space or the end is replaced; a
+        // longer name (`home2`, `homes`, `home.bak`) is not.
+        let posix = run("/w/sb/home");
+        assert_eq!(
+            RootsNormaliser.normalise(
+                &posix,
+                r#"/w/sb/home/.wg /w/sb/home2/.wg /w/sb/home /w/sb/home\x /w/sb/homes "/w/sb/home" /w/sb/home.bak"#
+            ),
+            r#"<home>/.wg /w/sb/home2/.wg <home> <home>\x /w/sb/homes "<home>" /w/sb/home.bak"#
+        );
+        // Windows form, its slash-normalised copy and its JSON-escaped copy, each at a boundary.
+        let windows = run(r"C:\w\sb\home");
+        assert_eq!(
+            RootsNormaliser.normalise(
+                &windows,
+                r"C:\w\sb\home\.wg C:\w\sb\home2\.wg C:/w/sb/home/x C:\\w\\sb\\home\\x C:\\w\\sb\\home2"
+            ),
+            r"<home>\.wg C:\w\sb\home2\.wg <home>/x <home>\\x C:\\w\\sb\\home2"
+        );
     }
 
     #[test]

@@ -8,7 +8,7 @@ use crate::spec::exec::worktree::{
     IntegrationTarget, Purpose, bisect_path, integration_path, worktree_active,
 };
 use wg_git::RunOptions;
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_types::{Id, WgError, WorktreeStatus};
 
 use crate::spec::{git_failure, io_error, native_root};

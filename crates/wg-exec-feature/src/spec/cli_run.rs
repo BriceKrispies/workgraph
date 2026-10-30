@@ -2,8 +2,8 @@
 //! `watch` commands (`RunOut` of `orchestration/runs.py`).
 
 use clap::Command;
-use wg_clispec::args::{cell, get, items, python};
-use wg_clispec::tree::snapshot_command;
+use wg_iface::cli::args::{cell, get, items, python};
+use wg_iface::cli::tree::snapshot_command;
 use wg_json::{Value, dict};
 use wg_model::entity::{AgentAttempt, Job};
 use wg_render::Console;

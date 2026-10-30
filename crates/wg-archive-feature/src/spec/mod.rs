@@ -6,8 +6,8 @@ use std::path::PathBuf;
 
 use clap::{ArgMatches, Command};
 use serde_json::Value as Json;
-use wg_clispec::args::{flag, one, python};
-use wg_clispec::tree::snapshot_command;
+use wg_iface::cli::args::{flag, one, python};
+use wg_iface::cli::tree::snapshot_command;
 use wg_json::{PyStr, Value, dict};
 use wg_render::{Console, escape};
 use wg_wire::convention::text;

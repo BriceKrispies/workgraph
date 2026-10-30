@@ -21,11 +21,11 @@ use futures_util::stream;
 use serde_json::{Value, json};
 use tower::ServiceExt;
 use wg_runtime::App;
+use wg_server::spec::security::device_cookie_value;
 use wg_server::{
     Answer, ApiRoute, LanOptions, Server, ServerOptions, SseEvent, Ui, event_stream, handler,
     router, serve,
 };
-use wg_serverspec::security::device_cookie_value;
 
 type TestResult = Result<(), Box<dyn Error>>;
 

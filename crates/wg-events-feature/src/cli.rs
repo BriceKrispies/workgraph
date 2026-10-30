@@ -4,7 +4,7 @@
 //! [`crate::spec`] (the `--json` document, or the human view).
 
 use clap::ArgMatches;
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
 use crate::service;

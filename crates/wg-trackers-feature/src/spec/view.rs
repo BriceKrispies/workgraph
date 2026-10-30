@@ -1,7 +1,7 @@
 //! The human views of the `tracker` commands (`cli/commands/tracker.py`): the table of connections,
 //! the status block of each connection, and the line an enqueue prints.
 
-use wg_clispec::args::python;
+use wg_iface::cli::args::python;
 use wg_render::Console;
 use wg_trackers::SyncReport;
 use wg_wire::convention as wire;

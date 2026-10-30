@@ -6,8 +6,8 @@ use std::io;
 use std::net::{IpAddr, UdpSocket};
 
 use tokio::net::TcpListener;
-use wg_serverspec::lan::lan_address_from_source;
-use wg_serverspec::net::Ip;
+use wg_iface::http::lan::lan_address_from_source;
+use wg_iface::http::net::Ip;
 
 /// `detect_lan_address()` with the probe injected: `probe` yields the source address the OS would
 /// use towards the network, and the result is that address when it is private.

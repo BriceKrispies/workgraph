@@ -3,7 +3,7 @@
 //! A group is implemented once it is in [`GROUPS`] or in a feature's `cli` table listed in
 //! [`FEATURES`]; `tests/if01_cli.rs` derives its implemented list from both and compares each
 //! group's clap command against `contracts/cli.json`. A top-level command or group that is not
-//! implemented is a placeholder built from the snapshot (see `wg_clispec::tree`).
+//! implemented is a placeholder built from the snapshot (see `wg_iface::cli::tree`).
 
 pub mod job;
 pub mod serve;

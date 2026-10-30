@@ -13,7 +13,7 @@ use crate::spec::exec::run::{
 use serde_json::Value;
 use wg_model::entity::JsonObject;
 use wg_proc::{LineOptions, ProcError, ProcessSpec, base_environment, run_process};
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_stacks::regression::RunResult;
 use wg_types::{Id, WgError};
 use wg_verify::{ApplicableCheck, CheckTier};

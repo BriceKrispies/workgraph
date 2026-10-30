@@ -1,9 +1,9 @@
 //! The pure half of the `git` command group (`cli/commands/gitcmd.py`): the clap command and the
 //! human views of its results.
 
-use wg_clispec::args::{get, items, python, s};
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
-use wg_clispec::{Snapshot, Usage};
+use wg_iface::cli::args::{get, items, python, s};
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::{Snapshot, Usage};
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::pyval::prefix;
@@ -31,7 +31,7 @@ pub const CHANGES: Usage = Usage {
 pub fn command() -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "git"),
-        Err(_) => wg_clispec::tree::command("git"),
+        Err(_) => wg_iface::cli::tree::command("git"),
     }
 }
 

@@ -8,9 +8,9 @@ use wg_json::{Value, dict};
 use wg_render::Console;
 use wg_wire::convention::json_value;
 
-use wg_clispec::args::{get, items, opt, python, s};
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
-use wg_clispec::{CliFailure, Snapshot};
+use wg_iface::cli::args::{get, items, opt, python, s};
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::{CliFailure, Snapshot};
 
 /// Exit code of a configuration error (`ConfigError`, `fail(..., 7)`).
 const EXIT_CONFIG: u8 = 7;
@@ -19,7 +19,7 @@ const EXIT_CONFIG: u8 = 7;
 fn snapshot_command(name: &str) -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, name),
-        Err(_) => wg_clispec::tree::command(name),
+        Err(_) => wg_iface::cli::tree::command(name),
     }
 }
 

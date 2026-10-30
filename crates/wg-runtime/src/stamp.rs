@@ -4,8 +4,8 @@
 //! [`RequestContext`] turns them into the decision's [`Stamp`]. Tests and replays plug their own
 //! [`StampSource`] into the runtime to make decisions reproducible.
 
+use crate::spec::{GETUSER_VARIABLES, RequestContext, getuser, timestamp_from_unix_nanos};
 use wg_model::{Stamp, derive_id};
-use wg_runtimespec::{GETUSER_VARIABLES, RequestContext, getuser, timestamp_from_unix_nanos};
 use wg_types::{Id, Timestamp, WgError};
 
 /// Where the runtime gets each decision's stamp.

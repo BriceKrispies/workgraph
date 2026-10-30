@@ -6,7 +6,7 @@ use std::collections::BTreeSet;
 use wg_json::Value;
 use wg_registry::resolve;
 use wg_runtime::App;
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 
 use wg_types::{Id, WgError};
 

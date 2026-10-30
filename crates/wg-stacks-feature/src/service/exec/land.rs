@@ -13,7 +13,7 @@ use serde_json::Value;
 use wg_git::RunOptions;
 use wg_model::RowKey;
 use wg_model::entity::{AgentAttempt, RevisionManifest, VerificationRun};
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_stacks::landing::{
     FfCheck, FfStep, LandDecision, LandRepo, after_verified_outcome, after_verified_request,
     fast_forward_plan, guard_defer, move_args, moved_while_landing, rollback_args, rollback_order,

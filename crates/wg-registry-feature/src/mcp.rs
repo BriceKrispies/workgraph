@@ -9,8 +9,8 @@
 //! structured output.
 
 use serde_json::Value;
+use wg_iface::mcp::{require, structured_output, text_argument, tool_permissions};
 use wg_json::Value as Dto;
-use wg_mcpspec::{require, structured_output, text_argument, tool_permissions};
 use wg_model::RegistrySlice;
 use wg_model::entity::{Project, Repository};
 use wg_registry::resolve;
@@ -25,7 +25,7 @@ use wg_store::Session;
 use wg_types::{Id, WgError};
 use wg_wire::dto::task_brief;
 
-use wg_mcpspec::options::Agent;
+use wg_iface::mcp::options::Agent;
 use wg_types::pyval::flag;
 
 /// Answers tool `name` when this module owns it; `None` leaves the call to the backend's fallback.

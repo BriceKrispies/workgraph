@@ -25,7 +25,7 @@ use wg_model::{Decision, EventDraft, EventPayload, Row, RowKey, Write};
 use wg_netspec::ProviderError;
 use wg_registry::resolve;
 use wg_runtime::App;
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_store::Session;
 use wg_types::pyval::{prefix, text};
 use wg_types::{Correlation, Id, Permission, WgError};

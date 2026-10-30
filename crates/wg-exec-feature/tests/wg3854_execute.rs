@@ -145,7 +145,7 @@ fn home(name: &str, max_attempts: i64) -> (App, PathBuf) {
     (app, dir)
 }
 
-fn ctx() -> wg_runtimespec::RequestContext {
+fn ctx() -> wg_runtime::spec::RequestContext {
     human_context(Some("brice")).expect("context")
 }
 
@@ -157,8 +157,8 @@ fn queue_run(app: &mut App) -> Id {
         ..StartRequest::default()
     };
     let out = run_start(app, &ctx(), &mut host, None, "WG-1", &request).expect("start");
-    let text = wg_clispec::args::get(&out, "id")
-        .map(wg_clispec::args::python)
+    let text = wg_iface::cli::args::get(&out, "id")
+        .map(wg_iface::cli::args::python)
         .expect("id");
     wg_types::parse_id(&text).expect("an id")
 }

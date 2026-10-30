@@ -11,11 +11,11 @@ use std::sync::OnceLock;
 
 use regex::Regex;
 use serde_json::{Value as Json, json};
-use wg_clispec::args::{get, items, opt, s};
 use wg_experiments::pool::{self, Entry};
 use wg_experiments::replay::{
     self, Change, CommitFacts, Features, NameStatus, ReplayConfig, Split,
 };
+use wg_iface::cli::args::{get, items, opt, s};
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::WgError;
@@ -596,10 +596,10 @@ pub fn validate_ref(reference: &str) -> Result<(), WgError> {
 pub fn int_text(
     text: Option<&str>,
     option: &str,
-    at: wg_clispec::Usage,
-) -> Result<Option<i64>, wg_clispec::CliFailure> {
+    at: wg_iface::cli::Usage,
+) -> Result<Option<i64>, wg_iface::cli::CliFailure> {
     text.map(|text| {
-        wg_clispec::failure::python_number_text(text)
+        wg_iface::cli::failure::python_number_text(text)
             .and_then(|digits| digits.parse().ok())
             .ok_or_else(|| at.invalid_value(option, text, "int"))
     })
@@ -615,11 +615,11 @@ pub fn float_text(
     text: Option<&str>,
     option: &str,
     default: f64,
-    at: wg_clispec::Usage,
-) -> Result<f64, wg_clispec::CliFailure> {
+    at: wg_iface::cli::Usage,
+) -> Result<f64, wg_iface::cli::CliFailure> {
     match text {
         None => Ok(default),
-        Some(text) => wg_clispec::failure::python_number_text(text)
+        Some(text) => wg_iface::cli::failure::python_number_text(text)
             .and_then(|digits| digits.parse().ok())
             .ok_or_else(|| at.invalid_value(option, text, "float")),
     }

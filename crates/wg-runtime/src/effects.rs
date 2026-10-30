@@ -10,15 +10,15 @@
 use std::io::Write as _;
 use std::path::Path;
 
+use crate::spec::effects::{
+    atomic_temp_path, fs_error, git_environment, git_outcome, git_spec, http_unavailable,
+    spawn_outcome, spawn_spec,
+};
 use rpds::VectorSync;
 use wg_model::{
     Effect, EffectError, EffectOutcome, EffectResult, FsOp, GitOp, HttpCall, HttpResponse,
 };
 use wg_proc::{CaptureLimits, LineOptions, run_capture, run_process};
-use wg_runtimespec::effects::{
-    atomic_temp_path, fs_error, git_environment, git_outcome, git_spec, http_unavailable,
-    spawn_outcome, spawn_spec,
-};
 
 use crate::bus::Bus;
 use crate::stamp::draw;

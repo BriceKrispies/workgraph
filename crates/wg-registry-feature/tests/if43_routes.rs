@@ -6,11 +6,11 @@
 use serde_json::{Value, json};
 use wg_git_feature::service::git_sync_ref;
 use wg_git_feature::spec::mode::sync_is_full;
+use wg_iface::http::groups::RouteSpec;
 use wg_registry_feature::http::{PROJECT_SPECS, REPOSITORY_SPECS};
 use wg_registry_feature::service::workspace_create;
 use wg_registry_feature::spec::repos::{register_input, repository_patch};
 use wg_runtime::{App, human_context};
-use wg_serverspec::groups::RouteSpec;
 use wg_types::{AccessMode, ErrorCode};
 
 fn spec(specs: &[RouteSpec], id: &str) -> RouteSpec {
@@ -190,7 +190,7 @@ fn the_tables_name_their_operations_in_order_and_in_the_if_43_group() {
         ]
     );
     for spec in PROJECT_SPECS.iter().chain(REPOSITORY_SPECS.iter()) {
-        assert_eq!(wg_serverspec::operations::group_of(spec.id), "IF-43");
+        assert_eq!(wg_iface::http::operations::group_of(spec.id), "IF-43");
     }
 }
 
@@ -301,7 +301,7 @@ fn every_body_of_the_tables_loads_from_the_snapshot() {
     for spec in PROJECT_SPECS.iter().chain(REPOSITORY_SPECS.iter()) {
         if let Some(body) = &spec.body {
             assert!(
-                wg_serverspec::groups::body_spec(&openapi, body).is_some(),
+                wg_iface::http::groups::body_spec(&openapi, body).is_some(),
                 "{}",
                 spec.id
             );

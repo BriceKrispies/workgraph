@@ -15,7 +15,7 @@ use std::path::{Path, PathBuf};
 use serde_json::{Map, Value, json};
 use wg_model::entity::{AgentAttempt, AgentSession, HookEvent, SessionBinding, SubagentRun, Task};
 use wg_model::{EventDraft, EventPayload, IdSeq, Row, RowKey, Stamp, Write};
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_store::{Location, Session, Store};
 use wg_telemetry::binding::{
     BindingFacts, Resolved, attempt_row, binding_target, cwd_binding, mapped_task_key,

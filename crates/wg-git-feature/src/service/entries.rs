@@ -4,7 +4,7 @@
 //!
 //! Each one resolves the workspace and the repository or task, reads the rows it needs, runs the
 //! git calls it needs outside any transaction, and then decides in one transaction with the pure
-//! functions of `wg_runtimespec::git`. Ported from `integrations/git/service.py` and
+//! functions of `wg_runtime::spec::git`. Ported from `integrations/git/service.py` and
 //! `integrations/git/worktrees.py`.
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -22,13 +22,13 @@ use crate::spec::sql::TaskCommitLink as TaskCommitLinkRow;
 use crate::spec::surface::{self, FileInput};
 use crate::spec::worktrees::{self, WorktreeRow};
 use crate::spec::worktrees::{is_within, removal_result};
-use wg_clispec::CliFailure;
 use wg_codeanalysis::{analyze_file, parse_hunks};
 use wg_codeparse::extract_symbols;
 use wg_git::{Git, RunOptions};
 use wg_gitcore::{
     EMPTY_TREE, FileChange, SurfacePlan, SurfaceRecord, SurfaceRepo, parse_numstat_z, plan_surface,
 };
+use wg_iface::cli::CliFailure;
 use wg_json::{Value, dict};
 use wg_model::entity::git::{Commit, CommitTaskLink, GitObjectGap, TaskChangeSurface};
 use wg_model::entity::repository::Repository;
@@ -36,7 +36,7 @@ use wg_model::entity::run::ManagedWorktree;
 use wg_model::event::{EventPayload, TaskChangeSurfaceComputed, TaskCommitLinked};
 use wg_model::{Decision, EventDraft, Row, RowKey, Write};
 use wg_registry::resolve;
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_store::Session;
 use wg_types::{Id, Permission, WgError, WorktreeStatus};
 use wg_wire::convention::{int, text};
@@ -544,7 +544,7 @@ pub fn git_diff(
                 .unwrap_or_default();
             let git = Git {
                 path: PathBuf::from(path),
-                timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+                timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
             };
             let base = surface.base_sha.as_str();
             let final_sha = surface.final_sha.as_str();
@@ -577,7 +577,7 @@ pub fn git_diff(
             };
             let git = Git {
                 path: PathBuf::from(path),
-                timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+                timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
             };
             let sha = entry.commit.sha.clone();
             if !git.object_exists(&sha).unwrap_or(false) {
@@ -715,7 +715,7 @@ pub fn git_surface(
         };
         let git = Git {
             path: PathBuf::from(path),
-            timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+            timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
         };
         let linked: Vec<String> = by_repo.get(&repo_id).cloned().unwrap_or_default();
         let plan = plan_surface(
@@ -911,7 +911,7 @@ pub(crate) fn analyze_commit(
     };
     let git = Git {
         path: PathBuf::from(&path),
-        timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+        timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
     };
     if !git.object_exists(&commit.sha).unwrap_or(false) {
         let unavailable = Commit {
@@ -1028,7 +1028,7 @@ pub(crate) fn ensure_commit(
     };
     let git = Git {
         path: PathBuf::from(&state.path),
-        timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+        timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
     };
     let Ok(full) = git.resolve_commit(sha) else {
         return Ok(None);
@@ -1136,7 +1136,7 @@ fn remove_released_worktree(
     if path.exists() {
         let git = Git {
             path: PathBuf::from(path.display().to_string()),
-            timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+            timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
         };
         if git.is_repository().unwrap_or(false) && !git.is_clean().unwrap_or(false) {
             return Ok(removal_result(
@@ -1148,7 +1148,7 @@ fn remove_released_worktree(
         if let Some(source_path) = source.as_deref() {
             let source_git = Git {
                 path: PathBuf::from(source_path),
-                timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+                timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
             };
             if source_git.is_repository().unwrap_or(false) {
                 let output = source_git
@@ -1164,7 +1164,7 @@ fn remove_released_worktree(
     if let Some(source_path) = source.as_deref() {
         let source_git = Git {
             path: PathBuf::from(source_path),
-            timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+            timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
         };
         if source_git.is_repository().unwrap_or(false) {
             let _ = source_git.worktree_prune(NO_CHECK_OPTIONS);
@@ -1233,7 +1233,7 @@ pub fn git_install_hook(
     };
     let git = Git {
         path: PathBuf::from(&path),
-        timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+        timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
     };
     match wg_git::install_post_commit_hook(&git, &repository_id.to_string()) {
         Ok(wg_git::HookOutcome::Installed(hook)) => {

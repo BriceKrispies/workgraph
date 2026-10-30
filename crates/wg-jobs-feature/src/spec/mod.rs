@@ -2,7 +2,7 @@
 //! job listing's page and filters.
 
 use serde_json::{Map, Value};
-use wg_serverspec::groups::{BodyRef, RouteSpec};
+use wg_iface::http::groups::{BodyRef, RouteSpec};
 
 /// One operation of the jobs routes. None of them takes a body.
 const fn route(
@@ -68,7 +68,7 @@ mod tests {
         let ids: Vec<&str> = SPECS.iter().map(|spec| spec.id).collect();
         assert_eq!(ids, ["H080", "H081", "H082", "H083", "H084"]);
         for spec in &SPECS {
-            assert_eq!(wg_serverspec::operations::group_of(spec.id), "IF-46");
+            assert_eq!(wg_iface::http::operations::group_of(spec.id), "IF-46");
         }
     }
 

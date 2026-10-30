@@ -1,8 +1,8 @@
 //! The human views of the `decision` commands and the prefix lookup (`cli/commands/decisions.py`):
 //! functions of the values the services return, with no clap and no I/O.
 
-use wg_clispec::CliFailure;
-use wg_clispec::args::{get, items, opt, s, when};
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::{get, items, opt, s, when};
 use wg_json::Value;
 use wg_model::py_repr_str;
 use wg_render::{Console, escape};

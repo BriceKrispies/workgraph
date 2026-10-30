@@ -9,14 +9,14 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::time::{Duration, Instant};
 
-use clap::ArgMatches;
-use wg_browser::{CaptureOptions, screenshot};
-use wg_clispec::args::{option_flag, option_text};
-use wg_clispec::ui::{
+use crate::spec::ui::{
     SCREENSHOT, Shot, base_url, health_url, no_server_message, number, target_url, wait_selector,
 };
-use wg_clispec::{CliFailure, not_implemented_message};
-use wg_serverspec::serve::Settings;
+use clap::ArgMatches;
+use wg_browser::{CaptureOptions, screenshot};
+use wg_iface::cli::args::{option_flag, option_text};
+use wg_iface::cli::{CliFailure, not_implemented_message};
+use wg_iface::http::serve::Settings;
 use wg_uispec::{Platform, Start, Wait};
 
 use super::Group;

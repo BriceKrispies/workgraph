@@ -3,8 +3,8 @@
 
 use clap::Command;
 use wg_agentspec::PLACEHOLDERS;
-use wg_clispec::args::{get, items, python};
-use wg_clispec::tree::snapshot_command;
+use wg_iface::cli::args::{get, items, python};
+use wg_iface::cli::tree::snapshot_command;
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::WgError;

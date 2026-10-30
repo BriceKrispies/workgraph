@@ -1,7 +1,7 @@
 //! The route table constructors of the task feature's operations: a `RouteSpec` names its method,
 //! path, status, query parameters and body, and the bodies name OpenAPI components. Pure data.
 
-use wg_serverspec::groups::{BodyRef, RouteSpec};
+use wg_iface::http::groups::{BodyRef, RouteSpec};
 
 /// A body that must be present; `strip` as in [`BodyRef`].
 pub const fn required(component: &'static str, strip: bool) -> Option<BodyRef> {

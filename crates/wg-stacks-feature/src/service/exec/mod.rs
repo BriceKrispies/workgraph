@@ -18,7 +18,7 @@ macro_rules! git_at {
     ($path:expr) => {
         wg_git::Git {
             path: std::path::Path::new(&$path).to_path_buf(),
-            timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+            timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
         }
     };
 }

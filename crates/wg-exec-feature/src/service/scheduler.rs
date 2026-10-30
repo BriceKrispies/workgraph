@@ -10,8 +10,8 @@ use wg_model::entity::{AgentAttempt, RepositoryCheckout};
 use wg_net::{Endpoint, Net, Ollama, OpenAiCompatible};
 use wg_registry::resolve;
 use wg_rows::TableRow;
+use wg_runtime::spec::RequestContext;
 use wg_runtime::{App, index_written};
-use wg_runtimespec::RequestContext;
 use wg_store::Session;
 use wg_tasks::edit::enrichment_from;
 use wg_types::{Id, WgError};
@@ -181,8 +181,8 @@ pub fn tick(
             &request,
         ) {
             Ok(attempt) => {
-                let id = wg_clispec::args::get(&attempt, "id")
-                    .map(wg_clispec::args::python)
+                let id = wg_iface::cli::args::get(&attempt, "id")
+                    .map(wg_iface::cli::args::python)
                     .and_then(|text| wg_types::parse_id(&text).ok());
                 if let Some(id) = id {
                     started.push((item.key.clone(), id));

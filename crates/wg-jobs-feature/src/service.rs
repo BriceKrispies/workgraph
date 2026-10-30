@@ -5,8 +5,8 @@
 use wg_jobs::queue::JobFilter;
 use wg_json::{Value, dict};
 use wg_runtime::App;
-use wg_runtimespec::RequestContext;
-use wg_runtimespec::jobs as view;
+use wg_runtime::spec::RequestContext;
+use wg_runtime::spec::jobs as view;
 use wg_types::{Id, Permission, WgError, parse_id};
 use wg_wire::convention::{counts, int, text};
 use wg_wire::dto::{job, worker};

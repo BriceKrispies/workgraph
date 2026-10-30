@@ -8,8 +8,8 @@
 //! documents the Python tools return, as structured output.
 
 use serde_json::{Value, json};
-use wg_mcpspec::options::Agent;
-use wg_mcpspec::{structured_output, text_argument};
+use wg_iface::mcp::options::Agent;
+use wg_iface::mcp::{structured_output, text_argument};
 use wg_runtime::{App, RequestContext, ResourceRun, ToolRun, agent_context};
 use wg_types::WgError;
 

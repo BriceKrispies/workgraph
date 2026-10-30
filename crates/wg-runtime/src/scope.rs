@@ -3,8 +3,8 @@
 
 use std::collections::BTreeSet;
 
+use crate::spec::RequestContext;
 use wg_model::{Row, Write};
-use wg_runtimespec::RequestContext;
 use wg_store::Session;
 use wg_types::{Id, Permission, WgError};
 

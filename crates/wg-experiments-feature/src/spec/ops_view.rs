@@ -1,7 +1,7 @@
 //! The human views of `experiment create, freeze, close, next, report, fit, predict`: the lines
 //! and tables the Python CLI prints, built from the JSON values the services return.
 
-use wg_clispec::args::{get, items, opt, python, s, when};
+use wg_iface::cli::args::{get, items, opt, python, s, when};
 use wg_json::{Value, py_float_repr};
 use wg_render::Console;
 

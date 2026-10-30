@@ -11,23 +11,20 @@ description = "the tasks feature: task commands, acceptance, claims, links and t
 workspace = true
 
 [dependencies]
+wg-iface = { path = "../wg-iface" }
 clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
-wg-clispec = { path = "../wg-clispec" }
 wg-decisions = { path = "../wg-decisions" }
 wg-exec = { path = "../wg-exec" }
 wg-experiments = { path = "../wg-experiments" }
 wg-git-feature = { path = "../wg-git-feature" }
 wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }
-wg-mcpspec = { path = "../wg-mcpspec" }
 wg-model = { path = "../wg-model" }
 wg-registry = { path = "../wg-registry" }
 wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
-wg-runtimespec = { path = "../wg-runtimespec" }
-wg-serverspec = { path = "../wg-serverspec" }
 wg-stacks = { path = "../wg-stacks" }
 wg-stacks-feature = { path = "../wg-stacks-feature" }
 wg-store = { path = "../wg-store" }

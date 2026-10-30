@@ -6,7 +6,7 @@
 //! [`crate::spec::view`].
 
 use clap::ArgMatches;
-use wg_clispec::CliFailure;
+use wg_iface::cli::CliFailure;
 use wg_runtime::{CliState, human_context};
 
 use crate::service;
@@ -51,7 +51,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             }
         }
         _ => Err(CliFailure::fail(
-            wg_clispec::not_implemented_message(path),
+            wg_iface::cli::not_implemented_message(path),
             1,
         )),
     }

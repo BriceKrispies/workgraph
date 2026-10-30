@@ -8,7 +8,7 @@ use wg_exec_feature::spec::worktrees::{
 use wg_json::cli_json;
 use wg_model::entity::{ManagedWorktree, ResourceLease};
 use wg_model::write::{RowKey, Write};
-use wg_runtimespec::context::timestamp_from_unix_nanos;
+use wg_runtime::spec::context::timestamp_from_unix_nanos;
 use wg_types::{Id, WorktreeStatus};
 
 const ROOT: &str = "/data/worktrees/stacks";

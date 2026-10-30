@@ -1,8 +1,8 @@
 //! The human views of the `task` commands: the lines and tables `task` prints, built from the
 //! JSON values the service returns.
 
-use wg_clispec::args::count;
-use wg_clispec::args::{get, items, opt, python, s, when};
+use wg_iface::cli::args::count;
+use wg_iface::cli::args::{get, items, opt, python, s, when};
 use wg_json::Value;
 use wg_model::py_repr_str;
 use wg_render::{Console, escape};

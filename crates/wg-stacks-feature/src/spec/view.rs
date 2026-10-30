@@ -3,7 +3,7 @@
 //! the text Python's `console` would write, line by line.
 
 use serde_json::Value as Json;
-use wg_clispec::args::{cell, get, items, opt, python, s, when};
+use wg_iface::cli::args::{cell, get, items, opt, python, s, when};
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::pyval::prefix;

@@ -4,7 +4,7 @@
 //! methods), of the git calls in `integrations/git/service.py`, and of `git install-hook`'s file
 //! handling. Shell crate: every function here starts a process or touches the file system. Parsing
 //! and decisions are `wg-gitcore`'s; the argument vectors, the E24 environment and the messages are
-//! `wg-runtimespec`'s `effects` module, shared with the runtime so nothing is defined twice.
+//! `wg-procspec`'s `effects` module, shared with the runtime so nothing is defined twice.
 
 mod hook;
 mod inspect;

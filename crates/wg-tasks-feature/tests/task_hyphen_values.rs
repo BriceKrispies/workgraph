@@ -2,7 +2,7 @@
 
 #![allow(clippy::expect_used)]
 
-use wg_clispec::args::one;
+use wg_iface::cli::args::one;
 
 // covers: C152
 #[test]

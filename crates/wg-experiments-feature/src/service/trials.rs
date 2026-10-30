@@ -8,8 +8,8 @@ use wg_json::Value;
 use wg_model::entity::{Experiment, ExperimentTrial, Task};
 use wg_model::{RowKey, TaskSlice, py_repr_str};
 use wg_registry::resolve;
+use wg_runtime::spec::app::is_uuid;
 use wg_runtime::{App, RequestContext};
-use wg_runtimespec::app::is_uuid;
 use wg_store::Session;
 use wg_types::{Id, Permission, WgError, parse_id};
 

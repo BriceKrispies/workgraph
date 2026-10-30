@@ -11,9 +11,9 @@ description = "the registry feature: workspaces, projects, repositories, setting
 workspace = true
 
 [dependencies]
+wg-iface = { path = "../wg-iface" }
 clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
 serde_json = { version = "1", features = ["preserve_order"] }
-wg-clispec = { path = "../wg-clispec" }
 wg-agents = { path = "../wg-agents" }
 wg-codeparse = { path = "../wg-codeparse" }
 wg-config = { path = "../wg-config" }
@@ -22,14 +22,11 @@ wg-git = { path = "../wg-git" }
 wg-git-feature = { path = "../wg-git-feature" }
 wg-intel = { path = "../wg-intel" }
 wg-json = { path = "../wg-json" }
-wg-mcpspec = { path = "../wg-mcpspec" }
 wg-model = { path = "../wg-model" }
 wg-net = { path = "../wg-net" }
 wg-registry = { path = "../wg-registry" }
 wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
-wg-runtimespec = { path = "../wg-runtimespec" }
-wg-serverspec = { path = "../wg-serverspec" }
 wg-store = { path = "../wg-store" }
 wg-rows = { path = "../wg-rows" }
 wg-tasks = { path = "../wg-tasks" }

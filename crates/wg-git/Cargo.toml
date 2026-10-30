@@ -16,4 +16,3 @@ wg-gitcore = { path = "../wg-gitcore" }
 wg-model = { path = "../wg-model" }
 wg-proc = { path = "../wg-proc" }
 wg-procspec = { path = "../wg-procspec" }
-wg-runtimespec = { path = "../wg-runtimespec" }

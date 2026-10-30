@@ -7,8 +7,8 @@
 use std::time::{Duration, Instant};
 
 use clap::ArgMatches;
-use wg_clispec::CliFailure;
-use wg_clispec::args::{get, option_flag, option_text, python};
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::{get, option_flag, option_text, python};
 use wg_json::Value;
 use wg_runtime::{CliGroup, CliState, human_context};
 use wg_wire::convention::json_value;
@@ -73,7 +73,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         Some("schedule") => schedule(state, m),
         Some("decompose") => decompose(state, m),
         _ => Err(CliFailure::fail(
-            wg_clispec::not_implemented_message(path),
+            wg_iface::cli::not_implemented_message(path),
             1,
         )),
     }
@@ -160,7 +160,7 @@ fn wait(state: &mut CliState, attempt: &str) -> Result<(), CliFailure> {
     while Instant::now() < deadline {
         let run = runs::get(state.app()?, attempt, RECENT_EVENTS)?;
         let mut progress = String::new();
-        for event in wg_clispec::args::items(get(&run, "recent_events")) {
+        for event in wg_iface::cli::args::items(get(&run, "recent_events")) {
             let seq = view::seq_of(event);
             if seq > last_seq {
                 last_seq = seq;

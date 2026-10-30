@@ -1,7 +1,7 @@
 //! The attempt and run tools (IF-33: M47 to M54, the tools of `mcp/server.py` that concern
 //! attempts and runs).
 //!
-//! Each call checks the permissions its Python method requires (`wg_mcpspec::tool_permissions`),
+//! Each call checks the permissions its Python method requires (`wg_iface::mcp::tool_permissions`),
 //! then resolves its references as `resolve.py` does: a task by UUID or key, within the workspace
 //! the call names or across all workspaces when it names none (an ambiguous key is refused), and
 //! an attempt by UUID. A reference that names nothing is the same `not_found` error Python gives.
@@ -11,9 +11,9 @@
 //! ([`crate::service::run_flow`]). The git tools of IF-33 are in the git feature's `mcp`.
 
 use serde_json::Value;
-use wg_mcpspec::options::Agent;
-use wg_mcpspec::outcome::text_argument;
-use wg_mcpspec::{require, structured, tool_permissions};
+use wg_iface::mcp::options::Agent;
+use wg_iface::mcp::outcome::text_argument;
+use wg_iface::mcp::{require, structured, tool_permissions};
 use wg_runtime::{App, ToolRun, agent_context};
 use wg_store::AttemptPage;
 use wg_types::{AttemptStatus, Id, WgError};

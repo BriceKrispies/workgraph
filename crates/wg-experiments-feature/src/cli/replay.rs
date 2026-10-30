@@ -4,8 +4,8 @@
 
 use clap::ArgMatches;
 use serde_json::Value as Json;
-use wg_clispec::args::{many, option_flag, option_list, option_text};
-use wg_clispec::{CliFailure, Usage, not_implemented_message};
+use wg_iface::cli::args::{many, option_flag, option_list, option_text};
+use wg_iface::cli::{CliFailure, Usage, not_implemented_message};
 use wg_runtime::{CliState, human_context};
 
 use crate::service::replay::{self, CreateOptions, ScanOptions};

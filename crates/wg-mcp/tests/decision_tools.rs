@@ -9,7 +9,7 @@ use wg_mcp::{Agent, AppBackend, ToolBackend};
 
 /// The features the backend serves: the decisions feature.
 static FEATURES: &[&wg_runtime::Feature] = &[&wg_decisions::FEATURE];
-use wg_mcpspec::{Catalog, agent_permissions, respond_to_call};
+use wg_iface::mcp::{Catalog, agent_permissions, respond_to_call};
 use wg_model::Write;
 use wg_model::entity::Workspace;
 use wg_runtime::{App, human_context};

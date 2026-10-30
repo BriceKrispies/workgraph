@@ -4,9 +4,9 @@
 //! worker adds in the same transaction.
 
 use serde_json::{Map, Value, json};
-use wg_clispec::args::python;
 use wg_exec::attempt::{counts_as_failure, escalates, is_terminal, task_after_attempt_end};
 use wg_exec::run::{CaptureFacts, Conclusion, completes_task, conclude, kept_summary, task_reason};
+use wg_iface::cli::args::python;
 use wg_json::{Value as Wire, dict};
 use wg_model::entity::{AgentAttempt, Artifact, Real, TaskTag};
 use wg_model::event::{EventDraft, EventPayload, TaskEscalated};

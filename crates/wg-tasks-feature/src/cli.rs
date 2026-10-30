@@ -13,8 +13,8 @@ use crate::spec::reads::GraphRequest;
 use crate::spec::triage::{triage_failed, triage_view};
 use crate::spec::view::*;
 use clap::ArgMatches;
-use wg_clispec::args::*;
-use wg_clispec::{CliFailure, PathKind, PathProblem, not_implemented_message};
+use wg_iface::cli::args::*;
+use wg_iface::cli::{CliFailure, PathKind, PathProblem, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
 /// The `task` group.
@@ -237,7 +237,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
 }
 
 /// The usage of `task triage-apply`, as Click prints it for its `PATH` argument.
-const TRIAGE_APPLY: wg_clispec::Usage = wg_clispec::Usage {
+const TRIAGE_APPLY: wg_iface::cli::Usage = wg_iface::cli::Usage {
     usage: "workgraph task triage-apply [OPTIONS] PATH",
     command: "workgraph task triage-apply",
 };

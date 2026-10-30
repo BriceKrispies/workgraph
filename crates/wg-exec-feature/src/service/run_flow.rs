@@ -10,9 +10,9 @@ use wg_exec::run::{require_execution, rerun_plan, retry_check};
 use wg_git::Git;
 use wg_json::Value;
 use wg_registry::resolve;
+use wg_runtime::spec::RequestContext;
+use wg_runtime::spec::effects::GIT_TIMEOUT_MS;
 use wg_runtime::{App, index_written};
-use wg_runtimespec::RequestContext;
-use wg_runtimespec::effects::GIT_TIMEOUT_MS;
 use wg_types::{Permission, WgError};
 
 use crate::service::agents::{AgentHost, require_available};

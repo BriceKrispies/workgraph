@@ -9,10 +9,10 @@
 use std::sync::Mutex;
 
 use serde_json::{Map, Value as Json};
+use wg_runtime::spec::RequestContext;
 use wg_runtime::{
     Handler, HandlerError, HandlerResult, JobContext, JobKind, Queue, system_context,
 };
-use wg_runtimespec::RequestContext;
 use wg_types::WgError;
 
 use crate::service::embed;

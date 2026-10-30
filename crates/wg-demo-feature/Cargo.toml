@@ -11,9 +11,9 @@ description = "the demo feature: the end-to-end demonstration and the UI demo da
 workspace = true
 
 [dependencies]
+wg-iface = { path = "../wg-iface" }
 clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
 serde_json = { version = "1", features = ["preserve_order"] }
-wg-clispec = { path = "../wg-clispec" }
 wg-config = { path = "../wg-config" }
 wg-json = { path = "../wg-json" }
 wg-registry-feature = { path = "../wg-registry-feature" }

@@ -5,7 +5,7 @@
 use std::path::PathBuf;
 
 use serde_json::{Map, Value};
-use wg_serverspec::groups::{BodyRef, RouteSpec};
+use wg_iface::http::groups::{BodyRef, RouteSpec};
 
 use crate::spec::runs::StartRequest;
 
@@ -221,7 +221,7 @@ mod tests {
             } else {
                 "IF-46"
             };
-            assert_eq!(wg_serverspec::operations::group_of(spec.id), group);
+            assert_eq!(wg_iface::http::operations::group_of(spec.id), group);
         }
     }
 }

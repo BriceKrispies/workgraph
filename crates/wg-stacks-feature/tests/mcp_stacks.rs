@@ -7,8 +7,8 @@ use std::collections::BTreeSet;
 use std::error::Error;
 
 use serde_json::{Value, json};
-use wg_mcpspec::agent_permissions;
-use wg_mcpspec::options::Agent;
+use wg_iface::mcp::agent_permissions;
+use wg_iface::mcp::options::Agent;
 use wg_model::entity::Workspace;
 use wg_model::{Decision, Write, derive_id};
 use wg_runtime::App;

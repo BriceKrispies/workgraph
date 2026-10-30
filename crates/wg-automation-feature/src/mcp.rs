@@ -5,8 +5,8 @@
 //! agent's identity, so the permission checks are the services' own.
 
 use serde_json::{Map, Value, json};
-use wg_mcpspec::options::Agent;
-use wg_mcpspec::{structured_output, text_argument};
+use wg_iface::mcp::options::Agent;
+use wg_iface::mcp::{structured_output, text_argument};
 use wg_runtime::{App, ToolRun, agent_context};
 use wg_types::WgError;
 

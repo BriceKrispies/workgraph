@@ -11,6 +11,8 @@ description = "MCP server over stdio and Streamable HTTP"
 workspace = true
 
 [dependencies]
+wg-validate = { path = "../wg-validate" }
+wg-iface = { path = "../wg-iface" }
 axum = { version = "0.8", default-features = false, features = ["tokio", "http1"] }
 rmcp = { version = "3.7", default-features = false, features = ["server", "transport-io", "transport-streamable-http-server"] }
 futures-util = "0.3"
@@ -26,8 +28,6 @@ wg-decisions = { path = "../wg-decisions" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }
 wg-git = { path = "../wg-git" }
 wg-json = { path = "../wg-json" }
-wg-runtimespec = { path = "../wg-runtimespec" }
-wg-mcpspec = { path = "../wg-mcpspec" }
 wg-model = { path = "../wg-model" }
 wg-registry = { path = "../wg-registry" }
 wg-registry-feature = { path = "../wg-registry-feature" }

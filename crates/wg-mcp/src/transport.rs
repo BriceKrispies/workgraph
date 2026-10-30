@@ -6,6 +6,10 @@
 
 use std::sync::Arc;
 
+use crate::spec::{
+    Plan, Reply, Step, Touch, check_body, check_headers, frame_events, protocol_version_gate,
+    too_large, touch_up, verb_of,
+};
 use axum::Router;
 use axum::body::{Body, to_bytes};
 use axum::extract::State;
@@ -19,10 +23,6 @@ use rmcp::transport::streamable_http_server::session::local::LocalSessionManager
 use rmcp::transport::streamable_http_server::{SessionId, SessionManager};
 use rmcp::transport::{StreamableHttpServerConfig, StreamableHttpService, stdio};
 use tokio_util::sync::CancellationToken;
-use wg_mcpspec::{
-    Plan, Reply, Step, Touch, check_body, check_headers, frame_events, protocol_version_gate,
-    too_large, touch_up, verb_of,
-};
 use wg_types::WgError;
 
 use crate::backend::{Agent, ToolBackend};
@@ -97,7 +97,7 @@ pub fn http_router(
         .layer(middleware::from_fn_with_state(sessions, check_request)))
 }
 
-/// The checks the Python endpoint makes before the SDK's own; `wg_mcpspec` decides. The glue reads
+/// The checks the Python endpoint makes before the SDK's own; `wg_iface::mcp` decides. The glue reads
 /// the request (its body first, under the size limit, as the Python body-limit middleware does for
 /// every method) and applies the decision.
 async fn check_request(

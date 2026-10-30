@@ -1,5 +1,5 @@
 //! Shell: the `experiment trial` subgroup (IF-20): `add`, `show`, `classify`, `start` and `grade`. The clap tree
-//! is the snapshot's own (`wg_clispec::tree`), built by the `experiment` group that owns it; that
+//! is the snapshot's own (`wg_iface::cli::tree`), built by the `experiment` group that owns it; that
 //! group's run function hands every `experiment trial ...` invocation to [`run`].
 //!
 //! `start` and `grade` are the trial runner ([`crate::service::runner`]); their views live in
@@ -7,8 +7,8 @@
 //! [`crate::spec::trial`].
 
 use clap::ArgMatches;
-use wg_clispec::args::option_text;
-use wg_clispec::{CliFailure, Usage, not_implemented_message};
+use wg_iface::cli::args::option_text;
+use wg_iface::cli::{CliFailure, Usage, not_implemented_message};
 use wg_runtime::{CliState, human_context};
 
 use crate::service::{runner, trials};

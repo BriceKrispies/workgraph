@@ -2,14 +2,14 @@
 //! (H002). The settings routes (H117, H118) are the registry feature's.
 //!
 //! The table of operations is `wg-serverspec`'s ([`META_SETTINGS`]); the rules are
-//! `wg-runtimespec`'s and the documents are `wg-wire`'s. This module is the glue: it binds each
+//! `wg-runtime`'s `spec`'s and the documents are `wg-wire`'s. This module is the glue: it binds each
 //! operation to its handler and runs the handler on the application context, which is a `&mut`
 //! operation (the shell's job).
 
+use wg_iface::http::groups::META_SETTINGS;
 use wg_json::Value;
 use wg_runtime::App;
-use wg_runtimespec::settings::meta_inputs;
-use wg_serverspec::groups::META_SETTINGS;
+use wg_runtime::spec::settings::meta_inputs;
 use wg_types::WgError;
 use wg_wire::convention::json_value;
 use wg_wire::dto::health;

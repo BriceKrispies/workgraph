@@ -18,8 +18,8 @@ use wg_exec::run::{
     choose_workdir, execute_entry, flush_due, provider_unavailable_result, records_event,
     timeout_seconds, usage_fields,
 };
+use wg_runtime::spec::RequestContext;
 use wg_runtime::{App, JobContext, system_context};
-use wg_runtimespec::RequestContext;
 use wg_types::{ErrorCode, Id, WgError, parse_id};
 
 use crate::service::agents::{AgentHost, require_available};

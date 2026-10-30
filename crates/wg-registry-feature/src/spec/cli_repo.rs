@@ -8,9 +8,9 @@ use wg_registry::admin::Patch;
 use wg_render::Console;
 use wg_types::AccessMode;
 
-use wg_clispec::args::{flag, get, items, many, one, opt, python, s, when};
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
-use wg_clispec::{CliFailure, Snapshot};
+use wg_iface::cli::args::{flag, get, items, many, one, opt, python, s, when};
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::{CliFailure, Snapshot};
 use wg_types::pyval::prefix;
 
 /// The clap command of the `repo` group: the snapshot's own tree.
@@ -18,7 +18,7 @@ use wg_types::pyval::prefix;
 pub fn command() -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "repo"),
-        Err(_) => wg_clispec::tree::command("repo"),
+        Err(_) => wg_iface::cli::tree::command("repo"),
     }
 }
 

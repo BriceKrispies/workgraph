@@ -5,7 +5,7 @@
 use std::io::Write;
 use std::path::PathBuf;
 
-use wg_clispec::CliFailure;
+use wg_iface::cli::CliFailure;
 use wg_json::{Value, cli_json};
 use wg_render::Console;
 

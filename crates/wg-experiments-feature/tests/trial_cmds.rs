@@ -4,8 +4,8 @@
 use rpds::RedBlackTreeSetSync;
 use rpds::VectorSync;
 use serde_json::{Value, json};
-use wg_clispec::args::{get, s};
 use wg_experiments_feature::spec::trial::{self, AddInput};
+use wg_iface::cli::args::{get, s};
 use wg_model::entity::{Experiment, ExperimentTrial, Task};
 use wg_model::stamp::Stamp;
 use wg_model::{JsonObject, RowKey, derive_id};

@@ -1,13 +1,13 @@
 //! The `task` command group's clap command and the request bodies its handlers build from the
-//! parsed options. The generic readers are in `wg_clispec::args`.
+//! parsed options. The generic readers are in `wg_iface::cli::args`.
 
 use clap::ArgMatches;
 use serde_json::{Map, Value as Json, json};
-use wg_clispec::args::{ReadFile, flag, get, many, number, one, option_flag};
-use wg_clispec::datetime;
-use wg_clispec::failure::python_number_text;
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
-use wg_clispec::{CliFailure, Snapshot, Usage};
+use wg_iface::cli::args::{ReadFile, flag, get, many, number, one, option_flag};
+use wg_iface::cli::datetime;
+use wg_iface::cli::failure::python_number_text;
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::{CliFailure, Snapshot, Usage};
 use wg_json::{Value, dict};
 use wg_model::py_repr_str;
 use wg_types::WgError;
@@ -48,7 +48,7 @@ const PROGRESS: Usage = Usage {
 pub fn command() -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "task"),
-        Err(_) => wg_clispec::tree::command("task"),
+        Err(_) => wg_iface::cli::tree::command("task"),
     }
 }
 

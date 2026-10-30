@@ -17,7 +17,7 @@ use serde_json::{Map, Value as Json, json};
 use wg_json::Value;
 use wg_model::entity::VerificationConfig;
 use wg_registry::{projects, renames, resolve, workspaces};
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_tasks::rename::{RenamePlan, Term, plan_rename};
 use wg_types::{Id, Permission, WgError};
 

@@ -7,10 +7,10 @@
 //! feature answers; [`TOOLS`] is the descriptor's table.
 
 use serde_json::{Map, Value};
-use wg_mcpspec::options::Agent;
-use wg_mcpspec::structured;
+use wg_iface::mcp::options::Agent;
+use wg_iface::mcp::structured;
+use wg_runtime::spec::text_param;
 use wg_runtime::{App, RequestContext, ToolRun, agent_context};
-use wg_runtimespec::text_param;
 use wg_types::WgError;
 
 use crate::service;

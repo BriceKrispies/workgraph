@@ -23,8 +23,8 @@ pub mod sql;
 pub mod view;
 pub mod writes;
 
-use wg_clispec::Snapshot;
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::Snapshot;
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
 use wg_model::entity::{Stack, StackItem, Task};
 use wg_registry::resolve;
 use wg_rows::task_world_sql::TaskWorld;
@@ -38,7 +38,7 @@ use wg_types::{Id, WgError};
 pub fn command() -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "stack"),
-        Err(_) => wg_clispec::tree::command("stack"),
+        Err(_) => wg_iface::cli::tree::command("stack"),
     }
 }
 
@@ -133,10 +133,10 @@ pub fn native_root(root: &str) -> std::path::PathBuf {
 pub fn job_context(
     correlation: Option<wg_types::Correlation>,
     causation: Option<Id>,
-    fresh: Result<wg_runtimespec::RequestContext, WgError>,
-) -> Result<wg_runtimespec::RequestContext, WgError> {
+    fresh: Result<wg_runtime::spec::RequestContext, WgError>,
+) -> Result<wg_runtime::spec::RequestContext, WgError> {
     let context = match correlation {
-        Some(correlation) => wg_runtimespec::RequestContext::system("stacks", correlation)?,
+        Some(correlation) => wg_runtime::spec::RequestContext::system("stacks", correlation)?,
         None => fresh?,
     };
     Ok(context.caused_by(causation))

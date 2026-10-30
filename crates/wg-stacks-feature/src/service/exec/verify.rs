@@ -14,7 +14,7 @@ use crate::spec::exec::worktree::{IntegrationTarget, integration_target};
 use serde_json::{Value, json};
 use wg_git::RunOptions;
 use wg_model::entity::VerificationRun;
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_stacks::bisect::{
     BisectEntry, Bisection, Entry, ProbeVerdict, bisect_entry, prefix_shas, probe_failed_checks,
     probe_verdict,

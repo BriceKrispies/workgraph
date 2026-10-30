@@ -25,8 +25,8 @@ use wg_json::Value;
 use wg_model::slice::QueueSlice;
 use wg_model::{Decision, Row, Stamp};
 use wg_registry::resolve;
+use wg_runtime::spec::RequestContext;
 use wg_runtime::{App, index_written};
-use wg_runtimespec::RequestContext;
 use wg_store::{EventQuery, Session, TaskWorld};
 use wg_tasks::bulk::bulk_results;
 use wg_tasks::edit::{self, read_update, validate_update};
@@ -291,7 +291,7 @@ pub fn task_history_limited(
             Ok(Value::List(
                 events
                     .iter()
-                    .map(wg_runtimespec::events::event_out)
+                    .map(wg_runtime::spec::events::event_out)
                     .collect(),
             ))
         },

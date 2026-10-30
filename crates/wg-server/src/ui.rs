@@ -24,7 +24,7 @@ pub enum Ui {
 
 impl Ui {
     /// The bytes of the file at `relative` (`/`-separated, inside the UI, from
-    /// `wg_serverspec::spa::static_path`), or `None` when there is no such file.
+    /// `crate::spec::spa::static_path`), or `None` when there is no such file.
     pub fn file(&self, relative: &str) -> Option<Vec<u8>> {
         match self {
             Ui::Embedded => Embedded::get(relative).map(|file| file.data.into_owned()),

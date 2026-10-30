@@ -4,14 +4,14 @@
 
 use crate::spec::requests::RunOptions;
 use clap::ArgMatches;
-use wg_clispec::args::{flag, many, number, one, option_text};
-use wg_clispec::tree::SNAPSHOT_JSON;
-use wg_clispec::{CliFailure, Snapshot, Usage};
+use wg_iface::cli::args::{flag, many, number, one, option_text};
+use wg_iface::cli::tree::SNAPSHOT_JSON;
+use wg_iface::cli::{CliFailure, Snapshot, Usage};
 
 /// The placeholder failure of a command this build does not serve yet.
 #[must_use]
 pub fn not_served(path: &[String]) -> CliFailure {
-    CliFailure::fail(wg_clispec::not_implemented_message(path), 1)
+    CliFailure::fail(wg_iface::cli::not_implemented_message(path), 1)
 }
 
 /// Click's usage line of `search`.
@@ -34,8 +34,8 @@ pub fn search_command() -> clap::Command {
 
 fn group_command(name: &str) -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
-        Ok(snapshot) => wg_clispec::tree::placeholder(&snapshot, name),
-        Err(_) => wg_clispec::tree::command(name),
+        Ok(snapshot) => wg_iface::cli::tree::placeholder(&snapshot, name),
+        Err(_) => wg_iface::cli::tree::command(name),
     }
 }
 

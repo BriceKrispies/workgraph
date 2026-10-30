@@ -83,7 +83,7 @@ fn the_link_body_is_the_snapshot_model_and_is_not_stripped() {
     let openapi = wg_wire::contract::openapi().unwrap_or_default();
     for spec in SPECS.iter().filter(|spec| spec.id != "H022") {
         assert_eq!(
-            wg_serverspec::operations::group_of(spec.id),
+            wg_iface::http::operations::group_of(spec.id),
             "IF-45",
             "{}",
             spec.id
@@ -95,7 +95,7 @@ fn the_link_body_is_the_snapshot_model_and_is_not_stripped() {
                 "LinkCommitBody is a BaseModel, not an InputSchema"
             );
             assert!(body.required);
-            assert!(wg_serverspec::groups::body_spec(&openapi, body).is_some());
+            assert!(wg_iface::http::groups::body_spec(&openapi, body).is_some());
         }
     }
 }

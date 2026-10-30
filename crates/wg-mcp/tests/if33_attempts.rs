@@ -9,8 +9,8 @@ use std::error::Error;
 use std::path::PathBuf;
 
 use serde_json::{Map, Value, json};
+use wg_iface::mcp::agent_permissions;
 use wg_mcp::{Agent, AppBackend, ToolBackend};
-use wg_mcpspec::agent_permissions;
 use wg_model::entity::{AgentAttempt, Task, Workspace};
 use wg_model::{Write, derive_id};
 use wg_runtime::App;

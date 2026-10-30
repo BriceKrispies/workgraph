@@ -8,8 +8,8 @@
 
 use clap::ArgMatches;
 use serde_json::{Value as Json, json};
-use wg_clispec::CliFailure;
-use wg_clispec::args::one;
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::one;
 use wg_runtime::{CliGroup, CliState};
 use wg_wire::convention::json_value;
 
@@ -99,9 +99,9 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             state.app()?;
             let env = ClaudeEnv::from_process();
             let project = args::project_dir(m);
-            let events = wg_clispec::args::many(m, "--event");
+            let events = wg_iface::cli::args::many(m, "--event");
             let command = args::text(m, "--command");
-            let mcp = wg_clispec::args::flag(m, "--mcp");
+            let mcp = wg_iface::cli::args::flag(m, "--mcp");
             let out = claude::install(
                 &env,
                 &scope,
@@ -126,7 +126,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             )
         }
         _ => Err(CliFailure::fail(
-            wg_clispec::not_implemented_message(path),
+            wg_iface::cli::not_implemented_message(path),
             1,
         )),
     }

@@ -1,0 +1,25 @@
+[package]
+name = "wg-iface"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+description = "what the CLI, HTTP and MCP interfaces share with the features that target them: argv rules, snapshots, operation tables, request validation, tool descriptors"
+
+[lints]
+workspace = true
+
+[dependencies]
+clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
+http = "1"
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+wg-config = { path = "../wg-config" }
+wg-json = { path = "../wg-json" }
+wg-model = { path = "../wg-model" }
+wg-registry = { path = "../wg-registry" }
+wg-render = { path = "../wg-render" }
+wg-types = { path = "../wg-types" }
+wg-validate = { path = "../wg-validate" }
+wg-wire = { path = "../wg-wire" }

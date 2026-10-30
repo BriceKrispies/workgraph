@@ -3,7 +3,7 @@
 
 use wg_json::Value;
 use wg_runtime::App;
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_types::{Permission, WgError};
 use wg_wire::dto::attempt_dicts;
 

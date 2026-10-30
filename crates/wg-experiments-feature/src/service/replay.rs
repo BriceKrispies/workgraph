@@ -538,7 +538,7 @@ pub fn replay_create(
                         .map(|checked| (checked, validated_at.as_str())),
                 );
                 let task = wg_tasks_feature::service::task_create(app, context, workspace, &body)?;
-                let key = wg_clispec::args::s(wg_clispec::args::get(&task, "key"));
+                let key = wg_iface::cli::args::s(wg_iface::cli::args::get(&task, "key"));
                 index = index.insert(candidate.sha.clone(), key.clone());
                 results.push(shape::result_json(
                     &candidate.sha,

@@ -9,3 +9,10 @@ description = "pure data and rules of the process runner: spec, results, errors,
 
 [lints]
 workspace = true
+
+[dependencies]
+wg-json = { path = "../wg-json" }
+wg-model = { path = "../wg-model" }
+
+[dev-dependencies]
+rpds = "1"

@@ -8,7 +8,7 @@
 
 use clap::ArgMatches;
 use wg_archive::backup;
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, draw, human_context, resolve_paths};
 
 use crate::service;

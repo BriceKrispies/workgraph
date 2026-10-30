@@ -49,7 +49,7 @@ pub fn instant_param(
     let Some(text) = params.get(key).and_then(serde_json::Value::as_str) else {
         return Ok(None);
     };
-    let at = wg_clispec::datetime::parse_click_datetime(text).map_err(|message| {
+    let at = wg_iface::cli::datetime::parse_click_datetime(text).map_err(|message| {
         wg_types::WgError::validation(format!("invalid datetime '{text}': {message}"))
     })?;
     wg_types::Timestamp::from_components(

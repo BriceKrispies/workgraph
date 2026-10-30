@@ -5,8 +5,8 @@
 //! The writes run the providers of the configuration (`service::llm::Live`) and the job queue.
 
 use clap::ArgMatches;
-use wg_clispec::CliFailure;
-use wg_clispec::args::{flag, option_text};
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::{flag, option_text};
 use wg_runtime::{CliGroup, CliState, human_context};
 
 use crate::service::entry;

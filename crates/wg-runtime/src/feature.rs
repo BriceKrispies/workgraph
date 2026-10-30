@@ -6,13 +6,13 @@
 //! on this crate and never on a front end. The handler types use only base and spec types, plus
 //! [`crate::CliState`] and [`RouteRequest`], which the runtime owns.
 
-use clap::{ArgMatches, Command};
 use serde_json::{Map, Value as Json};
-use wg_clispec::CliFailure;
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::{ArgMatches, Command};
+use wg_iface::http::groups::RouteSpec;
+use wg_iface::mcp::options::Agent;
 use wg_jobs::maintenance::Step;
 use wg_json::Value;
-use wg_mcpspec::options::Agent;
-use wg_serverspec::groups::RouteSpec;
 use wg_types::WgError;
 
 use crate::handlers::{HandlerResult, JobContext};
@@ -26,7 +26,7 @@ pub type CliRun = fn(&mut CliState, &[String], &ArgMatches) -> Result<(), CliFai
 pub struct CliGroup {
     /// The name as typed after `workgraph`.
     pub name: &'static str,
-    /// Builds the clap command; start from `wg_clispec::tree::command` so the help flag matches.
+    /// Builds the clap command; start from `wg_iface::cli::tree::command` so the help flag matches.
     pub command: fn() -> Command,
     /// Runs the matched leaf command of this group.
     pub run: CliRun,
@@ -67,7 +67,7 @@ pub type RouteRun = fn(&mut App, &str, RouteRequest) -> Result<RouteAnswer, WgEr
 
 /// The operations of one route group and the function that runs them.
 pub struct RouteGroup {
-    /// The operations, in registration order (`wg_serverspec::groups` tables).
+    /// The operations, in registration order (`wg_iface::http::groups` tables).
     pub specs: &'static [RouteSpec],
     pub run: RouteRun,
 }

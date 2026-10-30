@@ -6,8 +6,8 @@
 //! [`crate::service`] entry point and prints the result.
 
 use clap::ArgMatches;
-use wg_clispec::args::option_text;
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::args::option_text;
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_json::Value;
 use wg_runtime::{CliGroup, CliState, human_context};
 

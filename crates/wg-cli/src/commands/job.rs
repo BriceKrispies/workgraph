@@ -2,12 +2,12 @@
 //! queue.
 //!
 //! The clap command is the snapshot's own tree, so help and parameters match
-//! `contracts/cli.json`; each handler reads its options with `wg_clispec::job`, calls one `App`
+//! `contracts/cli.json`; each handler reads its options with `crate::spec::job`, calls one `App`
 //! entry point and prints the result.
 
+use crate::spec::job as view;
 use clap::ArgMatches;
-use wg_clispec::job as view;
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::{human_context, unknown_job_kind};
 
 use super::Group;

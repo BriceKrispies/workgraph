@@ -15,12 +15,12 @@ use rmcp::model::{
 use rmcp::service::RequestContext;
 use rmcp::{ErrorData, RoleServer, ServerHandler};
 use serde_json::Value;
-use wg_mcpspec::{
-    Catalog, INVALID_PARAMS_MESSAGE, has_params_to_parse, initialize_info, read_result,
-    respond_to_call,
+use wg_iface::mcp::{
+    Catalog, INVALID_PARAMS_MESSAGE, has_params_to_parse, read_result, respond_to_call,
 };
 
 use crate::backend::{Agent, ToolBackend};
+use crate::spec::initialize_info;
 
 /// The state one server shares between requests.
 pub struct Session {

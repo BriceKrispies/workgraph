@@ -3,9 +3,9 @@
 //! key-value blocks print, cell for cell.
 
 use clap::Command;
-use wg_clispec::Snapshot;
-use wg_clispec::args::{cell, get, items, python, s, when};
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::Snapshot;
+use wg_iface::cli::args::{cell, get, items, python, s, when};
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::pyval::prefix;
@@ -15,7 +15,7 @@ use wg_types::pyval::prefix;
 pub fn command() -> Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "attempt"),
-        Err(_) => wg_clispec::tree::command("attempt"),
+        Err(_) => wg_iface::cli::tree::command("attempt"),
     }
 }
 

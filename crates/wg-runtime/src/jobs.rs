@@ -5,6 +5,8 @@
 //! transaction of the call. The queue's own methods ([`crate::Queue`]) delegate here, so the
 //! worker and the commands run one copy of each rule.
 
+use crate::spec::RequestContext;
+use crate::spec::jobs as view;
 use serde_json::{Map, Value as Json, json};
 use wg_jobs::dispatch::{STALE_WORKER_SECONDS, WorkerSettings};
 use wg_jobs::queue::{JobFilter, NewJob};
@@ -13,8 +15,6 @@ use wg_jobs::workers::mark_lost_workers;
 use wg_json::Value;
 use wg_model::{Decision, Effect, FsOp, Row, Write};
 use wg_registry::boundary::is_within;
-use wg_runtimespec::RequestContext;
-use wg_runtimespec::jobs as view;
 use wg_types::{Id, JobStatus, WgError};
 
 use crate::app::App;

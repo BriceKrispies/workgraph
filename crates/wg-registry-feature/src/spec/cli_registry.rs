@@ -4,14 +4,14 @@
 use wg_json::Value;
 use wg_render::Console;
 
-use wg_clispec::Snapshot;
-use wg_clispec::args::{get, items, opt, python, s};
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::Snapshot;
+use wg_iface::cli::args::{get, items, opt, python, s};
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
 
 fn snapshot_command(name: &str) -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, name),
-        Err(_) => wg_clispec::tree::command(name),
+        Err(_) => wg_iface::cli::tree::command(name),
     }
 }
 

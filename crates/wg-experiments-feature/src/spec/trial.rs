@@ -9,8 +9,8 @@
 use std::collections::BTreeMap;
 
 use serde_json::Value as Json;
-use wg_clispec::args::{get, opt, s};
 use wg_experiments::trials as lifecycle;
+use wg_iface::cli::args::{get, opt, s};
 use wg_json::Value;
 use wg_model::entity::{Experiment, ExperimentTrial, Task};
 use wg_model::event::{EventPayload, ExperimentTrialAdded, ExperimentTrialClassified};

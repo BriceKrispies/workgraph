@@ -5,9 +5,9 @@
 
 use clap::ArgMatches;
 use serde_json::{Map, Value as Json};
-use wg_clispec::args::{ReadFile, flag, number, one};
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
-use wg_clispec::{CliFailure, Snapshot, Usage};
+use wg_iface::cli::args::{ReadFile, flag, number, one};
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::{CliFailure, Snapshot, Usage};
 
 /// Click's usage line of `automation runs`.
 const RUNS: Usage = Usage {
@@ -20,7 +20,7 @@ const RUNS: Usage = Usage {
 pub fn command() -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "automation"),
-        Err(_) => wg_clispec::tree::command("automation"),
+        Err(_) => wg_iface::cli::tree::command("automation"),
     }
 }
 

@@ -5,9 +5,9 @@
 use serde_json::{Map, Value as Json};
 use wg_analytics::agent_time::Group;
 use wg_analytics::common::Window;
-use wg_clispec::datetime::parse_click_datetime;
+use wg_iface::cli::datetime::parse_click_datetime;
+use wg_iface::mcp::text_argument;
 use wg_json::LocalDateTime;
-use wg_mcpspec::text_argument;
 use wg_types::WgError;
 
 use super::query::{self, QueryRequest};

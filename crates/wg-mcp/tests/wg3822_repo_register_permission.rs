@@ -9,8 +9,8 @@ use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde_json::{Map, Value, json};
+use wg_iface::mcp::agent_permissions;
 use wg_mcp::{Agent, AppBackend, ToolBackend};
-use wg_mcpspec::agent_permissions;
 use wg_model::entity::{Project, Workspace};
 use wg_model::{Row, Write};
 use wg_runtime::{App, Feature, new_id};

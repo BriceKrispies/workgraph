@@ -1,6 +1,6 @@
 //! `git sync` (IF-12): the ingestion pipeline of one repository, as the shell runs it. Git is
 //! read outside any transaction; each step then decides in one `BEGIN IMMEDIATE` transaction with
-//! the pure functions of `wg_runtimespec::git`. Ported from `GitService.sync` and its helpers in
+//! the pure functions of `wg_runtime::spec::git`. Ported from `GitService.sync` and its helpers in
 //! `integrations/git/service.py`.
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -24,7 +24,7 @@ use wg_model::entity::repository::{Repository, RepositoryRef};
 use wg_model::event::{EventPayload, RepositoryChangesDetected};
 use wg_model::{Decision, EventDraft, Row, RowKey, Write};
 use wg_registry::resolve;
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_types::{Id, Permission, WgError, parse_id};
 
 use wg_runtime::App;

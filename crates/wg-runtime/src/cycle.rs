@@ -19,8 +19,8 @@
 
 use std::collections::VecDeque;
 
+use crate::spec::RequestContext;
 use wg_model::{Decision, EffectResult, Stamp};
-use wg_runtimespec::RequestContext;
 use wg_store::{Applied, Session, Store};
 use wg_types::WgError;
 

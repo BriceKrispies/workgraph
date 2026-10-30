@@ -32,8 +32,8 @@ use wg_model::entity::{
 use wg_model::write::RowKey;
 use wg_registry::checkout::primary_checkout;
 use wg_runtime::App;
-use wg_runtimespec::RequestContext;
-use wg_runtimespec::effects::GIT_TIMEOUT_MS;
+use wg_runtime::spec::RequestContext;
+use wg_runtime::spec::effects::GIT_TIMEOUT_MS;
 use wg_store::{Session, TaskWorld};
 use wg_types::{AccessMode, Id, Permission, StackStatus, TaskStatus, WgError, WorktreeStatus};
 use wg_verify::TaskScope;

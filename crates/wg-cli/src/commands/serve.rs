@@ -9,20 +9,20 @@
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
+use crate::spec::servers::{self, mcp_arguments, pair, port_option};
 use clap::ArgMatches;
 use tokio_util::sync::CancellationToken;
-use wg_clispec::CliFailure;
-use wg_clispec::args::{option_flag, option_text};
-use wg_clispec::servers::{self, mcp_arguments, pair, port_option};
-use wg_mcp::{Agent, AppBackend, http_router, serve_stdio};
-use wg_mcpspec::options::{ServeOptions, Transport};
-use wg_mcpspec::permissions::agent_permissions;
-use wg_runtime::{App, HandlerRegistry, RunOptions, Worker, WorkerOptions};
-use wg_server::{LanOptions, Server, ServerOptions, Ui, bind_listeners, groups, host_name};
-use wg_serverspec::lan::{
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::{option_flag, option_text};
+use wg_iface::http::lan::{
     LOOPBACK_ONLY_NOTICE, LanPlan, lan_plan, listening_notice, local_network_markup,
 };
-use wg_serverspec::serve::{Settings, bind_refusal};
+use wg_iface::http::serve::{Settings, bind_refusal};
+use wg_iface::mcp::options::{ServeOptions, Transport};
+use wg_iface::mcp::permissions::agent_permissions;
+use wg_mcp::{Agent, AppBackend, http_router, serve_stdio};
+use wg_runtime::{App, HandlerRegistry, RunOptions, Worker, WorkerOptions};
+use wg_server::{LanOptions, Server, ServerOptions, Ui, bind_listeners, groups, host_name};
 
 use super::{FEATURES, Group};
 use crate::{CliState, console};

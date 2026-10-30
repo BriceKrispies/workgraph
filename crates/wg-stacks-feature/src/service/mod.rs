@@ -21,8 +21,8 @@ use wg_json::Value;
 use wg_model::Row;
 use wg_model::slice::QueueSlice;
 use wg_registry::checkout::primary_checkout;
+use wg_runtime::spec::effects::GIT_TIMEOUT_MS;
 use wg_runtime::{App, RequestContext, index_written};
-use wg_runtimespec::effects::GIT_TIMEOUT_MS;
 use wg_store::{EventQuery, Session, TaskWorld};
 use wg_types::{Id, Permission, WgError};
 

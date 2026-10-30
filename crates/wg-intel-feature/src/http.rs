@@ -7,9 +7,9 @@
 //! `created_after` and `created_before` filters are read as UTC instants.
 
 use serde_json::{Map, Value as Json};
+use wg_iface::http::groups::{BodyRef, RouteSpec};
 use wg_json::Value;
 use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
-use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::WgError;
 
 use crate::service::entry;

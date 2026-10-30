@@ -13,10 +13,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use wg_clispec::CliFailure;
-use wg_clispec::args::{get, items, s};
 use wg_config::set_path;
 use wg_git_feature::service::git_sync;
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::{get, items, s};
 use wg_json::Value;
 use wg_registry_feature::service::{repo_list, repo_register, workspace_create, workspace_list};
 use wg_registry_feature::spec::registry::workspace_create_body;

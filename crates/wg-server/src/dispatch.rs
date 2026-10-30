@@ -3,27 +3,27 @@
 
 use std::sync::Arc;
 
+use crate::spec::pages::{OAUTH2_REDIRECT_HTML, SWAGGER_HTML};
+use crate::spec::pairing::{pair_form, pair_submit};
+use crate::spec::routes::{Found, find};
+use crate::spec::security::{Incoming, screen};
+use crate::spec::spa::{SpaStep, file_reply, spa_page, spa_step};
+use crate::spec::{Target, request_context};
 use axum::Router;
 use axum::body::{Body, to_bytes};
 use axum::extract::{ConnectInfo, Request, State};
 use axum::http::Method;
 use axum::response::Response;
 use tower::ServiceExt;
-use wg_runtime::new_id;
-use wg_runtimespec::{GETUSER_VARIABLES, getuser};
-use wg_serverspec::form::parse_qsl;
-use wg_serverspec::net::Ip;
-use wg_serverspec::pages::{OAUTH2_REDIRECT_HTML, SWAGGER_HTML};
-use wg_serverspec::pairing::{pair_form, pair_submit};
-use wg_serverspec::reply::{
+use wg_iface::http::form::parse_qsl;
+use wg_iface::http::net::Ip;
+use wg_iface::http::reply::{
     JSON_TYPE, Reply, body_parse_error, error_reply, method_not_allowed, secured, secured_headers,
     to_http,
 };
-use wg_serverspec::request::check_request;
-use wg_serverspec::routes::{Found, find};
-use wg_serverspec::security::{Incoming, screen};
-use wg_serverspec::spa::{SpaStep, file_reply, spa_page, spa_step};
-use wg_serverspec::{Target, request_context};
+use wg_iface::http::request::check_request;
+use wg_runtime::new_id;
+use wg_runtime::spec::{GETUSER_VARIABLES, getuser};
 
 use crate::route::{Answer, ApiRequest};
 use crate::server::Server;
@@ -132,7 +132,7 @@ async fn api(
     body: Body,
 ) -> Produced {
     let Some((route, declared)) = server.routes.get(index) else {
-        return Produced::Reply(wg_serverspec::reply::internal_error());
+        return Produced::Reply(wg_iface::http::reply::internal_error());
     };
     let header = |name: &str| headers.get(name).and_then(|value| value.to_str().ok());
     let bytes = match to_bytes(body, usize::MAX).await {

@@ -10,8 +10,8 @@ use std::sync::{Arc, Mutex};
 
 use serde_json::{Value, json};
 use tokio_util::sync::CancellationToken;
+use wg_iface::mcp::options::ServeOptions;
 use wg_mcp::{Agent, ToolBackend, http_router};
-use wg_mcpspec::options::ServeOptions;
 use wg_types::{Permission, WgError};
 
 /// Records the permissions each call ran under.

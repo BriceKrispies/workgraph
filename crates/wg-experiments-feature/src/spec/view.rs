@@ -1,7 +1,7 @@
 //! The human views of the `experiment` commands (IF-19): the lines and tables the Python CLI
 //! prints, built from the JSON values the service returns.
 
-use wg_clispec::args::{get, items, opt, s, when};
+use wg_iface::cli::args::{get, items, opt, s, when};
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::pyval::prefix;

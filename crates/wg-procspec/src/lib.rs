@@ -4,6 +4,7 @@
 //! executable-suffix rule. Nothing here starts a process or touches the file system; durations are
 //! plain milliseconds so no clock type is needed.
 
+pub mod effects;
 mod env;
 mod error;
 mod resolve;

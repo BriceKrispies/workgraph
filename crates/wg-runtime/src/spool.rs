@@ -16,7 +16,7 @@ use crate::stamp::draw;
 /// Writes a spooled record atomically, as a spool file of the home.
 pub fn write_spooled(path: &Path, record: &Value) -> Result<(), WgError> {
     write_atomic(path, spool::spool_text(record).as_bytes())
-        .map_err(|err| wg_runtimespec::app::io_error("write", path, &err))
+        .map_err(|err| crate::spec::app::io_error("write", path, &err))
 }
 
 /// `_spool`: writes the record, with its payload redacted and the reason it could not be ingested, to

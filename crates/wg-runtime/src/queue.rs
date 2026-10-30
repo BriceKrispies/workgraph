@@ -7,6 +7,7 @@
 
 use std::path::Path;
 
+use crate::spec::RequestContext;
 use serde_json::{Map, Value, json};
 use wg_jobs::dispatch::WorkerSettings;
 use wg_jobs::limits::LimitSettings;
@@ -17,7 +18,6 @@ use wg_jobs::queue::{ClaimedJob, NewJob};
 use wg_jobs::trackers::enqueue_tracker_sync;
 use wg_jobs::workers::{NewWorker, register_worker, stop_worker, worker_heartbeat};
 use wg_model::entity::JsonObject;
-use wg_runtimespec::RequestContext;
 use wg_types::{Id, JobStatus, WgError};
 
 use crate::app::App;

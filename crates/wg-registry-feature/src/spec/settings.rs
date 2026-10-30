@@ -6,7 +6,7 @@
 
 use serde_json::{Map, Value};
 use wg_config::validate_global;
-use wg_runtimespec::app::configured_default_workspace;
+use wg_runtime::spec::app::configured_default_workspace;
 use wg_types::WgError;
 use wg_validate::pydantic::error_text;
 

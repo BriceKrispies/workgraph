@@ -11,12 +11,12 @@ description = "the exec feature: managed worktrees (recovery, release, removal, 
 workspace = true
 
 [dependencies]
+wg-iface = { path = "../wg-iface" }
 clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-agents = { path = "../wg-agents" }
 wg-agentspec = { path = "../wg-agentspec" }
-wg-clispec = { path = "../wg-clispec" }
 wg-exec = { path = "../wg-exec" }
 wg-git = { path = "../wg-git" }
 wg-git-feature = { path = "../wg-git-feature" }
@@ -24,7 +24,6 @@ wg-hash = { path = "../wg-hash" }
 wg-intel = { path = "../wg-intel" }
 wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }
-wg-mcpspec = { path = "../wg-mcpspec" }
 wg-model = { path = "../wg-model" }
 wg-net = { path = "../wg-net" }
 wg-netspec = { path = "../wg-netspec" }
@@ -33,8 +32,6 @@ wg-registry = { path = "../wg-registry" }
 wg-registry-feature = { path = "../wg-registry-feature" }
 wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
-wg-runtimespec = { path = "../wg-runtimespec" }
-wg-serverspec = { path = "../wg-serverspec" }
 wg-stacks-feature = { path = "../wg-stacks-feature" }
 wg-store = { path = "../wg-store" }
 wg-rows = { path = "../wg-rows" }

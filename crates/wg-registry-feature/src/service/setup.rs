@@ -25,8 +25,8 @@ use wg_registry::providers::{
     ProviderHealth, agent_adapters, entry_type, llm_health, llm_providers, wanted_models,
 };
 use wg_rows::EventQuery;
-use wg_runtimespec::RequestContext;
-use wg_runtimespec::app::{config_failure, io_error};
+use wg_runtime::spec::RequestContext;
+use wg_runtime::spec::app::{config_failure, io_error};
 use wg_store::head_revision;
 use wg_types::WgError;
 use wg_wire::convention::json_value;

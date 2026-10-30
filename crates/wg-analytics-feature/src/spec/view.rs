@@ -1,7 +1,7 @@
 //! Pure: the human views of `analytics metrics` and `analytics query` (`cli/commands/analytics.py`):
 //! the Rich tables and lines a result prints, as functions of the result document and the console.
 
-use wg_clispec::args::{cell, get, items, python, s};
+use wg_iface::cli::args::{cell, get, items, python, s};
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::pyval::prefix;

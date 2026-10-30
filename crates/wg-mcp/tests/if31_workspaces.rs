@@ -12,8 +12,8 @@ use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde_json::{Map, Value, json};
+use wg_iface::mcp::{Catalog, agent_permissions, respond_to_call};
 use wg_mcp::{Agent, AppBackend, ToolBackend};
-use wg_mcpspec::{Catalog, agent_permissions, respond_to_call};
 use wg_model::entity::{Project, Workspace};
 use wg_model::{Row, Write};
 use wg_runtime::{App, new_id};

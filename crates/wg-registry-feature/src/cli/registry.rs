@@ -5,8 +5,8 @@
 //! [`crate::service`] entry point and prints the result with [`crate::spec::cli_registry`].
 
 use clap::ArgMatches;
-use wg_clispec::args::{option_flag, option_list, option_text};
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::args::{option_flag, option_list, option_text};
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, Term, human_context};
 
 use crate::service;

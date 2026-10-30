@@ -14,7 +14,7 @@ use wg_model::entity::{AutomationRule, AutomationRun, Notification};
 use wg_model::event::{AutomationRunCompleted, NotificationCreated};
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, EventDraft, EventPayload, Write};
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_types::{Correlation, Id, Permission, WgError};
 
 use super::{TriggerRows, condition_context, objects};

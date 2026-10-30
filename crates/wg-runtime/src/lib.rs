@@ -25,6 +25,7 @@ mod jobs;
 mod logging;
 mod queue;
 mod scope;
+pub mod spec;
 mod spool;
 mod stamp;
 pub use scope::index_written;
@@ -42,11 +43,11 @@ pub use feature::{
 pub use handlers::{Handler, HandlerError, HandlerRegistry, HandlerResult, JobContext};
 pub use logging::{JsonLayer, LogSettings, RotatingFile, configure_logging, json_layer};
 pub use queue::Queue;
+pub use spec::jobs::{unknown_job_kind, worker_summary_out};
+pub use spec::{Level, RequestContext};
 pub use spool::{spool_record, write_spooled};
 pub use stamp::{
     StampSource, SystemStamps, agent_context, draw, human_context, new_id, system_context,
 };
-pub use wg_runtimespec::jobs::{unknown_job_kind, worker_summary_out};
-pub use wg_runtimespec::{Level, RequestContext};
 pub use wg_tasks::rename::Term;
 pub use worker::{RunOptions, Summary, Worker, WorkerOptions};

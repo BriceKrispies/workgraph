@@ -3,16 +3,16 @@
 //! the matched arguments and options.
 
 use clap::ArgMatches;
-use wg_clispec::Snapshot;
-use wg_clispec::args::{flag, one};
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::Snapshot;
+use wg_iface::cli::args::{flag, one};
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
 
 /// The clap command of the `tracker` group: the snapshot's own tree.
 #[must_use]
 pub fn command() -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "tracker"),
-        Err(_) => wg_clispec::tree::command("tracker"),
+        Err(_) => wg_iface::cli::tree::command("tracker"),
     }
 }
 

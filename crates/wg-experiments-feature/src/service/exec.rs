@@ -13,7 +13,7 @@ use wg_git::{Git, GitOutput};
 use wg_gitcore::RunOptions;
 use wg_proc::{CaptureLimits, run_capture};
 use wg_procspec::ProcessSpec;
-use wg_runtimespec::effects::GIT_TIMEOUT_MS;
+use wg_runtime::spec::effects::GIT_TIMEOUT_MS;
 use wg_types::WgError;
 
 use crate::spec::replay::git_failure;

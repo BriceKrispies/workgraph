@@ -4,10 +4,10 @@
 //! read as open objects.
 
 use serde_json::json;
+use wg_iface::http::groups::{BodyRef, OPEN_OBJECT, body_spec};
+use wg_iface::http::request::check_body;
 use wg_server::groups::routes_with;
-use wg_serverspec::coverage::{RouteDecl, route_problems};
-use wg_serverspec::groups::{BodyRef, OPEN_OBJECT, body_spec};
-use wg_serverspec::request::check_body;
+use wg_server::spec::coverage::{RouteDecl, route_problems};
 
 /// The operation ids of IF-47 in order, H085 to H100.
 fn if47_ids() -> Vec<String> {
@@ -22,13 +22,13 @@ fn the_verification_automation_and_notification_routes_match_the_snapshot() {
     let group: Vec<&str> = registered
         .iter()
         .map(|route| route.id)
-        .filter(|id| wg_serverspec::operations::group_of(id) == "IF-47")
+        .filter(|id| wg_iface::http::operations::group_of(id) == "IF-47")
         .collect();
     assert_eq!(group, if47_ids());
 
     let problems: Vec<String> = registered
         .iter()
-        .filter(|route| wg_serverspec::operations::group_of(route.id) == "IF-47")
+        .filter(|route| wg_iface::http::operations::group_of(route.id) == "IF-47")
         .flat_map(|route| {
             route_problems(
                 &openapi,

@@ -2,13 +2,13 @@
 
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
+use crate::spec::pairing::{Pairing, pairing_code};
+use crate::spec::routes::Entry;
+use crate::spec::security::{Lan, Policy};
+use crate::spec::{Target, openapi_body, route_table};
 use axum::Router;
+use wg_iface::http::request::{Declared, operation, params};
 use wg_runtime::{App, Bus, draw};
-use wg_serverspec::pairing::{Pairing, pairing_code};
-use wg_serverspec::request::{Declared, operation, params};
-use wg_serverspec::routes::Entry;
-use wg_serverspec::security::{Lan, Policy};
-use wg_serverspec::{Target, openapi_body, route_table};
 use wg_types::WgError;
 
 use crate::route::ApiRoute;
@@ -94,7 +94,7 @@ impl Server {
         let openapi_doc = wg_wire::contract::openapi()?;
         let mut routes = options.routes;
         routes.sort_by_key(|route| {
-            wg_serverspec::operations::registration_index(route.id).unwrap_or(usize::MAX)
+            wg_iface::http::operations::registration_index(route.id).unwrap_or(usize::MAX)
         });
         let routes = routes
             .into_iter()

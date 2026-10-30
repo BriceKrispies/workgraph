@@ -6,8 +6,8 @@
 //! with [`crate::spec::cli`]'s views.
 
 use clap::ArgMatches;
-use wg_clispec::args::{self, option_flag, option_text};
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::args::{self, option_flag, option_text};
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
 use crate::service;

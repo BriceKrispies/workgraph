@@ -20,8 +20,8 @@ use wg_registry::checkout::{WorktreeDetail, WorktreeRecord, primary_checkout};
 use wg_registry::identity::{fingerprint, matched_by};
 use wg_registry::register::{self, Facts, Matched, Request, sync_key};
 use wg_registry::{boundary, refresh, remote, resolve};
-use wg_runtimespec::RequestContext;
-use wg_runtimespec::effects::GIT_TIMEOUT_MS;
+use wg_runtime::spec::RequestContext;
+use wg_runtime::spec::effects::GIT_TIMEOUT_MS;
 use wg_store::Session;
 use wg_types::{Id, Permission, WgError};
 

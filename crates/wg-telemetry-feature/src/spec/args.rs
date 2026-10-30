@@ -5,14 +5,14 @@
 use std::path::PathBuf;
 
 use clap::{ArgMatches, Command};
-use wg_clispec::args::{number, one};
-use wg_clispec::{CliFailure, Usage};
+use wg_iface::cli::args::{number, one};
+use wg_iface::cli::{CliFailure, Usage};
 
 /// The clap command of the `claude` group: the snapshot's own tree, so help and parameters match
 /// `contracts/cli.json`.
 #[must_use]
 pub fn command() -> Command {
-    wg_clispec::tree::snapshot_command("claude")
+    wg_iface::cli::tree::snapshot_command("claude")
 }
 
 /// The usage line of `claude status`.

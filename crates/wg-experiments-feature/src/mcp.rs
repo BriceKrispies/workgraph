@@ -7,9 +7,9 @@
 //! M25: `trial_classify`, `trial_start`, `trial_grade`) run the trial and runner services.
 
 use serde_json::Value;
+use wg_iface::mcp::options::Agent;
+use wg_iface::mcp::{structured_output, text_argument};
 use wg_json::Value as Dto;
-use wg_mcpspec::options::Agent;
-use wg_mcpspec::{structured_output, text_argument};
 use wg_runtime::{App, ToolRun, agent_context};
 use wg_types::WgError;
 use wg_wire::dto::experiment_shapes;

@@ -14,10 +14,10 @@
 //! of their own: the service makes it, as the Python service does.
 
 use serde_json::Value as Json;
+use wg_iface::http::groups::{BodyRef, RouteSpec};
 use wg_json::Value;
+use wg_runtime::spec::text_param;
 use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
-use wg_runtimespec::text_param;
-use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::{Permission, WgError};
 use wg_wire::convention::json_object;
 
@@ -432,7 +432,7 @@ mod tests {
                 _ => "IF-42",
             };
             assert_eq!(
-                wg_serverspec::operations::group_of(spec.id),
+                wg_iface::http::operations::group_of(spec.id),
                 expected,
                 "{}",
                 spec.id
@@ -452,7 +452,7 @@ mod tests {
         let ids: Vec<&str> = PROVIDER_SPECS.iter().map(|spec| spec.id).collect();
         assert_eq!(ids, ["H119", "H120"]);
         for spec in &PROVIDER_SPECS {
-            assert_eq!(wg_serverspec::operations::group_of(spec.id), "IF-42");
+            assert_eq!(wg_iface::http::operations::group_of(spec.id), "IF-42");
             assert_eq!(spec.method, "GET");
             assert!(spec.body.is_none() && spec.query.is_empty());
         }
@@ -464,7 +464,7 @@ mod tests {
         for spec in &SPECS {
             if let Some(body) = &spec.body {
                 assert!(
-                    wg_serverspec::groups::body_spec(&openapi, body).is_some(),
+                    wg_iface::http::groups::body_spec(&openapi, body).is_some(),
                     "{}",
                     spec.id
                 );

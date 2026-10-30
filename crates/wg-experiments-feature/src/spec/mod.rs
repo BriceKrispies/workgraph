@@ -3,8 +3,8 @@
 
 use clap::Command;
 use serde_json::json;
-use wg_clispec::Snapshot;
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::Snapshot;
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
 use wg_model::py_repr_str;
 use wg_types::WgError;
 
@@ -29,7 +29,7 @@ pub const STATUSES: [&str; 3] = ["draft", "running", "closed"];
 pub fn command() -> Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "experiment"),
-        Err(_) => wg_clispec::tree::command("experiment"),
+        Err(_) => wg_iface::cli::tree::command("experiment"),
     }
 }
 

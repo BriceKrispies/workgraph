@@ -1,7 +1,7 @@
 //! The events group (plan IF-49): `GET /api/v1/ws/{ws}/events` (H123), the history, and `GET
 //! /api/v1/ws/{ws}/events/stream` (H124), the server-sent stream.
 //!
-//! The table of operations is `wg-serverspec`'s ([`EVENTS`]); the queries are `wg-runtimespec`'s
+//! The table of operations is `wg-serverspec`'s ([`EVENTS`]); the queries are `wg-runtime`'s `spec`'s
 //! and the frames are `wg-serverspec`'s. This module is the glue: it runs the store reads on the
 //! application context, and it paces the stream.
 //!
@@ -12,17 +12,17 @@ use std::collections::VecDeque;
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::spec::events::{batch_frames, queue_frame};
+use crate::spec::sse::SseEvent;
 use futures_util::stream;
 use serde_json::{Map, Value as Params};
+use wg_iface::http::groups::EVENTS;
 use wg_json::Value;
 use wg_model::StoredEvent;
 use wg_runtime::App;
-use wg_runtimespec::events::{
+use wg_runtime::spec::events::{
     after_seq, history_query, max_events, snapshot_due, stream_query, workspace_reference,
 };
-use wg_serverspec::events::{batch_frames, queue_frame};
-use wg_serverspec::groups::EVENTS;
-use wg_serverspec::sse::SseEvent;
 use wg_types::{Id, Permission, WgError};
 use wg_wire::dto::event::from_stored;
 

@@ -4,7 +4,7 @@
 //! `doctor` and `init` commands.
 //!
 //! The clap command and argument readers of the feature are `cli_*` (the snapshot's command,
-//! `wg_clispec`'s argument helpers, the views); the logic is `registry`, `repos`, `settings` and
+//! `wg_iface::cli`'s argument helpers, the views); the logic is `registry`, `repos`, `settings` and
 //! `setup`.
 
 pub mod cli_registry;

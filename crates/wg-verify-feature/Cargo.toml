@@ -11,11 +11,11 @@ description = "the verification feature: check configs, runs, check results, the
 workspace = true
 
 [dependencies]
+wg-iface = { path = "../wg-iface" }
 clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 time = { version = "0.3", default-features = false, features = ["std"] }
-wg-clispec = { path = "../wg-clispec" }
 wg-exec = { path = "../wg-exec" }
 wg-git = { path = "../wg-git" }
 wg-hash = { path = "../wg-hash" }
@@ -27,8 +27,6 @@ wg-model = { path = "../wg-model" }
 wg-registry = { path = "../wg-registry" }
 wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
-wg-runtimespec = { path = "../wg-runtimespec" }
-wg-serverspec = { path = "../wg-serverspec" }
 wg-store = { path = "../wg-store" }
 wg-rows = { path = "../wg-rows" }
 wg-tasks = { path = "../wg-tasks" }

@@ -3,7 +3,7 @@
 //! [`crate::cli`] send it to the output stream.
 
 use serde_json::{Map, Value};
-use wg_clispec::args::python;
+use wg_iface::cli::args::python;
 use wg_render::Console;
 use wg_types::pyval::prefix;
 use wg_wire::convention::json_value;

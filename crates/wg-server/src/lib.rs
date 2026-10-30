@@ -17,6 +17,7 @@ pub mod groups;
 mod listen;
 mod route;
 mod server;
+pub mod spec;
 mod sse;
 mod ui;
 
@@ -24,7 +25,7 @@ pub use dispatch::router;
 pub use listen::{bind_listeners, detect_lan_address, detect_lan_address_with, host_name};
 pub use route::{Answer, ApiRequest, ApiRoute, Handler, HandlerFuture, handler};
 pub use server::{LanOptions, Server, ServerOptions, serve};
+pub use spec::sse::SseEvent;
 pub use sse::event_stream;
 pub use ui::Ui;
-pub use wg_serverspec::request::BodySpec;
-pub use wg_serverspec::sse::SseEvent;
+pub use wg_iface::http::request::BodySpec;

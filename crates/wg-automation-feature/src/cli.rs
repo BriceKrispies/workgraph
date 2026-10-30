@@ -6,8 +6,8 @@
 //! point and prints the result with [`crate::spec::view`].
 
 use clap::ArgMatches;
-use wg_clispec::CliFailure;
-use wg_clispec::args::option_text;
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::option_text;
 use wg_runtime::{CliState, human_context, system_context};
 
 use crate::service;
@@ -112,7 +112,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             state.emit(&out, Some(&|c| view::process_view(c, &out)))
         }
         _ => Err(CliFailure::fail(
-            wg_clispec::not_implemented_message(path),
+            wg_iface::cli::not_implemented_message(path),
             1,
         )),
     }

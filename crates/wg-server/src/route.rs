@@ -6,10 +6,10 @@ use std::sync::Arc;
 
 use axum::response::Response;
 use serde_json::{Map, Value as Json};
+use wg_iface::http::net::Ip;
+use wg_iface::http::reply::Reply;
+use wg_iface::http::request::BodySpec;
 use wg_runtime::RequestContext;
-use wg_serverspec::net::Ip;
-use wg_serverspec::reply::Reply;
-use wg_serverspec::request::BodySpec;
 use wg_types::WgError;
 
 use crate::server::Server;

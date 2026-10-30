@@ -8,7 +8,7 @@ use wg_trackers::SyncReport;
 use wg_types::WgError;
 use wg_wire::convention as wire;
 
-use wg_clispec::args::python;
+use wg_iface::cli::args::python;
 
 use super::{iso_of_millis, unknown_connection};
 use wg_types::pyval::{int_or, text};

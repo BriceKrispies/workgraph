@@ -4,8 +4,8 @@
 //! `abandon`, `finish`) are not ported yet and answer with the placeholder message.
 
 use clap::ArgMatches;
-use wg_clispec::args::{number, option_flag, option_list, option_text};
-use wg_clispec::{CliFailure, Usage, not_implemented_message};
+use wg_iface::cli::args::{number, option_flag, option_list, option_text};
+use wg_iface::cli::{CliFailure, Usage, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
 use wg_types::AttemptStatus;

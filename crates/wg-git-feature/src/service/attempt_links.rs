@@ -11,7 +11,7 @@ use wg_model::entity::git::CommitTaskLink;
 use wg_model::event::{EntityType, EventDraft, EventPayload, GitCommitsAttributed};
 use wg_model::{Decision, Row, Write};
 use wg_runtime::App;
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_types::{Id, WgError};
 
 use super::entries::analyze_commit;

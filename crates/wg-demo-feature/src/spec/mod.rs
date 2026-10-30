@@ -6,9 +6,9 @@
 use std::path::PathBuf;
 
 use clap::{ArgMatches, Command};
-use wg_clispec::CliFailure;
-use wg_clispec::args::{flag, get, one, s};
-use wg_clispec::tree::snapshot_command;
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::{flag, get, one, s};
+use wg_iface::cli::tree::snapshot_command;
 use wg_json::Value;
 use wg_render::Console;
 

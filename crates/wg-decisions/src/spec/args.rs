@@ -5,9 +5,9 @@
 
 use clap::ArgMatches;
 use serde_json::{Value as Json, json};
-use wg_clispec::args::{many, number, one};
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
-use wg_clispec::{CliFailure, Snapshot, Usage};
+use wg_iface::cli::args::{many, number, one};
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::{CliFailure, Snapshot, Usage};
 
 /// The usage of `decision list` and `decision request`, as Click prints them in a usage error.
 const LIST: Usage = Usage {
@@ -27,7 +27,7 @@ const STATUSES: [&str; 4] = ["open", "decided", "withdrawn", "all"];
 pub fn command() -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "decision"),
-        Err(_) => wg_clispec::tree::command("decision"),
+        Err(_) => wg_iface::cli::tree::command("decision"),
     }
 }
 

@@ -7,7 +7,7 @@
 use std::process::{Command, Output};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-use wg_clispec::{Snapshot, diff_commands};
+use wg_iface::cli::{Snapshot, diff_commands};
 
 /// The implemented groups: the groups of `GROUPS`, then the features' groups in feature order.
 /// The coverage test below derives its list from these, so no name is kept by hand.
@@ -27,7 +27,7 @@ fn implemented(name: &str) -> Option<clap::Command> {
 }
 
 fn snapshot() -> Snapshot {
-    Snapshot::parse(wg_clispec::tree::SNAPSHOT_JSON).expect("the snapshot parses")
+    Snapshot::parse(wg_iface::cli::tree::SNAPSHOT_JSON).expect("the snapshot parses")
 }
 
 /// Runs the binary against a fresh home of its own, so a command that writes never touches the
@@ -54,7 +54,7 @@ fn text(bytes: &[u8]) -> String {
 #[test]
 fn clap_tree_matches_the_snapshot_for_implemented_groups() {
     let snapshot = snapshot();
-    let root = wg_clispec::tree::root(&snapshot, &implemented);
+    let root = wg_iface::cli::tree::root(&snapshot, &implemented);
     let names: Vec<String> = root
         .get_subcommands()
         .map(|c| c.get_name().to_owned())
@@ -64,7 +64,7 @@ fn clap_tree_matches_the_snapshot_for_implemented_groups() {
     let mut reported = Vec::new();
     for sub in root.get_subcommands() {
         let expected = snapshot.group(sub.get_name());
-        let actual = wg_clispec::tree::extract_group(sub);
+        let actual = wg_iface::cli::tree::extract_group(sub);
         let diff = diff_commands(&expected, &actual);
         if implemented_names.contains(&sub.get_name()) {
             assert!(diff.is_empty(), "{}: {diff:#?}", sub.get_name());
@@ -79,8 +79,8 @@ fn clap_tree_matches_the_snapshot_for_implemented_groups() {
 fn placeholders_cover_every_snapshot_command() {
     // The placeholders are built from the snapshot, so the whole tree must agree with it.
     let snapshot = snapshot();
-    let root = wg_clispec::tree::root(&snapshot, &implemented);
-    let actual = wg_clispec::tree::extract(&root);
+    let root = wg_iface::cli::tree::root(&snapshot, &implemented);
+    let actual = wg_iface::cli::tree::extract(&root);
     let expected: Vec<&_> = snapshot.commands.iter().collect();
     assert_eq!(snapshot.commands.len(), 192);
     assert_eq!(diff_commands(&expected, &actual), Vec::<String>::new());
@@ -89,8 +89,8 @@ fn placeholders_cover_every_snapshot_command() {
 #[test]
 fn root_options_match_the_snapshot() {
     let snapshot = snapshot();
-    let root = wg_clispec::tree::root(&snapshot, &implemented);
-    assert_eq!(wg_clispec::tree::params_of(&root), snapshot.root_options);
+    let root = wg_iface::cli::tree::root(&snapshot, &implemented);
+    assert_eq!(wg_iface::cli::tree::params_of(&root), snapshot.root_options);
 }
 
 #[test]

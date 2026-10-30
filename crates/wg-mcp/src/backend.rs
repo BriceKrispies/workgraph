@@ -1,7 +1,7 @@
 //! What a tool call or a resource read runs: the application, under the agent's identity.
 
 use serde_json::Value;
-pub use wg_mcpspec::options::Agent;
+pub use wg_iface::mcp::options::Agent;
 use wg_runtime::{App, Feature};
 use wg_types::WgError;
 

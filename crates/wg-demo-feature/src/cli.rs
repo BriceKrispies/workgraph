@@ -3,7 +3,7 @@
 //! [`crate::spec`], calls one [`crate::service`] entry point and prints the result.
 
 use clap::ArgMatches;
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::{CliGroup, CliState};
 
 use crate::service;

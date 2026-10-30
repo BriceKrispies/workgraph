@@ -11,9 +11,9 @@
 
 use crate::service::contract::task_contract_check;
 use serde_json::Value;
+use wg_iface::mcp::options::Agent;
+use wg_iface::mcp::{structured_output, text_argument};
 use wg_json::Value as Dto;
-use wg_mcpspec::options::Agent;
-use wg_mcpspec::{structured_output, text_argument};
 use wg_runtime::{App, ToolRun, agent_context};
 use wg_types::WgError;
 

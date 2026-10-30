@@ -5,9 +5,9 @@ use std::path::PathBuf;
 
 use wg_exec::manifest::{RepoObservation, needs_commit_range, plan_capture};
 use wg_git::{Git, GitError};
+use wg_runtime::spec::RequestContext;
+use wg_runtime::spec::effects::GIT_TIMEOUT_MS;
 use wg_runtime::{App, index_written};
-use wg_runtimespec::RequestContext;
-use wg_runtimespec::effects::GIT_TIMEOUT_MS;
 use wg_types::{Id, WgError};
 
 use crate::spec::conclude::Captured;

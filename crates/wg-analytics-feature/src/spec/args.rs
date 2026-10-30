@@ -5,10 +5,10 @@
 
 use clap::ArgMatches;
 use serde_json::{Map, Value as Json};
-use wg_clispec::args::{flag, number, one, option_list, option_text};
-use wg_clispec::datetime::parse_click_datetime;
-use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
-use wg_clispec::{CliFailure, Snapshot, Usage};
+use wg_iface::cli::args::{flag, number, one, option_list, option_text};
+use wg_iface::cli::datetime::parse_click_datetime;
+use wg_iface::cli::tree::{SNAPSHOT_JSON, placeholder};
+use wg_iface::cli::{CliFailure, Snapshot, Usage};
 use wg_json::LocalDateTime;
 
 use crate::spec::analyses::Typed;
@@ -90,7 +90,7 @@ pub fn estimate_options(m: &ArgMatches) -> EstimateOptions {
 pub fn command() -> clap::Command {
     match Snapshot::parse(SNAPSHOT_JSON) {
         Ok(snapshot) => placeholder(&snapshot, "analytics"),
-        Err(_) => wg_clispec::tree::command("analytics"),
+        Err(_) => wg_iface::cli::tree::command("analytics"),
     }
 }
 

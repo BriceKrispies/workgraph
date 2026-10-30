@@ -8,7 +8,6 @@ use std::path::PathBuf;
 
 use serde_json::{Map, Value, json};
 use wg_agents::{AgentError, AgentEvent, AgentRunRequest, AgentRunResult};
-use wg_clispec::args::{get, python};
 use wg_exec_feature::service::agents::AgentHost;
 use wg_exec_feature::service::run_flow::{run_cancel, run_rerun, run_retry, run_start};
 use wg_exec_feature::service::scheduler;
@@ -16,6 +15,7 @@ use wg_exec_feature::spec::decompose::{Proposal, read_proposal, validate_decompo
 use wg_exec_feature::spec::prompt::{PromptRepo, build_prompt};
 use wg_exec_feature::spec::runs::StartRequest;
 use wg_exec_feature::spec::schedule::{Eligible, fair_order};
+use wg_iface::cli::args::{get, python};
 use wg_model::entity::{AgentAttempt, Task, Workspace};
 use wg_model::{Decision, Write, derive_id};
 use wg_proc::Cancel;
@@ -163,7 +163,7 @@ fn status_of(app: &mut App, task: u32) -> TaskStatus {
         .status
 }
 
-fn ctx() -> wg_runtimespec::RequestContext {
+fn ctx() -> wg_runtime::spec::RequestContext {
     human_context(Some("brice")).expect("context")
 }
 

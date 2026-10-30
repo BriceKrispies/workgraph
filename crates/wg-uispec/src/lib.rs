@@ -8,9 +8,9 @@
 
 use clap::{ArgMatches, Command};
 use serde_json::{Map, Value as Json};
-use wg_clispec::failure::python_number_text;
-use wg_clispec::tree::{SNAPSHOT_JSON, command as bare_command, placeholder};
-use wg_clispec::{CliFailure, Snapshot, Usage};
+use wg_iface::cli::failure::python_number_text;
+use wg_iface::cli::tree::{SNAPSHOT_JSON, command as bare_command, placeholder};
+use wg_iface::cli::{CliFailure, Snapshot, Usage};
 use wg_json::{PyStr, Value, dict};
 
 /// The health endpoint of a Workgraph server, relative to its base URL.

@@ -268,7 +268,7 @@ pub fn run(
             filled(entry, &|path| {
                 let git = Git {
                     path: PathBuf::from(path),
-                    timeout_ms: wg_runtimespec::effects::GIT_TIMEOUT_MS,
+                    timeout_ms: wg_runtime::spec::effects::GIT_TIMEOUT_MS,
                 };
                 git.is_repository().ok().filter(|found| *found).map(|_| {
                     (

@@ -3,9 +3,9 @@
 //! come from the same values, as the Python `emit` helper does.
 
 use clap::{ArgMatches, Command};
-use wg_clispec::CliFailure;
-use wg_clispec::args::{ReadFile, cell, get, items, many, option_text, python, when};
-use wg_clispec::tree::snapshot_command;
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::{ReadFile, cell, get, items, many, option_text, python, when};
+use wg_iface::cli::tree::snapshot_command;
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::pyval::prefix;

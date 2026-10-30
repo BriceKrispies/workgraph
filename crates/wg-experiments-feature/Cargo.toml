@@ -11,16 +11,15 @@ description = "the experiments feature: experiments, trials and predictor fits (
 workspace = true
 
 [dependencies]
+wg-iface = { path = "../wg-iface" }
 clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
 regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 toml = { version = "0.9", default-features = false, features = ["parse", "serde", "std"] }
-wg-clispec = { path = "../wg-clispec" }
 wg-experiments = { path = "../wg-experiments" }
 wg-git = { path = "../wg-git" }
 wg-gitcore = { path = "../wg-gitcore" }
 wg-json = { path = "../wg-json" }
-wg-mcpspec = { path = "../wg-mcpspec" }
 wg-model = { path = "../wg-model" }
 wg-proc = { path = "../wg-proc" }
 wg-procspec = { path = "../wg-procspec" }
@@ -28,7 +27,6 @@ wg-pyrand = { path = "../wg-pyrand" }
 wg-registry = { path = "../wg-registry" }
 wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
-wg-runtimespec = { path = "../wg-runtimespec" }
 wg-store = { path = "../wg-store" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }
 wg-telemetry = { path = "../wg-telemetry" }

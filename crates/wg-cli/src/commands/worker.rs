@@ -8,9 +8,9 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
+use crate::spec::job as view;
 use clap::ArgMatches;
-use wg_clispec::job as view;
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::{
     HandlerRegistry, RunOptions, Worker, WorkerOptions, human_context, system_context,
     worker_summary_out,

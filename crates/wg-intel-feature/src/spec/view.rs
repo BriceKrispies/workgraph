@@ -1,7 +1,7 @@
 //! The human views of the `classify` reads and of `search` (`cli/commands/intelligence.py`): the
 //! lines and tables the commands print, built from the values the service returns.
 
-use wg_clispec::args::{cell, get, items, opt, python, s};
+use wg_iface::cli::args::{cell, get, items, opt, python, s};
 use wg_json::Value;
 use wg_render::Console;
 use wg_types::pyval::prefix;

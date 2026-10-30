@@ -11,7 +11,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 use rpds::VectorSync;
 use serde_json::{Value as Json, json};
-use wg_clispec::args::{get, items, python};
+use wg_iface::cli::args::{get, items, python};
 use wg_json::Value;
 use wg_model::entity::{
     AgentAttempt, Project, Repository, RepositoryCheckout, Task, TaskRepository, Workspace,

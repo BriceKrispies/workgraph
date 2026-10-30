@@ -5,7 +5,7 @@
 //! are reported on stderr, never failed.
 
 use wg_server::groups::routes_with;
-use wg_serverspec::coverage::{RouteDecl, coverage, route_problems};
+use wg_server::spec::coverage::{RouteDecl, coverage, route_problems};
 
 // covers: X1
 #[test]
@@ -46,7 +46,7 @@ fn registered_routes_match_the_openapi_snapshot() {
     let ids: Vec<&str> = registered.iter().map(|route| route.id).collect();
     let mut implemented: Vec<&str> = registered
         .iter()
-        .map(|route| wg_serverspec::operations::group_of(route.id))
+        .map(|route| wg_iface::http::operations::group_of(route.id))
         .collect();
     implemented.sort_unstable();
     implemented.dedup();

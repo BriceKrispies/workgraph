@@ -1,7 +1,7 @@
 //! The git runner: starts `git` with an argument vector, the E24 environment and the default
 //! timeout, and turns the outcome into text or an error.
 //!
-//! The argument vector, environment and messages come from `wg_runtimespec::effects`, the pure
+//! The argument vector, environment and messages come from `wg_procspec::effects`, the pure
 //! half of the runtime that defines git effects; this module only starts the process.
 //!
 //! Every operation in this crate calls [`Git::run_with`] itself rather than through another
@@ -17,7 +17,7 @@ use wg_gitcore::{GitError, RunOptions, parse_git_version};
 use wg_model::{EffectOutcome, GitOp, ProcessOutput};
 use wg_proc::{CaptureLimits, CaptureResult, run_capture};
 use wg_procspec::ProcessSpec;
-use wg_runtimespec::effects::{GIT_TIMEOUT_MS, git_environment, git_outcome, git_spec};
+use wg_procspec::effects::{GIT_TIMEOUT_MS, git_environment, git_outcome, git_spec};
 
 /// What a git call produced.
 #[derive(Debug, Clone, PartialEq, Eq)]

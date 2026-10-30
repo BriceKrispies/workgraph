@@ -6,8 +6,8 @@
 use crate::spec::cli_setup as view;
 use crate::spec::setup::InitRequest;
 use clap::ArgMatches;
-use wg_clispec::args::option_text;
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::args::option_text;
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::human_context;
 
 use wg_runtime::CliGroup;

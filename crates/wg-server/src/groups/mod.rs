@@ -14,9 +14,9 @@
 pub mod events;
 pub mod meta_settings;
 
+use wg_iface::http::groups::{RouteSpec, body_spec};
+use wg_iface::http::reply::Reply;
 use wg_runtime::{Feature, RouteAnswer, RouteFile, RouteRequest, RouteRun};
-use wg_serverspec::groups::{RouteSpec, body_spec};
-use wg_serverspec::reply::Reply;
 
 use crate::route::{Answer, ApiRoute, handler};
 

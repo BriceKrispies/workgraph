@@ -1,8 +1,8 @@
 //! `workgraph agent list, add-command` (IF-09). The clap command is the snapshot's own tree.
 
 use clap::ArgMatches;
-use wg_clispec::args::{float_value, option_flag, option_list, option_text};
-use wg_clispec::{CliFailure, Usage, not_implemented_message};
+use wg_iface::cli::args::{float_value, option_flag, option_list, option_text};
+use wg_iface::cli::{CliFailure, Usage, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
 use crate::service::agent_cmds::{self as agents, CommandAgent};

@@ -1,15 +1,15 @@
 //! The git tools of IF-33 (`git_get_changes`, `git_get_task_diff`, M55 and M56).
 //!
-//! Each call checks the permission its Python method requires (`wg_mcpspec::tool_permissions`),
+//! Each call checks the permission its Python method requires (`wg_iface::mcp::tool_permissions`),
 //! then answers with the same read as the `git changes` and `git diff` commands ([`crate::service`]).
 //! The task reference is resolved there as `resolve.py` does: by UUID or key, within the workspace
 //! the call names or across all workspaces when it names none (an ambiguous key is refused), and a
 //! reference that names nothing is the same `not_found` error Python gives.
 
 use serde_json::Value;
-use wg_mcpspec::options::Agent;
-use wg_mcpspec::outcome::text_argument;
-use wg_mcpspec::{require, structured, tool_permissions};
+use wg_iface::mcp::options::Agent;
+use wg_iface::mcp::outcome::text_argument;
+use wg_iface::mcp::{require, structured, tool_permissions};
 use wg_runtime::{App, ToolRun, agent_context};
 use wg_types::WgError;
 use wg_types::pyval::{int_or, text};

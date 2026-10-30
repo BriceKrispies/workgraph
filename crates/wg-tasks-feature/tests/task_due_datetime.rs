@@ -3,8 +3,8 @@
 
 #![allow(clippy::expect_used)]
 
-use wg_clispec::datetime::parse_click_datetime;
-use wg_clispec::{CliFailure, report};
+use wg_iface::cli::datetime::parse_click_datetime;
+use wg_iface::cli::{CliFailure, report};
 use wg_render::{Console, ConsoleEnv};
 use wg_tasks_feature::spec::args::create_body;
 

@@ -1,10 +1,10 @@
 //! The `task contract-check` wire shapes (Pure): the prediction a forecast makes and the verdict
 //! that carries the decision and the forecast it was made with.
 
-use wg_clispec::failure::python_number_text;
-use wg_clispec::{CliFailure, Usage};
 use wg_experiments::contract::ContractVerdict as Decided;
 use wg_experiments::predictor::LeafForecast;
+use wg_iface::cli::failure::python_number_text;
+use wg_iface::cli::{CliFailure, Usage};
 use wg_types::{Id, Timestamp};
 use wg_wire::dto::contract_check::ContractVerdict;
 use wg_wire::dto::predictor::Prediction;

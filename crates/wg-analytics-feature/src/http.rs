@@ -9,9 +9,9 @@
 //! answers with the file, as Python's `FileResponse` does; the other operations answer JSON.
 
 use serde_json::Value as Json;
+use wg_iface::http::groups::{BodyRef, RouteSpec};
 use wg_json::Value;
 use wg_runtime::{App, RouteAnswer, RouteFile, RouteGroup, RouteRequest};
-use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::WgError;
 
 use crate::service;

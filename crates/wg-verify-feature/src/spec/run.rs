@@ -744,11 +744,11 @@ pub fn job_payload(payload: &JsonObject) -> Result<JobPayload, String> {
 /// `_ctx(job, component)`: the system context under the job's correlation id, caused by the event
 /// that queued the job.
 pub fn job_context(
-    base: wg_runtimespec::RequestContext,
+    base: wg_runtime::spec::RequestContext,
     correlation: Option<wg_types::Correlation>,
     causation: Option<Id>,
-) -> wg_runtimespec::RequestContext {
-    wg_runtimespec::RequestContext {
+) -> wg_runtime::spec::RequestContext {
+    wg_runtime::spec::RequestContext {
         correlation: correlation.unwrap_or(base.correlation.clone()),
         causation,
         ..base
@@ -760,7 +760,7 @@ pub fn job_result(run: &Value) -> JsonObject {
     ["id", "status"]
         .into_iter()
         .map(|key| {
-            let text = wg_clispec::args::get(run, key).map(wg_clispec::args::python);
+            let text = wg_iface::cli::args::get(run, key).map(wg_iface::cli::args::python);
             (
                 if key == "id" { "run_id" } else { key }.to_owned(),
                 text.map_or(Json::Null, Json::String),

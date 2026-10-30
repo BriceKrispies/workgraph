@@ -6,7 +6,7 @@
 //! * [`run`] is the entry point: `--json` is stripped from anywhere on the command line, the
 //!   clap tree parses what is left, the matched command runs and a failure becomes the report
 //!   and exit code of `cli/common.py` (`wg-clispec` holds the pure rules).
-//! * [`wg_clispec::tree`] builds the tree from the `contracts/cli.json` snapshot. A group implemented in
+//! * [`wg_iface::cli::tree`] builds the tree from the `contracts/cli.json` snapshot. A group implemented in
 //!   [`commands`] supplies its own clap command; every other command is a placeholder that parses
 //!   like the real one and then reports that it is not implemented.
 //! * [`CliState`] carries the global options, opens the [`wg_runtime::App`] on first use and
@@ -16,6 +16,7 @@ pub mod commands;
 pub mod hook;
 mod output;
 mod run;
+pub mod spec;
 
 pub use output::{console, write_stderr, write_stdout};
 pub use run::{run, run_with};

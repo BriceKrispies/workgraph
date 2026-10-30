@@ -2,12 +2,12 @@
 
 use std::convert::Infallible;
 
+use crate::spec::sse::{PING_SECONDS, STREAM_HEADERS, SseEvent, encode, ping};
 use axum::body::{Body, Bytes};
 use axum::http::{HeaderName, HeaderValue};
 use axum::response::Response;
 use futures_util::{Stream, StreamExt};
 use wg_runtime::draw;
-use wg_serverspec::sse::{PING_SECONDS, STREAM_HEADERS, SseEvent, encode, ping};
 
 /// A streaming response of `events`, framed as sse-starlette frames them, with a ping comment
 /// every 15 seconds. The stream ends when `events` ends or the client goes away.

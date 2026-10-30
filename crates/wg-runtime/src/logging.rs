@@ -12,16 +12,16 @@ use std::io::{self, Write as _};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard, OnceLock, PoisonError};
 
+use crate::spec::logs::{
+    BACKUP_COUNT, LOG_FILE_NAME, MAX_BYTES, in_logger_tree, line_end, rollover_moves,
+    should_rollover,
+};
+use crate::spec::{Level, LogRecord, format_record, timestamp_from_unix_nanos};
 use tracing_core::field::{Field, Visit};
 use tracing_core::{Event, Subscriber};
 use tracing_subscriber::layer::{Context, Layer, SubscriberExt as _};
 use tracing_subscriber::registry::Registry;
 use wg_json::{PyStr, Value};
-use wg_runtimespec::logs::{
-    BACKUP_COUNT, LOG_FILE_NAME, MAX_BYTES, in_logger_tree, line_end, rollover_moves,
-    should_rollover,
-};
-use wg_runtimespec::{Level, LogRecord, format_record, timestamp_from_unix_nanos};
 use wg_types::WgError;
 
 /// `configure_logging(level, log_dir, stderr=...)`.

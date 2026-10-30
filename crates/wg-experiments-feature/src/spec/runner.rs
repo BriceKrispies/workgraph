@@ -6,11 +6,11 @@
 //! task's spec, the oracle and gate commands, the grade flags, the trial updates and the views.
 
 use serde_json::{Map, Value as Json, json};
-use wg_clispec::args::{get, items, python, s};
 use wg_experiments::escape::Escape;
 use wg_experiments::replay::{self, ReplayConfig};
 use wg_experiments::trials as lifecycle;
 use wg_experiments::{contract, escape};
+use wg_iface::cli::args::{get, items, python, s};
 use wg_json::Value;
 use wg_model::entity::{Experiment, ExperimentTrial, JsonObject};
 use wg_model::event::{

@@ -4,9 +4,9 @@
 //! [`SPECS`] is the table of the operation; the server binds it to [`run`], which checks the
 //! permission and calls [`document`]. The document is the status DTO of `wg-wire`.
 
+use wg_iface::http::groups::RouteSpec;
 use wg_json::Value;
 use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
-use wg_serverspec::groups::RouteSpec;
 use wg_types::{Permission, WgError};
 use wg_wire::convention::json_value;
 use wg_wire::dto::claude;

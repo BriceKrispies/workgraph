@@ -13,7 +13,7 @@ use wg_model::entity::TaskEmbedding;
 use wg_model::{Decision, Row, Write};
 use wg_registry::resolve;
 use wg_runtime::App;
-use wg_runtimespec::RequestContext;
+use wg_runtime::spec::RequestContext;
 use wg_store::Session;
 use wg_types::{Id, Permission, WgError};
 

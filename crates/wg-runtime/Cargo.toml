@@ -11,7 +11,11 @@ description = "effect interpreter, decision cycle, flow drivers, workers"
 workspace = true
 
 [dependencies]
-clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
+wg-stacks = { path = "../wg-stacks" }
+wg-validate = { path = "../wg-validate" }
+wg-procspec = { path = "../wg-procspec" }
+base64 = "0.22"
+wg-iface = { path = "../wg-iface" }
 getrandom = "0.4"
 time ={ version = "0.3", default-features = false, features = ["std", "local-offset"] }
 rpds = "1"
@@ -21,12 +25,9 @@ tracing = "0.1"
 tracing-core = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false, features = ["registry", "std"] }
 wg-codeanalysis = { path = "../wg-codeanalysis" }
-wg-clispec = { path = "../wg-clispec" }
 wg-codeparse = { path = "../wg-codeparse" }
 wg-config = { path = "../wg-config" }
-wg-mcpspec = { path = "../wg-mcpspec" }
 wg-render = { path = "../wg-render" }
-wg-serverspec = { path = "../wg-serverspec" }
 wg-exec = { path = "../wg-exec" }
 wg-git = { path = "../wg-git" }
 wg-gitcore = { path = "../wg-gitcore" }
@@ -37,7 +38,6 @@ wg-model = { path = "../wg-model" }
 wg-net = { path = "../wg-net" }
 wg-proc = { path = "../wg-proc" }
 wg-registry = { path = "../wg-registry" }
-wg-runtimespec = { path = "../wg-runtimespec" }
 wg-store = { path = "../wg-store" }
 wg-wire = { path = "../wg-wire" }
 wg-tasks = { path = "../wg-tasks" }

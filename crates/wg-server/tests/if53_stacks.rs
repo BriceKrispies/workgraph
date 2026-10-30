@@ -19,8 +19,8 @@ use serde_json::{Value, json};
 use tower::ServiceExt;
 use wg_model::entity::{Repository, RepositoryCheckout, StackItem, Workspace};
 use wg_model::{Decision, Write};
+use wg_runtime::spec::events::event_out;
 use wg_runtime::{App, human_context};
-use wg_runtimespec::events::event_out;
 use wg_server::{Server, ServerOptions, Ui, groups, router};
 use wg_types::{AccessMode, StackItemState, Timestamp};
 

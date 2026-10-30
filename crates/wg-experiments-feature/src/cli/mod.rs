@@ -13,8 +13,8 @@ use crate::service;
 use crate::spec::command;
 use crate::spec::view::{list_view, show_view};
 use clap::ArgMatches;
-use wg_clispec::args::option_text;
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_iface::cli::args::option_text;
+use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
 /// The `experiment` group.

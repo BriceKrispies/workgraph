@@ -23,8 +23,8 @@ use wg_jobs::queue::NewJob;
 use wg_model::entity::{Classification, ClassificationGoldLabel, Job, Task, Workspace};
 use wg_model::{Decision, Write, derive_id};
 use wg_netspec::ProviderError;
+use wg_runtime::spec::RequestContext;
 use wg_runtime::{App, HandlerRegistry, Queue, Worker, WorkerOptions, system_context};
-use wg_runtimespec::RequestContext;
 use wg_types::{ErrorCode, Id, JobStatus, TaskKey, TaskPriority, TaskStatus, Timestamp, WgError};
 
 /// What the fake provider answers every call with.

@@ -8,10 +8,10 @@
 //! `commits/{sha}`) are the registry feature's, and call into this crate's services.
 
 use serde_json::Value as Json;
+use wg_iface::http::groups::{BodyRef, RouteSpec};
 use wg_json::Value;
+use wg_runtime::spec::text_param;
 use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
-use wg_runtimespec::text_param;
-use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::WgError;
 use wg_types::pyval::int_or;
 
@@ -161,6 +161,6 @@ mod tests {
         assert_eq!(spec.path, "/api/v1/ws/{ws}/worktrees");
         assert_eq!(spec.status, 200);
         assert!(spec.body.is_none());
-        assert_eq!(wg_serverspec::operations::group_of(spec.id), "IF-43");
+        assert_eq!(wg_iface::http::operations::group_of(spec.id), "IF-43");
     }
 }

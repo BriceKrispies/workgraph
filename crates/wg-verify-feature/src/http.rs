@@ -7,10 +7,10 @@
 //! validated request and calls the feature's [`crate::service::api`] entry points.
 
 use serde_json::Value as Json;
+use wg_iface::http::groups::{BodyRef, RouteSpec};
 use wg_json::Value;
+use wg_runtime::spec::text_param;
 use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
-use wg_runtimespec::text_param;
-use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::WgError;
 
 use crate::service::api;
@@ -158,7 +158,7 @@ mod tests {
             } else {
                 "IF-47"
             };
-            assert_eq!(wg_serverspec::operations::group_of(spec.id), group);
+            assert_eq!(wg_iface::http::operations::group_of(spec.id), group);
         }
     }
 
@@ -168,7 +168,7 @@ mod tests {
         for spec in &SPECS {
             if let Some(body) = &spec.body {
                 assert!(
-                    wg_serverspec::groups::body_spec(&openapi, body).is_some(),
+                    wg_iface::http::groups::body_spec(&openapi, body).is_some(),
                     "{}",
                     spec.id
                 );

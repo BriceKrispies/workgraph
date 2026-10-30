@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 
 use rpds::VectorSync;
 use serde_json::{Map, Value as Json, json};
-use wg_clispec::args::{get, python};
+use wg_iface::cli::args::{get, python};
 use wg_model::event::{EventDraft, EventPayload, TaskDecomposed};
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, py_repr_str};

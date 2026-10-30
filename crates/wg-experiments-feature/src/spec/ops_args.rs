@@ -4,9 +4,9 @@
 
 use clap::ArgMatches;
 use serde_json::Value as Json;
-use wg_clispec::args::{ReadFile, number, one};
-use wg_clispec::failure::python_number_text;
-use wg_clispec::{CliFailure, Usage};
+use wg_iface::cli::args::{ReadFile, number, one};
+use wg_iface::cli::failure::python_number_text;
+use wg_iface::cli::{CliFailure, Usage};
 
 use super::predict::{FitSettings, PredictOptions};
 

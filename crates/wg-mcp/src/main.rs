@@ -5,8 +5,8 @@
 
 use std::process::ExitCode;
 
+use wg_iface::mcp::options::{ServeOptions, Transport};
 use wg_mcp::{AppBackend, serve_stdio};
-use wg_mcpspec::options::{ServeOptions, Transport};
 use wg_types::WgError;
 
 /// The features this program serves: the tasks, decisions, registry, automation, git, exec and

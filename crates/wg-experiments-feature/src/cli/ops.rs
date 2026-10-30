@@ -4,8 +4,8 @@
 //! [`crate::spec::ops_view`].
 
 use clap::ArgMatches;
-use wg_clispec::CliFailure;
-use wg_clispec::args::one;
+use wg_iface::cli::CliFailure;
+use wg_iface::cli::args::one;
 use wg_runtime::{CliState, human_context};
 
 use crate::service;

@@ -3,7 +3,7 @@
 //! what they came to.
 
 use serde_json::{Value as Json, json};
-use wg_clispec::args::{get, items, python, s};
+use wg_iface::cli::args::{get, items, python, s};
 use wg_json::Value;
 use wg_model::Task;
 use wg_render::Console;

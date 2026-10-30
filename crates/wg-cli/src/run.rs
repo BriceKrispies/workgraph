@@ -5,8 +5,8 @@ use std::io::Write;
 
 use clap::ArgMatches;
 use clap::error::ErrorKind;
-use wg_clispec::tree::{SNAPSHOT_JSON, root};
-use wg_clispec::{CliFailure, Snapshot, not_implemented_message, report, split_json};
+use wg_iface::cli::tree::{SNAPSHOT_JSON, root};
+use wg_iface::cli::{CliFailure, Snapshot, not_implemented_message, report, split_json};
 
 use crate::CliState;
 use crate::commands;
@@ -22,7 +22,7 @@ pub fn run() -> u8 {
         .skip(1)
         .map(|arg| arg.to_string_lossy().into_owned())
         .collect();
-    if wg_clispec::is_hook_invocation(&args) {
+    if wg_iface::cli::is_hook_invocation(&args) {
         // `claude hook` never builds the clap tree, the console or the snapshot (P01, O15).
         return crate::hook::run(args.get(2..).unwrap_or_default());
     }

@@ -5,9 +5,9 @@
 //! operation to its group's `run`, which reads the validated request and calls the feature's
 //! [`crate::service`] entry point.
 
+use wg_iface::http::groups::RouteSpec;
 use wg_json::Value;
 use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
-use wg_serverspec::groups::RouteSpec;
 use wg_types::WgError;
 
 use crate::service;
@@ -344,7 +344,7 @@ mod tests {
         assert_eq!(ids.len(), 21);
         assert!(!ids.contains(&"H033") && !ids.contains(&"H034") && !ids.contains(&"H035"));
         for spec in &TASK_SPECS {
-            assert_eq!(wg_serverspec::operations::group_of(spec.id), "IF-44");
+            assert_eq!(wg_iface::http::operations::group_of(spec.id), "IF-44");
         }
     }
 
@@ -354,7 +354,7 @@ mod tests {
         for spec in &TASK_SPECS {
             if let Some(body) = &spec.body {
                 assert!(
-                    wg_serverspec::groups::body_spec(&openapi, body).is_some(),
+                    wg_iface::http::groups::body_spec(&openapi, body).is_some(),
                     "{}",
                     spec.id
                 );

@@ -10,8 +10,8 @@ use std::path::PathBuf;
 
 use serde_json::{Map, Value, json};
 use wg_experiments_feature::mcp;
-use wg_mcpspec::agent_permissions;
-use wg_mcpspec::options::Agent;
+use wg_iface::mcp::agent_permissions;
+use wg_iface::mcp::options::Agent;
 use wg_model::entity::Workspace;
 use wg_model::{Write, derive_id};
 use wg_runtime::App;

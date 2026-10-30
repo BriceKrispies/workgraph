@@ -1,0 +1,27 @@
+//! The CLI rules the command groups and the `workgraph` binary share (docs/rust-rewrite.md
+//! sections 4.3, 5.5 and DV1): the `--json` rule for argv, the command snapshot
+//! (`contracts/cli.json`) and the comparison of a command tree against it, the clap tree built from
+//! it, the exit-code mapping and the text of error reports (contracts O02 and O05).
+//!
+//! `wg-cli` parses, calls one runtime entry point and renders; everything here that does not touch a
+//! stream, the environment or clap is a function of its inputs. The types a `Feature` names live
+//! here so that `wg-runtime` does not depend on a front end.
+
+pub use clap::{ArgMatches, Command};
+
+pub mod args;
+pub mod argv;
+pub mod datetime;
+pub mod failure;
+pub mod snapshot;
+pub mod tree;
+
+pub use argv::{Argv, is_hook_invocation, split_json};
+pub use failure::{
+    CliFailure, EXIT_INTERRUPTED, EXIT_UNEXPECTED, EXIT_USAGE, PathKind, PathProblem, Report,
+    Usage, python_number_text, report,
+};
+pub use snapshot::{
+    CommandSpec, Kind, ParamSpec, Snapshot, SnapshotError, diff_commands, display_path,
+    not_implemented_message,
+};

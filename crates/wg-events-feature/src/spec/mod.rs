@@ -4,9 +4,9 @@
 
 use clap::{ArgMatches, Command};
 use serde_json::Value as Json;
-use wg_clispec::args::{cell, get, items, one, when};
-use wg_clispec::tree::snapshot_command;
-use wg_clispec::{CliFailure, Usage};
+use wg_iface::cli::args::{cell, get, items, one, when};
+use wg_iface::cli::tree::snapshot_command;
+use wg_iface::cli::{CliFailure, Usage};
 use wg_json::Value;
 use wg_render::Console;
 use wg_rows::EventQuery;
@@ -50,13 +50,13 @@ pub struct ListArgs {
 pub fn list_args(m: &ArgMatches) -> Result<ListArgs, CliFailure> {
     let after = match one(m, "--after") {
         None => None,
-        Some(_) => Some(wg_clispec::args::number(m, "--after", 0, LIST)?),
+        Some(_) => Some(wg_iface::cli::args::number(m, "--after", 0, LIST)?),
     };
     Ok(ListArgs {
         entity: one(m, "--entity"),
         prefix: one(m, "--prefix"),
         after,
-        limit: wg_clispec::args::number(m, "--limit", 50, LIST)?,
+        limit: wg_iface::cli::args::number(m, "--limit", 50, LIST)?,
     })
 }
 

@@ -1,0 +1,22 @@
+{
+  "id": "providers-repository-boundary",
+  "covers": ["C118", "C183", "O05"],
+  "setup": [
+    {"git": "init", "repo": "outside"},
+    {"git": "commit", "repo": "outside", "files": {"README.md": "outside\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["workspace", "set", "default", "--allowed-root", "{tmp}{sep}nowhere"], "json": true},
+    {"assert": {"json": {"path": "/settings/allowed_roots/0", "equals": "{tmp}{sep}nowhere"}}},
+    {"cli": ["repo", "register", "{repo:outside}"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"json": {"path": "/error/code", "equals": "validation_failed"}}},
+    {"cli": ["repo", "register", "{tmp}{sep}missing"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"json": {"path": "/error/code", "equals": "validation_failed"}}},
+    {"cli": ["repo", "list", "--all"], "json": true},
+    {"assert": {"json": {"path": "/0", "absent": true}}}
+  ],
+  "not_observable": []
+}

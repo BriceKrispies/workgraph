@@ -1,0 +1,50 @@
+{
+  "id": "experiment-replay-exclusions",
+  "covers": ["C076"],
+  "setup": [
+    {"git": "init", "repo": "exclusions"},
+    {"git": "commit", "repo": "exclusions", "files": {
+      "pyproject.toml": "[project]\nname = \"demo\"\nversion = \"0.1.0\"\n",
+      "pkg/__init__.py": "",
+      "pkg/mod.py": "def f():\n    return 1\n"
+    }, "message": "add project"},
+    {"git": "commit", "repo": "exclusions", "files": {"tests/test_only.py": "def test_only():\n    assert True\n"}, "message": "tests only"},
+    {"git": "commit", "repo": "exclusions", "files": {"pkg/extra.py": "X = 1\n"}, "message": "source only"},
+    {"git": "commit", "repo": "exclusions", "files": {
+      "pkg/mod.py": "def f():\n    return 1  \n",
+      "tests/test_fmt.py": "def test_fmt():\n    assert True\n"
+    }, "message": "whitespace"},
+    {"git": "commit", "repo": "exclusions", "files": {
+      "pkg/mod.py": "def f():\n    return 1  \n\n\ndef test_f():\n    assert f() == 1\n",
+      "tests/test_inline.py": "def test_inline():\n    assert True\n"
+    }, "message": "inline test"},
+    {"git": "move", "repo": "exclusions", "args": ["pkg/extra.py", "pkg/extra2.py"]},
+    {"git": "commit", "repo": "exclusions", "files": {}, "message": "rename"},
+    {"git": "checkout", "repo": "exclusions", "args": ["-b", "side"]},
+    {"git": "commit", "repo": "exclusions", "files": {"pkg/side.py": "S = 1\n"}, "message": "side work"},
+    {"git": "checkout", "repo": "exclusions", "args": ["main"]},
+    {"git": "commit", "repo": "exclusions", "files": {"pkg/main.py": "M = 1\n"}, "message": "main work"},
+    {"git": "merge", "repo": "exclusions", "args": ["side"]}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:exclusions}"], "json": true},
+    {"cli": ["experiment", "replay", "scan", "--repo", "exclusions", "--rev", "HEAD", "--include-excluded", "--min-lines", "0", "--limit", "1"], "json": true},
+    {"assert": {"stdout_contains": "\"merge\""}},
+    {"cli": ["experiment", "replay", "scan", "--repo", "exclusions", "--rev", "HEAD~2", "--include-excluded", "--min-lines", "0", "--limit", "1"], "json": true},
+    {"assert": {"stdout_contains": "\"rename_only\""}},
+    {"assert": {"stdout_contains": "\"no_source\""}},
+    {"cli": ["experiment", "replay", "scan", "--repo", "exclusions", "--rev", "HEAD~3", "--include-excluded", "--min-lines", "0", "--limit", "1"], "json": true},
+    {"assert": {"stdout_contains": "\"inline_tests\""}},
+    {"cli": ["experiment", "replay", "scan", "--repo", "exclusions", "--rev", "HEAD~4", "--include-excluded", "--min-lines", "0", "--limit", "1"], "json": true},
+    {"assert": {"stdout_contains": "\"formatting_only\""}},
+    {"cli": ["experiment", "replay", "scan", "--repo", "exclusions", "--rev", "HEAD~5", "--include-excluded", "--min-lines", "0", "--limit", "1"], "json": true},
+    {"assert": {"stdout_contains": "\"no_tests\""}},
+    {"cli": ["experiment", "replay", "scan", "--repo", "exclusions", "--rev", "HEAD~6", "--include-excluded", "--min-lines", "0", "--limit", "1"], "json": true},
+    {"assert": {"stdout_contains": "\"no_source\""}},
+    {"cli": ["experiment", "replay", "scan", "--repo", "exclusions", "--rev", "HEAD~7", "--include-excluded", "--min-lines", "0", "--limit", "1"], "json": true},
+    {"assert": {"stdout_contains": "\"root\""}},
+    {"assert": {"json": {"path": "/0/parent", "equals": null}}}
+  ],
+  "not_observable": []
+}

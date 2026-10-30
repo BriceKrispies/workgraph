@@ -133,8 +133,14 @@ fn run_action(
             // `ClassificationService.request(ctx, slug, task)` with the default provider, model
             // and promote flag: queues one `classify_task` job and returns its reply.
             let task = exec::target_task(render_context)?;
-            let (job_id, task, status) =
-                classification::request(app, context, Some(slug), &task, &RunOptions::default())?;
+            let (job_id, task, status) = classification::request_with_correlation(
+                app,
+                context,
+                Some(slug),
+                &task,
+                &RunOptions::default(),
+                Some(context.correlation.clone()),
+            )?;
             Ok(json!({
                 "job_id": job_id.to_string(),
                 "task_id": task.id.to_string(),

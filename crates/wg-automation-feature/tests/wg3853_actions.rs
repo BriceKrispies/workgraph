@@ -303,6 +303,8 @@ fn classify_task_queues_one_classification_job_for_the_task() {
     assert_eq!(job.payload.get("promote"), Some(&json!(false)));
     assert_eq!(job.payload.get("reason"), Some(&json!("requested")));
     assert_eq!(job.max_attempts, 4);
+    // Python passes the run's correlation (`ctx.correlation_id`) to the job it queues.
+    assert!(job.correlation_id.is_some());
     assert_eq!(job.task_id, Some(id(11)));
     assert_eq!(job.workspace_id, Some(id(0)));
     let keys: Vec<String> = job.resource_keys.iter().cloned().collect();

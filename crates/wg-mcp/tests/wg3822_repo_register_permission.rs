@@ -14,7 +14,7 @@ use wg_mcpspec::agent_permissions;
 use wg_model::entity::{Project, Workspace};
 use wg_model::{Row, Write};
 use wg_runtime::{App, Feature, new_id};
-use wg_types::{Timestamp, WgError};
+use wg_types::{Permission, Timestamp, WgError};
 
 /// The features the backend serves: the registry feature.
 static REGISTRY: &[&Feature] = &[&wg_registry_feature::FEATURE];
@@ -170,4 +170,182 @@ fn repository_register_succeeds_with_repo_register() {
         .expect("register with the grant");
     assert_eq!(registered["name"], json!("svc"));
     assert_eq!(registered["checkouts"][0]["is_primary"], json!(true));
+}
+
+/// An MCP agent with exactly `grants`, without the default grants, so a refusal names the one
+/// permission the tool needs and no other.
+fn bare_agent(grants: &[Permission]) -> Agent {
+    Agent {
+        name: "wg3822-test".to_owned(),
+        permissions: grants.iter().copied().collect(),
+    }
+}
+
+/// Calls `tool` as an agent with `grants` and expects `permission_denied` naming `missing`.
+fn assert_refused(
+    fx: &mut Fixture,
+    tool: &str,
+    arguments: Value,
+    grants: &[Permission],
+    missing: &str,
+) {
+    let (code, message) = error_of(fx.backend.call_tool(&bare_agent(grants), tool, arguments));
+    assert_eq!(code, "permission_denied", "{tool}");
+    assert_eq!(
+        message,
+        format!("actor 'agent:wg3822-test' lacks permission(s): {missing}"),
+        "{tool}"
+    );
+}
+
+// covers: M01
+#[test]
+fn workspace_list_is_refused_without_workspace_read() {
+    let mut fx = Fixture::new("m01");
+    assert_refused(&mut fx, "workspace_list", json!({}), &[], "workspace:read");
+    assert_refused(
+        &mut fx,
+        "workspace_list",
+        json!({}),
+        &[Permission::RepoRead],
+        "workspace:read",
+    );
+    let listed = fx
+        .backend
+        .call_tool(
+            &bare_agent(&[Permission::WorkspaceRead]),
+            "workspace_list",
+            json!({}),
+        )
+        .expect("list with the grant");
+    assert_eq!(listed["workspaces"].as_array().map(Vec::len), Some(1));
+}
+
+// covers: M02
+#[test]
+fn workspace_get_is_refused_without_workspace_read() {
+    let mut fx = Fixture::new("m02");
+    assert_refused(&mut fx, "workspace_get", json!({}), &[], "workspace:read");
+    assert_refused(
+        &mut fx,
+        "workspace_get",
+        json!({}),
+        &[Permission::RepoRead],
+        "workspace:read",
+    );
+}
+
+// covers: M03
+#[test]
+fn project_list_is_refused_without_workspace_read() {
+    let mut fx = Fixture::new("m03");
+    assert_refused(&mut fx, "project_list", json!({}), &[], "workspace:read");
+    assert_refused(
+        &mut fx,
+        "project_list",
+        json!({}),
+        &[Permission::RepoRead],
+        "workspace:read",
+    );
+}
+
+// covers: M04
+#[test]
+fn project_get_is_refused_without_workspace_read() {
+    let mut fx = Fixture::new("m04");
+    let arguments = json!({"project": "platform"});
+    assert_refused(
+        &mut fx,
+        "project_get",
+        arguments.clone(),
+        &[],
+        "workspace:read",
+    );
+    assert_refused(
+        &mut fx,
+        "project_get",
+        arguments,
+        &[Permission::RepoRead],
+        "workspace:read",
+    );
+}
+
+// covers: M05
+#[test]
+fn repository_list_is_refused_without_repo_read() {
+    let mut fx = Fixture::new("m05");
+    assert_refused(&mut fx, "repository_list", json!({}), &[], "repo:read");
+    assert_refused(
+        &mut fx,
+        "repository_list",
+        json!({}),
+        &[Permission::WorkspaceRead],
+        "repo:read",
+    );
+    let listed = fx
+        .backend
+        .call_tool(
+            &bare_agent(&[Permission::RepoRead]),
+            "repository_list",
+            json!({}),
+        )
+        .expect("list with the grant");
+    assert_eq!(listed["repositories"], json!([]));
+}
+
+// covers: M06
+#[test]
+fn repository_get_is_refused_without_repo_read() {
+    let mut fx = Fixture::new("m06");
+    let arguments = json!({"repository": "svc"});
+    assert_refused(
+        &mut fx,
+        "repository_get",
+        arguments.clone(),
+        &[],
+        "repo:read",
+    );
+    assert_refused(
+        &mut fx,
+        "repository_get",
+        arguments,
+        &[Permission::WorkspaceRead],
+        "repo:read",
+    );
+}
+
+// covers: M07
+#[test]
+fn repository_register_is_refused_without_repo_register_alone() {
+    let mut fx = Fixture::new("m07");
+    let arguments = json!({"path": fx.root.display().to_string()});
+    // A read grant is not the write grant: only repo:register admits registration.
+    assert_refused(
+        &mut fx,
+        "repository_register",
+        arguments,
+        &[Permission::RepoRead],
+        "repo:register",
+    );
+}
+
+// covers: M08
+#[test]
+fn repository_status_is_refused_without_repo_read() {
+    let mut fx = Fixture::new("m08");
+    let arguments = json!({"repository": "svc"});
+    assert_refused(
+        &mut fx,
+        "repository_status",
+        arguments.clone(),
+        &[],
+        "repo:read",
+    );
+    assert_refused(
+        &mut fx,
+        "repository_status",
+        arguments,
+        &[Permission::WorkspaceRead],
+        "repo:read",
+    );
 }

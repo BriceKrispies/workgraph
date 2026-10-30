@@ -17,10 +17,15 @@ pub fn agent_permissions<S: AsRef<str>>(grants: &[S]) -> Result<BTreeSet<Permiss
     Ok(permissions)
 }
 
-/// The permissions the Python method behind attempt, run and git tool `name` requires, or `None`
-/// for a tool this table does not cover.
+/// The permissions the Python method behind attempt, run, git and registry tool `name` requires,
+/// or `None` for a tool this table does not cover.
 pub fn tool_permissions(name: &str) -> Option<&'static [Permission]> {
     Some(match name {
+        "workspace_list" | "workspace_get" | "project_list" | "project_get" => {
+            &[Permission::WorkspaceRead]
+        }
+        "repository_list" | "repository_get" | "repository_status" => &[Permission::RepoRead],
+        "repository_register" => &[Permission::RepoRegister],
         "attempt_create" => &[Permission::AttemptWrite],
         "attempt_start" => &[Permission::TaskClaim, Permission::AttemptWrite],
         "attempt_submit" => &[

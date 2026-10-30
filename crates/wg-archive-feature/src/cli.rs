@@ -3,13 +3,13 @@
 //! reads its matches with [`crate::spec`], calls one [`crate::service`] entry point and prints the
 //! result with [`crate::spec`] (the `--json` document, or the human view).
 //!
-//! `export analytics` (C084) is not served here: it needs the analytics warehouse, which is not
-//! ported, so it stays a not-implemented placeholder.
+//! `export analytics` (C084) writes one fact table, built by `wg-analytics-feature`, as CSV, JSON or
+//! Parquet.
 
 use clap::ArgMatches;
 use wg_archive::backup;
 use wg_clispec::{CliFailure, not_implemented_message};
-use wg_runtime::{CliGroup, CliState, draw, resolve_paths};
+use wg_runtime::{CliGroup, CliState, draw, human_context, resolve_paths};
 
 use crate::service;
 use crate::spec;
@@ -31,7 +31,7 @@ pub const RESTORE: CliGroup = CliGroup {
     run: run_restore,
 };
 
-/// The `export` group: `workspace` here, `analytics` not yet.
+/// The `export` group: `workspace` and `analytics`.
 pub const EXPORT: CliGroup = CliGroup {
     name: "export",
     command: spec::export_command,
@@ -100,6 +100,26 @@ fn run_export(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(
             let tables: Vec<(String, usize)> = report.tables;
             let value = spec::export_document(&written, &tables);
             state.emit(&value, Some(&|c| spec::export_view(c, &written, &tables)))
+        }
+        Some("analytics") => {
+            let output = spec::path_arg(m, "output");
+            let dataset = spec::analytics_dataset(m);
+            let format_text = spec::analytics_format(m);
+            let format = wg_archivespec::parse_format(&format_text)?;
+            let context = human_context(None)?;
+            let reference = state.workspace_ref(spec::workspace_arg(m).as_deref());
+            let report = service::export_analytics(
+                state.app()?,
+                &context,
+                reference.as_deref(),
+                &dataset,
+                format,
+                &output,
+            )?;
+            let written = report.path.display().to_string();
+            let value =
+                spec::export_analytics_document(&written, &format_text, &dataset, report.bytes);
+            state.emit(&value, Some(&|c| spec::export_analytics_view(c, &written)))
         }
         _ => Err(CliFailure::fail(not_implemented_message(path), 1)),
     }

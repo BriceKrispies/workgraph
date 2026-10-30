@@ -254,3 +254,32 @@ pub fn from_json(value: &Json) -> Value {
         ),
     }
 }
+
+/// `--dataset` of `export analytics` (default `task_facts`).
+#[must_use]
+pub fn analytics_dataset(m: &ArgMatches) -> String {
+    one(m, "--dataset").unwrap_or_else(|| "task_facts".to_owned())
+}
+
+/// `--format` of `export analytics` (default `csv`), as typed; the caller parses it.
+#[must_use]
+pub fn analytics_format(m: &ArgMatches) -> String {
+    one(m, "--format").unwrap_or_else(|| "csv".to_owned())
+}
+
+/// The `export analytics` result (`AnalyticsService.export`): path, format, dataset and bytes.
+#[must_use]
+pub fn export_analytics_document(path: &str, format: &str, dataset: &str, bytes: u64) -> Value {
+    dict!({
+        "path": text(path),
+        "format": text(format),
+        "dataset": text(dataset),
+        "bytes": Value::Int(i128::from(bytes)),
+    })
+}
+
+/// The human line of `export analytics`: `wrote <path>`.
+#[must_use]
+pub fn export_analytics_view(console: &Console, path: &str) -> String {
+    console.print(&format!("wrote {}", escape(path))).text
+}

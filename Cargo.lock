@@ -2251,6 +2251,7 @@ dependencies = [
  "serde_json",
  "time",
  "wg-analytics",
+ "wg-archivespec",
  "wg-automation-feature",
  "wg-clispec",
  "wg-hash",
@@ -2289,6 +2290,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "serde_json",
+ "wg-analytics-feature",
  "wg-archive",
  "wg-archivespec",
  "wg-clispec",

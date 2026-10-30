@@ -190,8 +190,8 @@ fn capture(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
     // Click checks the numeric options before the command runs: a bad one fails before any
     // server is probed or any config is read.
     let defaults = CaptureOptions::default();
-    let width = number(m, "--width", defaults.width, SCREENSHOT, "integer")?;
-    let height = number(m, "--height", defaults.height, SCREENSHOT, "integer")?;
+    let width = number(m, "--width", defaults.width, SCREENSHOT, "int")?;
+    let height = number(m, "--height", defaults.height, SCREENSHOT, "int")?;
     let scale = number(m, "--scale", defaults.scale, SCREENSHOT, "float")?;
     let settle = number(m, "--settle", defaults.settle, SCREENSHOT, "float")?;
     let timeout = number(m, "--timeout", defaults.timeout, SCREENSHOT, "float")?;

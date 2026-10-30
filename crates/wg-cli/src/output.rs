@@ -27,7 +27,7 @@ pub fn console(stderr: bool) -> Console {
         term: term.as_deref(),
         no_color: no_color.as_deref(),
         is_terminal,
-        terminal_width: None,
+        terminal_width: terminal_columns(),
         legacy_windows: legacy_windows(),
     })
 }
@@ -78,4 +78,53 @@ pub fn write_stdout(text: &str) {
 /// Writes `text` to standard error.
 pub fn write_stderr(text: &str) {
     write_all(&mut std::io::stderr().lock(), text);
+}
+
+/// The width of the console rich reads when `COLUMNS` is not set (`Console.size`). On Windows
+/// rich asks standard output, then standard error, for the window of the console behind it, so a
+/// redirected standard output still takes the width of a console on standard error. `None` when
+/// neither is a console; off Windows the terminal size is not read here, so the default applies.
+#[must_use]
+pub fn terminal_columns() -> Option<usize> {
+    #[cfg(not(windows))]
+    {
+        None
+    }
+    #[cfg(windows)]
+    {
+        /// `STD_OUTPUT_HANDLE` is `(DWORD)-11` and `STD_ERROR_HANDLE` is `(DWORD)-12`.
+        const HANDLES: [u32; 2] = [u32::MAX - 10, u32::MAX - 11];
+        HANDLES
+            .iter()
+            .find_map(|&id| console_window(id))
+            .and_then(|[left, right]| wg_render::window_columns(left, right))
+    }
+}
+
+/// The left and right columns of the console window behind standard handle `id`, when it is a
+/// console (`GetConsoleScreenBufferInfo`).
+#[cfg(windows)]
+fn console_window(id: u32) -> Option<[i16; 2]> {
+    use std::ffi::c_void;
+
+    /// `CONSOLE_SCREEN_BUFFER_INFO`, as the console API lays it out.
+    #[repr(C)]
+    #[derive(Default)]
+    struct ScreenBufferInfo {
+        size: [i16; 2],
+        cursor: [i16; 2],
+        attributes: u16,
+        window: [i16; 4],
+        maximum: [i16; 2],
+    }
+    unsafe extern "system" {
+        fn GetStdHandle(id: u32) -> *mut c_void;
+        fn GetConsoleScreenBufferInfo(console: *mut c_void, info: *mut ScreenBufferInfo) -> i32;
+    }
+    let mut info = ScreenBufferInfo::default();
+    // SAFETY: `GetStdHandle` only reads its argument; `GetConsoleScreenBufferInfo` writes one
+    // buffer-info structure through a pointer to a live local. A handle that is not a console
+    // makes it fail, which is the `None` answer.
+    let ok = unsafe { GetConsoleScreenBufferInfo(GetStdHandle(id), &raw mut info) != 0 };
+    ok.then_some([info.window[0], info.window[2]])
 }

@@ -7,6 +7,7 @@
 //! them. The generation instants are the service clock's: the stamp of the permission check.
 
 pub mod estimate;
+pub mod export;
 pub mod reads;
 pub mod retrospective;
 

@@ -40,7 +40,7 @@ fn an_int_that_python_cannot_read_is_click_s_integer_usage_error() {
     let failure = number(&m, "--limit", 50, LIST).expect_err("abc is not an integer");
     assert_eq!(
         usage_message(&failure),
-        "Invalid value for '--limit': 'abc' is not a valid integer."
+        "Invalid value for '--limit': 'abc' is not a valid int."
     );
     assert_eq!(failure.exit_code(), 2);
 
@@ -121,7 +121,7 @@ fn a_missing_file_argument_is_click_s_path_usage_error() {
 // covers: O02
 #[test]
 fn a_usage_error_goes_to_standard_error_as_text_even_with_json() {
-    let failure = LIST.invalid_value("--limit", "abc", "integer");
+    let failure = LIST.invalid_value("--limit", "abc", "int");
     let console = Console::new(80);
     for json in [false, true] {
         let printed = report(&failure, json, &console);
@@ -144,7 +144,7 @@ fn a_usage_error_goes_to_standard_error_as_text_even_with_json() {
             lines[2]
         );
         assert!(
-            lines[3].contains("Invalid value for '--limit': 'abc' is not a valid integer."),
+            lines[3].contains("Invalid value for '--limit': 'abc' is not a valid int."),
             "json={json}: {}",
             lines[3]
         );

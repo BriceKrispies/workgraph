@@ -9,7 +9,6 @@ use std::sync::Arc;
 use axum::Router;
 use axum::body::{Body, to_bytes};
 use axum::extract::State;
-use axum::http::request::Parts;
 use axum::http::{HeaderName, HeaderValue, Request, Response, StatusCode, header};
 use axum::middleware::{self, Next};
 use futures_util::StreamExt;
@@ -32,10 +31,6 @@ const BODY_LIMIT: usize = 4 * 1024 * 1024;
 /// The header that names a session.
 const SESSION_HEADER: &str = "mcp-session-id";
 
-fn failure(what: &str, err: impl std::fmt::Display) -> WgError {
-    WgError::workgraph(format!("{what}: {err}"))
-}
-
 /// Serves one client over this process's stdin and stdout until it closes the pipe. A pipe that
 /// closes before `initialize` is a clean end, as the Python server treats it (exit 0, WG-3821).
 pub async fn serve_stdio(agent: Agent, backend: Box<dyn ToolBackend>) -> Result<(), WgError> {
@@ -43,7 +38,7 @@ pub async fn serve_stdio(agent: Agent, backend: Box<dyn ToolBackend>) -> Result<
     let running = match server.serve(stdio()).await {
         Ok(running) => running,
         Err(ServerInitializeError::ConnectionClosed(_)) => return Ok(()),
-        Err(err) => return Err(failure("mcp stdio", err)),
+        Err(err) => return Err(WgError::workgraph(format!("mcp stdio: {err}"))),
     };
     running
         .waiting()
@@ -142,17 +137,12 @@ async fn check_request(
     match plan {
         Plan::Reply(reply) => write(reply),
         Plan::Forward { accept } => {
-            widen_accept(&mut parts, accept);
+            parts
+                .headers
+                .insert(header::ACCEPT, HeaderValue::from_static(accept));
             python_framed(next.run(Request::from_parts(parts, body)).await)
         }
     }
-}
-
-/// Sets the `Accept` header the SDK needs for a request the Python rule has passed.
-fn widen_accept(parts: &mut Parts, accept: &'static str) {
-    parts
-        .headers
-        .insert(header::ACCEPT, HeaderValue::from_static(accept));
 }
 
 /// Writes a planned reply.

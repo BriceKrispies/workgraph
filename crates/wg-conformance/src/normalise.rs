@@ -1148,6 +1148,25 @@ mod tests {
     }
 
     #[test]
+    fn sandbox_paths_named_by_step_env_take_their_root_placeholder() {
+        // A step's env value is resolved against the sandbox before the step runs (`{home}`,
+        // `{repos}/second`), so the path it leaves in output is a sandbox path. The most specific
+        // root names it: a second home under the repos dir is `<tmp>/repos/...`, not `<home>`.
+        let n = FullNormaliser::default();
+        let mut r = run("rs", &[("", "")]);
+        r.roots = vec![
+            ("/w/sb/repos".into(), "<tmp>/repos"),
+            ("/w/sb/home".into(), "<home>"),
+            ("/w/sb".into(), "<tmp>"),
+        ];
+        let text = "home /w/sb/home/.wg second /w/sb/repos/second/.wg repo /w/sb/repos/a";
+        assert_eq!(
+            n.normalise(&r, text),
+            "home <home>/.wg second <tmp>/repos/second/.wg repo <tmp>/repos/a"
+        );
+    }
+
+    #[test]
     fn ms_keys_with_object_values_and_mid_name_ms_are_durations() {
         let n = FullNormaliser::default();
         let r = run("py", &[("", "")]);

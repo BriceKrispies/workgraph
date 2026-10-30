@@ -19,7 +19,9 @@ use rmcp::transport::streamable_http_server::session::local::LocalSessionManager
 use rmcp::transport::streamable_http_server::{SessionId, SessionManager};
 use rmcp::transport::{StreamableHttpServerConfig, StreamableHttpService, stdio};
 use tokio_util::sync::CancellationToken;
-use wg_mcpspec::{Plan, Reply, Step, check_body, check_headers, frame_events, too_large, verb_of};
+use wg_mcpspec::{
+    Plan, Reply, Step, Touch, check_body, check_headers, frame_events, too_large, touch_up, verb_of,
+};
 use wg_types::WgError;
 
 use crate::backend::{Agent, ToolBackend};
@@ -95,16 +97,18 @@ pub fn http_router(
 }
 
 /// The checks the Python endpoint makes before the SDK's own; `wg_mcpspec` decides. The glue reads
-/// the request, applies the decision and passes every method but GET and POST through.
+/// the request (its body first, under the size limit, as the Python body-limit middleware does for
+/// every method) and applies the decision.
 async fn check_request(
     State(sessions): State<Arc<LocalSessionManager>>,
     request: Request<Body>,
     next: Next,
 ) -> Response<Body> {
-    let Some(verb) = verb_of(request.method().as_str()) else {
-        return next.run(request).await;
-    };
+    let verb = verb_of(request.method().as_str());
     let (mut parts, body) = request.into_parts();
+    let Ok(bytes) = to_bytes(body, BODY_LIMIT).await else {
+        return write(too_large());
+    };
     let headers: Vec<(String, String)> = parts
         .headers
         .iter()
@@ -125,24 +129,45 @@ async fn check_request(
         None => false,
     };
     let fresh = session_id();
-    let (plan, body) = match check_headers(verb, &headers, session_known, &fresh) {
-        Step::Answer(plan) => (plan, body),
-        Step::ReadBody => {
-            let Ok(bytes) = to_bytes(body, BODY_LIMIT).await else {
-                return write(too_large());
-            };
-            (check_body(&headers, &fresh, &bytes), Body::from(bytes))
-        }
+    let plan = match check_headers(verb, &headers, session_known, &fresh) {
+        Step::Answer(plan) => plan,
+        Step::ReadBody => check_body(&headers, &fresh, &bytes),
     };
     match plan {
         Plan::Reply(reply) => write(reply),
         Plan::Forward { accept } => {
+            let session = parts
+                .headers
+                .get(SESSION_HEADER)
+                .and_then(|value| value.to_str().ok())
+                .unwrap_or_default()
+                .to_owned();
             parts
                 .headers
                 .insert(header::ACCEPT, HeaderValue::from_static(accept));
-            python_framed(next.run(Request::from_parts(parts, body)).await)
+            let response = next
+                .run(Request::from_parts(parts, Body::from(bytes)))
+                .await;
+            let touch = touch_up(verb, response.status().as_u16(), &session);
+            touched(python_framed(response), touch)
         }
     }
+}
+
+/// Applies the endpoint's changes to the SDK's response.
+fn touched(mut response: Response<Body>, touch: Touch) -> Response<Body> {
+    if let Some(status) = touch.status {
+        *response.status_mut() = StatusCode::from_u16(status).unwrap_or(response.status());
+    }
+    touch.headers.iter().for_each(|(name, value)| {
+        if let (Ok(name), Ok(value)) = (
+            HeaderName::from_bytes(name.as_bytes()),
+            HeaderValue::from_str(value),
+        ) {
+            response.headers_mut().insert(name, value);
+        }
+    });
+    response
 }
 
 /// Writes a planned reply.

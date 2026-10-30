@@ -27,8 +27,8 @@ pub mod sse;
 pub mod wire;
 
 pub use accept::{
-    Gate, Plan, Reject, Reply, SDK_ACCEPT, Step, Verb, check_body, check_headers, error_body, gate,
-    not_acceptable_reply, refusal, reject_status, too_large, verb_of,
+    Gate, Plan, Reject, Reply, SDK_ACCEPT, Step, Touch, Verb, check_body, check_headers,
+    error_body, gate, not_acceptable_reply, refusal, reject_status, too_large, touch_up, verb_of,
 };
 pub use arguments::{ArgumentsError, check_arguments};
 pub use catalog::{Catalog, ToolSpec};

@@ -7,6 +7,8 @@ use serde_json::{Map, Value as Json, json};
 use wg_exec_feature::service::agents::AgentHost;
 use wg_exec_feature::service::run_flow;
 use wg_exec_feature::spec::runs::StartRequest;
+use wg_intel_feature::service::ops as classification;
+use wg_intel_feature::spec::requests::RunOptions;
 use wg_jobs::limits::task_verify_keys;
 use wg_jobs::queue::NewJob;
 use wg_model::RowKey;
@@ -127,6 +129,19 @@ fn run_action(
     let render_context = &running.context;
     let kind = text(action.get("type"));
     match kind {
+        "classify_task" => {
+            // `ClassificationService.request(ctx, slug, task)` with the default provider, model
+            // and promote flag: queues one `classify_task` job and returns its reply.
+            let task = exec::target_task(render_context)?;
+            let (job_id, task, status) =
+                classification::request(app, context, Some(slug), &task, &RunOptions::default())?;
+            Ok(json!({
+                "job_id": job_id.to_string(),
+                "task_id": task.id.to_string(),
+                "task_key": task.key.to_string(),
+                "status": status,
+            }))
+        }
         "add_tags" => {
             let task = exec::target_task(render_context)?;
             let body = exec::tags_body(action, render_context);

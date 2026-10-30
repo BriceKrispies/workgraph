@@ -107,6 +107,7 @@ pub fn query_request(m: &ArgMatches) -> Result<QueryRequest, CliFailure> {
         model: option_text(m, "--model"),
         since: click_datetime(m, "--since", QUERY)?,
         until: click_datetime(m, "--until", QUERY)?,
+        limit: None,
     })
 }
 

@@ -152,6 +152,8 @@ fn run_search(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<
             agent: search.agent,
             model: search.model,
             changed_path: search.changed_path,
+            created_after: None,
+            created_before: None,
         },
     };
     let out = entry::search(

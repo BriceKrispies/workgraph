@@ -9,6 +9,7 @@
 pub mod estimate;
 pub mod export;
 pub mod reads;
+pub mod reports;
 pub mod retrospective;
 pub mod subagents;
 

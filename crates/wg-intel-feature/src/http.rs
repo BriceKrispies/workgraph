@@ -3,14 +3,14 @@
 //!
 //! [`SPECS`] is the table of operations; the server binds each one to [`run`], which reads the
 //! validated request and calls the feature's [`crate::service`] entry points. The search's
-//! `created_after` and `created_before` filters are not ported yet: the service's filters do not
-//! carry them, so a request that gives either one is refused rather than answered without it.
+//! `created_after` and `created_before` filters are read as UTC instants.
 
 use serde_json::{Map, Value as Json};
+use wg_clispec::datetime::parse_click_datetime;
 use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_serverspec::groups::RouteSpec;
-use wg_types::WgError;
+use wg_types::{Timestamp, WgError};
 
 use crate::service::entry;
 use crate::service::llm::Live;
@@ -69,12 +69,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
     let ws = params.get("ws").and_then(Json::as_str);
     match id {
         "H114" => {
-            if params.contains_key("created_after") || params.contains_key("created_before") {
-                return Err(WgError::workgraph(
-                    "the created_after and created_before search filters are not ported yet",
-                ));
-            }
-            let request = search_request(&params);
+            let request = search_request(&params)?;
             entry::search(app, &context, &mut Live, ws, &request)
         }
         "H115" => entry::classify_evaluations(app, &context, ws),
@@ -90,7 +85,7 @@ fn text<'a>(params: &'a Map<String, Json>, key: &str) -> Option<&'a str> {
 
 /// The search arguments: `q`, `mode` (default `hybrid`), `limit` (default 20) and the filters.
 /// `status` may repeat, so it is a list.
-fn search_request(params: &Map<String, Json>) -> SearchRequest {
+fn search_request(params: &Map<String, Json>) -> Result<SearchRequest, WgError> {
     let statuses = match params.get("status") {
         Some(Json::Array(items)) => items
             .iter()
@@ -104,7 +99,7 @@ fn search_request(params: &Map<String, Json>) -> SearchRequest {
         .get("limit")
         .and_then(|value| value.as_i64().or_else(|| value.as_str()?.parse().ok()))
         .unwrap_or(20);
-    SearchRequest {
+    Ok(SearchRequest {
         query: text(params, "q").unwrap_or_default().to_owned(),
         mode: text(params, "mode").unwrap_or("hybrid").to_owned(),
         limit,
@@ -116,6 +111,28 @@ fn search_request(params: &Map<String, Json>) -> SearchRequest {
             agent: text(params, "agent").map(str::to_owned),
             model: text(params, "model").map(str::to_owned),
             changed_path: text(params, "path").map(str::to_owned),
+            created_after: when(params, "created_after")?,
+            created_before: when(params, "created_before")?,
         },
-    }
+    })
+}
+
+/// A date-time parameter as a UTC instant, absent when not given. Naive values read as UTC, as
+/// the analytics readers do.
+fn when(params: &Map<String, Json>, key: &str) -> Result<Option<Timestamp>, WgError> {
+    let Some(text) = text(params, key) else {
+        return Ok(None);
+    };
+    let at = parse_click_datetime(text)
+        .map_err(|message| WgError::validation(format!("invalid datetime '{text}': {message}")))?;
+    Timestamp::from_components(
+        at.year,
+        at.month,
+        at.day,
+        at.hour,
+        at.minute,
+        at.second,
+        at.microsecond,
+    )
+    .map(Some)
 }

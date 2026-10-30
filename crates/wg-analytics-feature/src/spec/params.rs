@@ -85,6 +85,10 @@ pub fn query_body(body: &Json) -> Result<QueryRequest, WgError> {
         model: optional("model"),
         since: body_text(&filters, "since").map(instant_text).transpose()?,
         until: body_text(&filters, "until").map(instant_text).transpose()?,
+        limit: body
+            .get("limit")
+            .and_then(Json::as_u64)
+            .map(|limit| usize::try_from(limit).unwrap_or(usize::MAX)),
     })
 }
 

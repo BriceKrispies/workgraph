@@ -36,15 +36,18 @@ struct Target {
     repositories: Vec<String>,
 }
 
-/// `AnalyticsService.estimate`: the estimate of `task` (or of `title`, with `description` empty)
+/// `AnalyticsService.estimate`: the estimate of `task` (or of `title` and `description`, which the
+/// lexical fallback reads)
 /// within `workspace`. `category` and `repositories` narrow the comparison; `repositories` are
 /// names or ids, archived ones included.
+#[allow(clippy::too_many_arguments)]
 pub fn estimate(
     app: &mut App,
     context: &RequestContext,
     workspace: Option<&str>,
     task: Option<&str>,
     title: Option<&str>,
+    description: &str,
     category: Option<&str>,
     repositories: &[String],
 ) -> Result<Value, WgError> {
@@ -100,7 +103,7 @@ pub fn estimate(
         None => (
             None,
             title.map(str::to_owned),
-            String::new(),
+            description.to_owned(),
             category.map(str::to_owned),
         ),
     };

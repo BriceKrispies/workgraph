@@ -47,6 +47,8 @@ pub struct QueryRequest {
     pub model: Option<String>,
     pub since: Option<LocalDateTime>,
     pub until: Option<LocalDateTime>,
+    /// The row limit (`AnalyticsQuery.limit`, 1 to 5000); `None` is the default, [`LIMIT`].
+    pub limit: Option<usize>,
 }
 
 /// The metric registry as `metric_definition` dicts, in registry order (`AnalyticsService
@@ -118,7 +120,13 @@ pub fn check_inputs(metric: &str, period: &str) -> Result<Metric, WgError> {
 
 /// [`check_inputs`] for an `analytics query` request.
 pub fn check_request(request: &QueryRequest) -> Result<Metric, WgError> {
-    check_inputs(&request.metric, &request.period)
+    let metric = check_inputs(&request.metric, &request.period)?;
+    match request.limit {
+        Some(limit) if !(1..=5000).contains(&limit) => Err(WgError::validation(
+            "invalid analytics query: limit must be between 1 and 5000",
+        )),
+        _ => Ok(metric),
+    }
 }
 
 /// A naive typer datetime as the UTC instant the warehouse compares it with.
@@ -163,7 +171,7 @@ pub fn engine_query(
             since: request.since.map(instant).transpose()?,
             until: request.until.map(instant).transpose()?,
         },
-        limit: LIMIT,
+        limit: request.limit.unwrap_or(LIMIT),
     })
 }
 
@@ -218,7 +226,7 @@ fn echo(request: &QueryRequest) -> Value {
             "since": date(request.since),
             "until": date(request.until),
         }),
-        "limit": Value::Int(LIMIT as i128),
+        "limit": Value::Int(request.limit.unwrap_or(LIMIT) as i128),
     })
 }
 

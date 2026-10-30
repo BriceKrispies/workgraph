@@ -92,6 +92,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 ws,
                 task.as_deref(),
                 title.as_deref(),
+                "",
                 category.as_deref(),
                 &repositories,
             )?;

@@ -1,12 +1,12 @@
 //! The analytics routes (`api/routes/ops.py`, analytics): the metric catalog (H101), the query
 //! (H102), the overview (H103), the compare (H104), the coupling (H105), the failures (H106), the
-//! agent time (H107), the bottlenecks (H108), the history (H109), the estimate (H110) and the
-//! retrospective (H113), under `/api/v1`.
+//! agent time (H107), the bottlenecks (H108), the history (H109), the estimate (H110), the stored
+//! reports (H112) and the retrospective (H113), under `/api/v1`.
 //!
 //! [`SPECS`] is the table of operations; the server binds each one to [`run`], which reads the
 //! validated request and calls the feature's [`crate::service`] entry points. The export (H111)
-//! and the stored reports (H112) are not served yet: the export writes DuckDB files and the report
-//! list reads the stored `report.generated` events, neither of which is ported.
+//! is not served: its Python route answers with the written file, and a feature route can only
+//! answer JSON.
 
 use serde_json::Value as Json;
 use wg_json::Value;
@@ -22,7 +22,7 @@ use crate::spec::params::{
 use crate::spec::query;
 
 /// The operations of the group, in registration order.
-pub const SPECS: [RouteSpec; 11] = [
+pub const SPECS: [RouteSpec; 12] = [
     RouteSpec {
         id: "H101",
         method: "GET",
@@ -116,6 +116,14 @@ pub const SPECS: [RouteSpec; 11] = [
         }),
     },
     RouteSpec {
+        id: "H112",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/reports",
+        status: 200,
+        query: &[],
+        body: None,
+    },
+    RouteSpec {
         id: "H113",
         method: "POST",
         path: "/api/v1/ws/{ws}/reports/retrospective",
@@ -189,6 +197,7 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             param_number(&params, "limit", 50),
         ),
         "H110" => estimate_body(app, context, ws, &body),
+        "H112" => service::reports::list_reports(app, context, ws),
         "H113" => {
             let options = (
                 body.get("period_days").and_then(Json::as_i64).unwrap_or(14),
@@ -244,6 +253,7 @@ fn estimate_body(
         ws,
         body_text(body, "task"),
         body_text(body, "title"),
+        body_text(body, "description").unwrap_or_default(),
         body_text(body, "category"),
         &json_strings(body.get("repositories")),
     )
@@ -260,7 +270,7 @@ mod tests {
             ids,
             [
                 "H101", "H102", "H103", "H104", "H105", "H106", "H107", "H108", "H109", "H110",
-                "H113"
+                "H112", "H113"
             ]
         );
     }

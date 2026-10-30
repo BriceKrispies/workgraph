@@ -34,13 +34,13 @@ use wg_runtime::{CliGroup, Feature};
 pub const CLI: &[CliGroup] = &[cli::attempt::GROUP, cli::agent::GROUP, cli::run::GROUP];
 
 /// The exec feature: its command groups, its attempt, run and scheduler routes, its tools, its
-/// job handlers and its maintenance step. It has no resources yet.
+/// job handlers and its maintenance step. Its resource is the task history ([`mcp::RESOURCES`]).
 pub static FEATURE: Feature = Feature {
     name: "exec",
     cli: CLI,
     routes: &[http::GROUP],
     tools: mcp::TOOLS,
-    resources: &[],
+    resources: mcp::RESOURCES,
     jobs: jobs::JOBS,
     maintenance: jobs::MAINTENANCE,
 };

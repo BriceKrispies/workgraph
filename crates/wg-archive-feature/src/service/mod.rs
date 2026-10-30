@@ -6,9 +6,11 @@
 
 use std::path::Path;
 
+use wg_archive::analytics::{self, AnalyticsExport};
 use wg_archive::backup::{self, BackupReport};
 use wg_archive::transfer::{self, ExportReport, ImportReport};
-use wg_runtime::{App, draw};
+use wg_archivespec::Format;
+use wg_runtime::{App, RequestContext, draw};
 use wg_types::WgError;
 
 /// `backup`: a consistent online copy of the database and the configuration, under `output` or
@@ -54,4 +56,19 @@ pub fn export_workspace(
 /// refused and nothing is written.
 pub fn import_workspace(app: &mut App, source: &Path) -> Result<ImportReport, WgError> {
     transfer::import_workspace(&mut app.runtime.store, source)
+}
+
+/// `export analytics`: one fact table of `workspace` (the default one when absent) written to
+/// `output` as CSV, JSON or Parquet. The fact tables are built by `wg-analytics-feature`.
+pub fn export_analytics(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    dataset: &str,
+    format: Format,
+    output: &Path,
+) -> Result<AnalyticsExport, WgError> {
+    let rows =
+        wg_analytics_feature::service::export::fact_dataset(app, context, workspace, dataset)?;
+    analytics::export_dataset(&rows, format, output)
 }

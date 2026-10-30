@@ -9,8 +9,8 @@
 //!   `restore` runs without the application, so its glue sits in [`cli`];
 //! * [`cli`] (Shell): the clap groups, one [`wg_runtime::CliGroup`] per top-level name.
 //!
-//! `export analytics` is not served (its dataset needs the analytics warehouse). The feature has no
-//! routes or tools, so its `routes` and `tools` tables are empty.
+//! `export analytics` takes its fact tables from `wg-analytics-feature`. The feature has no routes
+//! or tools, so its `routes` and `tools` tables are empty.
 //!
 //! The feature exports [`FEATURE`]; the binary collects it into its ordered feature list.
 

@@ -1,12 +1,18 @@
 //! `workgraph agent list, add-command` (IF-09). The clap command is the snapshot's own tree.
 
 use clap::ArgMatches;
-use wg_clispec::args::{option_flag, option_list, option_text};
-use wg_clispec::{CliFailure, not_implemented_message};
+use wg_clispec::args::{float_value, option_flag, option_list, option_text};
+use wg_clispec::{CliFailure, Usage, not_implemented_message};
 use wg_runtime::{CliGroup, CliState, human_context};
 
 use crate::service::agent_cmds::{self as agents, CommandAgent};
 use crate::spec::cli_agent::{command, list_view};
+
+/// The usage of `agent add-command`, for the `--timeout` error.
+const ADD_COMMAND: Usage = Usage {
+    usage: "workgraph agent add-command [OPTIONS] {name} {executable}",
+    command: "workgraph agent add-command",
+};
 
 /// The `agent` group.
 pub const GROUP: CliGroup = CliGroup {
@@ -22,17 +28,11 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             state.emit(&out, Some(&|c| list_view(c, &out)))
         }
         Some("add-command") => {
+            let timeout = float_value(m, "--timeout", ADD_COMMAND)?.unwrap_or(1800.0);
             human_context(None)?;
             let name = option_text(m, "name").unwrap_or_default();
             let executable = option_text(m, "executable").unwrap_or_default();
             let args = option_list(m, "--arg");
-            let timeout = match option_text(m, "--timeout") {
-                Some(text) => text
-                    .trim()
-                    .parse::<f64>()
-                    .map_err(|_| CliFailure::fail(format!("{text} is not a valid float"), 2))?,
-                None => 1800.0,
-            };
             let supports_usage = option_flag(m, "--supports-usage");
             let agent = CommandAgent {
                 name: &name,

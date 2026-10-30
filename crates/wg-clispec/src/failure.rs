@@ -99,9 +99,9 @@ pub enum PathProblem {
 }
 
 impl Usage {
-    /// Click's `BadParameter` for `option` given `value`, which its type `kind` (`integer` or
-    /// `float`, the names Click gives those types) cannot read:
-    /// `Invalid value for '--x': 'v' is not a valid integer.`
+    /// Click's `BadParameter` for `option` given `value`, which its type `kind` (`int` or
+    /// `float`, the names typer gives those types in Python) cannot read:
+    /// `Invalid value for '--x': 'v' is not a valid int.`
     #[must_use]
     pub fn invalid_value(self, option: &str, value: &str, kind: &str) -> CliFailure {
         self.bad_parameter(

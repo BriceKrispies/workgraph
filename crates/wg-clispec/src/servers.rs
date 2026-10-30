@@ -35,7 +35,7 @@ pub fn port_option(m: &ArgMatches) -> Result<Option<u16>, CliFailure> {
         .map(|text| {
             python_number_text(&text)
                 .and_then(|digits| digits.parse::<u16>().ok())
-                .ok_or_else(|| SERVE.invalid_value("--port", &text, "integer"))
+                .ok_or_else(|| SERVE.invalid_value("--port", &text, "int"))
         })
         .transpose()
 }

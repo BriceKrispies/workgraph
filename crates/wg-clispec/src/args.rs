@@ -39,7 +39,7 @@ pub fn number(m: &ArgMatches, id: &str, default: i64, at: Usage) -> Result<i64, 
         None => Ok(default),
         Some(text) => python_number_text(&text)
             .and_then(|digits| digits.parse().ok())
-            .ok_or_else(|| at.invalid_value(id, &text, "integer")),
+            .ok_or_else(|| at.invalid_value(id, &text, "int")),
     }
 }
 

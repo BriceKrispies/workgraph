@@ -228,3 +228,45 @@ fn workspace_or_default(app: &mut App, arguments: &Value) -> Result<Id, WgError>
         None => app.default_workspace_id(),
     }
 }
+
+/// The task history resource (`workgraph://workspaces/{workspace}/tasks/{task}/history`): the
+/// task's events and its first page of attempts, as `{"events": [...], "attempts": {...}}`.
+pub const RESOURCES: &[wg_runtime::ResourceRun] = &[resource];
+
+/// Answers the history resource; `None` leaves the URI to the other features.
+fn resource(app: &mut App, agent: &Agent, uri: &str) -> Option<Result<String, WgError>> {
+    let rest = uri.strip_prefix("workgraph://workspaces/")?;
+    let (workspace, tail) = rest.split_once('/')?;
+    let task = tail.strip_prefix("tasks/")?.strip_suffix("/history")?;
+    if task.is_empty() || task.contains('/') {
+        return None;
+    }
+    Some(history_text(app, agent, workspace, task))
+}
+
+/// `HistoryService.task_history` and `AttemptService.list` (first 50, newest first) for the
+/// resource, dumped as Python's `json.dumps` does.
+fn history_text(
+    app: &mut App,
+    agent: &Agent,
+    workspace: &str,
+    task: &str,
+) -> Result<String, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let events =
+        wg_tasks_feature::service::task_history(app, &context, Some(workspace), task, &[])?;
+    let attempts = crate::service::attempts::attempt_list(
+        app,
+        &context,
+        &crate::service::attempts::ListQuery {
+            workspace: Some(workspace),
+            task: Some(task),
+            statuses: &[],
+            provider: None,
+            limit: 50,
+            offset: 0,
+        },
+    )?;
+    let dto = wg_json::dict(vec![("events", events), ("attempts", attempts)]);
+    wg_json::log_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
+}

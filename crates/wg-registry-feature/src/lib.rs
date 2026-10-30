@@ -21,7 +21,7 @@ pub mod spec;
 use wg_runtime::Feature;
 
 /// The registry feature: its command groups, its settings routes and its tools. It has no
-/// resources or jobs.
+/// jobs. Its resources are [`mcp::RESOURCES`].
 pub static FEATURE: Feature = Feature {
     name: "registry",
     cli: &[
@@ -39,7 +39,7 @@ pub static FEATURE: Feature = Feature {
         http::REPOSITORY_GROUP,
     ],
     tools: mcp::TOOLS,
-    resources: &[],
+    resources: mcp::RESOURCES,
     jobs: &[],
     maintenance: &[],
 };

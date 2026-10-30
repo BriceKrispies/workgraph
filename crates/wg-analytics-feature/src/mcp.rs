@@ -91,6 +91,7 @@ fn query_tool(app: &mut App, agent: &Agent, a: &Value) -> Result<Value, WgError>
         model: text_argument(a, "model").map(str::to_owned),
         since: None,
         until: None,
+        limit: None,
     };
     let dto = service::query(app, &context, text_argument(a, "workspace"), &request)?;
     output(&dto)
@@ -115,6 +116,7 @@ fn report(app: &mut App, agent: &Agent, a: &Value) -> Result<Value, WgError> {
                 workspace,
                 Some(task),
                 None,
+                "",
                 None,
                 &[],
             )?)

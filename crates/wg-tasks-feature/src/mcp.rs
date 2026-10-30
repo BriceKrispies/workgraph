@@ -304,3 +304,30 @@ fn contract_check(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgErro
     let workspace = a.get("workspace").and_then(Value::as_str);
     task_contract_check(app, &context, workspace, reference, model, target)
 }
+
+/// The task resource (`workgraph://workspaces/{workspace}/tasks/{task}`): the task's detail, as
+/// `task_get` shows it.
+pub const RESOURCES: &[wg_runtime::ResourceRun] = &[resource];
+
+/// Answers the task resource; `None` leaves the URI to the other features.
+fn resource(app: &mut App, agent: &Agent, uri: &str) -> Option<Result<String, WgError>> {
+    let rest = uri.strip_prefix("workgraph://workspaces/")?;
+    let (workspace, tail) = rest.split_once('/')?;
+    let task = tail.strip_prefix("tasks/")?;
+    if task.contains('/') {
+        return None;
+    }
+    Some(task_text(app, agent, workspace, task))
+}
+
+/// `TaskService.detail` for the resource, dumped as Python's `json.dumps` does.
+fn task_text(app: &mut App, agent: &Agent, workspace: &str, task: &str) -> Result<String, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let dto = first_shown(service::task_show(
+        app,
+        &context,
+        Some(workspace),
+        &[task.to_owned()],
+    )?)?;
+    wg_json::log_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
+}

@@ -7,7 +7,7 @@
 use wg_json::Value;
 use wg_registry::resolve;
 use wg_store::TaskWorld;
-use wg_types::{Id, WgError};
+use wg_types::{Id, Timestamp, WgError};
 
 use crate::spec::search_sql::SearchScope;
 use wg_wire::convention::{optional_text, text};
@@ -167,6 +167,10 @@ pub struct SearchFilters {
     pub agent: Option<String>,
     pub model: Option<String>,
     pub changed_path: Option<String>,
+    /// `created_at >= created_after` (UTC).
+    pub created_after: Option<Timestamp>,
+    /// `created_at < created_before` (UTC).
+    pub created_before: Option<Timestamp>,
 }
 
 /// The scope of a search, with project and repository resolved to ids.
@@ -194,8 +198,8 @@ pub fn scope_of(
         repository_id,
         category: present(&filters.category).map(str::to_owned),
         statuses: filters.statuses.clone(),
-        created_after: None,
-        created_before: None,
+        created_after: filters.created_after,
+        created_before: filters.created_before,
         agent: present(&filters.agent).map(str::to_owned),
         model: present(&filters.model).map(str::to_owned),
         changed_path: present(&filters.changed_path).map(str::to_owned),

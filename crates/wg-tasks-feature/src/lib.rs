@@ -17,13 +17,13 @@ pub mod spec;
 use wg_runtime::Feature;
 
 /// The tasks feature: its CLI group, its routes, its tools and its expired-claim maintenance step.
-/// It has no resources or job kinds.
+/// It has no job kinds. Its resource is [`mcp::RESOURCES`] (the task detail).
 pub static FEATURE: Feature = Feature {
     name: "tasks",
     cli: &[cli::GROUP],
     routes: &[http::GROUP, http::ACCEPTANCE],
     tools: mcp::TOOLS,
-    resources: &[],
+    resources: mcp::RESOURCES,
     jobs: &[],
     maintenance: jobs::MAINTENANCE,
 };

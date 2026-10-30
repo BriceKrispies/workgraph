@@ -208,3 +208,39 @@ const RECENT_TASKS: i64 = 10;
 
 /// The feature's tool descriptor: one [`call`] that answers the registry tool names.
 pub const TOOLS: &[ToolRun] = &[call];
+
+/// The registry resources (`src/workgraph/mcp/server.py`): `workgraph://workspaces`,
+/// `workgraph://workspaces/{workspace}/summary` and `workgraph://workspaces/{workspace}/projects/{project}`.
+pub const RESOURCES: &[wg_runtime::ResourceRun] = &[resource];
+
+/// Answers the registry resources; `None` leaves the URI to the other features.
+fn resource(app: &mut App, agent: &Agent, uri: &str) -> Option<Result<String, WgError>> {
+    if uri == "workgraph://workspaces" {
+        return Some(resource_text(app, agent, |app, context| {
+            service::workspace_list(app, context, false)
+        }));
+    }
+    let rest = uri.strip_prefix("workgraph://workspaces/")?;
+    let (workspace, tail) = rest.split_once('/')?;
+    if tail == "summary" {
+        return Some(resource_text(app, agent, |app, context| {
+            service::workspace_summary(app, context, Some(workspace))
+        }));
+    }
+    let project = tail.strip_prefix("projects/")?;
+    Some(resource_text(app, agent, |app, context| {
+        service::project_summary(app, context, Some(workspace), project)
+    }))
+}
+
+/// Runs a resource's service under the agent's identity and dumps its document as Python's
+/// `json.dumps` does.
+fn resource_text(
+    app: &mut App,
+    agent: &Agent,
+    read: impl FnOnce(&mut App, &wg_runtime::RequestContext) -> Result<Dto, WgError>,
+) -> Result<String, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let dto = read(app, &context)?;
+    wg_json::log_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
+}

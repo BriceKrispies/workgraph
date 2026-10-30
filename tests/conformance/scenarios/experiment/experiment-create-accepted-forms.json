@@ -1,0 +1,22 @@
+{
+  "id": "experiment-create-accepted-forms",
+  "covers": ["C069"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["experiment", "create", "Not A Slug", "--title", "Title", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40}}"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"cli": ["experiment", "create", "exp", "--title", "  ", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40}}"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"cli": ["experiment", "create", "exp", "--title", "Title", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40}}"], "json": true},
+    {"assert": {"json": {"path": "/slug", "equals": "exp"}}},
+    {"assert": {"json": {"path": "/status", "equals": "draft"}}},
+    {"cli": ["experiment", "create", "exp", "--title", "Again", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40}}"], "json": true, "expect_exit": 3},
+    {"assert": {"exit": 3}},
+    {"assert": {"json": {"path": "/error/code", "equals": "conflict"}}},
+    {"cli": ["experiment", "create", "exp-pinned", "--title", "Pinned", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"},{\"name\":\"older\",\"model\":\"claude-haiku-4-5-20251001\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40}}"], "json": true},
+    {"assert": {"json": {"path": "/protocol/arms/0/model", "equals": "claude-haiku-5-5"}}},
+    {"assert": {"json": {"path": "/protocol/arms/1/model", "equals": "claude-haiku-4-5-20251001"}}}
+  ],
+  "not_observable": []
+}

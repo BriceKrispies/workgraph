@@ -1,6 +1,6 @@
 {
   "id": "experiment-lifecycle",
-  "covers": ["C068", "C069", "C071", "C072", "C078"],
+  "covers": ["C066", "C068", "C069", "C071", "C072", "C078"],
   "setup": [
     {"git": "init", "repo": "proto"},
     {"git": "commit", "repo": "proto", "files": {"protocol.json": "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":4},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40}}"}, "message": "protocol file"}
@@ -43,7 +43,17 @@
     {"cli": ["experiment", "list", "--status", "closed"], "json": true},
     {"assert": {"json": {"path": "/1/slug", "equals": "exp-two"}}},
     {"cli": ["experiment", "list", "--status", "running", "-w", "default"], "json": true},
-    {"assert": {"json": {"path": "", "equals": []}}}
+    {"assert": {"json": {"path": "", "equals": []}}},
+    {"cli": ["events", "list", "--entity", "{var:exp_one}", "--after", "0"], "json": true},
+    {"assert": {"json": {"path": "/0/event_type", "equals": "experiment.created"}}},
+    {"assert": {"json": {"path": "/1/event_type", "equals": "experiment.frozen"}}},
+    {"assert": {"json": {"path": "/2/event_type", "equals": "experiment.closed"}}},
+    {"assert": {"json": {"path": "/3", "absent": true}}}
   ],
-  "not_observable": []
+  "not_observable": [
+    {
+      "case": "tests/integration/test_experiments.py::test_frozen_protocol_cannot_change: update_protocol has no CLI command, so a protocol cannot be edited before freezing and the post-freeze refusal and its protocol_updated event cannot be driven; the freeze-twice refusal is covered by experiment-refusals",
+      "covered_by": "CORE-25"
+    }
+  ]
 }

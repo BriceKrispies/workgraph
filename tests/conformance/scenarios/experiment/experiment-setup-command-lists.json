@@ -1,0 +1,23 @@
+{
+  "id": "experiment-setup-command-lists",
+  "covers": ["C069"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["experiment", "create", "exp-setup", "--title", "Setup", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"setup\":[[]]}"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"stdout_contains": "setup must be a list of non-empty command lists"}},
+    {"cli": ["experiment", "create", "exp-setup", "--title", "Setup", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"setup\":[[\"python\"],[\"\"]]}"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"stdout_contains": "setup must be a list of non-empty command lists"}},
+    {"cli": ["experiment", "create", "exp-setup", "--title", "Setup", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"setup\":[\"python\"]}"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"stdout_contains": "setup must be a list of non-empty command lists"}},
+    {"cli": ["experiment", "create", "exp-setup", "--title", "Setup", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"setup\":\"python\"}"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"stdout_contains": "setup must be a list of non-empty command lists"}},
+    {"cli": ["experiment", "create", "exp-setup", "--title", "Setup", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"setup\":[[\"python\",\"-V\"]]}"], "json": true},
+    {"assert": {"json": {"path": "/protocol/setup/0/1", "equals": "-V"}}}
+  ],
+  "not_observable": []
+}

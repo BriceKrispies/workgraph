@@ -1,6 +1,7 @@
 {
   "id": "experiment-trial-run",
   "covers": [
+    "C066",
     "C079",
     "C080",
     "C081",
@@ -810,9 +811,31 @@
           "equals": null
         }
       }
-    }
+    },
+    {"cli": ["experiment", "trial", "classify", "{var:trial_pass}", "--cause", "too_big", "--source", "agent"], "json": true, "expect_exit": 3},
+    {"assert": {"exit": 3}},
+    {"cli": ["experiment", "trial", "classify", "{var:trial_fail}", "--cause", "too_big", "--source", "agent"], "json": true, "expect_exit": 3},
+    {"assert": {"exit": 3}},
+    {"cli": ["events", "list", "--entity", "{var:trial_fail}", "--after", "0"], "json": true},
+    {"assert": {"json": {"path": "/0/event_type", "equals": "experiment_trial.added"}}},
+    {"assert": {"json": {"path": "/1/event_type", "equals": "experiment_trial.started"}}},
+    {"assert": {"json": {"path": "/2/event_type", "equals": "experiment_trial.graded"}}},
+    {"assert": {"json": {"path": "/3/event_type", "equals": "experiment_trial.classified"}}},
+    {"assert": {"json": {"path": "/4", "absent": true}}}
   ],
   "not_observable": [
+    {
+      "case": "tests/integration/test_experiments.py::test_every_mutation_records_an_event: the linked event needs link_run and the protocol_updated event needs update_protocol, and neither has a CLI command",
+      "covered_by": "CORE-25"
+    },
+    {
+      "case": "tests/integration/test_experiments.py::test_start_and_record_grade: the test passes base_ref, worktree_path, a caller-chosen outcome of 'maybe' and outcome_detail to the service; the CLI start and grade take only the trial and measure the outcome themselves, so those explicit inputs and the outcome validation cannot be driven",
+      "covered_by": "CORE-25"
+    },
+    {
+      "case": "tests/integration/test_experiments.py::test_classify_validates_vocabularies_and_applies_to_failed_or_invalid: the mark_invalid half (status invalid with a human source, then reclassify) has no CLI command, so the excluded-trial path cannot be reached",
+      "covered_by": "CORE-25"
+    },
     {
       "case": "tests/integration/test_trials.py::test_correct_implementation_grades_pass, test_edited_test_file_fails_as_gaming, test_stub_in_source_fails_with_stub_flag: they grade an edit the agent makes inside the trial clone, and no scenario step can write into a clone",
       "covered_by": "TH-06"

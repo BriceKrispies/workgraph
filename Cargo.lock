@@ -2333,6 +2333,7 @@ dependencies = [
  "wg-automation",
  "wg-clispec",
  "wg-exec-feature",
+ "wg-intel-feature",
  "wg-jobs",
  "wg-json",
  "wg-model",

@@ -28,7 +28,7 @@ use wg_runtime::App;
 use wg_runtimespec::RequestContext;
 use wg_store::Session;
 use wg_types::pyval::{prefix, text};
-use wg_types::{Id, Permission, WgError};
+use wg_types::{Correlation, Id, Permission, WgError};
 
 use crate::service::classify as classify_reads;
 use crate::service::llm::Providers;
@@ -95,6 +95,19 @@ pub fn request(
     task_ref: &str,
     options: &RunOptions,
 ) -> Result<(Id, Task, String), WgError> {
+    request_with_correlation(app, context, workspace, task_ref, options, None)
+}
+
+/// [`request`] with the job's `correlation_id` set to `correlation` when one is given. Python's
+/// automation actions pass the run's correlation (`ctx.correlation_id`) to the job they queue.
+pub fn request_with_correlation(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    task_ref: &str,
+    options: &RunOptions,
+    correlation: Option<Correlation>,
+) -> Result<(Id, Task, String), WgError> {
     app.require_permission(context, Permission::ClassifyRequest)?;
     let ws = workspace
         .map(|reference| app.workspace_id(reference))
@@ -129,7 +142,7 @@ pub fn request(
         resource_keys: vec![GPU_RESOURCE.to_owned()],
         max_attempts: 4,
         backoff_base_seconds: 15.0,
-        correlation_id: None,
+        correlation_id: correlation,
         idempotency_key: Some(key),
         created_by: context.actor.to_string(),
         ..NewJob::new(CLASSIFY_JOB)

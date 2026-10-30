@@ -288,3 +288,40 @@ fn enqueue_agent_run_fails_the_run_when_the_agent_is_unavailable() {
     let stored = &results(&mut app, run)[0];
     assert_eq!(stored["status"], json!("failed"));
 }
+
+#[test]
+fn classify_task_queues_one_classification_job_for_the_task() {
+    let (mut app, run) = home("classify", vec![json!({"type": "classify_task"})]);
+    let outcome = execute_run(&mut app, &mut Fake, run).expect("the run succeeds");
+    assert_eq!(outcome, json!({"status": "succeeded", "actions": 1}));
+    let jobs = jobs_of(&mut app, "classify_task");
+    assert_eq!(jobs.len(), 1);
+    let job = &jobs[0];
+    assert_eq!(job.payload.get("task_id"), Some(&json!(id(11).to_string())));
+    assert_eq!(job.payload.get("provider"), Some(&Value::Null));
+    assert_eq!(job.payload.get("model"), Some(&Value::Null));
+    assert_eq!(job.payload.get("promote"), Some(&json!(false)));
+    assert_eq!(job.payload.get("reason"), Some(&json!("requested")));
+    assert_eq!(job.max_attempts, 4);
+    // Python passes the run's correlation (`ctx.correlation_id`) to the job it queues.
+    assert!(job.correlation_id.is_some());
+    assert_eq!(job.task_id, Some(id(11)));
+    assert_eq!(job.workspace_id, Some(id(0)));
+    let keys: Vec<String> = job.resource_keys.iter().cloned().collect();
+    assert_eq!(keys, vec!["gpu".to_owned()]);
+}
+
+#[test]
+fn classify_task_records_the_job_and_task_it_queued() {
+    let (mut app, run) = home("classify-output", vec![json!({"type": "classify_task"})]);
+    execute_run(&mut app, &mut Fake, run).expect("the run succeeds");
+    let jobs = jobs_of(&mut app, "classify_task");
+    let stored = &results(&mut app, run)[0];
+    assert_eq!(stored["status"], json!("succeeded"));
+    assert_eq!(stored["type"], json!("classify_task"));
+    let output = &stored["output"];
+    assert_eq!(output["job_id"], json!(jobs[0].id.to_string()));
+    assert_eq!(output["task_id"], json!(id(11).to_string()));
+    assert_eq!(output["task_key"], json!("WG-1"));
+    assert!(output["status"].is_string(), "{output}");
+}

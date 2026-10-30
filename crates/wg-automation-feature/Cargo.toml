@@ -18,6 +18,7 @@ wg-automation = { path = "../wg-automation" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }
 wg-clispec = { path = "../wg-clispec" }
 wg-exec-feature = { path = "../wg-exec-feature" }
+wg-intel-feature = { path = "../wg-intel-feature" }
 wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }
 wg-model = { path = "../wg-model" }

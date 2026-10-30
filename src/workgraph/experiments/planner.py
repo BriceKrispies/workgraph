@@ -323,8 +323,11 @@ class TrialPlanner(Service):
         next_seq = max((t.seq for t in trials), default=0) + 1
 
         if step.band is not None:
+            # A pool task outside the protocol range is never planned: the trial would be refused.
+            config = StaircaseConfig.from_protocol(protocol)
+            pool = [task for task in self._pool(ctx, workspace, protocol) if config.contains(task.band)]
             picked = _nearest_unused(
-                self._pool(ctx, workspace, protocol),
+                pool,
                 {t.task_key for t in valid if t.arm == primary},
                 step.band,
             )

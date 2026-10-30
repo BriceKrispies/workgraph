@@ -9,6 +9,7 @@
 pub mod estimate;
 pub mod reads;
 pub mod retrospective;
+pub mod subagents;
 
 use serde_json::Value as Json;
 use wg_analytics::core::{coupling, failures, period::Period, service};

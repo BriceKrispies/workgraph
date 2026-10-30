@@ -335,3 +335,33 @@ pub fn source_select(table: &str, columns: &[String]) -> Result<Statement, WgErr
         params: Vec::new(),
     })
 }
+
+/// The columns of `subagent_runs` that the subagent and agent-time reports read.
+pub const SUBAGENT_RUN_COLUMNS: &[&str] = &[
+    "id",
+    "task_id",
+    "agent_type",
+    "model",
+    "requested_model",
+    "started_at",
+    "stopped_at",
+    "usage",
+    "telemetry",
+];
+
+/// The copy of `subagent_runs`, in rowid order. Python reads the table through its ORM, not by
+/// [`TABLES`], so this statement is separate from [`source_select`].
+#[must_use]
+pub fn subagent_runs_select() -> Statement {
+    let names: Vec<String> = SUBAGENT_RUN_COLUMNS
+        .iter()
+        .map(|column| format!("\"{column}\""))
+        .collect();
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"subagent_runs\" ORDER BY rowid",
+            names.join(", ")
+        ),
+        params: Vec::new(),
+    }
+}

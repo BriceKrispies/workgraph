@@ -342,3 +342,294 @@ pub fn retrospective_view(console: &Console, result: &Value) -> String {
         .print(&wg_render::escape(&s(get(result, "content"))))
         .text
 }
+
+/// A number cell as a float (`None` for a missing, null or non-number value).
+fn number(value: Option<&Value>) -> Option<f64> {
+    match value {
+        Some(Value::Float(number)) => Some(*number),
+        Some(Value::Int(number)) => Some(*number as f64),
+        _ => None,
+    }
+}
+
+/// `_share_text`: a share as a percentage with one decimal, `-` when there is none.
+fn share_text(value: Option<&Value>) -> String {
+    number(value).map_or_else(|| "-".to_owned(), |share| format!("{:.1}%", share * 100.0))
+}
+
+/// `_rate_text`: a rate with its Wilson interval, `-` when either is missing.
+fn rate_text(rate: Option<&Value>, interval: Option<&Value>) -> String {
+    let bounds = match interval {
+        Some(Value::List(bounds)) if bounds.len() == 2 => {
+            (number(bounds.first()), number(bounds.get(1)))
+        }
+        _ => (None, None),
+    };
+    match (number(rate), bounds) {
+        (Some(rate), (Some(low), Some(high))) => format!("{rate:.2} [{low:.2}, {high:.2}]"),
+        _ => "-".to_owned(),
+    }
+}
+
+/// `_tokens_text`: a token count with no decimals, `-` when there is none.
+fn tokens_text(value: Option<&Value>) -> String {
+    number(value).map_or_else(|| "-".to_owned(), |tokens| format!("{tokens:.0}"))
+}
+
+/// A duration in seconds shown in minutes with one decimal (`f"{seconds / 60:.1f}"`).
+fn minutes(value: Option<&Value>) -> String {
+    number(value).map_or_else(String::new, |seconds| format!("{:.1}", seconds / 60.0))
+}
+
+/// The `top_classes` cells as `class minutes` pairs, joined by commas.
+fn top_classes(value: Option<&Value>) -> String {
+    items(value)
+        .iter()
+        .map(|c| format!("{} {}m", cell(get(c, "class")), minutes(get(c, "seconds"))))
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
+/// The notes of a report, one `note:` line each.
+fn notes(console: &Console, result: &Value) -> String {
+    items(get(result, "notes"))
+        .iter()
+        .map(|note| {
+            console
+                .print(&format!("[dim]note: {}[/dim]", s(Some(note))))
+                .text
+        })
+        .collect()
+}
+
+/// `subagents`: the runs by period, the acceptance by task size, then the notes.
+#[must_use]
+pub fn subagents_view(console: &Console, result: &Value) -> String {
+    let periods: Vec<Vec<String>> = items(get(result, "by_period"))
+        .iter()
+        .map(|row| {
+            vec![
+                cell(get(row, "period")),
+                cell(get(row, "model")),
+                cell(get(row, "runs")),
+                cell(get(row, "linked_runs")),
+                cell(get(row, "tasks")),
+                cell(get(row, "accepted")),
+                cell(get(row, "rejected")),
+                cell(get(row, "pending")),
+                rate_text(get(row, "acceptance_rate"), get(row, "wilson")),
+                tokens_text(get(row, "median_output_tokens")),
+            ]
+        })
+        .collect();
+    let mut out = console
+        .table(
+            &periods,
+            &[
+                "period",
+                "model",
+                "runs",
+                "linked",
+                "tasks",
+                "accepted",
+                "rejected",
+                "pending",
+                "rate",
+                "median tokens",
+            ],
+            Some("subagent work by period"),
+        )
+        .text;
+    let sizes: Vec<Vec<String>> = items(get(result, "by_size"))
+        .iter()
+        .map(|row| {
+            let band = match get(row, "band") {
+                None | Some(Value::Null) => "unknown".to_owned(),
+                Some(band) => format!("2^{}", python(band)),
+            };
+            vec![
+                cell(get(row, "model")),
+                band,
+                cell(get(row, "tasks")),
+                format!(
+                    "{}/{}",
+                    cell(get(row, "accepted")),
+                    cell(get(row, "decided"))
+                ),
+                rate_text(get(row, "acceptance_rate"), get(row, "wilson")),
+            ]
+        })
+        .collect();
+    out.push_str(
+        &console
+            .table(
+                &sizes,
+                &["model", "size (lines)", "tasks", "accepted/decided", "rate"],
+                Some("acceptance by task size"),
+            )
+            .text,
+    );
+    out.push_str(&notes(console, result));
+    out
+}
+
+/// `time`: the totals line, the rows by tool class or by the grouping, then the notes.
+#[must_use]
+pub fn agent_time_view(console: &Console, result: &Value) -> String {
+    let totals = get(result, "totals");
+    let field = |name: &str| totals.and_then(|t| get(t, name));
+    let mut out = console
+        .print(&format!(
+            "{} runs, {:.2} agent-hours accounted (model {}, waiting {}, polling {})",
+            cell(field("runs")),
+            number(field("accounted_seconds")).unwrap_or(0.0) / 3600.0,
+            share_text(field("model_share")),
+            share_text(field("waiting_share")),
+            share_text(field("polling_share")),
+        ))
+        .text;
+    let by = s(get(result, "by"));
+    if by == "class" {
+        let rows: Vec<Vec<String>> = items(get(result, "rows"))
+            .iter()
+            .map(|row| {
+                vec![
+                    cell(get(row, "class")),
+                    cell(get(row, "kind")),
+                    minutes(get(row, "seconds")),
+                    cell(get(row, "calls")),
+                    share_text(get(row, "share")),
+                ]
+            })
+            .collect();
+        out.push_str(
+            &console
+                .table(
+                    &rows,
+                    &["class", "kind", "minutes", "calls", "share"],
+                    Some("subagent time by class"),
+                )
+                .text,
+        );
+    } else {
+        let rows: Vec<Vec<String>> = items(get(result, "rows"))
+            .iter()
+            .map(|row| {
+                vec![
+                    cell(get(row, "key")),
+                    cell(get(row, "runs")),
+                    minutes(get(row, "accounted_seconds")),
+                    minutes(get(row, "waiting_seconds")),
+                    share_text(get(row, "polling_share")),
+                    top_classes(get(row, "top_classes")),
+                ]
+            })
+            .collect();
+        out.push_str(
+            &console
+                .table(
+                    &rows,
+                    &[
+                        &by,
+                        "runs",
+                        "minutes",
+                        "waiting min",
+                        "polling",
+                        "top classes",
+                    ],
+                    Some(&format!("subagent time by {by}")),
+                )
+                .text,
+        );
+    }
+    out.push_str(&notes(console, result));
+    out
+}
+
+/// `bottlenecks`: the totals line, the time by class, the slowest calls, the wall time per task,
+/// then the notes.
+#[must_use]
+pub fn bottlenecks_view(console: &Console, result: &Value) -> String {
+    let totals = get(result, "totals");
+    let field = |name: &str| totals.and_then(|t| get(t, name));
+    let peak = get(result, "concurrency").and_then(|c| get(c, "peak_during_window"));
+    let mut out = console
+        .print(&format!(
+            "{} runs, {:.2} agent-hours of wall time; peak concurrency {} agents; waiting {} and polling {} of accounted time",
+            cell(field("runs")),
+            number(field("span_seconds")).unwrap_or(0.0) / 3600.0,
+            cell(peak),
+            share_text(field("waiting_share")),
+            share_text(field("polling_share")),
+        ))
+        .text;
+    let classes: Vec<Vec<String>> = items(get(result, "classes"))
+        .iter()
+        .map(|row| {
+            vec![
+                cell(get(row, "class")),
+                cell(get(row, "kind")),
+                minutes(get(row, "seconds")),
+                share_text(get(row, "share")),
+            ]
+        })
+        .collect();
+    out.push_str(
+        &console
+            .table(
+                &classes,
+                &["class", "kind", "minutes", "share"],
+                Some("share of time by class"),
+            )
+            .text,
+    );
+    let calls: Vec<Vec<String>> = items(get(result, "slowest_calls"))
+        .iter()
+        .map(|call| {
+            let seconds = number(get(call, "seconds")).unwrap_or(0.0);
+            let concurrent = match get(call, "concurrent_runs") {
+                None | Some(Value::Null) => "-".to_owned(),
+                Some(value) => python(value),
+            };
+            let command = s(get(call, "command"));
+            vec![
+                format!("{seconds:.0}"),
+                cell(get(call, "class")),
+                concurrent,
+                cell(get(call, "description")),
+                prefix(&command, 70),
+            ]
+        })
+        .collect();
+    out.push_str(
+        &console
+            .table(
+                &calls,
+                &["seconds", "class", "concurrent", "agent", "call"],
+                Some("slowest calls"),
+            )
+            .text,
+    );
+    let tasks: Vec<Vec<String>> = items(get(result, "by_task"))
+        .iter()
+        .map(|row| {
+            vec![
+                cell(get(row, "key")),
+                cell(get(row, "runs")),
+                minutes(get(row, "span_seconds")),
+                top_classes(get(row, "top_classes")),
+            ]
+        })
+        .collect();
+    out.push_str(
+        &console
+            .table(
+                &tasks,
+                &["task", "runs", "wall min", "top classes"],
+                Some("agent wall time by task"),
+            )
+            .text,
+    );
+    out.push_str(&notes(console, result));
+    out
+}

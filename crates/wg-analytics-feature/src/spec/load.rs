@@ -9,8 +9,8 @@
 use rpds::VectorSync;
 use wg_analytics::source::{
     AcceptanceRow, Analysis, AnalyticsInput, AttemptRow, CheckResult, CommitLink, CommitRow, Event,
-    FileChange, ProjectRow, RepositoryDependency, RepositoryRow, Surface, TaskDependency,
-    TaskProject, TaskRelation, TaskRepository, TaskRow, VerificationRun,
+    FileChange, ProjectRow, RepositoryDependency, RepositoryRow, SubagentRunRow, Surface,
+    TaskDependency, TaskProject, TaskRelation, TaskRepository, TaskRow, VerificationRun,
 };
 use wg_storecodec::Raw;
 use wg_types::Timestamp;
@@ -107,6 +107,20 @@ fn table<T>(
     row: impl Fn(Record<'_>) -> T,
 ) -> VectorSync<T> {
     records(sources, name).into_iter().map(row).collect()
+}
+
+fn subagent_run(r: Record<'_>) -> SubagentRunRow {
+    SubagentRunRow {
+        id: r.text("id"),
+        task_id: r.text("task_id"),
+        agent_type: r.text("agent_type"),
+        model: r.text("model"),
+        requested_model: r.text("requested_model"),
+        started_at: r.moment("started_at"),
+        stopped_at: r.moment("stopped_at"),
+        usage: r.text("usage"),
+        telemetry: r.text("telemetry"),
+    }
 }
 
 fn task(r: Record<'_>) -> TaskRow {
@@ -224,8 +238,8 @@ fn event(r: Record<'_>) -> Event {
 }
 
 /// The analytics source rows of the copies: every table the warehouse reads, as the typed rows
-/// `wg-analytics` builds its fact tables from. `subagent_runs` is not copied (its reports read it
-/// in their own slices), so it stays empty here.
+/// `wg-analytics` builds its fact tables from. `subagent_runs` is copied by its own statement
+/// ([`crate::service::reads::subagent_runs_source`]).
 #[must_use]
 pub fn analytics_input(sources: &[AnalyticsSource]) -> AnalyticsInput {
     AnalyticsInput {
@@ -278,6 +292,7 @@ pub fn analytics_input(sources: &[AnalyticsSource]) -> AnalyticsInput {
             name: r.text("name"),
         }),
         events: table(sources, "events", event),
+        subagent_runs: table(sources, "subagent_runs", subagent_run),
         acceptances: table(sources, "task_acceptances", |r| AcceptanceRow {
             task_id: r.text("task_id"),
             decision: r.text("decision"),
@@ -292,6 +307,5 @@ pub fn analytics_input(sources: &[AnalyticsSource]) -> AnalyticsInput {
             task_id: r.text("task_id"),
             depends_on_id: r.text("depends_on_id"),
         }),
-        ..AnalyticsInput::default()
     }
 }

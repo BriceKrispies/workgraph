@@ -172,3 +172,70 @@ fn click_datetime(
             }),
     }
 }
+
+/// Click's usage line of `analytics subagents`.
+const SUBAGENTS: Usage = Usage {
+    usage: "workgraph analytics subagents [OPTIONS]",
+    command: "workgraph analytics subagents",
+};
+
+/// Click's usage line of `analytics time`.
+const TIME: Usage = Usage {
+    usage: "workgraph analytics time [OPTIONS]",
+    command: "workgraph analytics time",
+};
+
+/// Click's usage line of `analytics bottlenecks`.
+const BOTTLENECKS: Usage = Usage {
+    usage: "workgraph analytics bottlenecks [OPTIONS]",
+    command: "workgraph analytics bottlenecks",
+};
+
+/// The `subagents` options: the period (`week` or `month`), the window and the model.
+pub type SubagentsOptions = (
+    String,
+    Option<LocalDateTime>,
+    Option<LocalDateTime>,
+    Option<String>,
+);
+
+/// The `subagents` options as the command reads them (`--period` defaults to `week`).
+pub fn subagents_options(m: &ArgMatches) -> Result<SubagentsOptions, CliFailure> {
+    Ok((
+        one(m, "--period").unwrap_or_else(|| "week".to_owned()),
+        click_datetime(m, "--since", SUBAGENTS)?,
+        click_datetime(m, "--until", SUBAGENTS)?,
+        option_text(m, "--model"),
+    ))
+}
+
+/// The `time` options: the window, the grouping (`--by`, default `class`) and the model.
+pub type TimeOptions = (
+    Option<LocalDateTime>,
+    Option<LocalDateTime>,
+    String,
+    Option<String>,
+);
+
+/// The `time` options as the command reads them.
+pub fn time_options(m: &ArgMatches) -> Result<TimeOptions, CliFailure> {
+    Ok((
+        click_datetime(m, "--since", TIME)?,
+        click_datetime(m, "--until", TIME)?,
+        one(m, "--by").unwrap_or_else(|| "class".to_owned()),
+        option_text(m, "--model"),
+    ))
+}
+
+/// The `bottlenecks` options: the window and `--top` (default 15).
+pub type BottleneckOptions = (Option<LocalDateTime>, Option<LocalDateTime>, usize);
+
+/// The `bottlenecks` options as the command reads them.
+pub fn bottleneck_options(m: &ArgMatches) -> Result<BottleneckOptions, CliFailure> {
+    let top = number(m, "--top", 15, BOTTLENECKS)?;
+    Ok((
+        click_datetime(m, "--since", BOTTLENECKS)?,
+        click_datetime(m, "--until", BOTTLENECKS)?,
+        usize::try_from(top.max(0)).unwrap_or(usize::MAX),
+    ))
+}

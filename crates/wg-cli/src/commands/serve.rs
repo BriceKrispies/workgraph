@@ -3,8 +3,8 @@
 //! `serve` runs the HTTP API and web UI of `wg-server`, optionally with the job worker of
 //! `wg-runtime` on a thread and the `/mcp/` mount of `wg-mcp`. `mcp` runs the MCP server over
 //! stdio, or over Streamable HTTP behind the same server and token as `serve`. The decisions
-//! (the `server` settings, the LAN plan, the refusals, the start-up lines) are `wg-serverspec`'s
-//! and `wg-mcpspec`'s; this module holds the sockets, the threads and the signal.
+//! (the `server` settings, the LAN plan, the refusals, the start-up lines) are `wg_iface::http`'s
+//! and `wg_iface::mcp`'s; this module holds the sockets, the threads and the signal.
 
 use std::sync::Arc;
 use std::sync::atomic::Ordering;

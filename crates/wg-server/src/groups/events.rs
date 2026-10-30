@@ -1,8 +1,8 @@
 //! The events group (plan IF-49): `GET /api/v1/ws/{ws}/events` (H123), the history, and `GET
 //! /api/v1/ws/{ws}/events/stream` (H124), the server-sent stream.
 //!
-//! The table of operations is `wg-serverspec`'s ([`EVENTS`]); the queries are `wg-runtime`'s `spec`'s
-//! and the frames are `wg-serverspec`'s. This module is the glue: it runs the store reads on the
+//! The table of operations is `wg_iface::http`'s ([`EVENTS`]); the queries are `wg-runtime`'s `spec`'s
+//! and the frames are the `spec` module's. This module is the glue: it runs the store reads on the
 //! application context, and it paces the stream.
 //!
 //! The stream polls the store once a second by `after_seq`, as the Python route does. The bus

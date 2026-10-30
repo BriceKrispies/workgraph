@@ -1,4 +1,4 @@
-//! The argument and value readers the command groups share (`wg_clispec::args`): the clap option
+//! The argument and value readers the command groups share (`wg_iface::cli::args`): the clap option
 //! readers over `ArgMatches`, the `@file` reader type, and the readers of the JSON values the
 //! human views print. Every group reads its options and fields through them.
 

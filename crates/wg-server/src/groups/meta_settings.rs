@@ -1,7 +1,7 @@
 //! The meta group (plan IF-42, first part): `GET /api/v1/health` (H001) and `GET /api/v1/meta`
 //! (H002). The settings routes (H117, H118) are the registry feature's.
 //!
-//! The table of operations is `wg-serverspec`'s ([`META_SETTINGS`]); the rules are
+//! The table of operations is `wg_iface::http`'s ([`META_SETTINGS`]); the rules are
 //! `wg-runtime`'s `spec`'s and the documents are `wg-wire`'s. This module is the glue: it binds each
 //! operation to its handler and runs the handler on the application context, which is a `&mut`
 //! operation (the shell's job).

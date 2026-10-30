@@ -1,7 +1,7 @@
 //! wg-mcp: MCP server over stdio and Streamable HTTP.
 //!
 //! The decisions that are functions of values (descriptors, argument validation, error text,
-//! `--grant` permissions, the flags) live in `wg-mcpspec`. This crate is the I/O: it runs
+//! `--grant` permissions, the flags) live in `wg_iface::mcp` and `spec`. This crate is the I/O: it runs
 //! `rmcp`'s transports around a [`handler::WgMcp`] that answers from the snapshot descriptors and
 //! hands each validated tool call to a [`backend::ToolBackend`].
 //!

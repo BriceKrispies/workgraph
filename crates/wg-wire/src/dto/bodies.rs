@@ -2,7 +2,7 @@
 //! orders.
 //!
 //! A body is input, so it has no `from_model`: the server decodes it with the request validation
-//! of `wg-mcpspec` and the HTTP layer. What the wire crate fixes is the schema name and the field
+//! of `wg-iface` and the HTTP layer. What the wire crate fixes is the schema name and the field
 //! order, which the component-schema test checks against the OpenAPI snapshot and the Python
 //! source (`core/models/schemas.py` and `api/routes/*.py`). The analytics and report bodies keep
 //! their own modules (`analytics_compare_body` and friends).

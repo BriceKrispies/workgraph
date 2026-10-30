@@ -366,7 +366,7 @@ need FFI or Windows APIs, `clippy::unwrap_used` and `expect_used` denied outside
 | `wg-validate` | Pure | request and tool-argument validation that produces Pydantic-shaped error lists (`type`, `loc`, `msg`, `input`, `ctx`) | `wg-json` |
 | `wg-render` | Pure | rich-compatible tables, key-value blocks, markup handling and colour rules for human output | `unicode-width` |
 | `wg-config` | Pure | configuration model, TOML parsing, unknown-key rejection, v1 to v2 migration, workspace merge, `config set` paths, a `tomli_w`-compatible writer, the platformdirs rules as a function of OS and environment | `toml`, `wg-validate` |
-| `wg-store` | Impure | rusqlite connection setup, migrations compatible with `alembic_version`, row codecs, one module of SQL per area, slice loading, decision application, FTS5 maintenance, online backup | `rusqlite` (`bundled`) |
+| `wg-store` | Impure | rusqlite connection setup, the migration runner (every migration stays here: the schema is one database) compatible with `alembic_version`, the session, one module of SQL execution per area, slice loading, decision application, FTS5 maintenance, online backup; the values it binds are `wg-rows` | `rusqlite` (`bundled`), `wg-rows` |
 | `wg-git` | Impure | the git CLI runner (argument vectors, the E24 environment, timeouts) and one function per git operation, returning text for `wg-gitcore` to parse | `wg-proc` |
 | `wg-proc` | Impure | process spawning with a minimal environment, stdin feeding, bounded capture, streaming to log files, timeouts, whole-tree termination (Job Objects on Windows, process groups on POSIX) | `windows-sys`, `libc` |
 | `wg-agents` | Impure | the Claude Code adapter (stream-json) and the `workgraph.agent.v1` command adapter, availability checks | `wg-proc` |
@@ -374,17 +374,55 @@ need FFI or Windows APIs, `clippy::unwrap_used` and `expect_used` denied outside
 | `wg-codeparse` | Impure | tree-sitter symbol extraction for Python, C#, TypeScript/TSX, JavaScript, Go, Rust | `tree-sitter` and grammar crates pinned to the Python grammar versions |
 | `wg-archive` | Impure | backup and restore zips, JSON Lines export and import, CSV, JSON and Parquet analytics export | `zip`, `parquet`, `arrow` |
 | `wg-browser` | Impure | locating Chrome/Edge/Chromium and taking CDP screenshots | `tungstenite` |
-| `wg-runtime` | Impure | the effect interpreter, stamping, the load-decide-apply cycle, flow drivers, worker threads, the maintenance leader, JSON logging | `tracing`, `tracing-subscriber` |
-| `wg-server` | Impure | axum HTTP API, security middleware (bearer token, Host and Origin checks, headers), LAN listener and pairing, SSE, static UI files, Swagger page, mounting `/mcp/` | `axum`, `tokio`, `rust-embed` |
-| `wg-mcp` | Impure | MCP server over stdio and Streamable HTTP, tools and resources registered from the snapshot descriptors; `--grant` permissions apply to both transports (WG-3734) | `rmcp`, `tokio` |
-| `wg-cli` | Impure | the `workgraph` binary: hook fast path, `--json` stripping, clap command tree, one handler module per group | `clap` |
+| `wg-runtime` | Impure (`spec` module Pure) | `App`, the effect interpreter, stamping, the load-decide-apply cycle, flow drivers, worker threads, the maintenance leader, JSON logging, and `Feature`; the `spec` module holds the pure half (request contexts, log records, the application context's rules, the shapes of the event and job views) | `tracing`, `tracing-subscriber`, `wg-iface`, `wg-procspec` |
+| `wg-server` | Impure (`spec` module Pure) | axum HTTP API, security middleware (bearer token, Host and Origin checks, headers), LAN listener and pairing, SSE, static UI files, Swagger page, mounting `/mcp/`; the `spec` module holds the pure rules only the server uses (screen, pairing, route matching, SPA, pages, event framing, route-table coverage) | `axum`, `tokio`, `rust-embed`, `wg-iface` |
+| `wg-mcp` | Impure (`spec` module Pure) | MCP server over stdio and Streamable HTTP, tools and resources registered from the snapshot descriptors; `--grant` permissions apply to both transports (WG-3734); the `spec` module holds the transport rules (`Accept` negotiation, JSON-RPC refusal, protocol-version gate, SSE framing) | `rmcp`, `tokio`, `wg-iface` |
+| `wg-cli` | Impure (`spec` module Pure) | the `workgraph` binary: hook fast path, `--json` stripping, clap command tree, one handler module per group, collecting groups from `FEATURES`; the `spec` module holds the job, worker, serve and ui option readers | `clap`, `wg-iface` |
 | `wg-demo-agent` | Impure | the `workgraph-demo-agent` binary: the scripted `workgraph.agent.v1` agent and the demo checks (DV4) | `wg-proc` |
+| `wg-rows` | Pure | the store's values: column codecs for every model row, SQL text and parameters as `Statement` values, the `events` log's rows, queries and upcasting; shared by `wg-store`, the feature crates and the pure archive formats | `wg-model`, `wg-json`, `rpds` |
+| `wg-iface` | Pure | what the three interfaces share with the features that target them: `cli` (argv rules, the command snapshot and clap tree, error reports and exit codes, argument readers, `CliFailure`), `http` (operation tables and their groups, request validation and 422/400 bodies, replies and security headers, `ipaddress` and `urllib.parse`), `mcp` (tool and resource catalog, argument checks, result shapes, permissions, serve options, `Agent`); `Feature` names its types, so `wg-runtime` depends on no front end | `wg-wire`, `wg-validate`, `wg-render`, `wg-config`, `wg-registry`, `clap`, `regex`, `http` |
+| `wg-procspec` | Pure | process runner data and rules (spec, results, errors, environment filter) and, in `effects`, how an `Effect` becomes a process specification (git with the E24 environment, agents and checks with the minimal one) and the runner's report becomes an `EffectOutcome` | `wg-model`, `wg-json` |
+| `wg-codeanalysis` | Pure | symbol kinds, per-language node rules, hunk parsing and change attribution (the pure half of `wg-codeparse`) | `wg-model` |
+| `wg-hash` | Core | SHA-256 digests in-crate, for Core crates with no external dependencies | none |
+| `wg-pynum` | Pure | CPython numeric and ordering semantics: `sum()` over floats, `statistics.median`, stable sorts, bisect | none |
+| `wg-agentspec` | Pure | agent adapter requests and results, argv building, stream-json and `agent.v1` line interpretation (the pure half of `wg-agents`) | `wg-procspec` |
+| `wg-archivespec` | Pure | backup manifest and names, workspace JSON Lines, analytics dataset encodings (the pure half of `wg-archive`) | `wg-rows` |
+| `wg-browserspec` | Pure | browser discovery order, options, DevTools messages (the pure half of `wg-browser`) | none |
+| `wg-netspec` | Pure | request building, retry decisions and response parsing for Ollama, OpenAI-compatible and Jira (the pure half of `wg-net`) | `wg-model` |
+| `wg-telemetryspec` | Pure | the Claude Code hook payload model, validated with Pydantic's rules | `wg-validate` |
+| `wg-uispec` | Pure | rules of `workgraph ui open`: URLs, the health probe, the start decision, messages | `wg-iface` |
+| `wg-demoproto` | Pure | the pure parts of the scripted demo agent: arguments, request parsing, errors | none |
+| `wg-tasks-feature` | Impure (`spec` module Pure) | the tasks feature: task commands, acceptance, claims, links, task routes and tools (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-decisions` | Impure (`spec` module Pure) | the decisions feature in one crate (the pilot): questions tasks wait on, their options and answers (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-registry-feature` | Impure (`spec` module Pure) | the registry feature: workspaces, projects, repositories, settings, setup (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-git-feature` | Impure (`spec` module Pure) | the git feature: the `git` group, commit ingestion, attribution, worktree listing (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-exec-feature` | Impure (`spec` module Pure) | the exec feature: managed worktrees, attempts and runs (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-stacks-feature` | Impure (`spec` module Pure) | the stacks feature: services, executor, landing, routes and tools (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-verify-feature` | Impure (`spec` module Pure) | the verification feature: check configs, runs, results, failure history, external acceptance (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-jobs-feature` | Impure (`spec` module Pure) | the jobs feature: the job and worker routes over the job queue core (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-automation-feature` | Impure (`spec` module Pure) | the automation feature: rules, trigger and schedule runs, dry runs, notifications (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-experiments-feature` | Impure (`spec` module Pure) | the experiments feature: experiments, trials, predictor fits (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-analytics-feature` | Impure (`spec` module Pure) | the analytics feature: warehouse source extraction and the metric commands (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-intel-feature` | Impure (`spec` module Pure) | the intelligence feature: classification history, gold labels, search candidates, embeddings (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-telemetry-feature` | Impure (`spec` module Pure) | the telemetry feature: hook ingestion, session bindings, subagent runs, retention, the Claude Code commands (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-events-feature` | Impure (`spec` module Pure) | the events feature: the event history and the projection check (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-trackers-feature` | Impure (`spec` module Pure) | the trackers feature: external tracker items of tracked tasks and the tracker CLI (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-archive-feature` | Impure (`spec` module Pure) | the data feature: backup, restore, workspace export and import (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
+| `wg-demo-feature` | Impure (`spec` module Pure) | the demo feature: the end-to-end demonstration and the UI demo data (modules `spec`, `service`, `cli`, `http`, `mcp`, `jobs` as the feature needs; exports `FEATURE`) | its core crate, `wg-rows`, `wg-iface`, `wg-runtime` |
 | `arch-lint` | Tooling | purity tiers and the `Core` rules (copied from noether, section 4.6) | `syn` |
 | `wg-conformance` | Tooling | the differential runner, normaliser, drivers, database dump, coverage report | `serde_json`, `rusqlite` |
 
-Section 4.16 (D15) supersedes the per-layer pure/shell crate pairs that grew beside this table
-(`wg-runtimespec`, `wg-storecodec`, `wg-clispec`, `wg-serverspec`, `wg-mcpspec`): feature code moves
-into the feature crates, which become the unit of ownership from the store to the interfaces.
+Section 4.16 (D15) retired the per-layer pure/shell crate pairs that grew beside this table
+(`wg-runtimespec`, `wg-storecodec`, `wg-clispec`, `wg-serverspec`, `wg-mcpspec`). Feature code lives
+in the feature crates, which are the unit of ownership from the store to the interfaces. What was
+left of the layer crates is base code: `wg-runtimespec` became the Pure `spec` module of
+`wg-runtime` (its effect specifications went to `wg-procspec::effects`); `wg-storecodec` became
+`wg-rows`; `wg-clispec`, `wg-serverspec` and `wg-mcpspec` were split by who uses them: what features
+and `Feature` use is `wg-iface`, and what only one front end uses is a Pure `spec` module of
+`wg-cli`, `wg-server` or `wg-mcp`. Module tiers are listed in `tools/reports/purity-tiers.txt`. The
+pure halves of the effect adapters (`wg-agentspec`, `wg-archivespec`, `wg-browserspec`,
+`wg-netspec`, `wg-procspec`) stay beside their adapters: the adapters sit below `wg-runtime` and
+`Core` crates use their values.
 
 Dependency direction: `Core` crates depend only on `Core` crates and the allowlist; `Pure` crates on
 `Core` and `Pure`; shell crates on anything below them; `wg-cli`, `wg-server` and `wg-mcp` on
@@ -620,8 +658,8 @@ and tool coverage tests are derived from `FEATURES`, not maintained by hand.
 
 **Base crates** stay horizontal and contain no feature code: `wg-types`, `wg-model`, `wg-events`,
 `wg-json`, `wg-validate`, `wg-render`, `wg-config`, `wg-wire` (envelope, conventions, shared DTOs),
-`wg-store` (connection, migrations, session, codecs, query building; every migration stays here,
-since the schema is one database), `wg-runtime` (`App`, stamping, the cycle, effects, bus, worker
+`wg-rows` (row and event codecs, statements as values), `wg-store` (connection, migrations, session, query execution; every migration stays here,
+since the schema is one database), `wg-iface` (what features and front ends share per interface), `wg-runtime` (`App`, stamping, the cycle, effects, bus, worker
 loop, logging, `Feature`), and the effect adapters (`wg-git`, `wg-proc`, `wg-net`, `wg-agents`,
 `wg-codeparse`, `wg-archive`, `wg-browser`).
 
@@ -1336,7 +1374,7 @@ feature passing unchanged (moved, not rewritten) plus the gates.
 | FC-09 | Move job handlers out of `wg-runtime` into their features' `jobs` modules; `HandlerRegistry::standard()` assembled from `FEATURES` | FC-03 | mid |
 | FC-10 | Move `automation` into `wg-automation-feature` | FC-09 | haiku |
 | FC-11 | Move the remaining per-area store modules (experiments, analytics, classify, search, sessions and hooks, external/trackers, verification) into their `wg-<area>-feature` crates | FC-03 | haiku |
-| FC-12 | Retire the per-layer crates: whatever is left of `wg-runtimespec`, `wg-storecodec`, `wg-clispec`, `wg-serverspec`, `wg-mcpspec` is base code and moves into the base crates or stays as a renamed base crate; 4.3's table rewritten to the final layout | FC-04 to FC-11 | mid |
+| FC-12 | Retire the per-layer crates (done: 4.3 lists the final layout): whatever is left of `wg-runtimespec`, `wg-storecodec`, `wg-clispec`, `wg-serverspec`, `wg-mcpspec` is base code and moves into the base crates or stays as a renamed base crate; 4.3's table rewritten to the final layout | FC-04 to FC-11 | mid |
 
 ## 11. Decisions from the user (2026-10-25)
 

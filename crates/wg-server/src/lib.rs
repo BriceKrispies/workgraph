@@ -5,7 +5,7 @@
 //! A request goes through [`dispatch`]: the security screen (LAN clients, `Host`, `Origin`, the
 //! token), Starlette's routing over the route table, FastAPI's validation of the route's
 //! parameters and body, the handler, and the security headers. The rules are
-//! `wg-serverspec`'s; this crate holds the sockets, the locks, the file reads and the calls into
+//! `wg_iface::http`'s; this crate holds the sockets, the locks, the file reads and the calls into
 //! the runtime.
 //!
 //! Route groups (sections 9.9, IF-42 to IF-49) live in [`groups`]: each adds its [`ApiRoute`]s

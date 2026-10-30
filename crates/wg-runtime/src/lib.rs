@@ -9,8 +9,8 @@
 //! integration, verification) is a [`Flow`]: a `Core` state machine the runtime drives, feeding
 //! each effect's outcome back as the next input.
 //!
-//! The pure half (request contexts, effect specifications and outcomes, log lines, the app
-//! context's rules) is `wg-runtimespec`; this crate keeps the I/O.
+//! The pure half (request contexts, log lines, the app context's rules) is the `spec` module and
+//! the effect specifications are `wg_procspec::effects`; the rest of this crate is the I/O.
 
 mod app;
 mod attempts;

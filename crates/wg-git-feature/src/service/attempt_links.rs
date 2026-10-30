@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use wg_git::Git;
 use wg_model::entity::Real;
 use wg_model::entity::git::CommitTaskLink;
-use wg_model::event::{EventDraft, EventPayload, GitCommitsAttributed};
+use wg_model::event::{EntityType, EventDraft, EventPayload, GitCommitsAttributed};
 use wg_model::{Decision, Row, Write};
 use wg_runtime::App;
 use wg_runtimespec::RequestContext;
@@ -136,12 +136,14 @@ pub fn link_attempt_commits(
                             stamp,
                             event_id,
                             Some(workspace_id),
-                            range.repository_id,
+                            attempt_id,
                             EventPayload::GitCommitsAttributed(GitCommitsAttributed {
                                 links_created: before + made,
                                 repository_id: Some(range.repository_id),
                             }),
                         )
+                        // Python records an attempt's range against the attempt.
+                        .with_entity_type(EntityType::Attempt)
                         .with_attempt(Some(attempt_id)),
                     )
                     .collect();

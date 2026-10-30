@@ -353,7 +353,7 @@ fn event_value(event: &EventRecord) -> Value {
         "actor": event.actor,
         "actor_kind": event.actor_kind,
         "entity_type": event.entity_type,
-        "entity_id": event.entity_id.to_string(),
+        "entity_id": event.entity_id_text(),
         "data": Value::Object(event.data.clone()),
     })
 }

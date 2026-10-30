@@ -344,6 +344,12 @@ pub struct EventDraft {
     pub id: Id,
     pub workspace_id: Option<Id>,
     pub entity_id: Id,
+    /// The `entity_id` column when Python records text that is not an id (`worktree.recovered`
+    /// writes `"worktrees"`); `entity_id` is then nil.
+    pub entity_text: Option<String>,
+    /// The `entity_type` column when it is not the payload's (`git.commits_attributed` of an
+    /// attempt's range is recorded against the attempt).
+    pub entity_type_override: Option<EntityType>,
     /// `actor` and `actor_kind` columns.
     pub actor: Actor,
     pub occurred_at: Timestamp,
@@ -369,6 +375,8 @@ impl EventDraft {
             id,
             workspace_id,
             entity_id,
+            entity_text: None,
+            entity_type_override: None,
             actor: stamp.actor.clone(),
             occurred_at: stamp.at,
             correlation_id: stamp.correlation.clone(),
@@ -377,6 +385,32 @@ impl EventDraft {
             automation_depth: stamp.automation_depth,
             payload,
         }
+    }
+
+    /// Records `text` as the entity id, for the events whose Python entity id is not an id.
+    #[must_use]
+    pub fn with_entity_text(self, text: impl Into<String>) -> Self {
+        EventDraft {
+            entity_id: Id::nil(),
+            entity_text: Some(text.into()),
+            ..self
+        }
+    }
+
+    /// Records the event against another entity type than its payload names.
+    #[must_use]
+    pub fn with_entity_type(self, entity_type: EntityType) -> Self {
+        EventDraft {
+            entity_type_override: Some(entity_type),
+            ..self
+        }
+    }
+
+    /// The `entity_id` column as text.
+    pub fn entity_id_text(&self) -> String {
+        self.entity_text
+            .clone()
+            .unwrap_or_else(|| self.entity_id.to_string())
     }
 
     /// `ctx.caused_by(event_id)`: marks this event as a consequence of another.
@@ -402,7 +436,8 @@ impl EventDraft {
     }
 
     pub fn entity_type(&self) -> EntityType {
-        self.payload.entity_type()
+        self.entity_type_override
+            .unwrap_or_else(|| self.payload.entity_type())
     }
 
     pub fn schema_version(&self) -> u32 {

@@ -14,7 +14,9 @@
 //!   transports (WG-3734);
 //! * [`accept`]: the `Accept` negotiation of the `/mcp/` endpoint, and the `406` answer to a
 //!   refusal (X6);
-//! * [`jsonrpc`]: the `400` answer to a POST body that is not a JSON-RPC message (X6).
+//! * [`jsonrpc`]: the `400` answer to a POST body that is not a JSON-RPC message (X6);
+//! * [`version`]: the `MCP-Protocol-Version` gate, which answers a request naming a revision the
+//!   endpoint does not serve before any session check (WG-3819).
 
 pub mod accept;
 pub mod arguments;
@@ -24,6 +26,7 @@ pub mod options;
 pub mod outcome;
 pub mod permissions;
 pub mod sse;
+pub mod version;
 pub mod wire;
 
 pub use accept::{
@@ -40,6 +43,7 @@ pub use outcome::{
 };
 pub use permissions::{agent_permissions, require, tool_permissions};
 pub use sse::frame_events;
+pub use version::gate as protocol_version_gate;
 pub use wire::structured;
 
 /// The server name in `serverInfo`.

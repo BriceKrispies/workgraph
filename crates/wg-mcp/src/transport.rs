@@ -20,7 +20,8 @@ use rmcp::transport::streamable_http_server::{SessionId, SessionManager};
 use rmcp::transport::{StreamableHttpServerConfig, StreamableHttpService, stdio};
 use tokio_util::sync::CancellationToken;
 use wg_mcpspec::{
-    Plan, Reply, Step, Touch, check_body, check_headers, frame_events, too_large, touch_up, verb_of,
+    Plan, Reply, Step, Touch, check_body, check_headers, frame_events, protocol_version_gate,
+    too_large, touch_up, verb_of,
 };
 use wg_types::WgError;
 
@@ -129,9 +130,14 @@ async fn check_request(
         None => false,
     };
     let fresh = session_id();
-    let plan = match check_headers(verb, &headers, session_known, &fresh) {
-        Step::Answer(plan) => plan,
-        Step::ReadBody => check_body(&headers, &fresh, &bytes),
+    // The Python endpoint routes a request with an unserved `MCP-Protocol-Version` to its
+    // per-request entry, which answers before any session check (WG-3819).
+    let plan = match protocol_version_gate(verb, &headers, &bytes) {
+        Some(plan) => plan,
+        None => match check_headers(verb, &headers, session_known, &fresh) {
+            Step::Answer(plan) => plan,
+            Step::ReadBody => check_body(&headers, &fresh, &bytes),
+        },
     };
     match plan {
         Plan::Reply(reply) => write(reply),

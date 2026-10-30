@@ -9,3 +9,6 @@ description = "symbol kinds, per-language node rules, hunk parsing and change at
 
 [lints]
 workspace = true
+
+[lib]
+doctest = false

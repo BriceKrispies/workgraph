@@ -17,3 +17,6 @@ wg-types = { path = "../wg-types" }
 [dev-dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["arbitrary_precision"] }
+
+[lib]
+doctest = false

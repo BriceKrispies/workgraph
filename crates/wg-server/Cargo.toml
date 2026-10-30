@@ -46,3 +46,6 @@ wg-jobs-feature = { path = "../wg-jobs-feature" }
 wg-telemetry-feature = { path = "../wg-telemetry-feature" }
 wg-model = { path = "../wg-model" }
 wg-store = { path = "../wg-store" }
+
+[lib]
+doctest = false

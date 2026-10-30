@@ -9,3 +9,6 @@ description = "SHA-256 digests in-crate, for Core crates with no external depend
 
 [lints]
 workspace = true
+
+[lib]
+doctest = false

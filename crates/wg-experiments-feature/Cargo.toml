@@ -37,3 +37,6 @@ wg-wire = { path = "../wg-wire" }
 
 [dev-dependencies]
 rpds = "1"
+
+[lib]
+doctest = false

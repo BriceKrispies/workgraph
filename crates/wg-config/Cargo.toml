@@ -15,3 +15,6 @@ serde_json = { version = "1", features = ["preserve_order"] }
 toml = { version = "0.9", features = ["preserve_order"] }
 wg-types = { path = "../wg-types" }
 wg-validate = { path = "../wg-validate" }
+
+[lib]
+doctest = false

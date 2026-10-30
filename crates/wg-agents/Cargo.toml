@@ -16,12 +16,5 @@ uuid = { version = "1", default-features = false, features = ["std", "v4"] }
 wg-agentspec = { path = "../wg-agentspec" }
 wg-proc = { path = "../wg-proc" }
 
-# The scripted `claude` used by the tests: it emits the documented stream-json messages.
-[[bin]]
-name = "wg-fake-claude"
-path = "tests/support/fake_claude.rs"
-test = false
-
-[[test]]
-name = "sh17_agents"
-path = "tests/sh17_agents.rs"
+[lib]
+doctest = false

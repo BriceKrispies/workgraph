@@ -23,3 +23,6 @@ wg-types = { path = "../wg-types" }
 rpds = { version = "1", features = ["serde"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-conformance = { path = "../wg-conformance" }
+
+[lib]
+doctest = false

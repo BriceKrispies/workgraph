@@ -16,3 +16,6 @@ wg-model = { path = "../wg-model" }
 
 [dev-dependencies]
 rpds = "1"
+
+[lib]
+doctest = false

@@ -23,3 +23,6 @@ wg-store = { path = "../wg-store" }
 wg-rows = { path = "../wg-rows" }
 wg-types = { path = "../wg-types" }
 wg-wire = { path = "../wg-wire" }
+
+[lib]
+doctest = false

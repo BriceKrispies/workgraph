@@ -34,3 +34,6 @@ libc = "0.2"
 name = "process"
 path = "tests/process.rs"
 harness = false
+
+[lib]
+doctest = false

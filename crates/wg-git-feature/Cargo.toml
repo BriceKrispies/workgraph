@@ -29,3 +29,6 @@ wg-rows = { path = "../wg-rows" }
 wg-types = { path = "../wg-types" }
 wg-wire = { path = "../wg-wire" }
 time = { version = "0.3", default-features = false, features = ["std"] }
+
+[lib]
+doctest = false

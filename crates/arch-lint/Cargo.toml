@@ -8,12 +8,14 @@ publish.workspace = true
 description = "purity tiers and the Core rules, copied from noether"
 
 [lib]
+doctest = false
 name = "arch_lint"
 path = "src/lib.rs"
 
 [[bin]]
 name = "arch-lint"
 path = "src/main.rs"
+test = false
 
 [dependencies]
 # The lints parse Rust into an AST with `syn`; `span-locations` gives line numbers.

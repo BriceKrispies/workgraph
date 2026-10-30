@@ -9,19 +9,21 @@
 
 pub mod cli;
 pub mod http;
+pub mod mcp;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
 /// The analytics feature: its CLI group (`metrics`, `query`, ...) and its routes ([`http`]).
-/// It has no tools, resources or jobs yet.
+/// Its tools and resources are [`mcp`] (M59 to M63, the catalog and the metric resources); it has
+/// no jobs yet.
 pub static FEATURE: Feature = Feature {
     name: "analytics",
     cli: &[cli::GROUP],
     routes: &[http::GROUP],
-    tools: &[],
-    resources: &[],
+    tools: mcp::TOOLS,
+    resources: mcp::RESOURCES,
     jobs: &[],
     maintenance: &[],
 };

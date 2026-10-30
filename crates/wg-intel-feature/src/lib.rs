@@ -9,11 +9,13 @@
 //! * [`cli`] (Shell): the clap groups `classify` and `search`, each a `fn`-pointer table into
 //!   [`service`].
 //!
-//! The feature exports [`FEATURE`]. Its routes are [`http`] (H114 to H116); it has no tools or resources yet.
+//! The feature exports [`FEATURE`]. Its routes are [`http`] (H114 to H116) and its tools are [`mcp`]
+//! (M57 and M58).
 
 pub mod cli;
 pub mod http;
 pub mod jobs;
+pub mod mcp;
 pub mod service;
 pub mod spec;
 
@@ -25,7 +27,7 @@ pub static FEATURE: Feature = Feature {
     name: "intel",
     cli: &[cli::CLASSIFY, cli::SEARCH],
     routes: &[http::GROUP],
-    tools: &[],
+    tools: mcp::TOOLS,
     resources: &[],
     jobs: jobs::JOBS,
     maintenance: &[],

@@ -233,6 +233,18 @@ def unsatisfied_dependencies(session: Session, task_id: str) -> list[Task]:
     return list(session.scalars(select(Task).where(Task.id.in_(blockers)).order_by(Task.number)))
 
 
+def unaccepted_dependencies(session: Session, task_id: str) -> list[Task]:
+    """Direct dependencies of a task that are not accepted yet (the acceptance gate)."""
+    return list(
+        session.scalars(
+            select(Task)
+            .join(TaskDependency, TaskDependency.depends_on_id == Task.id)
+            .where(TaskDependency.task_id == task_id, Task.status != TaskStatus.ACCEPTED)
+            .order_by(Task.number)
+        )
+    )
+
+
 def depends_on_reachable(session: Session, start: str, target: str) -> list[str] | None:
     """Return a dependency path ``start -> ... -> target`` if one exists (BFS)."""
     parents: dict[str, str | None] = {start: None}
@@ -410,7 +422,7 @@ class TaskService(Service):
                 workspace_id=task.workspace_id,
                 data={"key": task.key},
             )
-        if TaskStatus.ACCEPTED in (target, current):
+        if {target, current} & DEPENDENCY_SATISFIED_STATUSES:
             self._refresh_dependents(session, ctx.caused_by(event.id), task.id)
         return event.id
 

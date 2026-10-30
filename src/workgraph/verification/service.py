@@ -42,7 +42,7 @@ from workgraph.core.services import resolve
 from workgraph.core.services.artifacts import register_file
 from workgraph.core.services.base import Service
 from workgraph.core.services.stacks import active_item
-from workgraph.core.services.tasks import is_tracked
+from workgraph.core.services.tasks import is_tracked, unaccepted_dependencies
 from workgraph.integrations.git.cli import Git
 from workgraph.integrations.process import base_environment, run_process
 from workgraph.persistence.orm import (
@@ -775,6 +775,9 @@ class VerificationService(Service):
                 return
             if _lands_through_stacks(session, prepared.manifest):
                 return
+            # Stays awaiting review until its dependencies are accepted; acceptance then needs a manual step.
+            if unaccepted_dependencies(session, task.id):
+                return
             latest = session.scalar(
                 select(VerificationRun)
                 .where(VerificationRun.task_id == task.id)
@@ -921,6 +924,7 @@ class VerificationService(Service):
         with self.db.session(write=True) as session:
             ws_id = self.app.tasks._workspace_id(session, workspace) if workspace else None
             task = resolve.task(session, ws_id, task_ref)
+            self._refuse_unaccepted_blockers(session, task)
             checks = applicable_checks(session, task)
             if not checks:
                 raise ValidationFailed(
@@ -965,6 +969,7 @@ class VerificationService(Service):
         with self.db.session(write=True) as session:
             ws_id = self.app.tasks._workspace_id(session, workspace) if workspace else None
             task = resolve.task(session, ws_id, task_ref)
+            self._refuse_unaccepted_blockers(session, task)
             latest = session.scalar(
                 select(VerificationRun)
                 .where(VerificationRun.task_id == task.id)
@@ -976,6 +981,16 @@ class VerificationService(Service):
             rebuild = self.app.stack_lander.release_child(session, ctx, task)
         self.app.stack_lander.rebuild_without(ctx, rebuild)
         return out
+
+    def _refuse_unaccepted_blockers(self, session: Session, task: Task) -> None:
+        """A task is accepted only after every task it depends on is accepted."""
+        blockers = unaccepted_dependencies(session, task.id)
+        if blockers:
+            raise ConflictError(
+                f"{task.key} cannot be accepted until its dependencies are accepted: "
+                + ", ".join(b.key for b in blockers),
+                details={"blocked_by": [b.key for b in blockers]},
+            )
 
     def _guard_tracked_acceptance(self, workspace: str | None, task_ref: str) -> None:
         with self.db.session() as session:

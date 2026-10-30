@@ -5,6 +5,7 @@ from sqlalchemy import text
 
 from workgraph.core.errors import (
     ConcurrencyError,
+    ConflictError,
     DependencyCycleError,
     InvalidTransitionError,
     NotFoundError,
@@ -63,13 +64,53 @@ def test_dependencies_block_and_unblock(app, human, ws):
     assert b.status == "blocked"
     ready_keys = [t.key for t in app.tasks.get_ready(human, ws)]
     assert ready_keys == [a.key]
-    # Completion by an agent does not satisfy the dependency; only acceptance does.
+    # A claimed blocker does not satisfy the dependency.
     app.tasks.claim(human, ws, a.key, ClaimRequest())
-    app.tasks.complete(human, ws, a.key, summary="done")
     assert app.tasks.get(human, ws, b.key).status == "blocked"
+    # Completion (awaiting review) does satisfy it; acceptance of a is still required for b to be accepted.
+    app.tasks.complete(human, ws, a.key, summary="done")
+    assert app.tasks.get(human, ws, b.key).status == "ready"
     app.verification.accept_manually(human, ws, a.key, reason="reviewed by hand")
     assert app.tasks.get(human, ws, a.key).status == "accepted"
     assert app.tasks.get(human, ws, b.key).status == "ready"
+
+
+def test_completed_blocker_satisfies_claim_and_complete(app, human, ws):
+    a = app.tasks.create(human, ws, TaskCreate(title="A", status="ready"))
+    b = app.tasks.create(human, ws, TaskCreate(title="B", status="ready", depends_on=[a.key]))
+    app.tasks.claim(human, ws, a.key, ClaimRequest())
+    # Blocker still claimed: b cannot be claimed.
+    with pytest.raises(InvalidTransitionError):
+        app.tasks.claim(human, ws, b.key, ClaimRequest())
+    app.tasks.complete(human, ws, a.key, summary="done")
+    # Blocker awaiting review: b is unblocked, can be claimed and completed.
+    assert app.tasks.get(human, ws, b.key).status == "ready"
+    claimed = app.tasks.claim(human, ws, b.key, ClaimRequest())
+    assert claimed.status == "claimed"
+    done = app.tasks.complete(human, ws, b.key, summary="done")
+    assert done.status == "awaiting_review"
+    # Acceptance of b refuses while its blocker a is not accepted.
+    with pytest.raises(ConflictError):
+        app.verification.accept_manually(human, ws, b.key, reason="too early")
+    assert app.tasks.get(human, ws, b.key).status == "awaiting_review"
+    app.verification.accept_manually(human, ws, a.key, reason="reviewed by hand")
+    app.verification.accept_manually(human, ws, b.key, reason="reviewed by hand")
+    assert app.tasks.get(human, ws, b.key).status == "accepted"
+
+
+def test_accept_refuses_while_blocker_is_only_awaiting_review(app, human, ws):
+    a = app.tasks.create(human, ws, TaskCreate(title="A", status="ready"))
+    b = app.tasks.create(human, ws, TaskCreate(title="B", status="ready", depends_on=[a.key]))
+    _accept_ready_task(app, human, ws, a.key)
+    app.tasks.claim(human, ws, b.key, ClaimRequest())
+    app.tasks.complete(human, ws, b.key, summary="done")
+    c = app.tasks.create(human, ws, TaskCreate(title="C", status="ready", depends_on=[b.key]))
+    assert app.tasks.get(human, ws, c.key).status == "ready"
+    app.tasks.claim(human, ws, c.key, ClaimRequest())
+    app.tasks.complete(human, ws, c.key, summary="done")
+    with pytest.raises(ConflictError):
+        app.verification.accept_manually(human, ws, c.key, reason="too early")
+    assert app.tasks.get(human, ws, c.key).status == "awaiting_review"
 
 
 def test_cycle_detection(app, human, ws):

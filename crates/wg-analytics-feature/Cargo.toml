@@ -31,3 +31,4 @@ wg-tasks = { path = "../wg-tasks" }
 wg-validate = { path = "../wg-validate" }
 wg-wire = { path = "../wg-wire" }
 wg-automation-feature = { path = "../wg-automation-feature" }
+wg-serverspec = { path = "../wg-serverspec" }

@@ -9,9 +9,10 @@
 //! * [`cli`] (Shell): the clap groups `classify` and `search`, each a `fn`-pointer table into
 //!   [`service`].
 //!
-//! The feature exports [`FEATURE`]. It has no routes, tools, resources or jobs yet.
+//! The feature exports [`FEATURE`]. Its routes are [`http`] (H114 to H116); it has no tools or resources yet.
 
 pub mod cli;
+pub mod http;
 pub mod jobs;
 pub mod service;
 pub mod spec;
@@ -23,7 +24,7 @@ use wg_runtime::Feature;
 pub static FEATURE: Feature = Feature {
     name: "intel",
     cli: &[cli::CLASSIFY, cli::SEARCH],
-    routes: &[],
+    routes: &[http::GROUP],
     tools: &[],
     resources: &[],
     jobs: jobs::JOBS,

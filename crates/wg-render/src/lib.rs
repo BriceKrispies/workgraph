@@ -282,3 +282,11 @@ fn lines_to_string(lines: &[Vec<char>], width: usize) -> String {
     }
     out
 }
+
+/// The columns of a console window whose left and right edges are `left` and `right` (inclusive),
+/// as rich reads them from the console buffer. `None` when the window is empty or inverted.
+#[must_use]
+pub fn window_columns(left: i16, right: i16) -> Option<usize> {
+    let columns = i32::from(right) - i32::from(left) + 1;
+    usize::try_from(columns).ok().filter(|columns| *columns > 0)
+}

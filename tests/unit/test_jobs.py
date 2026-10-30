@@ -163,3 +163,11 @@ def test_worker_cancels_running_job(app):
     worker.stop()
     thread.join(timeout=20)
     assert app.queue.get(job_id).status == "cancelled"
+
+
+def test_git_sync_takes_its_repository_key(app):
+    queue = app.queue
+    sync = queue.enqueue("git_sync", {"repository_id": "repo-1", "mode": "incremental"})
+    assert queue.get(sync).resource_keys == ["repo:repo-1"]
+    other = queue.enqueue("noop", {"repository_id": "repo-1"})
+    assert queue.get(other).resource_keys == []

@@ -6,7 +6,7 @@ use serde_json::{Value, json};
 /// A stage that rewrites volatile text before comparison. The default only
 /// replaces the run's own directories; the full normaliser (UUIDs, timestamps,
 /// shas, ...) is CR-02 and plugs in here.
-pub trait Normaliser {
+pub trait Normaliser: Sync {
     fn normalise(&self, run: &RunResult, text: &str) -> String;
 }
 

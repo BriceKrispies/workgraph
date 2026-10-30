@@ -25,7 +25,9 @@ const USAGE: &str = "usage: wg-conformance <validate|diff|record|check|coverage>
   --divergences FILE   allowlist (default tests/conformance/divergences.toml, optional)
   --out DIR            write step logs under DIR/<implementation>/
   --report FILE        write the JSON report
-  --env KEY=VALUE      extra environment for both implementations (repeatable)";
+  --env KEY=VALUE      extra environment for both implementations (repeatable)
+  --jobs N             scenario files run concurrently in diff, record and check
+                       (default: the available parallelism; the report is the same for any N)";
 
 struct Options {
     mode: String,
@@ -39,6 +41,7 @@ struct Options {
     out: Option<PathBuf>,
     report: Option<PathBuf>,
     env: Vec<(String, String)>,
+    jobs: usize,
 }
 
 fn parse_args(args: Vec<String>) -> Result<Options, String> {
@@ -56,6 +59,7 @@ fn parse_args(args: Vec<String>) -> Result<Options, String> {
         out: None,
         report: None,
         env: Vec::new(),
+        jobs: std::thread::available_parallelism().map_or(1, std::num::NonZero::get),
     };
     while let Some(flag) = it.next() {
         let mut value = || it.next().ok_or_else(|| format!("{flag} needs a value"));
@@ -69,6 +73,13 @@ fn parse_args(args: Vec<String>) -> Result<Options, String> {
             "--divergences" => o.divergences = value()?.into(),
             "--out" => o.out = Some(value()?.into()),
             "--report" => o.report = Some(value()?.into()),
+            "--jobs" => {
+                let text = value()?;
+                o.jobs = match text.parse::<usize>() {
+                    Ok(n) if n >= 1 => n,
+                    _ => return Err(format!("--jobs needs a positive number, not `{text}`")),
+                };
+            }
             "--env" => {
                 let kv = value()?;
                 let (k, v) = kv.split_once('=').ok_or("--env needs KEY=VALUE")?;
@@ -116,6 +127,7 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
             &allow,
             &norm,
             out,
+            o.jobs,
         ),
         "record" => record(
             &loaded,
@@ -123,6 +135,7 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
             &o.golden,
             &norm,
             out,
+            o.jobs,
         ),
         "check" => check(
             &loaded,
@@ -131,6 +144,7 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
             &allow,
             &norm,
             out,
+            o.jobs,
         ),
         other => return Err(format!("unknown mode `{other}`")),
     })

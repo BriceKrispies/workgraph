@@ -37,6 +37,7 @@ from workgraph.core.models.enums import (
 from workgraph.core.models.schemas import CommentCreate
 from workgraph.core.services.base import Service
 from workgraph.core.services.stacks import active_item
+from workgraph.core.services.tasks import unaccepted_dependencies
 from workgraph.integrations.git.cli import Git
 from workgraph.integrations.git.stack_integration import (
     RETURNABLE_TASK_STATUSES,
@@ -53,6 +54,7 @@ from workgraph.persistence.orm import (
     Stack,
     StackRepository,
     Task,
+    TaskDependency,
     VerificationRun,
 )
 from workgraph.verification.service import AcceptanceOut
@@ -63,6 +65,27 @@ ACCEPTABLE_TASK_STATUSES = (TaskStatus.AWAITING_REVIEW, TaskStatus.AWAITING_VERI
 # Per stack: a landing waits only for integration work of the same stack, never for another stack's.
 INTEGRATION_JOB_KINDS = ("stack_integrate", "stack_verify")
 INTEGRATION_JOB_STATUSES = ("queued", "running")
+
+
+def _blockers_first(session: Session, rows: list[tuple[Any, Task]]) -> list[tuple[Any, Task]]:
+    """Order stack rows so each task follows the stack tasks it depends on; ties keep the given order."""
+    ids = {task.id for _, task in rows}
+    blockers: dict[str, set[str]] = {}
+    for task_id, depends_on_id in session.execute(
+        select(TaskDependency.task_id, TaskDependency.depends_on_id).where(
+            TaskDependency.task_id.in_(ids), TaskDependency.depends_on_id.in_(ids)
+        )
+    ):
+        blockers.setdefault(task_id, set()).add(depends_on_id)
+    ordered: list[tuple[Any, Task]] = []
+    placed: set[str] = set()
+    pending = list(rows)
+    while pending:
+        row = next((r for r in pending if blockers.get(r[1].id, set()) <= placed), pending[0])
+        pending.remove(row)
+        placed.add(row[1].id)
+        ordered.append(row)
+    return ordered
 
 
 class StackLander(Service):
@@ -502,12 +525,17 @@ class StackLander(Service):
             run = session.get(VerificationRun, run_id) if run_id else None
             released = self._release_unverified(session, ctx, stack, parent)
             accepted = []
-            for item, task in StackVerifier.item_rows(session, stack):
+            # Blockers first, so a dependent whose blockers are accepted in this pass is accepted too. A
+            # dependent is skipped only when one of its blockers stays unaccepted.
+            for item, task in _blockers_first(session, StackVerifier.item_rows(session, stack)):
                 if StackItemState(item.state) != StackItemState.VERIFIED:
+                    continue
+                if unaccepted_dependencies(session, task.id):
                     continue
                 self.app.verification._accept(
                     session, ctx, task, mode="automated", reason=f"landed with stack {parent.key}", run=run
                 )
+                session.flush()
                 accepted.append(task.key)
             parent_acceptance = self.app.verification._accept(
                 session, ctx, parent, mode=mode, reason=reason, run=run

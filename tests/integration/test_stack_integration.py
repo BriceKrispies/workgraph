@@ -1198,6 +1198,30 @@ def test_auto_accept_is_on_by_default(app, human, ws, tree):
     assert row.mode == "automated" and row.reason == "stack.auto_accept"
 
 
+def test_auto_accept_accepts_a_dependent_in_the_same_pass_as_its_blocker(app, human, ws, tree):
+    repo, parent = tree
+    config = app.config
+    config.stacks.auto_accept = True
+    app.config_store.save_global(config)
+    _gate(
+        app,
+        human,
+        ws,
+        [{**passing_check("types"), "kind": "typecheck", "tier": "fast"}, passing_check("suite")],
+    )
+    blocker = _child(app, human, ws, parent, "Blocker change")
+    dependent = _child(app, human, ws, parent, "Dependent change", depends_on=[blocker.key])
+    stack = app.stacks.create(human, ws, parent.key)
+    _run(app, human, ws, blocker.key, "fake-a")
+    _run(app, human, ws, dependent.key, "fake-b")
+
+    assert app.stacks.get(human, ws, parent.key).status == "landed"
+    assert app.tasks.get(human, ws, blocker.key).status == "accepted"
+    assert app.tasks.get(human, ws, dependent.key).status == "accepted"
+    assert app.tasks.get(human, ws, parent.key).status == "accepted"
+    assert repo.git("rev-parse", "main") == _landed_tips(app, stack.id)["svc"]
+
+
 def test_accepting_a_merged_child_alone_removes_it_and_rebuilds_without_it(
     app, human, ws, tree, manual_landing
 ):

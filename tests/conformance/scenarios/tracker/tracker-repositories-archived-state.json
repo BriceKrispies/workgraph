@@ -1,0 +1,60 @@
+{
+  "id": "tracker-repositories-archived-state",
+  "covers": ["C118", "C116", "C119", "C121"],
+  "setup": [
+    {"git": "init", "repo": "svc-old"},
+    {"git": "commit", "repo": "svc-old", "files": {"README.md": "# svc-old\n"}, "message": "initial commit"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:svc-old}", "--name", "svc-old"], "json": true},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/name", "equals": "svc-old"}}},
+    {"cli": ["repo", "list"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "svc-old"}}},
+    {"cli": ["repo", "remove", "svc-old"], "json": true},
+    {"assert": {"exit": 0}},
+    {"cli": ["repo", "list"], "json": true},
+    {"assert": {"json": {"path": "/0", "absent": true}}},
+    {"cli": ["repo", "list", "--all"], "json": true},
+    {"assert": {"json": {"path": "/0/name", "equals": "svc-old"}}},
+    {"assert": {"json": {"path": "/0/archived_at", "not_equals": null}}},
+    {"cli": ["repo", "show", "svc-old"], "json": true},
+    {"assert": {"json": {"path": "/name", "equals": "svc-old"}}},
+    {"assert": {"json": {"path": "/archived_at", "not_equals": null}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_tracker_repositories.py::test_resolves_the_repository_whose_remote_matches: the resolver matches normalized remote URLs, and the runner has no git step that adds a remote, so no repository can carry a remote; the match is reached only through a tracker sync, which needs a fake Jira",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_repositories.py::test_match_is_case_insensitive: remote matching on a mixed-case URL needs a repository remote the runner cannot create",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_repositories.py::test_unknown_repository_resolves_to_none: the None result is observed only through a sync's task-to-repository link, which needs a fake Jira and a remote the runner cannot add",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_repositories.py::test_archived_repository_is_not_resolved: the resolver filters archived repositories by remote match, and the remote cannot be set up; the archive state itself is covered by this scenario through repo remove, repo list --all and repo show",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_repositories.py::test_archived_match_does_not_hide_an_active_one: two repositories sharing one remote need remotes the runner cannot add, and resolution is reached only through a sync",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_repositories.py::test_ambiguous_match_resolves_to_none: two active repositories with the same remote need remotes the runner cannot add, and the ambiguity is observable only through a sync",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_repositories.py::test_one_repository_with_two_matching_remotes_is_not_ambiguous: two remotes on one repository need a git remote step the runner does not have",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_repositories.py::test_other_workspaces_are_not_searched: a second workspace plus a remote-matched repository needs remotes the runner cannot add, and resolution is reached only through a sync",
+      "covered_by": "SC-14"
+    }
+  ]
+}

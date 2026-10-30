@@ -1,0 +1,49 @@
+{
+  "id": "tracker-keys-human-refused-over-http",
+  "covers": ["H024", "C152"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"http": "POST", "path": "/api/v1/ws/{ws}/tasks", "body": {"key": "ABC-8", "title": "x"}, "expect_status": 403},
+    {"assert": {"exit": 403}},
+    {"assert": {"json": {"path": "/error/code", "equals": "permission_denied"}}},
+    {"assert": {"stdout_contains": "only system:tracker-sync may set a task key"}},
+    {"cli": ["task", "create", "Local after refusal"], "json": true},
+    {"assert": {"exit": 0}},
+    {"assert": {"json": {"path": "/key", "equals": "WG-1"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_tracker_keys.py::test_sync_actor_creates_task_with_tracker_key: the system:tracker-sync actor is not reachable from the CLI or HTTP (the API always acts as a human), so a task keyed ABC-7 by the sync, and the counter continuing after it, cannot be created by the runner; a fake Jira sync would create it",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_keys.py::test_human_and_agent_cannot_set_a_tracker_key (agent half): neither the CLI nor the MCP task_create tool accepts a key argument, and the HTTP route always acts as a human, so an agent actor cannot submit a tracker key",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_keys.py::test_tracker_key_must_match_the_format (params abc-1, ABC1, ABC-, ABC-x, 1ABC-1, ABCDEFGHIJK-1): the format check runs only after the sync-actor check, so a non-sync caller always gets permission_denied and the validation_failed path needs the sync actor",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_keys.py::test_tracker_key_prefix_cannot_be_the_workspace_prefix: the WG prefix refusal is reached only with the sync actor, which the runner cannot act as",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_keys.py::test_duplicate_tracker_key_conflicts: a second task with the same tracker key needs the sync actor to set the key the first time",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_keys.py::test_rejected_tracker_key_does_not_consume_a_number: the rejected key is WG-1 set by the sync actor, which the runner cannot act as; this scenario checks only that a refused HTTP key does not consume a number",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_keys.py::test_task_out_lists_links_ordered_by_kind_then_url: task_links rows are written only by tracker sync or a direct database insert, neither reachable from the runner, so the link ordering in task show cannot be seeded",
+      "covered_by": "SC-14"
+    },
+    {
+      "case": "tests/integration/test_tracker_keys.py::test_migration_0009_moves_external_refs_into_task_links: the migration test upgrades a database file to 0008, inserts rows, then upgrades and downgrades it, which the runner cannot do (no migration step, and db assertions are skipped)",
+      "covered_by": "SH-03"
+    }
+  ]
+}

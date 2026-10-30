@@ -160,8 +160,10 @@ impl App {
         payload: &str,
         key: Option<&str>,
     ) -> Result<Value, WgError> {
+        let payload = view::enqueue_payload(payload)?;
         let job = NewJob {
-            payload: view::enqueue_payload(payload)?,
+            resource_keys: view::default_resource_keys(kind, &payload),
+            payload,
             idempotency_key: key.map(str::to_owned),
             created_by: "human:cli".to_owned(),
             ..NewJob::new(kind)

@@ -335,6 +335,7 @@ pub fn plan_next(
     load_pool: impl FnOnce() -> Result<Vec<Candidate>, WgError>,
 ) -> Result<NextPlan, WgError> {
     let step = step_of(protocol, trials)?;
+    let config = StaircaseConfig::from_protocol(&protocol_fields(protocol)).map_err(value_error)?;
     let primary = primary(protocol);
     let seed = seed(protocol);
     let pending = trials
@@ -358,7 +359,11 @@ pub fn plan_next(
             .filter(|row| row.trial.arm == primary)
             .map(|row| row.task_key.clone())
             .collect();
-        let tasks = as_tasks(&pool);
+        // A pool task outside the protocol range is never planned: the trial would be refused.
+        let tasks: Vec<Task> = as_tasks(&pool)
+            .into_iter()
+            .filter(|task| config.contains(task.band))
+            .collect();
         match planner::nearest_unused(&tasks, &used, band) {
             None => Planned::Done("pool_exhausted"),
             Some((chosen, unused)) => {

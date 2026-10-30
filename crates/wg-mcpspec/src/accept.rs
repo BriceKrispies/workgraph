@@ -140,7 +140,7 @@ pub const fn reject_status(reject: Reject) -> u16 {
 }
 
 /// The request header named `name` (case-insensitive), first occurrence.
-fn first_header<'a>(headers: &'a [(String, String)], name: &str) -> Option<&'a str> {
+pub(crate) fn first_header<'a>(headers: &'a [(String, String)], name: &str) -> Option<&'a str> {
     headers
         .iter()
         .find(|(key, _)| key.eq_ignore_ascii_case(name))
@@ -238,7 +238,7 @@ pub fn too_large() -> Reply {
 
 /// The Python transport's `Content-Type` gate for a POST: the lowercased header must start with
 /// `application/json` (`TransportSecurityMiddleware._validate_content_type`).
-fn content_type_starts_json(headers: &[(String, String)]) -> bool {
+pub(crate) fn content_type_starts_json(headers: &[(String, String)]) -> bool {
     first_header(headers, "content-type")
         .is_some_and(|ct| ct.to_ascii_lowercase().starts_with(JSON_TYPE))
 }

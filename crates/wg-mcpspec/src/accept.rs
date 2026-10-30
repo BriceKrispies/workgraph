@@ -21,11 +21,14 @@ pub const GET_REFUSAL: &str = "Not Acceptable: Client must accept text/event-str
 /// passed. Its own check looks for both media types as substrings, which `*/*` does not satisfy.
 pub const SDK_ACCEPT: &str = "application/json, text/event-stream";
 
-/// The HTTP method of the request whose `Accept` is checked.
+/// The HTTP method of a request to the endpoint. Only POST and GET negotiate `Accept`; DELETE ends
+/// a session; any other method is refused after the session lookup.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Verb {
     Post,
     Get,
+    Delete,
+    Other,
 }
 
 /// The media types an `Accept` header admits, as `(json, event_stream)`. Each comma-separated
@@ -63,6 +66,7 @@ pub fn refusal(verb: Verb, accept: &str) -> Option<&'static str> {
     match verb {
         Verb::Post => (!(json && sse)).then_some(POST_REFUSAL),
         Verb::Get => (!sse).then_some(GET_REFUSAL),
+        Verb::Delete | Verb::Other => None,
     }
 }
 
@@ -107,7 +111,7 @@ pub fn gate(verb: Verb, accept: &str, body: &[u8]) -> Gate {
         };
     }
     match verb {
-        Verb::Get => Gate::Forward,
+        Verb::Get | Verb::Delete | Verb::Other => Gate::Forward,
         Verb::Post => not_jsonrpc_reply(body).map_or(Gate::Forward, |reply| Gate::Reply {
             reject: Reject::BadRequest,
             body: reply,
@@ -115,13 +119,14 @@ pub fn gate(verb: Verb, accept: &str, body: &[u8]) -> Gate {
     }
 }
 
-/// The HTTP method of a request as the endpoint's checks see it: only POST and GET are checked.
+/// The HTTP method of a request as the endpoint's checks see it.
 #[must_use]
-pub fn verb_of(method: &str) -> Option<Verb> {
+pub fn verb_of(method: &str) -> Verb {
     match method {
-        "POST" => Some(Verb::Post),
-        "GET" => Some(Verb::Get),
-        _ => None,
+        "POST" => Verb::Post,
+        "GET" => Verb::Get,
+        "DELETE" => Verb::Delete,
+        _ => Verb::Other,
     }
 }
 
@@ -180,7 +185,12 @@ const MISSING_SESSION: &str = "Bad Request: Missing session ID";
 const UNSUPPORTED_MEDIA: &str = "Unsupported Media Type: Content-Type must be application/json";
 
 const JSON_TYPE: &str = "application/json";
-const TEXT_TYPE: &str = "text/plain; charset=utf-8";
+
+/// The message of a method the endpoint does not serve.
+const METHOD_NOT_ALLOWED: &str = "Method Not Allowed";
+
+/// The methods the endpoint serves, as its `Allow` header lists them.
+const ALLOW: &str = "GET, POST, DELETE";
 
 /// A JSON-RPC error with no id, in the key order the Python SDK writes it.
 #[must_use]
@@ -204,21 +214,24 @@ fn session_reply(status: u16, session: &str, body: &Value) -> Plan {
     })
 }
 
-/// A plain-text reply.
+/// A plain-text reply. Starlette writes a bare `Response("...")` with no `Content-Type`, and so
+/// does this.
 fn text_reply(status: u16, message: &str) -> Plan {
     Plan::Reply(Reply {
         status,
-        headers: vec![("content-type".to_owned(), TEXT_TYPE.to_owned())],
+        headers: Vec::new(),
         body: message.as_bytes().to_vec(),
     })
 }
 
-/// The reply to a POST whose body is over the limit: plain text, `413`.
+/// The reply to a request whose body is over the limit: `413`, plain text with no `Content-Type`.
+/// The Python body-limit middleware wraps the whole endpoint, so this is decided before any other
+/// check, for every method, as soon as the body is known to be over the limit.
 #[must_use]
 pub fn too_large() -> Reply {
     Reply {
         status: 413,
-        headers: vec![("content-type".to_owned(), TEXT_TYPE.to_owned())],
+        headers: Vec::new(),
         body: b"Request body too large".to_vec(),
     }
 }
@@ -251,10 +264,12 @@ fn is_initialize(body: &[u8]) -> bool {
     })
 }
 
-/// The decision that needs only the headers, in the Python transport's order: an unknown session
+/// The decision that needs only the headers, in the Python transport's order (after the body-size
+/// `413` the caller makes first, see [`too_large`]): an unknown session
 /// is `404` before anything else (`_handle_stateful_request`); a POST whose `Content-Type` does
 /// not start with `application/json` is a plain `400` (the transport's security check); a refused
-/// `Accept` is `406`; a GET without a session ID is `400` (`_validate_session`). `session_known`
+/// `Accept` is `406`; a GET or DELETE without a session ID is `400` (`_validate_session`); any
+/// other method is `405` (`_handle_unsupported_request`). `session_known`
 /// says whether the request's `Mcp-Session-Id`, when it has one, names a live session.
 /// `fresh_session` is the id a reply echoes when the request carries none.
 #[must_use]
@@ -276,6 +291,19 @@ pub fn check_headers(
                 .into_bytes(),
         }));
     }
+    if verb == Verb::Other {
+        return Step::Answer(Plan::Reply(Reply {
+            status: 405,
+            headers: vec![
+                ("content-type".to_owned(), JSON_TYPE.to_owned()),
+                ("allow".to_owned(), ALLOW.to_owned()),
+                ("mcp-session-id".to_owned(), session.to_owned()),
+            ],
+            body: error_body(INVALID_REQUEST, METHOD_NOT_ALLOWED)
+                .to_string()
+                .into_bytes(),
+        }));
+    }
     if verb == Verb::Post && !content_type_starts_json(headers) {
         return Step::Answer(text_reply(400, "Invalid Content-Type header"));
     }
@@ -284,12 +312,44 @@ pub fn check_headers(
     }
     match verb {
         Verb::Post => Step::ReadBody,
-        Verb::Get if request_session.is_none() => Step::Answer(session_reply(
+        Verb::Get | Verb::Delete if request_session.is_none() => Step::Answer(session_reply(
             400,
             session,
             &error_body(INVALID_REQUEST, MISSING_SESSION),
         )),
-        Verb::Get => Step::Answer(Plan::Forward { accept: SDK_ACCEPT }),
+        Verb::Get | Verb::Delete | Verb::Other => {
+            Step::Answer(Plan::Forward { accept: SDK_ACCEPT })
+        }
+    }
+}
+
+/// What the endpoint changes in a response the SDK has produced for a forwarded request.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct Touch {
+    /// A status to write instead of the SDK's.
+    pub status: Option<u16>,
+    /// Headers to set on the response.
+    pub headers: Vec<(String, String)>,
+}
+
+/// How the Python transport answers what the SDK answers differently: a DELETE that ended a
+/// session is `200` and an accepted POST (a notification or a response) is `202`, each as a JSON
+/// response echoing the session ID, with no body. `status` is the SDK's status and `session` the
+/// request's session ID (empty when it has none).
+#[must_use]
+pub fn touch_up(verb: Verb, status: u16, session: &str) -> Touch {
+    let ends_session = verb == Verb::Delete && status < 400;
+    let accepted = verb == Verb::Post && status == 202;
+    if !(ends_session || accepted) {
+        return Touch::default();
+    }
+    let mut headers = vec![("content-type".to_owned(), JSON_TYPE.to_owned())];
+    if !session.is_empty() {
+        headers.push(("mcp-session-id".to_owned(), session.to_owned()));
+    }
+    Touch {
+        status: ends_session.then_some(200),
+        headers,
     }
 }
 
@@ -336,9 +396,10 @@ mod plan_tests {
 
     #[test]
     fn only_post_and_get_are_checked() {
-        assert_eq!(verb_of("POST"), Some(Verb::Post));
-        assert_eq!(verb_of("GET"), Some(Verb::Get));
-        assert_eq!(verb_of("DELETE"), None);
+        assert_eq!(verb_of("POST"), Verb::Post);
+        assert_eq!(verb_of("GET"), Verb::Get);
+        assert_eq!(verb_of("DELETE"), Verb::Delete);
+        assert_eq!(verb_of("PUT"), Verb::Other);
     }
 
     #[test]
@@ -359,6 +420,81 @@ mod plan_tests {
             check_body(&headers, "fresh", body),
             Plan::Forward { accept: SDK_ACCEPT }
         );
+    }
+
+    #[test]
+    fn plain_replies_carry_no_content_type() {
+        let headers = h(&[("accept", "text/plain"), ("content-type", "text/plain")]);
+        let reply = reply_of(check_headers(Verb::Post, &headers, false, "fresh"));
+        assert!(reply.headers.is_empty());
+        let big = too_large();
+        assert_eq!((big.status, big.headers.is_empty()), (413, true));
+        assert_eq!(big.body, b"Request body too large".to_vec());
+    }
+
+    #[test]
+    fn delete_follows_the_session_rules_of_a_get_without_negotiating_accept() {
+        let none = h(&[]);
+        let reply = reply_of(check_headers(Verb::Delete, &none, false, "fresh"));
+        assert_eq!(reply.status, 400);
+        assert!(String::from_utf8_lossy(&reply.body).contains("Missing session ID"));
+        let gone = h(&[("mcp-session-id", "gone")]);
+        assert_eq!(
+            reply_of(check_headers(Verb::Delete, &gone, false, "fresh")).status,
+            404
+        );
+        let live = h(&[("mcp-session-id", "live"), ("accept", "text/plain")]);
+        assert_eq!(
+            check_headers(Verb::Delete, &live, true, "fresh"),
+            Step::Answer(Plan::Forward { accept: SDK_ACCEPT })
+        );
+    }
+
+    #[test]
+    fn another_method_is_a_405_after_the_session_lookup() {
+        let none = h(&[]);
+        let reply = reply_of(check_headers(Verb::Other, &none, false, "fresh"));
+        assert_eq!(reply.status, 405);
+        assert!(
+            reply
+                .headers
+                .contains(&("allow".to_owned(), "GET, POST, DELETE".to_owned()))
+        );
+        assert!(
+            reply
+                .headers
+                .contains(&("mcp-session-id".to_owned(), "fresh".to_owned()))
+        );
+        assert_eq!(
+            String::from_utf8_lossy(&reply.body),
+            r#"{"jsonrpc":"2.0","id":null,"error":{"code":-32600,"message":"Method Not Allowed"}}"#
+        );
+        let gone = h(&[("mcp-session-id", "gone")]);
+        assert_eq!(
+            reply_of(check_headers(Verb::Other, &gone, false, "fresh")).status,
+            404
+        );
+    }
+
+    #[test]
+    fn a_delete_the_sdk_accepted_is_a_200_and_an_accepted_post_a_json_202() {
+        let ended = touch_up(Verb::Delete, 202, "s");
+        assert_eq!(ended.status, Some(200));
+        assert!(
+            ended
+                .headers
+                .contains(&("mcp-session-id".to_owned(), "s".to_owned()))
+        );
+        let accepted = touch_up(Verb::Post, 202, "s");
+        assert_eq!(accepted.status, None);
+        assert!(
+            accepted
+                .headers
+                .contains(&("content-type".to_owned(), JSON_TYPE.to_owned()))
+        );
+        assert_eq!(touch_up(Verb::Post, 200, "s"), Touch::default());
+        assert_eq!(touch_up(Verb::Delete, 404, "s"), Touch::default());
+        assert_eq!(touch_up(Verb::Get, 202, "s"), Touch::default());
     }
 
     #[test]

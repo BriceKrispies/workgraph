@@ -56,6 +56,7 @@ fn probe() -> spec::Dataset {
                 text("x"),
             ],
         ],
+        boolean_columns: Vec::new(),
     }
 }
 
@@ -78,6 +79,7 @@ fn empty_dataset_matches_duckdb() -> TestResult {
     let empty = spec::Dataset {
         columns: vec!["a".to_string()],
         rows: Vec::new(),
+        boolean_columns: Vec::new(),
     };
     assert_eq!(spec::csv_text(&empty), "a\n");
     assert_eq!(spec::json_text(&empty)?, "[\n\t\n]\n");
@@ -126,6 +128,7 @@ fn parquet_of_no_rows_keeps_the_columns() -> TestResult {
     let empty = spec::Dataset {
         columns: vec!["a".to_string()],
         rows: Vec::new(),
+        boolean_columns: Vec::new(),
     };
     let bytes = spec::parquet_bytes(&empty)?;
     let reader = ParquetRecordBatchReaderBuilder::try_new(bytes::Bytes::from(bytes))?.build()?;

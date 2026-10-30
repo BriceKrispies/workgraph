@@ -226,3 +226,29 @@ fn old_task_created_events_are_upcast() -> TestResult {
     );
     Ok(())
 }
+
+#[test]
+fn an_entity_id_that_is_not_an_id_reads_back_as_text() -> TestResult {
+    let id = Raw::Text("22222222-2222-4222-8222-222222222222".into());
+    let text = |s: &str| Raw::Text(s.into());
+    let row = vec![
+        Raw::Int(4),
+        id.clone(),
+        Raw::Null,
+        text("worktree.recovered"),
+        text("system"),
+        text("worktrees"),
+        text("system:cli"),
+        text("system"),
+        text("2026-10-25T12:00:00.000000+00:00"),
+        id,
+        Raw::Null,
+        Raw::Null,
+        Raw::Int(1),
+        text("{}"),
+    ];
+    let record = decode_event(&row)?;
+    assert_eq!(record.entity_id_text(), "worktrees");
+    assert_eq!(record.to_dict()["entity_id"], "worktrees");
+    Ok(())
+}

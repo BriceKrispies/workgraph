@@ -38,6 +38,7 @@ fn event(seq: i64, event_type: &str, entity: Id, data: Value, schema_version: i6
         workspace_id: Some(Id::from_u128(7)),
         event_type: event_type.to_owned(),
         entity_type: "task".to_owned(),
+        entity_text: None,
         entity_id: entity,
         actor: "human:Brice".to_owned(),
         actor_kind: "human".to_owned(),

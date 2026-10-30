@@ -11,7 +11,7 @@ use wg_json::Value;
 use wg_model::entity::AgentAttempt;
 use wg_registry::resolve;
 use wg_runtime::{App, RequestContext, index_written};
-use wg_stacks_feature::service::exec::{integration_busy, land_stack_accepted};
+use wg_stacks_feature::service::exec::{integration_busy, land_stack_accepted, rebuild_without};
 use wg_store::{Session, TaskWorld};
 use wg_tasks::accept::AcceptFacts;
 use wg_types::{AttemptStatus, Id, Permission, WgError};
@@ -110,7 +110,13 @@ fn accept_with(
         )?
         .reply;
     match route {
-        Route::Done(out) => Ok(out),
+        Route::Done { out, rebuild } => {
+            // `rebuild_without` runs after the acceptance transaction, as Python's does.
+            if let Some(stack_id) = rebuild {
+                rebuild_without(app, context, stack_id)?;
+            }
+            Ok(out)
+        }
         Route::Land { stack_id } => {
             let (mode, text) = land_request_of(manual, reason);
             land_stack_accepted(app, context, stack_id, mode, &text, true)

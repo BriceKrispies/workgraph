@@ -33,8 +33,9 @@ pub struct AcceptWorld {
 /// Where an `accept` goes.
 #[derive(Debug, Clone)]
 pub enum Route {
-    /// The task is accepted; this is the `AcceptanceOut`.
-    Done(Value),
+    /// The task is accepted; this is the `AcceptanceOut`. `rebuild` is the stack whose integration
+    /// branches the shell rebuilds without the child, when the child's commits were on them.
+    Done { out: Value, rebuild: Option<Id> },
     /// The task is the parent of an active stack: the shell lands that stack.
     Land { stack_id: Id },
 }
@@ -109,13 +110,10 @@ pub fn accept_task(
     let run = Run::start(&loaded.world, stamp);
     let (accepted, acceptance) = accept_in(&run, stamp, task.id, mode, reason, &loaded.facts)?;
     let (released, rebuild) = release_child(&accepted, stamp, task.id)?;
-    if rebuild.is_some() {
-        return Err(rebuild_unavailable("accepting a merged stack child"));
-    }
-    Ok(released
-        .applied
-        .decision
-        .with_reply(Route::Done(acceptance_from_model(&acceptance))))
+    Ok(released.applied.decision.with_reply(Route::Done {
+        out: acceptance_from_model(&acceptance),
+        rebuild,
+    }))
 }
 
 /// The mode and reason a stack landing records for an `accept` of the stack's parent.

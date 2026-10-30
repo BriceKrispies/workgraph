@@ -43,6 +43,8 @@ fn events_carry_the_stored_columns_in_python_order() {
         id: id_of("00000000-0000-4000-8000-0000000000d1"),
         workspace_id: Some(id_of("00000000-0000-4000-8000-000000000001")),
         entity_id: id_of("00000000-0000-4000-8000-0000000000d2"),
+        entity_text: None,
+        entity_type_override: None,
         actor: Actor::new(ActorKind::Human, "Brice").expect("actor"),
         occurred_at: at(0),
         correlation_id: id_of("00000000-0000-4000-8000-0000000000d3").into(),

@@ -228,6 +228,7 @@ fn requested(snapshot: &Map<String, Json>) -> Option<Vec<PrepareRequest>> {
                             .get("target_ref")
                             .and_then(Json::as_str)
                             .map(str::to_owned),
+                        base: None,
                     })
                 })
                 .collect()

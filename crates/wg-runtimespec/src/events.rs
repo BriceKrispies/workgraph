@@ -84,7 +84,7 @@ pub fn event_out(event: &EventRecord) -> wg_json::Value {
             ("workspace_id", optional_id(event.workspace_id)),
             ("event_type", text(&event.event_type)),
             ("entity_type", text(&event.entity_type)),
-            ("entity_id", id(event.entity_id)),
+            ("entity_id", text(&event.entity_id_text())),
             ("actor", text(&event.actor)),
             ("actor_kind", text(&event.actor_kind)),
             (

@@ -22,6 +22,8 @@ pub struct StoredEvent {
     pub event_type: String,
     pub entity_type: String,
     pub entity_id: Id,
+    /// The `entity_id` column when it is not an id (nil in `entity_id` then).
+    pub entity_text: Option<String>,
     pub actor: String,
     pub actor_kind: String,
     pub occurred_at: Timestamp,
@@ -34,6 +36,13 @@ pub struct StoredEvent {
 }
 
 impl StoredEvent {
+    /// The `entity_id` column as text.
+    pub fn entity_id_text(&self) -> String {
+        self.entity_text
+            .clone()
+            .unwrap_or_else(|| self.entity_id.to_string())
+    }
+
     /// The row the store would hold for `draft` appended with sequence number `seq`.
     pub fn from_draft(seq: i64, draft: &EventDraft) -> Result<Self, WgError> {
         Ok(StoredEvent {
@@ -43,6 +52,7 @@ impl StoredEvent {
             event_type: draft.event_type().to_owned(),
             entity_type: draft.entity_type().as_str().to_owned(),
             entity_id: draft.entity_id,
+            entity_text: draft.entity_text.clone(),
             actor: draft.actor.to_string(),
             actor_kind: draft.actor.kind().as_str().to_owned(),
             occurred_at: draft.occurred_at,

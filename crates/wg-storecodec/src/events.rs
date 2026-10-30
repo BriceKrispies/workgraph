@@ -7,7 +7,7 @@
 
 use serde_json::{Value, json};
 use wg_model::{EventDraft, JsonObject, StoredEvent};
-use wg_types::{Correlation, Id, Timestamp, WgError};
+use wg_types::{Correlation, Id, Timestamp, WgError, parse_id};
 
 use crate::codec::{Cols, Raw, correlation_sql, id_sql, json_text, opt_id_sql, ts_sql};
 use crate::sql::Statement;
@@ -22,6 +22,7 @@ impl From<EventRecord> for StoredEvent {
             event_type: record.event_type,
             entity_type: record.entity_type,
             entity_id: record.entity_id,
+            entity_text: record.entity_text,
             actor: record.actor,
             actor_kind: record.actor_kind,
             occurred_at: record.occurred_at,
@@ -56,6 +57,8 @@ pub struct EventRecord {
     pub event_type: String,
     pub entity_type: String,
     pub entity_id: Id,
+    /// The `entity_id` column when it is not an id (nil in `entity_id` then).
+    pub entity_text: Option<String>,
     pub actor: String,
     pub actor_kind: String,
     pub occurred_at: Timestamp,
@@ -67,6 +70,13 @@ pub struct EventRecord {
 }
 
 impl EventRecord {
+    /// The `entity_id` column as text.
+    pub fn entity_id_text(&self) -> String {
+        self.entity_text
+            .clone()
+            .unwrap_or_else(|| self.entity_id.to_string())
+    }
+
     /// `EventRecord.to_dict()`: `occurred_at` as Python's `isoformat()`, ids as text.
     pub fn to_dict(&self) -> Value {
         json!({
@@ -75,7 +85,7 @@ impl EventRecord {
             "workspace_id": self.workspace_id.map(|id| id.to_string()),
             "event_type": self.event_type,
             "entity_type": self.entity_type,
-            "entity_id": self.entity_id.to_string(),
+            "entity_id": self.entity_id_text(),
             "actor": self.actor,
             "actor_kind": self.actor_kind,
             "occurred_at": self.occurred_at.format_isoformat(),
@@ -131,6 +141,12 @@ fn py_strip(text: &str) -> &str {
 pub fn decode_event(values: &[Raw]) -> Result<EventRecord, WgError> {
     let cols = Cols::new(EVENT_COLUMNS, values);
     let event_type = cols.text("event_type")?;
+    // Python's entity id is free text: an id for almost every event, `worktrees` for one.
+    let entity_text = cols.text("entity_id")?;
+    let (entity_id, entity_text) = match parse_id(&entity_text) {
+        Ok(entity_id) => (entity_id, None),
+        Err(_) => (Id::nil(), Some(entity_text)),
+    };
     let (schema_version, data) = upcast(
         &event_type,
         cols.int("schema_version")?,
@@ -142,7 +158,8 @@ pub fn decode_event(values: &[Raw]) -> Result<EventRecord, WgError> {
         workspace_id: cols.opt_id("workspace_id")?,
         event_type,
         entity_type: cols.text("entity_type")?,
-        entity_id: cols.id("entity_id")?,
+        entity_id,
+        entity_text,
         actor: cols.text("actor")?,
         actor_kind: cols.text("actor_kind")?,
         occurred_at: cols.ts("occurred_at")?,
@@ -186,7 +203,10 @@ pub fn append_statement(draft: &EventDraft) -> Result<Statement, WgError> {
             opt_id_sql(draft.workspace_id),
             Raw::Text(draft.event_type().to_owned()),
             Raw::Text(draft.entity_type().as_str().to_owned()),
-            id_sql(draft.entity_id),
+            match &draft.entity_text {
+                Some(text) => Raw::Text(text.clone()),
+                None => id_sql(draft.entity_id),
+            },
             Raw::Text(draft.actor.to_string()),
             Raw::Text(draft.actor.kind().as_str().to_owned()),
             ts_sql(draft.occurred_at),

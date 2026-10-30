@@ -60,6 +60,7 @@ mod tests {
             event_type: "workspace.created".to_owned(),
             entity_type: "workspace".to_owned(),
             entity_id: id,
+            entity_text: None,
             actor: "human:tester".to_owned(),
             actor_kind: "human".to_owned(),
             occurred_at: Timestamp::parse_iso("2026-10-25T13:56:00.123456+00:00")?,

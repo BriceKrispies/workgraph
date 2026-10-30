@@ -340,6 +340,28 @@ pub fn readmit(
         .reply)
 }
 
+/// `StackService.mark_ready`: a stack child whose fast tier passed becomes ready. A task outside
+/// an active stack is left alone.
+pub fn mark_ready(app: &mut App, context: &RequestContext, task: Id) -> Result<(), WgError> {
+    require_stack_write(app, context)?;
+    let Some(scope) = app.runtime.store.read(|session| {
+        Ok(session
+            .fetch::<wg_model::entity::Task>(&wg_model::write::RowKey::Task(task))?
+            .map(|found| found.workspace_id))
+    })?
+    else {
+        return Ok(());
+    };
+    app.runtime
+        .decide_then(
+            context,
+            |session| load_world(session, scope),
+            |world, stamp| writes::mark_ready(world, stamp, task),
+            index_written,
+        )
+        .map(|_| ())
+}
+
 /// `StackService.integrate`: one `stack_integrate` job per repository of the active stack.
 pub fn integrate(
     app: &mut App,

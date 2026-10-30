@@ -26,7 +26,7 @@ wire_dto! {
         workspace_id: Option<Id> = e.workspace_id,
         event_type: &'a str = &e.event_type,
         entity_type: &'a str = &e.entity_type,
-        entity_id: Id = e.entity_id,
+        entity_id: String = e.entity_id_text(),
         actor: &'a str = &e.actor,
         actor_kind: &'a str = &e.actor_kind,
         occurred_at: Value = timestamp(e.occurred_at, format),

@@ -166,13 +166,17 @@ pub fn recovery_decision(input: &RecoveryInput, stamp: &Stamp) -> Decision<Recov
         .fold(Decision::new(()), |decision, write| decision.write(write));
     let decision = if changed {
         let (event_id, _) = stamp.ids().next();
-        decision.event(EventDraft::new(
-            stamp,
-            event_id,
-            None,
-            Id::nil(),
-            EventPayload::WorktreeRecovered(counts),
-        ))
+        // Python records the event against the entity id `"worktrees"`, which is not an id.
+        decision.event(
+            EventDraft::new(
+                stamp,
+                event_id,
+                None,
+                Id::nil(),
+                EventPayload::WorktreeRecovered(counts),
+            )
+            .with_entity_text("worktrees"),
+        )
     } else {
         decision
     };
@@ -278,6 +282,8 @@ pub struct PrepareRequest {
     pub repository_id: Id,
     pub access: String,
     pub target_ref: Option<String>,
+    /// Why a stack chose the base (`stack_base` info), when it did.
+    pub base: Option<serde_json::Value>,
 }
 
 /// `acquire_lease`: `existing` is the lease row of `resource_key`, if there is one. The holder of

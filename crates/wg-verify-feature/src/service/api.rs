@@ -3,6 +3,9 @@
 //! transaction of the call and answers the wire documents the Python service returns. The
 //! decisions are [`crate::spec::config_write`] and the reads are [`crate::service::reads`].
 
+use serde_json::{Map, json};
+use wg_jobs::limits::task_verify_keys;
+use wg_jobs::queue::NewJob;
 use wg_json::Value;
 use wg_model::RowKey;
 use wg_model::entity::{VerificationConfig, VerificationRun};
@@ -11,7 +14,7 @@ use wg_runtime::{App, RequestContext};
 use wg_types::{Permission, VerificationStatus, WgError, parse_id};
 use wg_wire::dto::verification::{config_from_model, failure_row};
 
-use wg_verify::applicable_checks;
+use wg_verify::{applicable_checks, parse_tier};
 
 use crate::service::config;
 use crate::service::listing;
@@ -149,6 +152,47 @@ pub fn checks_for_task(
         applicable_checks(&configs, &scope)
     })?;
     Ok(Value::List(checks.iter().map(check_document).collect()))
+}
+
+/// `VerificationService.verify` (H059): queues a `verify` job for the task, one verify key per
+/// repository the task is linked to. The permission is checked first, then the task is resolved,
+/// as Python does. The reply is the job's id.
+pub fn enqueue_verify(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: &str,
+    task_reference: &str,
+    attempt_id: Option<&str>,
+    tier: Option<&str>,
+) -> Result<Value, WgError> {
+    app.require_permission(context, Permission::VerifyRun)?;
+    parse_tier(tier)?;
+    let ws = app.workspace_or_default(Some(workspace))?;
+    let (task_id, workspace_id, repositories) = app.runtime.store.read(|session| {
+        let world = session.task_world(Some(ws), &[])?;
+        let task = resolve::task(&world.tasks, Some(ws), task_reference)?;
+        let repositories: Vec<String> = world
+            .tasks
+            .repositories_of(task.id)
+            .map(|link| link.repository_id.to_string())
+            .collect();
+        Ok((task.id, task.workspace_id, repositories))
+    })?;
+    let job = NewJob {
+        payload: Map::from_iter([
+            ("task_id".to_owned(), json!(task_id.to_string())),
+            ("attempt_id".to_owned(), json!(attempt_id)),
+            ("tier".to_owned(), json!(tier)),
+        ]),
+        workspace_id: Some(workspace_id),
+        task_id: Some(task_id),
+        max_attempts: 1,
+        resource_keys: task_verify_keys(repositories.iter().map(String::as_str)),
+        created_by: context.actor.to_string(),
+        ..NewJob::new("verify")
+    };
+    let job_id = app.enqueue_as(context, &job)?;
+    Ok(wg_json::to_value(&json!({"job_id": job_id.to_string()})))
 }
 
 /// `VerificationService.get_run`: one run with its manifest entries and check results.

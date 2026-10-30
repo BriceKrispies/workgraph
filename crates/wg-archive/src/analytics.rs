@@ -27,11 +27,7 @@ pub fn export_dataset(
         std::fs::create_dir_all(parent)
             .map_err(|err| wg_archivespec::io_failure("create", parent, &err))?;
     }
-    let bytes_out = match format {
-        Format::Csv => wg_archivespec::csv_text(dataset).into_bytes(),
-        Format::Json => wg_archivespec::json_text(dataset)?.into_bytes(),
-        Format::Parquet => wg_archivespec::parquet_bytes(dataset)?,
-    };
+    let bytes_out = wg_archivespec::dataset_bytes(dataset, format)?;
     std::fs::write(target, bytes_out)
         .map_err(|err| wg_archivespec::io_failure("write", target, &err))?;
     let bytes = std::fs::metadata(target)

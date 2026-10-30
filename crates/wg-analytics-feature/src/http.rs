@@ -1,16 +1,16 @@
 //! The analytics routes (`api/routes/ops.py`, analytics): the metric catalog (H101), the query
 //! (H102), the overview (H103), the compare (H104), the coupling (H105), the failures (H106), the
-//! agent time (H107), the bottlenecks (H108), the history (H109), the estimate (H110), the stored
-//! reports (H112) and the retrospective (H113), under `/api/v1`.
+//! agent time (H107), the bottlenecks (H108), the history (H109), the estimate (H110), the export
+//! (H111), the stored reports (H112) and the retrospective (H113), under `/api/v1`, and the task's
+//! estimate (H056, `api/routes/tasks.py`).
 //!
-//! [`SPECS`] is the table of operations; the server binds each one to [`run`], which reads the
-//! validated request and calls the feature's [`crate::service`] entry points. The export (H111)
-//! is not served: its Python route answers with the written file, and a feature route can only
-//! answer JSON.
+//! [`SPECS`] is the table of operations; the server binds each one to [`run_group`], which reads
+//! the validated request and calls the feature's [`crate::service`] entry points. The export (H111)
+//! answers with the file, as Python's `FileResponse` does; the other operations answer JSON.
 
 use serde_json::Value as Json;
 use wg_json::Value;
-use wg_runtime::{App, RouteGroup, RouteRequest};
+use wg_runtime::{App, RouteAnswer, RouteFile, RouteGroup, RouteRequest};
 use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::WgError;
 
@@ -22,7 +22,15 @@ use crate::spec::params::{
 use crate::spec::query;
 
 /// The operations of the group, in registration order.
-pub const SPECS: [RouteSpec; 12] = [
+pub const SPECS: [RouteSpec; 14] = [
+    RouteSpec {
+        id: "H056",
+        method: "GET",
+        path: "/api/v1/ws/{ws}/tasks/{ref}/estimate",
+        status: 200,
+        query: &[],
+        body: None,
+    },
     RouteSpec {
         id: "H101",
         method: "GET",
@@ -116,6 +124,18 @@ pub const SPECS: [RouteSpec; 12] = [
         }),
     },
     RouteSpec {
+        id: "H111",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/analytics/export",
+        status: 200,
+        query: &[],
+        body: Some(BodyRef {
+            component: "ExportBody",
+            strip: false,
+            required: true,
+        }),
+    },
+    RouteSpec {
         id: "H112",
         method: "GET",
         path: "/api/v1/ws/{ws}/reports",
@@ -138,7 +158,47 @@ pub const SPECS: [RouteSpec; 12] = [
 ];
 
 /// The group as the feature descriptor takes it.
-pub const GROUP: RouteGroup = RouteGroup { specs: &SPECS, run };
+pub const GROUP: RouteGroup = RouteGroup {
+    specs: &SPECS,
+    run: run_group,
+};
+
+/// The export answers with its file; every other operation answers the JSON of [`run`].
+fn run_group(app: &mut App, id: &str, request: RouteRequest) -> Result<RouteAnswer, WgError> {
+    match id {
+        "H111" => export_file(app, &request),
+        _ => run(app, id, request).map(RouteAnswer::Json),
+    }
+}
+
+/// `ExportBody` (H111): the dataset's fact table as CSV, JSON or Parquet, named `<dataset>.<format>`
+/// as Python names the file. A body with a query and no dataset is not served yet.
+fn export_file(app: &mut App, request: &RouteRequest) -> Result<RouteAnswer, WgError> {
+    let body = &request.body;
+    let ws = request.params.get("ws").and_then(Json::as_str);
+    let format_text = body_text(body, "format").unwrap_or("csv");
+    let format = wg_archivespec::parse_format(format_text)?;
+    let Some(dataset) = body_text(body, "dataset") else {
+        let has_query = body.get("query").is_some_and(|query| !query.is_null());
+        return Err(if has_query {
+            WgError::workgraph("analytics export of a query is not served yet; export a dataset")
+        } else {
+            WgError::validation("provide a dataset or a query")
+        });
+    };
+    let rows = service::export::fact_dataset(app, &request.context, ws, dataset)?;
+    let bytes = wg_archivespec::dataset_bytes(&rows, format)?;
+    let content_type = match format {
+        wg_archivespec::Format::Csv => "text/csv; charset=utf-8",
+        wg_archivespec::Format::Json => "application/json",
+        wg_archivespec::Format::Parquet => "application/octet-stream",
+    };
+    Ok(RouteAnswer::File(RouteFile {
+        content_type: content_type.to_owned(),
+        filename: format!("{dataset}.{format_text}"),
+        bytes,
+    }))
+}
 
 /// One operation on the application context: the request in, the document out.
 fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {
@@ -151,6 +211,16 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
     let ws = params.get("ws").and_then(Json::as_str);
     let context = &context;
     match id {
+        "H056" => service::estimate::estimate(
+            app,
+            context,
+            ws,
+            param_text(&params, "ref"),
+            None,
+            "",
+            None,
+            &[],
+        ),
         "H101" => Ok(query::definitions()),
         "H102" => service::query(app, context, ws, &query_body(&body)?),
         "H103" => service::overview(
@@ -269,8 +339,8 @@ mod tests {
         assert_eq!(
             ids,
             [
-                "H101", "H102", "H103", "H104", "H105", "H106", "H107", "H108", "H109", "H110",
-                "H112", "H113"
+                "H056", "H101", "H102", "H103", "H104", "H105", "H106", "H107", "H108", "H109",
+                "H110", "H111", "H112", "H113"
             ]
         );
     }

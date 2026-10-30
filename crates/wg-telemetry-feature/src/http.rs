@@ -5,7 +5,7 @@
 //! permission and calls [`document`]. The document is the status DTO of `wg-wire`.
 
 use wg_json::Value;
-use wg_runtime::{App, RouteGroup, RouteRequest};
+use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
 use wg_serverspec::groups::RouteSpec;
 use wg_types::{Permission, WgError};
 use wg_wire::convention::json_value;
@@ -25,7 +25,10 @@ pub const SPECS: [RouteSpec; 1] = [RouteSpec {
 }];
 
 /// The group as the feature descriptor takes it.
-pub const GROUP: RouteGroup = RouteGroup { specs: &SPECS, run };
+pub const GROUP: RouteGroup = RouteGroup {
+    specs: &SPECS,
+    run: |app, id, request| run(app, id, request).map(RouteAnswer::Json),
+};
 
 /// One operation on the application context: the permission check first, then the document.
 fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {

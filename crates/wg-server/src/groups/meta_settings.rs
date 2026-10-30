@@ -16,14 +16,16 @@ use wg_wire::dto::health;
 
 use super::bind;
 use crate::route::ApiRoute;
-use wg_runtime::RouteRequest;
+use wg_runtime::{RouteAnswer, RouteRequest};
 
 /// The version the documents report (`workgraph.__version__`).
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Registers the group's routes into `table`, in the group's order.
 pub fn register(table: &mut Vec<ApiRoute>) {
-    bind(table, &META_SETTINGS, run);
+    bind(table, &META_SETTINGS, |app, id, request| {
+        run(app, id, request).map(RouteAnswer::Json)
+    });
 }
 
 /// One operation on the application context: the request in, the document out.

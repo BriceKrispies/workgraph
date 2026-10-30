@@ -15,7 +15,7 @@
 
 use serde_json::Value as Json;
 use wg_json::Value;
-use wg_runtime::{App, RouteGroup, RouteRequest};
+use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::{Permission, WgError};
@@ -81,7 +81,10 @@ pub const SPECS: [RouteSpec; 5] = [
 ];
 
 /// The group as the feature descriptor takes it.
-pub const GROUP: RouteGroup = RouteGroup { specs: &SPECS, run };
+pub const GROUP: RouteGroup = RouteGroup {
+    specs: &SPECS,
+    run: |app, id, request| run(app, id, request).map(RouteAnswer::Json),
+};
 
 /// The provider routes of the registry feature (`api/routes/ops.py`): `GET /api/v1/agents`
 /// (H119) and `GET /api/v1/llm/health` (H120).
@@ -107,7 +110,7 @@ pub const PROVIDER_SPECS: [RouteSpec; 2] = [
 /// The provider group as the feature descriptor takes it.
 pub const PROVIDER_GROUP: RouteGroup = RouteGroup {
     specs: &PROVIDER_SPECS,
-    run: run_providers,
+    run: |app, id, request| run_providers(app, id, request).map(RouteAnswer::Json),
 };
 
 /// The project routes (`api/routes/core.py`): the list and creation of projects (H006, H007), one
@@ -178,7 +181,7 @@ pub const PROJECT_SPECS: [RouteSpec; 6] = [
 /// The project group as the feature descriptor takes it.
 pub const PROJECT_GROUP: RouteGroup = RouteGroup {
     specs: &PROJECT_SPECS,
-    run: run_projects,
+    run: |app, id, request| run_projects(app, id, request).map(RouteAnswer::Json),
 };
 
 /// The repository routes (`api/routes/core.py`): the list and registration of repositories (H012,
@@ -278,7 +281,7 @@ pub const REPOSITORY_SPECS: [RouteSpec; 10] = [
 /// The repository group as the feature descriptor takes it.
 pub const REPOSITORY_GROUP: RouteGroup = RouteGroup {
     specs: &REPOSITORY_SPECS,
-    run: run_repositories,
+    run: |app, id, request| run_repositories(app, id, request).map(RouteAnswer::Json),
 };
 
 /// The project operations: each makes its permission check in the service, as the Python service

@@ -265,6 +265,21 @@ fn generate(
     }
 }
 
+/// `POST /ws/{ws}/tasks/{ref}/decompose` (H060): `Scheduler.decompose` for the task `task_ref`
+/// names in `workspace`.
+pub fn decompose_ref(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    task_ref: &str,
+    create: bool,
+) -> Result<Json, WgError> {
+    let scope = app.workspace_or_all(workspace)?;
+    let loaded = app.runtime.store.read(|session| load(session, scope))?;
+    let task_id = resolve::task(&loaded.world.tasks, scope, task_ref)?.id;
+    decompose(app, context, task_id, create, None, None)
+}
+
 /// `Scheduler.decompose`: asks the configured model for child tasks, validates them and, with
 /// `create`, creates them in dependency order under the task.
 pub fn decompose(

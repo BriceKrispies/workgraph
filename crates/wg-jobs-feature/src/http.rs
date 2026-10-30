@@ -4,7 +4,7 @@
 
 use serde_json::{Map, Value as Json};
 use wg_json::Value;
-use wg_runtime::{App, RouteGroup, RouteRequest};
+use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
 use wg_types::WgError;
 
 use crate::service::{self, JobQuery};
@@ -14,7 +14,7 @@ use wg_types::pyval::int_or;
 /// The routes of the jobs feature, in registration order.
 pub const GROUP: RouteGroup = RouteGroup {
     specs: &SPECS,
-    run: run_jobs,
+    run: |app, id, request| run_jobs(app, id, request).map(RouteAnswer::Json),
 };
 
 /// One operation on the application context: the request in, the document out.

@@ -50,9 +50,9 @@ pub const fn exec_route(
 }
 
 /// The operations of the attempt, run and scheduler routes, in registration order: H071 to H079,
-/// H122, and the task's schedulability (H061, `api/routes/tasks.py`). Every body model here
+/// H122, and the task's schedulability and decomposition (H061, H060, `api/routes/tasks.py`). Every body model here
 /// subclasses `BaseModel`, not `InputSchema`, so none is stripped.
-pub const SPECS: [RouteSpec; 11] = [
+pub const SPECS: [RouteSpec; 12] = [
     exec_route(
         "H071",
         "GET",
@@ -134,6 +134,14 @@ pub const SPECS: [RouteSpec; 11] = [
         &[],
         None,
     ),
+    exec_route(
+        "H060",
+        "POST",
+        "/api/v1/ws/{ws}/tasks/{ref}/decompose",
+        200,
+        &["create"],
+        None,
+    ),
 ];
 
 /// The string items of a list parameter (`status=ready&status=done`); unset reads as empty.
@@ -196,7 +204,7 @@ mod tests {
         assert_eq!(tail_start(2, -5), 2);
     }
 
-    // covers: H061
+    // covers: H060 H061
     #[test]
     fn the_table_has_the_attempt_run_and_scheduler_operations() {
         let ids: Vec<&str> = SPECS.iter().map(|spec| spec.id).collect();
@@ -204,11 +212,15 @@ mod tests {
             ids,
             [
                 "H071", "H072", "H073", "H074", "H075", "H076", "H077", "H078", "H079", "H122",
-                "H061"
+                "H061", "H060"
             ]
         );
         for spec in &SPECS {
-            let group = if spec.id == "H061" { "IF-45" } else { "IF-46" };
+            let group = if matches!(spec.id, "H061" | "H060") {
+                "IF-45"
+            } else {
+                "IF-46"
+            };
             assert_eq!(wg_serverspec::operations::group_of(spec.id), group);
         }
     }

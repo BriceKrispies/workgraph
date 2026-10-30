@@ -1,13 +1,14 @@
 //! The verification group (`api/routes/ops.py`, verification): the check configs (H085, H086),
 //! their enable and disable (H087), the check runs (H088, H089) and the failure history (H090),
-//! under `/api/v1`, and the task's verification runs and applicable checks (H057, H058, from
-//! `api/routes/tasks.py`).
+//! under `/api/v1`, and the task's verification runs, applicable checks and verify job (H057 to
+//! H059, from `api/routes/tasks.py`).
 //!
 //! [`SPECS`] is the table of operations; the server binds each one to [`run`], which reads the
 //! validated request and calls the feature's [`crate::service::api`] entry points.
 
+use serde_json::Value as Json;
 use wg_json::Value;
-use wg_runtime::{App, RouteGroup, RouteRequest};
+use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::WgError;
@@ -17,7 +18,7 @@ use crate::spec::config_write::config_body;
 use crate::spec::routes::{enabled_of, failure_args, run_args};
 
 /// The operations of the group, in registration order.
-pub const SPECS: [RouteSpec; 8] = [
+pub const SPECS: [RouteSpec; 9] = [
     RouteSpec {
         id: "H085",
         method: "GET",
@@ -86,10 +87,21 @@ pub const SPECS: [RouteSpec; 8] = [
         query: &[],
         body: None,
     },
+    RouteSpec {
+        id: "H059",
+        method: "POST",
+        path: "/api/v1/ws/{ws}/tasks/{ref}/verify",
+        status: 200,
+        query: &["attempt_id", "tier"],
+        body: None,
+    },
 ];
 
 /// The group as the feature descriptor takes it.
-pub const GROUP: RouteGroup = RouteGroup { specs: &SPECS, run };
+pub const GROUP: RouteGroup = RouteGroup {
+    specs: &SPECS,
+    run: |app, id, request| run(app, id, request).map(RouteAnswer::Json),
+};
 
 /// One operation on the application context: the request in, the document out.
 fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {
@@ -114,6 +126,14 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
         }
         "H057" => api::task_runs(app, context, ws, text_param(params, "ref")),
         "H058" => api::checks_for_task(app, context, ws, text_param(params, "ref")),
+        "H059" => api::enqueue_verify(
+            app,
+            context,
+            ws,
+            text_param(params, "ref"),
+            params.get("attempt_id").and_then(Json::as_str),
+            params.get("tier").and_then(Json::as_str),
+        ),
         other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }
 }
@@ -122,18 +142,18 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
 mod tests {
     use super::*;
 
-    // covers: H057 H058
+    // covers: H057 H058 H059
     #[test]
     fn the_verification_table_has_the_operations_of_its_group() {
         let ids: Vec<&str> = SPECS.iter().map(|spec| spec.id).collect();
         assert_eq!(
             ids,
             [
-                "H085", "H086", "H087", "H088", "H089", "H090", "H057", "H058"
+                "H085", "H086", "H087", "H088", "H089", "H090", "H057", "H058", "H059"
             ]
         );
         for spec in &SPECS {
-            let group = if matches!(spec.id, "H057" | "H058") {
+            let group = if matches!(spec.id, "H057" | "H058" | "H059") {
                 "IF-45"
             } else {
                 "IF-47"

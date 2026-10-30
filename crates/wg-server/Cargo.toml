@@ -29,6 +29,8 @@ wg-wire = { path = "../wg-wire" }
 
 [dev-dependencies]
 rpds = "1"
+wg-analytics-feature = { path = "../wg-analytics-feature" }
+wg-intel-feature = { path = "../wg-intel-feature" }
 wg-decisions = { path = "../wg-decisions" }
 wg-git-feature = { path = "../wg-git-feature" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }

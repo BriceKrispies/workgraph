@@ -8,7 +8,7 @@
 
 use serde_json::{Map, Value as Json};
 use wg_json::Value;
-use wg_runtime::{App, RouteGroup, RouteRequest};
+use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
 use wg_types::{Permission, WgError};
 
 use crate::service::agents::LiveAgents;
@@ -21,7 +21,7 @@ use wg_types::pyval::int_or;
 /// The routes of the attempt, run and scheduler operations, in registration order.
 pub const GROUP: RouteGroup = RouteGroup {
     specs: &SPECS,
-    run: run_exec,
+    run: |app, id, request| run_exec(app, id, request).map(RouteAnswer::Json),
 };
 
 /// The reason a cancel gives when its body does not name one (`CancelBody.reason`).
@@ -82,6 +82,16 @@ fn run_exec(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgE
             let task = text(&params, "ref").unwrap_or_default();
             let found = scheduler::explain(app, Some(ws), task)?;
             Ok(wg_json::to_value(&found))
+        }
+        "H060" => {
+            let task = text(&params, "ref").unwrap_or_default();
+            let create = params.get("create").is_some_and(|value| {
+                value
+                    .as_bool()
+                    .unwrap_or_else(|| value.as_str() == Some("true"))
+            });
+            let decomposed = scheduler::decompose_ref(app, &context, Some(ws), task, create)?;
+            Ok(wg_json::to_value(&decomposed))
         }
         other => Err(WgError::workgraph(format!("route {other} has no handler"))),
     }

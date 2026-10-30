@@ -8,7 +8,7 @@
 //! validated request and calls the feature's [`crate::service`] entry point.
 
 use wg_json::Value;
-use wg_runtime::{App, RouteGroup, RouteRequest};
+use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
 use wg_runtimespec::text_param;
 use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::WgError;
@@ -102,7 +102,10 @@ pub const SPECS: [RouteSpec; 9] = [
 ];
 
 /// The group: its table and the function that runs an operation.
-pub const GROUP: RouteGroup = RouteGroup { specs: &SPECS, run };
+pub const GROUP: RouteGroup = RouteGroup {
+    specs: &SPECS,
+    run: |app, id, request| run(app, id, request).map(RouteAnswer::Json),
+};
 
 /// One operation on the application context: the request in, the document out.
 fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError> {

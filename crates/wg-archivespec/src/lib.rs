@@ -537,6 +537,15 @@ fn py_repr(number: f64) -> String {
     wg_json::py_float_repr(number)
 }
 
+/// The file bytes of a dataset in `format`: the CSV text, the JSON text or the Parquet file.
+pub fn dataset_bytes(dataset: &Dataset, format: Format) -> Result<Vec<u8>, WgError> {
+    Ok(match format {
+        Format::Csv => csv_text(dataset).into_bytes(),
+        Format::Json => json_text(dataset)?.into_bytes(),
+        Format::Parquet => parquet_bytes(dataset)?,
+    })
+}
+
 /// The dataset as CSV with a header row (DuckDB's `FORMAT CSV, HEADER`): `,` separators, `\n`
 /// terminators, NULL as an empty field, and a field quoted when it holds a separator, a quote or
 /// a line break, with inner quotes doubled.

@@ -6,7 +6,7 @@
 //! [`crate::service`] entry point.
 
 use wg_json::Value;
-use wg_runtime::{App, RouteGroup, RouteRequest};
+use wg_runtime::{App, RouteAnswer, RouteGroup, RouteRequest};
 use wg_serverspec::groups::RouteSpec;
 use wg_types::WgError;
 
@@ -18,13 +18,13 @@ use crate::spec::routes::{optional, required, task_route};
 /// The routes of the task reads, writes and lifecycle group, in registration order.
 pub const GROUP: RouteGroup = RouteGroup {
     specs: &TASK_SPECS,
-    run: run_tasks,
+    run: |app, id, request| run_tasks(app, id, request).map(RouteAnswer::Json),
 };
 
 /// The routes of the acceptance group, in registration order.
 pub const ACCEPTANCE: RouteGroup = RouteGroup {
     specs: &ACCEPTANCE_SPECS,
-    run: run_acceptance,
+    run: |app, id, request| run_acceptance(app, id, request).map(RouteAnswer::Json),
 };
 
 /// The task reads, writes and lifecycle group (IF-44): H023 to H046 without the acceptance

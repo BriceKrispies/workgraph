@@ -14,8 +14,9 @@
 pub mod events;
 pub mod meta_settings;
 
-use wg_runtime::{Feature, RouteRequest, RouteRun};
+use wg_runtime::{Feature, RouteAnswer, RouteFile, RouteRequest, RouteRun};
 use wg_serverspec::groups::{RouteSpec, body_spec};
+use wg_serverspec::reply::Reply;
 
 use crate::route::{Answer, ApiRoute, handler};
 
@@ -30,6 +31,7 @@ pub fn bind(table: &mut Vec<ApiRoute>, specs: &[RouteSpec], run: RouteRun) {
             .as_ref()
             .and_then(|body| openapi.as_ref().and_then(|doc| body_spec(doc, body)));
         let id = spec.id;
+        let status = spec.status;
         table.push(ApiRoute {
             id,
             method: spec.method,
@@ -45,11 +47,23 @@ pub fn bind(table: &mut Vec<ApiRoute>, specs: &[RouteSpec], run: RouteRun) {
                     given: request.given,
                     context: request.context,
                 };
-                let value = server.blocking(move |app| run(app, id, route)).await?;
-                Ok(Answer::Json(value))
+                let answer = match server.blocking(move |app| run(app, id, route)).await? {
+                    RouteAnswer::Json(value) => Answer::Json(value),
+                    RouteAnswer::File(file) => Answer::Reply(file_reply(status, file)),
+                };
+                Ok(answer)
             }),
         });
     }
+}
+
+/// The reply of a file operation: the file's bytes under its media type, saved by the client under
+/// its name (Starlette's `FileResponse` headers).
+fn file_reply(status: u16, file: RouteFile) -> Reply {
+    Reply::new(status, &file.content_type, file.bytes).with_header(
+        "content-disposition",
+        &format!("attachment; filename=\"{}\"", file.filename),
+    )
 }
 
 /// Every registered API route: the groups that predate the feature descriptor, in their order,

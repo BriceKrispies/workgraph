@@ -39,3 +39,27 @@ pub struct ReclassifyRequest {
     pub promote: bool,
     pub category: Option<String>,
 }
+
+/// A date-time request parameter as a UTC instant, absent when not given. Naive values read as UTC,
+/// as the analytics readers do.
+pub fn instant_param(
+    params: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+) -> Result<Option<wg_types::Timestamp>, wg_types::WgError> {
+    let Some(text) = params.get(key).and_then(serde_json::Value::as_str) else {
+        return Ok(None);
+    };
+    let at = wg_clispec::datetime::parse_click_datetime(text).map_err(|message| {
+        wg_types::WgError::validation(format!("invalid datetime '{text}': {message}"))
+    })?;
+    wg_types::Timestamp::from_components(
+        at.year,
+        at.month,
+        at.day,
+        at.hour,
+        at.minute,
+        at.second,
+        at.microsecond,
+    )
+    .map(Some)
+}

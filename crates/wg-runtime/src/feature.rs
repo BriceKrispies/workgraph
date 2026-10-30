@@ -45,9 +45,25 @@ pub struct RouteRequest {
     pub context: RequestContext,
 }
 
+/// A file a route answers with instead of a JSON document: its bytes, the media type and the name
+/// the client saves it under (`Content-Disposition: attachment`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RouteFile {
+    pub content_type: String,
+    pub filename: String,
+    pub bytes: Vec<u8>,
+}
+
+/// What a route operation answers: a JSON document, or a file.
+#[derive(Debug, Clone, PartialEq)]
+pub enum RouteAnswer {
+    Json(Value),
+    File(RouteFile),
+}
+
 /// What a route group runs for one operation: the application context, the operation's inventory
-/// id and the request, in; the document, out.
-pub type RouteRun = fn(&mut App, &str, RouteRequest) -> Result<Value, WgError>;
+/// id and the request, in; the document or the file, out.
+pub type RouteRun = fn(&mut App, &str, RouteRequest) -> Result<RouteAnswer, WgError>;
 
 /// The operations of one route group and the function that runs them.
 pub struct RouteGroup {

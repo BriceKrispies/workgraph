@@ -461,6 +461,9 @@ pub fn ids_of(table: &ExportTable, rows: &[Vec<Raw>]) -> Vec<String> {
 pub struct Dataset {
     pub columns: Vec<String>,
     pub rows: Vec<Vec<Raw>>,
+    /// The indexes of the columns DuckDB types as BOOLEAN. Their `Int` cells (0 or 1) are written as
+    /// `true` and `false`, as DuckDB writes them.
+    pub boolean_columns: Vec<usize>,
 }
 
 /// The analytics export formats (`analytics export --format`).
@@ -549,12 +552,23 @@ pub fn csv_text(dataset: &Dataset) -> String {
     for row in &dataset.rows {
         let fields: Vec<String> = row
             .iter()
-            .map(|raw| csv_field(cell_text(raw).as_deref()))
+            .enumerate()
+            .map(|(index, raw)| csv_field(cell(dataset, index, raw).as_deref()))
             .collect();
         out.push_str(&fields.join(","));
         out.push('\n');
     }
     out
+}
+
+/// A cell as CSV and JSON text: a boolean column writes `true` or `false`, other cells their text.
+fn cell(dataset: &Dataset, index: usize, raw: &Raw) -> Option<String> {
+    match raw {
+        Raw::Int(flag) if dataset.boolean_columns.contains(&index) => {
+            Some((*flag != 0).to_string())
+        }
+        other => cell_text(other),
+    }
 }
 
 fn csv_field(text: Option<&str>) -> String {
@@ -578,9 +592,12 @@ pub fn json_text(dataset: &Dataset) -> Result<String, WgError> {
     let mut records = Vec::with_capacity(dataset.rows.len());
     for row in &dataset.rows {
         let mut fields = Vec::with_capacity(dataset.columns.len());
-        for (name, raw) in dataset.columns.iter().zip(row) {
+        for (index, (name, raw)) in dataset.columns.iter().zip(row).enumerate() {
             let value = match raw {
                 Raw::Null => "null".to_string(),
+                Raw::Int(flag) if dataset.boolean_columns.contains(&index) => {
+                    (*flag != 0).to_string()
+                }
                 Raw::Int(number) => number.to_string(),
                 Raw::Real(number) => fixed_float(*number).unwrap_or_else(|| "null".to_string()),
                 other => json_string(&cell_text(other).unwrap_or_default())?,

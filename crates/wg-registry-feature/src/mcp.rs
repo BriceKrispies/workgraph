@@ -10,7 +10,7 @@
 
 use serde_json::Value;
 use wg_json::Value as Dto;
-use wg_mcpspec::{structured_output, text_argument};
+use wg_mcpspec::{require, structured_output, text_argument, tool_permissions};
 use wg_model::RegistrySlice;
 use wg_model::entity::{Project, Repository};
 use wg_registry::resolve;
@@ -35,6 +35,25 @@ pub fn call(
     name: &str,
     arguments: &Value,
 ) -> Option<Result<Value, WgError>> {
+    if !matches!(
+        name,
+        "workspace_list"
+            | "workspace_get"
+            | "project_list"
+            | "project_get"
+            | "repository_list"
+            | "repository_get"
+            | "repository_register"
+            | "repository_status"
+    ) {
+        return None;
+    }
+    // Each tool checks the permission its Python method requires, before it reads anything.
+    let needed = tool_permissions(name)?;
+    let actor = format!("agent:{}", agent.name);
+    if let Err(err) = require(&actor, &agent.permissions, needed) {
+        return Some(Err(err));
+    }
     let answer = match name {
         "workspace_list" => workspace_list(app),
         "workspace_get" => workspace_get(app, arguments),
@@ -43,8 +62,7 @@ pub fn call(
         "repository_list" => repository_list(app, arguments),
         "repository_get" => repository_get(app, arguments),
         "repository_register" => repository_register(app, agent, arguments),
-        "repository_status" => repository_status(app, agent, arguments),
-        _ => return None,
+        _ => repository_status(app, agent, arguments),
     };
     Some(answer.and_then(|dto| structured_output(&dto)))
 }

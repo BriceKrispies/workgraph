@@ -7,6 +7,7 @@ pub mod dto;
 pub mod export;
 pub mod load;
 pub mod narrative;
+pub mod params;
 pub mod query;
 pub mod sql;
 pub mod view;

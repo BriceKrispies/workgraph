@@ -149,13 +149,15 @@ async fn check_request(
                 .run(Request::from_parts(parts, Body::from(bytes)))
                 .await;
             let touch = touch_up(verb, response.status().as_u16(), &session);
-            touched(python_framed(response), touch)
+            let mut response = python_framed(response);
+            touched(&mut response, touch);
+            response
         }
     }
 }
 
-/// Applies the endpoint's changes to the SDK's response.
-fn touched(mut response: Response<Body>, touch: Touch) -> Response<Body> {
+/// Applies the endpoint's changes to the SDK's response, in place.
+fn touched(response: &mut Response<Body>, touch: Touch) {
     if let Some(status) = touch.status {
         *response.status_mut() = StatusCode::from_u16(status).unwrap_or(response.status());
     }
@@ -167,7 +169,6 @@ fn touched(mut response: Response<Body>, touch: Touch) -> Response<Body> {
             response.headers_mut().insert(name, value);
         }
     });
-    response
 }
 
 /// Writes a planned reply.

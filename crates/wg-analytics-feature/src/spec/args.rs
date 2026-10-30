@@ -4,6 +4,7 @@
 //! [`crate::cli`] run them.
 
 use clap::ArgMatches;
+use serde_json::{Map, Value as Json};
 use wg_clispec::args::{flag, number, one, option_list, option_text};
 use wg_clispec::datetime::parse_click_datetime;
 use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
@@ -238,4 +239,30 @@ pub fn bottleneck_options(m: &ArgMatches) -> Result<BottleneckOptions, CliFailur
         click_datetime(m, "--until", BOTTLENECKS)?,
         usize::try_from(top.max(0)).unwrap_or(usize::MAX),
     ))
+}
+
+/// The period a job's retrospective scope uses when it names none (`period_days=14`).
+const SCOPE_PERIOD_DAYS: i64 = 14;
+
+/// The retrospective options a job's scope names: `period_days` (default 14), `project`,
+/// `repository` and `use_model` (default on). `since` and `until` are not read: a job payload
+/// carries no instants.
+pub fn scope_retrospective_options(scope: Option<&Map<String, Json>>) -> RetrospectiveOptions {
+    let period_days = scope
+        .and_then(|scope| scope.get("period_days"))
+        .and_then(Json::as_i64)
+        .unwrap_or(SCOPE_PERIOD_DAYS);
+    let member = |name: &str| {
+        scope
+            .and_then(|scope| scope.get(name))
+            .and_then(Json::as_str)
+            .map(str::to_owned)
+    };
+    let project = member("project");
+    let repository = member("repository");
+    let use_model = scope
+        .and_then(|scope| scope.get("use_model"))
+        .and_then(Json::as_bool)
+        .unwrap_or(true);
+    (period_days, project, repository, use_model, None)
 }

@@ -8,16 +8,18 @@
 //! and the stored reports (H112) are not served yet: the export writes DuckDB files and the report
 //! list reads the stored `report.generated` events, neither of which is ported.
 
-use serde_json::{Map, Value as Json};
-use wg_clispec::datetime::parse_click_datetime;
-use wg_json::{LocalDateTime, Value};
+use serde_json::Value as Json;
+use wg_json::Value;
 use wg_runtime::{App, RouteGroup, RouteRequest};
 use wg_serverspec::groups::{BodyRef, RouteSpec};
 use wg_types::WgError;
 
 use crate::service;
 use crate::spec::analyses::Typed;
-use crate::spec::query::{self, QueryRequest};
+use crate::spec::params::{
+    body_text, instant_text, json_strings, param_instant, param_number, param_text, query_body,
+};
+use crate::spec::query;
 
 /// The operations of the group, in registration order.
 pub const SPECS: [RouteSpec; 11] = [
@@ -143,33 +145,38 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
     match id {
         "H101" => Ok(query::definitions()),
         "H102" => service::query(app, context, ws, &query_body(&body)?),
-        "H103" => service::overview(app, context, ws, text(&params, "period").unwrap_or("week")),
+        "H103" => service::overview(
+            app,
+            context,
+            ws,
+            param_text(&params, "period").unwrap_or("week"),
+        ),
         "H104" => compare_body(app, context, ws, &body),
         "H105" => service::coupling(
             app,
             context,
             ws,
-            text(&params, "project"),
-            number(&params, "min_support", 1),
+            param_text(&params, "project"),
+            param_number(&params, "min_support", 1),
         ),
         "H106" => service::failures(app, context, ws, false),
         "H107" => service::subagents::breakdown(
             app,
             context,
             ws,
-            when(&params, "since")?,
-            when(&params, "until")?,
-            text(&params, "by").unwrap_or("class"),
-            text(&params, "model"),
+            param_instant(&params, "since")?,
+            param_instant(&params, "until")?,
+            param_text(&params, "by").unwrap_or("class"),
+            param_text(&params, "model"),
         ),
         "H108" => {
-            let top = number(&params, "top", 15);
+            let top = param_number(&params, "top", 15);
             service::subagents::bottlenecks(
                 app,
                 context,
                 ws,
-                when(&params, "since")?,
-                when(&params, "until")?,
+                param_instant(&params, "since")?,
+                param_instant(&params, "until")?,
                 usize::try_from(top.max(0)).unwrap_or(usize::MAX),
             )
         }
@@ -177,16 +184,16 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             app,
             context,
             ws,
-            text(&params, "category"),
-            text(&params, "repository"),
-            number(&params, "limit", 50),
+            param_text(&params, "category"),
+            param_text(&params, "repository"),
+            param_number(&params, "limit", 50),
         ),
         "H110" => estimate_body(app, context, ws, &body),
         "H113" => {
             let options = (
                 body.get("period_days").and_then(Json::as_i64).unwrap_or(14),
-                text_json(&body, "project").map(str::to_owned),
-                text_json(&body, "repository").map(str::to_owned),
+                body_text(&body, "project").map(str::to_owned),
+                body_text(&body, "repository").map(str::to_owned),
                 body.get("use_model")
                     .and_then(Json::as_bool)
                     .unwrap_or(true),
@@ -198,68 +205,6 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
     }
 }
 
-/// A query or path parameter as text, when the request carries it.
-fn text<'a>(params: &'a Map<String, Json>, key: &str) -> Option<&'a str> {
-    params.get(key).and_then(Json::as_str)
-}
-
-/// An integer parameter, read from a number or from its text; `default` when absent.
-fn number(params: &Map<String, Json>, key: &str, default: i64) -> i64 {
-    params
-        .get(key)
-        .and_then(|value| value.as_i64().or_else(|| value.as_str()?.parse().ok()))
-        .unwrap_or(default)
-}
-
-/// A body field as text, when it is a string.
-fn text_json<'a>(body: &'a Json, key: &str) -> Option<&'a str> {
-    body.get(key).and_then(Json::as_str)
-}
-
-/// A date-time parameter (`since`, `until`): Click's datetime formats, absent when not given.
-fn when(params: &Map<String, Json>, key: &str) -> Result<Option<LocalDateTime>, WgError> {
-    text(params, key).map(instant).transpose()
-}
-
-/// A date-time as the request gives it, read in the same formats the CLI reads.
-fn instant(text: &str) -> Result<LocalDateTime, WgError> {
-    parse_click_datetime(text)
-        .map_err(|message| WgError::validation(format!("invalid datetime '{text}': {message}")))
-}
-
-/// A list of strings from a body field (absent or not a list: empty).
-fn strings(value: Option<&Json>) -> Vec<String> {
-    value
-        .and_then(Json::as_array)
-        .map(|items| {
-            items
-                .iter()
-                .filter_map(Json::as_str)
-                .map(str::to_owned)
-                .collect()
-        })
-        .unwrap_or_default()
-}
-
-/// The `AnalyticsQuery` body as the query request: `metric`, `group_by`, `period` and the
-/// `filters` (their `since` and `until` are the window).
-fn query_body(body: &Json) -> Result<QueryRequest, WgError> {
-    let filters = body.get("filters").cloned().unwrap_or(Json::Null);
-    let optional = |key: &str| text_json(&filters, key).map(str::to_owned);
-    Ok(QueryRequest {
-        metric: text_json(body, "metric").unwrap_or_default().to_owned(),
-        group_by: strings(body.get("group_by")),
-        period: text_json(body, "period").unwrap_or("week").to_owned(),
-        project: optional("project"),
-        repository: optional("repository"),
-        category: optional("category"),
-        provider: optional("provider"),
-        model: optional("model"),
-        since: text_json(&filters, "since").map(instant).transpose()?,
-        until: text_json(&filters, "until").map(instant).transpose()?,
-    })
-}
-
 /// The `CompareBody` body: the metric, the two windows and the grouping.
 fn compare_body(
     app: &mut App,
@@ -269,8 +214,8 @@ fn compare_body(
 ) -> Result<Value, WgError> {
     let window = |since: &str, until: &str| -> Result<Typed, WgError> {
         Ok((
-            instant(text_json(body, since).unwrap_or_default())?,
-            instant(text_json(body, until).unwrap_or_default())?,
+            instant_text(body_text(body, since).unwrap_or_default())?,
+            instant_text(body_text(body, until).unwrap_or_default())?,
         ))
     };
     let first = window("a_since", "a_until")?;
@@ -279,10 +224,10 @@ fn compare_body(
         app,
         context,
         ws,
-        text_json(body, "metric").unwrap_or_default(),
+        body_text(body, "metric").unwrap_or_default(),
         first,
         second,
-        &strings(body.get("group_by")),
+        &json_strings(body.get("group_by")),
     )
 }
 
@@ -297,10 +242,10 @@ fn estimate_body(
         app,
         context,
         ws,
-        text_json(body, "task"),
-        text_json(body, "title"),
-        text_json(body, "category"),
-        &strings(body.get("repositories")),
+        body_text(body, "task"),
+        body_text(body, "title"),
+        body_text(body, "category"),
+        &json_strings(body.get("repositories")),
     )
 }
 

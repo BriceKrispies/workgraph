@@ -6,8 +6,8 @@
 //! `subagent_runs` rows the reads copy. Each entry point checks its permission first, as the
 //! Python service does, then its arguments, then reads the window and the scope.
 
-use wg_analytics::agent_time::{self, Group};
-use wg_analytics::common::{Scope, Window};
+use wg_analytics::agent_time;
+use wg_analytics::common::Scope;
 use wg_analytics::subagents::{self, Period};
 use wg_json::LocalDateTime;
 use wg_json::Value;
@@ -15,24 +15,12 @@ use wg_runtime::{App, RequestContext};
 use wg_types::{Permission, WgError};
 use wg_wire::convention::json_value;
 
-use super::{load, query};
+use super::load;
+use crate::spec::params::{report_window, time_group};
 
 /// `require(ctx, Permission.TASK_READ)`: the reports read the task and run rows.
 fn require(app: &mut App, context: &RequestContext) -> Result<(), WgError> {
     app.require_permission(context, Permission::TaskRead)
-}
-
-/// The window of a report: the inclusive `since` and exclusive `until`, and the model filter.
-fn window(
-    since: Option<LocalDateTime>,
-    until: Option<LocalDateTime>,
-    model: Option<&str>,
-) -> Result<Window, WgError> {
-    Ok(Window {
-        since: since.map(query::instant).transpose()?,
-        until: until.map(query::instant).transpose()?,
-        model: model.map(str::to_owned),
-    })
 }
 
 /// The scope of a report: the resolved workspace and the default one, when there is one.
@@ -58,7 +46,7 @@ pub fn report(
         WgError::validation(format!("unknown period '{period}'"))
             .detail("allowed", serde_json::json!(["week", "month"]))
     })?;
-    let window = window(since, until, model)?;
+    let window = report_window(since, until, model)?;
     let loaded = load(app, workspace, None, None)?;
     let scope = scope(app, loaded.workspace.to_string());
     Ok(json_value(&subagents::report(
@@ -67,16 +55,6 @@ pub fn report(
         parsed,
         &window,
     )))
-}
-
-/// The grouping names `analytics time --by` accepts.
-fn group(by: &str) -> Result<Group, WgError> {
-    Group::parse(by).ok_or_else(|| {
-        WgError::validation(format!("unknown grouping '{by}'")).detail(
-            "allowed",
-            serde_json::json!(["class", "model", "task", "description"]),
-        )
-    })
 }
 
 /// `AgentTimeReport.breakdown`: the share of subagent wall time by tool class, or per group.
@@ -89,9 +67,9 @@ pub fn breakdown(
     by: &str,
     model: Option<&str>,
 ) -> Result<Value, WgError> {
-    let by = group(by)?;
+    let by = time_group(by)?;
     require(app, context)?;
-    let window = window(since, until, model)?;
+    let window = report_window(since, until, model)?;
     let loaded = load(app, workspace, None, None)?;
     let scope = scope(app, loaded.workspace.to_string());
     Ok(json_value(&agent_time::breakdown(
@@ -113,7 +91,7 @@ pub fn bottlenecks(
     top: usize,
 ) -> Result<Value, WgError> {
     require(app, context)?;
-    let window = window(since, until, None)?;
+    let window = report_window(since, until, None)?;
     let loaded = load(app, workspace, None, None)?;
     let scope = scope(app, loaded.workspace.to_string());
     Ok(json_value(&agent_time::bottlenecks(

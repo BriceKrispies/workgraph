@@ -17,6 +17,9 @@ wg-analytics-feature Shell
 wg-analytics-feature::spec Pure
 wg-analytics-feature::service Shell
 wg-analytics-feature::cli Shell
+wg-analytics-feature::http Shell
+wg-analytics-feature::jobs Shell
+wg-analytics-feature::mcp Shell
 wg-archive Shell
 wg-archive-feature Shell
 wg-archive-feature::spec Pure
@@ -30,6 +33,7 @@ wg-automation-feature::service Shell
 wg-automation-feature::jobs Shell
 wg-automation-feature::cli Shell
 wg-automation-feature::http Shell
+wg-automation-feature::mcp Shell
 wg-browser Shell
 wg-browserspec Pure
 wg-cli Shell
@@ -86,6 +90,8 @@ wg-intel-feature::spec Pure
 wg-intel-feature::service Shell
 wg-intel-feature::cli Shell
 wg-intel-feature::jobs Shell
+wg-intel-feature::http Shell
+wg-intel-feature::mcp Shell
 wg-jobs Core
 wg-jobs-feature Shell
 wg-jobs-feature::http Shell

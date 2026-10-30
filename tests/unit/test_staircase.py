@@ -262,3 +262,10 @@ def test_config_rejects_min_above_max() -> None:
 def test_config_rejects_max_trials_below_one_visit() -> None:
     with pytest.raises(ValueError, match="max_trials"):
         _config(max_trials=1, per_visit=2)
+
+
+def test_degenerate_range_stays_on_its_only_band() -> None:
+    config = _config(min_band=4, max_band=4, per_visit=1, max_reversals=1, max_trials=6, refine_trials=2)
+    assert config.contains(4) and not config.contains(3) and not config.contains(5)
+    step = next_step(config, [(4, False), (4, False), (4, False)])
+    assert (step.phase, step.band) == ("staircase", 4)

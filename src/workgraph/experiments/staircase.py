@@ -36,6 +36,10 @@ class StaircaseConfig:
     refine_trials: int = 0
     refine_width: int = 1
 
+    def contains(self, band: int) -> bool:
+        """Whether ``band`` lies in the protocol range, the bounds inclusive."""
+        return self.min_band <= band <= self.max_band
+
     def __post_init__(self) -> None:
         _int_field(self.min_band, "min_band", 1)
         _int_field(self.max_band, "max_band", 1)

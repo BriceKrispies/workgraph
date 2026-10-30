@@ -54,6 +54,20 @@ class ClaimedJob:
     lease_expires_at: datetime
 
 
+def default_resource_keys(kind: str, payload: dict[str, Any] | None) -> list[str]:
+    """The resource keys a job takes whatever its caller names.
+
+    A ``git_sync`` job takes its repository's ``repo:<id>`` key, the one ``RepositoryService.register``
+    gives the sync it enqueues, so a sync enqueued from the CLI or the post-commit hook serialises with
+    it instead of racing it for the same (repository, sha) rows.
+    """
+    if kind == "git_sync" and payload:
+        repository = payload.get("repository_id")
+        if isinstance(repository, str):
+            return [f"repo:{repository}"]
+    return []
+
+
 def enqueue(
     session: Session,
     kind: str,
@@ -89,7 +103,7 @@ def enqueue(
         backoff_base_seconds=backoff_base_seconds,
         timeout_seconds=timeout_seconds,
         idempotency_key=idempotency_key,
-        resource_keys=sorted(set(resource_keys)),
+        resource_keys=sorted({*resource_keys, *default_resource_keys(kind, payload)}),
         correlation_id=correlation_id,
         causation_id=causation_id,
         task_id=task_id,

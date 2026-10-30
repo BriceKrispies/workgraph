@@ -4,8 +4,8 @@
 
 use std::error::Error;
 
-use wg_storecodec::Raw;
-use wg_storecodec::migrations::{REVISIONS, external_ref_links, head_revision, upgrade_path};
+use wg_rows::Raw;
+use wg_rows::migrations::{REVISIONS, external_ref_links, head_revision, upgrade_path};
 use wg_types::{Id, Timestamp, WgError};
 
 type TestResult = Result<(), Box<dyn Error>>;
@@ -26,7 +26,7 @@ fn counter() -> impl FnMut() -> Id {
 }
 
 /// The `(title, normalized_url)` of each statement's parameters, in order.
-fn links(statements: &[wg_storecodec::Statement]) -> Vec<(String, String)> {
+fn links(statements: &[wg_rows::Statement]) -> Vec<(String, String)> {
     statements
         .iter()
         .map(

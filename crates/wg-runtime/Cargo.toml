@@ -15,7 +15,7 @@ clap = { version = "4.5", default-features = false, features = ["std", "help", "
 getrandom = "0.4"
 time ={ version = "0.3", default-features = false, features = ["std", "local-offset"] }
 rpds = "1"
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 serde_json = { version = "1", features = ["preserve_order"] }
 tracing = "0.1"
 tracing-core = "0.1"

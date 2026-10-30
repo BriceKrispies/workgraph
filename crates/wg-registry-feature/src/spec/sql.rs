@@ -3,13 +3,13 @@
 //! counts and recent-task lists the workspace and project summaries read.
 //!
 //! The statements that other features read (workspaces, projects, repositories, checkouts, refs)
-//! stay in `wg_storecodec::repo_sql`. Every SELECT lists the table's columns in schema order, so
+//! stay in `wg_rows::repo_sql`. Every SELECT lists the table's columns in schema order, so
 //! its rows decode through the same `TableRow` codecs as a fetch by key.
 
 use wg_model::Table;
-use wg_storecodec::codec::{Raw, id_sql, text_sql};
-use wg_storecodec::repo_sql::repository_child;
-use wg_storecodec::sql::{Statement, select_list};
+use wg_rows::codec::{Raw, id_sql, text_sql};
+use wg_rows::repo_sql::repository_child;
+use wg_rows::sql::{Statement, select_list};
 use wg_types::Id;
 
 /// `?1, ?2, ...` for `count` placeholders starting at `first`, or `NULL` when there are none (an
@@ -143,7 +143,7 @@ pub fn dependency_between(from: Id, to: Id) -> Statement {
 }
 
 /// Live (not archived) tasks of a workspace, counted by status, in status order. The rows are
-/// `(status, count)`; see `wg_storecodec::repo_sql::pairs_from_rows`.
+/// `(status, count)`; see `wg_rows::repo_sql::pairs_from_rows`.
 pub fn workspace_task_counts(workspace_id: Id) -> Statement {
     Statement {
         sql: "SELECT \"status\", COUNT(*) FROM \"tasks\" WHERE \"workspace_id\" = ?1 \

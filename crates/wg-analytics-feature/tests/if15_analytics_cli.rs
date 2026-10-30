@@ -11,7 +11,7 @@ use wg_analytics_feature::spec::query::{self, QueryRequest};
 use wg_analytics_feature::spec::view;
 use wg_json::{PyStr, Value};
 use wg_render::Console;
-use wg_storecodec::Raw;
+use wg_rows::Raw;
 use wg_types::{ErrorCode, Timestamp};
 
 type TestResult = Result<(), Box<dyn Error>>;

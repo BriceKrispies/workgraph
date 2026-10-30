@@ -10,7 +10,7 @@ use wg_clispec::args::{get, python};
 use wg_model::event::{EventDraft, EventPayload, TaskDecomposed};
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, py_repr_str};
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::edit::Enrichment;
 use wg_tasks::shape::key_of;
 use wg_tasks_feature::spec::requests::{read_create, validate_create};

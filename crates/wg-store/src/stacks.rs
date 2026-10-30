@@ -1,11 +1,11 @@
 //! The three stack lookups other features read (SH-07): a stack by id, the repository row a
 //! child's attempt builds from, and a stack's item for a task. The rest of the stack readers belong to the stacks feature.
 //!
-//! The statements are built by `wg_storecodec::stack_sql` as values; this module only runs them
+//! The statements are built by `wg_rows::stack_sql` as values; this module only runs them
 //! through the session and decodes the rows with the table codecs.
 
 use wg_model::entity::{Stack, StackItem, StackRepository};
-use wg_storecodec::stack_sql;
+use wg_rows::stack_sql;
 use wg_types::{Id, WgError};
 
 use crate::Session;

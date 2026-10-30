@@ -8,8 +8,8 @@
 use wg_events::{VerifyReport, task_states, verify_task_projection};
 use wg_json::Value;
 use wg_model::StoredEvent;
+use wg_rows::EventQuery;
 use wg_runtime::{App, RequestContext};
-use wg_storecodec::EventQuery;
 use wg_types::{Permission, WgError};
 use wg_wire::dto::event::from_stored;
 

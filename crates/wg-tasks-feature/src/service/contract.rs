@@ -11,11 +11,11 @@ use wg_json::{Value, py_float_repr};
 use wg_model::Table;
 use wg_model::entity::PredictorFit;
 use wg_registry::resolve;
+use wg_rows::codec::{id_sql, text_sql};
+use wg_rows::sql::{Statement, select_list};
 use wg_runtime::{App, RequestContext};
 use wg_store::Session;
 use wg_store::query::one;
-use wg_storecodec::codec::{id_sql, text_sql};
-use wg_storecodec::sql::{Statement, select_list};
 use wg_types::WgError;
 use wg_wire::dto::contract_check;
 

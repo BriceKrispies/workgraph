@@ -12,9 +12,9 @@ use wg_model::Table;
 use wg_model::entity::ExperimentTrial;
 use wg_types::{Id, WgError};
 
-use wg_storecodec::codec::{DbFailure, Raw, db_error, id_sql, text_sql};
-use wg_storecodec::rows::{TableRow, columns};
-use wg_storecodec::sql::{Statement, select_list};
+use wg_rows::codec::{DbFailure, Raw, db_error, id_sql, text_sql};
+use wg_rows::rows::{TableRow, columns};
+use wg_rows::sql::{Statement, select_list};
 
 /// The experiment whose id is `experiment_id`.
 pub fn experiment_by_id(experiment_id: Id) -> Statement {

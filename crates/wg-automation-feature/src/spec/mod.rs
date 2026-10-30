@@ -34,7 +34,7 @@ use wg_model::event::{AutomationRuleCreated, AutomationRuleToggled, AutomationRu
 use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, EventDraft, EventPayload, Write};
-use wg_storecodec::EventRecord;
+use wg_rows::EventRecord;
 use wg_types::pyval::prefix;
 use wg_types::{Id, Timestamp, WgError};
 use wg_wire::convention as wire_convention;

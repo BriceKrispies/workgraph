@@ -5,7 +5,7 @@
 use wg_intel_feature::spec::search_sql::{
     SearchScope, fts_match, lexical_candidates, search_scope,
 };
-use wg_storecodec::Raw;
+use wg_rows::Raw;
 use wg_types::{Id, parse_id};
 
 fn id(text: &str) -> Id {

@@ -8,7 +8,7 @@
 use wg_model::Decision;
 use wg_model::entity::VerificationRun;
 use wg_model::stamp::Stamp;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::accept::{AcceptFacts, Run, accept_in, active_item};
 use wg_types::{Id, Permission, TaskStatus, WgError};
 use wg_verify::{ApplicableCheck, AutoAcceptFacts, auto_accept_skip, ran_fast_tier_only};

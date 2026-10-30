@@ -6,8 +6,8 @@
 //! `wg_store::Session` (its `acceptance` module). Writes go through `Session::apply_write`.
 
 use wg_model::entity::{VerificationCheckResult, VerificationConfig, VerificationRun};
+use wg_rows::{Statement, TableRow};
 use wg_store::Session;
-use wg_storecodec::{Statement, TableRow};
 use wg_types::{Id, WgError};
 
 use crate::spec::sql::{self, FailureFilter, FailureRow, Page, RunFilter, decode_failure};

@@ -10,7 +10,7 @@
 //!   bodies of the remaining commands;
 //! * [`acceptance`]: accept, reject and promote-dependents over the task world.
 //!
-//! The runtime loads a [`TaskWorld`](wg_storecodec::task_world_sql::TaskWorld), calls one of
+//! The runtime loads a [`TaskWorld`](wg_rows::task_world_sql::TaskWorld), calls one of
 //! these and applies the decision it returns.
 
 pub mod acceptance;

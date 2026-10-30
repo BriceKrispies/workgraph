@@ -35,7 +35,7 @@ use wg_model::event::{
 use wg_model::slice::{QueueSlice, StackSlice};
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, RowKey, Write};
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_types::{Id, StackItemState, StackStatus, TaskKey, TaskStatus, WgError};
 
 use wg_stacks::item::{check_item_transition, satisfies_stack_dependency};

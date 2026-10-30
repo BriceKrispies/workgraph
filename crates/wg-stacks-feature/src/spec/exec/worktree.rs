@@ -10,8 +10,8 @@ use wg_model::event::{EventDraft, EventPayload, WorktreeCreated};
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, Write};
 use wg_registry::checkout::primary_checkout;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_stacks::merge::{directory_name, is_inactive};
-use wg_storecodec::task_world_sql::TaskWorld;
 use wg_types::{Id, WgError, WorktreeStatus};
 
 /// One repository of a stack: where its integration branch lives and what it starts from.

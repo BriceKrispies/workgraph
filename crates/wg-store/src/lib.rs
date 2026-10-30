@@ -1,6 +1,6 @@
 //! wg-store: rusqlite connection setup, migrations, row codecs, SQL.
 //!
-//! This is the base of the store (SH-01). The pure half lives in `wg-storecodec` (row and event
+//! This is the base of the store (SH-01). The pure half lives in `wg-rows` (row and event
 //! codecs, SQL text and parameters as values); this crate is the glue to SQLite:
 //!
 //! * [`Store`]: a connection configured as `persistence/db.py` configures one (WAL, a 15 second
@@ -35,10 +35,10 @@ use session::db;
 pub use query::{many, one};
 pub use run::AttemptPage;
 pub use session::{Applied, Session};
-pub use wg_storecodec::migrations::head_revision;
-pub use wg_storecodec::run_sql::{RecordedHead, WorktreeWithRepository};
-pub use wg_storecodec::task_world_sql::TaskWorld;
-pub use wg_storecodec::{EventQuery, EventRecord, Raw, Statement, TableRow};
+pub use wg_rows::migrations::head_revision;
+pub use wg_rows::run_sql::{RecordedHead, WorktreeWithRepository};
+pub use wg_rows::task_world_sql::TaskWorld;
+pub use wg_rows::{EventQuery, EventRecord, Raw, Statement, TableRow};
 
 /// Python's `BUSY_TIMEOUT_MS`.
 pub const BUSY_TIMEOUT: Duration = Duration::from_millis(15_000);

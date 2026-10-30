@@ -12,7 +12,7 @@ use wg_analytics::source::{
     FileChange, ProjectRow, RepositoryDependency, RepositoryRow, SubagentRunRow, Surface,
     TaskDependency, TaskProject, TaskRelation, TaskRepository, TaskRow, VerificationRun,
 };
-use wg_storecodec::Raw;
+use wg_rows::Raw;
 use wg_types::Timestamp;
 
 use crate::spec::dto::AnalyticsSource;

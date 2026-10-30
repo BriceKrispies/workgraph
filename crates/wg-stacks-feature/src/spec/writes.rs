@@ -20,12 +20,12 @@ use wg_model::slice::{QueueSlice, StackSlice};
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, TaskSlice, Write, py_repr_str};
 use wg_registry::checkout::primary_checkout;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_stacks::item::{check_item_transition, merge_order_after, satisfies_stack_dependency};
 use wg_stacks::membership::{
     check_add_item, check_readmit, check_remove_item, outside_repositories, readmit_task_path,
 };
 use wg_stacks::verify::{verify_job_key, verify_resource_keys};
-use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Applied, Change, refresh_dependents, transition};
 use wg_types::{Id, Permission, StackItemState, StackStatus, TaskStatus, WgError};
 use wg_wire::convention::{id as id_value, text};

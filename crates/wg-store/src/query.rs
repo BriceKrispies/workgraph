@@ -1,7 +1,7 @@
 //! The row helpers every store family reads through: run a statement on the session and decode
-//! its rows. The statements themselves are built by the `wg_storecodec` `*_sql` modules.
+//! its rows. The statements themselves are built by the `wg_rows` `*_sql` modules.
 
-use wg_storecodec::{Raw, Statement, TableRow};
+use wg_rows::{Raw, Statement, TableRow};
 use wg_types::WgError;
 
 use crate::Session;

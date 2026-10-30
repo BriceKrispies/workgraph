@@ -202,7 +202,7 @@ pub fn conclude_attempt(
 
 type EndLoad = (
     wg_model::entity::AgentAttempt,
-    wg_storecodec::task_world_sql::TaskWorld,
+    wg_rows::task_world_sql::TaskWorld,
     Vec<wg_model::entity::AgentAttempt>,
 );
 

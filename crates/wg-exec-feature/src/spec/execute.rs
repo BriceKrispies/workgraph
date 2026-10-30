@@ -12,7 +12,7 @@ use wg_model::event::{
 };
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, Write};
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Change, transition};
 use wg_types::{AttemptStatus, Id, TaskStatus, WgError};
 

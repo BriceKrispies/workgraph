@@ -6,7 +6,7 @@ use std::collections::BTreeSet;
 use wg_json::Value;
 use wg_model::entity::{Task, TaskTag};
 use wg_registry::resolve;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::graph::{GraphEdgeKind, GraphQuery, task_graph};
 use wg_tasks::promote::{ReadyQuery, ready_tasks};
 use wg_types::{Id, TaskPriority, WgError};

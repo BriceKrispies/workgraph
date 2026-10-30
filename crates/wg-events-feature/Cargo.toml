@@ -20,6 +20,6 @@ wg-model = { path = "../wg-model" }
 wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
 wg-store = { path = "../wg-store" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-types = { path = "../wg-types" }
 wg-wire = { path = "../wg-wire" }

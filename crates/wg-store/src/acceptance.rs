@@ -2,12 +2,12 @@
 //! resolution in the registry, tasks and worktrees), the newest run of a task and the task's
 //! acceptance decisions (the acceptance gate in `wg-runtime`).
 //!
-//! The statements come from `wg_storecodec::acceptance_sql`; this module runs them and decodes the
+//! The statements come from `wg_rows::acceptance_sql`; this module runs them and decodes the
 //! rows through the table codecs. The rest of the verification family is `wg-verify-feature`.
 
 use wg_model::entity::{TaskAcceptance, VerificationConfig, VerificationRun};
-use wg_storecodec::TableRow;
-use wg_storecodec::acceptance_sql;
+use wg_rows::TableRow;
+use wg_rows::acceptance_sql;
 use wg_types::{Id, WgError};
 
 use crate::Session;

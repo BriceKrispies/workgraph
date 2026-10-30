@@ -11,7 +11,7 @@ use wg_analytics::Facts;
 use wg_analytics::source::{AnalyticsInput, AttemptRow, CommitRow, TaskRow};
 use wg_analytics::tasks::TaskFact;
 use wg_archivespec::Dataset;
-use wg_storecodec::Raw;
+use wg_rows::Raw;
 use wg_types::Timestamp;
 
 /// The fact tables `export analytics --dataset` accepts (`FACT_TABLES`), sorted as Python lists them.

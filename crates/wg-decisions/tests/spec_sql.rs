@@ -1,4 +1,4 @@
-//! wg-storecodec checks for structured decisions: the `task_decisions` row codec and the query
+//! wg-rows checks for structured decisions: the `task_decisions` row codec and the query
 //! builders. No database is involved; the SQLite round trip lives in wg-store's tests.
 
 use std::error::Error;
@@ -8,7 +8,7 @@ use wg_decisions::spec::sql::{
 };
 use wg_model::Table;
 use wg_model::entity::{DecisionOption, TaskDecision};
-use wg_storecodec::{Raw, TableRow, columns};
+use wg_rows::{Raw, TableRow, columns};
 use wg_types::{Id, Timestamp, parse_id};
 
 type TestResult = Result<(), Box<dyn Error>>;

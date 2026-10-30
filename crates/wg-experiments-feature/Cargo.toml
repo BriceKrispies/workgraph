@@ -32,7 +32,7 @@ wg-runtimespec = { path = "../wg-runtimespec" }
 wg-store = { path = "../wg-store" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }
 wg-telemetry = { path = "../wg-telemetry" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-types = { path = "../wg-types" }
 wg-validate = { path = "../wg-validate" }
 wg-wire = { path = "../wg-wire" }

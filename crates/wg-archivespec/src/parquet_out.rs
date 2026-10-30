@@ -7,7 +7,7 @@ use std::sync::Arc;
 use arrow_array::{ArrayRef, Float64Array, Int64Array, RecordBatch, StringArray};
 use arrow_schema::{DataType, Field, Schema};
 use parquet::arrow::ArrowWriter;
-use wg_storecodec::Raw;
+use wg_rows::Raw;
 use wg_types::WgError;
 
 use crate::{ColumnType, Dataset, cell_text, column_types};

@@ -71,13 +71,13 @@ pub fn trials_with_task_keys(
 /// The number of trials an experiment has.
 pub fn trial_count(session: &mut Session<'_>, experiment_id: Id) -> Result<i64, WgError> {
     let rows = session.rows(&sql::trial_count(experiment_id))?;
-    Ok(wg_storecodec::sql::int_scalar(&rows).unwrap_or(0))
+    Ok(wg_rows::sql::int_scalar(&rows).unwrap_or(0))
 }
 
 /// The highest trial `seq` of an experiment, if it has any trials.
 pub fn max_trial_seq(session: &mut Session<'_>, experiment_id: Id) -> Result<Option<i64>, WgError> {
     let rows = session.rows(&sql::max_trial_seq(experiment_id))?;
-    Ok(wg_storecodec::sql::int_scalar(&rows))
+    Ok(wg_rows::sql::int_scalar(&rows))
 }
 
 /// The predictor fit whose id is `fit_id`, if there is one.

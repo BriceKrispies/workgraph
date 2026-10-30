@@ -3,8 +3,8 @@
 //! task has.
 
 use wg_model::Table;
-use wg_storecodec::codec::{Cols, Raw, id_sql};
-use wg_storecodec::sql::Statement;
+use wg_rows::codec::{Cols, Raw, id_sql};
+use wg_rows::sql::Statement;
 use wg_types::{Id, WgError};
 
 /// The implementation evidence a similar task shows: the linked commits, five at most.
@@ -40,7 +40,7 @@ pub struct ImplementationCommit {
     pub repository_id: Id,
 }
 
-wg_storecodec::row_projection! {
+wg_rows::row_projection! {
     ImplementationCommit {
         sha: text,
         subject: text,

@@ -2,7 +2,7 @@
 //! subagent runs, agent internal tasks, hook events and tool events, and the selections that
 //! retention compaction makes.
 //!
-//! Like [`wg_storecodec::sql`], every statement is a value ([`Statement`]); `wg-store` binds and runs it.
+//! Like [`wg_rows::sql`], every statement is a value ([`Statement`]); `wg-store` binds and runs it.
 //! The typed rows here ([`SessionSummary`], [`HookEventCount`], [`StoppedRunOwner`]) are the
 //! shapes the Python readers return or join into; they decode from the values a query returns.
 //!
@@ -12,9 +12,9 @@
 use wg_model::Table;
 use wg_types::{AttemptStatus, Id, TaskStatus, Timestamp, WgError};
 
-use wg_storecodec::codec::{Raw, id_sql, text_sql, ts_sql};
-use wg_storecodec::rows::columns;
-use wg_storecodec::sql::{Statement, quote};
+use wg_rows::codec::{Raw, id_sql, text_sql, ts_sql};
+use wg_rows::rows::columns;
+use wg_rows::sql::{Statement, quote};
 
 /// Attempt states that count as open for subagent binding (`OPEN_ATTEMPT_STATUSES` in
 /// `claude_code/ingest.py`).
@@ -124,7 +124,7 @@ pub struct SessionSummary {
     pub end_reason: Option<String>,
 }
 
-wg_storecodec::row_projection! {
+wg_rows::row_projection! {
     SessionSummary {
         id: id,
         external_session_id: text,
@@ -148,7 +148,7 @@ pub struct HookEventCount {
     pub count: i64,
 }
 
-wg_storecodec::row_projection! {
+wg_rows::row_projection! {
     HookEventCount {
         hook_event_name: text,
         count: int,
@@ -166,7 +166,7 @@ pub struct StoppedRunOwner {
     pub status: TaskStatus,
 }
 
-wg_storecodec::row_projection! {
+wg_rows::row_projection! {
     StoppedRunOwner {
         run_id: id,
         task_id: id,

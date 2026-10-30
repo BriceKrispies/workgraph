@@ -17,7 +17,7 @@ use wg_model::event::{
 use wg_model::stamp::{IdSeq, Stamp, py_repr_str};
 use wg_model::{Decision, TaskSlice, Write};
 use wg_registry::resolve;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::accept::comment_step;
 use wg_tasks::claims::{
     Caller, ClaimPlan, REASON_ATTEMPT_FAILED, REASON_COMPLETION, REASON_EXPIRED_CLAIM_RELEASED,

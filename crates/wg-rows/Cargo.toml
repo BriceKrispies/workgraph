@@ -1,11 +1,11 @@
 [package]
-name = "wg-storecodec"
+name = "wg-rows"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
-description = "the store's pure half: row and event codecs, SQL text and parameters as values"
+description = "the store's pure values: row and event codecs, SQL text and parameters as values"
 
 [lints]
 workspace = true

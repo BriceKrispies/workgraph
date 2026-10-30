@@ -12,7 +12,7 @@ use wg_json::{Value, dict};
 use wg_model::RegistrySlice;
 use wg_model::entity::{Task, VerificationConfig, Workspace};
 use wg_registry::projects::ProjectView;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::rename::{
     ConfigRecord, FileRecord, ProjectChange, ProjectRecord, RenamePlan, RepositoryRecord,
     TaskChange, TaskRecord, Term,

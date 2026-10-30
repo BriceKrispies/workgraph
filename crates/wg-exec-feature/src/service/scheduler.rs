@@ -9,10 +9,10 @@ use wg_json::Value as WgJson;
 use wg_model::entity::{AgentAttempt, RepositoryCheckout};
 use wg_net::{Endpoint, Net, Ollama, OpenAiCompatible};
 use wg_registry::resolve;
+use wg_rows::TableRow;
 use wg_runtime::{App, index_written};
 use wg_runtimespec::RequestContext;
 use wg_store::Session;
-use wg_storecodec::TableRow;
 use wg_tasks::edit::enrichment_from;
 use wg_types::{Id, WgError};
 use wg_wire::dto::scheduler;
@@ -38,7 +38,7 @@ const OLLAMA_URL: &str = "http://127.0.0.1:11434";
 
 /// Everything the scheduler reads.
 struct Loaded {
-    world: wg_storecodec::task_world_sql::TaskWorld,
+    world: wg_rows::task_world_sql::TaskWorld,
     attempts: Vec<AgentAttempt>,
     checkouts: BTreeMap<Id, Vec<RepositoryCheckout>>,
 }

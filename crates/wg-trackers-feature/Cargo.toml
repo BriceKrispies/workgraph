@@ -23,7 +23,7 @@ wg-netspec = { path = "../wg-netspec" }
 wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
 wg-store = { path = "../wg-store" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-tasks = { path = "../wg-tasks" }
 wg-trackers = { path = "../wg-trackers" }
 wg-types = { path = "../wg-types" }

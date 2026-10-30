@@ -7,7 +7,7 @@
 use crate::spec::search_out::{SearchFilters, scope_of};
 use crate::spec::search_sql::{self, FtsCandidate, SearchScope, TaskVector};
 use wg_model::entity::TaskEmbedding;
-use wg_storecodec::TableRow;
+use wg_rows::TableRow;
 use wg_types::{Id, WgError};
 
 use wg_store::Session;

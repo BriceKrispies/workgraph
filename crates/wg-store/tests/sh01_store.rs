@@ -18,8 +18,8 @@ use wg_model::event::{TaskCreated, TaskKeyed};
 use wg_model::{
     Decision, EventDraft, EventPayload, JsonObject, Row, RowKey, Stamp, Table, Write, derive_id,
 };
+use wg_rows::columns;
 use wg_store::{EventQuery, Location, Raw, Statement, Store};
-use wg_storecodec::columns;
 use wg_types::{
     AccessMode, Actor, CommentKind, ErrorCode, Id, RelationType, TaskKey, TaskPriority, TaskStatus,
     Timestamp, WgError,

@@ -2,7 +2,7 @@
 //! classification history, the lookup of a stored succeeded classification for an input, gold
 //! labels, evaluations, and the succeeded classifications of a workspace joined to their task keys.
 //!
-//! Like [`wg_storecodec::task_sql`], every statement is a value ([`Statement`]); `wg-store` binds and runs
+//! Like [`wg_rows::task_sql`], every statement is a value ([`Statement`]); `wg-store` binds and runs
 //! it and decodes the rows through the table codecs. Lists have a fixed `ORDER BY`, with `id`
 //! breaking ties between rows that share a timestamp, so results are deterministic.
 
@@ -10,9 +10,9 @@ use wg_model::Table;
 use wg_model::entity::Classification;
 use wg_types::{Id, WgError};
 
-use wg_storecodec::codec::{Cols, Raw, id_sql, text_sql};
-use wg_storecodec::rows::{TableRow, columns};
-use wg_storecodec::sql::{Statement, select_list};
+use wg_rows::codec::{Cols, Raw, id_sql, text_sql};
+use wg_rows::rows::{TableRow, columns};
+use wg_rows::sql::{Statement, select_list};
 
 /// The classifications of `task_id`, newest first (`ClassificationService.get`).
 pub fn classification_history(task_id: Id) -> Statement {

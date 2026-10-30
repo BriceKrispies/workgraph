@@ -115,6 +115,7 @@ wg-registry-feature::cli Shell
 wg-registry-feature::http Shell
 wg-registry-feature::mcp Shell
 wg-render Pure
+wg-rows Pure
 wg-runtime Shell
 wg-runtimespec Pure
 wg-server Shell
@@ -128,7 +129,6 @@ wg-stacks-feature::http Shell
 wg-stacks-feature::jobs Shell
 wg-stacks-feature::mcp Shell
 wg-store Shell
-wg-storecodec Pure
 wg-tasks Core
 wg-tasks::accept Pure
 wg-tasks::archive Core

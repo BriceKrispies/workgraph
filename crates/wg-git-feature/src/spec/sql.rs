@@ -2,7 +2,7 @@
 //! (file changes, symbols, analyses, equivalences, task links), the object gaps a repository
 //! records, and the change surfaces a task leaves in a repository.
 //!
-//! Like the task and repository statements of `wg-storecodec`, every statement is a value ([`Statement`]).
+//! Like the task and repository statements of `wg-rows`, every statement is a value ([`Statement`]).
 //! Each SELECT lists its table's [`columns`] in schema order, so its rows decode through the same
 //! `TableRow` codecs as a fetch by key. A join appends the joined table's columns after the first
 //! table's; the typed rows at the end of this module split such a combined row back into parts.
@@ -12,9 +12,9 @@ use wg_model::Table;
 use wg_model::entity::{Commit, CommitTaskLink};
 use wg_types::{Id, Timestamp, WgError};
 
-use wg_storecodec::codec::{Cols, Raw, bool_sql, id_sql, opt_ts_sql, text_sql};
-use wg_storecodec::rows::{TableRow, columns};
-use wg_storecodec::sql::{Statement, select_list};
+use wg_rows::codec::{Cols, Raw, bool_sql, id_sql, opt_ts_sql, text_sql};
+use wg_rows::rows::{TableRow, columns};
+use wg_rows::sql::{Statement, select_list};
 
 /// `?first, ..., ?(first + count - 1)`, or `NULL` when there are none: an `IN (NULL)` list
 /// matches nothing, which is what an empty id list should match.
@@ -412,7 +412,7 @@ pub struct PathTotal {
     pub deletions: i64,
 }
 
-wg_storecodec::row_projection! {
+wg_rows::row_projection! {
     PathTotal {
         path: text,
         changes: int,
@@ -429,7 +429,7 @@ pub struct CommitReachability {
     pub reachable: bool,
 }
 
-wg_storecodec::row_projection! {
+wg_rows::row_projection! {
     CommitReachability {
         id: id,
         sha: text,

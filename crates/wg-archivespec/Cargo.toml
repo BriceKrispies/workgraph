@@ -16,7 +16,7 @@ arrow-schema = "58"
 parquet = { version = "58", default-features = false, features = ["arrow"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-json = { path = "../wg-json" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-types = { path = "../wg-types" }
 
 [dev-dependencies]

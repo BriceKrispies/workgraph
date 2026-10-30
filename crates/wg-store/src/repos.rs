@@ -2,7 +2,7 @@
 //! workspaces, projects, repositories, their checkouts and refs, and the registry slice the
 //! runtime's git and stack code resolve references in.
 //!
-//! The statements are built by `wg_storecodec::repo_sql` as values; this module only runs them
+//! The statements are built by `wg_rows::repo_sql` as values; this module only runs them
 //! through the session and decodes the rows with the table codecs. The registry-only lookups and
 //! counts are free functions in `wg-registry-feature`'s `service::reads`. Writes go through the
 //! generic [`Session::apply_write`] and [`Session::apply_decision`] like every other family.
@@ -11,7 +11,7 @@ use wg_model::entity::{
     Project, ProjectRepository, Repository, RepositoryCheckout, RepositoryRef, Workspace,
 };
 use wg_model::{RegistrySlice, Row, RowKey, Write};
-use wg_storecodec::repo_sql;
+use wg_rows::repo_sql;
 use wg_types::{Id, WgError};
 
 use crate::Session;

@@ -9,8 +9,8 @@
 use wg_model::Table;
 use wg_types::Id;
 
-use wg_storecodec::codec::id_sql;
-use wg_storecodec::sql::{Statement, select_list};
+use wg_rows::codec::id_sql;
+use wg_rows::sql::{Statement, select_list};
 
 /// The statuses a stack no longer takes part in (Python `INACTIVE_STACK_STATUSES`), as SQL text.
 const INACTIVE: &str = "('landed', 'abandoned')";

@@ -21,7 +21,7 @@ use wg_model::event::{
 use wg_model::slice::{QueueSlice, StackSlice};
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, RowKey, TaskSlice, Write};
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::accept::substamp;
 use wg_tasks::create::{Allocation, NewTask, RepositoryLink, create_plan};
 use wg_tasks::deps::depends_on_reachable;

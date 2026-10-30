@@ -10,7 +10,7 @@
 //! * [`reads`]: the JSON of the log, the commit detail, the changes and the diff.
 //! * [`analysis`]: the analysis rows of a commit and the change-surface records.
 //! * [`worktrees`]: the managed-worktree listing and the cleanup plan.
-//! * [`sql`]: the statement text of the git reads and the row decoding (`wg-storecodec`'s
+//! * [`sql`]: the statement text of the git reads and the row decoding (`wg-rows`'s
 //!   former `git_sql`).
 //! * [`cli`]: the clap command of the `git` group and its human views.
 

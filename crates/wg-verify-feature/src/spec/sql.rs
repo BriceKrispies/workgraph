@@ -1,7 +1,7 @@
 //! SQL text, parameters and row decoding for the verification family (SH-10): verification
 //! configs of one scope, runs, check results, and the joined failure history. The reads base code
 //! shares (the workspace configs, the newest run of a task, task acceptances) are in
-//! `wg_storecodec::acceptance_sql`.
+//! `wg_rows::acceptance_sql`.
 //!
 //! Every statement is a value ([`Statement`]); `wg-store` binds and runs it. Every SELECT lists the
 //! table's [`columns`] in schema order, so its rows decode through the same `TableRow` codecs as a
@@ -13,9 +13,9 @@
 
 use wg_model::Table;
 use wg_model::entity::VerificationCheckResult;
-use wg_storecodec::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
-use wg_storecodec::rows::{TableRow, columns};
-use wg_storecodec::sql::{Statement, select_list};
+use wg_rows::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
+use wg_rows::rows::{TableRow, columns};
+use wg_rows::sql::{Statement, select_list};
 use wg_types::{Id, TaskKey, Timestamp, VerificationStatus, WgError};
 
 /// Appends a bound parameter and returns its `?N` placeholder.

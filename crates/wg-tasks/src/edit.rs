@@ -18,7 +18,7 @@ use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, Write};
 use wg_registry::resolve;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_types::Permission;
 use wg_types::pyval::flag;
 use wg_types::{Id, TaskPriority, TaskStatus};

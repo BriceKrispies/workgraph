@@ -29,7 +29,7 @@ wg-registry = { path = "../wg-registry" }
 wg-runtimespec = { path = "../wg-runtimespec" }
 wg-serverspec = { path = "../wg-serverspec" }
 wg-store = { path = "../wg-store" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-types = { path = "../wg-types" }
 wg-wire = { path = "../wg-wire" }
 

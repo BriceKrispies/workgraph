@@ -17,6 +17,7 @@ use wg_model::event::{
 use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, Task};
+use wg_rows::task_world_sql::TaskWorld;
 use wg_stacks::bisect::{Entry, sequence};
 use wg_stacks::ejection::{
     RETURNABLE_TASK_STATUSES, bisected_comment, bisected_ejection, check_ejectable, manual_comment,
@@ -32,7 +33,6 @@ use wg_stacks::verify::{
     Errored, StackRepoBase, in_scope, not_reviewable_message, review_parent_steps, verified_reason,
     verify_job_key, verify_resource_keys,
 };
-use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::transition::Change;
 use wg_types::{
     ErrorCode, Id, Permission, StackItemState, StackStatus, TaskStatus, WgError, parse_id,

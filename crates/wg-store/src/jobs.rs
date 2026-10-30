@@ -1,7 +1,7 @@
 //! Queue-family reads and the atomic claim on a [`Session`] (SH-08): jobs, their runs, resource
 //! claims, workers and system cursors.
 //!
-//! The statements come from `wg_storecodec::queue_sql`. The claim decision is `wg_jobs::queue::claim`
+//! The statements come from `wg_rows::queue_sql`. The claim decision is `wg_jobs::queue::claim`
 //! run over the rows those statements load, and its writes are applied in the same transaction, so
 //! two claimers never take the same job: [`Store::claim_job`] runs the claim in `BEGIN IMMEDIATE`.
 
@@ -14,7 +14,7 @@ use wg_model::RowKey;
 use wg_model::entity::{Job, JobResourceClaim, JobRun, SystemCursor, Worker};
 use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
-use wg_storecodec::{Statement, TableRow, queue_sql};
+use wg_rows::{Statement, TableRow, queue_sql};
 use wg_types::{Id, WgError};
 
 use crate::{Session, Store};

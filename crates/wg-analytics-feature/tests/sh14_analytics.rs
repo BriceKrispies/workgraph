@@ -12,8 +12,8 @@ use wg_analytics_feature::service::reads;
 use wg_analytics_feature::spec::sql::{self, TABLES};
 use wg_model::entity::{Task, Workspace};
 use wg_model::{JsonObject, Row, Write, derive_id};
+use wg_rows::Raw;
 use wg_store::{Location, Store};
-use wg_storecodec::Raw;
 use wg_types::{ErrorCode, Id, TaskKey, TaskPriority, TaskStatus, Timestamp, WgError};
 
 type TestResult = Result<(), Box<dyn Error>>;

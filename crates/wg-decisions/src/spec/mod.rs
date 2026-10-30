@@ -23,7 +23,7 @@ use wg_model::entity::{Task, TaskComment, TaskDecision};
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, EventDraft, EventPayload, Write};
 use wg_registry::resolve;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::edit::tag_writes;
 use wg_tasks::requests::{component, run};
 use wg_types::{Id, Permission, WgError, parse_id};

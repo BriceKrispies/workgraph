@@ -18,7 +18,7 @@ use wg_model::event::{AttemptCancelRequested, EventDraft, EventPayload};
 use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, Write};
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Change, transition};
 use wg_tasks_feature::spec::bodies::ClaimRead;
 use wg_tasks_feature::spec::claims::claim_task;

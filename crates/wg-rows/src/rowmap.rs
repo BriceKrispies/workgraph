@@ -45,7 +45,7 @@
 //! join, an aggregate or a column subset (same codecs):
 //!
 //! ```ignore
-//! wg_storecodec::row_projection! {
+//! wg_rows::row_projection! {
 //!     PathTotal { path: text, changes: int, insertions: int, deletions: int }
 //! }
 //! // PathTotal::COLUMNS, PathTotal::from_raw(&values)

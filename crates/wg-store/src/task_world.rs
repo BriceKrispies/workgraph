@@ -1,12 +1,12 @@
 //! Loads the task world (IF-05): the slices a task command decides on.
 //!
-//! The statements come from `wg_storecodec::task_world_sql`; this module runs them and decodes
+//! The statements come from `wg_rows::task_world_sql`; this module runs them and decodes
 //! each row through its table's codec.
 
 use std::collections::BTreeSet;
 
-use wg_storecodec::Raw;
-use wg_storecodec::task_world_sql::{TaskWorld, decode_row, fts_task_ids, statements};
+use wg_rows::Raw;
+use wg_rows::task_world_sql::{TaskWorld, decode_row, fts_task_ids, statements};
 use wg_types::{Id, WgError, parse_id};
 
 use crate::Session;

@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 
 use wg_json::Value;
 use wg_model::entity::{Stack, StackItem, StackRepository, Task};
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_types::{Id, WgError};
 use wg_wire::dto::stack;
 

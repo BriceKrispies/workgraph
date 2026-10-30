@@ -1,7 +1,7 @@
 //! Reads for the run family (SH-06): agent attempts, revision manifests, managed worktrees,
 //! resource leases, change sets and their items, and artifacts.
 //!
-//! The statements are built by `wg_storecodec::run_sql` as values; this module only runs them
+//! The statements are built by `wg_rows::run_sql` as values; this module only runs them
 //! through the session and decodes the rows with the table codecs. Writes go through the generic
 //! [`Session::apply_write`] and [`Session::apply_decision`] like every other family.
 
@@ -9,10 +9,8 @@ use wg_model::entity::{
     AgentAttempt, Artifact, ChangeSet, ChangeSetItem, ManagedWorktree, ResourceLease,
     RevisionManifest,
 };
-use wg_storecodec::run_sql::{
-    RecordedHead, WorktreeWithRepository, decode_worktree_with_repository,
-};
-use wg_storecodec::{Raw, run_sql};
+use wg_rows::run_sql::{RecordedHead, WorktreeWithRepository, decode_worktree_with_repository};
+use wg_rows::{Raw, run_sql};
 use wg_types::{AttemptStatus, Id, Timestamp, WgError, WorktreeStatus};
 
 use crate::Session;

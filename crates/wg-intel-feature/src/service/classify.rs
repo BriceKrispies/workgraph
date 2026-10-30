@@ -6,7 +6,7 @@
 
 use crate::spec::classify_sql::{self, ClassificationWithKey};
 use wg_model::entity::{Classification, ClassificationEvaluation, ClassificationGoldLabel};
-use wg_storecodec::task_sql;
+use wg_rows::task_sql;
 use wg_types::{Id, WgError};
 
 use wg_store::Session;

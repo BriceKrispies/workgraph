@@ -16,7 +16,7 @@ time = { version = "0.3", default-features = false, features = ["std"] }
 uuid = { version = "1", default-features = false, features = ["std", "v4"] }
 wg-jobs = { path = "../wg-jobs" }
 wg-model = { path = "../wg-model" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-types = { path = "../wg-types" }
 
 [dev-dependencies]

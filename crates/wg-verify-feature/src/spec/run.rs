@@ -22,7 +22,7 @@ use wg_model::stamp::Stamp;
 use wg_model::{Decision, Write};
 use wg_registry::checkout::primary_checkout;
 use wg_registry::resolve;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::lifecycle::check_attempt_transition;
 use wg_tasks::transition::{Change, transition};
 use wg_types::pyval::prefix;

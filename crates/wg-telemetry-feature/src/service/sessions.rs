@@ -185,7 +185,7 @@ pub fn subagent_runs_with_transcript(
     many(session, &sql::subagent_runs_with_transcript(limit))
 }
 
-/// Subagent runs whose telemetry text contains `text` (a prefilter; see the storecodec builder).
+/// Subagent runs whose telemetry text contains `text` (a prefilter; see the wg-rows builder).
 pub fn subagent_runs_mentioning(
     session: &mut Session<'_>,
     text: &str,

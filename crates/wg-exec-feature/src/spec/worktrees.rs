@@ -29,7 +29,7 @@ use wg_model::event::{
 use wg_model::stamp::Stamp;
 use wg_model::write::{RowKey, Write};
 use wg_registry::boundary::is_within;
-use wg_storecodec::run_sql::WorktreeWithRepository;
+use wg_rows::run_sql::WorktreeWithRepository;
 use wg_types::{
     AttemptStatus, ChangeSetItemStatus, ChangeSetStatus, Id, Timestamp, WgError, WorktreeStatus,
 };

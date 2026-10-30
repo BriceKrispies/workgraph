@@ -29,7 +29,7 @@ wg-runtimespec = { path = "../wg-runtimespec" }
 wg-serverspec = { path = "../wg-serverspec" }
 wg-stacks = { path = "../wg-stacks" }
 wg-store = { path = "../wg-store" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-tasks = { path = "../wg-tasks" }
 wg-types = { path = "../wg-types" }
 wg-verify = { path = "../wg-verify" }

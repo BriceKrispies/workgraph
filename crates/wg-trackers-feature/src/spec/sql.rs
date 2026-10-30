@@ -9,8 +9,8 @@
 use wg_model::Table;
 use wg_types::Id;
 
-use wg_storecodec::codec::{id_sql, text_sql};
-use wg_storecodec::sql::{Statement, select_list};
+use wg_rows::codec::{id_sql, text_sql};
+use wg_rows::sql::{Statement, select_list};
 
 /// The kind a task link has when it is a GitHub pull request (Python `PULL_REQUEST_KIND`).
 pub const PULL_REQUEST_KIND: &str = "pull_request";

@@ -11,7 +11,7 @@ use wg_model::event::{
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, RowKey, Task, Write};
 use wg_registry::resolve;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::deps::{DependencyAdd, check_add_dependency};
 use wg_tasks::links::{
     RelationAdd, RepoLinkPlan, check_add_relation, plan_link_repository, plan_unlink_repository,

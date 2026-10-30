@@ -12,8 +12,8 @@ use rpds::VectorSync;
 use wg_model::Table;
 use wg_types::{Id, Timestamp, WgError};
 
-use wg_storecodec::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
-use wg_storecodec::sql::{Statement, select_list};
+use wg_rows::codec::{Cols, Raw, id_sql, text_sql, ts_sql};
+use wg_rows::sql::{Statement, select_list};
 
 /// `search/service.py` fetches `limit * LEXICAL_OVERFETCH` candidates, because rows outside the
 /// filters' scope are dropped after the query.
@@ -241,7 +241,7 @@ pub struct TaskVector {
     pub vector: VectorSync<u8>,
 }
 
-wg_storecodec::row_projection! {
+wg_rows::row_projection! {
     TaskVector {
         task_id: id,
         vector: blob,

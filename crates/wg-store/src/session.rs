@@ -1,6 +1,6 @@
 //! [`Session`]: the open transaction a store body works in.
 //!
-//! The pure half (`wg-storecodec`) builds every statement as a value and decodes every row from
+//! The pure half (`wg-rows`) builds every statement as a value and decodes every row from
 //! values; a session only binds a statement's parameters, runs it and hands the rows back as
 //! values. It takes `&mut self` throughout: a session is one exclusive cursor over the
 //! transaction, so two bodies cannot interleave on it.
@@ -9,7 +9,7 @@ use rusqlite::Connection;
 use rusqlite::params_from_iter;
 use rusqlite::types::Value as Sql;
 use wg_model::{Decision, EventDraft, Row, RowKey, Write};
-use wg_storecodec::{
+use wg_rows::{
     EventQuery, EventRecord, Raw, Statement, TableRow, append_statement, decode_event,
     latest_seq_statement, select_by_key, update_failure, version_probe, write_statement,
 };
@@ -23,17 +23,15 @@ macro_rules! db {
         $result.map_err(|err| {
             let kind = match &err {
                 rusqlite::Error::SqliteFailure(failure, _) => match failure.code {
-                    rusqlite::ErrorCode::ConstraintViolation => {
-                        wg_storecodec::DbFailure::Constraint
-                    }
+                    rusqlite::ErrorCode::ConstraintViolation => wg_rows::DbFailure::Constraint,
                     rusqlite::ErrorCode::DatabaseBusy | rusqlite::ErrorCode::DatabaseLocked => {
-                        wg_storecodec::DbFailure::Busy
+                        wg_rows::DbFailure::Busy
                     }
-                    _ => wg_storecodec::DbFailure::Other,
+                    _ => wg_rows::DbFailure::Other,
                 },
-                _ => wg_storecodec::DbFailure::Other,
+                _ => wg_rows::DbFailure::Other,
             };
-            wg_storecodec::db_error(kind, &err.to_string())
+            wg_rows::db_error(kind, &err.to_string())
         })
     };
 }

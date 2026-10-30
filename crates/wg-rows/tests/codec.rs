@@ -1,4 +1,4 @@
-//! wg-storecodec checks: column lists against the schema contract, statement text, event
+//! wg-rows checks: column lists against the schema contract, statement text, event
 //! decoding and queries. No database is involved.
 
 use std::error::Error;
@@ -6,7 +6,7 @@ use std::path::PathBuf;
 
 use wg_model::entity::{TaskTag, Workspace};
 use wg_model::{JsonObject, Row, RowKey, Table, Write};
-use wg_storecodec::{
+use wg_rows::{
     EventQuery, Raw, TableRow, columns, decode_event, primary_key, select_by_key, update_failure,
     write_statement,
 };

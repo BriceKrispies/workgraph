@@ -139,9 +139,7 @@ fn bind_session(
                     .rows(&session_by_external(&key, session_id))?
                     .first()
                     .map(|values| {
-                        <wg_model::entity::AgentSession as wg_storecodec::TableRow>::from_raw(
-                            values,
-                        )
+                        <wg_model::entity::AgentSession as wg_rows::TableRow>::from_raw(values)
                     })
                     .transpose()?;
                 Ok((attempt, existing))

@@ -20,7 +20,7 @@ use std::path::Path;
 
 use serde_json::Value as JsonValue;
 use wg_json::{PyStr, Value, cli_json, db_json, dict, log_json};
-use wg_storecodec::{Raw, Statement};
+use wg_rows::{Raw, Statement};
 use wg_types::{Timestamp, WgError};
 
 pub use layout::EXPORT_TABLES;

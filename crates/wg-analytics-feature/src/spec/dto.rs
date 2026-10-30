@@ -1,6 +1,6 @@
 //! The DTO of the analytics source extraction (SH-14).
 
-use wg_storecodec::Raw;
+use wg_rows::Raw;
 
 /// One table's copy: the columns read (in the order the rows hold them) and the rows, in rowid
 /// order.

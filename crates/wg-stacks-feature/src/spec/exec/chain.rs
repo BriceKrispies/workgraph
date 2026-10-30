@@ -13,7 +13,7 @@ use wg_model::event::{EventDraft, EventPayload, StackStatusChanged};
 use wg_model::slice::QueueSlice;
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, Task, Write};
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Change, transition};
 use wg_types::{CommentKind, Id, StackItemState, StackStatus, TaskStatus, WgError};
 

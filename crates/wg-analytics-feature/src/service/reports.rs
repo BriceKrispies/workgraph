@@ -2,8 +2,8 @@
 //! the `reports` table, newest first.
 
 use wg_json::Value;
+use wg_rows::{Raw, sql::Statement};
 use wg_runtime::{App, RequestContext};
-use wg_storecodec::{Raw, sql::Statement};
 use wg_types::{Permission, Timestamp, WgError};
 use wg_wire::dto::analytics_report_entry;
 

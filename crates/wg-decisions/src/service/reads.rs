@@ -4,9 +4,9 @@
 //! rows. Writes go through `Session::apply_decision` like every other row.
 
 use wg_model::entity::TaskDecision;
+use wg_rows::Raw;
+use wg_rows::rows::TableRow;
 use wg_store::Session;
-use wg_storecodec::Raw;
-use wg_storecodec::rows::TableRow;
 use wg_types::{Id, WgError};
 
 use crate::spec::sql::{
@@ -16,7 +16,7 @@ use crate::spec::sql::{
 /// Runs a query and decodes every row as a decision.
 fn decisions(
     session: &mut Session<'_>,
-    statement: &wg_storecodec::Statement,
+    statement: &wg_rows::Statement,
 ) -> Result<Vec<TaskDecision>, WgError> {
     session
         .rows(statement)?
@@ -29,7 +29,7 @@ fn decisions(
 /// read by a second query over the tasks found, as Python loads `Task.tags`.
 fn decisions_with_task(
     session: &mut Session<'_>,
-    statement: &wg_storecodec::Statement,
+    statement: &wg_rows::Statement,
 ) -> Result<Vec<DecisionWithTask>, WgError> {
     let rows = session
         .rows(statement)?

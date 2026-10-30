@@ -10,7 +10,7 @@
 //! * [`sql`]: the statement text of the stack readers (SH-07);
 //! * [`view`]: the human views of the results.
 //!
-//! The service loads a [`TaskWorld`](wg_storecodec::task_world_sql::TaskWorld) with the
+//! The service loads a [`TaskWorld`](wg_rows::task_world_sql::TaskWorld) with the
 //! repository rows of every stack of the workspace added, calls one of these and applies the
 //! decision it returns. Git (the base commits of a new stack, the tips of the integration
 //! worktrees, the branch tips a readmit compares) is the shell's: it asks the functions here for
@@ -27,7 +27,7 @@ use wg_clispec::Snapshot;
 use wg_clispec::tree::{SNAPSHOT_JSON, placeholder};
 use wg_model::entity::{Stack, StackItem, Task};
 use wg_registry::resolve;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::deps::INACTIVE_STACK_STATUSES;
 use wg_types::pyval::text;
 use wg_types::{Id, WgError};

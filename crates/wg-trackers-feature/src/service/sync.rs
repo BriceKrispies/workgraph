@@ -17,13 +17,13 @@ use serde_json::Value as Json;
 use wg_model::slice::QueueSlice;
 use wg_net::{Flavour, JiraClient, Net};
 use wg_netspec::TrackerError;
+use wg_rows::Raw;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_runtime::{
     App, HandlerError, HandlerResult, JobContext, Queue, RequestContext, index_written,
     latest_succeeded,
 };
 use wg_store::Session;
-use wg_storecodec::Raw;
-use wg_storecodec::task_world_sql::TaskWorld;
 use wg_tasks::edit::{Enrichment, enrichment_from};
 use wg_trackers::{
     MappingConfig, PAGE_SIZE, SyncReport, TrackerSnapshot, cursor_name, dependency_order,
@@ -325,8 +325,8 @@ fn known_keys(app: &mut App, workspace: Id, keys: &[String]) -> Result<HashSet<S
             rows.iter()
                 .map(|values| match values.first() {
                     Some(Raw::Text(key)) => Ok(key.clone()),
-                    _ => Err(wg_storecodec::db_error(
-                        wg_storecodec::DbFailure::Other,
+                    _ => Err(wg_rows::db_error(
+                        wg_rows::DbFailure::Other,
                         "a task key row is not text",
                     )),
                 })

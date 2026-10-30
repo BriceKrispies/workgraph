@@ -31,7 +31,7 @@ wg-serverspec = { path = "../wg-serverspec" }
 wg-stacks = { path = "../wg-stacks" }
 wg-stacks-feature = { path = "../wg-stacks-feature" }
 wg-store = { path = "../wg-store" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-tasks = { path = "../wg-tasks" }
 wg-types = { path = "../wg-types" }
 wg-validate = { path = "../wg-validate" }

@@ -1,13 +1,13 @@
 //! The migration runner (`persistence/migrate.py`): Alembic's `alembic_version` table, revision
-//! ids and upgrade semantics. The chain and its DDL are values in `wg_storecodec::migrations`; this
+//! ids and upgrade semantics. The chain and its DDL are values in `wg_rows::migrations`; this
 //! module runs them in one write transaction (SQLite DDL is transactional, so a failed revision
 //! leaves the database as it was). A revision's data step reads and writes rows around its DDL.
 
 use rusqlite::params;
 use time::OffsetDateTime;
 use uuid::Uuid;
-use wg_storecodec::Statement;
-use wg_storecodec::migrations::{
+use wg_rows::Statement;
+use wg_rows::migrations::{
     CREATE_VERSION_TABLE, DataStep, INSERT_VERSION, SELECT_EXTERNAL_REFS, SELECT_VERSION,
     UPDATE_VERSION, external_ref_links, head_revision, upgrade_path,
 };

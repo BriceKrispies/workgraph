@@ -15,6 +15,6 @@ serde_json = { version = "1", features = ["preserve_order"] }
 wg-archivespec = { path = "../wg-archivespec" }
 wg-config = { path = "../wg-config" }
 wg-store = { path = "../wg-store" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-types = { path = "../wg-types" }
 zip = { version = "6", default-features = false, features = ["deflate"] }

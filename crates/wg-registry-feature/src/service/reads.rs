@@ -10,8 +10,8 @@ use wg_model::entity::{
     Project, Repository, RepositoryCheckout, RepositoryDependency, RepositoryRemote, Workspace,
 };
 use wg_model::{Row, Write};
+use wg_rows::Statement;
 use wg_store::{Session, many, one};
-use wg_storecodec::Statement;
 use wg_types::{Id, WgError};
 
 use crate::spec::sql;
@@ -172,7 +172,7 @@ pub fn workspace_active_attempts(
     workspace_id: Id,
 ) -> Result<i64, WgError> {
     let rows = session.rows(&sql::workspace_active_attempts(workspace_id))?;
-    wg_storecodec::repo_sql::scalar_from_rows(&rows)
+    wg_rows::repo_sql::scalar_from_rows(&rows)
 }
 
 /// The jobs of `workspace_id` counted by status: `(status, count)` in status order.
@@ -185,5 +185,5 @@ pub fn workspace_job_counts(
 
 /// Runs `statement` and decodes its `(text, integer)` rows.
 fn pairs(session: &mut Session<'_>, statement: &Statement) -> Result<Vec<(String, i64)>, WgError> {
-    wg_storecodec::repo_sql::pairs_from_rows(&session.rows(statement)?)
+    wg_rows::repo_sql::pairs_from_rows(&session.rows(statement)?)
 }

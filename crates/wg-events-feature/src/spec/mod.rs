@@ -9,7 +9,7 @@ use wg_clispec::tree::snapshot_command;
 use wg_clispec::{CliFailure, Usage};
 use wg_json::Value;
 use wg_render::Console;
-use wg_storecodec::EventQuery;
+use wg_rows::EventQuery;
 use wg_types::pyval::prefix;
 use wg_types::{Id, parse_id};
 

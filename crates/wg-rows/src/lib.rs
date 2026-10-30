@@ -1,4 +1,4 @@
-//! wg-storecodec: the store's pure half.
+//! wg-rows: the store's values, with no database in sight.
 //!
 //! Everything about the database that does not need a database: how model values become column
 //! values and back ([`codec`], [`rows`]), the SQL text and parameters that apply a write or read a

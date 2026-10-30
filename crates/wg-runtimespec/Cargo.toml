@@ -26,7 +26,7 @@ wg-model = { path = "../wg-model" }
 wg-procspec = { path = "../wg-procspec" }
 wg-registry = { path = "../wg-registry" }
 wg-stacks = { path = "../wg-stacks" }
-wg-storecodec = { path = "../wg-storecodec" }
+wg-rows = { path = "../wg-rows" }
 wg-tasks = { path = "../wg-tasks" }
 wg-types = { path = "../wg-types" }
 wg-validate = { path = "../wg-validate" }

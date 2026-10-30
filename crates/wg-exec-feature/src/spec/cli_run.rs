@@ -7,7 +7,7 @@ use wg_clispec::tree::snapshot_command;
 use wg_json::{Value, dict};
 use wg_model::entity::{AgentAttempt, Job};
 use wg_render::Console;
-use wg_storecodec::EventRecord;
+use wg_rows::EventRecord;
 use wg_types::AttemptStatus;
 use wg_types::pyval::prefix;
 use wg_wire::convention::{id, text};

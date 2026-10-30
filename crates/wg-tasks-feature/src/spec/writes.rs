@@ -12,7 +12,7 @@ use wg_model::slice::QueueSlice;
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, Write};
 use wg_registry::resolve;
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::archive::{ArchiveChange, archive_plan};
 use wg_tasks::create::{Allocation, NewTask, RepositoryLink, create_plan};
 use wg_tasks::edit::*;

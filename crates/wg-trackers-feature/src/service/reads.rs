@@ -5,8 +5,8 @@
 
 use crate::spec::sql;
 use wg_model::entity::ExternalItem;
-use wg_storecodec::Raw;
-use wg_storecodec::sql::int_scalar;
+use wg_rows::Raw;
+use wg_rows::sql::int_scalar;
 use wg_types::{Id, WgError};
 
 use wg_store::Session;
@@ -63,8 +63,8 @@ pub fn unresolved_pull_request_repos(
         .iter()
         .map(|values| match values.first() {
             Some(Raw::Text(name)) => Ok(name.clone()),
-            _ => Err(wg_storecodec::db_error(
-                wg_storecodec::DbFailure::Other,
+            _ => Err(wg_rows::db_error(
+                wg_rows::DbFailure::Other,
                 "a repository name row is not text",
             )),
         })

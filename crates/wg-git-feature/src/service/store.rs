@@ -11,7 +11,7 @@ use wg_model::entity::{
     Commit, CommitAnalysis, CommitEquivalence, CommitFileChange, CommitSymbol, CommitTaskLink,
     GitObjectGap, TaskChangeSurface,
 };
-use wg_storecodec::{Raw, Statement, TableRow};
+use wg_rows::{Raw, Statement, TableRow};
 
 use crate::spec::sql as git_sql;
 use wg_types::{Id, Timestamp, WgError};

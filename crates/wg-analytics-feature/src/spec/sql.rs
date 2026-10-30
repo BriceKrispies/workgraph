@@ -10,8 +10,8 @@
 
 use wg_types::WgError;
 
-use wg_storecodec::codec::{DbFailure, Raw, db_error};
-use wg_storecodec::sql::Statement;
+use wg_rows::codec::{DbFailure, Raw, db_error};
+use wg_rows::sql::Statement;
 
 /// The tables the warehouse copies, each with the columns it reads (Python `TABLES`, in its
 /// order). Every table is copied in this order.

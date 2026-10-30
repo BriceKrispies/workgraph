@@ -1,6 +1,6 @@
 //! Task-family reads and `task_fts` maintenance on a [`Session`] (SH-04).
 //!
-//! The statements come from `wg_storecodec::task_sql`; this module only runs them and decodes the
+//! The statements come from `wg_rows::task_sql`; this module only runs them and decodes the
 //! rows. A session is one transaction, so [`Session::index_task`] runs inside whatever write the
 //! caller is making and sees that write's changes.
 
@@ -8,7 +8,7 @@ use wg_model::RowKey;
 use wg_model::entity::{
     Classification, Task, TaskComment, TaskDependency, TaskFile, TaskLink, TaskRelation, TaskTag,
 };
-use wg_storecodec::{Statement, TableRow, task_sql};
+use wg_rows::{Statement, TableRow, task_sql};
 use wg_types::{Id, TaskKey, TaskStatus, WgError};
 
 use crate::Session;

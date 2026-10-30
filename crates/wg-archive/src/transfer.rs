@@ -105,7 +105,7 @@ pub fn import_workspace(store: &mut Store, source: &Path) -> Result<ImportReport
             }
         }
         for id in session.rows(&spec::task_ids_in(&workspace_id))? {
-            if let Some(wg_storecodec::Raw::Text(task)) = id.first() {
+            if let Some(wg_rows::Raw::Text(task)) = id.first() {
                 session.index_task(parse_id(task)?)?;
             }
         }

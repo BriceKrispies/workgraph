@@ -3,8 +3,8 @@
 use wg_model::Table;
 use wg_types::Id;
 
-use wg_storecodec::codec::{id_sql, text_sql};
-use wg_storecodec::sql::{Statement, select_list};
+use wg_rows::codec::{id_sql, text_sql};
+use wg_rows::sql::{Statement, select_list};
 
 /// The subagent runs whose telemetry text mentions `trial_id`, the most recently stopped first
 /// (`_latest_run`; a run that never stopped sorts last, and the id breaks ties).

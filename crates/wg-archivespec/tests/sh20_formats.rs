@@ -7,7 +7,7 @@ use std::path::PathBuf;
 use arrow_array::{Array, RecordBatchReader};
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use wg_archivespec as spec;
-use wg_storecodec::Raw;
+use wg_rows::Raw;
 use wg_types::Timestamp;
 
 type TestResult = Result<(), Box<dyn Error>>;

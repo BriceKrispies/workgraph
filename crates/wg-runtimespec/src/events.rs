@@ -3,7 +3,7 @@
 //! sends a queue snapshot. The shell runs the queries; the parameters arrive validated.
 
 use serde_json::{Map, Value};
-use wg_storecodec::{EventQuery, EventRecord};
+use wg_rows::{EventQuery, EventRecord};
 use wg_types::pyval::{flag, int_or};
 use wg_types::{Id, parse_id};
 use wg_wire::convention::{TimeFormat, id, json_object, model, optional_id, text, timestamp};

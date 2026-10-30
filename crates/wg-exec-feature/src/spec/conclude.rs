@@ -12,7 +12,7 @@ use wg_model::entity::{AgentAttempt, Artifact, Real, TaskTag};
 use wg_model::event::{EventDraft, EventPayload, TaskEscalated};
 use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, Write};
-use wg_storecodec::task_world_sql::TaskWorld;
+use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::transition::{Change, transition};
 use wg_tasks_feature::spec::bodies::CompleteRead;
 use wg_tasks_feature::spec::claims::{Reported, complete_task};

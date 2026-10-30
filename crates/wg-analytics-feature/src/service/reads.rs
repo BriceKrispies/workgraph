@@ -21,8 +21,8 @@ pub fn analytics_source(
     table: &str,
 ) -> Result<AnalyticsSource, WgError> {
     let wanted = sql::wanted_columns(table).ok_or_else(|| {
-        wg_storecodec::db_error(
-            wg_storecodec::DbFailure::Other,
+        wg_rows::db_error(
+            wg_rows::DbFailure::Other,
             &format!("{table} is not an analytics source table"),
         )
     })?;

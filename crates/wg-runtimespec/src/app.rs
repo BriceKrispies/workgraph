@@ -5,7 +5,7 @@ use base64::Engine;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use serde_json::Value;
 use wg_config::ConfigError;
-use wg_storecodec::{Raw, Statement};
+use wg_rows::{Raw, Statement};
 use wg_types::{Id, WgError, parse_id};
 use wg_validate::ValidationError;
 use wg_validate::pydantic::error_url;

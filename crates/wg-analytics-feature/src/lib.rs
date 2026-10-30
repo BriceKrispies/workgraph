@@ -8,20 +8,23 @@
 //! The feature exports [`FEATURE`]. Nothing is served yet, so its tables are empty.
 
 pub mod cli;
+pub mod http;
 pub mod jobs;
+pub mod mcp;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The analytics feature: its CLI group (`metrics`, `query`) and the `generate_report` job.
-/// It has no routes, tools or resources yet.
+/// The analytics feature: its CLI group (`metrics`, `query`, ...) and its routes ([`http`]).
+/// Its tools and resources are [`mcp`] (M59 to M63, the catalog and the metric resources); it has
+/// the `generate_report` job ([`jobs`]).
 pub static FEATURE: Feature = Feature {
     name: "analytics",
     cli: &[cli::GROUP],
-    routes: &[],
-    tools: &[],
-    resources: &[],
+    routes: &[http::GROUP],
+    tools: mcp::TOOLS,
+    resources: mcp::RESOURCES,
     jobs: jobs::JOBS,
     maintenance: &[],
 };

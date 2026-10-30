@@ -57,9 +57,23 @@ pub fn analytics_events(session: &mut Session<'_>) -> Result<AnalyticsSource, Wg
     })
 }
 
+/// The copy of `subagent_runs` (not in [`TABLES`]: Python reads it through its ORM).
+pub fn subagent_runs_source(session: &mut Session<'_>) -> Result<AnalyticsSource, WgError> {
+    let rows = session.rows(&sql::subagent_runs_select())?;
+    Ok(AnalyticsSource {
+        table: "subagent_runs".to_owned(),
+        columns: sql::SUBAGENT_RUN_COLUMNS
+            .iter()
+            .map(|column| (*column).to_owned())
+            .collect(),
+        rows,
+    })
+}
+
 /// Every source table of the warehouse, as the typed rows of `wg-analytics`.
 pub fn analytics_input(session: &mut Session<'_>) -> Result<AnalyticsInput, WgError> {
     let mut sources = analytics_sources(session)?;
     sources.push(analytics_events(session)?);
+    sources.push(subagent_runs_source(session)?);
     Ok(load::analytics_input(&sources))
 }

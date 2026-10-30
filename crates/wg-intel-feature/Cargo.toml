@@ -23,6 +23,8 @@ wg-net = { path = "../wg-net" }
 wg-netspec = { path = "../wg-netspec" }
 wg-registry = { path = "../wg-registry" }
 wg-runtimespec = { path = "../wg-runtimespec" }
+wg-serverspec = { path = "../wg-serverspec" }
+wg-mcpspec = { path = "../wg-mcpspec" }
 wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
 wg-store = { path = "../wg-store" }

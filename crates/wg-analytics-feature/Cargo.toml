@@ -21,6 +21,7 @@ wg-hash = { path = "../wg-hash" }
 wg-intel-feature = { path = "../wg-intel-feature" }
 time = { version = "0.3", default-features = false, features = ["std"] }
 wg-json = { path = "../wg-json" }
+wg-mcpspec = { path = "../wg-mcpspec" }
 wg-model = { path = "../wg-model" }
 wg-registry = { path = "../wg-registry" }
 wg-render = { path = "../wg-render" }
@@ -32,3 +33,4 @@ wg-tasks = { path = "../wg-tasks" }
 wg-validate = { path = "../wg-validate" }
 wg-wire = { path = "../wg-wire" }
 wg-automation-feature = { path = "../wg-automation-feature" }
+wg-serverspec = { path = "../wg-serverspec" }

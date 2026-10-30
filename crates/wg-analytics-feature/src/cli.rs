@@ -1,4 +1,5 @@
-//! `workgraph analytics metrics, query, overview, compare, coupling, failures, history`
+//! `workgraph analytics metrics, query, overview, compare, coupling, failures, history, estimate,
+//! retrospective, subagents, time, bottlenecks`
 //! (`cli/commands/analytics.py`): the engineering metrics.
 //!
 //! The clap tree and the readers of the matched options are in [`crate::spec::args`]; each
@@ -101,6 +102,41 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             let options = args::retrospective_options(m)?;
             let out = service::retrospective::retrospective(state.app()?, &context, ws, &options)?;
             state.emit(&out, Some(&|c| view::retrospective_view(c, &out)))
+        }
+        Some("subagents") => {
+            let context = human_context(None)?;
+            let (period, since, until, model) = args::subagents_options(m)?;
+            let out = service::subagents::report(
+                state.app()?,
+                &context,
+                ws,
+                &period,
+                since,
+                until,
+                model.as_deref(),
+            )?;
+            state.emit(&out, Some(&|c| view::subagents_view(c, &out)))
+        }
+        Some("time") => {
+            let context = human_context(None)?;
+            let (since, until, by, model) = args::time_options(m)?;
+            let out = service::subagents::breakdown(
+                state.app()?,
+                &context,
+                ws,
+                since,
+                until,
+                &by,
+                model.as_deref(),
+            )?;
+            state.emit(&out, Some(&|c| view::agent_time_view(c, &out)))
+        }
+        Some("bottlenecks") => {
+            let context = human_context(None)?;
+            let (since, until, top) = args::bottleneck_options(m)?;
+            let out =
+                service::subagents::bottlenecks(state.app()?, &context, ws, since, until, top)?;
+            state.emit(&out, Some(&|c| view::bottlenecks_view(c, &out)))
         }
         _ => Err(CliFailure::fail(
             wg_clispec::not_implemented_message(path),

@@ -10,28 +10,30 @@
 //!   glue;
 //! * [`cli`] (Shell): the clap group, a table of `fn` pointers into [`service`].
 //!
+//! The tools (`automation_list` and `automation_trigger`, M64 and M65) are [`mcp`].
+//!
 //! The routes (H091 to H100: the automation rules, runs, catalog, dry run and notifications) are
-//! [`http`] over [`service`]. The tools (`automation_list`, `automation_trigger` in `wg-mcpspec`)
-//! are not served by this crate yet, so the feature has no tool table; its output shapes are in
-//! [`spec::shapes`].
+//! [`http`] over [`service`].
 //!
 //! The feature exports [`FEATURE`]; the binary collects it into its ordered feature list.
 
 pub mod cli;
 pub mod http;
 pub mod jobs;
+pub mod mcp;
 pub mod service;
 pub mod spec;
 
 use wg_runtime::Feature;
 
-/// The automation feature: its CLI group, its routes, its job handler and its maintenance steps.
-/// It has no tools or resources yet.
+/// The automation feature: its CLI group, its routes, its tools, its job handler and its maintenance
+/// steps.
+/// It has no resources yet.
 pub static FEATURE: Feature = Feature {
     name: "automation",
     cli: &[cli::GROUP],
     routes: &[http::GROUP],
-    tools: &[],
+    tools: mcp::TOOLS,
     resources: &[],
     jobs: jobs::JOBS,
     maintenance: jobs::MAINTENANCE,

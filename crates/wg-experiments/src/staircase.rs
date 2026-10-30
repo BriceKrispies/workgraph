@@ -321,6 +321,13 @@ pub fn next_step(
 }
 
 impl StaircaseConfig {
+    /// Whether `band` lies in the protocol range `min_band..=max_band`, the bounds inclusive. A
+    /// degenerate range (`min_band == max_band`) holds exactly one band.
+    #[must_use]
+    pub fn contains(&self, band: i64) -> bool {
+        (self.min_band..=self.max_band).contains(&band)
+    }
+
     /// Checks the ranges and cross-field rules of `StaircaseConfig.__post_init__`.
     ///
     /// # Errors

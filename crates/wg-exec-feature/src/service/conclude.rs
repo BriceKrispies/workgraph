@@ -365,13 +365,6 @@ pub fn attempt_submit(
     )?;
     if facts.stacked {
         app.require_permission(context, Permission::StackWrite)?;
-        // A stack child succeeds through the stack's gate, which the stacks feature does not
-        // serve yet: refused before anything is written.
-        if !failed {
-            return Err(WgError::workgraph(
-                "submitting a stack child is not ported yet (the stacks gate service)",
-            ));
-        }
     }
     let attempted = RequestContext {
         attempt: Some(attempt_id),
@@ -414,8 +407,7 @@ pub fn attempt_submit(
 }
 
 /// The collaborators of a live process: the git feature links an attempt's commits and the verify
-/// feature runs the checks; marking a stack item ready is reached through [`Unported`] until the
-/// stacks feature serves it.
+/// feature runs the checks and the stacks feature marks a stack item ready.
 pub struct Live;
 
 impl Collaborators for Live {
@@ -434,7 +426,7 @@ impl Collaborators for Live {
         context: &RequestContext,
         task: Id,
     ) -> Result<(), WgError> {
-        Unported.mark_ready(app, context, task)
+        wg_stacks_feature::service::mark_ready(app, context, task)
     }
 
     fn verify(

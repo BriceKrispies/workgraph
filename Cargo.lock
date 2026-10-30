@@ -2596,6 +2596,7 @@ dependencies = [
  "wg-runtime",
  "wg-runtimespec",
  "wg-serverspec",
+ "wg-stacks-feature",
  "wg-store",
  "wg-storecodec",
  "wg-tasks",

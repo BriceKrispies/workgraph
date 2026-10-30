@@ -42,3 +42,14 @@ pub fn active_repository_for_task(task_id: Id, repository_id: Id) -> Statement {
         params: vec![id_sql(task_id), id_sql(repository_id)],
     }
 }
+
+/// The item of `task_id` in `stack_id`, if the task is one.
+pub fn stack_item(stack_id: Id, task_id: Id) -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"stack_items\" WHERE \"stack_id\" = ?1 AND \"task_id\" = ?2",
+            select_list(Table::StackItem, None)
+        ),
+        params: vec![id_sql(stack_id), id_sql(task_id)],
+    }
+}

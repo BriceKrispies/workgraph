@@ -673,6 +673,52 @@ pub fn readmit(
     Ok(finished.decision.with_reply(reply))
 }
 
+/// `StackService.mark_ready`: a stack child whose fast tier passed becomes ready; a task outside
+/// an active stack is left alone.
+pub fn mark_ready(world: &TaskWorld, stamp: &Stamp, task_id: Id) -> Result<Decision<()>, WgError> {
+    stamp.require(&[Permission::StackWrite])?;
+    let Some((stack, item)) = world
+        .stacks
+        .stacks
+        .values()
+        .filter(|stack| !matches!(stack.status, StackStatus::Landed | StackStatus::Abandoned))
+        .find_map(|stack| {
+            world
+                .stacks
+                .items_of(stack.id)
+                .find(|item| item.task_id == task_id)
+                .map(|item| (stack, item))
+        })
+    else {
+        return Ok(Decision::new(()));
+    };
+    let child = world
+        .tasks
+        .task(task_id)
+        .ok_or_else(|| WgError::not_found(format!("task {task_id} not found")))?;
+    let parent = world
+        .tasks
+        .task(stack.parent_task_id)
+        .ok_or_else(|| WgError::not_found(format!("task {} not found", stack.parent_task_id)))?;
+    let start = Step {
+        decision: Decision::new(()),
+        tasks: world.tasks.clone(),
+        stacks: world.stacks.clone(),
+        ids: stamp.ids(),
+    };
+    let moved = transition_item(
+        &start,
+        stamp,
+        stack,
+        parent,
+        child,
+        item,
+        StackItemState::Ready,
+        item.detail.clone(),
+    )?;
+    Ok(moved.decision)
+}
+
 // ---------------------------------------------------------------- integrate and verify
 
 /// The stack an integration or verification request is about, and its repositories.

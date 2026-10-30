@@ -92,14 +92,6 @@ fn gone(task: Id) -> WgError {
     WgError::workgraph(format!("task {task} vanished from the slice"))
 }
 
-/// The stack rebuild a release or deferral needs belongs to the stack integration service, which
-/// this build does not have; the decision refuses instead of leaving the branch stale.
-pub fn rebuild_unavailable(what: &str) -> WgError {
-    WgError::workgraph(format!(
-        "{what} needs the stack's integration branches rebuilt, which this build cannot do yet"
-    ))
-}
-
 /// What the acceptance of one task reads besides the task world.
 #[derive(Debug, Clone, Default)]
 pub struct AcceptFacts {

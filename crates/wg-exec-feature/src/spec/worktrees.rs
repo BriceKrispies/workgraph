@@ -278,6 +278,8 @@ pub struct PrepareRequest {
     pub repository_id: Id,
     pub access: String,
     pub target_ref: Option<String>,
+    /// Why a stack chose the base (`stack_base` info), when it did.
+    pub base: Option<serde_json::Value>,
 }
 
 /// `acquire_lease`: `existing` is the lease row of `resource_key`, if there is one. The holder of

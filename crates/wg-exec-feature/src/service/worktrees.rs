@@ -6,6 +6,7 @@
 //! attempts, tasks and stacks they belong to, checks the checkouts and the worktree directory on
 //! disk, runs git in the checkouts, and applies each decision in one transaction.
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -21,6 +22,7 @@ use wg_exec::manifest::{
     AttemptRef, ExecutionManifest, ManifestEntry, RepoFacts, RepoPlan, RepoRequest as ExecRequest,
     effective_target, plan_repo, worktree_dir_name,
 };
+use wg_exec::stack_base::{Sibling, SiblingChoice, choose_sibling, starts_from_integration_tip};
 use wg_git::{Git, GitError, resolve};
 pub use wg_git_feature::service::worktree_remove::{MANIFEST_FILE, worktree_remove};
 use wg_json::Value;
@@ -350,7 +352,7 @@ fn prepare_repo(
     };
     let exec_request = ExecRequest {
         target_ref: request.target_ref.clone(),
-        base: None,
+        base: request.base.clone(),
     };
     let target = effective_target(&exec_request, repo.default_branch.as_deref());
     let resolved = match target {
@@ -459,8 +461,8 @@ fn prepare_repo(
     }
 }
 
-/// The attempt's task and the requests `prepare` acts on. A stack child whose stack covers a
-/// repository needs the stack base, which is not ported yet, so it is refused.
+/// The attempt's task and the requests `prepare` acts on. Outside `in_place`, a stack child's
+/// request that chose no target gets the base its stack implies (`_stack_request`).
 fn prepare_start(
     session: &mut Session<'_>,
     attempt_id: Id,
@@ -477,27 +479,174 @@ fn prepare_start(
         Some(requests) => requests,
         None => default_requests(session, &task)?,
     };
-    if isolation != "in_place" {
-        for request in requests
-            .iter()
-            .filter(|request| request.target_ref.is_none())
-        {
-            if session
-                .active_repository_for_task(task.id, request.repository_id)?
-                .is_some()
-            {
-                return Err(WgError::workgraph(format!(
-                    "task {} is a stack child: choosing its stack base is not ported yet",
-                    task.key
-                )));
-            }
-        }
-    }
+    let requests = if isolation == "in_place" {
+        requests
+    } else {
+        requests
+            .into_iter()
+            .map(|request| stack_request(session, &task, request))
+            .collect::<Result<Vec<_>, _>>()?
+    };
     Ok(PrepareStart {
         task,
         number: attempt.number,
         requests,
     })
+}
+
+/// `WorktreeManager._stack_request`: gives a stack child's request the base its stack implies,
+/// unless the caller chose a target.
+fn stack_request(
+    session: &mut Session<'_>,
+    task: &Task,
+    request: PrepareRequest,
+) -> Result<PrepareRequest, WgError> {
+    if request.target_ref.is_some() {
+        return Ok(request);
+    }
+    let Some(repo) = session.fetch::<Repository>(&RowKey::Repository(request.repository_id))?
+    else {
+        return Ok(request);
+    };
+    Ok(match stack_base(session, task, &repo)? {
+        Some((commit, base)) => PrepareRequest {
+            target_ref: Some(commit),
+            base: Some(base),
+            ..request
+        },
+        None => request,
+    })
+}
+
+/// `stack_base`: where a stack child's attempt starts in one repository, and why. `None` when
+/// the task is not an item of an active stack that covers the repository.
+fn stack_base(
+    session: &mut Session<'_>,
+    task: &Task,
+    repo: &Repository,
+) -> Result<Option<(String, serde_json::Value)>, WgError> {
+    let Some(covering) = session.active_repository_for_task(task.id, repo.id)? else {
+        return Ok(None);
+    };
+    let Some(item) = session.stack_item(covering.stack_id, task.id)? else {
+        return Ok(None);
+    };
+    let no_checkout = || {
+        WgError::validation(format!(
+            "repository '{}' has no available checkout",
+            repo.name
+        ))
+    };
+    let checkouts = session.checkouts(repo.id)?;
+    let git = || {
+        primary_checkout(&checkouts, true).map(|checkout| Git {
+            path: PathBuf::from(&checkout.path),
+            timeout_ms: GIT_TIMEOUT_MS,
+        })
+    };
+    let stack_id = covering.stack_id.to_string();
+    if starts_from_integration_tip(item.state) {
+        let git = git().ok_or_else(no_checkout)?;
+        let tip = git
+            .resolve_commit(&covering.integration_branch)
+            .map_err(git_failure)?;
+        return Ok(Some((
+            tip.clone(),
+            json!({
+                "source": "integration_tip",
+                "stack_id": stack_id,
+                "stack_base_sha": covering.base_sha,
+                "integration_branch": covering.integration_branch,
+                "integration_tip": tip,
+            }),
+        )));
+    }
+    let mut siblings = Vec::new();
+    for dependency in session.task_dependencies(task.id)? {
+        if session
+            .stack_item(covering.stack_id, dependency.depends_on_id)?
+            .is_none()
+        {
+            continue;
+        }
+        if let Some(sibling) = session.fetch::<Task>(&RowKey::Task(dependency.depends_on_id))? {
+            siblings.push(sibling);
+        }
+    }
+    siblings.sort_by_key(|sibling| sibling.number);
+    let mut heads = Vec::new();
+    for sibling in &siblings {
+        let head = session
+            .latest_recorded_head(sibling.id, repo.id)?
+            .map(|recorded| recorded.head_sha);
+        heads.push(Sibling {
+            key: sibling.key.to_string(),
+            number: sibling.number,
+            head,
+        });
+    }
+    if heads.iter().all(|sibling| sibling.head.is_none()) {
+        return Ok(Some((
+            covering.base_sha.clone(),
+            json!({
+                "source": "stack_base",
+                "stack_id": stack_id,
+                "stack_base_sha": covering.base_sha,
+            }),
+        )));
+    }
+    let git = git().ok_or_else(no_checkout)?;
+    let tips: Vec<&str> = heads
+        .iter()
+        .filter_map(|sibling| sibling.head.as_deref())
+        .collect();
+    let parents = commit_parents(&git, &tips)?;
+    match choose_sibling(&heads, &parents) {
+        SiblingChoice::StackBase => Ok(None),
+        SiblingChoice::Diverged { first, second } => Err(WgError::validation(format!(
+            "{} depends on {first} and {second}, whose changes to '{}' are not one line of history; add an explicit dependency between {first} and {second} so that one builds on the other",
+            task.key, repo.name
+        ))
+        .with_detail("task", json!(task.key.to_string()))
+        .with_detail("repository", json!(repo.name))
+        .with_detail("siblings", json!([first, second]))),
+        SiblingChoice::SiblingHead {
+            sibling,
+            sibling_head,
+            superseded,
+        } => Ok(Some((
+            sibling_head.clone(),
+            json!({
+                "source": "sibling_head",
+                "stack_id": stack_id,
+                "stack_base_sha": covering.base_sha,
+                "sibling": sibling,
+                "sibling_head": sibling_head,
+                "superseded": superseded
+                    .iter()
+                    .map(|other| json!({"task": other.task, "head": other.head}))
+                    .collect::<Vec<_>>(),
+            }),
+        ))),
+    }
+}
+
+/// The parents of every commit reachable from `tips` (`git rev-list --parents`).
+fn commit_parents(git: &Git, tips: &[&str]) -> Result<BTreeMap<String, Vec<String>>, WgError> {
+    let mut args = tips.to_vec();
+    args.push("--");
+    let mut full = vec!["--parents"];
+    full.extend(args);
+    let output = git.rev_list(&full).map_err(git_failure)?;
+    Ok(output
+        .stdout
+        .lines()
+        .filter_map(|line| {
+            let mut words = line.split_whitespace().map(str::to_owned);
+            let commit = words.next()?;
+            Some((commit, words.collect()))
+        })
+        .collect())
 }
 
 /// `WorktreeManager.default_requests`: one request per repository link of the task, skipping the
@@ -525,6 +674,7 @@ fn default_requests(
             repository_id: repo.id,
             access,
             target_ref: None,
+            base: None,
         });
     }
     Ok(requests)

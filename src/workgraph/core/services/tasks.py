@@ -35,9 +35,10 @@ from workgraph.core.errors import (
 )
 from workgraph.core.events.log import record_event
 from workgraph.core.models.enums import (
-    DEPENDENCY_SATISFIED_STATUSES,
+    CLAIMABLE_DEPENDENCY_STATUSES,
     INACTIVE_STACK_STATUSES,
     PRIORITY_RANK,
+    SCHEDULING_DEPENDENCY_STATUSES,
     STACK_DEPENDENCY_SATISFIED_STATES,
     AttemptStatus,
     CommentKind,
@@ -184,7 +185,11 @@ def is_tracked(session: Session, task_id: str) -> ExternalItem | None:
     return session.scalar(select(ExternalItem).where(ExternalItem.task_id == task_id))
 
 
-def satisfied_dependencies(session: Session, edges: Collection[tuple[str, str]]) -> set[tuple[str, str]]:
+def satisfied_dependencies(
+    session: Session,
+    edges: Collection[tuple[str, str]],
+    statuses: frozenset[TaskStatus] = SCHEDULING_DEPENDENCY_STATUSES,
+) -> set[tuple[str, str]]:
     """Which ``(task_id, depends_on_id)`` edges are satisfied.
 
     A dependency is satisfied once its task is accepted. Inside a stack, a dependency on a sibling
@@ -193,10 +198,10 @@ def satisfied_dependencies(session: Session, edges: Collection[tuple[str, str]])
     """
     if not edges:
         return set()
-    statuses = dict(
+    states = dict(
         session.execute(select(Task.id, Task.status).where(Task.id.in_({d for _, d in edges}))).all()
     )
-    satisfied = {(t, d) for t, d in edges if statuses.get(d) in DEPENDENCY_SATISFIED_STATUSES}
+    satisfied = {(t, d) for t, d in edges if states.get(d) in statuses}
     pending = {(t, d) for t, d in edges if (t, d) not in satisfied}
     if not pending:
         return satisfied
@@ -219,14 +224,16 @@ def satisfied_dependencies(session: Session, edges: Collection[tuple[str, str]])
     return satisfied
 
 
-def unsatisfied_dependencies(session: Session, task_id: str) -> list[Task]:
+def unsatisfied_dependencies(
+    session: Session, task_id: str, statuses: frozenset[TaskStatus] = SCHEDULING_DEPENDENCY_STATUSES
+) -> list[Task]:
     edges = [
         (task_id, depends_on_id)
         for depends_on_id in session.scalars(
             select(TaskDependency.depends_on_id).where(TaskDependency.task_id == task_id)
         )
     ]
-    satisfied = satisfied_dependencies(session, edges)
+    satisfied = satisfied_dependencies(session, edges, statuses)
     blockers = [d for _, d in edges if (task_id, d) not in satisfied]
     if not blockers:
         return []
@@ -355,12 +362,21 @@ class TaskService(Service):
         reason: str | None = None,
         privileged: bool = False,
         tracker: bool = False,
+        claimable: bool = False,
         extra: dict[str, Any] | None = None,
     ) -> str | None:
-        """Validate and apply a status change; returns the status-change event id."""
+        """Validate and apply a status change; returns the status-change event id.
+
+        ``claimable`` applies the manual-claim dependency rule (see ``CLAIMABLE_DEPENDENCY_STATUSES``)
+        instead of the automatic one.
+        """
         current = TaskStatus(task.status)
         if target in REQUIRES_DEPENDENCIES:
-            blockers = unsatisfied_dependencies(session, task.id)
+            blockers = unsatisfied_dependencies(
+                session,
+                task.id,
+                CLAIMABLE_DEPENDENCY_STATUSES if claimable else SCHEDULING_DEPENDENCY_STATUSES,
+            )
             if blockers:
                 if target != TaskStatus.READY:
                     raise InvalidTransitionError(
@@ -422,7 +438,7 @@ class TaskService(Service):
                 workspace_id=task.workspace_id,
                 data={"key": task.key},
             )
-        if {target, current} & DEPENDENCY_SATISFIED_STATUSES:
+        if TaskStatus.ACCEPTED in (target, current):
             self._refresh_dependents(session, ctx.caused_by(event.id), task.id)
         return event.id
 
@@ -1296,19 +1312,37 @@ class TaskService(Service):
                 task.version += 1
                 return
             # Expired foreign claim: release it before re-claiming.
-            self._transition(session, ctx, task, TaskStatus.READY, reason="expired claim released")
+            self._transition(
+                session, ctx, task, TaskStatus.READY, reason="expired claim released", claimable=True
+            )
+        elif (
+            status == TaskStatus.BLOCKED
+            and (task.metadata_ or {}).get("blocked_reason") == BLOCKED_BY_DEPENDENCIES
+            and not unsatisfied_dependencies(session, task.id, CLAIMABLE_DEPENDENCY_STATUSES)
+        ):
+            # Every blocker's work is complete: a manual claim unblocks the task.
+            self._transition(
+                session,
+                ctx,
+                task,
+                TaskStatus.READY,
+                reason="dependencies awaiting acceptance; claimed",
+                claimable=True,
+            )
         elif status not in (TaskStatus.READY, TaskStatus.FAILED):
             raise InvalidTransitionError(
                 f"task {task.key} is {status}; only ready (or failed) tasks can be claimed",
                 details={"status": status},
             )
-        blockers = unsatisfied_dependencies(session, task.id)
+        blockers = unsatisfied_dependencies(session, task.id, CLAIMABLE_DEPENDENCY_STATUSES)
         if blockers:
             raise InvalidTransitionError(
                 f"task {task.key} is blocked by {', '.join(b.key for b in blockers)}",
                 details={"blocked_by": [b.key for b in blockers]},
             )
-        event_id = self._transition(session, ctx, task, TaskStatus.CLAIMED, reason=f"claimed by {claimant}")
+        event_id = self._transition(
+            session, ctx, task, TaskStatus.CLAIMED, reason=f"claimed by {claimant}", claimable=True
+        )
         expires_at = now + timedelta(minutes=data.lease_minutes)
         task.claimed_by = claimant
         task.claim_expires_at = expires_at

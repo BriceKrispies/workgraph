@@ -67,9 +67,9 @@ def test_dependencies_block_and_unblock(app, human, ws):
     # A claimed blocker does not satisfy the dependency.
     app.tasks.claim(human, ws, a.key, ClaimRequest())
     assert app.tasks.get(human, ws, b.key).status == "blocked"
-    # Completion (awaiting review) does satisfy it; acceptance of a is still required for b to be accepted.
+    # Completion (awaiting review) does not unblock b automatically; only acceptance of a does.
     app.tasks.complete(human, ws, a.key, summary="done")
-    assert app.tasks.get(human, ws, b.key).status == "ready"
+    assert app.tasks.get(human, ws, b.key).status == "blocked"
     app.verification.accept_manually(human, ws, a.key, reason="reviewed by hand")
     assert app.tasks.get(human, ws, a.key).status == "accepted"
     assert app.tasks.get(human, ws, b.key).status == "ready"
@@ -83,8 +83,8 @@ def test_completed_blocker_satisfies_claim_and_complete(app, human, ws):
     with pytest.raises(InvalidTransitionError):
         app.tasks.claim(human, ws, b.key, ClaimRequest())
     app.tasks.complete(human, ws, a.key, summary="done")
-    # Blocker awaiting review: b is unblocked, can be claimed and completed.
-    assert app.tasks.get(human, ws, b.key).status == "ready"
+    # Blocker awaiting review: b stays blocked on the display, but a manual claim can take it.
+    assert app.tasks.get(human, ws, b.key).status == "blocked"
     claimed = app.tasks.claim(human, ws, b.key, ClaimRequest())
     assert claimed.status == "claimed"
     done = app.tasks.complete(human, ws, b.key, summary="done")
@@ -105,7 +105,7 @@ def test_accept_refuses_while_blocker_is_only_awaiting_review(app, human, ws):
     app.tasks.claim(human, ws, b.key, ClaimRequest())
     app.tasks.complete(human, ws, b.key, summary="done")
     c = app.tasks.create(human, ws, TaskCreate(title="C", status="ready", depends_on=[b.key]))
-    assert app.tasks.get(human, ws, c.key).status == "ready"
+    assert app.tasks.get(human, ws, c.key).status == "blocked"
     app.tasks.claim(human, ws, c.key, ClaimRequest())
     app.tasks.complete(human, ws, c.key, summary="done")
     with pytest.raises(ConflictError):

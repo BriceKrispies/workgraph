@@ -19,10 +19,12 @@ class TaskStatus(StrEnum):
 
 
 TERMINAL_TASK_STATUSES = frozenset({TaskStatus.ACCEPTED, TaskStatus.CANCELLED})
-# A dependency is satisfied once the blocking task's work is complete: accepted, or awaiting review or
-# verification (its result is final and only acceptance is pending). Acceptance itself still requires
-# every blocker to be accepted (see ``unaccepted_dependencies``).
-DEPENDENCY_SATISFIED_STATUSES = frozenset(
+# Automatic scheduling (ready/blocked recomputation, promotion, the scheduler and auto-execution) waits
+# for every blocker to be accepted.
+SCHEDULING_DEPENDENCY_STATUSES = frozenset({TaskStatus.ACCEPTED})
+# A manual claim also accepts blockers whose work is complete (awaiting review or verification). Acceptance
+# of the dependent still requires every blocker to be accepted (see ``unaccepted_dependencies``).
+CLAIMABLE_DEPENDENCY_STATUSES = frozenset(
     {TaskStatus.ACCEPTED, TaskStatus.AWAITING_REVIEW, TaskStatus.AWAITING_VERIFICATION}
 )
 OPEN_TASK_STATUSES = frozenset(set(TaskStatus) - TERMINAL_TASK_STATUSES)

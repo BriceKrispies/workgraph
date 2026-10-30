@@ -1,0 +1,36 @@
+{
+  "id": "classify-unavailable-history",
+  "covers": ["C045", "C046", "O05"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "llm.auto_classify", "false"], "json": true},
+    {"cli": ["config", "set", "llm.providers.ollama.base_url", "http://127.0.0.1:1"], "json": true},
+    {"cli": ["config", "set", "llm.providers.ollama.max_retries", "2"], "json": true},
+    {"cli": ["config", "set", "llm.providers.ollama.backoff_seconds", "0"], "json": true},
+    {"cli": ["config", "set", "llm.providers.ollama.timeout_seconds", "5"], "json": true},
+    {"cli": ["config", "set", "llm.classification.provider", "ollama"], "json": true},
+    {"cli": ["config", "set", "llm.classification.model", "not-pulled"], "json": true},
+    {"cli": ["task", "create", "Write docs"], "json": true},
+    {"cli": ["classify", "request", "WG-1", "--now"], "json": true, "expect_exit": 6},
+    {"cli": ["classify", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/current", "equals": null}}},
+    {"assert": {"json": {"path": "/history/0/validation_status", "equals": "provider_unavailable"}}},
+    {"assert": {"json": {"path": "/history/0/status", "equals": "failed"}}},
+    {"assert": {"json": {"path": "/history/0/provider", "equals": "ollama"}}},
+    {"assert": {"json": {"path": "/history/0/model", "equals": "not-pulled"}}},
+    {"assert": {"json": {"path": "/history/1", "absent": true}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "backlog"}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_llm_classification_search.py::test_invalid_output_and_unavailable_model: the invalid_output row and the failed status that come from the fake Ollama server returning non-JSON for broken-model, and the missing-model 404 that the fake server returns for not-pulled, need the fake Ollama HTTP server; this scenario reaches the provider_unavailable row through an unreachable endpoint instead",
+      "covered_by": "SC-17"
+    },
+    {
+      "case": "tests/integration/test_llm_classification_search.py::test_classification_job_dead_letters_when_model_unavailable: the test lowers the queued job's max_attempts through the database session before draining, which no CLI step can do, so the job never reaches the dead status from the CLI",
+      "covered_by": "SC-22"
+    }
+  ]
+}

@@ -19,6 +19,8 @@
     {"cli": ["tracker", "status", "work-jira"], "json": true},
     {"assert": {"json": {"path": "/connection", "equals": "work-jira"}}},
     {"assert": {"json": {"path": "/tracked_tasks", "equals": 0}}},
+    {"assert": {"json": {"path": "/cursor", "equals": null}}},
+    {"assert": {"json": {"path": "/last_sync", "equals": null}}},
     {"cli": ["tracker", "status"], "json": true},
     {"assert": {"json": {"path": "/0/connection", "equals": "work-jira"}}},
     {"cli": ["tracker", "status", "nope"], "json": true, "expect_exit": 4},

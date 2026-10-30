@@ -1,0 +1,56 @@
+{
+  "id": "providers-workspace-and-project-services",
+  "covers": ["C108", "C109", "C110", "C111", "C113", "C114", "C118", "C123", "C152", "C156", "C180", "C181", "C183", "C184", "O05"],
+  "setup": [
+    {"git": "init", "repo": "allowed"},
+    {"git": "commit", "repo": "allowed", "files": {"README.md": "allowed\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["workspace", "create", "main", "--name", "Main", "--default"], "json": true},
+    {"assert": {"json": {"path": "/slug", "equals": "main"}}},
+    {"cli": ["workspace", "create", "main"], "json": true, "expect_exit": 3},
+    {"assert": {"exit": 3}},
+    {"assert": {"json": {"path": "/error/code", "equals": "conflict"}}},
+    {"cli": ["workspace", "set", "main", "--allowed-root", "{repo:allowed}"], "json": true},
+    {"assert": {"json": {"path": "/settings/allowed_roots/0", "equals": "{repo:allowed}"}}},
+    {"cli": ["repo", "register", "{repo:allowed}"], "json": true},
+    {"assert": {"json": {"path": "/name", "equals": "allowed"}}},
+    {"cli": ["project", "create", "p1", "--name", "P1"], "json": true},
+    {"assert": {"json": {"path": "/slug", "equals": "p1"}}},
+    {"cli": ["project", "create", "p1", "--name", "again"], "json": true, "expect_exit": 3},
+    {"assert": {"exit": 3}},
+    {"assert": {"json": {"path": "/error/code", "equals": "conflict"}}},
+    {"cli": ["project", "add-repo", "p1", "allowed"], "json": true},
+    {"cli": ["project", "show", "p1"], "json": true},
+    {"assert": {"json": {"path": "/repositories/0/name", "equals": "allowed"}}},
+    {"cli": ["project", "remove-repo", "p1", "allowed"], "json": true},
+    {"cli": ["project", "show", "p1"], "json": true},
+    {"assert": {"json": {"path": "/repositories/0", "absent": true}}},
+    {"cli": ["project", "update", "p1", "--status", "archived", "--description", "done"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "archived"}}},
+    {"assert": {"json": {"path": "/description", "equals": "done"}}},
+    {"cli": ["project", "list"], "json": true},
+    {"assert": {"json": {"path": "/0", "absent": true}}},
+    {"cli": ["project", "list", "--all"], "json": true},
+    {"assert": {"json": {"path": "/0/slug", "equals": "p1"}}},
+    {"assert": {"json": {"path": "/1", "absent": true}}},
+    {"cli": ["workspace", "show", "main"], "json": true},
+    {"assert": {"json": {"path": "/repositories", "equals": 1}}},
+    {"cli": ["repo", "update", "allowed", "--access", "read_only"], "json": true},
+    {"assert": {"json": {"path": "/access_mode", "equals": "read_only"}}},
+    {"cli": ["task", "create", "x", "--repo", "allowed"], "json": true},
+    {"assert": {"json": {"path": "/key", "equals": "WG-1"}}},
+    {"cli": ["task", "link-repo", "WG-1", "allowed", "--access", "read_write"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}},
+    {"assert": {"json": {"path": "/error/code", "equals": "validation_failed"}}},
+    {"cli": ["workspace", "archive", "main"], "json": true},
+    {"assert": {"json": {"path": "/archived_at", "not_equals": null}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_providers_and_services.py::test_workspace_and_project_services: the update_settings call with an unknown setting key ({\"unknown\": 1}) is refused by the service, but `workspace set` only accepts --allowed-root, so that rejection cannot be sent through the CLI; the allowed-root boundary is exercised with the registered repository itself, because the Python test uses the parent directory of a sibling repository and the runner has no placeholder for the repositories directory",
+      "covered_by": "CORE-07"
+    }
+  ]
+}

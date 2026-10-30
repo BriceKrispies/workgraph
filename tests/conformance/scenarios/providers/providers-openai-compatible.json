@@ -1,0 +1,19 @@
+{
+  "id": "providers-openai-compatible",
+  "covers": ["C060", "C061"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "llm.providers.lm", "{\"type\":\"openai_compatible\",\"base_url\":\"http://127.0.0.1:9\",\"max_retries\":0}"], "json": true},
+    {"cli": ["config", "show"], "json": true},
+    {"assert": {"json": {"path": "/config/llm/providers/lm/type", "equals": "openai_compatible"}}},
+    {"assert": {"json": {"path": "/config/llm/providers/lm/base_url", "equals": "http://127.0.0.1:9"}}},
+    {"assert": {"json": {"path": "/config/llm/providers/lm/max_retries", "equals": 0}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_providers_and_services.py::test_openai_compatible_provider: the test starts a ThreadingHTTPServer (_OpenAIHandler) on a loopback port, and the runner cannot start a fake HTTP server, so model listing (check_model), JSON generation with schema and invalid-output rejection (InvalidModelOutputError) and embeddings are not reached; only the provider's configuration is asserted",
+      "covered_by": "SH-18"
+    }
+  ]
+}

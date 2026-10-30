@@ -383,5 +383,18 @@
       }
     }
   ],
-  "not_observable": []
+  "not_observable": [
+    {
+      "case": "tests/integration/test_replay.py::test_validate_accepts_red_base_and_green_solution: the create output gives only the status and reason, so the per-command exit codes of the base and solution runs and the removal of the temporary validation worktree and workdir are not visible",
+      "covered_by": "GV-17"
+    },
+    {
+      "case": "tests/integration/test_replay.py::test_validate_rejects_green_base: the rejection status and reason are asserted above, but the solution exit codes and the removal of the temporary validation worktree and workdir are not printed",
+      "covered_by": "GV-17"
+    },
+    {
+      "case": "tests/integration/test_replay.py::test_validate_rejects_red_solution: the rejection status and reason are asserted above, but the empty base exit codes (the solution runs first) and the removal of the temporary validation worktree are not printed",
+      "covered_by": "GV-17"
+    }
+  ]
 }

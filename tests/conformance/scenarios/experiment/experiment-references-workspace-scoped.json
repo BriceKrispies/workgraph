@@ -1,0 +1,27 @@
+{
+  "id": "experiment-references-workspace-scoped",
+  "covers": ["C069", "C071", "C078", "C079", "C082", "C181"],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["workspace", "create", "other", "--name", "Other", "--prefix", "OTH"], "json": true},
+    {"cli": ["task", "create", "Measured change"], "json": true},
+    {"assert": {"json": {"path": "/key", "equals": "WG-1"}}},
+    {"cli": ["experiment", "create", "exp-one", "--title", "Experiment one", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40}}"], "json": true},
+    {"cli": ["experiment", "freeze", "exp-one"], "json": true},
+    {"cli": ["experiment", "trial", "add", "exp-one", "WG-1", "--arm", "haiku", "--phase", "staircase", "--band", "2"], "json": true, "save": {"trial": "/id"}},
+    {"assert": {"json": {"path": "/seq", "equals": 1}}},
+    {"cli": ["experiment", "trial", "show", "{var:trial}", "-w", "other"], "json": true, "expect_exit": 4},
+    {"assert": {"exit": 4}},
+    {"assert": {"json": {"path": "/error/code", "equals": "not_found"}}},
+    {"cli": ["experiment", "show", "exp-one", "-w", "other"], "json": true, "expect_exit": 4},
+    {"assert": {"exit": 4}},
+    {"assert": {"json": {"path": "/error/code", "equals": "not_found"}}},
+    {"cli": ["experiment", "show", "exp-one"], "json": true},
+    {"assert": {"json": {"path": "/experiment/status", "equals": "running"}}},
+    {"cli": ["experiment", "trial", "show", "{var:trial}"], "json": true},
+    {"assert": {"json": {"path": "/id", "equals": "{var:trial}"}}},
+    {"assert": {"json": {"path": "/status", "equals": "planned"}}}
+  ],
+  "not_observable": []
+}

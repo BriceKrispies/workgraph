@@ -1,0 +1,40 @@
+{
+  "id": "experiment-replay-rust-rho-base",
+  "covers": ["C075", "C076", "C079", "C083", "C165"],
+  "setup": [
+    {"git": "init", "repo": "rhofeat"},
+    {"git": "commit", "repo": "rhofeat", "files": {
+      "Cargo.toml": "[workspace]\nmembers = [\"crates/foo\"]\n",
+      "crates/foo/Cargo.toml": "[package]\nname = \"foo-core\"\nversion = \"0.1.0\"\n",
+      "crates/foo/src/lib.rs": "pub fn one() -> u32 {\n    1\n}\n",
+      "crates/foo/tests/common/mod.rs": "pub fn helper() {}\n"
+    }, "message": "crate"},
+    {"git": "commit", "repo": "rhofeat", "files": {
+      "crates/foo/src/lib.rs": "pub fn one() -> u32 {\n    1\n}\n\npub fn two() -> u32 {\n    2\n}\n",
+      "crates/foo/src/two.rho": "two :: fn() -> i32 { return 2 }\n",
+      "crates/foo/tests/bar.rs": "use foo_core::two;\n\n#[test]\nfn bar() { assert_eq!(two(), 2); }\n",
+      "libraries/gpu/tests/two_is_two.rho": "main :: fn() -> i32 { return 42 }\n"
+    }, "message": "Add two with a rho test program"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["repo", "register", "{repo:rhofeat}"], "json": true},
+    {"cli": ["experiment", "replay", "scan", "--repo", "rhofeat"], "json": true, "save": {"rho_sha": "/0/sha"}},
+    {"assert": {"json": {"path": "/0/features/src_lines", "equals": 5}}},
+    {"assert": {"stdout_contains": "libraries/gpu/tests/two_is_two.rho"}},
+    {"assert": {"stdout_contains": "crates/foo/src/two.rho"}},
+    {"cli": ["experiment", "replay", "create", "--repo", "rhofeat", "{var:rho_sha}"], "json": true, "save": {"rho_task": "/0/task_key"}},
+    {"assert": {"json": {"path": "/0/status", "equals": "created"}}},
+    {"cli": ["task", "show", "{var:rho_task}"], "json": true},
+    {"assert": {"stdout_contains": "Base branch: `wg/replay/"}},
+    {"cli": ["experiment", "create", "rhoexp", "--title", "Rho base", "--protocol", "{\"arms\":[{\"name\":\"haiku\",\"model\":\"claude-haiku-5-5\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":4},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40},\"oracle_template\":[\"python\",\"-c\",\"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"]}"], "json": true},
+    {"cli": ["experiment", "freeze", "rhoexp"], "json": true},
+    {"cli": ["experiment", "trial", "add", "rhoexp", "{var:rho_task}", "--arm", "haiku", "--phase", "live"], "json": true, "save": {"rho_trial": "/id"}},
+    {"cli": ["experiment", "trial", "start", "{var:rho_trial}"], "json": true, "save": {"rho_wt": "/worktree"}},
+    {"assert": {"json": {"path": "/trial/status", "equals": "running"}}},
+    {"assert": {"file": "{var:rho_wt}{sep}libraries{sep}gpu{sep}tests{sep}two_is_two.rho", "exists": true, "contains": "main ::"}},
+    {"assert": {"file": "{var:rho_wt}{sep}crates{sep}foo{sep}tests{sep}bar.rs", "exists": true}},
+    {"assert": {"file": "{var:rho_wt}{sep}crates{sep}foo{sep}src{sep}two.rho", "exists": false}}
+  ],
+  "not_observable": []
+}

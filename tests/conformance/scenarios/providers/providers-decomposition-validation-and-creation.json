@@ -1,0 +1,39 @@
+{
+  "id": "providers-decomposition-validation-and-creation",
+  "covers": ["C118", "C126", "C152", "C165"],
+  "setup": [
+    {"git": "init", "repo": "dec"},
+    {"git": "commit", "repo": "dec", "files": {"README.md": "dec\n"}, "message": "initial"}
+  ],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "llm.summarization.provider", "heuristic"], "json": true},
+    {"cli": ["config", "set", "llm.summarization.model", "heuristic-v1"], "json": true},
+    {"cli": ["config", "set", "llm.auto_embed", "false"], "json": true},
+    {"cli": ["repo", "register", "{repo:dec}"], "json": true},
+    {"cli": ["task", "create", "Big feature", "--repo", "dec", "-d", "- Design the API\n- Then implement the endpoint\n- Then write the docs"], "json": true},
+    {"assert": {"json": {"path": "/key", "equals": "WG-1"}}},
+    {"cli": ["run", "decompose", "WG-1", "--no-create"], "json": true},
+    {"assert": {"json": {"path": "/proposal/children/2/title", "equals": "Then write the docs"}}},
+    {"assert": {"json": {"path": "/proposal/children/3", "absent": true}}},
+    {"assert": {"json": {"path": "/created", "equals": []}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/child_ids/0", "absent": true}}},
+    {"cli": ["run", "decompose", "WG-1", "--create"], "json": true},
+    {"assert": {"json": {"path": "/created/2", "not_equals": null}}},
+    {"assert": {"json": {"path": "/created/3", "absent": true}}},
+    {"cli": ["task", "show", "WG-1"], "json": true},
+    {"assert": {"json": {"path": "/child_ids/2", "not_equals": null}}},
+    {"assert": {"json": {"path": "/child_ids/3", "absent": true}}},
+    {"cli": ["task", "show", "WG-3"], "json": true},
+    {"assert": {"json": {"path": "/status", "equals": "blocked"}}},
+    {"assert": {"json": {"path": "/depends_on/0", "not_equals": null}}},
+    {"assert": {"json": {"path": "/depends_on/1", "absent": true}}}
+  ],
+  "not_observable": [
+    {
+      "case": "tests/integration/test_providers_and_services.py::test_decomposition_validation_and_creation: the three validate_decomposition rejections (a dependency cycle, a child naming an unknown repository, a child depending on an unknown ref) need a TaskDecomposition that the heuristic provider never proposes and the CLI cannot supply, so these pure validation cases are not reachable through a scenario",
+      "covered_by": "CORE-12"
+    }
+  ]
+}

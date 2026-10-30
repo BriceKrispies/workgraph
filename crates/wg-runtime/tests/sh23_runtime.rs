@@ -529,6 +529,15 @@ fn probe_step(
 #[test]
 fn flow_driver_feeds_effect_results_back() -> TestResult {
     let dir = scratch("flow")?;
+    // The probe asks git whether the directory is a work tree. The scratch directory lives under
+    // the target directory, which need not sit inside any repository, so the test makes its own.
+    assert!(
+        std::process::Command::new("git")
+            .args(["init", "-q"])
+            .current_dir(&dir)
+            .status()?
+            .success()
+    );
     let mut runtime = runtime(&dir)?;
     let flow = Flow {
         name: "probe",
@@ -542,7 +551,6 @@ fn flow_driver_feeds_effect_results_back() -> TestResult {
         phase: Phase::Start,
     };
     let done = runtime.drive(&flow, &context()?, start, ProbeInput::Begin)?;
-    // The scratch directory sits inside the repository's own work tree.
     assert_eq!(done.phase, Phase::Done(true));
     let events = runtime
         .store

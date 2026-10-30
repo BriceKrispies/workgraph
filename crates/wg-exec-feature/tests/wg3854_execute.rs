@@ -490,9 +490,8 @@ fn the_live_collaborators_reach_the_commit_and_verify_features() {
         "{}",
         refused.message
     );
-    // Stacks do not serve `mark_ready` yet.
-    let blocked = Live
-        .mark_ready(&mut app, &ctx(), id(11))
-        .expect_err("not served");
-    assert!(blocked.message.contains("stacks"), "{}", blocked.message);
+    // The stacks feature serves `mark_ready`; WG-1 is in no stack, so it is left alone (as the
+    // Python `StackService.mark_ready` does), not refused by a stand-in.
+    Live.mark_ready(&mut app, &ctx(), id(11))
+        .expect("stacks serve mark_ready; a task outside a stack is left alone");
 }

@@ -134,42 +134,55 @@ fn missing_argument_is_a_usage_error() {
     assert!(text(&out.stderr).contains("REFS"));
 }
 
+// `analytics subagents` is implemented now, so the failure below is a real one: a fresh home has
+// no default workspace (the same `not_found` the Python CLI raises).
+
 #[test]
-fn unimplemented_command_reports_itself_in_human_mode() {
+fn a_failing_command_reports_itself_in_human_mode() {
     let out = workgraph(&["analytics", "subagents"]);
-    assert_eq!(out.status.code(), Some(1));
+    assert_eq!(out.status.code(), Some(4));
     assert!(out.stdout.is_empty());
     let err = text(&out.stderr);
-    assert!(err.starts_with("error:"), "{err}");
-    assert!(err.contains("workgraph analytics subagents"), "{err}");
+    assert!(err.starts_with("error (not_found):"), "{err}");
+    assert!(err.contains("no default workspace configured"), "{err}");
 }
 
 #[test]
 fn json_is_stripped_wherever_it_appears() {
     let expected = concat!(
-        "{\"error\": {\"code\": \"cli_error\", \"message\": ",
-        "\"`workgraph analytics subagents` is not implemented in this build of the Rust rewrite yet\", ",
+        "{\"error\": {\"code\": \"not_found\", \"message\": ",
+        "\"no default workspace configured; pass --workspace or run `workgraph workspace use <slug>`\", ",
         "\"details\": {}}}\n"
     );
     for args in [
         vec!["--json", "analytics", "subagents"],
         vec!["analytics", "--json", "subagents"],
         vec!["analytics", "subagents", "--json"],
-        vec![
-            "--home",
-            "somewhere",
-            "-w",
-            "main",
-            "analytics",
-            "subagents",
-            "--json",
-        ],
     ] {
         let out = workgraph(&args);
-        assert_eq!(out.status.code(), Some(1), "{args:?}");
+        assert_eq!(out.status.code(), Some(4), "{args:?}");
         assert_eq!(text(&out.stdout), expected, "{args:?}");
         assert!(out.stderr.is_empty(), "{args:?}");
     }
+    // An explicit, missing workspace names itself in the envelope, wherever `--json` sits.
+    let out = workgraph(&[
+        "--home",
+        "somewhere",
+        "-w",
+        "main",
+        "analytics",
+        "subagents",
+        "--json",
+    ]);
+    assert_eq!(out.status.code(), Some(4));
+    assert!(
+        text(&out.stdout).starts_with(
+            "{\"error\": {\"code\": \"not_found\", \"message\": \"workspace 'main' not found\""
+        ),
+        "{}",
+        text(&out.stdout)
+    );
+    assert!(out.stderr.is_empty());
 }
 
 #[test]

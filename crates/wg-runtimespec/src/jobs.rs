@@ -46,6 +46,17 @@ pub fn unknown_job_kind(kind: &str) -> Option<String> {
     ))
 }
 
+/// The resource keys of a job enqueued without any. A `git_sync` job takes its repository's key,
+/// `repo:<id>`, as `RepositoryService.register` gives the job it enqueues, so a sync from the CLI or
+/// the post-commit hook serialises with the registration sync and cannot race it.
+#[must_use]
+pub fn default_resource_keys(kind: &str, payload: &wg_model::entity::JsonObject) -> Vec<String> {
+    match (kind, payload.get("repository_id").and_then(Json::as_str)) {
+        ("git_sync", Some(repository)) => vec![format!("repo:{repository}")],
+        _ => Vec::new(),
+    }
+}
+
 /// The payload of `job enqueue --payload`: a JSON object. Anything else is a validation error.
 pub fn enqueue_payload(text: &str) -> Result<wg_model::entity::JsonObject, WgError> {
     let value: Json = serde_json::from_str(text)

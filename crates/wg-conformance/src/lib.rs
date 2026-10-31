@@ -27,10 +27,13 @@
 //!   escapes.
 //! * **Run a subset.** `--only id,id,...` (repeatable) or `--list FILE` (one id per line, `#`
 //!   comments) runs only the named scenarios. An id that matches no scenario is an error.
+//! * **Budget.** The whole run has one hard wall-clock budget, `--budget SECS` (default and
+//!   ceiling 120 s); see [`budget`]. A spent budget fails the unfinished scenarios and exits 1.
 //! * **Timing.** The `--report` JSON gives every file a `duration_ms`, and a `slow_steps` list of
 //!   the steps that took over a second (`implementation`, `index` (null for setup), `kind`, `ms`).
 //!   The text report prints the file's time on its result line.
 
+pub mod budget;
 pub mod compare;
 pub mod coverage;
 pub mod dbdump;

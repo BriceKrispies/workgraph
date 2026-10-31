@@ -1,35 +1,19 @@
 # Testing
 
+Every test run has a hard **120 s wall-clock budget**. It is enforced by `wg-conformance --budget`
+(default 120, refused above 120) and by `tools/check.py`, which runs each test step under the same
+120 s limit. A run that outlives the budget is killed and fails. A check that does not fit the
+budget is cut, never lengthened.
+
 ```sh
-uv run pytest -n auto                       # default: run the suite in parallel across CPU cores
-uv run pytest                               # serial run, useful when debugging one ordering problem
-uv run pytest -m "not slow and not e2e"
-uv run pytest tests/e2e
-uv run pytest --cov=workgraph --cov-report=term
-uv run tools/check.py
+cargo test --workspace --no-run   # build the test binaries (unbudgeted)
+cargo test -p <crate>             # run one crate's tests; must finish in 120 s
+uv run tools/check.py --tests     # stack verification: the Rust tests run under the budget
+wg-conformance check --rust COMMAND --budget 60   # a conformance run with a shorter budget
 ```
 
-The ordinary suite needs **no network, no Ollama, no Claude Code and no paid API**:
-
-| Real thing | How tests exercise it |
-| --- | --- |
-| Git | real temporary repositories created per test (`tests/conftest.py::make_repo`) |
-| Coding agents | `workgraph/demo/scripted_agent.py`, a real `workgraph.agent.v1` executable that edits worktrees and commits |
-| Claude Code | `tests/fixtures/fake_claude.py` emitting documented `stream-json` messages behind a `claude` wrapper; hook payloads from the documented formats; the real `workgraph claude hook` entrypoint in a subprocess |
-| Ollama | `tests/fixtures/fake_ollama.py`, a real HTTP server implementing `/api/tags`, `/api/chat`, `/api/embed` (with forced failures) |
-| OpenAI-compatible servers | an in-test HTTP server |
-| MCP | the real server over stdio (subprocess) and Streamable HTTP (uvicorn), driven by the SDK client |
-| HTTP API | Starlette `TestClient` with the real security middleware, and uvicorn for MCP/e2e |
-| Database | real SQLite files in WAL mode, real Alembic migrations |
-
-`pytest-xdist` is a dev dependency and `uv run pytest -n auto` is the default way to run the suite.
-Each test gets its own `WORKGRAPH_HOME` under `tmp_path`, and tests that open a socket use a free
-port from `_free_port()` or an OS-assigned port, so workers do not share a database, data directory
-or port. A test that writes to a process-wide location must monkeypatch it per test.
-
-Layout: `tests/unit` (pure logic, queue semantics, parsers, configuration, migrations),
-`tests/integration` (services against real Git/SQLite/processes, API, MCP, CLI),
-`tests/e2e` (the 25-step demonstration and demo seeding). Markers: `slow`, `e2e`.
+Tests run once per stack, not per change. A per-change agent runs only the cheap checks
+(`cargo check`, `cargo clippy -D warnings`, `cargo fmt`).
 
 ## Frontend
 
@@ -37,11 +21,9 @@ Layout: `tests/unit` (pure logic, queue semantics, parsers, configuration, migra
 bun run --cwd web typecheck
 bun run --cwd web test
 bun run --cwd web build
-bun run --cwd web test:e2e
 ```
 
-Component tests use Vitest and Testing Library. The Playwright suite starts the real backend
-against an isolated, seeded home and drives the system Chrome (no browser download).
+Component tests use Vitest and Testing Library. `tools/check.py` runs `web test` under the budget.
 
 ## Generating a migration
 

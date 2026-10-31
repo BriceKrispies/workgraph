@@ -1,7 +1,8 @@
 //! The three modes: `diff`, `record` and `check`.
 
+use crate::budget::Budget;
 use crate::compare::{
-    Divergence, FileReport, Normaliser, compare, golden_json, observe, parse_golden,
+    Divergence, FileReport, Normaliser, Verdict, compare, golden_json, observe, parse_golden,
 };
 use crate::runner::{Implementation, RunResult, run_scenario};
 use crate::scenario::{Scenario, parse_scenario};
@@ -120,20 +121,38 @@ pub fn run_in_order<I: Sync, T: Send>(
 
 /// Judge every loaded file with `work` on `jobs` workers, in file order, and stamp each report with
 /// the wall-clock time its work took.
+///
+/// Under the budget, a file that has not started when the budget is spent is failed without
+/// running. A file whose work runs past the budget and fails carries the budget problem first.
 fn per_file(
     loaded: &[Loaded],
     jobs: usize,
+    budget: &Budget,
     work: impl Fn(&Loaded) -> FileReport + Sync,
 ) -> Vec<FileReport> {
     run_in_order(loaded, jobs, |l| {
         let started = Instant::now();
-        let mut report = work(l);
+        let mut report = if budget.expired() {
+            let id = l.scenario.as_ref().ok().map(|s| s.id.clone());
+            FileReport::failed(&l.file, id, budget.problem())
+        } else {
+            let mut report = work(l);
+            let problem = budget.problem();
+            if budget.expired()
+                && report.verdict == Verdict::Failed
+                && !report.problems.contains(&problem)
+            {
+                report.problems.insert(0, problem);
+            }
+            report
+        };
         report.duration_ms = u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX);
         report
     })
 }
 
 /// `diff`: run the reference and candidate implementations and compare them.
+#[allow(clippy::too_many_arguments)]
 pub fn diff(
     loaded: &[Loaded],
     reference: &Implementation,
@@ -142,8 +161,9 @@ pub fn diff(
     norm: &dyn Normaliser,
     out: Option<&Path>,
     jobs: usize,
+    budget: &Budget,
 ) -> Vec<FileReport> {
-    per_file(loaded, jobs, |l| {
+    per_file(loaded, jobs, budget, |l| {
         let s = match &l.scenario {
             Ok(s) => s,
             Err(e) => {
@@ -169,8 +189,9 @@ pub fn record(
     norm: &dyn Normaliser,
     out: Option<&Path>,
     jobs: usize,
+    budget: &Budget,
 ) -> Vec<FileReport> {
-    per_file(loaded, jobs, |l| {
+    per_file(loaded, jobs, budget, |l| {
         let s = match &l.scenario {
             Ok(s) => s,
             Err(e) => {
@@ -201,6 +222,7 @@ pub fn record(
 }
 
 /// `check`: run the candidate implementation and compare it with the goldens.
+#[allow(clippy::too_many_arguments)]
 pub fn check(
     loaded: &[Loaded],
     candidate: &Implementation,
@@ -209,8 +231,9 @@ pub fn check(
     norm: &dyn Normaliser,
     out: Option<&Path>,
     jobs: usize,
+    budget: &Budget,
 ) -> Vec<FileReport> {
-    per_file(loaded, jobs, |l| {
+    per_file(loaded, jobs, budget, |l| {
         let s = match &l.scenario {
             Ok(s) => s,
             Err(e) => {
@@ -353,6 +376,7 @@ mod tests {
             &FullNormaliser::default(),
             None,
             2,
+            &Budget::start(crate::budget::CEILING),
         );
 
         let by_file = |name: &str| reports.iter().find(|r| r.file == name).unwrap();
@@ -367,6 +391,46 @@ mod tests {
             failed.problems
         );
         assert!(!golden.join("fails.json").exists());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn a_spent_budget_fails_every_scenario_without_running_it() {
+        let dir = scratch("spent");
+        write(
+            &dir.join("area/one.json"),
+            &scenario("one", r#"{"assert":{"exit":0}}"#),
+        );
+        write(
+            &dir.join("area/two.json"),
+            &scenario("two", r#"{"assert":{"exit":0}}"#),
+        );
+        let golden = dir.join("golden");
+        let loaded = load_scenarios(&dir).unwrap();
+        // The reference is a command that does not exist: if a scenario ran, its step would fail
+        // with a spawn error instead of the budget problem.
+        let reference =
+            Implementation::from_command("ref", "no-such-binary-for-budget-test", Vec::new())
+                .unwrap();
+        let spent = Budget::start(std::time::Duration::ZERO);
+
+        let reports = record(
+            &loaded,
+            &reference,
+            &golden,
+            &FullNormaliser::default(),
+            None,
+            2,
+            &spent,
+        );
+
+        assert_eq!(reports.len(), 2);
+        for report in &reports {
+            assert_eq!(report.verdict, Verdict::Failed);
+            assert_eq!(report.problems, ["test budget of 0 s exceeded"]);
+            assert!(report.scenario.is_some());
+        }
+        assert!(!golden.exists());
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

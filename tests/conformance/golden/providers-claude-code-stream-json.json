@@ -12,7 +12,7 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "[\n  {\n    \"name\": \"claude_code\",\n    \"adapter\": \"claude_code\",\n    \"available\": true,\n    \"detail\": \"2.1.314 (Claude Code)\",\n    \"capabilities\": {\n      \"streaming_progress\": true,\n      \"usage_reporting\": true,\n      \"cost_reporting\": true,\n      \"session_resume\": true,\n      \"isolated_workspace\": true,\n      \"cancellation\": true,\n      \"subagents\": true,\n      \"lifecycle_hooks\": true\n    },\n    \"config\": {\n      \"adapter\": \"claude_code\",\n      \"executable\": \"claude\",\n      \"model\": null,\n      \"permission_mode\": \"acceptEdits\",\n      \"allowed_tools\": [],\n      \"max_turns\": null,\n      \"max_budget_usd\": null,\n      \"extra_args\": []\n    }\n  }\n]\n",
+      "stdout": "[\n  {\n    \"name\": \"claude_code\",\n    \"adapter\": \"claude_code\",\n    \"available\": true,\n    \"detail\": \"<claude-version> (Claude Code)\",\n    \"capabilities\": {\n      \"streaming_progress\": true,\n      \"usage_reporting\": true,\n      \"cost_reporting\": true,\n      \"session_resume\": true,\n      \"isolated_workspace\": true,\n      \"cancellation\": true,\n      \"subagents\": true,\n      \"lifecycle_hooks\": true\n    },\n    \"config\": {\n      \"adapter\": \"claude_code\",\n      \"executable\": \"claude\",\n      \"model\": null,\n      \"permission_mode\": \"acceptEdits\",\n      \"allowed_tools\": [],\n      \"max_turns\": null,\n      \"max_budget_usd\": null,\n      \"extra_args\": []\n    }\n  }\n]\n",
       "stderr": ""
     },
     {

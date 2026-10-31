@@ -55,6 +55,13 @@ impl Normaliser for FullNormaliser {
         for (s, e, prefix) in scan(bytes, attempt_prefix_at) {
             spans.push((s, e, format!("<id:{}>", numbering.attempt(&prefix))));
         }
+        for (s, e, prefix) in scan(bytes, trial_prefix_at) {
+            // A trial's worktree and branch carry the first 8 hex digits of its id. A prefix
+            // that no UUID of the run shows is left as written.
+            if let Some(n) = numbering.known_prefix(&prefix) {
+                spans.push((s, e, format!("<id:{n}>")));
+            }
+        }
         for (s, e, key) in scan(bytes, sha_at) {
             spans.push((s, e, format!("<sha:{}>", numbering.sha(&key))));
         }
@@ -81,6 +88,9 @@ impl Normaliser for FullNormaliser {
         }
         for (s, e, ()) in scan(bytes, local_port_at) {
             spans.push((s, e, "<port>".to_owned()));
+        }
+        for (s, e, ()) in scan(bytes, claude_version_at) {
+            spans.push((s, e, "<claude-version>".to_owned()));
         }
         // Bare calendar dates near the run day. Added last, so a timestamp span found above keeps
         // its overlap: `splice` drops the later of two overlapping spans. A `period` value is
@@ -291,6 +301,34 @@ fn attempt_prefix_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
         return None;
     }
     let start = p + 1;
+    let end = start + 8;
+    if end > bytes.len() || !bounded(bytes, start, end) {
+        return None;
+    }
+    bytes[start..end]
+        .iter()
+        .all(u8::is_ascii_hexdigit)
+        .then(|| (start, end, lower(&bytes[start..end])))
+}
+
+/// The 8-character prefix of a trial id in a trial's worktree or branch: `trials\<id8>`,
+/// `trials/<id8>` (the worktree path, with one or two separators on Windows) or `wg/trial/<id8>`
+/// (the branch). Only the prefix is the span.
+fn trial_prefix_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
+    let head: &[u8] = [&b"trials"[..], &b"wg/trial/"[..]]
+        .into_iter()
+        .find(|h| bytes[i..].starts_with(h))?;
+    if i > 0 && is_word(bytes[i - 1]) {
+        return None;
+    }
+    let mut p = i + head.len();
+    while matches!(bytes.get(p), Some(b'\\' | b'/')) {
+        p += 1;
+    }
+    if p == i + head.len() && !head.ends_with(b"/") {
+        return None;
+    }
+    let start = p;
     let end = start + 8;
     if end > bytes.len() || !bounded(bytes, start, end) {
         return None;
@@ -606,6 +644,34 @@ fn local_port_at(bytes: &[u8], i: usize) -> Option<Span<()>> {
     (end > start).then_some((start, end, ()))
 }
 
+/// The version of an installed Claude Code, `<digits>.<digits>.<digits> (Claude Code)`. Only the
+/// version is the span; it is machine state, not behaviour.
+fn claude_version_at(bytes: &[u8], i: usize) -> Option<Span<()>> {
+    if (i > 0 && (is_word(bytes[i - 1]) || bytes[i - 1] == b'.')) || !bytes.get(i)?.is_ascii_digit()
+    {
+        return None;
+    }
+    let mut p = i;
+    for part in 0..3 {
+        if part > 0 {
+            if bytes.get(p) != Some(&b'.') {
+                return None;
+            }
+            p += 1;
+        }
+        let from = p;
+        while bytes.get(p).is_some_and(u8::is_ascii_digit) {
+            p += 1;
+        }
+        if p == from {
+            return None;
+        }
+    }
+    bytes[p..]
+        .starts_with(b" (Claude Code)")
+        .then_some((i, p, ()))
+}
+
 /// A step's wall-clock window in microseconds since the epoch, with the step's position in the
 /// run's step list (setup steps first), which names it in the placeholder.
 type Window = (usize, i64, i64);
@@ -690,12 +756,18 @@ impl Numbering {
     /// The number of the full UUID that `prefix` abbreviates, or a number of its own when the
     /// run never shows that UUID.
     fn attempt(&mut self, prefix: &str) -> usize {
-        let full = self
-            .ids
+        match self.known_prefix(prefix) {
+            Some(n) => n,
+            None => self.id(prefix),
+        }
+    }
+
+    /// The number of the full UUID of the run that `prefix` abbreviates, if any shows one.
+    fn known_prefix(&self, prefix: &str) -> Option<usize> {
+        self.ids
             .iter()
             .find(|(id, _)| id.starts_with(prefix))
-            .map(|(_, n)| *n);
-        full.unwrap_or_else(|| self.id(prefix))
+            .map(|(_, n)| *n)
     }
 
     fn sha(&mut self, key: &str) -> usize {
@@ -1158,6 +1230,44 @@ mod tests {
             n.normalise(&r, "myattempt-1-3f2b8c1e x attempt-x-3f2b8c1e"),
             "myattempt-1-3f2b8c1e x attempt-x-3f2b8c1e"
         );
+    }
+
+    #[test]
+    fn trial_prefixes_take_the_placeholder_of_their_full_uuid() {
+        let n = FullNormaliser::default();
+        let text = format!("trials\\\\3f2b8c1e x wg/trial/3f2b8c1e {ID1}");
+        let r = run("py", &[(text.as_str(), "")]);
+        assert_eq!(
+            n.normalise(&r, &text),
+            "trials\\\\<id:1> x wg/trial/<id:1> <id:1>"
+        );
+        // The same prefix in another run, with another UUID, still matches its UUID.
+        let other = "11111111-2222-4333-8444-555555555555";
+        let rs_text = format!("trials\\\\{} {other}", &other[..8]);
+        let rs = run("rs", &[(rs_text.as_str(), "")]);
+        assert_eq!(n.normalise(&rs, &rs_text), "trials\\\\<id:1> <id:1>");
+        // A prefix that no UUID of the run shows is left as written.
+        assert_eq!(n.normalise(&r, "trials\\\\abcdef12"), "trials\\\\abcdef12");
+        // Words that merely end in `trials` are left alone.
+        assert_eq!(
+            n.normalise(&r, "mytrials\\\\3f2b8c1e"),
+            "mytrials\\\\3f2b8c1e"
+        );
+    }
+
+    #[test]
+    fn claude_code_versions_are_placeholders() {
+        let n = FullNormaliser::default();
+        let text = "\"detail\": \"2.1.314 (Claude Code)\" and 2.1.316 (Claude Code)";
+        let r = run("py", &[(text, "")]);
+        assert_eq!(
+            n.normalise(&r, text),
+            "\"detail\": \"<claude-version> (Claude Code)\" and <claude-version> (Claude Code)"
+        );
+        // Not a three-part version, or not followed by the product name: left alone.
+        let other = "v1.2.3 (Claude Code) 1.2 (Claude Code) 1.2.3.4 (Claude Code) 1.2.3 (Codex)";
+        let r = run("rs", &[(other, "")]);
+        assert_eq!(n.normalise(&r, other), other);
     }
 
     #[test]

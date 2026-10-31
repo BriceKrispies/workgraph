@@ -6,8 +6,8 @@
 
 use serde_json::{Map, Value as Json};
 use wg_json::{Value, dict};
-use wg_model::entity::{Classification, ClassificationEvaluation};
-use wg_types::Id;
+use wg_model::entity::{Classification, ClassificationEvaluation, Task};
+use wg_types::{Id, Timestamp};
 
 use crate::spec::similar_sql::ImplementationCommit;
 use wg_wire::convention::{json_value, optional_text, text};
@@ -203,4 +203,17 @@ fn round(value: f64, digits: usize) -> f64 {
 #[must_use]
 pub fn best(entries: &[SimilarEntry], limit: usize) -> &[SimilarEntry] {
     &entries[..entries.len().min(limit)]
+}
+
+/// `after` with `updated_at` stamped when it differs from `before`: the ORM's `onupdate` runs
+/// for a row whose columns changed, and not otherwise.
+pub fn touched(before: &Task, after: Task, at: Timestamp) -> Task {
+    if &after == before {
+        after
+    } else {
+        Task {
+            updated_at: at,
+            ..after
+        }
+    }
 }

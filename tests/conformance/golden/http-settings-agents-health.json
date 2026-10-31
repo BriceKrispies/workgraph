@@ -54,7 +54,7 @@
       "index": 7,
       "kind": "http",
       "exit": 200,
-      "stdout": "[{\"name\":\"claude_code\",\"adapter\":\"claude_code\",\"available\":true,\"detail\":\"2.1.314 (Claude Code)\",\"capabilities\":{\"streaming_progress\":true,\"usage_reporting\":true,\"cost_reporting\":true,\"session_resume\":true,\"isolated_workspace\":true,\"cancellation\":true,\"subagents\":true,\"lifecycle_hooks\":true},\"config\":{\"adapter\":\"claude_code\",\"executable\":\"claude\",\"model\":null,\"permission_mode\":\"acceptEdits\",\"allowed_tools\":[],\"max_turns\":null,\"max_budget_usd\":null,\"extra_args\":[]}}]",
+      "stdout": "[{\"name\":\"claude_code\",\"adapter\":\"claude_code\",\"available\":true,\"detail\":\"<claude-version> (Claude Code)\",\"capabilities\":{\"streaming_progress\":true,\"usage_reporting\":true,\"cost_reporting\":true,\"session_resume\":true,\"isolated_workspace\":true,\"cancellation\":true,\"subagents\":true,\"lifecycle_hooks\":true},\"config\":{\"adapter\":\"claude_code\",\"executable\":\"claude\",\"model\":null,\"permission_mode\":\"acceptEdits\",\"allowed_tools\":[],\"max_turns\":null,\"max_budget_usd\":null,\"extra_args\":[]}}]",
       "stderr": ""
     },
     {

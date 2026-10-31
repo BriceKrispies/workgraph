@@ -2,6 +2,7 @@
 //! errors a bad payload or an unknown repository raises, and the JSON object the job returns.
 
 use serde_json::{Value as Json, json};
+use wg_json::Value as WireValue;
 use wg_model::entity::JsonObject;
 use wg_types::{Id, WgError, parse_id};
 
@@ -56,4 +57,43 @@ pub fn sync_result_object(result: &SyncResult) -> JsonObject {
     .as_object()
     .cloned()
     .unwrap_or_default()
+}
+
+/// The message of the bare `KeyError` a `compute_change_surface` job without `task_id` raises
+/// (retried, kind `exception`, as Python's worker treats any unexpected exception).
+pub const MISSING_TASK: &str = "KeyError: 'task_id'";
+
+/// The `task_id` of a `compute_change_surface` payload, when it is text.
+pub fn task_reference(payload: &JsonObject) -> Option<&str> {
+    payload.get("task_id").and_then(Json::as_str)
+}
+
+/// The number of repository surfaces `git surface` replied with (`len(surfaces)` in Python).
+pub fn surface_count(replies: &WireValue) -> usize {
+    match replies {
+        WireValue::List(items) => items.len(),
+        _ => 0,
+    }
+}
+
+/// The job's result of `compute_change_surface`: `{"repositories": n}`.
+pub fn surface_result_object(repositories: usize) -> JsonObject {
+    json!({ "repositories": repositories })
+        .as_object()
+        .cloned()
+        .unwrap_or_default()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn surface_result_counts_repositories() {
+        let replies = WireValue::List(vec![WireValue::Null, WireValue::Null]);
+        assert_eq!(surface_count(&replies), 2);
+        assert_eq!(surface_count(&WireValue::Null), 0);
+        let object = surface_result_object(surface_count(&replies));
+        assert_eq!(object.get("repositories"), Some(&json!(2)));
+    }
 }

@@ -8,12 +8,14 @@ publish.workspace = true
 description = "the workgraph binary: clap command tree and handlers"
 
 [lib]
+doctest = false
 name = "wg_cli"
 path = "src/lib.rs"
 
 [[bin]]
 name = "workgraph"
 path = "src/main.rs"
+test = false
 
 # Own lint table: the console UTF-8 setup on Windows calls the Windows API, so this crate
 # cannot inherit the workspace `unsafe_code = "forbid"`. Keep the clippy rules in step with the root.

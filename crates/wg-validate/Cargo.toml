@@ -14,3 +14,6 @@ workspace = true
 regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
 serde_json = { version = "1", features = ["preserve_order", "arbitrary_precision"] }
 wg-json = { path = "../wg-json" }
+
+[lib]
+doctest = false

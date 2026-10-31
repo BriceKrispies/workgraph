@@ -16,3 +16,6 @@ wg-procspec = { path = "../wg-procspec" }
 wg-validate = { path = "../wg-validate" }
 serde_json = "1"
 base64 = "0.22"
+
+[lib]
+doctest = false

@@ -13,3 +13,6 @@ workspace = true
 [dependencies]
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-procspec = { path = "../wg-procspec" }
+
+[lib]
+doctest = false

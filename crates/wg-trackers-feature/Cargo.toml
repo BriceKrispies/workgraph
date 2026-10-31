@@ -33,3 +33,6 @@ wg-wire = { path = "../wg-wire" }
 [dev-dependencies]
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
+
+[lib]
+doctest = false

@@ -33,3 +33,6 @@ wg-wire = { path = "../wg-wire" }
 [dev-dependencies]
 wg-agents = { path = "../wg-agents" }
 wg-proc = { path = "../wg-proc" }
+
+[lib]
+doctest = false

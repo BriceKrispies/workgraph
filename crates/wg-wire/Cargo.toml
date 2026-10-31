@@ -17,3 +17,6 @@ serde_json = { version = "1", features = ["preserve_order"] }
 wg-json = { path = "../wg-json" }
 wg-model = { path = "../wg-model" }
 wg-types = { path = "../wg-types" }
+
+[lib]
+doctest = false

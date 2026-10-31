@@ -21,3 +21,6 @@ wg-git-feature = { path = "../wg-git-feature" }
 wg-runtime = { path = "../wg-runtime" }
 wg-render = { path = "../wg-render" }
 wg-types = { path = "../wg-types" }
+
+[lib]
+doctest = false

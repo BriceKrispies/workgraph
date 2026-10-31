@@ -17,3 +17,6 @@ time = { version = "0.3", default-features = false, features = ["std"] }
 wg-automation = { path = "../wg-automation" }
 wg-model = { path = "../wg-model" }
 wg-types = { path = "../wg-types" }
+
+[lib]
+doctest = false

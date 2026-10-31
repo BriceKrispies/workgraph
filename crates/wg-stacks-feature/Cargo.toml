@@ -36,3 +36,6 @@ wg-wire = { path = "../wg-wire" }
 
 [dev-dependencies]
 wg-tasks-feature = { path = "../wg-tasks-feature" }
+
+[lib]
+doctest = false

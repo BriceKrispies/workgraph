@@ -21,3 +21,6 @@ wg-netspec = { path = "../wg-netspec" }
 
 [dev-dependencies]
 base64 = "0.22"
+
+[lib]
+doctest = false

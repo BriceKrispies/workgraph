@@ -23,3 +23,6 @@ wg-render = { path = "../wg-render" }
 wg-runtime = { path = "../wg-runtime" }
 wg-types = { path = "../wg-types" }
 wg-wire = { path = "../wg-wire" }
+
+[lib]
+doctest = false

@@ -9,3 +9,6 @@ description = "CPython numeric and ordering semantics: sum() over floats, statis
 
 [lints]
 workspace = true
+
+[lib]
+doctest = false

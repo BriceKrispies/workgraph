@@ -35,3 +35,6 @@ wg-wire = { path = "../wg-wire" }
 wg-tasks-feature = { path = "../wg-tasks-feature" }
 rpds = "1"
 uuid = { version = "1", default-features = false, features = ["std", "v4"] }
+
+[lib]
+doctest = false

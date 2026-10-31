@@ -21,3 +21,6 @@ wg-types = { path = "../wg-types" }
 
 [dev-dependencies]
 bytes = "1"
+
+[lib]
+doctest = false

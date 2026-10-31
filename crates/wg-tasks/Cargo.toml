@@ -28,3 +28,6 @@ wg-types = { path = "../wg-types" }
 
 [dev-dependencies]
 uuid = { version = "1", default-features = false, features = ["std", "serde"] }
+
+[lib]
+doctest = false

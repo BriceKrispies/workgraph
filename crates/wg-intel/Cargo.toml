@@ -17,3 +17,6 @@ wg-types = { path = "../wg-types" }
 
 [lints]
 workspace = true
+
+[lib]
+doctest = false

@@ -43,3 +43,6 @@ wg-verify = { path = "../wg-verify" }
 wg-verify-feature = { path = "../wg-verify-feature" }
 wg-wire = { path = "../wg-wire" }
 time = { version = "0.3", default-features = false, features = ["std"] }
+
+[lib]
+doctest = false

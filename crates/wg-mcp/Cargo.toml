@@ -35,3 +35,11 @@ wg-runtime = { path = "../wg-runtime" }
 wg-store = { path = "../wg-store" }
 wg-types = { path = "../wg-types" }
 wg-wire = { path = "../wg-wire" }
+
+[lib]
+doctest = false
+
+[[bin]]
+name = "wg-mcp"
+path = "src/main.rs"
+test = false

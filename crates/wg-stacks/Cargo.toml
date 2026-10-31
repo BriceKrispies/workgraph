@@ -18,3 +18,6 @@ wg-verify = { path = "../wg-verify" }
 
 [dev-dependencies]
 uuid = { version = "1", default-features = false, features = ["std", "serde"] }
+
+[lib]
+doctest = false

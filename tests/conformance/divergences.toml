@@ -64,3 +64,13 @@ scenario = "*"
 fields = ["stdout"]
 relative_tolerance = 1e-12
 description = "last-ulp differences in exp/log statistics: the two stdout texts must be identical after tokenising numbers, and every differing number must be a float within relative tolerance 1e-12 (differing integers, words or token counts are not allowed)"
+
+[[divergence]]
+id = "DV9"
+decision = "3.6"
+scenario = "analytics-exports-and-no-attempt-rows"
+step = 6
+fields = ["stdout"]
+contains = [".parquet"]
+both = true
+description = "the byte count printed for a Parquet export: Python writes through DuckDB (snappy), Rust through the arrow writer (uncompressed), so file sizes differ while DV6 checks the rows read back. Only this one step's stdout, and only when both sides name a .parquet file"

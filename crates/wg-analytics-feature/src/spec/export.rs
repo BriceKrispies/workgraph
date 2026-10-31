@@ -7,6 +7,7 @@
 //! DuckDB types the booleans and timestamps; a boolean column is marked in the dataset, and a
 //! timestamp is written as DuckDB writes it (`YYYY-MM-DD HH:MM:SS[.ffffff]`, fraction trimmed).
 
+use serde_json::Value as Json;
 use wg_analytics::Facts;
 use wg_analytics::source::{AnalyticsInput, AttemptRow, CommitRow, TaskRow};
 use wg_analytics::tasks::TaskFact;
@@ -423,4 +424,41 @@ pub fn export_view(console: &wg_render::Console, path: &str, bytes: u64) -> Stri
             wg_render::escape(path)
         ))
         .text
+}
+
+/// Result rows as a dataset: the columns are the keys of the first row, in order.
+pub fn rows_dataset(rows: &[Json]) -> Dataset {
+    let columns: Vec<String> = rows
+        .first()
+        .and_then(Json::as_object)
+        .map(|row| row.keys().cloned().collect())
+        .unwrap_or_default();
+    let body = rows
+        .iter()
+        .map(|row| {
+            columns
+                .iter()
+                .map(|column| json_raw(row.get(column)))
+                .collect()
+        })
+        .collect();
+    Dataset {
+        columns,
+        rows: body,
+        boolean_columns: Vec::new(),
+    }
+}
+
+fn json_raw(value: Option<&Json>) -> Raw {
+    match value {
+        None | Some(Json::Null) => Raw::Null,
+        Some(Json::Bool(flag)) => Raw::Int(i64::from(*flag)),
+        Some(Json::Number(number)) => number
+            .as_i64()
+            .map(Raw::Int)
+            .or_else(|| number.as_f64().map(Raw::Real))
+            .unwrap_or(Raw::Null),
+        Some(Json::String(text)) => Raw::Text(text.clone()),
+        Some(other) => Raw::Text(other.to_string()),
+    }
 }

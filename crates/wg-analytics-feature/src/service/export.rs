@@ -6,10 +6,8 @@
 
 use std::path::Path;
 
-use serde_json::Value as Json;
 use wg_analytics::build;
 use wg_archivespec::Dataset;
-use wg_rows::Raw;
 use wg_runtime::{App, RequestContext};
 use wg_types::WgError;
 
@@ -83,39 +81,7 @@ pub fn metric_dataset(
         &loaded.workspace.to_string(),
         &engine,
     )?;
-    Ok(rows_dataset(&answer.rows))
-}
-
-/// Result rows as a dataset: the columns are the keys of the first row, in order.
-fn rows_dataset(rows: &[Json]) -> Dataset {
-    let columns: Vec<String> = rows
-        .first()
-        .and_then(Json::as_object)
-        .map(|row| row.keys().cloned().collect())
-        .unwrap_or_default();
-    let body = rows
-        .iter()
-        .map(|row| columns.iter().map(|column| raw(row.get(column))).collect())
-        .collect();
-    Dataset {
-        columns,
-        rows: body,
-        boolean_columns: Vec::new(),
-    }
-}
-
-fn raw(value: Option<&Json>) -> Raw {
-    match value {
-        None | Some(Json::Null) => Raw::Null,
-        Some(Json::Bool(flag)) => Raw::Int(i64::from(*flag)),
-        Some(Json::Number(number)) => number
-            .as_i64()
-            .map(Raw::Int)
-            .or_else(|| number.as_f64().map(Raw::Real))
-            .unwrap_or(Raw::Null),
-        Some(Json::String(text)) => Raw::Text(text.clone()),
-        Some(other) => Raw::Text(other.to_string()),
-    }
+    Ok(export::rows_dataset(&answer.rows))
 }
 
 /// The dataset `export analytics --dataset` names, for `workspace` (the default one when absent).

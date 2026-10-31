@@ -222,6 +222,10 @@ fn execute(
     let poll_interval = Duration::from_millis(spec.poll_interval_ms);
     let mut timed_out = false;
     let mut cancelled = false;
+    // A process that ends quickly (most `git` calls) is noticed within a millisecond or two: the
+    // wait starts short and doubles up to `poll_interval`, so a long-running child is still polled
+    // (and its cancellation probe called) only every `poll_interval`.
+    let mut interval = Duration::from_millis(1).min(poll_interval);
     let status = loop {
         match child.try_wait() {
             Ok(Some(status)) => break status,
@@ -242,8 +246,9 @@ fn execute(
             guard.kill_tree(&mut child).map_err(ProcError::Wait)?;
             break child.wait().map_err(ProcError::Wait)?;
         }
-        let nap = remaining.map_or(poll_interval, |r| r.min(poll_interval));
+        let nap = remaining.map_or(interval, |r| r.min(interval));
         thread::sleep(nap.max(Duration::from_millis(1)));
+        interval = (interval * 2).min(poll_interval);
     };
 
     let mut waiting = readers;

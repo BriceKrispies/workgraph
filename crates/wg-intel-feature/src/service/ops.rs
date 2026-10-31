@@ -28,7 +28,7 @@ use wg_runtime::App;
 use wg_runtime::spec::RequestContext;
 use wg_store::Session;
 use wg_types::pyval::{prefix, text};
-use wg_types::{Correlation, Id, Permission, Timestamp, WgError};
+use wg_types::{Correlation, Id, Permission, WgError};
 
 use crate::service::classify as classify_reads;
 use crate::service::llm::Providers;
@@ -39,6 +39,7 @@ use crate::spec::plan::{
     validation_status,
 };
 use crate::spec::requests::{ConfirmRequest, ReclassifyRequest, RunOptions};
+use crate::spec::write_out::touched;
 
 /// The job kind of one classification run.
 pub const CLASSIFY_JOB: &str = "classify_task";
@@ -784,17 +785,4 @@ pub fn evaluate(
         },
     )?;
     Ok(outcome.reply)
-}
-
-/// `after` with `updated_at` stamped when it differs from `before`: the ORM's `onupdate` runs
-/// for a row whose columns changed, and not otherwise.
-fn touched(before: &Task, after: Task, at: Timestamp) -> Task {
-    if &after == before {
-        after
-    } else {
-        Task {
-            updated_at: at,
-            ..after
-        }
-    }
 }

@@ -9,6 +9,7 @@ use jiff::Timestamp;
 use jiff::tz::TimeZone;
 use rpds::VectorSync;
 use wg_model::{EffectError, EffectErrorKind, HttpCall, HttpMethod, HttpResponse};
+use wg_netspec::text::os_transport_message;
 
 /// A function that waits `seconds`. Tests replace the real wait with one that records it.
 pub type Sleeper = Box<dyn FnMut(f64) + Send>;
@@ -21,26 +22,6 @@ static CLOCK_START: OnceLock<Instant> = OnceLock::new();
 pub struct Net {
     /// Replaces the real sleep between retries when set.
     pub sleep: Option<Sleeper>,
-}
-
-/// A transport failure as Python's `httpx` prints it: an operating-system error reads
-/// `[WinError 10061] No connection ...` (`[Errno 111] Connection refused` elsewhere), with no
-/// trailing full stop and none of Rust's `io:` prefix or `(os error N)` suffix.
-fn transport_message(err: &ureq::Error) -> String {
-    let ureq::Error::Io(io) = err else {
-        return err.to_string();
-    };
-    let Some(code) = io.raw_os_error() else {
-        return err.to_string();
-    };
-    let shown = io.to_string();
-    let suffix = format!(" (os error {code})");
-    let reason = shown
-        .strip_suffix(&suffix)
-        .unwrap_or(&shown)
-        .trim_end_matches(|c: char| c == '.' || c.is_whitespace());
-    let tag = if cfg!(windows) { "WinError" } else { "Errno" };
-    format!("[{tag} {code}] {reason}")
 }
 
 impl Net {
@@ -75,7 +56,13 @@ impl Net {
                 ureq::Error::ConnectionFailed | ureq::Error::Io(_) => EffectErrorKind::Unavailable,
                 _ => EffectErrorKind::Failed,
             },
-            message: transport_message(&err),
+            message: match &err {
+                ureq::Error::Io(io) => match io.raw_os_error() {
+                    Some(code) => os_transport_message(cfg!(windows), code, &io.to_string()),
+                    None => err.to_string(),
+                },
+                other => other.to_string(),
+            },
         })?;
         let status = response.status().as_u16();
         let headers = response

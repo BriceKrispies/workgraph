@@ -1616,7 +1616,7 @@ mod tests {
         let text = "a\n- web + auth changed together in 1 task(s).\n- auth + sdk changed together in 1 task(s).\n\n## Q";
         assert_eq!(
             n.normalise(&r, text),
-            "a\n- auth + sdk changed together in 1 task(s).\n- web + auth changed together in 1 task(s).\n\n## Q"
+            "a\n- auth + sdk changed together in 1 task(s).\n- auth + web changed together in 1 task(s).\n\n## Q"
         );
     }
 

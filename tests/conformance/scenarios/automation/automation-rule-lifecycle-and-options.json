@@ -4,6 +4,8 @@
   "setup": [],
   "steps": [
     {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "llm.auto_embed", "false"], "json": true},
+    {"cli": ["config", "set", "llm.auto_classify", "false"], "json": true},
     {"cli": ["automation", "catalog"], "json": true},
     {"assert": {"exit": 0}},
     {"cli": ["automation", "create", "{\"name\":\"ping\",\"trigger\":{\"type\":\"manual\"},\"actions\":[{\"type\":\"notify\",\"title\":\"ping {{task.key}}\"}]}", "-w", "default"], "json": true},

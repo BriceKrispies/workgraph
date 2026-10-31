@@ -100,7 +100,7 @@ pub fn send(port: u16, req: &Request<'_>, max_events: Option<usize>) -> Result<E
         .map_err(|e| format!("connect 127.0.0.1:{port}: {e}"))?;
     let window = crate::wait::stall_timeout();
     stream
-        .set_read_timeout(Some(window))
+        .set_read_timeout(Some(crate::wait::POLL))
         .and_then(|()| stream.set_write_timeout(Some(window)))
         .map_err(|e| format!("socket timeout: {e}"))?;
     stream
@@ -165,19 +165,30 @@ fn read_exchange(stream: &mut impl Read, max_events: Option<usize>) -> Result<Ex
     })
 }
 
-/// One read. A reset or closed peer counts as the end of the stream; a timeout is an error.
+/// One read. A reset or closed peer counts as the end of the stream. The socket polls in short
+/// slices (see `send`): a silent peer is an error once the stall window has passed, and a spent
+/// budget is an error at once.
 fn read_some(stream: &mut impl Read, buf: &mut [u8]) -> Result<usize, String> {
-    match stream.read(buf) {
-        Ok(n) => Ok(n),
-        Err(e)
-            if matches!(
-                e.kind(),
-                std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut
-            ) =>
-        {
-            Err(format!("stalled: no response bytes: {e}"))
+    let quiet = Instant::now();
+    let window = crate::wait::stall_timeout();
+    loop {
+        match stream.read(buf) {
+            Ok(n) => return Ok(n),
+            Err(e)
+                if matches!(
+                    e.kind(),
+                    std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut
+                ) =>
+            {
+                if crate::budget::cut() {
+                    return Err(crate::budget::cut_error());
+                }
+                if quiet.elapsed() >= window {
+                    return Err(format!("stalled: no response bytes: {e}"));
+                }
+            }
+            Err(_) => return Ok(0),
         }
-        Err(_) => Ok(0),
     }
 }
 
@@ -492,6 +503,9 @@ impl Server {
         };
         let deadline = Instant::now() + crate::wait::STARTUP_TIMEOUT;
         loop {
+            if crate::budget::cut() {
+                return Err(crate::budget::cut_error());
+            }
             if let Some(status) = server
                 .child
                 .try_wait()

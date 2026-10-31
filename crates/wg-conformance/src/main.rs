@@ -1,9 +1,12 @@
 //! Command line for the conformance runner.
 
+use serde_json::json;
 use std::collections::BTreeSet;
 use std::io::Write as _;
 use std::path::PathBuf;
 use std::process::ExitCode;
+use std::time::Duration;
+use wg_conformance::budget::{self, Budget};
 use wg_conformance::compare::{FileReport, parse_divergences, report_json, report_text, tally};
 use wg_conformance::coverage::{coverage, inventory_ids, marked_tests, parse_exclusions};
 use wg_conformance::dbdump::canonical_dump;
@@ -33,7 +36,10 @@ const USAGE: &str = "usage: wg-conformance <validate|diff|record|check|coverage>
   --only IDS           run only these scenario ids, comma separated (repeatable; unknown ids are an error)
   --list FILE          run only the scenario ids listed in FILE, one per line (# comments allowed)
   --stall-timeout SECS a process, MCP reply or HTTP response that makes no progress for SECS seconds
-                       is killed and reported as a step problem (default 10)";
+                       is killed and reported as a step problem (default 10)
+  --budget SECS        hard wall-clock budget for the whole run (validate, diff, record, check;
+                       default 120, above 120 is refused). When it is spent the run starts no more
+                       scenarios, kills the ones running, fails the unfinished ones and exits 1";
 
 struct Options {
     mode: String,
@@ -51,6 +57,7 @@ struct Options {
     /// Scenario ids named by `--only` and `--list`; empty runs every scenario.
     only: BTreeSet<String>,
     stall: Option<std::time::Duration>,
+    budget: Duration,
 }
 
 /// Read a `--list` file: one scenario id per line, blank lines and `#` comments skipped.
@@ -107,6 +114,7 @@ fn parse_args(args: Vec<String>) -> Result<Options, String> {
         jobs: std::thread::available_parallelism().map_or(1, std::num::NonZero::get),
         only: BTreeSet::new(),
         stall: None,
+        budget: budget::CEILING,
     };
     while let Some(flag) = it.next() {
         let mut value = || it.next().ok_or_else(|| format!("{flag} needs a value"));
@@ -120,6 +128,7 @@ fn parse_args(args: Vec<String>) -> Result<Options, String> {
             ),
             "--list" => o.only.extend(read_id_list(&value()?)?),
             "--stall-timeout" => o.stall = Some(wait::parse_stall_timeout(&value()?)?),
+            "--budget" => o.budget = budget::parse(&value()?)?,
             "--scenarios" => o.scenarios = value()?.into(),
             "--contracts" => o.contracts = value()?.into(),
             "--allowlist" => o.allowlist = value()?.into(),
@@ -154,7 +163,7 @@ fn implementation(name: &str, cmd: &Option<String>, o: &Options) -> Result<Imple
     Implementation::from_command(name, cmd, o.env.clone())
 }
 
-fn run(o: &Options) -> Result<Vec<FileReport>, String> {
+fn run(o: &Options, budget: &Budget) -> Result<Vec<FileReport>, String> {
     let loaded = select(load_scenarios(&o.scenarios)?, &o.only)?;
     let allow = match std::fs::read_to_string(&o.divergences) {
         Ok(t) => parse_divergences(&t)?,
@@ -166,6 +175,11 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
         "validate" => loaded
             .iter()
             .map(|l| match &l.scenario {
+                _ if budget.expired() => FileReport::failed(
+                    &l.file,
+                    l.scenario.as_ref().ok().map(|s| s.id.clone()),
+                    budget.problem(),
+                ),
                 Ok(s) => FileReport {
                     file: l.file.clone(),
                     scenario: Some(s.id.clone()),
@@ -186,6 +200,7 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
             &norm,
             out,
             o.jobs,
+            budget,
         ),
         "record" => record(
             &loaded,
@@ -194,6 +209,7 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
             &norm,
             out,
             o.jobs,
+            budget,
         ),
         "check" => check(
             &loaded,
@@ -203,6 +219,7 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
             &norm,
             out,
             o.jobs,
+            budget,
         ),
         other => return Err(format!("unknown mode `{other}`")),
     })
@@ -445,17 +462,37 @@ fn main() -> ExitCode {
             }
         };
     }
-    match run(&options) {
+    let budget = Budget::start(options.budget);
+    budget::arm(budget);
+    budget::watchdog(budget);
+    match run(&options, &budget) {
         Ok(reports) => {
+            let elapsed = budget.elapsed();
+            let exceeded = budget.expired();
             print!("{}", report_text(&options.mode, &reports));
             if let Some(path) = &options.report {
-                let mut text = serde_json::to_string_pretty(&report_json(&options.mode, &reports))
-                    .unwrap_or_default();
+                let mut json = report_json(&options.mode, &reports);
+                json["budget_exceeded"] = json!(exceeded);
+                json["elapsed_ms"] = json!(u64::try_from(elapsed.as_millis()).unwrap_or(u64::MAX));
+                let mut text = serde_json::to_string_pretty(&json).unwrap_or_default();
                 text.push('\n');
                 if let Err(e) = std::fs::write(path, text) {
                     eprintln!("error: write {}: {e}", path.display());
                     return ExitCode::from(2);
                 }
+            }
+            if exceeded {
+                let problem = budget.problem();
+                let cut = reports
+                    .iter()
+                    .filter(|r| r.problems.first() == Some(&problem))
+                    .count();
+                println!(
+                    "{problem}: ran {:.1} s; {cut} of {} file(s) cut",
+                    elapsed.as_secs_f64(),
+                    reports.len()
+                );
+                return ExitCode::from(1);
             }
             if tally(&reports).2 == 0 {
                 ExitCode::SUCCESS

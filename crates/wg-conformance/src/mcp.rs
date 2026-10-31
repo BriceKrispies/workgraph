@@ -156,11 +156,21 @@ impl StdioClient {
     /// Read messages until the reply with `id` arrives. Notifications and other messages that come
     /// first are recorded and skipped.
     pub fn await_response(&mut self, id: &Value) -> Result<Value, String> {
+        // Polled in short slices so a spent budget is seen at once; the stall window is still
+        // measured from the last message received.
+        let mut quiet = std::time::Instant::now();
         loop {
+            if crate::budget::cut() {
+                return Err(crate::budget::cut_error());
+            }
             let window = crate::wait::stall_timeout();
-            let line = match self.lines.recv_timeout(window) {
-                Ok(Ok(line)) => line,
+            let line = match self.lines.recv_timeout(crate::wait::POLL) {
+                Ok(Ok(line)) => {
+                    quiet = std::time::Instant::now();
+                    line
+                }
                 Ok(Err(e)) => return Err(format!("read from server: {e}")),
+                Err(RecvTimeoutError::Timeout) if quiet.elapsed() < window => continue,
                 Err(RecvTimeoutError::Timeout) => {
                     return Err(format!(
                         "stalled: no reply for {:.1} s{}",

@@ -22,7 +22,7 @@ pub const DEFAULT_STALL_TIMEOUT: Duration = Duration::from_secs(10);
 pub const STARTUP_TIMEOUT: Duration = Duration::from_secs(90);
 
 /// How often a waiting loop looks at the process and the activity channel.
-const POLL: Duration = Duration::from_millis(50);
+pub(crate) const POLL: Duration = Duration::from_millis(50);
 
 static STALL_MILLIS: AtomicU64 = AtomicU64::new(10_000);
 
@@ -99,6 +99,10 @@ fn run_bounded_with(
     let mut closed = 0;
     let mut status = None;
     loop {
+        if crate::budget::cut() {
+            kill_tree(&mut child);
+            return Err(crate::budget::cut_error());
+        }
         if status.is_none() {
             status = child.try_wait().map_err(|e| format!("wait failed: {e}"))?;
         }

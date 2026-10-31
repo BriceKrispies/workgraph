@@ -1294,6 +1294,12 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
     }
     if setup_ok {
         for (i, step) in scenario.steps.iter().enumerate() {
+            // A spent budget ends the scenario as a failed step, so a cut run never passes.
+            if crate::budget::cut() {
+                let cut = record(i, "budget", format!("step {i}"));
+                steps.push(fail(cut, crate::budget::cut_error()));
+                break;
+            }
             steps.push(windowed(|| run_step(&mut ctx, i, step)));
         }
     }

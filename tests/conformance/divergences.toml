@@ -46,6 +46,7 @@ decision = "3.6"
 scenario = "*"
 fields = ["stdout", "stderr"]
 contains = ["Error", "Exception", "Traceback", "logging"]
+both = true
 description = "exception class names in spool_reason, unexpected-error message text, traceback text in logs, logger names (only differences that name an exception, a traceback or a logger are allowed)"
 
 [[divergence]]

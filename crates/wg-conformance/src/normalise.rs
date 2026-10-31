@@ -74,6 +74,12 @@ impl Normaliser for FullNormaliser {
         for (s, e, masked) in scan(bytes, ms_object_at) {
             spans.push((s, e, masked));
         }
+        for (s, e, masked) in scan(bytes, duration_stats_at) {
+            spans.push((s, e, masked));
+        }
+        for (s, e, placeholder) in scan(bytes, rendered_duration_at) {
+            spans.push((s, e, placeholder.to_owned()));
+        }
         if archive {
             for (s, e, placeholder) in scan(bytes, archive_bytes_at) {
                 spans.push((s, e, placeholder.to_owned()));
@@ -328,8 +334,8 @@ struct Stamp {
 }
 
 /// `YYYY-MM-DDTHH:MM:SS[.f+][Z|+00:00]` and `YYYY-MM-DD HH:MM:SS[.f+]` (display).
-/// The format is `Z`, `+00:00`, `db` (O11: six fraction digits with `+00:00`) or
-/// `display` (space separator, no offset).
+/// The format is `Z`, `+00:00`, `db` (O11: six fraction digits with `+00:00`), `display` (space
+/// separator, no offset) or `naive` (`T` separator, no offset: a Python `datetime.isoformat()`).
 fn timestamp_at(bytes: &[u8], i: usize) -> Option<Span<Stamp>> {
     if (i > 0 && bytes[i - 1].is_ascii_digit()) || i + 19 > bytes.len() {
         return None;
@@ -396,6 +402,7 @@ fn timestamp_at(bytes: &[u8], i: usize) -> Option<Span<Stamp>> {
         (b'T', Some("Z")) => "Z",
         (b'T', Some(_)) if frac_digits == 6 => "db",
         (b'T', Some(_)) => "+00:00",
+        (b'T', None) => "naive",
         (b' ', None) => "display",
         (b' ', Some("+00:00")) => "display+00:00",
         _ => return None,
@@ -590,6 +597,77 @@ fn ms_object_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
     .map(|(s, e, p)| (s, e, p.to_owned()))
     .collect();
     Some((start, end, splice(object, durations)))
+}
+
+/// Keys of the analytics overview whose value is a list of statistic rows over a duration in
+/// milliseconds (`{"n": 8, "mean": 1856.75, "median": 1905.0, ...}`).
+const DURATION_STATS_KEYS: [&str; 4] = [
+    "execution_duration",
+    "queue_wait",
+    "task_elapsed",
+    "agent_duration",
+];
+
+/// A duration-statistics key (see [`DURATION_STATS_KEYS`]) with a list of flat row objects. In
+/// each row every number is a measured duration except the sample count `n`, which is exact and
+/// stays; string and null cells (`provider`, `model`) stay. Returns the span of the list and its
+/// text with the durations replaced.
+fn duration_stats_at(bytes: &[u8], i: usize) -> Option<Span<String>> {
+    let (key, mut start) = key_value_at(bytes, i)?;
+    if !DURATION_STATS_KEYS.contains(&key) {
+        return None;
+    }
+    // Pretty-printed JSON puts a line break after the colon.
+    while bytes.get(start).is_some_and(u8::is_ascii_whitespace) {
+        start += 1;
+    }
+    if bytes.get(start) != Some(&b'[') {
+        return None;
+    }
+    let mut in_string = false;
+    let mut escaped = false;
+    let mut end = None;
+    for (offset, b) in bytes[start..].iter().enumerate() {
+        match *b {
+            _ if escaped => escaped = false,
+            b'\\' if in_string => escaped = true,
+            b'"' => in_string = !in_string,
+            b']' if !in_string => {
+                end = Some(start + offset + 1);
+                break;
+            }
+            _ => {}
+        }
+    }
+    let end = end?;
+    let list = std::str::from_utf8(&bytes[start..end]).ok()?;
+    let durations: Vec<Span<String>> = scan(list.as_bytes(), |b, j| {
+        keyed_number_at(b, j, |k: &str| (k != "n").then_some("<dur>"))
+    })
+    .into_iter()
+    .map(|(s, e, p)| (s, e, p.to_owned()))
+    .collect();
+    Some((start, end, splice(list, durations)))
+}
+
+/// The sentence the retrospective renders a median duration in: `Median time from creation to
+/// acceptance: **9s** (n=1).` The figure is `_fmt_ms` output (`9s`, `3m`, `1.5h`); `n/a` stays.
+const RENDERED_DURATION_LEAD: &[u8] = b"Median time from creation to acceptance: **";
+
+fn rendered_duration_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
+    if !bytes[i..].starts_with(RENDERED_DURATION_LEAD) {
+        return None;
+    }
+    let start = i + RENDERED_DURATION_LEAD.len();
+    let mut end = start;
+    while bytes
+        .get(end)
+        .is_some_and(|b| b.is_ascii_digit() || *b == b'.')
+    {
+        end += 1;
+    }
+    let shaped = end > start && matches!(bytes.get(end), Some(b's' | b'm' | b'h'));
+    (shaped && bytes.get(end + 1..end + 3) == Some(b"**")).then_some((start, end + 1, "<dur>"))
 }
 
 /// The digits after `127.0.0.1:` or `localhost:`.
@@ -1424,5 +1502,69 @@ mod tests {
         for (y, m, d) in [(1970, 1, 1), (2024, 2, 29), (2026, 10, 31), (1999, 12, 31)] {
             assert_eq!(civil_from_days(days_from_civil(y, m, d)), (y, m, d));
         }
+    }
+
+    #[test]
+    fn naive_iso_datetimes_are_timestamps() {
+        let text = r#"{"accepted_at":"2026-10-31T12:24:24.340410","due":"2026-10-31T12:24:25"}"#;
+        let r = run("py", &[(text, "")]);
+        assert_eq!(
+            norm(&r, text),
+            r#"{"accepted_at":"<ts:1|naive>","due":"<ts:2|naive>"}"#
+        );
+        // Inside a step window it names the step, like any other stamp.
+        let w = run_w("py", &[(text, (at(0, 0), at(30, 0)))]);
+        let w = norm(&w, "x 2026-10-26T06:34:10.5");
+        assert_eq!(w, "x <ts@0|naive>");
+    }
+
+    #[test]
+    fn duration_statistics_are_masked_but_counts_stay() {
+        let r = run("py", &[("", "")]);
+        let text = r#"{"execution_duration":[{"n":8,"mean":1856.75,"median":1905.0,"max":2701}],"agent_duration":[{"provider":"scripted","model":null,"n":6,"mean":2078.8,"sum":12473}],"churn":[{"n":6,"mean":13.5,"sum":81}],"queue_wait":[]}"#;
+        assert_eq!(
+            norm(&r, text),
+            r#"{"execution_duration":[{"n":8,"mean":<dur>,"median":<dur>,"max":<dur>}],"agent_duration":[{"provider":"scripted","model":null,"n":6,"mean":<dur>,"sum":<dur>}],"churn":[{"n":6,"mean":13.5,"sum":81}],"queue_wait":[]}"#
+        );
+        let pretty = "{
+  \"task_elapsed\": [
+    {
+      \"n\": 6,
+      \"p75\": 24367.5
+    }
+  ]
+}";
+        assert_eq!(
+            norm(&r, pretty),
+            "{
+  \"task_elapsed\": [
+    {
+      \"n\": 6,
+      \"p75\": <dur>
+    }
+  ]
+}"
+        );
+    }
+
+    #[test]
+    fn rendered_median_durations_are_masked() {
+        let r = run("py", &[("", "")]);
+        assert_eq!(
+            norm(
+                &r,
+                "- Median time from creation to acceptance: **9s** (n=1)."
+            ),
+            "- Median time from creation to acceptance: **<dur>** (n=1)."
+        );
+        assert_eq!(
+            norm(
+                &r,
+                "- Median time from creation to acceptance: **1.5h** (n=2)."
+            ),
+            "- Median time from creation to acceptance: **<dur>** (n=2)."
+        );
+        let none = "- Median time from creation to acceptance: **n/a** (n=0).";
+        assert_eq!(norm(&r, none), none);
     }
 }

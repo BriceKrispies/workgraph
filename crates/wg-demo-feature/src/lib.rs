@@ -8,8 +8,8 @@
 //!   the other crates;
 //! * [`cli`] (Shell): the clap group, a [`wg_runtime::CliGroup`].
 //!
-//! The feature has no routes, tools or jobs: the demonstration's HTTP and MCP steps need the
-//! servers, which the demonstration does not reach yet.
+//! The feature has no routes, tools or jobs: the demonstration's HTTP and MCP steps drive the
+//! current executable (`serve` and `mcp`) as child processes.
 //!
 //! The feature exports [`FEATURE`]; the binary collects it into its ordered feature list.
 

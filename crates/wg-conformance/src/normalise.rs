@@ -353,7 +353,7 @@ fn json_field_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
     keyed_number_at(bytes, i, |key| match key {
         "pid" => Some("<pid>"),
         "port" => Some("<port>"),
-        "duration_seconds" => Some("<dur>"),
+        "duration_seconds" | "seconds" => Some("<dur>"),
         _ if is_ms_key(key) => Some("<dur>"),
         _ => None,
     })

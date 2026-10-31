@@ -3,6 +3,7 @@
 //! [`crate::spec`], calls one [`crate::service`] entry point and prints the result.
 
 use clap::ArgMatches;
+use wg_iface::cli::args::{get, items, s};
 use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_runtime::{CliGroup, CliState};
 
@@ -34,17 +35,26 @@ fn e2e(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
         None => service::fresh_temp_home()?,
     };
     let mut lines = Vec::new();
-    let result = service::e2e(&home, &mut lines);
+    let result = service::e2e(&home, state.features, &mut lines);
     if !state.json {
         for line in &lines {
-            state.print(&format!("{line}\n"));
+            state.print(&format!(
+                "{line}
+"
+            ));
         }
     }
-    result?;
+    let report = result?;
     if temp && !keep {
         let _ = std::fs::remove_dir_all(&home);
     }
-    Ok(())
+    state.emit(
+        &report,
+        Some(&|_| {
+            let steps = items(get(&report, "steps")).len();
+            spec::e2e::passed_line(steps, &s(get(&report, "home")))
+        }),
+    )
 }
 
 /// `demo seed [--workspace SLUG] [--force]`: the demo data for the web UI.

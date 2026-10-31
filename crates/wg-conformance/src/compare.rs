@@ -313,6 +313,20 @@ impl Verdict {
     }
 }
 
+/// A step that took longer than [`SLOW_STEP_MICROS`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SlowStep {
+    /// The implementation that ran the step.
+    pub implementation: String,
+    /// The step index, or `None` for a setup step.
+    pub index: Option<usize>,
+    pub kind: &'static str,
+    pub ms: u64,
+}
+
+/// Steps slower than this are listed in a report (one second).
+pub const SLOW_STEP_MICROS: i64 = 1_000_000;
+
 /// The report line for one scenario file.
 #[derive(Debug, Clone)]
 pub struct FileReport {
@@ -321,6 +335,10 @@ pub struct FileReport {
     pub verdict: Verdict,
     pub diffs: Vec<Diff>,
     pub problems: Vec<String>,
+    /// Wall-clock time the file took in its mode, every implementation's run included.
+    pub duration_ms: u64,
+    /// The steps of every run that took longer than a second, in run and step order.
+    pub slow_steps: Vec<SlowStep>,
 }
 
 impl FileReport {
@@ -331,6 +349,8 @@ impl FileReport {
             verdict: Verdict::Failed,
             diffs: Vec::new(),
             problems: vec![problem],
+            duration_ms: 0,
+            slow_steps: Vec::new(),
         }
     }
 
@@ -353,18 +373,38 @@ impl FileReport {
         } else {
             Verdict::Allowlisted
         };
+        let slow_steps = runs
+            .iter()
+            .flat_map(|run| {
+                run.steps.iter().filter_map(|s| {
+                    let (start, end) = s.window?;
+                    (end - start > SLOW_STEP_MICROS).then(|| SlowStep {
+                        implementation: run.implementation.clone(),
+                        index: s.index,
+                        kind: s.kind,
+                        ms: u64::try_from((end - start) / 1000).unwrap_or(0),
+                    })
+                })
+            })
+            .collect();
         Self {
             file: file.to_owned(),
             scenario: Some(scenario.to_owned()),
             verdict,
             diffs,
             problems,
+            duration_ms: 0,
+            slow_steps,
         }
     }
 
     pub fn to_json(&self) -> Value {
         json!({
             "file": self.file, "scenario": self.scenario, "verdict": self.verdict.as_str(),
+            "duration_ms": self.duration_ms,
+            "slow_steps": self.slow_steps.iter().map(|s| json!({
+                "implementation": s.implementation, "index": s.index, "kind": s.kind, "ms": s.ms,
+            })).collect::<Vec<_>>(),
             "problems": self.problems,
             "diffs": self.diffs.iter().map(|d| json!({
                 "step": d.step, "field": d.field, "left": d.left, "right": d.right, "allowed_by": d.allowed_by,
@@ -397,7 +437,19 @@ pub fn report_json(mode: &str, reports: &[FileReport]) -> Value {
 pub fn report_text(mode: &str, reports: &[FileReport]) -> String {
     let mut out = String::new();
     for r in reports {
-        out.push_str(&format!("{:<11} {}\n", r.verdict.as_str(), r.file));
+        out.push_str(&format!(
+            "{:<11} {} ({} ms)\n",
+            r.verdict.as_str(),
+            r.file,
+            r.duration_ms
+        ));
+        for s in &r.slow_steps {
+            let at = s.index.map_or("setup".to_owned(), |i| format!("step {i}"));
+            out.push_str(&format!(
+                "    slow {} {at} ({}): {} ms\n",
+                s.implementation, s.kind, s.ms
+            ));
+        }
         for p in &r.problems {
             out.push_str(&format!("    {p}\n"));
         }

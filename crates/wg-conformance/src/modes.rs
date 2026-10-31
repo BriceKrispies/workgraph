@@ -9,6 +9,7 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Mutex, PoisonError};
 use std::thread;
+use std::time::Instant;
 
 /// A scenario file that loaded (or failed to).
 pub struct Loaded {
@@ -117,6 +118,21 @@ pub fn run_in_order<I: Sync, T: Send>(
     done.into_iter().map(|(_, result)| result).collect()
 }
 
+/// Judge every loaded file with `work` on `jobs` workers, in file order, and stamp each report with
+/// the wall-clock time its work took.
+fn per_file(
+    loaded: &[Loaded],
+    jobs: usize,
+    work: impl Fn(&Loaded) -> FileReport + Sync,
+) -> Vec<FileReport> {
+    run_in_order(loaded, jobs, |l| {
+        let started = Instant::now();
+        let mut report = work(l);
+        report.duration_ms = u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX);
+        report
+    })
+}
+
 /// `diff`: run the reference and candidate implementations and compare them.
 pub fn diff(
     loaded: &[Loaded],
@@ -127,7 +143,7 @@ pub fn diff(
     out: Option<&Path>,
     jobs: usize,
 ) -> Vec<FileReport> {
-    run_in_order(loaded, jobs, |l| {
+    per_file(loaded, jobs, |l| {
         let s = match &l.scenario {
             Ok(s) => s,
             Err(e) => {
@@ -154,7 +170,7 @@ pub fn record(
     out: Option<&Path>,
     jobs: usize,
 ) -> Vec<FileReport> {
-    run_in_order(loaded, jobs, |l| {
+    per_file(loaded, jobs, |l| {
         let s = match &l.scenario {
             Ok(s) => s,
             Err(e) => {
@@ -194,7 +210,7 @@ pub fn check(
     out: Option<&Path>,
     jobs: usize,
 ) -> Vec<FileReport> {
-    run_in_order(loaded, jobs, |l| {
+    per_file(loaded, jobs, |l| {
         let s = match &l.scenario {
             Ok(s) => s,
             Err(e) => {

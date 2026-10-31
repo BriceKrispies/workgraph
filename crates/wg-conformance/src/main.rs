@@ -1,15 +1,17 @@
 //! Command line for the conformance runner.
 
+use std::collections::BTreeSet;
 use std::io::Write as _;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use wg_conformance::compare::{FileReport, parse_divergences, report_json, report_text, tally};
 use wg_conformance::coverage::{coverage, inventory_ids, marked_tests, parse_exclusions};
 use wg_conformance::dbdump::canonical_dump;
-use wg_conformance::modes::{check, diff, load_scenarios, record};
+use wg_conformance::modes::{Loaded, check, diff, load_scenarios, record};
 use wg_conformance::normalise::FullNormaliser;
 use wg_conformance::replay;
 use wg_conformance::runner::Implementation;
+use wg_conformance::wait;
 
 const USAGE: &str = "usage: wg-conformance <validate|diff|record|check|coverage> [options]
        wg-conformance dbdump DATABASE [-o FILE]   canonical database dump (as dbdump.py dump)
@@ -19,15 +21,19 @@ const USAGE: &str = "usage: wg-conformance <validate|diff|record|check|coverage>
   --scenarios PATH     scenario directory or file (default tests/conformance/scenarios)
   --contracts FILE     contract inventory for coverage (default docs/rust-rewrite-contracts.md)
   --allowlist FILE     coverage exclusions with reasons (default tests/conformance/coverage-allowlist.toml, optional)
-  --python COMMAND     reference implementation command line (diff, record)
+  --python COMMAND     reference implementation command line (diff, record); quote a path with spaces
   --rust COMMAND       candidate implementation command line (diff, check)
   --golden DIR         golden directory (default tests/conformance/golden)
   --divergences FILE   allowlist (default tests/conformance/divergences.toml, optional)
   --out DIR            write step logs under DIR/<implementation>/
-  --report FILE        write the JSON report
+  --report FILE        write the JSON report (per-file duration_ms and slow_steps)
   --env KEY=VALUE      extra environment for both implementations (repeatable)
   --jobs N             scenario files run concurrently in diff, record and check
-                       (default: the available parallelism; the report is the same for any N)";
+                       (default: the available parallelism; the report is the same for any N)
+  --only IDS           run only these scenario ids, comma separated (repeatable; unknown ids are an error)
+  --list FILE          run only the scenario ids listed in FILE, one per line (# comments allowed)
+  --stall-timeout SECS a process, MCP reply or HTTP response that makes no progress for SECS seconds
+                       is killed and reported as a step problem (default 10)";
 
 struct Options {
     mode: String,
@@ -42,6 +48,45 @@ struct Options {
     report: Option<PathBuf>,
     env: Vec<(String, String)>,
     jobs: usize,
+    /// Scenario ids named by `--only` and `--list`; empty runs every scenario.
+    only: BTreeSet<String>,
+    stall: Option<std::time::Duration>,
+}
+
+/// Read a `--list` file: one scenario id per line, blank lines and `#` comments skipped.
+fn read_id_list(path: &str) -> Result<Vec<String>, String> {
+    let text = std::fs::read_to_string(path).map_err(|e| format!("read {path}: {e}"))?;
+    Ok(text
+        .lines()
+        .map(str::trim)
+        .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        .map(str::to_owned)
+        .collect())
+}
+
+/// Keep the scenarios whose id (their file name without `.json`) is in `wanted`. Every wanted id
+/// must match a scenario, so a misspelt id fails instead of running nothing.
+fn select(loaded: Vec<Loaded>, wanted: &BTreeSet<String>) -> Result<Vec<Loaded>, String> {
+    if wanted.is_empty() {
+        return Ok(loaded);
+    }
+    let stem = |file: &str| {
+        let name = file.rsplit(['/', '\\']).next().unwrap_or(file);
+        name.strip_suffix(".json").unwrap_or(name).to_owned()
+    };
+    let known: BTreeSet<String> = loaded.iter().map(|l| stem(&l.file)).collect();
+    let missing: Vec<&str> = wanted
+        .iter()
+        .filter(|id| !known.contains(id.as_str()))
+        .map(String::as_str)
+        .collect();
+    if !missing.is_empty() {
+        return Err(format!("no scenario with id {}", missing.join(", ")));
+    }
+    Ok(loaded
+        .into_iter()
+        .filter(|l| wanted.contains(&stem(&l.file)))
+        .collect())
 }
 
 fn parse_args(args: Vec<String>) -> Result<Options, String> {
@@ -60,10 +105,21 @@ fn parse_args(args: Vec<String>) -> Result<Options, String> {
         report: None,
         env: Vec::new(),
         jobs: std::thread::available_parallelism().map_or(1, std::num::NonZero::get),
+        only: BTreeSet::new(),
+        stall: None,
     };
     while let Some(flag) = it.next() {
         let mut value = || it.next().ok_or_else(|| format!("{flag} needs a value"));
         match flag.as_str() {
+            "--only" => o.only.extend(
+                value()?
+                    .split(',')
+                    .map(str::trim)
+                    .filter(|s| !s.is_empty())
+                    .map(str::to_owned),
+            ),
+            "--list" => o.only.extend(read_id_list(&value()?)?),
+            "--stall-timeout" => o.stall = Some(wait::parse_stall_timeout(&value()?)?),
             "--scenarios" => o.scenarios = value()?.into(),
             "--contracts" => o.contracts = value()?.into(),
             "--allowlist" => o.allowlist = value()?.into(),
@@ -99,7 +155,7 @@ fn implementation(name: &str, cmd: &Option<String>, o: &Options) -> Result<Imple
 }
 
 fn run(o: &Options) -> Result<Vec<FileReport>, String> {
-    let loaded = load_scenarios(&o.scenarios)?;
+    let loaded = select(load_scenarios(&o.scenarios)?, &o.only)?;
     let allow = match std::fs::read_to_string(&o.divergences) {
         Ok(t) => parse_divergences(&t)?,
         Err(_) => Vec::new(),
@@ -116,6 +172,8 @@ fn run(o: &Options) -> Result<Vec<FileReport>, String> {
                     verdict: wg_conformance::compare::Verdict::Equal,
                     diffs: Vec::new(),
                     problems: Vec::new(),
+                    duration_ms: 0,
+                    slow_steps: Vec::new(),
                 },
                 Err(e) => FileReport::failed(&l.file, None, format!("invalid scenario: {e}")),
             })
@@ -371,6 +429,9 @@ fn main() -> ExitCode {
             return ExitCode::from(2);
         }
     };
+    if let Some(window) = options.stall {
+        wait::set_stall_timeout(window);
+    }
     if options.mode == "coverage" {
         return match coverage_mode(&options) {
             Ok(true) => ExitCode::SUCCESS,
@@ -406,5 +467,50 @@ fn main() -> ExitCode {
             eprintln!("error: {e}\n{USAGE}");
             ExitCode::from(2)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn loaded(file: &str) -> Loaded {
+        Loaded {
+            file: file.to_owned(),
+            scenario: Err("not parsed in this test".to_owned()),
+        }
+    }
+
+    #[test]
+    fn only_keeps_the_named_scenarios_and_rejects_unknown_ids() {
+        let all = || {
+            vec![
+                loaded("git/one.json"),
+                loaded("two.json"),
+                loaded("runs/three.json"),
+            ]
+        };
+        let wanted: BTreeSet<String> = ["two", "three"].map(str::to_owned).into();
+        let kept = select(all(), &wanted).unwrap();
+        let files: Vec<&str> = kept.iter().map(|l| l.file.as_str()).collect();
+        assert_eq!(files, ["two.json", "runs/three.json"]);
+        assert!(select(all(), &BTreeSet::new()).unwrap().len() == 3);
+        let typo: BTreeSet<String> = ["two", "tow"].map(str::to_owned).into();
+        let Err(err) = select(all(), &typo) else {
+            panic!("unknown id accepted")
+        };
+        assert!(err.contains("tow") && !err.contains("two,"), "{err}");
+    }
+
+    #[test]
+    fn list_files_skip_blank_lines_and_comments() {
+        let dir = std::env::temp_dir().join(format!("wg-conf-list-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("fast.txt");
+        std::fs::write(&path, "# routine subset\none\n\n  two  \n").unwrap();
+        let ids = read_id_list(path.to_str().unwrap()).unwrap();
+        assert_eq!(ids, ["one", "two"]);
+        assert!(read_id_list(dir.join("absent.txt").to_str().unwrap()).is_err());
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

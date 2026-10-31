@@ -324,12 +324,15 @@ fn disagreement_payload(
     .unwrap_or_default()
 }
 
-/// The task with `row` as its current classification: `current_classification_id` and `category`.
+/// The task with `row` as its current classification: `current_classification_id`, `category` and
+/// the `updated_at` the ORM stamps on the update.
 #[must_use]
 pub fn with_current(task: &Task, row: &Classification) -> Task {
     Task {
         current_classification_id: Some(row.id),
         category: row.category.clone(),
+        // The ORM's `onupdate` stamps the task row the moment the classification is stored.
+        updated_at: row.created_at,
         ..task.clone()
     }
 }

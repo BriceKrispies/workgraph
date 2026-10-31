@@ -461,7 +461,9 @@ pub fn confirm(
 ) -> Result<Classification, WgError> {
     app.require_permission(context, Permission::ClassifyConfirm)?;
     if !CATEGORIES.contains(&request.category.as_str()) {
-        return Err(unknown_category(&request.category));
+        return Err(
+            unknown_category(&request.category).detail("categories", serde_json::json!(CATEGORIES))
+        );
     }
     let ws = workspace
         .map(|reference| app.workspace_id(reference))

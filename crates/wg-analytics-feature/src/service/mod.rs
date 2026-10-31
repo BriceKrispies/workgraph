@@ -101,7 +101,7 @@ pub fn query(
         &loaded.workspace.to_string(),
         &engine,
     )?;
-    Ok(query::query_out(request, &metric, &answer, at))
+    Ok(query::query_out(request, &metric, &engine, &answer, at))
 }
 
 /// The source rows with their fact tables, for the commands that read the whole warehouse.

@@ -496,12 +496,21 @@ pub fn breakdown(records: &[Value], local_offset_seconds: i32) -> Value {
         _ => 0.0,
     };
     let classes = class_entries(&state);
-    let tool_seconds: f64 = classes.iter().map(|(_, seconds, _)| seconds).sum();
+    // Python sums an empty dict to the int 0 (not 0.0, and never -0.0); any class makes it a float.
+    let tool_seconds = if classes.is_empty() {
+        json!(0)
+    } else {
+        json!(round3(
+            classes
+                .iter()
+                .fold(0.0, |total, (_, seconds, _)| total + seconds)
+        ))
+    };
     let longest = slowest(&state.calls);
     json!({
         "version": TIMING_VERSION,
         "span_seconds": round3(span),
-        "tool_seconds": round3(tool_seconds),
+        "tool_seconds": tool_seconds,
         "model_seconds": round3(state.model_seconds),
         "waiting_seconds": round3(state.waiting_seconds),
         "classes": classes

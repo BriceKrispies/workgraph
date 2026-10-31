@@ -6,6 +6,7 @@ pub mod args;
 pub mod dto;
 pub mod export;
 pub mod load;
+pub mod metric_sql;
 pub mod narrative;
 pub mod params;
 pub mod query;

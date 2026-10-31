@@ -23,6 +23,26 @@ pub struct Net {
     pub sleep: Option<Sleeper>,
 }
 
+/// A transport failure as Python's `httpx` prints it: an operating-system error reads
+/// `[WinError 10061] No connection ...` (`[Errno 111] Connection refused` elsewhere), with no
+/// trailing full stop and none of Rust's `io:` prefix or `(os error N)` suffix.
+fn transport_message(err: &ureq::Error) -> String {
+    let ureq::Error::Io(io) = err else {
+        return err.to_string();
+    };
+    let Some(code) = io.raw_os_error() else {
+        return err.to_string();
+    };
+    let shown = io.to_string();
+    let suffix = format!(" (os error {code})");
+    let reason = shown
+        .strip_suffix(&suffix)
+        .unwrap_or(&shown)
+        .trim_end_matches(|c: char| c == '.' || c.is_whitespace());
+    let tag = if cfg!(windows) { "WinError" } else { "Errno" };
+    format!("[{tag} {code}] {reason}")
+}
+
 impl Net {
     /// Performs `call` once, bounded by its timeout. An HTTP error status is a response.
     pub fn perform(&mut self, call: &HttpCall) -> Result<HttpResponse, EffectError> {
@@ -55,7 +75,7 @@ impl Net {
                 ureq::Error::ConnectionFailed | ureq::Error::Io(_) => EffectErrorKind::Unavailable,
                 _ => EffectErrorKind::Failed,
             },
-            message: err.to_string(),
+            message: transport_message(&err),
         })?;
         let status = response.status().as_u16();
         let headers = response

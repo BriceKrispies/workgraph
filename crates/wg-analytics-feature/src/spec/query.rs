@@ -2,8 +2,7 @@
 //! `definitions` and `query`): the request, its validation, the query it runs and the result
 //! document. The metric engine is `wg-analytics`; the store reads are in [`crate::service`].
 //!
-//! The provenance `sql` is the DuckDB text of the Python service. The Rust engine does not
-//! produce that text (divergence DV3), so the field carries a description of the engine instead.
+//! The provenance `sql` is the DuckDB text of the Python service, rebuilt by [`super::metric_sql`].
 
 use std::collections::BTreeSet;
 
@@ -23,10 +22,6 @@ use wg_wire::convention::{json_value, optional_text, text};
 
 /// The `source` of the provenance block (`AnalyticsService.query`).
 pub const SOURCE: &str = "DuckDB snapshot of the SQLite database";
-
-/// What the provenance `sql` holds instead of DuckDB text.
-pub const SQL_DESCRIPTION: &str =
-    "wg-analytics engine: fact tables and metric registry (DuckDB SQL text not reproduced, DV3)";
 
 /// The row limit of an `AnalyticsQuery` (its default).
 pub const LIMIT: usize = 500;
@@ -116,6 +111,52 @@ pub fn check_inputs(metric: &str, period: &str) -> Result<Metric, WgError> {
         Some(known) if errors.is_empty() => Ok(known),
         _ => Err(validation_failure(&errors)),
     }
+}
+
+/// The pydantic errors of a refused request, when `error` is one of [`check_inputs`].
+fn pydantic_errors(error: &WgError) -> Option<&Vec<Json>> {
+    match error.details.get("errors") {
+        Some(Json::Array(errors)) if error.code == wg_types::ErrorCode::ValidationFailed => {
+            Some(errors)
+        }
+        _ => None,
+    }
+}
+
+/// A refused `AnalyticsQuery` body as the HTTP route reports it: FastAPI's `invalid request`
+/// envelope, with each error located under `body`.
+#[must_use]
+pub fn http_refusal(error: WgError) -> WgError {
+    let Some(errors) = pydantic_errors(&error) else {
+        return error;
+    };
+    let located: Vec<Json> = errors
+        .iter()
+        .cloned()
+        .map(|mut item| {
+            if let Some(Json::Array(loc)) = item.get_mut("loc") {
+                loc.insert(0, json!("body"));
+            }
+            item
+        })
+        .collect();
+    WgError::validation(wg_wire::error::INVALID_REQUEST_MESSAGE)
+        .detail("errors", Json::Array(located))
+}
+
+/// A refused `AnalyticsQuery` as the MCP tool reports it: `invalid analytics query:` and the
+/// messages of the errors.
+#[must_use]
+pub fn tool_refusal(error: WgError) -> WgError {
+    let Some(errors) = pydantic_errors(&error) else {
+        return error;
+    };
+    let summary: Vec<&str> = errors
+        .iter()
+        .filter_map(|item| item.get("msg").and_then(Json::as_str))
+        .collect();
+    WgError::validation(format!("invalid analytics query: {}", summary.join("; ")))
+        .detail("errors", Json::Array(errors.clone()))
 }
 
 /// [`check_inputs`] for an `analytics query` request.
@@ -235,6 +276,7 @@ fn echo(request: &QueryRequest) -> Value {
 pub fn query_out(
     request: &QueryRequest,
     metric: &Metric,
+    engine: &Query,
     answer: &Answer,
     generated_at: Timestamp,
 ) -> Value {
@@ -252,7 +294,7 @@ pub fn query_out(
         "rows": Value::List(rows),
         "sample_size": Value::Int(i128::from(answer.sample_size)),
         "provenance": dict!({
-            "sql": text(SQL_DESCRIPTION),
+            "sql": text(&super::metric_sql::build(metric, engine)),
             "source": text(SOURCE),
             "generated_at": text(&generated_at.format_isoformat()),
         }),

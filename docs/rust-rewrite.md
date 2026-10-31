@@ -233,6 +233,7 @@ rewrites them consistently within one run, so structure and cross-references are
 | Durations (`*_ms`, `duration_seconds`, wall-time fields) | `<dur>` | by field name allowlist |
 | Git SHAs | `<sha:N>` | numbered by first appearance; commit graph compared separately |
 | Temporary roots, home, ports, pids, worker ids, API token, pairing code | `<tmp>`, `<home>`, `<port>`, `<pid>`, `<worker:N>`, `<token>`, `<code>` | literal replacement |
+| Bare calendar dates `YYYY-MM-DD` within 400 days of the run day (UTC day the run started; not part of a timestamp) | `<today>`, `<today-N>`, `<today+N>` | literal, by day offset; goldens recorded on one day compare equal on another |
 | Task keys | kept | keys are allocated deterministically from the workspace counter |
 
 Floating-point values are compared exactly, except fields listed in the allowlist as derived from

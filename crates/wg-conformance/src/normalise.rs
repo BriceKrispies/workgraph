@@ -82,8 +82,61 @@ impl Normaliser for FullNormaliser {
         for (s, e, ()) in scan(bytes, local_port_at) {
             spans.push((s, e, "<port>".to_owned()));
         }
+        // Bare calendar dates near the run day. Added last, so a timestamp span found above keeps
+        // its overlap: `splice` drops the later of two overlapping spans.
+        if let Some(today) = run.started.map(|micros| micros.div_euclid(MICROS_PER_DAY)) {
+            for (s, e, days) in scan(bytes, date_at) {
+                if let Some(placeholder) = today_placeholder(days, today) {
+                    spans.push((s, e, placeholder));
+                }
+            }
+        }
         sort_set_lists(&splice(&out, spans))
     }
+}
+
+const MICROS_PER_DAY: i64 = 86_400_000_000;
+
+/// How far from the run day a bare date may fall and still be rewritten to a `<today...>`
+/// placeholder. Beyond it the date is kept, so a scenario's fixture dates stay as written.
+const TODAY_WINDOW_DAYS: i64 = 400;
+
+/// A bare calendar date `YYYY-MM-DD` and the days since 1970-01-01 it names. Neither neighbour may
+/// be a word character, so a date glued to more text is not one: a timestamp's `T` (a naive
+/// `2026-10-30T22:16:45` is left as written), or a digit run.
+fn date_at(bytes: &[u8], i: usize) -> Option<Span<i64>> {
+    let end = i + 10;
+    if end > bytes.len() || !bounded(bytes, i, end) || bytes[i + 4] != b'-' || bytes[i + 7] != b'-'
+    {
+        return None;
+    }
+    let digits = |from: usize, n: usize| -> Option<i64> {
+        let part = bytes.get(from..from + n)?;
+        part.iter().all(u8::is_ascii_digit).then(|| {
+            part.iter()
+                .fold(0_i64, |acc, d| acc * 10 + i64::from(d - b'0'))
+        })
+    };
+    let year = digits(i, 4)?;
+    let month = digits(i + 5, 2)?;
+    let day = digits(i + 8, 2)?;
+    ((1..=12).contains(&month) && (1..=31).contains(&day))
+        .then(|| (i, end, days_from_civil(year, month, day)))
+}
+
+/// The `<today...>` placeholder of a date `days` since the epoch on a run whose day is `today`:
+/// `<today>`, `<today-N>` for N days before, `<today+N>` for N days after. `None` outside
+/// `TODAY_WINDOW_DAYS` either side.
+fn today_placeholder(days: i64, today: i64) -> Option<String> {
+    let delta = days - today;
+    if delta.abs() > TODAY_WINDOW_DAYS {
+        return None;
+    }
+    Some(match delta {
+        0 => "<today>".to_owned(),
+        d if d < 0 => format!("<today-{}>", -d),
+        d => format!("<today+{d}>"),
+    })
 }
 
 /// Byte span `(start, end)` with a payload.
@@ -787,6 +840,7 @@ mod tests {
                     window: None,
                 })
                 .collect(),
+            started: None,
         }
     }
 
@@ -800,6 +854,11 @@ mod tests {
             rec.window = Some(*w);
         }
         r
+    }
+
+    /// Microseconds since the epoch of noon UTC on the given date: a run that started that day.
+    fn run_day(year: i64, month: i64, day: i64) -> i64 {
+        (days_from_civil(year, month, day) * 86_400 + 12 * 3600) * 1_000_000
     }
 
     /// Microseconds since the epoch of `2026-10-26T06:34:<sec>.<ms>Z`.
@@ -1185,6 +1244,60 @@ mod tests {
         assert_eq!(
             n.normalise(&r, text),
             r#"{"pair": ["auth-service", "shared-sdk"], "evidence": [{"task_key": "WG-2"}, {"task_key": "WG-4"}], "other": ["b", "a"]}"#
+        );
+    }
+
+    #[test]
+    fn bare_dates_near_the_run_day_are_today_placeholders() {
+        let n = FullNormaliser::default();
+        let mut r = run("py", &[("", "")]);
+        r.started = Some(run_day(2026, 10, 31));
+        let text = "Retrospective 2026-10-17 - 2026-10-31, period 2026-10-31, next 2026-11-05, \
+                    old 2025-03-26, far 2027-12-31, stamp 2026-10-30T22:16:45Z, naive 2026-10-30T22:16:45";
+        assert_eq!(
+            n.normalise(&r, text),
+            "Retrospective <today-14> - <today>, period <today>, next <today+5>, \
+             old 2025-03-26, far 2027-12-31, stamp <ts:1|Z>, naive 2026-10-30T22:16:45"
+        );
+        // The same golden text on another day compares equal once both sides are normalised.
+        let mut later = run("rs", &[("", "")]);
+        later.started = Some(run_day(2026, 11, 1));
+        let shifted = "Retrospective 2026-10-18 - 2026-11-01, period 2026-11-01, next 2026-11-06, \
+                       old 2025-03-26, far 2027-12-31, stamp 2026-10-31T22:16:45Z, naive 2026-10-30T22:16:45";
+        assert_eq!(
+            n.normalise(&later, shifted),
+            "Retrospective <today-14> - <today>, period <today>, next <today+5>, \
+             old 2025-03-26, far 2027-12-31, stamp <ts:1|Z>, naive 2026-10-30T22:16:45"
+        );
+    }
+
+    #[test]
+    fn today_window_is_400_days_either_side() {
+        let today = days_from_civil(2026, 10, 31);
+        assert_eq!(today_placeholder(today, today).as_deref(), Some("<today>"));
+        assert_eq!(
+            today_placeholder(today - 400, today).as_deref(),
+            Some("<today-400>")
+        );
+        assert_eq!(
+            today_placeholder(today + 400, today).as_deref(),
+            Some("<today+400>")
+        );
+        assert_eq!(today_placeholder(today - 401, today), None);
+        assert_eq!(today_placeholder(today + 401, today), None);
+    }
+
+    #[test]
+    fn dates_are_left_alone_without_a_run_clock_or_inside_other_text() {
+        let n = FullNormaliser::default();
+        let text = "2026-10-30 x20261030 2026-10-301 2026-10-30_v2";
+        let no_clock = run("py", &[("", "")]);
+        assert_eq!(n.normalise(&no_clock, text), text);
+        let mut r = run("py", &[("", "")]);
+        r.started = Some(run_day(2026, 10, 31));
+        assert_eq!(
+            n.normalise(&r, text),
+            "<today-1> x20261030 2026-10-301 2026-10-30_v2"
         );
     }
 }

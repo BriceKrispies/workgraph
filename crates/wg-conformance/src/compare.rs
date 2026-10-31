@@ -618,6 +618,7 @@ mod tests {
             implementation: "rs".into(),
             roots: vec![(root.into(), "<home>")],
             steps: Vec::new(),
+            started: None,
         };
         // POSIX form: a root followed by a separator, a quote, a space or the end is replaced; a
         // longer name (`home2`, `homes`, `home.bak`) is not.

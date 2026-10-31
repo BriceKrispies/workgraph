@@ -211,7 +211,15 @@ pub fn enrichment_jobs(
         job.causation_id = Some(caused_by);
         job.created_by = stamp.actor.to_string();
         salt += 1;
-        let queued = enqueue(queue, &job, &substamp(stamp, salt));
+        // Python stamps each job row when it is added, so the jobs of one change carry
+        // increasing `created_at` values; `job list` orders on that, newest first.
+        let mut own = substamp(stamp, salt);
+        if let Ok(later) = Timestamp::from_offset_datetime(
+            stamp.at.to_offset_datetime() + time::Duration::microseconds(i64::from(salt)),
+        ) {
+            own.at = later;
+        }
+        let queued = enqueue(queue, &job, &own);
         queued
             .writes
             .iter()

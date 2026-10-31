@@ -304,7 +304,11 @@ pub fn add_item(
         tasks: world.tasks.clone(),
         stacks: world.stacks.apply_all(decision.writes.iter()),
     };
-    let reply = stack_out(&after, stack, &Tips::new())?;
+    let reply = stack_out(
+        &after,
+        after.stacks.stack(stack.id).unwrap_or(stack),
+        &Tips::new(),
+    )?;
     Ok(decision.with_reply(reply))
 }
 

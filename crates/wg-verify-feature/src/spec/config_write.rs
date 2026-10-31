@@ -180,7 +180,17 @@ pub fn toggle(
     stamp.require(&[Permission::ConfigManage])?;
     let config = found
         .ok_or_else(|| WgError::not_found(format!("verification config {reference} not found")))?;
-    let row = VerificationConfig { enabled, ..config };
+    // The ORM stamps `updated_at` only when the flag actually changes.
+    let updated_at = if config.enabled == enabled {
+        config.updated_at
+    } else {
+        stamp.at
+    };
+    let row = VerificationConfig {
+        enabled,
+        updated_at,
+        ..config
+    };
     let payload = if enabled {
         EventPayload::VerificationConfigEnabled(VerificationConfigToggled {})
     } else {

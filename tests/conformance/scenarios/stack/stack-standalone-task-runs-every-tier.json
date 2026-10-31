@@ -33,6 +33,8 @@
       ],
       "json": true
     },
+    {"cli": ["config", "set", "llm.auto_embed", "false"], "json": true},
+    {"cli": ["config", "set", "llm.auto_classify", "false"], "json": true},
     {
       "cli": [
         "config",

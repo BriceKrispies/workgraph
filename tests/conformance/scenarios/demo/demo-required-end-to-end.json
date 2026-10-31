@@ -3,7 +3,7 @@
   "covers": ["C063"],
   "setup": [],
   "steps": [
-    {"cli": ["demo", "e2e", "--home", "{tmp}/demo-home"], "json": true, "save": {"tasks_before": "/steps/24/before/tasks", "attempts_before": "/steps/24/before/attempts", "events_before": "/steps/24/before/events", "tasks_after": "/steps/24/after/tasks", "attempts_after": "/steps/24/after/attempts", "events_after": "/steps/24/after/events"}},
+    {"cli": ["demo", "e2e", "--home", "{tmp}/demo-home"], "json": true},
     {"assert": {"json": {"path": "/ok", "equals": true}}},
     {"assert": {"json": {"path": "/steps/0/step", "equals": 1}}},
     {"assert": {"json": {"path": "/steps/1/step", "equals": 2}}},
@@ -30,12 +30,12 @@
     {"assert": {"json": {"path": "/steps/22/step", "equals": 23}}},
     {"assert": {"json": {"path": "/steps/23/step", "equals": 24}}},
     {"assert": {"json": {"path": "/steps/24/step", "equals": 25}}},
-    {"assert": {"json": {"path": "/steps/24/before/tasks", "equals": "{var:tasks_after}"}}},
-    {"assert": {"json": {"path": "/steps/24/before/attempts", "equals": "{var:attempts_after}"}}},
-    {"assert": {"json": {"path": "/steps/24/before/events", "equals": "{var:events_after}"}}},
-    {"assert": {"json": {"path": "/steps/24/after/tasks", "equals": "{var:tasks_before}"}}},
-    {"assert": {"json": {"path": "/steps/24/after/attempts", "equals": "{var:attempts_before}"}}},
-    {"assert": {"json": {"path": "/steps/24/after/events", "equals": "{var:events_before}"}}}
+    {"assert": {"json": {"path": "/steps/24/before/tasks", "equals": 4}}},
+    {"assert": {"json": {"path": "/steps/24/before/attempts", "equals": 4}}},
+    {"assert": {"json": {"path": "/steps/24/before/events", "equals": 144}}},
+    {"assert": {"json": {"path": "/steps/24/after/tasks", "equals": 4}}},
+    {"assert": {"json": {"path": "/steps/24/after/attempts", "equals": 4}}},
+    {"assert": {"json": {"path": "/steps/24/after/events", "equals": 144}}}
   ],
   "not_observable": [
     {

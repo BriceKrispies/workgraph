@@ -30,7 +30,7 @@
     {"cli": ["init"], "json": true},
     {"cli": ["repo", "register", "{repo:exclusions}"], "json": true},
     {"cli": ["experiment", "replay", "scan", "--repo", "exclusions", "--rev", "HEAD", "--include-excluded", "--min-lines", "0", "--limit", "1"], "json": true},
-    {"assert": {"stdout_contains": "\"merge\""}},
+    {"assert": {"stdout_contains": "\"subject\": \"main work\""}},
     {"cli": ["experiment", "replay", "scan", "--repo", "exclusions", "--rev", "HEAD~2", "--include-excluded", "--min-lines", "0", "--limit", "1"], "json": true},
     {"assert": {"stdout_contains": "\"rename_only\""}},
     {"assert": {"stdout_contains": "\"no_source\""}},

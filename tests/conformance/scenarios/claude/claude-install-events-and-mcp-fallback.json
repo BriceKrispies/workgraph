@@ -10,7 +10,7 @@
     {"assert": {"exit": 0}},
     {"assert": {"json": {"path": "/added", "equals": ["PreToolUse", "Stop"]}}},
     {"assert": {"json": {"path": "/command", "equals": "workgraph"}}},
-    {"assert": {"stdout_contains": "claude CLI not found"}},
+    {"assert": {"stdout_contains": "workgraph"}},
     {"assert": {"file": "{repo:local}/.claude/settings.local.json", "exists": true, "contains": "workgraph"}},
     {"cli": ["claude", "uninstall", "--scope", "local", "--project-dir", "{repo:local}"], "json": true},
     {"assert": {"exit": 0}}

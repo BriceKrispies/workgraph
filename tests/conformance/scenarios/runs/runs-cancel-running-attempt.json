@@ -9,7 +9,7 @@
     {"cli": ["init"], "json": true},
     {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
     {"cli": ["config", "set", "execution.default_agent", "\"fake\""], "json": true},
-    {"cli": ["agent", "add-command", "fake", "python", "--arg", "C:/dev/workgraph/.claude/worktrees/agent-adbe51c0d630f1176/src/workgraph/demo/scripted_agent.py", "--arg", "--mode", "--arg", "sleep", "--arg", "{manifest}", "--timeout", "120", "--supports-usage"], "json": true},
+    {"cli": ["agent", "add-command", "fake", "workgraph-demo-agent", "--arg", "--mode", "--arg", "sleep", "--arg", "{manifest}", "--timeout", "120", "--supports-usage"], "json": true},
     {"cli": ["repo", "register", "{repo:cancel-me}"], "json": true},
     {"cli": ["task", "create", "Implement login", "-r", "cancel-me", "--ready"], "json": true},
     {"cli": ["run", "start", "WG-1"], "json": true, "save": {"attempt": "/id"}},

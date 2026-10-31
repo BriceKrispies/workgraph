@@ -46,6 +46,24 @@
     },
     {
       "cli": [
+        "config",
+        "set",
+        "llm.auto_embed",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "llm.auto_classify",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
         "agent",
         "add-command",
         "fake-a",
@@ -128,7 +146,7 @@
         "--check",
         "{\"name\":\"types\",\"kind\":\"typecheck\",\"tier\":\"fast\",\"command\":[\"git\",\"rev-parse\",\"--is-inside-work-tree\"]}",
         "--check",
-        "{\"name\":\"suite\",\"kind\":\"test\",\"command\":[\"sh\",\"-c\",\"if [ -e c.txt ]; then echo FAILED suite::late - c.txt exists; exit 1; fi; echo runner could not start; exit 2\"],\"error_exit_codes\":[2]}"
+        "{\"name\":\"suite\",\"kind\":\"test\",\"allow_shell\":true,\"command\":[\"sh\",\"-c\",\"if [ -e c.txt ]; then echo FAILED suite::late - c.txt exists; exit 1; fi; echo runner could not start; exit 2\"],\"error_exit_codes\":[2]}"
       ],
       "json": true
     },

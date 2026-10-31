@@ -54,6 +54,24 @@
     },
     {
       "cli": [
+        "config",
+        "set",
+        "llm.auto_embed",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "llm.auto_classify",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
         "agent",
         "add-command",
         "fake-a",
@@ -121,7 +139,7 @@
         "--check",
         "{\"name\":\"types\",\"kind\":\"typecheck\",\"tier\":\"fast\",\"command\":[\"git\",\"rev-parse\",\"--is-inside-work-tree\"]}",
         "--check",
-        "{\"name\":\"suite\",\"kind\":\"test\",\"command\":[\"sh\",\"-c\",\"bad=0; for f in bad_*; do if [ -e $f ]; then echo test $f ... FAILED; bad=1; fi; done; exit $bad\"],\"parser\":\"cargo\",\"baseline\":\"regression\"}"
+        "{\"name\":\"suite\",\"kind\":\"test\",\"allow_shell\":true,\"command\":[\"sh\",\"-c\",\"bad=0; for f in bad_*; do if [ -e $f ]; then echo test $f ... FAILED; bad=1; fi; done; exit $bad\"],\"parser\":\"cargo\",\"baseline\":\"regression\"}"
       ],
       "json": true
     },

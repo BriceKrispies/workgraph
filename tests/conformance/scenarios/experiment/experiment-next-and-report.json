@@ -727,11 +727,19 @@
         "one-band"
       ],
       "json": true,
-      "expect_exit": 2
+      "expect_exit": 0
     },
     {
       "assert": {
-        "exit": 2
+        "exit": 0
+      }
+    },
+    {
+      "assert": {
+        "json": {
+          "path": "/reason",
+          "equals": "pool_exhausted"
+        }
       }
     }
   ],

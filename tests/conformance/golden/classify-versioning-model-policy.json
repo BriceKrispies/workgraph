@@ -1,0 +1,355 @@
+{
+  "scenario": "classify-versioning-model-policy",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.auto_embed\",\n  \"value\": false,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.auto_classify\",\n  \"value\": true,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.classification.provider\",\n  \"value\": \"heuristic\",\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.classification.model\",\n  \"value\": \"heuristic-v1\",\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Fix crash when login token expires\",\n  \"description\": \"The app throws an exception and crashes.\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@5|Z>\",\n  \"updated_at\": \"<ts@5|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "drain",
+      "exit": 0,
+      "stdout": "completed=1 failed=0\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"task_id\": \"<id:1>\",\n  \"task_key\": \"WG-1\",\n  \"current\": {\n    \"id\": \"<id:3>\",\n    \"task_id\": \"<id:1>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"6e7953c54a698333bcc55a50a8fdc573a7da7a92d5c244737bccfc59641fc2a8\",\n    \"category\": \"bug_fix\",\n    \"subtype\": \"bug_fix:auth\",\n    \"domain\": \"auth\",\n    \"affected_systems\": [],\n    \"complexity\": \"small\",\n    \"tags\": [\n      \"crash\",\n      \"crashes\",\n      \"description\",\n      \"exception\"\n    ],\n    \"confidence\": 0.779,\n    \"rationale\": \"keyword score 10.5 (runner-up 1.5); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": null,\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@6|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:3>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"6e7953c54a698333bcc55a50a8fdc573a7da7a92d5c244737bccfc59641fc2a8\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"crash\",\n        \"crashes\",\n        \"description\",\n        \"exception\"\n      ],\n      \"confidence\": 0.779,\n      \"rationale\": \"keyword score 10.5 (runner-up 1.5); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@6|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Fix crash when login token expires\",\n  \"description\": \"The app throws an exception and crashes.\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": \"bug_fix\",\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@5|Z>\",\n  \"updated_at\": \"<ts@6|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": \"<id:3>\",\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.auto_classify\",\n  \"value\": false,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Fix crash when login token expires\",\n  \"description\": \"Refactor the login module into smaller units.\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": \"bug_fix\",\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts@5|Z>\",\n  \"updated_at\": \"<ts@19|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": \"<id:3>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"task_id\": \"<id:1>\",\n  \"source\": \"model\",\n  \"status\": \"succeeded\",\n  \"provider\": \"heuristic\",\n  \"model\": \"heuristic-alt\",\n  \"prompt_version\": \"classify-v1\",\n  \"taxonomy_version\": \"2026.1\",\n  \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n  \"category\": \"bug_fix\",\n  \"subtype\": \"bug_fix:auth\",\n  \"domain\": \"auth\",\n  \"affected_systems\": [],\n  \"complexity\": \"small\",\n  \"tags\": [\n    \"login\",\n    \"crash\",\n    \"description\",\n    \"expires\"\n  ],\n  \"confidence\": 0.486,\n  \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n  \"validation_status\": \"valid\",\n  \"error\": null,\n  \"duration_ms\": <dur>,\n  \"is_current\": false,\n  \"confirmed_by\": null,\n  \"batch_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts@20|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"task_id\": \"<id:1>\",\n  \"task_key\": \"WG-1\",\n  \"current\": {\n    \"id\": \"<id:3>\",\n    \"task_id\": \"<id:1>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"6e7953c54a698333bcc55a50a8fdc573a7da7a92d5c244737bccfc59641fc2a8\",\n    \"category\": \"bug_fix\",\n    \"subtype\": \"bug_fix:auth\",\n    \"domain\": \"auth\",\n    \"affected_systems\": [],\n    \"complexity\": \"small\",\n    \"tags\": [\n      \"crash\",\n      \"crashes\",\n      \"description\",\n      \"exception\"\n    ],\n    \"confidence\": 0.779,\n    \"rationale\": \"keyword score 10.5 (runner-up 1.5); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": null,\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@6|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:4>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-alt\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"crash\",\n        \"description\",\n        \"expires\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"human:Brice\",\n      \"created_at\": \"<ts@20|Z>\"\n    },\n    {\n      \"id\": \"<id:3>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"6e7953c54a698333bcc55a50a8fdc573a7da7a92d5c244737bccfc59641fc2a8\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"crash\",\n        \"crashes\",\n        \"description\",\n        \"exception\"\n      ],\n      \"confidence\": 0.779,\n      \"rationale\": \"keyword score 10.5 (runner-up 1.5); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@6|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"task_id\": \"<id:1>\",\n  \"source\": \"model\",\n  \"status\": \"succeeded\",\n  \"provider\": \"heuristic\",\n  \"model\": \"heuristic-v1\",\n  \"prompt_version\": \"classify-v1\",\n  \"taxonomy_version\": \"2026.1\",\n  \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n  \"category\": \"bug_fix\",\n  \"subtype\": \"bug_fix:auth\",\n  \"domain\": \"auth\",\n  \"affected_systems\": [],\n  \"complexity\": \"small\",\n  \"tags\": [\n    \"login\",\n    \"crash\",\n    \"description\",\n    \"expires\"\n  ],\n  \"confidence\": 0.486,\n  \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n  \"validation_status\": \"valid\",\n  \"error\": null,\n  \"duration_ms\": <dur>,\n  \"is_current\": true,\n  \"confirmed_by\": null,\n  \"batch_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts@29|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"task_id\": \"<id:1>\",\n  \"task_key\": \"WG-1\",\n  \"current\": {\n    \"id\": \"<id:5>\",\n    \"task_id\": \"<id:1>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n    \"category\": \"bug_fix\",\n    \"subtype\": \"bug_fix:auth\",\n    \"domain\": \"auth\",\n    \"affected_systems\": [],\n    \"complexity\": \"small\",\n    \"tags\": [\n      \"login\",\n      \"crash\",\n      \"description\",\n      \"expires\"\n    ],\n    \"confidence\": 0.486,\n    \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": null,\n    \"created_by\": \"human:Brice\",\n    \"created_at\": \"<ts@29|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:5>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"crash\",\n        \"description\",\n        \"expires\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"human:Brice\",\n      \"created_at\": \"<ts@29|Z>\"\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-alt\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"crash\",\n        \"description\",\n        \"expires\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"human:Brice\",\n      \"created_at\": \"<ts@20|Z>\"\n    },\n    {\n      \"id\": \"<id:3>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"6e7953c54a698333bcc55a50a8fdc573a7da7a92d5c244737bccfc59641fc2a8\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"crash\",\n        \"crashes\",\n        \"description\",\n        \"exception\"\n      ],\n      \"confidence\": 0.779,\n      \"rationale\": \"keyword score 10.5 (runner-up 1.5); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@6|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 33,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"task_id\": \"<id:1>\",\n  \"source\": \"model\",\n  \"status\": \"succeeded\",\n  \"provider\": \"heuristic\",\n  \"model\": \"heuristic-v1\",\n  \"prompt_version\": \"classify-v1\",\n  \"taxonomy_version\": \"2026.1\",\n  \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n  \"category\": \"bug_fix\",\n  \"subtype\": \"bug_fix:auth\",\n  \"domain\": \"auth\",\n  \"affected_systems\": [],\n  \"complexity\": \"small\",\n  \"tags\": [\n    \"login\",\n    \"crash\",\n    \"description\",\n    \"expires\"\n  ],\n  \"confidence\": 0.486,\n  \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n  \"validation_status\": \"valid\",\n  \"error\": null,\n  \"duration_ms\": <dur>,\n  \"is_current\": true,\n  \"confirmed_by\": null,\n  \"batch_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts@29|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 34,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 35,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"key\": \"llm.auto_classify\",\n  \"value\": true,\n  \"workspace\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 36,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Fix crash when login token expires\",\n  \"description\": \"Refactor the login module into smaller units. Keep the token handling as it is.\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": \"bug_fix\",\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 3,\n  \"created_at\": \"<ts@5|Z>\",\n  \"updated_at\": \"<ts@36|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": \"<id:5>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 37,
+      "kind": "drain",
+      "exit": 0,
+      "stdout": "completed=1 failed=0\n",
+      "stderr": ""
+    },
+    {
+      "index": 38,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"task_id\": \"<id:1>\",\n  \"task_key\": \"WG-1\",\n  \"current\": {\n    \"id\": \"<id:6>\",\n    \"task_id\": \"<id:1>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"5b54d78e274abde82bd87e2147187bd72a7d55a5d963153b07e98d7068959b57\",\n    \"category\": \"bug_fix\",\n    \"subtype\": \"bug_fix:auth\",\n    \"domain\": \"auth\",\n    \"affected_systems\": [],\n    \"complexity\": \"small\",\n    \"tags\": [\n      \"login\",\n      \"token\",\n      \"crash\",\n      \"description\"\n    ],\n    \"confidence\": 0.486,\n    \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": null,\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@37|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:6>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"5b54d78e274abde82bd87e2147187bd72a7d55a5d963153b07e98d7068959b57\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"token\",\n        \"crash\",\n        \"description\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@37|Z>\"\n    },\n    {\n      \"id\": \"<id:5>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"crash\",\n        \"description\",\n        \"expires\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"human:Brice\",\n      \"created_at\": \"<ts@29|Z>\"\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-alt\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"crash\",\n        \"description\",\n        \"expires\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"human:Brice\",\n      \"created_at\": \"<ts@20|Z>\"\n    },\n    {\n      \"id\": \"<id:3>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"6e7953c54a698333bcc55a50a8fdc573a7da7a92d5c244737bccfc59641fc2a8\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"crash\",\n        \"crashes\",\n        \"description\",\n        \"exception\"\n      ],\n      \"confidence\": 0.779,\n      \"rationale\": \"keyword score 10.5 (runner-up 1.5); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@6|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 39,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 40,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 41,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"task_id\": \"<id:1>\",\n  \"source\": \"manual\",\n  \"status\": \"succeeded\",\n  \"provider\": null,\n  \"model\": null,\n  \"prompt_version\": null,\n  \"taxonomy_version\": \"2026.1\",\n  \"input_hash\": \"5b54d78e274abde82bd87e2147187bd72a7d55a5d963153b07e98d7068959b57\",\n  \"category\": \"security\",\n  \"subtype\": \"bug_fix:auth\",\n  \"domain\": \"auth\",\n  \"affected_systems\": [],\n  \"complexity\": \"small\",\n  \"tags\": [],\n  \"confidence\": 1.0,\n  \"rationale\": \"actually a token issue\",\n  \"validation_status\": \"manual\",\n  \"error\": null,\n  \"duration_ms\": null,\n  \"is_current\": true,\n  \"confirmed_by\": \"human:Brice\",\n  \"batch_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts@41|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 42,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 43,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 44,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"task_id\": \"<id:1>\",\n  \"source\": \"model\",\n  \"status\": \"succeeded\",\n  \"provider\": \"heuristic\",\n  \"model\": \"heuristic-alt\",\n  \"prompt_version\": \"classify-v1\",\n  \"taxonomy_version\": \"2026.1\",\n  \"input_hash\": \"5b54d78e274abde82bd87e2147187bd72a7d55a5d963153b07e98d7068959b57\",\n  \"category\": \"bug_fix\",\n  \"subtype\": \"bug_fix:auth\",\n  \"domain\": \"auth\",\n  \"affected_systems\": [],\n  \"complexity\": \"small\",\n  \"tags\": [\n    \"login\",\n    \"token\",\n    \"crash\",\n    \"description\"\n  ],\n  \"confidence\": 0.486,\n  \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n  \"validation_status\": \"valid\",\n  \"error\": null,\n  \"duration_ms\": <dur>,\n  \"is_current\": false,\n  \"confirmed_by\": null,\n  \"batch_id\": null,\n  \"created_by\": \"human:Brice\",\n  \"created_at\": \"<ts@44|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 45,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 46,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"task_id\": \"<id:1>\",\n  \"task_key\": \"WG-1\",\n  \"current\": {\n    \"id\": \"<id:7>\",\n    \"task_id\": \"<id:1>\",\n    \"source\": \"manual\",\n    \"status\": \"succeeded\",\n    \"provider\": null,\n    \"model\": null,\n    \"prompt_version\": null,\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"5b54d78e274abde82bd87e2147187bd72a7d55a5d963153b07e98d7068959b57\",\n    \"category\": \"security\",\n    \"subtype\": \"bug_fix:auth\",\n    \"domain\": \"auth\",\n    \"affected_systems\": [],\n    \"complexity\": \"small\",\n    \"tags\": [],\n    \"confidence\": 1.0,\n    \"rationale\": \"actually a token issue\",\n    \"validation_status\": \"manual\",\n    \"error\": null,\n    \"duration_ms\": null,\n    \"is_current\": true,\n    \"confirmed_by\": \"human:Brice\",\n    \"batch_id\": null,\n    \"created_by\": \"human:Brice\",\n    \"created_at\": \"<ts@41|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:8>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-alt\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"5b54d78e274abde82bd87e2147187bd72a7d55a5d963153b07e98d7068959b57\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"token\",\n        \"crash\",\n        \"description\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"human:Brice\",\n      \"created_at\": \"<ts@44|Z>\"\n    },\n    {\n      \"id\": \"<id:7>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"manual\",\n      \"status\": \"succeeded\",\n      \"provider\": null,\n      \"model\": null,\n      \"prompt_version\": null,\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"5b54d78e274abde82bd87e2147187bd72a7d55a5d963153b07e98d7068959b57\",\n      \"category\": \"security\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [],\n      \"confidence\": 1.0,\n      \"rationale\": \"actually a token issue\",\n      \"validation_status\": \"manual\",\n      \"error\": null,\n      \"duration_ms\": null,\n      \"is_current\": true,\n      \"confirmed_by\": \"human:Brice\",\n      \"batch_id\": null,\n      \"created_by\": \"human:Brice\",\n      \"created_at\": \"<ts@41|Z>\"\n    },\n    {\n      \"id\": \"<id:6>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"5b54d78e274abde82bd87e2147187bd72a7d55a5d963153b07e98d7068959b57\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"token\",\n        \"crash\",\n        \"description\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@37|Z>\"\n    },\n    {\n      \"id\": \"<id:5>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"crash\",\n        \"description\",\n        \"expires\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"human:Brice\",\n      \"created_at\": \"<ts@29|Z>\"\n    },\n    {\n      \"id\": \"<id:4>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-alt\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"4a556c88ff32f2d827bafb6cf6daa022221519cfd2e45ed1737e35cf67cd9f5d\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"login\",\n        \"crash\",\n        \"description\",\n        \"expires\"\n      ],\n      \"confidence\": 0.486,\n      \"rationale\": \"keyword score 5.5 (runner-up 4.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"human:Brice\",\n      \"created_at\": \"<ts@20|Z>\"\n    },\n    {\n      \"id\": \"<id:3>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"6e7953c54a698333bcc55a50a8fdc573a7da7a92d5c244737bccfc59641fc2a8\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:auth\",\n      \"domain\": \"auth\",\n      \"affected_systems\": [],\n      \"complexity\": \"small\",\n      \"tags\": [\n        \"crash\",\n        \"crashes\",\n        \"description\",\n        \"exception\"\n      ],\n      \"confidence\": 0.779,\n      \"rationale\": \"keyword score 10.5 (runner-up 1.5); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": false,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@6|Z>\"\n    }\n  ],\n  \"disagreement\": true,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 47,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 48,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 49,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

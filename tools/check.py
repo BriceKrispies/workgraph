@@ -2,7 +2,8 @@
 
 Runs, in order: ruff lint, ruff format check, ty, the Rust steps (cargo fmt check, clippy with
 warnings denied, `cargo purity`) and, when the frontend dependencies are installed, bun run
-typecheck / test / build. Add --tests to also run the Rust tests (`cargo test --workspace`); only
+typecheck / test / build. Add --tests to also run the Rust tests (`cargo test --workspace`) and the
+conformance corpus against the Rust binaries; only
 stack verification passes it, since per-change runs stay cheap.
 
 Every step that runs tests has a hard wall-clock budget of TEST_BUDGET_SECS (120 s). A test run
@@ -98,6 +99,26 @@ def main() -> None:
     if args.tests:
         step("cargo test build", [cargo, "test", "--workspace", "--no-run"])
         test_step("cargo test", [cargo, "test", "--workspace"])
+        step("cargo build bins", [cargo, "build", "--workspace", "--bins"])
+        bin_dir = Path(os.environ.get("CARGO_TARGET_DIR", ROOT / "target")) / "debug"
+        exe = ".exe" if os.name == "nt" else ""
+        test_step(
+            "conformance check",
+            [
+                str(bin_dir / f"wg-conformance{exe}"),
+                "check",
+                "--jobs",
+                str(os.cpu_count() or 4),
+                "--scenarios",
+                "tests/conformance/scenarios",
+                "--golden",
+                "tests/conformance/golden",
+                "--env",
+                f"PATH={bin_dir}",
+                "--rust",
+                str(bin_dir / f"workgraph{exe}"),
+            ],
+        )
     web = ROOT / "web"
     bun = shutil.which("bun")
     if args.no_web:

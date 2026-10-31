@@ -340,10 +340,10 @@ pub struct Touch {
 pub fn touch_up(verb: Verb, status: u16, session: &str) -> Touch {
     let ends_session = verb == Verb::Delete && status < 400;
     let accepted = verb == Verb::Post && status == 202;
-    if !(ends_session || accepted) {
-        return Touch::default();
+    let mut headers = Vec::new();
+    if ends_session || accepted {
+        headers.push(("content-type".to_owned(), JSON_TYPE.to_owned()));
     }
-    let mut headers = vec![("content-type".to_owned(), JSON_TYPE.to_owned())];
     if !session.is_empty() {
         headers.push(("mcp-session-id".to_owned(), session.to_owned()));
     }
@@ -492,9 +492,14 @@ mod plan_tests {
                 .headers
                 .contains(&("content-type".to_owned(), JSON_TYPE.to_owned()))
         );
-        assert_eq!(touch_up(Verb::Post, 200, "s"), Touch::default());
-        assert_eq!(touch_up(Verb::Delete, 404, "s"), Touch::default());
-        assert_eq!(touch_up(Verb::Get, 202, "s"), Touch::default());
+        assert_eq!(touch_up(Verb::Post, 200, ""), Touch::default());
+        assert_eq!(touch_up(Verb::Delete, 404, ""), Touch::default());
+        let echoed = touch_up(Verb::Get, 200, "s");
+        assert_eq!(echoed.status, None);
+        assert_eq!(
+            echoed.headers,
+            vec![("mcp-session-id".to_owned(), "s".to_owned())]
+        );
     }
 
     #[test]

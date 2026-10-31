@@ -61,11 +61,3 @@ decision = "Q9"
 scenario = "*"
 fields = ["stdout"]
 description = "last-ulp differences in exp/log statistics; relative tolerance 1e-12 on the listed fields only (the runner compares text, so the tolerance itself is not applied yet)"
-
-[[divergence]]
-id = "DV8"
-decision = "3.6"
-scenario = "mcp-resources"
-fields = ["stdout"]
-contains = ["-32002", "-32602"]
-description = "resources/read of an unknown URI: rmcp 3.7 answers peers on protocol 2026-07-28 with -32602 and a `uri` data field, as that protocol revision requires; Python's SDK still answers -32002. Only that error code and its data differ"

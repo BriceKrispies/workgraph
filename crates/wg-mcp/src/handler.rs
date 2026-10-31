@@ -152,11 +152,30 @@ impl ServerHandler for WgMcp {
                 backend
                     .read_resource(agent, &uri)
                     .map(|text| read_result(&uri, &text))
-                    .map_err(|err| ErrorData::resource_not_found(err.message, None))
+                    .map_err(|err| resource_error(&uri, err))
             })
         })
         .await
         .map_err(|err| ErrorData::internal_error(err.to_string(), None))??;
         Ok(result.into())
+    }
+}
+
+/// The JSON-RPC error a failed resource read answers with, as the Python server does: a missing
+/// instance is invalid params (`-32602`), a template the server cannot build (a validation
+/// failure) is an internal error naming the template, and any other failure is an internal error
+/// with its message. Every error carries the URI in `data`.
+fn resource_error(uri: &str, err: wg_types::WgError) -> ErrorData {
+    let data = Some(serde_json::json!({ "uri": uri }));
+    match err.code {
+        wg_types::ErrorCode::NotFound => {
+            ErrorData::new(ErrorCode::INVALID_PARAMS, err.message, data)
+        }
+        wg_types::ErrorCode::ValidationFailed => ErrorData::new(
+            ErrorCode::INTERNAL_ERROR,
+            format!("Error creating resource from template {uri}"),
+            data,
+        ),
+        _ => ErrorData::new(ErrorCode::INTERNAL_ERROR, err.message, data),
     }
 }

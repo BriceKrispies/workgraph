@@ -39,7 +39,7 @@ pub fn export_command() -> Command {
 /// `--output` of `backup`, when given.
 #[must_use]
 pub fn backup_output(m: &ArgMatches) -> Option<PathBuf> {
-    one(m, "--output").map(PathBuf::from)
+    one(m, "--output").map(|text| wg_archivespec::native_path(&text))
 }
 
 /// `--include-artifacts` of `backup`.
@@ -51,7 +51,7 @@ pub fn include_artifacts(m: &ArgMatches) -> bool {
 /// A required positional path (`archive`, `output`, `source`).
 #[must_use]
 pub fn path_arg(m: &ArgMatches, id: &str) -> PathBuf {
-    PathBuf::from(one(m, id).unwrap_or_default())
+    wg_archivespec::native_path(&one(m, id).unwrap_or_default())
 }
 
 /// `--with-config` of `restore`.

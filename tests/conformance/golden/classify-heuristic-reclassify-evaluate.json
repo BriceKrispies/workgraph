@@ -12,70 +12,70 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"key\": \"llm.classification.provider\",\n  \"value\": \"heuristic\",\n  \"workspace\": null\n}\n",
+      "stdout": "{\n  \"key\": \"llm.auto_embed\",\n  \"value\": false,\n  \"workspace\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 2,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"key\": \"llm.classification.model\",\n  \"value\": \"heuristic-v1\",\n  \"workspace\": null\n}\n",
+      "stdout": "{\n  \"key\": \"llm.auto_classify\",\n  \"value\": false,\n  \"workspace\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 3,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Fix crash in checkout page\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@3|Z>\",\n  \"updated_at\": \"<ts@3|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stdout": "{\n  \"key\": \"llm.classification.provider\",\n  \"value\": \"heuristic\",\n  \"workspace\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 4,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Add dark mode feature\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@4|Z>\",\n  \"updated_at\": \"<ts@4|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stdout": "{\n  \"key\": \"llm.classification.model\",\n  \"value\": \"heuristic-v1\",\n  \"workspace\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 5,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Refactor payment module\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@5|Z>\",\n  \"updated_at\": \"<ts@5|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Fix crash in checkout page\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@5|Z>\",\n  \"updated_at\": \"<ts@5|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 6,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Update README documentation\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@6|Z>\",\n  \"updated_at\": \"<ts@6|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Add dark mode feature\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@6|Z>\",\n  \"updated_at\": \"<ts@6|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 7,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-5\",\n  \"number\": 5,\n  \"title\": \"Investigate slow query latency\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@7|Z>\",\n  \"updated_at\": \"<ts@7|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-3\",\n  \"number\": 3,\n  \"title\": \"Refactor payment module\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@7|Z>\",\n  \"updated_at\": \"<ts@7|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 8,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"title\": \"Fix crash in checkout page\",\n  \"category\": \"bug_fix\"\n}\n",
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-4\",\n  \"number\": 4,\n  \"title\": \"Update README documentation\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@8|Z>\",\n  \"updated_at\": \"<ts@8|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 9,
-      "kind": "assert",
-      "exit": null,
-      "stdout": "",
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-5\",\n  \"number\": 5,\n  \"title\": \"Investigate slow query latency\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@9|Z>\",\n  \"updated_at\": \"<ts@9|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 10,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"title\": \"Add dark mode feature\",\n  \"category\": \"feature\"\n}\n",
+      "stdout": "{\n  \"id\": \"<id:7>\",\n  \"title\": \"Fix crash in checkout page\",\n  \"category\": \"bug_fix\"\n}\n",
       "stderr": ""
     },
     {
@@ -89,49 +89,49 @@
       "index": 12,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"title\": \"Refactor payment module\",\n  \"category\": \"refactor\"\n}\n",
+      "stdout": "{\n  \"id\": \"<id:8>\",\n  \"title\": \"Add dark mode feature\",\n  \"category\": \"feature\"\n}\n",
       "stderr": ""
     },
     {
       "index": 13,
-      "kind": "cli",
-      "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"title\": \"Update README documentation\",\n  \"category\": \"documentation\"\n}\n",
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
       "stderr": ""
     },
     {
       "index": 14,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:11>\",\n  \"title\": \"Investigate slow query latency\",\n  \"category\": \"performance\"\n}\n",
+      "stdout": "{\n  \"id\": \"<id:9>\",\n  \"title\": \"Refactor payment module\",\n  \"category\": \"refactor\"\n}\n",
       "stderr": ""
     },
     {
       "index": 15,
       "kind": "cli",
       "exit": 0,
-      "stdout": "[\n  {\n    \"id\": \"<id:7>\",\n    \"task_id\": \"<id:1>\",\n    \"title\": \"Fix crash in checkout page\",\n    \"category\": \"bug_fix\",\n    \"labeled_by\": \"human:Brice\"\n  },\n  {\n    \"id\": \"<id:8>\",\n    \"task_id\": \"<id:3>\",\n    \"title\": \"Add dark mode feature\",\n    \"category\": \"feature\",\n    \"labeled_by\": \"human:Brice\"\n  },\n  {\n    \"id\": \"<id:9>\",\n    \"task_id\": \"<id:4>\",\n    \"title\": \"Refactor payment module\",\n    \"category\": \"refactor\",\n    \"labeled_by\": \"human:Brice\"\n  },\n  {\n    \"id\": \"<id:10>\",\n    \"task_id\": \"<id:5>\",\n    \"title\": \"Update README documentation\",\n    \"category\": \"documentation\",\n    \"labeled_by\": \"human:Brice\"\n  },\n  {\n    \"id\": \"<id:11>\",\n    \"task_id\": \"<id:6>\",\n    \"title\": \"Investigate slow query latency\",\n    \"category\": \"performance\",\n    \"labeled_by\": \"human:Brice\"\n  }\n]\n",
+      "stdout": "{\n  \"id\": \"<id:10>\",\n  \"title\": \"Update README documentation\",\n  \"category\": \"documentation\"\n}\n",
       "stderr": ""
     },
     {
       "index": 16,
-      "kind": "assert",
-      "exit": null,
-      "stdout": "",
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:11>\",\n  \"title\": \"Investigate slow query latency\",\n  \"category\": \"performance\"\n}\n",
       "stderr": ""
     },
     {
       "index": 17,
-      "kind": "assert",
-      "exit": null,
-      "stdout": "",
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:7>\",\n    \"task_id\": \"<id:1>\",\n    \"title\": \"Fix crash in checkout page\",\n    \"category\": \"bug_fix\",\n    \"labeled_by\": \"human:Brice\"\n  },\n  {\n    \"id\": \"<id:8>\",\n    \"task_id\": \"<id:3>\",\n    \"title\": \"Add dark mode feature\",\n    \"category\": \"feature\",\n    \"labeled_by\": \"human:Brice\"\n  },\n  {\n    \"id\": \"<id:9>\",\n    \"task_id\": \"<id:4>\",\n    \"title\": \"Refactor payment module\",\n    \"category\": \"refactor\",\n    \"labeled_by\": \"human:Brice\"\n  },\n  {\n    \"id\": \"<id:10>\",\n    \"task_id\": \"<id:5>\",\n    \"title\": \"Update README documentation\",\n    \"category\": \"documentation\",\n    \"labeled_by\": \"human:Brice\"\n  },\n  {\n    \"id\": \"<id:11>\",\n    \"task_id\": \"<id:6>\",\n    \"title\": \"Investigate slow query latency\",\n    \"category\": \"performance\",\n    \"labeled_by\": \"human:Brice\"\n  }\n]\n",
       "stderr": ""
     },
     {
       "index": 18,
-      "kind": "cli",
-      "exit": 0,
-      "stdout": "{\n  \"batch_id\": \"<id:12>\",\n  \"tasks\": 5,\n  \"job_ids\": [\n    \"<id:13>\",\n    \"<id:14>\",\n    \"<id:15>\",\n    \"<id:16>\",\n    \"<id:17>\"\n  ],\n  \"total_matching\": 5\n}\n",
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
       "stderr": ""
     },
     {
@@ -143,30 +143,30 @@
     },
     {
       "index": 20,
-      "kind": "drain",
+      "kind": "cli",
       "exit": 0,
-      "stdout": "completed=10 failed=15\n",
+      "stdout": "{\n  \"batch_id\": \"<id:12>\",\n  \"tasks\": 5,\n  \"job_ids\": [\n    \"<id:13>\",\n    \"<id:14>\",\n    \"<id:15>\",\n    \"<id:16>\",\n    \"<id:17>\"\n  ],\n  \"total_matching\": 5\n}\n",
       "stderr": ""
     },
     {
       "index": 21,
-      "kind": "cli",
-      "exit": 0,
-      "stdout": "{\n  \"task_id\": \"<id:1>\",\n  \"task_key\": \"WG-1\",\n  \"current\": {\n    \"id\": \"<id:18>\",\n    \"task_id\": \"<id:1>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"9507dc393ceae020f16736265e351bd87005312d5fc286a75d274da11ee9e72a\",\n    \"category\": \"bug_fix\",\n    \"subtype\": \"bug_fix:frontend\",\n    \"domain\": \"frontend\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"checkout\",\n      \"crash\",\n      \"page\",\n      \"title\"\n    ],\n    \"confidence\": 0.85,\n    \"rationale\": \"keyword score 5.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": null,\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@20|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:18>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"9507dc393ceae020f16736265e351bd87005312d5fc286a75d274da11ee9e72a\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:frontend\",\n      \"domain\": \"frontend\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"checkout\",\n        \"crash\",\n        \"page\",\n        \"title\"\n      ],\n      \"confidence\": 0.85,\n      \"rationale\": \"keyword score 5.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@20|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
-      "stderr": ""
-    },
-    {
-      "index": 22,
       "kind": "assert",
       "exit": null,
       "stdout": "",
       "stderr": ""
     },
     {
+      "index": 22,
+      "kind": "drain",
+      "exit": 0,
+      "stdout": "completed=5 failed=0\n",
+      "stderr": ""
+    },
+    {
       "index": 23,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"task_id\": \"<id:3>\",\n  \"task_key\": \"WG-2\",\n  \"current\": {\n    \"id\": \"<id:19>\",\n    \"task_id\": \"<id:3>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"aba753bcd8b20727365b09b69e2ec2c8685671893fa5759907c24a4607586b4f\",\n    \"category\": \"feature\",\n    \"subtype\": \"feature:general\",\n    \"domain\": \"general\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"dark\",\n      \"feature\",\n      \"mode\",\n      \"title\"\n    ],\n    \"confidence\": 0.85,\n    \"rationale\": \"keyword score 4.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": null,\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@20|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:19>\",\n      \"task_id\": \"<id:3>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"aba753bcd8b20727365b09b69e2ec2c8685671893fa5759907c24a4607586b4f\",\n      \"category\": \"feature\",\n      \"subtype\": \"feature:general\",\n      \"domain\": \"general\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"dark\",\n        \"feature\",\n        \"mode\",\n        \"title\"\n      ],\n      \"confidence\": 0.85,\n      \"rationale\": \"keyword score 4.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@20|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
+      "stdout": "{\n  \"task_id\": \"<id:1>\",\n  \"task_key\": \"WG-1\",\n  \"current\": {\n    \"id\": \"<id:18>\",\n    \"task_id\": \"<id:1>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"9507dc393ceae020f16736265e351bd87005312d5fc286a75d274da11ee9e72a\",\n    \"category\": \"bug_fix\",\n    \"subtype\": \"bug_fix:frontend\",\n    \"domain\": \"frontend\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"checkout\",\n      \"crash\",\n      \"page\",\n      \"title\"\n    ],\n    \"confidence\": 0.85,\n    \"rationale\": \"keyword score 5.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": \"<id:12>\",\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@22|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:18>\",\n      \"task_id\": \"<id:1>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"9507dc393ceae020f16736265e351bd87005312d5fc286a75d274da11ee9e72a\",\n      \"category\": \"bug_fix\",\n      \"subtype\": \"bug_fix:frontend\",\n      \"domain\": \"frontend\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"checkout\",\n        \"crash\",\n        \"page\",\n        \"title\"\n      ],\n      \"confidence\": 0.85,\n      \"rationale\": \"keyword score 5.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": \"<id:12>\",\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@22|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
       "stderr": ""
     },
     {
@@ -180,7 +180,7 @@
       "index": 25,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"task_id\": \"<id:4>\",\n  \"task_key\": \"WG-3\",\n  \"current\": {\n    \"id\": \"<id:20>\",\n    \"task_id\": \"<id:4>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"4746b4341ba9df452c07e30cabcd2f545ac990d54a99863aa110de2e5055bab6\",\n    \"category\": \"refactor\",\n    \"subtype\": \"refactor:general\",\n    \"domain\": \"general\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"module\",\n      \"payment\",\n      \"refactor\",\n      \"title\"\n    ],\n    \"confidence\": 0.662,\n    \"rationale\": \"keyword score 4.0 (runner-up 1.5); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": null,\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@20|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:20>\",\n      \"task_id\": \"<id:4>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"4746b4341ba9df452c07e30cabcd2f545ac990d54a99863aa110de2e5055bab6\",\n      \"category\": \"refactor\",\n      \"subtype\": \"refactor:general\",\n      \"domain\": \"general\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"module\",\n        \"payment\",\n        \"refactor\",\n        \"title\"\n      ],\n      \"confidence\": 0.662,\n      \"rationale\": \"keyword score 4.0 (runner-up 1.5); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@20|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
+      "stdout": "{\n  \"task_id\": \"<id:3>\",\n  \"task_key\": \"WG-2\",\n  \"current\": {\n    \"id\": \"<id:19>\",\n    \"task_id\": \"<id:3>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"aba753bcd8b20727365b09b69e2ec2c8685671893fa5759907c24a4607586b4f\",\n    \"category\": \"feature\",\n    \"subtype\": \"feature:general\",\n    \"domain\": \"general\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"dark\",\n      \"feature\",\n      \"mode\",\n      \"title\"\n    ],\n    \"confidence\": 0.85,\n    \"rationale\": \"keyword score 4.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": \"<id:12>\",\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@22|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:19>\",\n      \"task_id\": \"<id:3>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"aba753bcd8b20727365b09b69e2ec2c8685671893fa5759907c24a4607586b4f\",\n      \"category\": \"feature\",\n      \"subtype\": \"feature:general\",\n      \"domain\": \"general\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"dark\",\n        \"feature\",\n        \"mode\",\n        \"title\"\n      ],\n      \"confidence\": 0.85,\n      \"rationale\": \"keyword score 4.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": \"<id:12>\",\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@22|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
       "stderr": ""
     },
     {
@@ -194,7 +194,7 @@
       "index": 27,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"task_id\": \"<id:5>\",\n  \"task_key\": \"WG-4\",\n  \"current\": {\n    \"id\": \"<id:21>\",\n    \"task_id\": \"<id:5>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"e8a88497e9bdcc2dcf60fae5090dfb6263fa957b0b06d491dba2a5d49b3e4f31\",\n    \"category\": \"documentation\",\n    \"subtype\": \"documentation:general\",\n    \"domain\": \"general\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"documentation\",\n      \"readme\",\n      \"title\",\n      \"update\"\n    ],\n    \"confidence\": 0.85,\n    \"rationale\": \"keyword score 10.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": null,\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@20|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:21>\",\n      \"task_id\": \"<id:5>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"e8a88497e9bdcc2dcf60fae5090dfb6263fa957b0b06d491dba2a5d49b3e4f31\",\n      \"category\": \"documentation\",\n      \"subtype\": \"documentation:general\",\n      \"domain\": \"general\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"documentation\",\n        \"readme\",\n        \"title\",\n        \"update\"\n      ],\n      \"confidence\": 0.85,\n      \"rationale\": \"keyword score 10.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@20|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
+      "stdout": "{\n  \"task_id\": \"<id:4>\",\n  \"task_key\": \"WG-3\",\n  \"current\": {\n    \"id\": \"<id:20>\",\n    \"task_id\": \"<id:4>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"4746b4341ba9df452c07e30cabcd2f545ac990d54a99863aa110de2e5055bab6\",\n    \"category\": \"refactor\",\n    \"subtype\": \"refactor:general\",\n    \"domain\": \"general\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"module\",\n      \"payment\",\n      \"refactor\",\n      \"title\"\n    ],\n    \"confidence\": 0.662,\n    \"rationale\": \"keyword score 4.0 (runner-up 1.5); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": \"<id:12>\",\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@22|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:20>\",\n      \"task_id\": \"<id:4>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"4746b4341ba9df452c07e30cabcd2f545ac990d54a99863aa110de2e5055bab6\",\n      \"category\": \"refactor\",\n      \"subtype\": \"refactor:general\",\n      \"domain\": \"general\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"module\",\n        \"payment\",\n        \"refactor\",\n        \"title\"\n      ],\n      \"confidence\": 0.662,\n      \"rationale\": \"keyword score 4.0 (runner-up 1.5); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": \"<id:12>\",\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@22|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
       "stderr": ""
     },
     {
@@ -208,7 +208,7 @@
       "index": 29,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-5\",\n  \"current\": {\n    \"id\": \"<id:22>\",\n    \"task_id\": \"<id:6>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"a13d2d7b69baa6a7834d9dccb164b6e66c7f33a42923be6e3a447b759a7bdbaa\",\n    \"category\": \"performance\",\n    \"subtype\": \"performance:backend\",\n    \"domain\": \"backend\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"investigate\",\n      \"latency\",\n      \"query\",\n      \"slow\"\n    ],\n    \"confidence\": 0.558,\n    \"rationale\": \"keyword score 6.0 (runner-up 3.5); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": null,\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@20|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:22>\",\n      \"task_id\": \"<id:6>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"a13d2d7b69baa6a7834d9dccb164b6e66c7f33a42923be6e3a447b759a7bdbaa\",\n      \"category\": \"performance\",\n      \"subtype\": \"performance:backend\",\n      \"domain\": \"backend\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"investigate\",\n        \"latency\",\n        \"query\",\n        \"slow\"\n      ],\n      \"confidence\": 0.558,\n      \"rationale\": \"keyword score 6.0 (runner-up 3.5); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": null,\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@20|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
+      "stdout": "{\n  \"task_id\": \"<id:5>\",\n  \"task_key\": \"WG-4\",\n  \"current\": {\n    \"id\": \"<id:21>\",\n    \"task_id\": \"<id:5>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"e8a88497e9bdcc2dcf60fae5090dfb6263fa957b0b06d491dba2a5d49b3e4f31\",\n    \"category\": \"documentation\",\n    \"subtype\": \"documentation:general\",\n    \"domain\": \"general\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"documentation\",\n      \"readme\",\n      \"title\",\n      \"update\"\n    ],\n    \"confidence\": 0.85,\n    \"rationale\": \"keyword score 10.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": \"<id:12>\",\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@22|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:21>\",\n      \"task_id\": \"<id:5>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"e8a88497e9bdcc2dcf60fae5090dfb6263fa957b0b06d491dba2a5d49b3e4f31\",\n      \"category\": \"documentation\",\n      \"subtype\": \"documentation:general\",\n      \"domain\": \"general\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"documentation\",\n        \"readme\",\n        \"title\",\n        \"update\"\n      ],\n      \"confidence\": 0.85,\n      \"rationale\": \"keyword score 10.5 (runner-up 0.0); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": \"<id:12>\",\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@22|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
       "stderr": ""
     },
     {
@@ -222,7 +222,7 @@
       "index": 31,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:23>\",\n  \"provider\": \"heuristic\",\n  \"model\": \"heuristic-v1\",\n  \"prompt_version\": \"classify-v1\",\n  \"taxonomy_version\": \"2026.1\",\n  \"sample_size\": 5,\n  \"failures\": 0,\n  \"accuracy\": 1.0,\n  \"macro_f1\": 1.0,\n  \"per_class\": {\n    \"bug_fix\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    },\n    \"documentation\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    },\n    \"feature\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    },\n    \"performance\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    },\n    \"refactor\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    }\n  },\n  \"confusion\": {\n    \"bug_fix\": {\n      \"bug_fix\": 1,\n      \"documentation\": 0,\n      \"feature\": 0,\n      \"performance\": 0,\n      \"refactor\": 0,\n      \"(failed)\": 0\n    },\n    \"documentation\": {\n      \"bug_fix\": 0,\n      \"documentation\": 1,\n      \"feature\": 0,\n      \"performance\": 0,\n      \"refactor\": 0,\n      \"(failed)\": 0\n    },\n    \"feature\": {\n      \"bug_fix\": 0,\n      \"documentation\": 0,\n      \"feature\": 1,\n      \"performance\": 0,\n      \"refactor\": 0,\n      \"(failed)\": 0\n    },\n    \"performance\": {\n      \"bug_fix\": 0,\n      \"documentation\": 0,\n      \"feature\": 0,\n      \"performance\": 1,\n      \"refactor\": 0,\n      \"(failed)\": 0\n    },\n    \"refactor\": {\n      \"bug_fix\": 0,\n      \"documentation\": 0,\n      \"feature\": 0,\n      \"performance\": 0,\n      \"refactor\": 1,\n      \"(failed)\": 0\n    }\n  },\n  \"results\": [\n    {\n      \"label_id\": \"<id:7>\",\n      \"title\": \"Fix crash in checkout page\",\n      \"expected\": \"bug_fix\",\n      \"predicted\": \"bug_fix\",\n      \"correct\": true\n    },\n    {\n      \"label_id\": \"<id:8>\",\n      \"title\": \"Add dark mode feature\",\n      \"expected\": \"feature\",\n      \"predicted\": \"feature\",\n      \"correct\": true\n    },\n    {\n      \"label_id\": \"<id:9>\",\n      \"title\": \"Refactor payment module\",\n      \"expected\": \"refactor\",\n      \"predicted\": \"refactor\",\n      \"correct\": true\n    },\n    {\n      \"label_id\": \"<id:10>\",\n      \"title\": \"Update README documentation\",\n      \"expected\": \"documentation\",\n      \"predicted\": \"documentation\",\n      \"correct\": true\n    },\n    {\n      \"label_id\": \"<id:11>\",\n      \"title\": \"Investigate slow query latency\",\n      \"expected\": \"performance\",\n      \"predicted\": \"performance\",\n      \"correct\": true\n    }\n  ]\n}\n",
+      "stdout": "{\n  \"task_id\": \"<id:6>\",\n  \"task_key\": \"WG-5\",\n  \"current\": {\n    \"id\": \"<id:22>\",\n    \"task_id\": \"<id:6>\",\n    \"source\": \"model\",\n    \"status\": \"succeeded\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"input_hash\": \"a13d2d7b69baa6a7834d9dccb164b6e66c7f33a42923be6e3a447b759a7bdbaa\",\n    \"category\": \"performance\",\n    \"subtype\": \"performance:backend\",\n    \"domain\": \"backend\",\n    \"affected_systems\": [],\n    \"complexity\": \"trivial\",\n    \"tags\": [\n      \"investigate\",\n      \"latency\",\n      \"query\",\n      \"slow\"\n    ],\n    \"confidence\": 0.558,\n    \"rationale\": \"keyword score 6.0 (runner-up 3.5); heuristic rules, not a model judgement\",\n    \"validation_status\": \"valid\",\n    \"error\": null,\n    \"duration_ms\": <dur>,\n    \"is_current\": true,\n    \"confirmed_by\": null,\n    \"batch_id\": \"<id:12>\",\n    \"created_by\": \"system:classifier\",\n    \"created_at\": \"<ts@22|Z>\"\n  },\n  \"history\": [\n    {\n      \"id\": \"<id:22>\",\n      \"task_id\": \"<id:6>\",\n      \"source\": \"model\",\n      \"status\": \"succeeded\",\n      \"provider\": \"heuristic\",\n      \"model\": \"heuristic-v1\",\n      \"prompt_version\": \"classify-v1\",\n      \"taxonomy_version\": \"2026.1\",\n      \"input_hash\": \"a13d2d7b69baa6a7834d9dccb164b6e66c7f33a42923be6e3a447b759a7bdbaa\",\n      \"category\": \"performance\",\n      \"subtype\": \"performance:backend\",\n      \"domain\": \"backend\",\n      \"affected_systems\": [],\n      \"complexity\": \"trivial\",\n      \"tags\": [\n        \"investigate\",\n        \"latency\",\n        \"query\",\n        \"slow\"\n      ],\n      \"confidence\": 0.558,\n      \"rationale\": \"keyword score 6.0 (runner-up 3.5); heuristic rules, not a model judgement\",\n      \"validation_status\": \"valid\",\n      \"error\": null,\n      \"duration_ms\": <dur>,\n      \"is_current\": true,\n      \"confirmed_by\": null,\n      \"batch_id\": \"<id:12>\",\n      \"created_by\": \"system:classifier\",\n      \"created_at\": \"<ts@22|Z>\"\n    }\n  ],\n  \"disagreement\": false,\n  \"note\": \"Model classifications are inferences, not objective facts.\"\n}\n",
       "stderr": ""
     },
     {
@@ -234,9 +234,9 @@
     },
     {
       "index": 33,
-      "kind": "assert",
-      "exit": null,
-      "stdout": "",
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:23>\",\n  \"provider\": \"heuristic\",\n  \"model\": \"heuristic-v1\",\n  \"prompt_version\": \"classify-v1\",\n  \"taxonomy_version\": \"2026.1\",\n  \"sample_size\": 5,\n  \"failures\": 0,\n  \"accuracy\": 1.0,\n  \"macro_f1\": 1.0,\n  \"per_class\": {\n    \"bug_fix\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    },\n    \"documentation\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    },\n    \"feature\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    },\n    \"performance\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    },\n    \"refactor\": {\n      \"precision\": 1.0,\n      \"recall\": 1.0,\n      \"f1\": 1.0,\n      \"support\": 1\n    }\n  },\n  \"confusion\": {\n    \"bug_fix\": {\n      \"bug_fix\": 1,\n      \"documentation\": 0,\n      \"feature\": 0,\n      \"performance\": 0,\n      \"refactor\": 0,\n      \"(failed)\": 0\n    },\n    \"documentation\": {\n      \"bug_fix\": 0,\n      \"documentation\": 1,\n      \"feature\": 0,\n      \"performance\": 0,\n      \"refactor\": 0,\n      \"(failed)\": 0\n    },\n    \"feature\": {\n      \"bug_fix\": 0,\n      \"documentation\": 0,\n      \"feature\": 1,\n      \"performance\": 0,\n      \"refactor\": 0,\n      \"(failed)\": 0\n    },\n    \"performance\": {\n      \"bug_fix\": 0,\n      \"documentation\": 0,\n      \"feature\": 0,\n      \"performance\": 1,\n      \"refactor\": 0,\n      \"(failed)\": 0\n    },\n    \"refactor\": {\n      \"bug_fix\": 0,\n      \"documentation\": 0,\n      \"feature\": 0,\n      \"performance\": 0,\n      \"refactor\": 1,\n      \"(failed)\": 0\n    }\n  },\n  \"results\": [\n    {\n      \"label_id\": \"<id:7>\",\n      \"title\": \"Fix crash in checkout page\",\n      \"expected\": \"bug_fix\",\n      \"predicted\": \"bug_fix\",\n      \"correct\": true\n    },\n    {\n      \"label_id\": \"<id:8>\",\n      \"title\": \"Add dark mode feature\",\n      \"expected\": \"feature\",\n      \"predicted\": \"feature\",\n      \"correct\": true\n    },\n    {\n      \"label_id\": \"<id:9>\",\n      \"title\": \"Refactor payment module\",\n      \"expected\": \"refactor\",\n      \"predicted\": \"refactor\",\n      \"correct\": true\n    },\n    {\n      \"label_id\": \"<id:10>\",\n      \"title\": \"Update README documentation\",\n      \"expected\": \"documentation\",\n      \"predicted\": \"documentation\",\n      \"correct\": true\n    },\n    {\n      \"label_id\": \"<id:11>\",\n      \"title\": \"Investigate slow query latency\",\n      \"expected\": \"performance\",\n      \"predicted\": \"performance\",\n      \"correct\": true\n    }\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -290,13 +290,27 @@
     },
     {
       "index": 41,
-      "kind": "cli",
-      "exit": 0,
-      "stdout": "[\n  {\n    \"id\": \"<id:23>\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"sample_size\": 5,\n    \"failures\": 0,\n    \"accuracy\": 1.0,\n    \"macro_f1\": 1.0,\n    \"per_class\": {\n      \"bug_fix\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      },\n      \"documentation\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      },\n      \"feature\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      },\n      \"performance\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      },\n      \"refactor\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      }\n    },\n    \"confusion\": {\n      \"bug_fix\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 1,\n        \"documentation\": 0,\n        \"feature\": 0,\n        \"performance\": 0,\n        \"refactor\": 0\n      },\n      \"documentation\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 0,\n        \"documentation\": 1,\n        \"feature\": 0,\n        \"performance\": 0,\n        \"refactor\": 0\n      },\n      \"feature\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 0,\n        \"documentation\": 0,\n        \"feature\": 1,\n        \"performance\": 0,\n        \"refactor\": 0\n      },\n      \"performance\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 0,\n        \"documentation\": 0,\n        \"feature\": 0,\n        \"performance\": 1,\n        \"refactor\": 0\n      },\n      \"refactor\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 0,\n        \"documentation\": 0,\n        \"feature\": 0,\n        \"performance\": 0,\n        \"refactor\": 1\n      }\n    },\n    \"created_at\": \"<ts@31|db>\"\n  }\n]\n",
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
       "stderr": ""
     },
     {
       "index": 42,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 43,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"id\": \"<id:23>\",\n    \"provider\": \"heuristic\",\n    \"model\": \"heuristic-v1\",\n    \"prompt_version\": \"classify-v1\",\n    \"taxonomy_version\": \"2026.1\",\n    \"sample_size\": 5,\n    \"failures\": 0,\n    \"accuracy\": 1.0,\n    \"macro_f1\": 1.0,\n    \"per_class\": {\n      \"bug_fix\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      },\n      \"documentation\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      },\n      \"feature\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      },\n      \"performance\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      },\n      \"refactor\": {\n        \"f1\": 1.0,\n        \"precision\": 1.0,\n        \"recall\": 1.0,\n        \"support\": 1\n      }\n    },\n    \"confusion\": {\n      \"bug_fix\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 1,\n        \"documentation\": 0,\n        \"feature\": 0,\n        \"performance\": 0,\n        \"refactor\": 0\n      },\n      \"documentation\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 0,\n        \"documentation\": 1,\n        \"feature\": 0,\n        \"performance\": 0,\n        \"refactor\": 0\n      },\n      \"feature\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 0,\n        \"documentation\": 0,\n        \"feature\": 1,\n        \"performance\": 0,\n        \"refactor\": 0\n      },\n      \"performance\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 0,\n        \"documentation\": 0,\n        \"feature\": 0,\n        \"performance\": 1,\n        \"refactor\": 0\n      },\n      \"refactor\": {\n        \"(failed)\": 0,\n        \"bug_fix\": 0,\n        \"documentation\": 0,\n        \"feature\": 0,\n        \"performance\": 0,\n        \"refactor\": 1\n      }\n    },\n    \"created_at\": \"<ts@33|db>\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 44,
       "kind": "assert",
       "exit": null,
       "stdout": "",

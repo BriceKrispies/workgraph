@@ -7,6 +7,8 @@
   ],
   "steps": [
     {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "llm.auto_embed", "false"], "json": true},
+    {"cli": ["config", "set", "llm.auto_classify", "false"], "json": true},
     {"cli": ["config", "set", "execution.enabled", "true"], "json": true},
     {"cli": ["config", "set", "stacks.auto_accept", "false"], "json": true},
     {"cli": ["agent", "add-command", "fake-a", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg=--file", "--arg=a.py", "--arg={manifest}", "--timeout", "120", "--supports-usage"], "json": true},

@@ -4,6 +4,8 @@
   "setup": [],
   "steps": [
     {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "llm.auto_embed", "false"], "json": true},
+    {"cli": ["config", "set", "llm.auto_classify", "false"], "json": true},
     {"cli": ["config", "set", "llm.classification.provider", "heuristic"], "json": true},
     {"cli": ["config", "set", "llm.classification.model", "heuristic-v1"], "json": true},
     {"cli": ["task", "create", "Fix crash in checkout page"], "json": true},

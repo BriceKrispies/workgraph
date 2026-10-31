@@ -280,10 +280,16 @@ pub fn fact_dataset(
 ) -> Dataset {
     match dataset {
         "task_facts" => {
-            let rows = facts
+            // DuckDB's unordered `SELECT * FROM task_facts` returns the tasks with a change
+            // surface first and the others after them, each group in task order.
+            let (with_code, without_code): (Vec<_>, Vec<_>) = facts
                 .task_facts
                 .iter()
                 .filter(|fact| fact.task.workspace_id.as_deref() == Some(workspace))
+                .partition(|fact| fact.final_files.is_some());
+            let rows = with_code
+                .into_iter()
+                .chain(without_code)
                 .map(task_fact_row)
                 .collect();
             Dataset {

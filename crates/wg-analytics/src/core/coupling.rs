@@ -91,19 +91,43 @@ pub fn coupling_report(
             map.insert(key, shas)
         },
     );
-    let pair_tasks = task_repos.iter().fold(
+    // Python walks `task_repos` in insertion order: the order in which the join first returns each
+    // task. Pairs and the tasks of a pair keep that order, which ranks edges of equal support.
+    let task_order: Vec<&String> = touches.iter().fold(Vec::new(), |mut order, (task, _, _)| {
+        if !order.contains(&task) {
+            order.push(task);
+        }
+        order
+    });
+    let pair_tasks = task_order.iter().fold(
         RedBlackTreeMapSync::<Pair, VectorSync<String>>::new_sync(),
-        |pairs, (task, touched)| {
-            pairs_of(touched).into_iter().fold(pairs, |pairs, pair| {
+        |pairs, task| {
+            let touched = task_repos
+                .get(*task)
+                .cloned()
+                .unwrap_or_else(RedBlackTreeSetSync::new_sync);
+            pairs_of(&touched).into_iter().fold(pairs, |pairs, pair| {
                 let tasks = pairs
                     .get(&pair)
                     .cloned()
                     .unwrap_or_else(VectorSync::new_sync)
-                    .push_back(task.clone());
+                    .push_back((*task).clone());
                 pairs.insert(pair, tasks)
             })
         },
     );
+    let pair_position: Vec<Pair> = task_order.iter().fold(Vec::new(), |mut seen, task| {
+        let touched = task_repos
+            .get(*task)
+            .cloned()
+            .unwrap_or_else(RedBlackTreeSetSync::new_sync);
+        for pair in pairs_of(&touched) {
+            if !seen.contains(&pair) {
+                seen.push(pair);
+            }
+        }
+        seen
+    });
     let touch_counts = task_repos
         .values()
         .flat_map(|touched| touched.iter().cloned())
@@ -126,15 +150,25 @@ pub fn coupling_report(
             set.insert(pair)
         });
 
-    // The edges with at least `min_support` tasks: most tasks first, then by pair.
+    // The edges with at least `min_support` tasks: most tasks first, ties in the order the pairs
+    // were first seen (Python's stable sort of `pair_tasks`).
     let ranked = pair_tasks.iter().fold(
-        RedBlackTreeMapSync::<(Reverse<usize>, Pair), VectorSync<String>>::new_sync(),
-        |ranked, (pair, tasks)| ranked.insert((Reverse(tasks.len()), pair.clone()), tasks.clone()),
+        RedBlackTreeMapSync::<(Reverse<usize>, usize), (Pair, VectorSync<String>)>::new_sync(),
+        |ranked, (pair, tasks)| {
+            let position = pair_position
+                .iter()
+                .position(|seen| seen == pair)
+                .unwrap_or(usize::MAX);
+            ranked.insert(
+                (Reverse(tasks.len()), position),
+                (pair.clone(), tasks.clone()),
+            )
+        },
     );
     let supported: Vec<(&Pair, &VectorSync<String>)> = ranked
         .iter()
         .filter(|((count, _), _)| count.0 as i64 >= min_support)
-        .map(|((_, pair), tasks)| (pair, tasks))
+        .map(|(_, (pair, tasks))| (pair, tasks))
         .collect();
     let touched_count = |repository: &str| touch_counts.get(repository).copied().unwrap_or(0);
     let edges: Vec<Value> = supported
@@ -198,15 +232,16 @@ pub fn coupling_report(
         })
         .collect();
 
-    let cross: Vec<&String> = task_repos
+    let touched_by = |task: &String| task_repos.get(task).map_or(0, RedBlackTreeSetSync::size);
+    let cross: Vec<&String> = task_order
         .iter()
-        .filter(|(_, touched)| touched.size() > 1)
-        .map(|(task, _)| task)
+        .copied()
+        .filter(|task| touched_by(task) > 1)
         .collect();
-    let single: Vec<&String> = task_repos
+    let single: Vec<&String> = task_order
         .iter()
-        .filter(|(_, touched)| touched.size() == 1)
-        .map(|(task, _)| task)
+        .copied()
+        .filter(|task| touched_by(task) == 1)
         .collect();
     let elapsed = |tasks: &[&String]| -> Value {
         median(

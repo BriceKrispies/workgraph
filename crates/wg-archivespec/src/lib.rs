@@ -671,6 +671,14 @@ pub fn task_ids_in(workspace_id: &str) -> Statement {
     }
 }
 
+/// A path given on the command line in the platform's own separators, as `pathlib.Path` builds it:
+/// `C:\dir/file.zip` becomes `C:\dir\file.zip` on Windows, and `.` segments and repeated
+/// separators are dropped. The path arguments of the archive commands are read through this, so
+/// the text they print matches Python's `str(path)`.
+pub fn native_path(text: &str) -> std::path::PathBuf {
+    Path::new(text).components().collect()
+}
+
 /// The SQLite side files of a database (`-wal` and `-shm`), which a restore removes.
 pub fn sidecar_files(database: &Path) -> Vec<std::path::PathBuf> {
     ["-wal", "-shm"]

@@ -16,6 +16,7 @@ clap = { version = "4.5", default-features = false, features = ["std", "help", "
 rpds = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-analytics = { path = "../wg-analytics" }
+wg-archive = { path = "../wg-archive" }
 wg-archivespec = { path = "../wg-archivespec" }
 wg-hash = { path = "../wg-hash" }
 wg-intel-feature = { path = "../wg-intel-feature" }

@@ -2251,6 +2251,7 @@ dependencies = [
  "serde_json",
  "time",
  "wg-analytics",
+ "wg-archive",
  "wg-archivespec",
  "wg-automation-feature",
  "wg-hash",

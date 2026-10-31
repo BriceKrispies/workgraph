@@ -2,6 +2,7 @@
 //! `generate_retrospective` for the job's workspace and scope and returns the report's id and its
 //! narrative source. The worker collects [`JOBS`] through the feature's `FEATURE` value.
 
+use crate::service::persist_findings;
 use crate::service::retrospective;
 use crate::spec::args::scope_retrospective_options;
 use serde_json::{Map, Value as Json, json};
@@ -11,10 +12,29 @@ use wg_runtime::{
 use wg_types::WgError;
 
 /// The job kinds this feature handles.
-pub static JOBS: &[JobKind] = &[JobKind {
-    kind: "generate_report",
-    handler: generate_report,
-}];
+pub static JOBS: &[JobKind] = &[
+    JobKind {
+        kind: "generate_report",
+        handler: generate_report,
+    },
+    JobKind {
+        kind: "failure_analysis",
+        handler: failure_analysis,
+    },
+];
+
+/// `failure_analysis`: `persist_findings(app, payload["workspace"])`, the reply being
+/// `{"findings": n}`, n the number of findings seen.
+fn failure_analysis(queue: &mut Queue, job: &mut JobContext) -> HandlerResult {
+    let workspace = job
+        .job
+        .payload
+        .get("workspace")
+        .and_then(Json::as_str)
+        .ok_or_else(|| HandlerError::Exception("KeyError: 'workspace'".to_owned()))?;
+    let seen = persist_findings(&mut queue.app, Some(workspace)).map_err(HandlerError::Failed)?;
+    Ok(Some(Map::from_iter([("findings".to_owned(), json!(seen))])))
+}
 
 /// `generate_report`: `generate_retrospective(workspace, **scope)`, with the context a system
 /// component (`_ctx(job, "reports")`): the job's correlation and causation. The reply is the

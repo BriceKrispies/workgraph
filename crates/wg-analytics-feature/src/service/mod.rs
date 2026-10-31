@@ -197,7 +197,7 @@ fn failure_report(
 
 /// `persist_findings`: records the report's findings, a new row per fingerprint and a refreshed
 /// one for a finding seen before. Returns the number of findings seen.
-fn persist_findings(app: &mut App, workspace: Option<&str>) -> Result<usize, WgError> {
+pub fn persist_findings(app: &mut App, workspace: Option<&str>) -> Result<usize, WgError> {
     let context = system_context("failure-analysis")?;
     let (report, ws, at) = failure_report(app, &context, workspace)?;
     let stamp = app.runtime.stamps.stamp(&context)?;

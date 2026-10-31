@@ -64,3 +64,4 @@ wg-types = { path = "../wg-types" }
 [dev-dependencies]
 serde_json = { version = "1", features = ["preserve_order"] }
 wg-model = { path = "../wg-model" }
+wg-jobs = { path = "../wg-jobs" }

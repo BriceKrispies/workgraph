@@ -49,3 +49,19 @@ pub const GROUPS: &[Group] = &[
     ui::GROUP,
     worker::GROUP,
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::FEATURES;
+    use wg_jobs::dispatch::unwired_kinds;
+    use wg_runtime::HandlerRegistry;
+
+    /// Every kind of Python's `HANDLERS` has a handler in the binary's registry, so the worker
+    /// never dead-letters a job with "handler not ported".
+    #[test]
+    fn registry_covers_every_job_kind() {
+        let registry = HandlerRegistry::from_features(FEATURES);
+        let wired: Vec<String> = registry.handlers.keys().cloned().collect();
+        assert_eq!(unwired_kinds(&wired), Vec::<&str>::new());
+    }
+}

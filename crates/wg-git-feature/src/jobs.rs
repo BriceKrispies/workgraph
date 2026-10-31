@@ -11,8 +11,8 @@ use wg_runtime::spec::RequestContext;
 use wg_runtime::{HandlerError, HandlerResult, JobContext, JobKind, Queue, system_context};
 use wg_types::WgError;
 
-use crate::service::{git_surface, sync_repository};
-use crate::spec::jobs::{self, MISSING_REPOSITORY, MISSING_TASK};
+use crate::service::{analyze_commit, git_surface, sync_repository};
+use crate::spec::jobs::{self, MISSING_COMMIT_IDS, MISSING_REPOSITORY, MISSING_TASK};
 
 /// The job kinds this feature handles.
 pub static JOBS: &[JobKind] = &[
@@ -23,6 +23,10 @@ pub static JOBS: &[JobKind] = &[
     JobKind {
         kind: "compute_change_surface",
         handler: compute_change_surface_job,
+    },
+    JobKind {
+        kind: "analyze_commits",
+        handler: analyze_commits_job,
     },
 ];
 
@@ -68,4 +72,20 @@ fn compute_change_surface_job(queue: &mut Queue, ctx: &mut JobContext) -> Handle
     Ok(Some(jobs::surface_result_object(jobs::surface_count(
         &replies,
     ))))
+}
+
+/// `analyze_commits`: `GitService.analyze_commit` for each of the payload's `commit_ids`, checking
+/// for cancellation before each; the reply is `{"analyzed": n}`, n counting the analyses written.
+fn analyze_commits_job(queue: &mut Queue, ctx: &mut JobContext) -> HandlerResult {
+    let ids = jobs::commit_ids(&ctx.job.payload)
+        .ok_or_else(|| HandlerError::Exception(MISSING_COMMIT_IDS.to_owned()))?;
+    let context = job_context(ctx, "git").map_err(HandlerError::Failed)?;
+    let mut analyzed = 0;
+    for id in ids {
+        ctx.check_cancelled()?;
+        if analyze_commit(&mut queue.app, &context, id).map_err(HandlerError::Failed)? {
+            analyzed += 1;
+        }
+    }
+    Ok(Some(jobs::analyze_result_object(analyzed)))
 }

@@ -84,9 +84,44 @@ pub fn surface_result_object(repositories: usize) -> JsonObject {
         .unwrap_or_default()
 }
 
+/// The message of the bare `KeyError` an `analyze_commits` job without `commit_ids` raises.
+pub const MISSING_COMMIT_IDS: &str = "KeyError: 'commit_ids'";
+
+/// The commits of an `analyze_commits` payload. An entry that is not an id names no commit, which
+/// Python's lookup finds none of, so it is skipped. `None` when `commit_ids` is absent or not a list.
+pub fn commit_ids(payload: &JsonObject) -> Option<Vec<Id>> {
+    let items = payload.get("commit_ids").and_then(Json::as_array)?;
+    Some(
+        items
+            .iter()
+            .filter_map(Json::as_str)
+            .filter_map(|text| parse_id(text).ok())
+            .collect(),
+    )
+}
+
+/// The job's result of `analyze_commits`: `{"analyzed": n}`.
+pub fn analyze_result_object(analyzed: usize) -> JsonObject {
+    json!({ "analyzed": analyzed })
+        .as_object()
+        .cloned()
+        .unwrap_or_default()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn commit_ids_skip_names_that_are_not_ids() {
+        let payload = json!({ "commit_ids": ["nope", 3] })
+            .as_object()
+            .cloned()
+            .unwrap_or_default();
+        assert_eq!(commit_ids(&payload), Some(Vec::new()));
+        assert_eq!(commit_ids(&JsonObject::new()), None);
+        assert_eq!(analyze_result_object(2).get("analyzed"), Some(&json!(2)));
+    }
 
     #[test]
     fn surface_result_counts_repositories() {

@@ -2395,6 +2395,7 @@ dependencies = [
  "wg-git-feature",
  "wg-iface",
  "wg-intel-feature",
+ "wg-jobs",
  "wg-jobs-feature",
  "wg-json",
  "wg-mcp",

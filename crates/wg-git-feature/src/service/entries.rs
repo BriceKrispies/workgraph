@@ -877,7 +877,7 @@ pub fn git_analyze(
 
 /// `GitService.analyze_commit`: the structure analysis of one commit's files. Returns whether
 /// an analysis was written.
-pub(crate) fn analyze_commit(
+pub fn analyze_commit(
     app: &mut App,
     context: &RequestContext,
     commit_id: Id,

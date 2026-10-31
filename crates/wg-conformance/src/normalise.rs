@@ -35,6 +35,7 @@ impl Normaliser for FullNormaliser {
                 out = out.replace(value.as_str(), placeholder);
             }
         }
+        let out = sort_coupling_lines(&sort_coupling_lines(&mask_csv_durations(&out), "\\n"), "\n");
         let outputs: Vec<&str> = run
             .steps
             .iter()
@@ -42,7 +43,8 @@ impl Normaliser for FullNormaliser {
             .chain(std::iter::once(text))
             .collect();
         let windows = step_windows(run);
-        let mut numbering = Numbering::from_outputs(&outputs, &windows);
+        let first_seen = first_seen_steps(run);
+        let mut numbering = Numbering::from_outputs(&outputs, &windows, &first_seen);
         let bytes = out.as_bytes();
         // The archive size of a backup is a zip byte count that differs between two Python runs,
         // so it is masked only in output that names a backup format. Other `bytes` keys stay.
@@ -69,7 +71,7 @@ impl Normaliser for FullNormaliser {
             spans.push((s, e, format!("<sha:{}>", numbering.sha(&key))));
         }
         for (s, e, stamp) in scan(bytes, any_timestamp_at) {
-            let placeholder = match step_of(&windows, &stamp) {
+            let placeholder = match step_of(&windows, &first_seen, &stamp) {
                 Some(k) => format!("<ts@{k}|{}>", stamp.format),
                 None => format!("<ts:{}|{}>", numbering.rank(stamp.micros), stamp.format),
             };
@@ -544,6 +546,88 @@ fn archive_bytes_at(bytes: &[u8], i: usize) -> Option<Span<&'static str>> {
     keyed_number_at(bytes, i, |key| (key == "bytes").then_some("<bytes>"))
 }
 
+/// Sorts each run of consecutive `- A + B changed together in N task(s).` lines (a retrospective's
+/// coordination section, split on `sep`). Python lists repositories of equal support in an order
+/// that follows random uuid4 values, so the run order is not behaviour.
+fn ordered_pair(line: &str) -> String {
+    let split = line
+        .strip_prefix("- ")
+        .and_then(|rest| rest.split_once(" changed together in "))
+        .and_then(|(pair, tail)| pair.split_once(" + ").map(|names| (names, tail)));
+    match split {
+        Some(((a, b), tail)) => {
+            let (first, second) = if a <= b { (a, b) } else { (b, a) };
+            format!("- {first} + {second} changed together in {tail}")
+        }
+        None => line.to_owned(),
+    }
+}
+
+fn sort_coupling_lines(text: &str, sep: &str) -> String {
+    let is_pair = |line: &str| line.starts_with("- ") && line.contains(" changed together in ");
+    let lines: Vec<&str> = text.split(sep).collect();
+    let (out, run) = lines.iter().fold(
+        (Vec::<String>::new(), Vec::<String>::new()),
+        |(out, run), line| {
+            if is_pair(line) {
+                (out, [run, vec![ordered_pair(line)]].concat())
+            } else {
+                let ordered = {
+                    let mut run = run;
+                    run.sort_unstable();
+                    run
+                };
+                (
+                    [out, ordered, vec![(*line).to_owned()]].concat(),
+                    Vec::new(),
+                )
+            }
+        },
+    );
+    let mut tail = run;
+    tail.sort_unstable();
+    [out, tail].concat().join(sep)
+}
+
+/// Replaces the cells of millisecond columns (`execution_ms`, `elapsed_ms`, ...) of a CSV document
+/// with `<dur>`: the CSV export names its measured durations by header, not by JSON key. Text
+/// whose first line is not a comma-separated header naming such a column is returned unchanged.
+fn mask_csv_durations(text: &str) -> String {
+    let header = text.lines().next().unwrap_or("");
+    let columns: Vec<bool> = header.split(',').map(is_ms_key).collect();
+    let csv_like = !header.is_empty()
+        && !header.starts_with(['{', '[', '"'])
+        && header.split(',').all(|name| {
+            !name.is_empty() && name.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
+        });
+    if !csv_like || !columns.contains(&true) {
+        return text.to_owned();
+    }
+    // One pass over the characters, tracking the column and whether a quoted cell is open.
+    let mut out = String::with_capacity(text.len());
+    let (mut column, mut line, mut quoted, mut cell_start) = (0_usize, 0_usize, false, true);
+    for c in text.chars() {
+        let masked = line > 0 && columns.get(column).copied().unwrap_or(false);
+        let boundary = !quoted && matches!(c, ',' | '\n');
+        if !masked || boundary {
+            out.push(c);
+        } else if cell_start {
+            out.push_str("<dur>");
+        }
+        cell_start = boundary;
+        match c {
+            '"' => quoted = !quoted,
+            ',' if !quoted => column += 1,
+            '\n' if !quoted => {
+                column = 0;
+                line += 1;
+            }
+            _ => {}
+        }
+    }
+    out
+}
+
 /// A JSON key that names a duration in milliseconds: `*_ms`, or a key with `_ms_` inside such as
 /// `median_elapsed_ms_cross_repo`.
 fn is_ms_key(key: &str) -> bool {
@@ -771,14 +855,16 @@ fn step_windows(run: &RunResult) -> Vec<Window> {
 /// the answer does not depend on how fast the run was: everything a step writes is one instant,
 /// however far from the next step's writes. `None` for dates the scenario supplied (fixtures,
 /// commit dates), which keep their rank.
-fn step_of(windows: &[Window], stamp: &Stamp) -> Option<usize> {
+fn step_of(windows: &[Window], first_seen: &BTreeMap<i64, usize>, stamp: &Stamp) -> Option<usize> {
     let (lo, hi) = (stamp.micros, stamp.micros + stamp.span);
-    // A second-resolution stamp is a truncated instant: any step overlapping that whole second may
-    // have written it, and the latest of them is the one taken.
+    // A second-resolution stamp is a truncated instant: any step overlapping that whole second
+    // may have written it. A step cannot write what an earlier step's output never held, so the
+    // writer is the latest overlapping step up to the first step whose output shows the stamp.
     if stamp.span > 1 {
+        let last = first_seen.get(&stamp.micros).copied().unwrap_or(usize::MAX);
         let overlapping = windows
             .iter()
-            .filter(|&&(_, start, end)| start < hi && end >= lo)
+            .filter(|&&(k, start, end)| k <= last && start < hi && end >= lo)
             .map(|&(k, _, _)| k)
             .max();
         if overlapping.is_some() {
@@ -795,6 +881,25 @@ fn step_of(windows: &[Window], stamp: &Stamp) -> Option<usize> {
         .map(|(_, k)| k)
 }
 
+/// For each second-resolution stamp (by instant), the first step whose stdout or stderr shows it.
+fn first_seen_steps(run: &RunResult) -> BTreeMap<i64, usize> {
+    run.steps
+        .iter()
+        .enumerate()
+        .rev()
+        .flat_map(|(k, step)| {
+            [step.stdout.as_str(), step.stderr.as_str()]
+                .into_iter()
+                .flat_map(move |text| {
+                    scan(text.as_bytes(), any_timestamp_at)
+                        .into_iter()
+                        .filter(|(_, _, stamp)| stamp.span > 1)
+                        .map(move |(_, _, stamp)| (stamp.micros, k))
+                })
+        })
+        .collect()
+}
+
 /// First-appearance numbers for UUIDs, SHAs and worker ids, and timestamp ranks, for one run.
 #[derive(Default)]
 struct Numbering {
@@ -806,7 +911,11 @@ struct Numbering {
 }
 
 impl Numbering {
-    fn from_outputs(outputs: &[&str], windows: &[Window]) -> Self {
+    fn from_outputs(
+        outputs: &[&str],
+        windows: &[Window],
+        first_seen: &BTreeMap<i64, usize>,
+    ) -> Self {
         let mut n = Self::default();
         for text in outputs {
             for (_, _, key) in scan(text.as_bytes(), uuid_at) {
@@ -832,7 +941,7 @@ impl Numbering {
             .iter()
             .flat_map(|text| scan(text.as_bytes(), any_timestamp_at))
             .map(|(_, _, stamp)| stamp)
-            .filter(|stamp| step_of(windows, stamp).is_none())
+            .filter(|stamp| step_of(windows, first_seen, stamp).is_none())
             .map(|stamp| stamp.micros)
             .collect();
         for (rank, micros) in unattributed.into_iter().enumerate() {
@@ -1263,19 +1372,29 @@ mod tests {
     }
 
     #[test]
-    fn whole_second_stamps_take_the_latest_step_overlapping_that_second() {
+    fn whole_second_stamps_take_the_latest_step_overlapping_that_second_up_to_first_sight() {
         let n = FullNormaliser::default();
         let text = "20261026T063441Z";
         let r = run_w(
             "py",
             &[
                 ("", (at(40, 900), at(41, 100))),
-                ("", (at(41, 300), at(41, 400))),
+                (text, (at(41, 300), at(41, 400))),
                 (text, (at(41, 600), at(41, 700))),
                 ("", (at(42, 100), at(42, 200))),
             ],
         );
-        assert_eq!(n.normalise(&r, text), "<ts@2|compact>");
+        // Steps 0 to 2 overlap the second, but step 1 is the first to show it.
+        assert_eq!(n.normalise(&r, text), "<ts@1|compact>");
+        // Slow steps: the truncated second falls in the previous step's window as well.
+        let slow = run_w(
+            "py",
+            &[
+                ("", (at(39, 500), at(41, 500))),
+                (text, (at(41, 500), at(43, 500))),
+            ],
+        );
+        assert_eq!(n.normalise(&slow, text), "<ts@1|compact>");
     }
 
     #[test]
@@ -1488,6 +1607,38 @@ mod tests {
         // Digit runs that are not a compact stamp are left alone.
         let other = "id 1234567T123456Z 20261026T1449Z x20261026T144947Z";
         assert_eq!(n.normalise(&r, other), other);
+    }
+
+    #[test]
+    fn coupling_pair_lines_of_a_report_are_sorted() {
+        let n = FullNormaliser::default();
+        let r = run("py", &[("", "")]);
+        let text = "a\n- web + auth changed together in 1 task(s).\n- auth + sdk changed together in 1 task(s).\n\n## Q";
+        assert_eq!(
+            n.normalise(&r, text),
+            "a\n- auth + sdk changed together in 1 task(s).\n- web + auth changed together in 1 task(s).\n\n## Q"
+        );
+    }
+
+    #[test]
+    fn csv_millisecond_columns_are_masked() {
+        let n = FullNormaliser::default();
+        let r = run("py", &[("", "")]);
+        let text = "key,execution_ms,title,elapsed_ms
+A-1,1198,\"x, y\",9
+A-2,,plain,10
+";
+        assert_eq!(
+            n.normalise(&r, text),
+            "key,execution_ms,title,elapsed_ms
+A-1,<dur>,\"x, y\",<dur>
+A-2,,plain,<dur>
+"
+        );
+        let plain = "a,b
+1,2
+";
+        assert_eq!(n.normalise(&r, plain), plain);
     }
 
     #[test]

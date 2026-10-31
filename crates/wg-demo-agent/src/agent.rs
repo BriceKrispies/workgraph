@@ -143,7 +143,12 @@ fn implement(repo: &Value, task_key: &str, mode: &str, default_file: &str) -> Re
     git(checkout, &["add", "-A"])?;
     let message = format!("Implement {task_key} in {repository}\n\nTask-ID: {task_key}");
     git(checkout, &["commit", "-q", "-m", &message])?;
-    Ok(relative.display().to_string())
+    // `pathlib` renders the path with the platform separator.
+    Ok(relative
+        .components()
+        .collect::<PathBuf>()
+        .display()
+        .to_string())
 }
 
 /// Run one git command in `checkout` with the agent's author identity.

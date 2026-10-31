@@ -80,6 +80,89 @@ pub struct Divergence {
     pub both: bool,
     /// When set, the left or the right text of the difference holds a non-ASCII character.
     pub non_ascii: bool,
+    /// When set, the two texts must be identical after tokenising numbers, and every pair of
+    /// differing numbers must be floats (a `.` or an exponent) within this relative tolerance.
+    /// Differing integers, differing words and a differing token count are not allowed.
+    pub relative_tolerance: Option<f64>,
+}
+
+/// One piece of a text: a run of non-numeric text, or a number.
+#[derive(Debug, PartialEq)]
+enum Piece<'a> {
+    Text(&'a str),
+    Num { text: &'a str, float: bool },
+}
+
+/// Split `s` into text runs and number tokens (`-`? digits, optional fraction, optional exponent).
+/// A `-` belongs to a number only when it is not glued to a preceding word character.
+fn pieces(s: &str) -> Vec<Piece<'_>> {
+    let b = s.as_bytes();
+    let mut out = Vec::new();
+    let (mut i, mut text_start) = (0, 0);
+    while i < b.len() {
+        let neg = b[i] == b'-'
+            && b.get(i + 1).is_some_and(u8::is_ascii_digit)
+            && (i == 0 || !(b[i - 1].is_ascii_alphanumeric() || b[i - 1] == b'_'));
+        if !(b[i].is_ascii_digit() || neg) {
+            i += 1;
+            continue;
+        }
+        let start = i;
+        i += usize::from(neg);
+        while b.get(i).is_some_and(u8::is_ascii_digit) {
+            i += 1;
+        }
+        let mut float = false;
+        if b.get(i) == Some(&b'.') && b.get(i + 1).is_some_and(u8::is_ascii_digit) {
+            float = true;
+            i += 1;
+            while b.get(i).is_some_and(u8::is_ascii_digit) {
+                i += 1;
+            }
+        }
+        if matches!(b.get(i), Some(b'e' | b'E')) {
+            let sign = usize::from(matches!(b.get(i + 1), Some(b'+' | b'-')));
+            if b.get(i + 1 + sign).is_some_and(u8::is_ascii_digit) {
+                float = true;
+                i += 1 + sign;
+                while b.get(i).is_some_and(u8::is_ascii_digit) {
+                    i += 1;
+                }
+            }
+        }
+        if start > text_start {
+            out.push(Piece::Text(&s[text_start..start]));
+        }
+        out.push(Piece::Num {
+            text: &s[start..i],
+            float,
+        });
+        text_start = i;
+    }
+    if text_start < b.len() {
+        out.push(Piece::Text(&s[text_start..]));
+    }
+    out
+}
+
+/// True when `left` and `right` differ only in float tokens that agree within `tol`
+/// (`|a-b| <= tol * max(|a|,|b|)`).
+pub fn within_relative_tolerance(left: &str, right: &str, tol: f64) -> bool {
+    let (l, r) = (pieces(left), pieces(right));
+    l.len() == r.len()
+        && l.iter().zip(&r).all(|(a, b)| match (a, b) {
+            (Piece::Text(x), Piece::Text(y)) => x == y,
+            (Piece::Num { text: x, float: fx }, Piece::Num { text: y, float: fy }) => {
+                x == y
+                    || (*fx
+                        && *fy
+                        && matches!(
+                            (x.parse::<f64>(), y.parse::<f64>()),
+                            (Ok(a), Ok(b)) if (a - b).abs() <= tol * a.abs().max(b.abs())
+                        ))
+            }
+            _ => false,
+        })
 }
 
 impl Divergence {
@@ -100,11 +183,15 @@ impl Divergence {
         };
         let text_ok = self.contains.is_empty() || self.contains.iter().any(names);
         let encoding_ok = !self.non_ascii || !left.is_ascii() || !right.is_ascii();
+        let tolerance_ok = self
+            .relative_tolerance
+            .is_none_or(|tol| within_relative_tolerance(left, right, tol));
         (self.scenario == "*" || self.scenario == scenario)
             && (self.step.is_none() || self.step == step)
             && (self.fields.is_empty() || self.fields.iter().any(|f| f == field))
             && text_ok
             && encoding_ok
+            && tolerance_ok
     }
 }
 
@@ -151,7 +238,35 @@ pub fn parse_divergences(text: &str) -> Result<Vec<Divergence>, String> {
                     .get("non_ascii")
                     .and_then(toml::Value::as_bool)
                     .unwrap_or(false),
+                relative_tolerance: match t.get("relative_tolerance") {
+                    None => None,
+                    Some(v) => Some(
+                        v.as_float()
+                            .filter(|x| x.is_finite() && *x > 0.0)
+                            .ok_or_else(|| {
+                                format!(
+                                    "divergence[{i}]: `relative_tolerance` must be a positive float"
+                                )
+                            })?,
+                    ),
+                },
             })
+        })
+        .collect::<Result<Vec<_>, String>>()?
+        .into_iter()
+        .map(|d| {
+            if d.scenario == "*"
+                && d.contains.is_empty()
+                && !d.non_ascii
+                && d.relative_tolerance.is_none()
+            {
+                Err(format!(
+                    "divergence {}: scenario \"*\" needs `contains`, `non_ascii` or `relative_tolerance` (a wildcard that allows everything is illegal)",
+                    d.id
+                ))
+            } else {
+                Ok(d)
+            }
         })
         .collect()
 }
@@ -601,6 +716,62 @@ mod tests {
             &allow,
         );
         assert!(config[0].allowed_by.is_none());
+    }
+
+    #[test]
+    fn tolerance_allows_close_floats_only() {
+        let w = within_relative_tolerance;
+        assert!(w(
+            "mean=1.0000000000001 n=3\n",
+            "mean=1.0000000000002 n=3\n",
+            1e-12
+        ));
+        assert!(w("x=1.5e-3", "x=1.5000000000001e-3", 1e-12));
+        assert!(!w("mean=1.001\n", "mean=1.002\n", 1e-12));
+        assert!(w("a 2.5 b", "a 2.5 b", 1e-12));
+    }
+
+    #[test]
+    fn tolerance_rejects_integers_words_and_shape() {
+        let w = within_relative_tolerance;
+        assert!(!w("failed=3", "failed=0", 1e-12));
+        assert!(!w("n=1000000000000", "n=1000000000001", 1e-12));
+        assert!(!w("mean=1.0 ok", "mean=1.0 bad", 1e-12));
+        assert!(!w("1.0 2.0", "1.0", 1e-12));
+        assert!(!w("v=1", "v=1.0", 1e-12));
+        assert!(!w("WG-1", "WG-2", 1e-12));
+    }
+
+    #[test]
+    fn tolerance_entry_applies_through_compare() {
+        let allow = parse_divergences(
+            "[[divergence]]\nid = \"DV7\"\ndecision = \"Q9\"\nfields = [\"stdout\"]\nrelative_tolerance = 1e-12\n",
+        )
+        .unwrap();
+        let near = compare(
+            "s",
+            &obs("p=0.30000000000000004\n"),
+            &obs("p=0.3\n"),
+            &allow,
+        );
+        assert_eq!(near[0].allowed_by.as_deref(), Some("DV7"));
+        let far = compare("s", &obs("failed=3\n"), &obs("failed=0\n"), &allow);
+        assert!(far[0].allowed_by.is_none());
+    }
+
+    #[test]
+    fn wildcard_entry_must_name_what_it_allows() {
+        let bare = "[[divergence]]\nid = \"X\"\ndecision = \"Q\"\nscenario = \"*\"\nfields = [\"stdout\"]\n";
+        assert!(parse_divergences(bare).is_err());
+        for extra in [
+            "contains = [\"a\"]",
+            "non_ascii = true",
+            "relative_tolerance = 1e-9",
+        ] {
+            assert!(parse_divergences(&format!("{bare}{extra}\n")).is_ok());
+        }
+        // A scenario-specific entry may stay bare.
+        assert!(parse_divergences(&bare.replace("\"*\"", "\"s\"")).is_ok());
     }
 
     #[test]
